@@ -1,0 +1,37 @@
+# Dependency directories
+node_modules/
+
+# Nx cache
+.nx/
+
+# Angular cache
+.angular/
+
+# Distribution / build output
+dist/
+
+# Editor directories and files
+*.sublime-workspace
+*.sublime-project
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS generated files
+._*
+.Spotlight-V100
+.Trashes
+
+# ESLint cache
+.eslintcache
+
+# Lock files
+package-lock.json
+yarn.lock
