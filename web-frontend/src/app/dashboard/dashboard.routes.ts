@@ -6,17 +6,7 @@ import { Dashboard2Component } from "./dashboard2/dashboard2.component";
 export const DASHBOARD_ROUTE: Route[] = [
   {
     path: "",
-    redirectTo: "dashboard1",
-    pathMatch: "full",
-  },
-  {
-    path: "dashboard1",
     component: Dashboard1Component,
-  },
-  {
-    path: "dashboard2",
-    component: Dashboard2Component,
-  },
-  { path: "**", component: Page404Component },
+  }
 ];
 

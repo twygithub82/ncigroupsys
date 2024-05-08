@@ -187,7 +187,7 @@ export class HeaderComponent
     }
   }
   logout() {
-    this.subs.sink = this.authService.logout().subscribe((res) => {
+    this.subs.sink = this.authService.logout().subscribe((res: { success: any; }) => {
       if (!res.success) {
         this.router.navigate(['/authentication/signin']);
       }

@@ -56,7 +56,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private router: Router
   ) {
     this.elementRef.nativeElement.closest('body');
-    this.routerObj = this.router.events.subscribe((event) => {
+    this.routerObj = this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         // close sidebar on mobile screen after menu select
         this.renderer.removeClass(this.document.body, 'overlay-open');
@@ -170,7 +170,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
   }
   logout() {
-    this.authService.logout().subscribe((res) => {
+    this.authService.logout().subscribe((res: { success: any; }) => {
       if (!res.success) {
         this.router.navigate(['/authentication/signin']);
       }

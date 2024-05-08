@@ -64,7 +64,7 @@ export class SigninComponent
               if (res) {
                 const token = this.authService.currentUserValue.token;
                 if (token) {
-                  this.router.navigate(['/dashboard/dashboard1']);
+                  this.router.navigate(['/']);
                 }
               } else {
                 this.error = 'Invalid Login';
