@@ -33,6 +33,7 @@ import { DeleteDialogComponent } from 'app/advance-table/dialogs/delete/delete.c
 import { FormDialogComponent } from 'app/advance-table/dialogs/form-dialog/form-dialog.component';
 import { fromEvent } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-cleaning-procedures',
@@ -54,7 +55,8 @@ import { RouterLink } from '@angular/router';
       MatMenuModule,
       MatPaginatorModule,
       DatePipe,
-      RouterLink
+      RouterLink,
+      TranslateModule
     ]
 })
 export class CleaningProceduresComponent
@@ -73,6 +75,12 @@ implements OnInit {
     'country',
     'actions',
   ];
+
+  pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-PROCEDURES'
+  breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT'
+  ]
+
   exampleDatabase?: AdvanceTableService;
   dataSource!: ExampleDataSource;
   selection = new SelectionModel<AdvanceTable>(true, []);

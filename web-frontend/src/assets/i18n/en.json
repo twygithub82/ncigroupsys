@@ -80,6 +80,9 @@
         "NGX-DATATABLE": "NGX-Datatable"
       }
     },
+    "HOME": {
+      "TEXT": "Home"
+    },
     "ADMIN": {
       "TEXT": "Admin"
     },

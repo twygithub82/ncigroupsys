@@ -79,6 +79,20 @@
         "MATERIAL": "Tablas de materiales",
         "NGX-DATATABLE": "NGX-Datatable"
       }
+    },
+    "HOME": {
+      "TEXT": "Home"
+    },
+    "ADMIN": {
+      "TEXT": "Admin"
+    },
+    "CLEANING-MANAGEMENT": {
+      "TEXT": "Cleaning Management",
+      "LIST": {
+        "CLEAN-STEPS": "Cleaning Steps",
+        "CLEAN-PROCEDURES": "Cleaning Procedures",
+        "CLEAN-GROUPS": "Cleaning Groups"
+      }
     }
   }
 }
