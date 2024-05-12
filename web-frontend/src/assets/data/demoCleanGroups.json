@@ -1,0 +1,22 @@
+[
+    { "id": "1", "groupName": "Difficult", "category": "Difficult", "minCost": 150.00, "maxCost": 280.00, "latUpdateDt": "01/05/2014" },
+    { "id": "2", "groupName": "Difficult 1", "category": "Difficult", "minCost": 210.00, "maxCost": 210.00, "latUpdateDt": "01/05/2014" },
+    { "id": "3", "groupName": "Easy", "category": "Easy", "minCost": 220.00, "maxCost": 220.00, "latUpdateDt": "01/05/2014" },
+    { "id": "4", "groupName": "FG 1", "category": "Easy", "minCost": 160.00, "maxCost": 160.00, "latUpdateDt": "01/05/2014" },
+    { "id": "5", "groupName": "Flammable 1", "category": "Easy", "minCost": 160.00, "maxCost": 220.00, "latUpdateDt": "01/05/2014" },
+    { "id": "6", "groupName": "Flammable 2", "category": "Easy", "minCost": 200.00, "maxCost": 200.00, "latUpdateDt": "01/05/2014" },
+    { "id": "7", "groupName": "Flammable 3", "category": "Easy", "minCost": 220.00, "maxCost": 220.00, "latUpdateDt": "01/05/2014" },
+    { "id": "8", "groupName": "Flammable 4", "category": "Easy", "minCost": 180.00, "maxCost": 180.00, "latUpdateDt": "01/05/2014" },
+    { "id": "9", "groupName": "Flammable 5", "category": "Easy", "minCost": 150.00, "maxCost": 220.00, "latUpdateDt": "01/05/2014" },
+    { "id": "10", "groupName": "Flammable 6", "category": "Easy", "minCost": 240.00, "maxCost": 240.00, "latUpdateDt": "01/05/2014" },
+    { "id": "11", "groupName": "Flammable with Odor 1", "category": "Easy", "minCost": 200.00, "maxCost": 220.00, "latUpdateDt": "01/05/2014" },
+    { "id": "12", "groupName": "Flammable with Odor 2", "category": "Easy", "minCost": 220.00, "maxCost": 220.00, "latUpdateDt": "01/05/2014" },
+    { "id": "13", "groupName": "Flammable with Odor 3", "category": "Easy", "minCost": 230.00, "maxCost": 230.00, "latUpdateDt": "01/05/2014" },
+    { "id": "14", "groupName": "Flammable with Odor 4", "category": "Easy", "minCost": 150.00, "maxCost": 220.00, "latUpdateDt": "01/05/2014" },
+    { "id": "15", "groupName": "Flammable with Odor 5", "category": "Easy", "minCost": 200.00, "maxCost": 200.00, "latUpdateDt": "01/05/2014" },
+    { "id": "16", "groupName": "FMO High 1", "category": "Standard", "minCost": 150.00, "maxCost": 250.00, "latUpdateDt": "01/05/2014" },
+    { "id": "17", "groupName": "FMO High 2", "category": "Standard", "minCost": 200.00, "maxCost": 200.00, "latUpdateDt": "01/05/2014" },
+    { "id": "18", "groupName": "Food grade Hard 1", "category": "Standard", "minCost": 200.00, "maxCost": 200.00, "latUpdateDt": "01/05/2014" },
+    { "id": "19", "groupName": "General Cargo 1", "category": "Easy", "minCost": 150.00, "maxCost": 220.00, "latUpdateDt": "01/05/2014" },
+    { "id": "20", "groupName": "General Cargo 2", "category": "Easy", "minCost": 220.00, "maxCost": 220.00, "latUpdateDt": "01/05/2014" }
+]

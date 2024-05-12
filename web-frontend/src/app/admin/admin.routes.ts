@@ -14,7 +14,7 @@ export const ADMIN_ROUTE: Routes = [
     component: CleaningProceduresComponent,
   },
   {
-    path: "cleaning-procedures-new",
+    path: "cleaning-procedures/cleaning-procedures-new",
     component: CleaningProceduresNewComponent,
   }
 ];

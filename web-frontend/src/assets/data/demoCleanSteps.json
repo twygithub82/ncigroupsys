@@ -1,0 +1,22 @@
+[
+    { "id": "1", "stepName": "Blow", "description": "Drying with forced ventilation", "latUpdateDt": "01/05/2014" },
+    { "id": "2", "stepName": "Cement", "description": "Cement Dry and Blow", "latUpdateDt": "01/05/2014" },
+    { "id": "3", "stepName": "Closed System", "description": "Closed Loop cleaning sytem using kerosene", "latUpdateDt": "01/05/2014" },
+    { "id": "4", "stepName": "CW", "description": "Cold wash with cleaning head", "latUpdateDt": "01/05/2014" },
+    { "id": "5", "stepName": "CW and HDC Head", "description": "Cold wash and HDC with cleaning head", "latUpdateDt": "01/05/2014" },
+    { "id": "6", "stepName": "Enclosed System", "description": "Fully enclosed system using special chemical", "latUpdateDt": "01/05/2014" },
+    { "id": "7", "stepName": "Fin", "description": "Finishing process", "latUpdateDt": "01/05/2014" },
+    { "id": "8", "stepName": "HDC Head", "description": "Heavy Duty Cleaner with cleaning head", "latUpdateDt": "01/05/2014" },
+    { "id": "9", "stepName": "HDC Man", "description": "Heavy Duty Cleaner with manual labour scrubbing", "latUpdateDt": "01/05/2014" },
+    { "id": "10", "stepName": "HG (C)", "description": "Handgun with cold water", "latUpdateDt": "01/05/2014" },
+    { "id": "11", "stepName": "HG (H)", "description": "Handgun with hot water", "latUpdateDt": "01/05/2014" },
+    { "id": "12", "stepName": "HW", "description": "Hot wash with cleaning head", "latUpdateDt": "01/05/2014" },
+    { "id": "13", "stepName": "Hw and HDC Head", "description": "Hot wash and HDC with cleaning head", "latUpdateDt": "01/05/2014" },
+    { "id": "14", "stepName": "Kero", "description": "Kerosine spray 15 litres", "latUpdateDt": "01/05/2014" },
+    { "id": "15", "stepName": "Latex head", "description": "Latex machine chemical wash", "latUpdateDt": "01/05/2014" },
+    { "id": "16", "stepName": "P1", "description": "Program 1", "latUpdateDt": "01/05/2014" },
+    { "id": "17", "stepName": "P2", "description": "Program 2", "latUpdateDt": "01/05/2014" },
+    { "id": "18", "stepName": "P3", "description": "Program 3", "latUpdateDt": "01/05/2014" },
+    { "id": "19", "stepName": "P4", "description": "Program 4", "latUpdateDt": "01/05/2014" },
+    { "id": "20", "stepName": "P5", "description": "Program 5", "latUpdateDt": "01/05/2014" }
+]

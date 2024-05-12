@@ -31,7 +31,12 @@
                 <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null"
                   [ngClass]="[sidebarItem.class]" (click)="callToggleMenu($event, sidebarItem.submenu.length)"
                   class="menu-top">
+                  @if (sidebarItem.iconType == 'feather') {
                   <i-feather [name]="sidebarItem.icon" class="sidebarIcon"></i-feather>
+                  }
+                  @else if(sidebarItem.iconType == 'material') {
+                    <mat-icon aria-hidden="false" class="sidebarIcon font-20">{{sidebarItem.icon}}</mat-icon>
+                  }
                   <span class="hide-menu">{{sidebarItem.title | translate}}
                   </span>
                   @if (sidebarItem.badge !== '' ) {
