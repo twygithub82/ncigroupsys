@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "oqpXn4VBrf/IOeDZj6ruf4PQGOI1lLKDCGgP1bUsIFG13UEOAcmOlIKsgmuakIGoKDLqIL40ZEu76htfAErBxA==",
+  "dgSpecHash": "t+Pg38EoL/yajoE9naAvNpvUI3EypcGK4oNzs8dGphfDGR3Y9AksjkzvuvuQABwbWUNqMpTo2xTdvyEXJKAlQg==",
   "success": true,
-  "projectFilePath": "D:\\personal\\project\\code\\c#\\graphql\\Dot6.HotChoc12.CRUD.Demo\\Dot6.HotChoc12.CRUD.Demo.csproj",
+  "projectFilePath": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Dot6.HotChoc12.CRUD.Demo.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\BoonHongANG\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\BoonHongANG\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",

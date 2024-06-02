@@ -1,0 +1,120 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{092A2213-6355-4FE4-AC5F-ECB922772F4B}|Dot6.HotChoc12.CRUD.Demo.csproj|d:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\dot6.hotchoc12.crud.demo\\data\\entities\\cake.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{092A2213-6355-4FE4-AC5F-ECB922772F4B}|Dot6.HotChoc12.CRUD.Demo.csproj|solutionrelative:data\\entities\\cake.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{092A2213-6355-4FE4-AC5F-ECB922772F4B}|Dot6.HotChoc12.CRUD.Demo.csproj|d:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\dot6.hotchoc12.crud.demo\\data\\myworlddbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{092A2213-6355-4FE4-AC5F-ECB922772F4B}|Dot6.HotChoc12.CRUD.Demo.csproj|solutionrelative:data\\myworlddbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{092A2213-6355-4FE4-AC5F-ECB922772F4B}|Dot6.HotChoc12.CRUD.Demo.csproj|d:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\dot6.hotchoc12.crud.demo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{092A2213-6355-4FE4-AC5F-ECB922772F4B}|Dot6.HotChoc12.CRUD.Demo.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{092A2213-6355-4FE4-AC5F-ECB922772F4B}|Dot6.HotChoc12.CRUD.Demo.csproj|D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\dot6.hotchoc12.crud.demo.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{092A2213-6355-4FE4-AC5F-ECB922772F4B}|Dot6.HotChoc12.CRUD.Demo.csproj|solutionrelative:dot6.hotchoc12.crud.demo.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Cake.cs",
+              "DocumentMoniker": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Data\\Entities\\Cake.cs",
+              "RelativeDocumentMoniker": "Data\\Entities\\Cake.cs",
+              "ToolTip": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Data\\Entities\\Cake.cs",
+              "RelativeToolTip": "Data\\Entities\\Cake.cs",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAuwAoAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-02T05:28:18.949Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MyWorldDbContext.cs",
+              "DocumentMoniker": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Data\\MyWorldDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\MyWorldDbContext.cs",
+              "ToolTip": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Data\\MyWorldDbContext.cs",
+              "RelativeToolTip": "Data\\MyWorldDbContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-02T05:28:11.939Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{269a02dc-6af8-11d3-bdc4-00c04f688e50}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAACEAAAAAAAAAAAAAADkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-01T09:06:57.077Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Dot6.HotChoc12.CRUD.Demo",
+              "DocumentMoniker": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Dot6.HotChoc12.CRUD.Demo.csproj",
+              "RelativeDocumentMoniker": "Dot6.HotChoc12.CRUD.Demo.csproj",
+              "ToolTip": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Dot6.HotChoc12.CRUD.Demo.csproj",
+              "RelativeToolTip": "Dot6.HotChoc12.CRUD.Demo.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-06-01T09:29:00.997Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 221,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:3:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6063,11 +6063,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\personal\\project\\code\\c#\\graphql\\Dot6.HotChoc12.CRUD.Demo\\Dot6.HotChoc12.CRUD.Demo.csproj",
+      "projectUniqueName": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Dot6.HotChoc12.CRUD.Demo.csproj",
       "projectName": "Dot6.HotChoc12.CRUD.Demo",
-      "projectPath": "D:\\personal\\project\\code\\c#\\graphql\\Dot6.HotChoc12.CRUD.Demo\\Dot6.HotChoc12.CRUD.Demo.csproj",
+      "projectPath": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\Dot6.HotChoc12.CRUD.Demo.csproj",
       "packagesPath": "C:\\Users\\BoonHongANG\\.nuget\\packages\\",
-      "outputPath": "D:\\personal\\project\\code\\c#\\graphql\\Dot6.HotChoc12.CRUD.Demo\\obj\\",
+      "outputPath": "D:\\personal\\project\\code\\cni\\ncigroupsys\\backend\\graphql_sample\\Dot6.HotChoc12.CRUD.Demo\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
