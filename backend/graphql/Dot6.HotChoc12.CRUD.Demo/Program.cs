@@ -33,6 +33,7 @@ app.UseHttpsRedirection();
 //app.UseAuthorization();
 
 
+
 //Here to setup graphQl
 //app.MapControllers();
 app.MapGraphQL();
