@@ -14,6 +14,9 @@ public class QueryType
 
      public async Task<Cake> GetCakeById([Service] MyWorldDBContext context,int id)
     {
+        // get the API setting
+        //call the controller  and wait return
+        // 
         return await context.Cake.FirstOrDefaultAsync(cake => cake.Id == id);
 
 
