@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.Models", "DWMS.Models.csproj", "{510D33F1-F68D-4903-9001-95E0D0F6980E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.UserAuthentication", "./DWMS.UserAuthentication/DWMS.UserAuthentication.csproj", "{CC13C7EA-875C-441A-B158-8B782C8EB4EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{510D33F1-F68D-4903-9001-95E0D0F6980E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{510D33F1-F68D-4903-9001-95E0D0F6980E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{510D33F1-F68D-4903-9001-95E0D0F6980E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{510D33F1-F68D-4903-9001-95E0D0F6980E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC13C7EA-875C-441A-B158-8B782C8EB4EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC13C7EA-875C-441A-B158-8B782C8EB4EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC13C7EA-875C-441A-B158-8B782C8EB4EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC13C7EA-875C-441A-B158-8B782C8EB4EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B59EBBA3-83CC-42F9-95F5-B19FE556369F}
+		SolutionGuid = {6DD3B21C-0ECC-40C4-8D52-43A7A86C0310}
 	EndGlobalSection
 EndGlobal

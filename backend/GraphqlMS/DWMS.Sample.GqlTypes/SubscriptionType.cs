@@ -1,6 +1,6 @@
 ﻿namespace DWMS.Sample.GqlTypes
 {
-    public class Class1
+    public class ClasSubscriptionTypes1
     {
 
     }

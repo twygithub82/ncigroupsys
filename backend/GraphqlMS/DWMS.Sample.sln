@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.Sample", "DWMS.Sample.csproj", "{D43BCE93-7D64-43AE-A1AD-3C10AEBA5ACB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.Sample", ".\DWMS.Sample\DWMS.Sample.csproj", "{D43BCE93-7D64-43AE-A1AD-3C10AEBA5ACB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.Sample.GqlTypes", "..\DWMS.Sample.GqlTypes\DWMS.Sample.GqlTypes.csproj", "{DFFECE22-1580-4356-85F4-D7047C42A346}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.Sample.GqlTypes", ".\DWMS.Sample.GqlTypes\DWMS.Sample.GqlTypes.csproj", "{DFFECE22-1580-4356-85F4-D7047C42A346}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
