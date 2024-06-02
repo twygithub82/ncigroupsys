@@ -1,4 +1,4 @@
-.header .header-button{
+.header .header-button {
   margin-right: auto;
   margin-left: unset;
 }
@@ -6,12 +6,314 @@
 .m-l- {
   margin-left: auto;
 }
+
 .m-r- {
   margin-right: auto;
 }
+
 .m-t- {
   margin-top: auto;
 }
+
 .m-b- {
   margin-bottom: auto;
+}
+
+/* Custom grid classes for half-step increments */
+// [class*="col-"] {
+//   padding-right: 15px;
+//   /* Bootstrap typically includes padding for gutters */
+//   padding-left: 15px;
+// }
+
+.col-0-5 {
+  width: 4.16666667%;
+  /* 1/24 of the full width */
+}
+
+.col-1-5 {
+  width: 12.5%;
+  /* 3/24 of the full width */
+}
+
+.col-2-5 {
+  width: 20.83333333%;
+  /* 5/24 of the full width */
+}
+
+.col-3-5 {
+  width: 29.16666667%;
+  /* 7/24 of the full width */
+}
+
+.col-4-5 {
+  width: 37.5%;
+  /* 9/24 of the full width */
+}
+
+.col-5-5 {
+  width: 45.83333333%;
+  /* 11/24 of the full width */
+}
+
+.col-6-5 {
+  width: 54.16666667%;
+  /* 13/24 of the full width */
+}
+
+.col-7-5 {
+  width: 62.5%;
+  /* 15/24 of the full width */
+}
+
+.col-8-5 {
+  width: 70.83333333%;
+  /* 17/24 of the full width */
+}
+
+.col-9-5 {
+  width: 79.16666667%;
+  /* 19/24 of the full width */
+}
+
+.col-10-5 {
+  width: 87.5%;
+  /* 21/24 of the full width */
+}
+
+.col-11-5 {
+  width: 95.83333333%;
+  /* 23/24 of the full width */
+}
+
+/* Responsive custom grid classes for half-step increments at 'lg' breakpoint */
+@media (min-width: 992px) {
+
+  /* Adjust this if your Bootstrap theme uses a different breakpoint */
+  .col-lg-0-5 {
+    width: 4.16666667%;
+    /* 1/24 of the full width */
+  }
+
+  .col-lg-1-5 {
+    width: 12.5%;
+    /* 3/24 of the full width */
+  }
+
+  .col-lg-2-5 {
+    width: 20.83333333%;
+    /* 5/24 of the full width */
+  }
+
+  .col-lg-3-5 {
+    width: 29.16666667%;
+    /* 7/24 of the full width */
+  }
+
+  .col-lg-4-5 {
+    width: 37.5%;
+    /* 9/24 of the full width */
+  }
+
+  .col-lg-5-5 {
+    width: 45.83333333%;
+    /* 11/24 of the full width */
+  }
+
+  .col-lg-6-5 {
+    width: 54.16666667%;
+    /* 13/24 of the full width */
+  }
+
+  .col-lg-7-5 {
+    width: 62.5%;
+    /* 15/24 of the full width */
+  }
+
+  .col-lg-8-5 {
+    width: 70.83333333%;
+    /* 17/24 of the full width */
+  }
+
+  .col-lg-9-5 {
+    width: 79.16666667%;
+    /* 19/24 of the full width */
+  }
+
+  .col-lg-10-5 {
+    width: 87.5%;
+    /* 21/24 of the full width */
+  }
+
+  .col-lg-11-5 {
+    width: 95.83333333%;
+    /* 23/24 of the full width */
+  }
+}
+
+/* Responsive custom grid classes for half-step increments at 'xl' breakpoint */
+@media (min-width: 1200px) {
+
+  /* Adjust this if your Bootstrap theme uses a different breakpoint */
+  .col-xl-0-5 {
+    width: 4.16666667%;
+    /* 1/24 of the full width */
+  }
+
+  .col-xl-1-5 {
+    width: 12.5%;
+    /* 3/24 of the full width */
+  }
+
+  .col-xl-2-5 {
+    width: 20.83333333%;
+    /* 5/24 of the full width */
+  }
+
+  .col-xl-3-5 {
+    width: 29.16666667%;
+    /* 7/24 of the full width */
+  }
+
+  .col-xl-4-5 {
+    width: 37.5%;
+    /* 9/24 of the full width */
+  }
+
+  .col-xl-5-5 {
+    width: 45.83333333%;
+    /* 11/24 of the full width */
+  }
+
+  .col-xl-6-5 {
+    width: 54.16666667%;
+    /* 13/24 of the full width */
+  }
+
+  .col-xl-7-5 {
+    width: 62.5%;
+    /* 15/24 of the full width */
+  }
+
+  .col-xl-8-5 {
+    width: 70.83333333%;
+    /* 17/24 of the full width */
+  }
+
+  .col-xl-9-5 {
+    width: 79.16666667%;
+    /* 19/24 of the full width */
+  }
+
+  .col-xl-10-5 {
+    width: 87.5%;
+    /* 21/24 of the full width */
+  }
+
+  .col-xl-11-5 {
+    width: 95.83333333%;
+    /* 23/24 of the full width */
+  }
+}
+
+/* Responsive custom grid classes for 'md' breakpoint */
+@media (min-width: 768px) {
+  .col-md-0-5 {
+    width: 4.16666667%;
+  }
+
+  .col-md-1-5 {
+    width: 12.5%;
+  }
+
+  .col-md-2-5 {
+    width: 20.83333333%;
+  }
+
+  .col-md-3-5 {
+    width: 29.16666667%;
+  }
+
+  .col-md-4-5 {
+    width: 37.5%;
+  }
+
+  .col-md-5-5 {
+    width: 45.83333333%;
+  }
+
+  .col-md-6-5 {
+    width: 54.16666667%;
+  }
+
+  .col-md-7-5 {
+    width: 62.5%;
+  }
+
+  .col-md-8-5 {
+    width: 70.83333333%;
+  }
+
+  .col-md-9-5 {
+    width: 79.16666667%;
+  }
+
+  .col-md-10-5 {
+    width: 87.5%;
+  }
+
+  .col-md-11-5 {
+    width: 95.83333333%;
+  }
+}
+
+/* Responsive custom grid classes for 'sm' breakpoint */
+@media (min-width: 576px) {
+  .col-sm-0-5 {
+    width: 4.16666667%;
+  }
+
+  .col-sm-1-5 {
+    width: 12.5%;
+  }
+
+  .col-sm-2-5 {
+    width: 20.83333333%;
+  }
+
+  .col-sm-3-5 {
+    width: 29.16666667%;
+  }
+
+  .col-sm-4-5 {
+    width: 37.5%;
+  }
+
+  .col-sm-5-5 {
+    width: 45.83333333%;
+  }
+
+  .col-sm-6-5 {
+    width: 54.16666667%;
+  }
+
+  .col-sm-7-5 {
+    width: 62.5%;
+  }
+
+  .col-sm-8-5 {
+    width: 70.83333333%;
+  }
+
+  .col-sm-9-5 {
+    width: 79.16666667%;
+  }
+
+  .col-sm-10-5 {
+    width: 87.5%;
+  }
+
+  .col-sm-11-5 {
+    width: 95.83333333%;
+  }
 }

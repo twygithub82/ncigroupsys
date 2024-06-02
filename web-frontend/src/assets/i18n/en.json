@@ -1,4 +1,7 @@
 {
+  "COMPANY-NAME": {
+    "TEXT": "NCI Group"
+  },
   "HEADER":{
     "SEARCH": {
       "TEXT": "Search.."
@@ -99,6 +102,27 @@
       "TEXT": "New"
     }
   },
+  "COMMON-FORM": {
+    "CLEAN-PROCEDURES": "Cleaning Procedures",
+    "CLEAN-GROUPS": "Cleaning Groups",
+    "PROCEDURE-DETAILS": "Procedure Details",
+    "PROCEDURE-NAME": "Procedure Name",
+    "DESCRIPTION": "Description",
+    "CLEAN-CATEGORY": "Cleaning Category",
+    "CLEAN-GROUP": "Cleaning Group",
+    "MIN-COST": "Minimum Cost [SGD]",
+    "MAX-COST": "Maximum Cost [SGD]",
+    "TOTAL-DURATION": "Total Duration [mins]",
+    "IS-REQUIRED": "is required",
+    "PROCEDURE-STEPS": "Procedure Steps",
+    "STEP-NAME": "Step Name",
+    "STEP-DURATION": "Duration",
+    "STEP-DURATION-TOOLTIP": "Duration minutes",
+    "GROUP-DETAILS": "Group Details",
+    "GROUP-NAME": "Group Name",
+    "BAY": "Bay",
+    "LAST-UPDATED": "Last Updated"
+  },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
     "FORMS": {
@@ -115,6 +139,14 @@
       "STEP-NAME": "Step Name",
       "STEP-DURATION": "Duration",
       "STEP-DURATION-TOOLTIP": "Duration minutes"
+    }
+  },
+  "CLEAN-GROUPS": {
+    "TEXT": "Cleaning Groups",
+    "FORMS": {
+      "GROUP-DETAILS": "Group Details",
+      "GROUP-NAME": "Group Name",
+      "BAY": "Bay"
     }
   }
 }

@@ -32,7 +32,7 @@ export class AdvanceTableService extends UnsubscribeOnDestroyAdapter {
       .subscribe({
         next: (data) => {
           this.isTblLoading = false;
-          this.dataChange.next(data);
+          //this.dataChange.next(data);
         },
         error: (error: HttpErrorResponse) => {
           this.isTblLoading = false;
