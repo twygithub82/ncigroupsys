@@ -10,9 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="graphiql" Version="2.0.0" />
-    <PackageReference Include="GraphQL" Version="7.8.0" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DWMS.Sample.GqlTypes\DWMS.Sample.GqlTypes.csproj" />
   </ItemGroup>
 
 </Project>
