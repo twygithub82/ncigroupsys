@@ -9,5 +9,6 @@ public class Cake
 
     public string Description{get;set;}
     public string DescriptionBH { get; set; }
+    public string Descriptionws { get; set; }
 
 }
