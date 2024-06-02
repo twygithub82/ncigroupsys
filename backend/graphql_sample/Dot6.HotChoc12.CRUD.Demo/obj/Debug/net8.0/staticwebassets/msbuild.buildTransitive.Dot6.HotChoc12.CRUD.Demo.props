@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\Dot6.HotChoc12.CRUD.Demo.props" />
-</Project>
