@@ -18,7 +18,7 @@ public class MyWorldDBContext:DbContext
     //         entity.ToTable("Cake");
     //         entity.HasKey(e => e.Id);
     //         entity.Property(e => e.Id).HasColumnName("id");
-    //         entity.Property(e => e.Name).HasColumnName("Name");
+    //         entity.Property(e => e.Name).HasColumnName("Name");haha
     //         entity.Property(e => e.Price).HasColumnName("Price");
     //         entity.Property(e => e.Description).HasColumnName("Description");
             
