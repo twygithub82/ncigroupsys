@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Dot6.HotChoc12.CRUD.Demo")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c4b2f47249b30508d27976315f812d6f5d2e3f8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1bb28968b96b587dfc045df4fda9b8a055707445")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dot6.HotChoc12.CRUD.Demo")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dot6.HotChoc12.CRUD.Demo")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
