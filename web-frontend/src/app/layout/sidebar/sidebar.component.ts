@@ -39,6 +39,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public sidebarItems!: RouteInfo[];
   public innerHeight?: number;
   public bodyTag!: HTMLElement;
+
+  COMPANY_TITLE = 'COMPANY-NAME.TEXT'
+  
   listMaxHeight?: string;
   listMaxWidth?: string;
   userFullName?: string;
