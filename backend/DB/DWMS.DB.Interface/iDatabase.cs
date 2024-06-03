@@ -4,14 +4,22 @@ namespace DWMS.DB.Interface
 {
     public interface iDatabase
     {
-        (bool, string) Connect();
-        (bool, string) Connect(string connString);
-        void Disconnect();
+        Task <(bool, string)> Connect();
+        Task <(bool, string)> Connect(string connString);
+        Task <bool> Disconnect();
         void Dispose();
-        int ExecuteCommand(string command);
-        JToken QueryData(string query);
+        Task <int> ExecuteCommand(Operation commandType, string command);
+        Task <int> OpenCloseExecuteCommand(Operation commandType, string command);
+        Task <JToken> QueryData(string query);
+        Task <JToken> OpenCloseQueryData(string query);
         void RunStoredProcedure(string name, object[] parameters);
 
-
+        public enum Operation
+        {
+            CREATE = 1,
+            READ = 2,
+            UPDATE = 3,
+            DELETE = 4,
+        }
     }
 }

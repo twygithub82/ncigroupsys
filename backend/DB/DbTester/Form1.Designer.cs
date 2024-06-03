@@ -29,6 +29,12 @@
         private void InitializeComponent()
         {
             button1 = new Button();
+            button2 = new Button();
+            button3 = new Button();
+            txtName = new TextBox();
+            label1 = new Label();
+            button4 = new Button();
+            button5 = new Button();
             SuspendLayout();
             // 
             // button1
@@ -41,19 +47,89 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
+            // button2
+            // 
+            button2.Location = new Point(29, 110);
+            button2.Name = "button2";
+            button2.Size = new Size(83, 41);
+            button2.TabIndex = 1;
+            button2.Text = "Query";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
+            // button3
+            // 
+            button3.Location = new Point(29, 222);
+            button3.Name = "button3";
+            button3.Size = new Size(83, 41);
+            button3.TabIndex = 2;
+            button3.Text = "Update";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
+            // txtName
+            // 
+            txtName.Location = new Point(118, 240);
+            txtName.Name = "txtName";
+            txtName.Size = new Size(100, 23);
+            txtName.TabIndex = 3;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(118, 222);
+            label1.Name = "label1";
+            label1.Size = new Size(42, 15);
+            label1.TabIndex = 4;
+            label1.Text = "Name:";
+            // 
+            // button4
+            // 
+            button4.Location = new Point(233, 222);
+            button4.Name = "button4";
+            button4.Size = new Size(83, 41);
+            button4.TabIndex = 5;
+            button4.Text = "Create";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
+            // 
+            // button5
+            // 
+            button5.Location = new Point(29, 296);
+            button5.Name = "button5";
+            button5.Size = new Size(83, 41);
+            button5.TabIndex = 6;
+            button5.Text = "Delete";
+            button5.UseVisualStyleBackColor = true;
+            button5.Click += button5_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(button5);
+            Controls.Add(button4);
+            Controls.Add(label1);
+            Controls.Add(txtName);
+            Controls.Add(button3);
+            Controls.Add(button2);
             Controls.Add(button1);
             Name = "Form1";
             Text = "Form1";
+            Load += Form1_Load;
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private Button button1;
+        private Button button2;
+        private Button button3;
+        private TextBox txtName;
+        private Label label1;
+        private Button button4;
+        private Button button5;
     }
 }
