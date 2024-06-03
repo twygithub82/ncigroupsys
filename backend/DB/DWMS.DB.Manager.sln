@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.DB.Interface", ".\DWMS.DB.Interface\DWMS.DB.Interface.csproj", "{8940E807-9C0F-4012-A07C-F96893612780}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DWMS.DB.Interface", "DWMS.DB.Interface\DWMS.DB.Interface.csproj", "{8940E807-9C0F-4012-A07C-F96893612780}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.DB.Implementation", ".\DWMS.DB.Implementation\DWMS.DB.Implementation.csproj", "{44CB0E98-D770-46C7-BD90-5D71304E9613}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DWMS.DB.Implementation", "DWMS.DB.Implementation\DWMS.DB.Implementation.csproj", "{44CB0E98-D770-46C7-BD90-5D71304E9613}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbTester", "DbTester\DbTester.csproj", "{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{44CB0E98-D770-46C7-BD90-5D71304E9613}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44CB0E98-D770-46C7-BD90-5D71304E9613}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44CB0E98-D770-46C7-BD90-5D71304E9613}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

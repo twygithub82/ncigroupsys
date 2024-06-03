@@ -4,7 +4,8 @@ namespace DWMS.DB.Interface
 {
     public interface iDatabase
     {
-        void Connect();
+        (bool, string) Connect();
+        (bool, string) Connect(string connString);
         void Disconnect();
         void Dispose();
         int ExecuteCommand(string command);

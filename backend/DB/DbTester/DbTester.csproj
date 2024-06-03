@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DWMS.DB.Implementation\DWMS.DB.Implementation.csproj" />
+    <ProjectReference Include="..\DWMS.DB.Interface\DWMS.DB.Interface.csproj" />
+  </ItemGroup>
+
+</Project>
