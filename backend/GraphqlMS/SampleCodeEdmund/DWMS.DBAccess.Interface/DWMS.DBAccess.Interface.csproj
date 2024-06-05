@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HotChocolate.Abstractions" Version="13.9.5" />
+    <ProjectReference Include="..\DWMS.Cleaning.Model\DWMS.Cleaning.Model.csproj" />
   </ItemGroup>
 
 </Project>

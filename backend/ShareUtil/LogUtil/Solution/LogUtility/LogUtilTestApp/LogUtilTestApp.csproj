@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LogUtility.Core.Service\LogUtility.Core.Service.csproj" />
+    <ProjectReference Include="..\LogUtility\LogUtility.Core.Interface.csproj" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(ProjectDir)$(OutDir)Util\References\LogUtil.json&quot; &quot;$(ProjectDir)$(OutDir)LogUtil.json&quot;" />
+  </Target>
+</Project>

@@ -7,7 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HotChocolate.Types" Version="13.9.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DWMS.Cleaning.Model\DWMS.Cleaning.Model.csproj" />
+    <ProjectReference Include="..\DWMS.DBAccess.Interface\DWMS.DBAccess.Interface.csproj" />
+    <ProjectReference Include="..\DWMS.DBAccess\DWMS.DBAccess.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DWMS.DB.Implementation">
+      <HintPath>..\..\..\DB\ReleaseDll\DWMS.DB.Implementation.dll</HintPath>
+    </Reference>
+    <Reference Include="DWMS.DB.Interface">
+      <HintPath>..\..\..\DB\ReleaseDll\DWMS.DB.Interface.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
