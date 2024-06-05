@@ -19,7 +19,7 @@ namespace DWMS.UserAuthentication.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class UserAuthenticationController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -27,7 +27,7 @@ namespace DWMS.UserAuthentication.Controllers
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
 
-        public AuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService)
+        public UserAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -70,7 +70,7 @@ namespace DWMS.UserAuthentication.Controllers
 
         [HttpPost("UserLogin")]
         [AllowAnonymous]
-        public async Task<IActionResult> UserSignUp([FromBody] LoginUserModel loginModel)
+        public async Task<IActionResult> UserSignIn([FromBody] LoginUserModel loginModel)
         {
             //checking the user
             var user = await _userManager.FindByEmailAsync(loginModel.Email);
@@ -104,7 +104,7 @@ namespace DWMS.UserAuthentication.Controllers
 
                 //generate the token with the claims
 
-                var jwtToken = GetToken(authClaims);
+                var jwtToken = DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
                 //returning the token
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo });
             }
@@ -202,18 +202,6 @@ namespace DWMS.UserAuthentication.Controllers
         }
 
 
-        private JwtSecurityToken GetToken(List<Claim> authClaims)
-        {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-            var token = new JwtSecurityToken(
-                  issuer: _configuration["JWT:ValidIssuer"],
-                  audience: _configuration["JWT:ValidAudience"],
-                  expires: DateTime.Now.AddHours(5),
-                  claims: authClaims,
-                  signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                );
-            return token;
-        }
+      
     }
 }
