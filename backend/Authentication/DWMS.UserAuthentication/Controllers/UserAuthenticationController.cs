@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -131,7 +132,7 @@ namespace DWMS.UserAuthentication.Controllers
                     }
 
                     var token1 = await _userManager.GenerateEmailConfirmationTokenAsync(userExist);
-                    var confirmationLink1 = Url.Action(nameof(ConfirmEmail), "Authentication", new { token1, email = userExist.Email }, Request.Scheme);
+                    var confirmationLink1 = Url.Action(nameof(ConfirmEmail), "UserAuthentication", new { token1, email = userExist.Email }, Request.Scheme);
                     var message1 = new Message(new string[] { userExist.Email! }, "Confirmation email link", confirmationLink1);
                     _emailService.SendMail(message1);
 
@@ -167,7 +168,7 @@ namespace DWMS.UserAuthentication.Controllers
 
                 //add token to verify the email
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", new { token, email = user.Email }, Request.Scheme);
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "UserAuthentication", new { token, email = user.Email }, Request.Scheme);
                 var message = new Message(new string[] { user.Email! }, "Confirmation email link", confirmationLink);
                 _emailService.SendMail(message);
 
@@ -202,6 +203,55 @@ namespace DWMS.UserAuthentication.Controllers
         }
 
 
-      
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([Required] string mail)
+        {
+            var user = await _userManager.FindByEmailAsync(mail);
+            if (user != null)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetPasswordLink = Url.Action(nameof(ResetPassword), "UserAuthentication", new { token, email = user.Email }, Request.Scheme);
+                var message = new Message(new string[] { user.Email! }, "Reset Password link", resetPasswordLink);
+                _emailService.SendMail(message);
+                return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = new string[] { $"Password reset request is sent on Email {user.Email}" } });
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "The email is not yet registered" } });
+        }
+
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+            if (user != null)
+            {
+                var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
+                if (!resetPassResult.Succeeded)
+                {
+                    foreach (var error in resetPassResult.Errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    return Ok(ModelState);
+                }
+
+                return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = new string[] { $"Password has been changed" } });
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "The email is not yet registered" } });
+        }
+
+
+        [HttpGet("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string token, string email)
+        {
+            var model = new ResetPassword { Token = token, Email = email };
+
+            return Ok(model);
+        }
+
+
+
     }
 }
