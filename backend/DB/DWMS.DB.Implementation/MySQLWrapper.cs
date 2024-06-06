@@ -101,6 +101,7 @@ namespace DWMS.DB.Implementation
                      val = await cmd.ExecuteNonQueryAsync();
                 else
                 {
+                    
                     var result = await cmd.ExecuteScalarAsync();
                     if (result != null)
                     {

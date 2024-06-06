@@ -1,7 +1,11 @@
 using Dot6.HotChoc12.CRUD.Demo.Data;
 using Dot6.HotChoc12.CRUD.Demo.Data.GqlTypes;
 using Dot6.HotChoc12.CRUD.Demo.GqlTypes;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,12 +17,39 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MyWorldDBContext>(options=>{
    options.UseSqlServer(builder.Configuration.GetConnectionString("MyWorldDbConnection")); 
 });
+
 builder.Services.AddGraphQLServer()
+.AddAuthorization()
 .AddQueryType<QueryType>()
 .AddMutationType<MutationType>()
 .AddSubscriptionType<SubscriptionType>()
 .AddInMemorySubscriptions();
 
+
+//Generate the link for reseting password
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opts => opts.TokenLifespan = TimeSpan.FromHours(10));
+
+
+builder.Services.AddAuthentication(options => {
+
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+})
+      .AddJwtBearer(options =>
+      {
+          options.SaveToken = true;
+          options.RequireHttpsMetadata = false;
+          options.TokenValidationParameters = new TokenValidationParameters
+          {
+              ValidateIssuer = true,
+              ValidateAudience = true,
+              ValidAudience = builder.Configuration["JWT:ValidAudience"],
+              ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+          };
+      });
 
 var app = builder.Build();
 
@@ -32,7 +63,8 @@ app.UseWebSockets();
 app.UseHttpsRedirection();
 //app.UseAuthorization();
 
-
+app.UseAuthentication();
+//app.UseAuthorization();
 
 //Here to setup graphQl
 //app.MapControllers();

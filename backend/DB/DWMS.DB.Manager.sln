@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DWMS.DB.Interface", "DWMS.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DWMS.DB.Implementation", "DWMS.DB.Implementation\DWMS.DB.Implementation.csproj", "{44CB0E98-D770-46C7-BD90-5D71304E9613}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbTester", "DbTester\DbTester.csproj", "{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbTester", "DbTester\DbTester.csproj", "{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQLWrapperController", "MySQLWrapperController\MySQLWrapperController.csproj", "{C1079AC0-586D-4397-9FDA-97C6C1FED939}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF290E2C-0CFB-4931-89A0-C6B8E1AD3EB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1079AC0-586D-4397-9FDA-97C6C1FED939}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1079AC0-586D-4397-9FDA-97C6C1FED939}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1079AC0-586D-4397-9FDA-97C6C1FED939}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1079AC0-586D-4397-9FDA-97C6C1FED939}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
