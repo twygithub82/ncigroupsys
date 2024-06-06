@@ -15,7 +15,7 @@ public class QueryType
 
     }
 
-     public async Task<Cake> GetCakeById([Service] MyWorldDBContext context,int id)
+     public async Task<Cake> TestCakeByIdAsync([Service] MyWorldDBContext context,int id)
     {
         // get the API setting
         //call the controller  and wait return
