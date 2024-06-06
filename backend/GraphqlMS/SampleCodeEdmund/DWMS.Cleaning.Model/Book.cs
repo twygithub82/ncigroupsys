@@ -1,7 +1,10 @@
-﻿namespace DWMS.Cleaning.Model
+﻿using HotChocolate;
+
+namespace DWMS.Cleaning.Model
 {
     public class Book
     {
+        [GraphQLName("Book Title")]
         public string Title { get; set; }
 
         public Author Author { get; set; }

@@ -1,0 +1,6 @@
+{
+  "loggingService": { //Specifying controlSwitch: None, will turn off logging
+    "LevelSwitch": { "$controlSwitch": "Debug" }, //Verbose, Debug, Information, Warning, Error, Fatal, None
+    "path": "C:\\LogUtil\\Logs\\LogUtility_Log_.txt"
+  }
+}
