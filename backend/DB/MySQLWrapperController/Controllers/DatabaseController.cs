@@ -1,4 +1,5 @@
-﻿using DWMS.DB.Interface;
+﻿using Asp.Versioning;
+using DWMS.DB.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
@@ -6,8 +7,9 @@ using Newtonsoft.Json.Linq;
 
 namespace MySQLWrapperController.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+     [ApiVersion("1.0")]
     public class DatabaseController : ControllerBase
     {
         private readonly iDatabase_v2 _database;
@@ -33,6 +35,16 @@ namespace MySQLWrapperController.Controllers
             var result = await _database.QueryData(query);
             dynamic rlt = new JObject();
             
+            rlt.result = JToken.FromObject(result);
+            return Ok(rlt.ToString());
+        }
+
+        [HttpPost("QueryData")]
+        public async Task<IActionResult> QueryData_Post([FromBody] string query)
+        {
+            var result = await _database.QueryData(query);
+            dynamic rlt = new JObject();
+
             rlt.result = JToken.FromObject(result);
             return Ok(rlt.ToString());
         }

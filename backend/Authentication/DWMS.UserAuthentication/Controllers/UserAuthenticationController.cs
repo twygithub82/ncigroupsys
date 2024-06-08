@@ -88,21 +88,21 @@ namespace DWMS.UserAuthentication.Controllers
                 }
 
                 // claimlist creation
-                var authClaims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.GroupSid, "c1"),
-                        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                //var authClaims = new List<Claim>
+                //    {
+                //        new Claim(ClaimTypes.Email, user.Email),
+                //        new Claim(ClaimTypes.GroupSid, "c1"),
+                //        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
 
-                    };
+                //    };
 
 
                 var userRoles = await _userManager.GetRolesAsync(user);
-                foreach (var role in userRoles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, role));
-                }
-
+                //foreach (var role in userRoles)
+                //{
+                //    authClaims.Add(new Claim(ClaimTypes.Role, role));
+                //}
+                var authClaims = DWMS.User.Authentication.API.Utilities.utils.GetClaims(1, user.UserName, user.Email, userRoles);
                 //generate the token with the claims
 
                 var jwtToken = DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);

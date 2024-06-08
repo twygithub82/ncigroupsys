@@ -51,27 +51,27 @@ namespace DWMS.User.Authentication.API.Controllers
             {
                
                 // claimlist creation
-                var authClaims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name , staff.UserName),
-                        new Claim(ClaimTypes.Email, staff.Email),
-                        new Claim(ClaimTypes.GroupSid, "s1"),
-                        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                //var authClaims = new List<Claim>
+                //    {
+                //        new Claim(ClaimTypes.Name , staff.UserName),
+                //        new Claim(ClaimTypes.Email, staff.Email),
+                //        new Claim(ClaimTypes.GroupSid, "s1"),
+                //        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
 
-                    };
+                //    };
 
                 var staffRoles = await _userManager.GetRolesAsync(staff);
 
                 
-                foreach (var role in staffRoles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, role));
-                    if (role.Trim().ToLower() == "admin")
-                        authClaims.Add(new Claim(ClaimTypes.PrimaryGroupSid, "a1"));
-                }
+                //foreach (var role in staffRoles)
+                //{
+                //    authClaims.Add(new Claim(ClaimTypes.Role, role));
+                //    if (role.Trim().ToLower() == "admin")
+                //        authClaims.Add(new Claim(ClaimTypes.PrimaryGroupSid, "a1"));
+                //}
 
                 //generate the token with the claims
-
+                var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
                 var jwtToken = Utilities.utils.GetToken(_configuration,authClaims);
                 //returning the token
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo });
