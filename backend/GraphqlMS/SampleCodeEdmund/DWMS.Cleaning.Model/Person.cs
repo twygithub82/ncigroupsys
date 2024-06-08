@@ -12,4 +12,10 @@ namespace DWMS.Cleaning.Model
         public string Name { get; set; }
         public DateTime Date { get; set; }
     }
+
+    public class PersonResult
+    {
+        public string Name { get; set; }
+        public DateTime Date { get; set; }
+    }
 }

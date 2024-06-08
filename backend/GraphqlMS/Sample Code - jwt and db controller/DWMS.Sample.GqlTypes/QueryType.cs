@@ -12,10 +12,11 @@ namespace DWMS.Sample.GqlTypes
 {
     public class QueryType
     {
-        
+
         public async Task<List<Identity_user>> ReadAllUsers([Service] IConfiguration config)
         {
-            List<Identity_user> users= new List<Identity_user>();
+
+            List<Identity_user> users = new List<Identity_user>();
             string sqlStatement = "SELECT * FROM nci.AspNetUsers";
             sqlStatement= JsonConvert.SerializeObject(sqlStatement);
            // string sqlStatement_encoded=WebUtility.UrlEncode(sqlStatement);
@@ -24,22 +25,21 @@ namespace DWMS.Sample.GqlTypes
             if(status==HttpStatusCode.OK)
             {
                 var resultContent = $"{result}";
-                var resultJtoken = JObject.Parse(resultContent) ;
+                var resultJtoken = JObject.Parse(resultContent);
                 var userList = resultJtoken["result"];
-                if (userList!=null)
+                if (userList != null)
                 {
                     users = userList.ToObject<List<Identity_user>>();
 
                 }
 
             }
-            return  users;
+            return users;
 
         }
 
         [Authorize]
-       
-        public async Task<Identity_user> ReadUserByEmail([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,string email)
+        public async Task<Identity_user> ReadUserByEmail([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, string email)
         {
             // get the API setting
             //call the controller  and wait return
@@ -52,10 +52,10 @@ namespace DWMS.Sample.GqlTypes
                 throw new GraphQLException(new Error("Unauthorized", "AUTH_NOT_AUTHORIZED"));
             }
 
-           
+
 
             Identity_user user = new Identity_user();
-            
+
             List<Identity_user> users = new List<Identity_user>();
             string sqlStatement = $"SELECT * FROM nci.AspNetUsers where Email='{email}'";
             string sqlStatement_encoded = WebUtility.UrlEncode(sqlStatement);
@@ -66,9 +66,9 @@ namespace DWMS.Sample.GqlTypes
                 var resultContent = $"{result}";
                 var resultJtoken = JObject.Parse(resultContent);
                 var userList = resultJtoken["result"].ToList();
-                if(userList?.Count>0)
+                if (userList?.Count > 0)
                 {
-                    var userFirst = userList[0] ;
+                    var userFirst = userList[0];
                     user = userFirst.ToObject<Identity_user>();
                 }
 

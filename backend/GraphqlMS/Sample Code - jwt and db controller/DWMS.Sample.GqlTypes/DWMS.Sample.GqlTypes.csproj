@@ -18,7 +18,7 @@
       <HintPath>..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
     </Reference>
     <Reference Include="DWMS.Models">
-      <HintPath>..\..\..\Models\DWMS.Models\bin\Debug\net8.0\DWMS.Models.dll</HintPath>
+      <HintPath>..\..\..\Models\Realease Dll\DWMS.Models.dll</HintPath>
     </Reference>
   </ItemGroup>
 
