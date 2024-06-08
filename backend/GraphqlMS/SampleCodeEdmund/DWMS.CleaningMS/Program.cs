@@ -21,12 +21,12 @@ namespace DWMS.CleaningMS
             //builder.Services.AddEndpointsApiExplorer();
             //builder.Services.AddSwaggerGen();
             //builder.Services.AddScoped<IServiceProvider, ServiceProvider>();
-            builder.Services.AddSingleton<iDBAccess, DBAccessService>();
-            builder.Services.AddTransient<iDatabase, MySQLWrapper>();
+            builder.Services.AddSingleton<IDBAccess, DBAccessService>();
+            //builder.Services.AddTransient<iDatabase, MySQLWrapper>();
 
             
             builder.Services.AddGraphQLServer()
-                            .RegisterService<iDBAccess>()
+                            .RegisterService<IDBAccess>()
                             .RegisterService<iDatabase>()
                             .AddQueryType<QueryType>()
                             .AddSubscriptionType<SubscriptionType>()

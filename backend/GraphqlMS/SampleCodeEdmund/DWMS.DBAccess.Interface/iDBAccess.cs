@@ -2,11 +2,11 @@
 
 namespace DWMS.DBAccess.Interface
 {
-    public interface iDBAccess
+    public interface IDBAccess
     {
         Task<IEnumerable<Person>> GetAllDataAsync();
         Task<Person> GetDataByIdAsync(int id);
-        Task InsertDataAsync(Person data);
+        Task<Person> InsertDataAsync(Person data);
         Task UpdateDataAsync(int id, Person data);
         Task DeleteDataAsync(int id);
     }

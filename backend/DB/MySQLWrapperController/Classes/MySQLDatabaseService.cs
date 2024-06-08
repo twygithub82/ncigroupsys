@@ -9,12 +9,13 @@ namespace MySQLWrapperController.Classes
     public class MySQLDatabaseService : DWMS.DB.Interface.iDatabase_v2
     {
         private readonly string _connectionString;
-        public MySQLDatabaseService(IConfiguration configuration) {
+        public MySQLDatabaseService(IConfiguration configuration)
+        {
 
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-         async Task<int> iDatabase_v2.ExecuteNonQueryCommand(string command)
+        async Task<int> iDatabase_v2.ExecuteNonQueryCommand(string command)
         {
             try
             {
@@ -27,13 +28,13 @@ namespace MySQLWrapperController.Classes
                     }
                 }
             }
-            catch 
+            catch
             {
                 throw;
             }
         }
 
-         async Task<List<JToken>> iDatabase_v2.QueryData(string query)
+        async Task<List<JToken>> iDatabase_v2.QueryData(string query)
         {
             try
             {
@@ -66,7 +67,7 @@ namespace MySQLWrapperController.Classes
         }
 
 
-         async Task<int> iDatabase_v2.RunStoredProcedure(string name, Parameter[] parameters)
+        async Task<int> iDatabase_v2.RunStoredProcedure(string name, Parameter[] parameters)
         {
             try
             {

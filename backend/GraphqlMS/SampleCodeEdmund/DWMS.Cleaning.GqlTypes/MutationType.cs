@@ -1,18 +1,37 @@
-﻿using DWMS.Cleaning.Model;
+﻿using CommonUtil.Core.Service;
+using DWMS.Cleaning.Model;
 using DWMS.DB.Implementation;
 using DWMS.DB.Interface;
+using DWMS.DBAccess.Interface;
 using HotChocolate;
 using HotChocolate.Subscriptions;
+using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace DWMS.Cleaning.GqlTypes
 {
     public class MutationType
     {
         private readonly List<Cake> cakes;
-        public MutationType()
+        private readonly IDBAccess _dbAccess;
+
+        public MutationType(IDBAccess dBAccess)
         {
             cakes = new List<Cake>();
+            _dbAccess = dBAccess;
         }
+
+
+        public async Task<Person> CreatePerson(string name)
+        {
+            Person person = new Person { ID = 1, Name = name, Date = DateTime.Now };
+            if (await _dbAccess.InsertDataAsync(person) == null)
+            {
+                throw new GraphQLException(new Error("create new person error", "CREATE_ERROR"));
+            };
+            return person;
+        }
+
 
         public async Task<CakeResult> CreateNewCake(string name, decimal price, string desc, [Service] ITopicEventSender topicEventSender)
         {

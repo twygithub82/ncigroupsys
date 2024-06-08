@@ -1,29 +1,47 @@
 ﻿using DWMS.Cleaning.Model;
-using DWMS.DB.Implementation;
-using DWMS.DB.Interface;
-using DWMS.DBAccess;
-using DWMS.DBAccess.Interface;
+using HotChocolate;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
+using System.Net;
+using CommonUtil.Core.Service;
+using DWMS.DBAccess.Interface;
 
 namespace DWMS.Cleaning.GqlTypes
 {
     public class QueryType
     {
-        //private readonly IServiceProvider _serviceProvider;
+        private readonly IDBAccess _dbAccess;
 
-        //public QueryType(IServiceProvider serviceProvider)
-        //{
+        public QueryType([Service] IDBAccess dBAccess)
+        {
+            _dbAccess = dBAccess;
+        }
 
-        //}
+        /// <summary>
+        /// This is actual db access function
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<Person>> GetAllPersons()
+        {
+            var persons = await _dbAccess.GetAllDataAsync();
+            return persons.ToList();
+        }
 
+        public async Task<Person> GetPersonById(int id)
+        {
+            var persons = await _dbAccess.GetDataByIdAsync(id);
+            if (persons == null)
+            {
+                throw new GraphQLException(new Error("person not found", "NOT_FOUND"));
+            }
+            return persons;
+        }
 
-        //public QueryType(IServiceProvider service)
-        //{
-        //    //_mySqlDb = mySqlDb;
-        //    _serviceProvider = service;
-        //    var db = _serviceProvider.GetRequiredService<DBAccessService>();
-        //}
-
+        /// <summary>
+        /// This is dummy data test function
+        /// </summary>
+        /// <returns></returns>
         public Book AllBooks()
         {
             return new Book
@@ -35,8 +53,11 @@ namespace DWMS.Cleaning.GqlTypes
                 }
             };
         }
-    
 
+        /// <summary>
+        /// This is dummy data test function
+        /// </summary>
+        /// <returns></returns>
         public Cake GiveMeCakes()
         {
             return new Cake
@@ -46,13 +67,6 @@ namespace DWMS.Cleaning.GqlTypes
                 Name = "April Cake",
                 Price = 12
             };
-        }
-
-        public async Task<List<Person>> GetPerson(iDBAccess dBAccessService, iDatabase database)
-        {
-            var ret = await dBAccessService.GetAllDataAsync();
-            return ret.ToList();
-            //return null;
         }
     }
 }

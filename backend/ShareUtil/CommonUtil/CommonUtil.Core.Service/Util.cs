@@ -424,6 +424,9 @@ namespace CommonUtil.Core.Service
 
         public static string GenerateTransID() => Guid.NewGuid().ToString().Replace("-", "") + DateTime.Now.ToEpochTime();
 
+        public static string GenerateGUID() => Guid.NewGuid().ToString().Replace("-", "");
+
+
         public static List<string> ReplaceSolaceTopics(List<string> topics, string deviceType, string deviceID)
         {
             List<string> newTopics = new List<string>();
