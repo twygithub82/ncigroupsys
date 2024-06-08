@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Newtonsoft.Json;
 namespace DWMS.Sample.GqlTypes
 {
     public class QueryType
@@ -16,9 +17,10 @@ namespace DWMS.Sample.GqlTypes
         {
             List<Identity_user> users= new List<Identity_user>();
             string sqlStatement = "SELECT * FROM nci.AspNetUsers";
-            string sqlStatement_encoded=WebUtility.UrlEncode(sqlStatement);
-            string urlApi_querydata = $"{config["DBService:queryUrl"]}{sqlStatement_encoded}";
-            var (status, result) = await CommonUtil.Core.Service.Util.RestCallAsync(urlApi_querydata, HttpMethod.Get);
+            sqlStatement= JsonConvert.SerializeObject(sqlStatement);
+           // string sqlStatement_encoded=WebUtility.UrlEncode(sqlStatement);
+            string urlApi_querydata = $"{config["DBService:queryUrl"]}";
+            var (status, result) = await CommonUtil.Core.Service.Util.RestCallAsync(urlApi_querydata, HttpMethod.Post, sqlStatement);
             if(status==HttpStatusCode.OK)
             {
                 var resultContent = $"{result}";
