@@ -107,7 +107,7 @@ namespace CommonUtil.Core.Service
             return processedJo;
         }
 
-        public static async Task<(HttpStatusCode, string)> RestCallAsync(string url, HttpMethod httpMethod, string payload = "", bool skipCertValidation = false, double timeout = 10000)
+        public static async Task<(HttpStatusCode, string)> RestCallAsync(string url, HttpMethod httpMethod, string payload = "", bool skipCertValidation = false, double timeout = 10000,string post_mediaType= "application/json")
         {
             var responseCode = HttpStatusCode.NotFound;
             var responseMsg = string.Empty;
@@ -129,7 +129,7 @@ namespace CommonUtil.Core.Service
 
                     if (payload != null)
                     {
-                        HttpContent c = new StringContent(payload, Encoding.UTF8, "application/json");
+                        HttpContent c = new StringContent(payload, Encoding.UTF8, post_mediaType);
                         request.Content = c;
                     }
 
