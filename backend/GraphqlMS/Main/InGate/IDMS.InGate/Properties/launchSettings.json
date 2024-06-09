@@ -5,7 +5,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "JWT_VALIDAUDIENCE": "http://localhost:5401",
+        "JWT_VALIDAUDIENCE": "http://localhost:4200",
         "JWT_VALIDISSUER": "http://localhost:5052"
       },
       "dotnetRunMessages": true,
@@ -16,7 +16,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "JWT_VALIDAUDIENCE": "http://localhost:5401",
+        "JWT_VALIDAUDIENCE": "http://localhost:4200",
         "JWT_VALIDISSUER": "http://localhost:5052"
       },
       "dotnetRunMessages": true,
@@ -27,7 +27,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "JWT_VALIDAUDIENCE": "http://localhost:5401",
+        "JWT_VALIDAUDIENCE": "http://localhost:4200",
         "JWT_VALIDISSUER": "http://localhost:5052"
       }
     },
@@ -38,7 +38,7 @@
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",
         "ASPNETCORE_HTTP_PORTS": "8080",
-        "JWT_VALIDAUDIENCE": "http://localhost:5401",
+        "JWT_VALIDAUDIENCE": "http://localhost:4200",
         "JWT_VALIDISSUER": "http://localhost:5052"
       },
       "publishAllPorts": true,
@@ -52,7 +52,7 @@
     "iisExpress": {
       "applicationUrl": "http://localhost:25794",
       "sslPort": 44315,
-      "JWT_VALIDAUDIENCE": "http://localhost:5401",
+      "JWT_VALIDAUDIENCE": "http://localhost:4200",
       "JWT_VALIDISSUER": "http://localhost:5052"
     }
   }

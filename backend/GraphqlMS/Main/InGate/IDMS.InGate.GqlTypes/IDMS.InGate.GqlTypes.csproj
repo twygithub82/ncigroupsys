@@ -6,4 +6,21 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.5" />
+    <PackageReference Include="HotChocolate.AspNetCore.Abstractions" Version="10.5.5" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.9.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CommonUtil.Core.Service">
+      <HintPath>..\..\..\..\ShareUtil\CommonUtil\CommonUtil.Core.Service\bin\Release\net6.0\CommonUtil.Core.Service.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

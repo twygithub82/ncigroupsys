@@ -17,7 +17,7 @@ namespace DWMS.Sample.GqlTypes
         {
 
             List<Identity_user> users = new List<Identity_user>();
-            string sqlStatement = "SELECT * FROM nci.AspNetUsers";
+            string sqlStatement = "SELECT * FROM idms.AspNetUsers";
             sqlStatement= JsonConvert.SerializeObject(sqlStatement);
            // string sqlStatement_encoded=WebUtility.UrlEncode(sqlStatement);
             string urlApi_querydata = $"{config["DBService:queryUrl"]}";
@@ -57,7 +57,7 @@ namespace DWMS.Sample.GqlTypes
             Identity_user user = new Identity_user();
 
             List<Identity_user> users = new List<Identity_user>();
-            string sqlStatement = $"SELECT * FROM nci.AspNetUsers where Email='{email}'";
+            string sqlStatement = $"SELECT * FROM idms.AspNetUsers where Email='{email}'";
             string sqlStatement_encoded = WebUtility.UrlEncode(sqlStatement);
             string urlApi_querydata = $"{config["DBService:queryUrl"]}{sqlStatement_encoded}";
             var (status, result) = await CommonUtil.Core.Service.Util.RestCallAsync(urlApi_querydata, HttpMethod.Get);
