@@ -215,7 +215,7 @@ namespace DWMS.User.Authentication.API.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var newJwtToken = _jwtTokenService.GetToken(1, user.UserName, user.Email, userRoles);
+            var newJwtToken = _jwtTokenService.GetToken(2, user.UserName, user.Email, userRoles);
             var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
 
             var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
