@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DWMS.CleaningMS", "DWMS.CleaningMS\DWMS.CleaningMS.csproj", "{C67EC3EC-8883-4497-8C78-402786F8AF0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.StoringOrder", "IDMS.StoringOrder\IDMS.StoringOrder.csproj", "{C67EC3EC-8883-4497-8C78-402786F8AF0A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DWMS.Cleaning.GqlTypes", "DWMS.Cleaning.GqlTypes\DWMS.Cleaning.GqlTypes.csproj", "{ACC6F5F8-AE7A-4556-9686-13B0C26A95AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.StoringOrder.GqlTypes", "IDMS.StoringOrder.GqlTypes\IDMS.StoringOrder.GqlTypes.csproj", "{ACC6F5F8-AE7A-4556-9686-13B0C26A95AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DWMS.Cleaning.Model", "DWMS.Cleaning.Model\DWMS.Cleaning.Model.csproj", "{26740B81-8B32-43CA-88C5-79322FCEAF24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.StoringOrder.Model", "IDMS.StoringOrder.Model\IDMS.StoringOrder.Model.csproj", "{26740B81-8B32-43CA-88C5-79322FCEAF24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.DBAccess.Service", "DWMS.DBAccess\DWMS.DBAccess.Service.csproj", "{F3F36529-4531-44F1-B303-5AE6CCB9B5C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.DBAccess.Service", "IDMS.DBAccess\IDMS.DBAccess.Service.csproj", "{F3F36529-4531-44F1-B303-5AE6CCB9B5C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWMS.DBAccess.Interface", "DWMS.DBAccess.Interface\DWMS.DBAccess.Interface.csproj", "{6D833187-ACA3-4330-8EE5-0904060AD5D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.DBAccess.Interface", "IDMS.DBAccess.Interface\IDMS.DBAccess.Interface.csproj", "{6D833187-ACA3-4330-8EE5-0904060AD5D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

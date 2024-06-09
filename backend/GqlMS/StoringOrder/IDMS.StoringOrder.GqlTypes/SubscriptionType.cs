@@ -1,18 +1,25 @@
-﻿using DWMS.Cleaning.Model;
+﻿using IDMS.StoringOrder.Model;
 using HotChocolate;
 using HotChocolate.Execution;
 using HotChocolate.Subscriptions;
 using HotChocolate.Types;
 
-namespace DWMS.Cleaning.GqlTypes
+namespace IDMS.StoringOrder.GqlTypes
 {
     public class SubscriptionType
     {
         [Subscribe]
-        public CakeResult CakeCreated([EventMessage]CakeResult result)
+        public StoringOder SOCreated([EventMessage] StoringOder result)
         {
             return result;
         }
+
+        [Subscribe]
+        public StoringOder SOUpdated([EventMessage] StoringOder result)
+        {
+            return result;
+        }
+
 
         //Old method, going to obsolette
         [SubscribeAndResolve]
@@ -37,10 +44,10 @@ namespace DWMS.Cleaning.GqlTypes
 
 
         [Subscribe]
-        [Topic("SomeCakeDeleted")]
-        public string CakeDeleted([EventMessage]int id)
+        [Topic("SODeleted")]
+        public string SODeleted([EventMessage]string soNo)
         {
-            return $"cake with this id: {id} deleted";
+            return $"Storing Order: {soNo} deleted";
         }
     }
 }

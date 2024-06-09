@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DWMS.Cleaning.Model\DWMS.Cleaning.Model.csproj" />
+    <ProjectReference Include="..\IDMS.StoringOrder.Model\IDMS.StoringOrder.Model.csproj" />
   </ItemGroup>
 
 </Project>
