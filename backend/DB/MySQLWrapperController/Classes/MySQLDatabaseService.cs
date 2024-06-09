@@ -54,6 +54,7 @@ namespace MySQLWrapperController.Classes
                             //return await cmd.ExecuteNonQueryAsync();
                         }
                     }
+                    tnx.Commit();
                     return count;
                 }
             }
