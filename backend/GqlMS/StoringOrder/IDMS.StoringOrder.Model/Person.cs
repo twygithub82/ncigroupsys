@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DWMS.Cleaning.Model
+namespace IDMS.StoringOrder.Model
 {
     public class Person
     {

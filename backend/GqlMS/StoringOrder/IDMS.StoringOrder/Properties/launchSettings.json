@@ -5,7 +5,9 @@
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:16321",
-      "sslPort": 44373
+      "sslPort": 44373,
+      "JWT_VALIDAUDIENCE": "http://localhost:4200",
+      "JWT_VALIDISSUER": "http://localhost:5052"
     }
   },
   "profiles": {
@@ -16,7 +18,9 @@
       "applicationUrl": "http://localhost:5071",
       "launchUrl": "graphql",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JWT_VALIDAUDIENCE": "http://localhost:4200",
+        "JWT_VALIDISSUER": "http://localhost:5052"
       }
     },
     "https": {
@@ -26,7 +30,9 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7220;http://localhost:5071",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JWT_VALIDAUDIENCE": "http://localhost:4200",
+        "JWT_VALIDISSUER": "http://localhost:5052"
       }
     },
     "IIS Express": {
@@ -34,7 +40,9 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JWT_VALIDAUDIENCE": "http://localhost:4200",
+        "JWT_VALIDISSUER": "http://localhost:5052"
       }
     }
   }

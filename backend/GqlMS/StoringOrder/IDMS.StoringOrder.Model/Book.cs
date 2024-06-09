@@ -1,6 +1,6 @@
 ﻿using HotChocolate;
 
-namespace DWMS.Cleaning.Model
+namespace IDMS.StoringOrder.Model
 {
     public class Book
     {
