@@ -1,4 +1,7 @@
-﻿using DWMS.User.Authentication.API.Models.Authentication.Login;
+﻿using DWMS.User.Authentication.API.Models.Authentication;
+using DWMS.User.Authentication.API.Models.Authentication.Login;
+using DWMS.User.Authentication.API.Models.RefreshToken;
+using DWMS.User.Authentication.API.Utilities;
 using DWMS.User.Authentication.Service.Models;
 using DWMS.User.Authentication.Service.Services;
 using DWMS.UserAuthentication.Models;
@@ -27,15 +30,22 @@ namespace DWMS.UserAuthentication.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
+        private readonly JwtTokenService _jwtTokenService;
+        private readonly IRefreshTokenStore _refreshTokenStore;
 
-        public UserAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService)
+        public UserAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, 
+            SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService, IRefreshTokenStore refreshTokenStore)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _emailService = emailService;
             _signInManager = signInManager;
-            
+            _jwtTokenService = new JwtTokenService(_configuration);
+            _refreshTokenStore = refreshTokenStore;
+
+
+
         }
 
         
@@ -102,15 +112,48 @@ namespace DWMS.UserAuthentication.Controllers
                 //{
                 //    authClaims.Add(new Claim(ClaimTypes.Role, role));
                 //}
-                var authClaims = DWMS.User.Authentication.API.Utilities.utils.GetClaims(1, user.UserName, user.Email, userRoles);
+                // var authClaims = DWMS.User.Authentication.API.Utilities.utils.GetClaims(1, user.UserName, user.Email, userRoles);
                 //generate the token with the claims
 
-                var jwtToken = DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
+                var jwtToken = _jwtTokenService.GetToken(1, user.UserName, user.Email, userRoles); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
+                var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = user.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
+
+                _refreshTokenStore.AddToken(refreshToken);
+               // _refreshTokens[user.UserName] = refreshToken;
                 //returning the token
-                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo });
+                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo,refreshToken = refreshToken.Token });
             }
 
             return Unauthorized();
+        }
+
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequestModel refreshRequest)
+        {
+            //var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
+            var userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+            var refreshTokenKey = _refreshTokenStore.GetToken(userName);
+            if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken)
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userManager.FindByNameAsync(userName);
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var newJwtToken = _jwtTokenService.GetToken(1, user.UserName, user.Email, userRoles);
+            var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+
+            var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
+
+            _refreshTokenStore.AddToken(refreshToken);
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
+                expiration = newJwtToken.ValidTo,
+                refreshToken = newRefreshToken
+            });
         }
 
 

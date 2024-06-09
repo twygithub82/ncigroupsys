@@ -1,3 +1,4 @@
+using DWMS.User.Authentication.API.Models.RefreshToken;
 using DWMS.User.Authentication.Service.Models;
 using DWMS.User.Authentication.Service.Services;
 using DWMS.UserAuthentication.DB;
@@ -58,6 +59,7 @@ var emailConfig = builder.Configuration
         .Get<EmailConfiguration>();
 
 builder.Services.AddSingleton(emailConfig);
+builder.Services.AddSingleton<IRefreshTokenStore, RefreshTokenStore>();
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 
