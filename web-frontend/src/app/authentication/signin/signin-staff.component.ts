@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgModule } from '@angular/core';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '@core';
@@ -7,10 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { Utility } from 'app/utilities/utility'
+import { TranslateModule } from '@ngx-translate/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 @Component({
-  selector: 'app-signin',
-  templateUrl: './signin.component.html',
-  styleUrls: ['./signin.component.scss'],
+  selector: 'app-signin-staff',
+  templateUrl: './signin-staff.component.html',
+  styleUrls: ['./signin-staff.component.scss'],
   standalone: true,
   imports: [
     RouterLink,
@@ -20,16 +23,29 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatInputModule,
     MatIconModule,
     MatButtonModule,
+    TranslateModule,
+    MatCheckboxModule
   ],
 })
-export class SigninComponent
-  extends UnsubscribeOnDestroyAdapter
-  implements OnInit, AfterViewInit {
+export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   authForm!: UntypedFormGroup;
   submitted = false;
   loading = false;
   error = '';
   hide = true;
+
+  SOFTWARE_NAME = 'SOFTWARE-NAME.TEXT'
+  SIGNIN = 'LANDING-SIGNIN.SIGNIN'
+  WELCOME = 'LANDING-SIGNIN.WELCOME'
+  ADMIN = 'LANDING-SIGNIN.ADMIN'
+  PORTAL = 'LANDING-SIGNIN.PORTAL'
+  USERNAME = 'LANDING-SIGNIN.USERNAME'
+  PASSWORD = 'LANDING-SIGNIN.PASSWORD'
+  REMEMBER = 'LANDING-SIGNIN.REMEMBER'
+  FORGOTPASSWORD = 'LANDING-SIGNIN.FORGOTPASSWORD'
+  LOGIN = 'LANDING-SIGNIN.LOGIN'
+  
+  PROCEDURE_REQUIRED = 'COMMON-FORM.IS-REQUIRED'
 
   rememberMe = false;
 
@@ -43,15 +59,19 @@ export class SigninComponent
   }
 
   ngOnInit() {
+    const rememberedUsername = this.authService.getRememberedUsername();
     this.authForm = this.formBuilder.group({
-      username: ['bhang2k', Validators.required],
-      password: ['P@ssw0rd', Validators.required],
+      username: [rememberedUsername, Validators.required],
+      password: ['P@ssw0rd', Validators.required], // TODO:: remove after
     });
-  }
-  ngAfterViewInit(): void {
-    const token = this.authService.currentUserValue.token;
-    console.log(token)
-    if (token) {
+
+    if (rememberedUsername) {
+      this.rememberMe = true;
+    } else {
+      this.rememberMe = false;
+    }
+
+    if (this.authService.currentUserValue.token) {
       // User is logged in, navigate to the dashboard or home
       this.router.navigate(['/']);
     }
@@ -68,7 +88,7 @@ export class SigninComponent
       return;
     } else {
       this.subs.sink = this.authService
-        .login(this.f['username'].value, this.f['password'].value, false, this.rememberMe)
+        .login(this.f['username'].value, this.f['password'].value, true, this.rememberMe)
         .subscribe({
           next: (res) => {
             if (res) {

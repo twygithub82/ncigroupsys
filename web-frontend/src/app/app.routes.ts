@@ -10,7 +10,7 @@ export const APP_ROUTE: Route[] = [
         component: MainLayoutComponent,
         canActivate: [AuthGuard],
         children: [
-            //{ path: '', redirectTo: '/authentication/signin', pathMatch: 'full' },
+            // { path: '', redirectTo: '/authentication/signin', pathMatch: 'full' },
             {
                 path: '',
                 loadChildren: () => import('./dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTE),

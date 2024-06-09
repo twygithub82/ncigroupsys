@@ -1,5 +1,6 @@
 import { Route } from "@angular/router";
 import { SigninComponent } from "./signin/signin.component";
+import { SigninStaffComponent } from "./signin/signin-staff.component";
 import { SignupComponent } from "./signup/signup.component";
 import { ForgotPasswordComponent } from "./forgot-password/forgot-password.component";
 import { LockedComponent } from "./locked/locked.component";
@@ -14,6 +15,10 @@ export const AUTH_ROUTE: Route[] = [
   {
     path: "signin",
     component: SigninComponent,
+  },
+  {
+    path: "signin-staff",
+    component: SigninStaffComponent,
   },
   {
     path: "signup",

@@ -38,8 +38,8 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
     selector: 'app-cleaning-procedures',
     standalone: true,
-    templateUrl: './cleaning-procedures.component.html',
-    styleUrl: './cleaning-procedures.component.scss',
+    templateUrl: './storing-order.component.html',
+    styleUrl: './storing-order.component.scss',
     imports: [
       BreadcrumbComponent,
       MatTooltipModule,
@@ -59,7 +59,7 @@ import { TranslateModule } from '@ngx-translate/core';
       TranslateModule
     ]
 })
-export class CleaningProceduresComponent
+export class StoringOrderComponent
 extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
@@ -74,7 +74,7 @@ implements OnInit {
     'actions',
   ];
 
-  pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-PROCEDURES'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]

@@ -40,7 +40,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public innerHeight?: number;
   public bodyTag!: HTMLElement;
 
-  COMPANY_TITLE = 'COMPANY-NAME.TEXT'
+  SOFTWARE_NAME = 'SOFTWARE-NAME.TEXT'
   
   listMaxHeight?: string;
   listMaxWidth?: string;
