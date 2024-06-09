@@ -34,6 +34,35 @@ namespace MySQLWrapperController.Classes
             }
         }
 
+        async Task<int> iDatabase_v2.ExecuteNonQueryCommands(string[] commands)
+        {
+            int count = 0;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var tnx = connection.BeginTransaction();
+
+                    //await connection.OpenAsync();
+                    foreach (var command in commands)
+                    {
+                        using (var cmd = new MySqlCommand(command, connection))
+                        {
+                            cmd.Transaction = tnx;
+                            count += cmd.ExecuteNonQuery();
+                            //return await cmd.ExecuteNonQueryAsync();
+                        }
+                    }
+                    return count;
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         async Task<List<JToken>> iDatabase_v2.QueryData(string query)
         {
             try

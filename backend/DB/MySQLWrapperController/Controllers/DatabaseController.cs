@@ -29,6 +29,18 @@ namespace MySQLWrapperController.Controllers
             return Ok(rlt.ToString());
         }
 
+        [HttpPost("ExecuteNonQueries")]
+        public async Task<IActionResult> ExecuteNonQueries([FromBody] string[] commands)
+        {
+            
+            
+            var result = await _database.ExecuteNonQueryCommands(commands);
+            dynamic rlt = new JObject();
+
+            rlt.result = JToken.FromObject(result);
+            return Ok(rlt.ToString());
+        }
+
         [HttpGet("QueryData")]
         public async Task<IActionResult> QueryData([FromQuery] string query)
         {

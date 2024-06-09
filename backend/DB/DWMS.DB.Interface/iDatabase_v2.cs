@@ -6,7 +6,9 @@ namespace DWMS.DB.Interface
     {
        
        public Task <int> ExecuteNonQueryCommand(string command);
-       public Task <List<JToken>> QueryData(string query);
+
+        public Task<int> ExecuteNonQueryCommands(string[] commands);
+        public Task <List<JToken>> QueryData(string query);
        public Task<int> RunStoredProcedure(string name, Parameter[] parameters);
       
     }
