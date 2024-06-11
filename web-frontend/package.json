@@ -1,5 +1,5 @@
 {
-  "name": "ncigroup",
+  "name": "idms",
   "version": "5.1.0",
   "scripts": {
     "ng": "ng",
@@ -23,6 +23,7 @@
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
+    "@auth0/angular-jwt": "^5.2.0",
     "@ckeditor/ckeditor5-angular": "^7.0.1",
     "@ckeditor/ckeditor5-build-classic": "^41.2.1",
     "@danielmoncada/angular-datetime-picker": "^17.0.0",

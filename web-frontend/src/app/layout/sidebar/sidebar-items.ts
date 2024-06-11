@@ -67,6 +67,29 @@ export const ROUTES: RouteInfo[] = [
       }
     ],
   },
+  {
+    path: "admin/inventory",
+    title: "MENUITEMS.INVENTORY.TEXT",
+    iconType: "material",
+    icon: "compare_arrows",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/storing-order",
+        title: "MENUITEMS.INVENTORY.LIST.STORING-ORDER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      }
+    ]
+  },
   // {
   //   path: "advance-table",
   //   title: "MENUITEMS.ADVANCE-TABLE.TEXT",

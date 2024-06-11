@@ -6,15 +6,16 @@ import { AuthService } from '../service/auth.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard  {
-  constructor(private authService: AuthService, private router: Router) {}
+export class AuthGuard {
+  constructor(private authService: AuthService, private router: Router) { }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (this.authService.currentUserValue) {
+    if (this.authService.currentUserValue && this.authService.currentUserValue.token) {
       return true;
+    } else {
+      this.router.navigate(['/authentication/signin']);
+      return false;
     }
-    this.router.navigate(['/authentication/signin']);
-    return false;
   }
 }

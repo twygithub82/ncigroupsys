@@ -281,6 +281,16 @@ CREATE TABLE `code_values` (
 
 LOCK TABLES `code_values` WRITE;
 /*!40000 ALTER TABLE `code_values` DISABLE KEYS */;
+INSERT INTO `code_values` (code_val_type, code_val, description) VALUES 
+('YES_NO', 'Y', 'Yes'),
+('YES_NO', 'N', 'No'),
+('CLEAN_STATUS', 'UNKNOWN', 'Unknown'),
+('CLEAN_STATUS', 'CLEAN', 'Clean'),
+('CLEAN_STATUS', 'DIRTY', 'Dirty'),
+('SO_STATUS', 'PENDING', 'Pending'),
+('SO_STATUS', 'COMPLETE', 'Complete'),
+('SO_STATUS', 'CANCELED', 'Canceled'),
+('SO_STATUS', 'PROSESSING', 'Dirty');
 /*!40000 ALTER TABLE `code_values` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -1,6 +1,6 @@
 {
-  "COMPANY-NAME": {
-    "TEXT": "NCI Group"
+  "SOFTWARE-NAME": {
+    "TEXT": "IDMS"
   },
   "HEADER":{
     "SEARCH": {
@@ -100,7 +100,25 @@
     },
     "NEW": {
       "TEXT": "New"
+    },
+    "INVENTORY": {
+      "TEXT": "Inventory",
+      "LIST": {
+        "STORING-ORDER": "Storing Order"
+      }
     }
+  },
+  "LANDING-SIGNIN": {
+    "WELCOME": "Welcome to",
+    "PORTAL": "portal",
+    "ADMIN": "admin",
+    "SIGNUP": "Sign Up",
+    "SIGNIN": "Sign in",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "REMEMBER": "Remember me",
+    "FORGOTPASSWORD": "Forgot password?",
+    "LOGIN": "Login"
   },
   "COMMON-FORM": {
     "CLEAN-PROCEDURES": "Cleaning Procedures",
@@ -147,6 +165,24 @@
       "GROUP-DETAILS": "Group Details",
       "GROUP-NAME": "Group Name",
       "BAY": "Bay"
+    }
+  },
+  "STORING-ORDER": {
+    "TEXT": "Storing Order",
+    "FORMS": {
+      "PROCEDURE-DETAILS": "Procedure Details",
+      "PROCEDURE-NAME": "Procedure Name",
+      "DESCRIPTION": "Description",
+      "CLEAN-CATEGORY": "Cleaning Category",
+      "CLEAN-GROUP": "Cleaning Group",
+      "MIN-COST": "Minimum Cost [SGD]",
+      "MAX-COST": "Maximum Cost [SGD]",
+      "TOTAL-DURATION": "Total Duration [mins]",
+      "IS-REQUIRED": "is required",
+      "PROCEDURE-STEPS": "Procedure Steps",
+      "STEP-NAME": "Step Name",
+      "STEP-DURATION": "Duration",
+      "STEP-DURATION-TOOLTIP": "Duration minutes"
     }
   }
 }
