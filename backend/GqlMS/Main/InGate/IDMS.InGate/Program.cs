@@ -12,7 +12,9 @@ var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration["DBService:q
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
                 .AddAuthorization()
-               .AddQueryType<QueryType>();
+               .AddQueryType<InGate_QueryType>()
+               .AddMutationType<InGate_MutationType>();
+
 
 
 builder.Services.AddAuthentication(options => {

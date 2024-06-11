@@ -1,6 +1,6 @@
 ﻿namespace IDMS.InGate.GqlTypes
 {
-    public class ClasSubscriptionTypes
+    public class InGate_SubscriptionType
     {
 
     }
