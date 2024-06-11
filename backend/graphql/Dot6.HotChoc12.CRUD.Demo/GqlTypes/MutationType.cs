@@ -8,10 +8,17 @@ public class MutationType
 {
     public async Task<Cake> SaveCakeAsync([Service] MyWorldDBContext context, Cake newCake,[Service] ITopicEventSender topicEventSender)
     {
-        context.Cake.Add(newCake);
-        await context.SaveChangesAsync();
-        await topicEventSender.SendAsync(nameof(SubscriptionType.CakeCreated),newCake);
-        return newCake;
+        try
+        {
+            context.Cake.Add(newCake);
+            await context.SaveChangesAsync();
+            await topicEventSender.SendAsync(nameof(SubscriptionType.CakeCreated), newCake);
+            return newCake;
+        }
+        catch(Exception ex)
+        {
+            throw ex;
+        }
     }
 
     public async Task<Cake>UpdateCakeAsync([Service] MyWorldDBContext context, Cake updateCake)
