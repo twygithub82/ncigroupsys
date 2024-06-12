@@ -15,7 +15,7 @@
                 <mat-panel-description>
                   <div class="m-l-" matTooltip="ADD">
                     <button mat-mini-fab color="primary"
-                      [routerLink]="['/admin/storing-order/storing-order-new']">
+                      [routerLink]="['/admin/cleaning-procedures/cleaning-procedures-new']">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
@@ -24,9 +24,10 @@
                       <mat-icon class="col-white">refresh</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" matTooltip="CANCEL" (click)="$event.stopPropagation()">
-                    <button mat-mini-fab color="warn" (click)="removeSelectedRows()" [disabled]="!selection.hasValue()">
-                      <mat-icon class="col-white">cancel</mat-icon>
+                  <div class="m-l-10" [hidden]=!selection.hasValue() matTooltip="DELETE" (click)="$event.stopPropagation()">
+                    <button mat-mini-fab color="warn" (click)="removeSelectedRows()">
+                      <mat-icon class="col-white">delete
+                      </mat-icon>
                     </button>
                   </div>
                   <div class="export-button m-l-10" matTooltip="XLSX">

@@ -36,13 +36,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StoringOrderModel } from 'app/models/storing-order';
 
 @Component({
   selector: 'app-cleaning-procedures',
   standalone: true,
-  templateUrl: './storing-order.component.html',
-  styleUrl: './storing-order.component.scss',
+  templateUrl: './storing-order-new.component.html',
+  styleUrl: './storing-order-new.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -70,7 +70,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FormsModule
   ]
 })
-export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'so_no',

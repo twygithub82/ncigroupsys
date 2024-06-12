@@ -5,6 +5,8 @@ import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { JwtPayload } from '@core/models/JwtPayload';
 import { environment } from 'environments/environment';
 import { api_endpoints } from 'app/api-endpoints';
+import { decodeToken } from 'app/utilities/jwt-util';
+import { jwt_mapping } from 'app/api-endpoints';
 
 @Injectable({
   providedIn: 'root',
@@ -40,8 +42,21 @@ export class AuthService {
     return this.http.post<any>(url, body, { headers })
       .pipe(map(user => {
         if (user && user.token) {
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUserSubject.next(user);
+          
+          const decodedToken = decodeToken(user.token);
+          var usr = new User;
+          usr.name = decodedToken[jwt_mapping.name.key]
+          usr.email = decodedToken[jwt_mapping.email.key]
+          usr.groupsid = decodedToken[jwt_mapping.groupsid.key]
+          usr.role = decodedToken[jwt_mapping.role.key]
+          usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key]
+          usr.token = decodedToken;
+          usr.plainToken = user.token;
+          usr.expiration = user.expiration;
+          usr.refreshToken = user.refreshToken;
+
+          localStorage.setItem('currentUser', JSON.stringify(usr));
+          this.currentUserSubject.next(usr);
         }
         return user;
       }));
@@ -70,5 +85,10 @@ export class AuthService {
   
   getRememberedUsername(): string | null {
     return localStorage.getItem('rememberMe') === 'true' ? localStorage.getItem('username') : null;
+  }
+  
+  getDecodedToken(): any {
+    // const token = this.currentUserValue?.token;
+    // return token ? decodeToken(token) : null;
   }
 }
