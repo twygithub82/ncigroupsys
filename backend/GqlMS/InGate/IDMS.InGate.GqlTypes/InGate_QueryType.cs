@@ -17,10 +17,7 @@ namespace IDMS.InGate.GqlTypes
 {
     public class InGate_QueryType
     {
-        public async Task<string> GetBook()
-        {
-            return "This is my book";
-        }
+       
 
        // [Authorize]
         public async Task<List<EntityClass_InGateWithTank>> QueryAllInGates([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
