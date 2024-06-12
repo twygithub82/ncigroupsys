@@ -73,7 +73,7 @@ namespace IDMS.InGate.GqlTypes
                     int count = Convert.ToInt32(result["result"]);
                     if(count > 0)
                     {
-                        string sqlStatement = $"select * from idms.in_gate where guid='{InGate.guid}'";
+                        string sqlStatement = $"select * from idms.in_gate where guid='{InGate.guid}' and delete_dt is null";
 
 
                         var resultJtoken = await GqlUtils.QueryData(config, sqlStatement);
@@ -82,7 +82,7 @@ namespace IDMS.InGate.GqlTypes
                         {
                             var jsnInGate = inGateList[0];
                             var retInGate=jsnInGate.ToObject<EntityClass_InGateWithTank>();
-                            var sqlQuery = $"select * from storing_order_tank where guid ='{retInGate.so_tank_guid}'";
+                            var sqlQuery = $"select * from storing_order_tank where guid ='{retInGate.so_tank_guid}' and delete_dt is null";
                             var rst = await GqlUtils.QueryData(config, sqlQuery);
 
                             var tankList = rst["result"];

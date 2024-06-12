@@ -14,12 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
+    <ProjectReference Include="..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="CommonUtil.Core.Service">
-      <HintPath>..\..\..\..\ShareUtil\CommonUtil\CommonUtil.Core.Service\bin\Release\net6.0\CommonUtil.Core.Service.dll</HintPath>
+      <HintPath>..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
 

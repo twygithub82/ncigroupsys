@@ -31,7 +31,7 @@ namespace IDMS.InGate.GqlTypes
                 
                 GqlUtils.IsAuthorize(config,httpContextAccessor);
 
-                string sqlStatement = "select * from idms.in_gate";
+                string sqlStatement = "select * from idms.in_gate where  delete_dt is null";
                 var resultJtoken = await GqlUtils.QueryData(config, sqlStatement);
                 var inGateList = resultJtoken["result"];
                 if (inGateList?.Count() > 0)
@@ -104,7 +104,7 @@ namespace IDMS.InGate.GqlTypes
             {
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                string sqlStatement = $"select * from idms.in_gate where so_tank_guid='{tank_guid}'";
+                string sqlStatement = $"select * from idms.in_gate where so_tank_guid='{tank_guid}'  and delete_dt is null";
 
 
                 var resultJtoken= await GqlUtils.QueryData(config, sqlStatement);
@@ -114,7 +114,7 @@ namespace IDMS.InGate.GqlTypes
                     var jsnInGate = inGateList[0];
                     retInGate = jsnInGate.ToObject<EntityClass_InGateWithTank>();
 
-                    var sqlQuery = $"select * from storing_order_tank where guid ='{retInGate.so_tank_guid}'";
+                    var sqlQuery = $"select * from storing_order_tank where guid ='{retInGate.so_tank_guid}'  and delete_dt is null";
                     var result = await GqlUtils.QueryData(config, sqlQuery);
 
                     var tankList = result["result"];
