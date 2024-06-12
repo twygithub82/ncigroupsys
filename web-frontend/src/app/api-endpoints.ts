@@ -1,6 +1,7 @@
 export const api_endpoints = {
   staff_auth: '/api/StaffAuthentication/StaffLogin',
-  user_auth: '/api/UserAuthentication/UserLogin'
+  user_auth: '/api/UserAuthentication/UserLogin',
+  graphQL_link: 'YOUR_GRAPHQL_ENDPOINT'
 }
 
 export const jwt_mapping = {

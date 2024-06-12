@@ -36,7 +36,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
-import { StoringOrderModel } from 'app/models/storing-order';
+//import { StoringOrderModel } from 'app/data-sources/storing-order';
 
 @Component({
   selector: 'app-cleaning-procedures',
