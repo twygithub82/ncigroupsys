@@ -1,0 +1,58 @@
+CREATE TABLE `cleaning_group` (
+  `guid` varchar(36) NOT NULL,
+  `group_name` varchar(45) DEFAULT NULL,
+  `category` varchar(45) DEFAULT NULL,
+  `minmum_cost` float DEFAULT NULL,
+  `maximum_cost` float DEFAULT NULL,
+  `delete_dt` bigint DEFAULT NULL,
+  `create_dt` bigint DEFAULT NULL,
+  `create_by` varchar(45) DEFAULT NULL,
+  `update_dt` bigint DEFAULT NULL,
+  `update_by` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `guid_UNIQUE` (`guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `cleaning_procedure` (
+  `guid` varchar(36) NOT NULL,
+  `procedure_name` varchar(45) DEFAULT NULL,
+  `description` varchar(150) DEFAULT NULL,
+  `duration` int DEFAULT NULL,
+  `category` varchar(20) DEFAULT NULL,
+  `clean_group_guid` varchar(36) DEFAULT NULL,
+  `delete_dt` bigint DEFAULT NULL,
+  `create_dt` bigint DEFAULT NULL,
+  `create_by` varchar(45) DEFAULT NULL,
+  `update_dt` bigint DEFAULT NULL,
+  `update_by` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `guid_UNIQUE` (`guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `cleaning_procedure_steps` (
+  `guid` varchar(36) NOT NULL,
+  `cleaning_procedure_guid` varchar(36) DEFAULT NULL,
+  `cleaning_step_guid` varchar(36) DEFAULT NULL,
+  `duration` int DEFAULT '0',
+  `delete_dt` bigint DEFAULT NULL,
+  `create_dt` bigint DEFAULT NULL,
+  `create_by` varchar(45) DEFAULT NULL,
+  `update_dt` bigint DEFAULT NULL,
+  `update_by` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `guid_UNIQUE` (`guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `cleaning_steps` (
+  `guid` varchar(36) NOT NULL,
+  `step_name` varchar(100) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `delete_dt` bigint DEFAULT NULL,
+  `create_dt` bigint DEFAULT NULL,
+  `create_by` varchar(45) DEFAULT NULL,
+  `update_dt` bigint DEFAULT NULL,
+  `update_by` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `guid_UNIQUE` (`guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

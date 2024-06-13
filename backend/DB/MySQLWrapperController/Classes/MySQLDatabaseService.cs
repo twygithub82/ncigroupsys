@@ -58,9 +58,10 @@ namespace MySQLWrapperController.Classes
                     return count;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
         }
 
@@ -90,9 +91,10 @@ namespace MySQLWrapperController.Classes
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
         }
 
@@ -118,9 +120,10 @@ namespace MySQLWrapperController.Classes
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
             }
         }
     }

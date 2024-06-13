@@ -16,4 +16,12 @@ namespace IDMS.Models
 
        
     }
+
+    public class EntityClass_CleaningStepWithDuration:EntityClass_CleaningStep
+    {
+        public int? duration { get; set; } = 0;
+
+
+
+    }
 }
