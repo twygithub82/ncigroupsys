@@ -4,7 +4,13 @@ export class User {
   id!: number;
   img!: string;
   username!: string;
-  firstName!: string;
-  lastName!: string;
+  name!: string;
+  email!: string;
+  groupsid!: string;
+  role!: string;
+  primarygroupsid!: string;
   token!: JwtPayload;
+  plainToken!: string;
+  expiration!: string;
+  refreshToken!: string;
 }

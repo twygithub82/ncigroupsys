@@ -139,7 +139,12 @@
     "GROUP-DETAILS": "Group Details",
     "GROUP-NAME": "Group Name",
     "BAY": "Bay",
-    "LAST-UPDATED": "Last Updated"
+    "LAST-UPDATED": "Last Updated",
+    "SO-NO": "SO No.",
+    "CODE": "Code",
+    "CUSTOMER-NAME": "Customer Name",
+    "NO-OF-TANKS": "No. of Tanks",
+    "STATUS": "Status"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

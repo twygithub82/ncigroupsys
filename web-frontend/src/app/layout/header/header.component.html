@@ -142,8 +142,8 @@
         <li class="nav-item user_profile">
           <button mat-button [matMenuTriggerFor]="profilemenu">
             <div class="chip dropdown-toggle" ngbDropdownToggle class="">
-              <span>Ella Jones</span>
-              <img src="{{userImg}}" class="user_img" width="25" height="25" alt="User">
+              <span>{{ name }}</span>
+              <app-feather-icons [icon]="'fas fa-user-circle'" [class]="'fas fa-user-circle'"></app-feather-icons>
             </div>
           </button>
           <mat-menu #profilemenu="matMenu" class="profile-menu">

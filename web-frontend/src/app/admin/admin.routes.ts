@@ -4,6 +4,7 @@ import { CleaningStepsComponent } from './cleaning-steps/cleaning-steps.componen
 import { CleaningProceduresComponent } from './cleaning-procedures/cleaning-procedures.component';
 import { CleaningProceduresNewComponent } from './cleaning-procedures-new/cleaning-procedures-new.component';
 import { StoringOrderComponent } from './storing-order/storing-order.component';
+import { StoringOrderNewComponent } from './storing-order-new/storing-order-new.component';
 
 export const ADMIN_ROUTE: Routes = [
   {
@@ -21,6 +22,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "storing-order",
     component: StoringOrderComponent,
+  },
+  {
+    path: "storing-order/storing-order-new",
+    component: StoringOrderNewComponent,
   }
 ];
 

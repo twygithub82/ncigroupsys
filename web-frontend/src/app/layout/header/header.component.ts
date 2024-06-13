@@ -14,6 +14,7 @@ import { NgScrollbar } from 'ngx-scrollbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { FeatherIconsComponent } from '../../shared/components/feather-icons/feather-icons.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 interface Notifications {
   message: string;
@@ -35,6 +36,7 @@ interface Notifications {
     RouterLink,
     NgClass,
     NgScrollbar,
+    MatIconModule
   ],
   providers: [LanguageService],
 })
@@ -52,6 +54,8 @@ export class HeaderComponent
   isOpenSidebar?: boolean;
   docElement?: HTMLElement;
   isFullScreen = false;
+
+  name = '';
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -130,6 +134,9 @@ export class HeaderComponent
     this.langStoreValue = localStorage.getItem('lang') as string;
     const val = this.listLang.filter((x) => x.lang === this.langStoreValue);
     this.countryName = val.map((element) => element.text);
+
+    this.name = this.authService.currentUserValue.name;
+
     if (val.length === 0) {
       if (this.flagvalue === undefined) {
         this.defaultFlag = 'assets/images/flags/us.jpg';
