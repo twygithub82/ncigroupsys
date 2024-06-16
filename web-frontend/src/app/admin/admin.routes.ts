@@ -3,8 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { CleaningStepsComponent } from './cleaning-steps/cleaning-steps.component';
 import { CleaningProceduresComponent } from './cleaning-procedures/cleaning-procedures.component';
 import { CleaningProceduresNewComponent } from './cleaning-procedures-new/cleaning-procedures-new.component';
-import { StoringOrderComponent } from './storing-order/storing-order.component';
-import { StoringOrderNewComponent } from './storing-order-new/storing-order-new.component';
+import { StoringOrderComponent } from './inventory/storing-order/storing-order.component';
+import { StoringOrderNewComponent } from './inventory/storing-order-new/storing-order-new.component';
 
 export const ADMIN_ROUTE: Routes = [
   {

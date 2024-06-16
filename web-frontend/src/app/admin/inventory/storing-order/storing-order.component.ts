@@ -36,13 +36,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
-//import { StoringOrderModel } from 'app/data-sources/storing-order';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @Component({
   selector: 'app-cleaning-procedures',
   standalone: true,
-  templateUrl: './storing-order-new.component.html',
-  styleUrl: './storing-order-new.component.scss',
+  templateUrl: './storing-order.component.html',
+  styleUrl: './storing-order.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -70,7 +70,7 @@ import { Utility } from 'app/utilities/utility';
     FormsModule
   ]
 })
-export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'so_no',
@@ -86,12 +86,12 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     'MENUITEMS.HOME.TEXT'
   ]
 
+  STATUS = 'COMON-FORM.STATUS'
   SO_NO = 'COMMON-FORM.SO-NO'
-  CODE = 'COMMON-FORM.CODE'
+  CUSTOMER_CODE = 'COMMON-FORM.CUSTOMER-CODE'
   CUSTOMER_NAME = 'COMMON-FORM.CUSTOMER-NAME'
   SO_DATE = 'COMMON-FORM.SO-DATE'
   NO_OF_TANKS = 'COMMON-FORM.NO-OF-TANKS'
-  STATUS = 'COMMON-FORM.STATUS'
 
   soStatusList = [
     {

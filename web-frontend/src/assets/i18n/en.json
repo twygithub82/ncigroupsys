@@ -104,7 +104,8 @@
     "INVENTORY": {
       "TEXT": "Inventory",
       "LIST": {
-        "STORING-ORDER": "Storing Order"
+        "STORING-ORDER": "Storing Order",
+        "STORING-ORDER-NEW": "New Storing Order"
       }
     }
   },
@@ -140,11 +141,36 @@
     "GROUP-NAME": "Group Name",
     "BAY": "Bay",
     "LAST-UPDATED": "Last Updated",
-    "SO-NO": "SO No.",
-    "CODE": "Code",
+    "STATUS": "Status",
+    "NEW": "New",
+    "HEADER": "Header",
+    "CUSTOMER-CODE": "Customer Code",
     "CUSTOMER-NAME": "Customer Name",
+    "SO-NO": "SO No.",
     "NO-OF-TANKS": "No. of Tanks",
-    "STATUS": "Status"
+    "CONTACT-PERSON": "Contact Person",
+    "SO-NOTES": "SO Notes",
+    "HAULIER": "Haulier",
+    "ORDER-DETAILS": "Order Details",
+    "UNIT-TYPE": "Unit Type",
+    "TANK-NO": "Tank No.",
+    "PURPOSE": "Purpose",
+    "STORAGE": "Storage",
+    "STEAM": "Steam",
+    "CLEANING": "Cleaning",
+    "LAST-CARGO": "Last Cargo",
+    "CLEAN-STATUS": "Clean Status",
+    "CERTIFICATE": "Certificate",
+    "REQUIRED-TEMP": "Required Temp.",
+    "FLASH-POINT": "Flast Point",
+    "JOB-NO": "Job No.",
+    "ETA-DATE": "ETA Date",
+    "REMARKS": "Remarks",
+    "ETR-DATE": "ETR Date",
+    "ST": "ST",
+    "O2-LEVEL": "O2 Level",
+    "OPEN-ON-GATE": "Open On Gate",
+    "REPAIR": "Repair"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
@@ -170,24 +196,6 @@
       "GROUP-DETAILS": "Group Details",
       "GROUP-NAME": "Group Name",
       "BAY": "Bay"
-    }
-  },
-  "STORING-ORDER": {
-    "TEXT": "Storing Order",
-    "FORMS": {
-      "PROCEDURE-DETAILS": "Procedure Details",
-      "PROCEDURE-NAME": "Procedure Name",
-      "DESCRIPTION": "Description",
-      "CLEAN-CATEGORY": "Cleaning Category",
-      "CLEAN-GROUP": "Cleaning Group",
-      "MIN-COST": "Minimum Cost [SGD]",
-      "MAX-COST": "Maximum Cost [SGD]",
-      "TOTAL-DURATION": "Total Duration [mins]",
-      "IS-REQUIRED": "is required",
-      "PROCEDURE-STEPS": "Procedure Steps",
-      "STEP-NAME": "Step Name",
-      "STEP-DURATION": "Duration",
-      "STEP-DURATION-TOOLTIP": "Duration minutes"
     }
   }
 }

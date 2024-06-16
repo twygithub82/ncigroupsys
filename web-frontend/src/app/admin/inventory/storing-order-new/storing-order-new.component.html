@@ -1,0 +1,443 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="NEW"></app-breadcrumb>
+    </div>
+    <div class="row clearfix">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <form class="ms-0" [formGroup]="soForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
+          <div class="card">
+            <div class="header">
+              <h2>{{HEADER | translate}}</h2>
+            </div>
+            <div class="body">
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{CUSTOMER_CODE | translate}}</mat-label>
+                    <input type="text" matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
+                      formControlName="customer_code" required>
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCleanGroupFn"
+                      (optionSelected)="onSelectCleanGroup($event)">
+                      <!-- @for (group of filteredCleanGroupOptions | async; track group) {
+                      <mat-option [value]="group">
+                        {{group.groupName}}
+                      </mat-option>
+                      } -->
+                    </mat-autocomplete>
+                    @if (soForm?.get('customer_code')?.hasError('required')) {
+                    <mat-error>
+                      {{CUSTOMER_CODE | translate}} {{SO_REQUIRED | translate}}
+                    </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{CONTACT_PERSON | translate}}</mat-label>
+                    <input matInput formControlName="contact_person" required>
+                    @if (soForm?.get('contact_person')?.hasError('required')) {
+                    <mat-error>
+                      {{CONTACT_PERSON | translate}} {{SO_REQUIRED | translate}}
+                    </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{HAULIER | translate}}</mat-label>
+                    <input matInput formControlName="haulier" required>
+                    @if (soForm?.get('haulier')?.hasError('required')) {
+                    <mat-error>
+                      {{HAULIER | translate}} {{SO_REQUIRED | translate}}
+                    </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{SO_NOTES | translate}}</mat-label>
+                    <input matInput formControlName="so_notes" required>
+                    @if (soForm?.get('so_notes')?.hasError('required')) {
+                    <mat-error>
+                      {{SO_NOTES | translate}} {{SO_REQUIRED | translate}}
+                    </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <form class="ms-0" [formGroup]="sotForm!" (ngSubmit)="onSOTFormSubmit()" #formDirective2="ngForm">
+          <div class="card">
+            <div class="header">
+              <h2>{{ORDER_DETAILS | translate}}</h2>
+            </div>
+            <div class="body">
+              <div class="row">
+                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
+                  <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{UNIT_TYPE | translate}}</mat-label>
+                        <mat-select formControlName="unit_type" required>
+                          @for (topping of unit_typeList; track topping) {
+                          <mat-option [value]="topping">{{topping}}
+                          </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{TANK_NO | translate}}</mat-label>
+                        <input matInput formControlName="tank_no" required>
+                        @if (soForm?.get('tank_no')?.hasError('required')) {
+                        <mat-error>
+                          {{TANK_NO | translate}} {{SO_REQUIRED | translate}}
+                        </mat-error>
+                        }
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{LAST_CARGO | translate}}</mat-label>
+                        <input matInput formControlName="last_cargo" required>
+                        @if (soForm?.get('last_cargo')?.hasError('required')) {
+                        <mat-error>
+                          {{LAST_CARGO | translate}} {{SO_REQUIRED | translate}}
+                        </mat-error>
+                        }
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{JOB_NO | translate}}</mat-label>
+                        <input matInput formControlName="job_no">
+                        @if (soForm?.get('job_no')?.hasError('required')) {
+                        <mat-error>
+                          {{JOB_NO | translate}} {{SO_REQUIRED | translate}}
+                        </mat-error>
+                        }
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{ETA_DATE | translate}}</mat-label>
+                        <input matInput formControlName="eta_date">
+                        @if (soForm?.get('eta_date')?.hasError('required')) {
+                        <mat-error>
+                          {{ETA_DATE | translate}} {{SO_REQUIRED | translate}}
+                        </mat-error>
+                        }
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-0">
+                  <div class="row">
+                    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-1">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+                          <small class="m-b-0 font-bold">{{PURPOSE | translate}}</small>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+                          <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
+                            {{STORAGE | translate}}
+                          </mat-checkbox>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+                          <mat-checkbox formControlName="purpose_steam" class="m-r-5" color="primary">
+                            {{STEAM | translate}}
+                          </mat-checkbox>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+                          <mat-checkbox formControlName="purpose_cleaning" class="m-r-5" color="primary">
+                            {{CLEANING | translate}}
+                          </mat-checkbox>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{REPAIR | translate}}</mat-label>
+                        <mat-select formControlName="repair" required>
+                          @for (topping of repairList; track topping) {
+                          <mat-option [value]="topping">{{topping}}
+                          </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{CLEAN_STATUS | translate}}</mat-label>
+                        <mat-select formControlName="clean_status">
+                          @for (topping of clean_statusList; track topping) {
+                          <mat-option [value]="topping">{{topping}}
+                          </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{CERTIFICATE | translate}}</mat-label>
+                        <mat-select formControlName="certificate">
+                          @for (topping of certificateList; track topping) {
+                          <mat-option [value]="topping">{{topping}}
+                          </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{REQUIRED_TEMP | translate}}</mat-label>
+                        <input matInput formControlName="required_temp" type="number">
+                        <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1 p-t-20">
+                      <h6>{{FLASH_POINT | translate}}: -20&deg;C</h6>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{REMARKS | translate}}</mat-label>
+                        <input matInput formControlName="remarks">
+                        @if (soForm?.get('remarks')?.hasError('required')) {
+                        <mat-error>
+                          {{ETA_DATE | translate}} {{SO_REQUIRED | translate}}
+                        </mat-error>
+                        }
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1 align-right">
+                  <button mat-mini-fab color="primary">
+                    <mat-icon class="col-white">add</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                  <div class="responsive_table">
+                    <table mat-table [dataSource]="dataSourceDemo" matSort class="mat-cell advance-table">
+                      <!-- Checkbox Column -->
+                      <!-- <ng-container matColumnDef="select">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'p-l-0 tbl-col-width-per-5'">
+                          <mat-checkbox (change)="$event ? masterToggle() : null"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                          </mat-checkbox>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-6'">
+                          <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                            [ngClass]="'tbl-checkbox'">
+                          </mat-checkbox>
+                        </mat-cell>
+                      </ng-container> -->
+                      <!-- ID Column -->
+                      <ng-container matColumnDef="id">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="tank_no">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-9'">{{TANK_NO | translate}}</mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-9 justify-content-center'">
+                          <span class="mobile-label">
+                            {{ TANK_NO | translate}}:
+                          </span>
+                          {{row.tank_no}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="tank_no_validity">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-4'" mat-sort-header>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-4'">
+                          <span class="mobile-label">Validity:</span>
+                          @if (row.tank_no_validity==='valid') {
+                          <div>
+                            <span class="badge badge-solid-green">
+                              <mat-icon>done</mat-icon>
+                            </span>
+                          </div>
+                          }
+                          @if (row.tank_no_validity==='invalid') {
+                          <div>
+                            <span class="badge badge-solid-purple">
+                              <mat-icon>clear</mat-icon>
+                            </span>
+                          </div>
+                          }
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="last_cargo">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{LAST_CARGO | translate}}</mat-header-cell>
+                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" matTooltip="{{row.last_cargo}}">
+                          <span class="truncate-text">
+                            <span class="mobile-label">{{LAST_CARGO | translate}}:</span>
+                            {{row.last_cargo}}
+                          </span>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="job_no">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-8'" mat-sort-header>{{JOB_NO | translate}}</mat-header-cell>
+                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-8'">
+                          <span class="mobile-label">{{JOB_NO | translate}}:</span>
+                          {{row.job_no}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="purpose_storage">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'" mat-sort-header>{{STORAGE | translate}}</mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-7'">
+                          <span class="mobile-label">{{STORAGE | translate}}:</span>
+                          @if (row.purpose_storage) {
+                          <div>
+                            <span class="badge badge-solid-green">
+                              <mat-icon>done</mat-icon>
+                            </span>
+                          </div>
+                          }
+                          @if (!row.purpose_storage) {
+                          <div>
+                            <span class="badge badge-solid-purple">
+                              <mat-icon>clear</mat-icon>
+                            </span>
+                          </div>
+                          }
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="purpose_steam">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'" mat-sort-header>{{STEAM | translate}}</mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-7'">
+                          <span class="mobile-label">{{STEAM | translate}}:</span>
+                          @if (row.purpose_steam) {
+                          <div>
+                            <span class="badge badge-solid-green">
+                              <mat-icon>done</mat-icon>
+                            </span>
+                          </div>
+                          }
+                          @if (!row.purpose_steam) {
+                          <div>
+                            <span class="badge badge-solid-purple">
+                              <mat-icon>clear</mat-icon>
+                            </span>
+                          </div>
+                          }
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="purpose_cleaning">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-8'" mat-sort-header>{{CLEANING | translate}}</mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-8 justify-content-center'">
+                          <span class="mobile-label">{{CLEANING | translate}}:</span>
+                          @if (row.purpose_cleaning) {
+                          <div>
+                            <span class="badge badge-solid-green">
+                              <mat-icon>done</mat-icon>
+                            </span>
+                          </div>
+                          }
+                          @if (!row.purpose_cleaning) {
+                          <div>
+                            <span class="badge badge-solid-purple">
+                              <mat-icon>clear</mat-icon>
+                            </span>
+                          </div>
+                          }
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="repair">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'" mat-sort-header>{{REPAIR | translate}}</mat-header-cell>
+                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-7'">
+                          <span class="mobile-label">{{REPAIR | translate}}:</span>
+                          {{row.repair}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="status">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'" mat-sort-header>{{STATUS | translate}}</mat-header-cell>
+                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-7'">
+                          <span class="mobile-label">{{CLEAN_STATUS | translate}}:</span>
+                          {{row.clean_status}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="certificate">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-9'" mat-sort-header>{{CERTIFICATE | translate}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-9'">
+                          <span class="mobile-label">{{CERTIFICATE | translate}}:</span>
+                          {{row.certificate}}
+                        </mat-cell>
+                      </ng-container>
+                      <!-- actions -->
+                      <ng-container matColumnDef="actions">
+                        <mat-header-cell class="pr-0" [ngClass]="'tbl-col-width-per-7'" *matHeaderCellDef>
+                          <!-- <i class="fas fa-ellipsis-v"></i> -->
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; let i=index;" class="pr-0" [ngClass]="'tbl-col-width-per-7  '">
+                          <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()"
+                            (click)="editCall(row)" class="tbl-action-btn">
+                            <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+                          </button> -->
+                          <button mat-icon-button color="accent" (click)="handleDelete($event, row, i)" class="tbl-action-btn">
+                            <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+                          </button>
+                        </mat-cell>
+                      </ng-container>
+                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                        [style.cursor]="'pointer'" matRipple>
+                      </mat-row>
+                    </table>
+                  </div>
+                  @if (!dataSourceDemo.data.length) {
+                  <div class="no-results" [style.display]="dataSourceDemo.data.length === 0 ? '' : 'none'">
+                    No results
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="card">
+          <div class="body">
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
+                <button mat-flat-button color="warn" aria-label="Back to previoys page"
+                  [routerLink]="['/admin/storing-order']">
+                  <mat-icon>chevron_left</mat-icon>Back
+                </button>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0 align-right">
+                <button mat-flat-button color="primary" (click)="submitSOForm(formDirective)">
+                  Submit &amp; Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
