@@ -479,6 +479,7 @@ CREATE TABLE `storing_order` (
   `so_no` varchar(20) NOT NULL,
   `contact_person_guid` varchar(45) DEFAULT NULL,
   `haulier` varchar(45) DEFAULT NULL,
+  `status` int DEFAULT NULL,
   `delete_dt` bigint DEFAULT NULL,
   `create_dt` bigint DEFAULT NULL,
   `create_by` varchar(45) DEFAULT NULL,
@@ -506,7 +507,7 @@ DROP TABLE IF EXISTS `storing_order_tank`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `storing_order_tank` (
-  `guid` int NOT NULL,
+  `guid` varchar(36) NOT NULL,
   `so_guid` varchar(36) DEFAULT NULL,
   `unit_type_guid` varchar(36) DEFAULT NULL,
   `tank_no` varchar(45) DEFAULT NULL,
@@ -531,7 +532,9 @@ CREATE TABLE `storing_order_tank` (
   `create_by` varchar(45) DEFAULT NULL,
   `update_dt` bigint DEFAULT NULL,
   `update_by` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`guid`)
+  PRIMARY KEY (`guid`),
+  UNIQUE KEY `guid_UNIQUE` (`guid`),
+  UNIQUE KEY `so_guid_UNIQUE` (`so_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

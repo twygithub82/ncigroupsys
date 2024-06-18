@@ -4,8 +4,12 @@ using IDMS.DBAccess.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using IDMS.StoringOrder.GqlTypes.Repo;
+using HotChocolate.Data;
 
-namespace IDMS.StoringOrder
+namespace IDMS.StoringOrder.Application
 {
     public class Program
     {
@@ -20,6 +24,16 @@ namespace IDMS.StoringOrder
             var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
             var JWT_secretKey = "";//await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
 
+
+            string connectionString = builder.Configuration.GetConnectionString("default");
+            //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+            builder.Services.AddDbContext<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+
+            //builder.Services.AddDbContext<ApplicationDbContext>(
+            //        options => options.UseSqlServer("YOUR_CONNECTION_STRING"));
+
+            //builder.Services.AddScoped<SORepository>();
+
             // Add services to the container.
             //builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -29,39 +43,43 @@ namespace IDMS.StoringOrder
             builder.Services.AddSingleton<IDBAccess, DBAccessService>();
             //builder.Services.AddTransient<iDatabase, MySQLWrapper>();
 
-            
+
             builder.Services.AddGraphQLServer()
                             .RegisterService<IDBAccess>()
+                            .RegisterDbContext<SODbContext>(DbContextKind.Synchronized)
                             //.RegisterService<iDatabase>()
                             .AddQueryType<QueryType>()
                             .AddSubscriptionType<SubscriptionType>()
                             .AddMutationType<MutationType>()
+                            .AddFiltering()
+                            .AddSorting()
+                            .AddProjections()
                             .AddInMemorySubscriptions();// Must add this as well for websocket
 
             //------------------------------------------------------------------------------
             //This portion is for Authentication matter
-            builder.Services.AddAuthentication(options => {
+            //builder.Services.AddAuthentication(options => {
 
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            })
-                .AddJwtBearer(options =>
-                {
-                    options.SaveToken = true;
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidAudience = JWT_validAudience,
-                        ValidIssuer = JWT_validIssuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_secretKey))
-                    };
-                });
+            //})
+            //    .AddJwtBearer(options =>
+            //    {
+            //        options.SaveToken = true;
+            //        options.RequireHttpsMetadata = false;
+            //        options.TokenValidationParameters = new TokenValidationParameters
+            //        {
+            //            ValidateIssuer = true,
+            //            ValidateAudience = true,
+            //            ValidateLifetime = true,
+            //            ValidateIssuerSigningKey = true,
+            //            ValidAudience = JWT_validAudience,
+            //            ValidIssuer = JWT_validIssuer,
+            //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_secretKey))
+            //        };
+            //    });
             //--------------------------------------------------------------------------------------------
 
             var app = builder.Build();

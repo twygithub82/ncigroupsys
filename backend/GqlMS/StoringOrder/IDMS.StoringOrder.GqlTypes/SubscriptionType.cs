@@ -3,19 +3,20 @@ using HotChocolate;
 using HotChocolate.Execution;
 using HotChocolate.Subscriptions;
 using HotChocolate.Types;
+using IDMS.StoringOrder.Model.Domain;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     public class SubscriptionType
     {
         [Subscribe]
-        public StoringOder SOCreated([EventMessage] StoringOder result)
+        public SO_type SOCreated([EventMessage] SO_type result)
         {
             return result;
         }
 
         [Subscribe]
-        public StoringOder SOUpdated([EventMessage] StoringOder result)
+        public SO_type SOUpdated([EventMessage] SO_type result)
         {
             return result;
         }

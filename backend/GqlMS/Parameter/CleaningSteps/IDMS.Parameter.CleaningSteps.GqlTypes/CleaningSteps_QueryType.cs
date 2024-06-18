@@ -40,7 +40,7 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                string sqlStatement = $"select * from idms.cleaning_steps where guid='{guid}' and  delete_dt is null";
+                string sqlStatement = $"select * from idms.cleaning_steps where guid='{guid}' and delete_dt is null";
                 var resultJtoken = await GqlUtils.QueryData(config, sqlStatement);
                 var resultList = resultJtoken["result"];
                 if (resultList?.Count() > 0)

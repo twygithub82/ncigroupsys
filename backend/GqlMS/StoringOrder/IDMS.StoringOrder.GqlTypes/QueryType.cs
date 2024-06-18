@@ -1,5 +1,4 @@
-﻿
-using HotChocolate;
+﻿using HotChocolate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -8,82 +7,172 @@ using CommonUtil.Core.Service;
 using System.Runtime.CompilerServices;
 using IDMS.DBAccess.Interface;
 using IDMS.StoringOrder.Model;
+using IDMS.StoringOrder.Model.DTOs;
+using IDMS.StoringOrder.GqlTypes.Repo;
+using Microsoft.EntityFrameworkCore;
+using HotChocolate.Types;
+using IDMS.StoringOrder.Model.Domain;
+using Microsoft.AspNetCore.Http;
+
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     public class QueryType
     {
         private readonly IDBAccess _dbAccess;
+        //private readonly SORepository _sORepository;
 
         public QueryType([Service] IDBAccess dBAccess)
         {
             _dbAccess = dBAccess;
+            //_sORepository = sORepository;
         }
 
-        public async Task<List<StoringOder>> QueryAllStoringOrders()
+        [UsePaging]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<SO_type> QueryAllStoringOrders(SODbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
-            var orders = await _dbAccess.GetAllDataAsync<StoringOder>("storing_order");
-            return orders.ToList();
-        }
+            var result = context.storing_order
+                 .Include(so => so.storing_order_tank)
+                 .Include(so => so.customer_company);
 
-        public async Task<StoringOder> QueryStoringOrder(string soNo)
-        {
-            var order = await _dbAccess.GetDataByIdAsync<StoringOder>(soNo, "storing_order");
-            if (order == null)
+            if(result != null)
             {
-                throw new GraphQLException(new Error("storing order not found", "NOT_FOUND"));
+                return result;
             }
-            return order;
+            
+            return null;
         }
 
-        /// <summary>
-        /// This is actual db access function
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        //public async Task<List<Person>> GetAllPersons()
-        //{
-        //    var persons = await _dbAccess.GetAllDataAsync();
-        //    return persons.ToList();
-        //}
 
-        //public async Task<Person> GetPersonById(int id)
-        //{
-        //    var persons = await _dbAccess.GetDataByIdAsync(id);
-        //    if (persons == null)
-        //    {
-        //        throw new GraphQLException(new Error("person not found", "NOT_FOUND"));
-        //    }
-        //    return persons;
-        //}
-
-        /// <summary>
-        /// This is dummy data test function
-        /// </summary>
-        /// <returns></returns>
-        public Book AllBooks()
+        //[UseDbContext(typeof(SODbContext))]
+        public async Task<SO_type> GetCourseByIdAsync(string id, SODbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
-            return new Book
+            try
             {
-                Title = "C# in depth.",
-                Author = new Author
+                var courseDTO = context.storing_order
+                    .Include(so => so.storing_order_tank)
+                    .Include(so => so.customer_company)
+                    .FirstOrDefaultAsync(c => c.guid == id).Result;
+
+                //var courseDTO = await context.storing_order.FindAsync(id);
+
+                if (courseDTO == null)
                 {
-                    Name = "Jon Skeet"
+                    return null;
                 }
-            };
+
+                return courseDTO;
+            }
+            catch
+            {
+                throw;
+            }
+
+            //return new CourseType()
+            //{
+            //    Id = courseDTO.Id,
+            //    Name = courseDTO.Name,
+            //    Subject = courseDTO.Subject,
+            //    InstructorId = courseDTO.InstructorId,
+            //    CreatorId = courseDTO.CreatorId
+            //};
         }
 
-        /// <summary>
-        /// This is dummy data test function
-        /// </summary>
-        /// <returns></returns>
-        public Cake GiveMeCakes()
+
+        //[UseDbContext(typeof(SODbContext))]
+        //public IQueryable<StoringOrdersDTO> GetCourses([ScopedService] SODbContext context)
+        //{
+
+        //    context.StoringOrders.G
+
+        //    return context.StoringOrders.Select(c => new StoringOrdersDTO()
+        //    {
+        //         g
+
+
+        //    });
+        //}
+
+
+        //public async Task<List<CodeValues>> QueryCodeValues(CodeValues codeValues)
+        //{
+
+        //    List<CodeValues> codeValuesList = new List<CodeValues>();
+        //    return codeValuesList;
+        //    //Query code value table and return as a list
+
+        //}
+
+
+
+        //public async Task<StoringOder> QueryStoringOrderById(StoringOder so)
+        //{
+        //    var guid = so.guid;
+
+        //    //var order = await _dbAccess.GetDataByIdAsync<StoringOder>(soNo, "storing_order");
+        //    //if (order == null)
+        //    //{
+        //    //    throw new GraphQLException(new Error("storing order not found", "NOT_FOUND"));
+        //    //}
+        //    //return order;
+        //    return null;
+        //}
+
+        //public async Task<List<StoringOrderTank>> QueryStoringOrderTankBySOId(StoringOrderTank sot)
+        //{
+        //    var guid = sot.so_guid;
+        //    //Select Storing Ordrt Tank table n join  tarif cleaning table
+        //    //var order = await _dbAccess.GetDataByIdAsync<StoringOder>(soNo, "storing_order");
+        //    //if (order == null)
+        //    //{
+        //    //    throw new GraphQLException(new Error("storing order not found", "NOT_FOUND"));
+        //    //}
+        //    //return order;
+        //    return null;
+        //}
+
+
+        ///// <summary>
+        ///// This is dummy data test function
+        ///// </summary>
+        ///// <returns></returns>
+        //public Book AllBooks()
+        //{
+        //    return new Book
+        //    {
+        //        Title = "C# in depth.",
+        //        Author = new Author
+        //        {
+        //            Name = "Jon Skeet"
+        //        }
+        //    };
+        //}
+
+        ///// <summary>
+        ///// This is dummy data test function
+        ///// </summary>
+        ///// <returns></returns>
+        //public Cake GiveMeCakes()
+        //{
+        //    return new Cake
+        //    {
+        //        Description = "This is new cake for the month",
+        //        Id = 001,
+        //        Name = "April Cake",
+        //        Price = 12
+        //    };
+        //}
+
+        public Cake GetMeCakes()
         {
             return new Cake
             {
                 Description = "This is new cake for the month",
                 Id = 001,
-                Name = "April Cake",
+                Name = "April Cake dkljflksd",
                 Price = 12
             };
         }

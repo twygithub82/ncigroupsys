@@ -1,11 +1,11 @@
 ﻿using CommonUtil.Core.Service;
-using IDMS.StoringOrder.Model;
 using HotChocolate;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using IDMS.DBAccess.Interface;
+using IDMS.StoringOrder.Model.Domain;
 
 namespace IDMS.DBAccess
 {
@@ -49,16 +49,14 @@ namespace IDMS.DBAccess
             return 0;
         }
 
-        public async Task<int> UpdateDataAsync<T>(T data, string tableName)
+        public async Task<int> UpdateDataAsync<T>(SO_type so, List<storing_order_tank_type> soTanks)
         {
-            //stupid thing here
-            StoringOder so = data as StoringOder;
 
             string updateby = "edmund";
+            long updateDT = DateTime.Now.ToEpochTime();
 
-            long curDT = DateTime.Now.ToEpochTime();
-            string sqlStatement = $"UPDATE idms.{tableName} SET so_notes = '{so.so_notes}', haulier = '{so.haulier}'" +   
-                $"update_dt = {curDT}, update_by = '{updateby}' WHERE guid = '{so.guid}'";
+            string sqlStatement = $"UPDATE idms.storing_order SET so_notes = '{so.so_notes}', haulier = '{so.haulier}'" +   
+                $"update_dt = {updateDT}, update_by = '{updateby}' WHERE guid = '{so.guid}'";
 
             string urlApi_querydata = $"{_config["DBService:nonQueryUrl"]}";
             var (status, result) = await Util.RestCallAsync(urlApi_querydata, HttpMethod.Post, JsonConvert.SerializeObject(sqlStatement));
@@ -139,24 +137,24 @@ namespace IDMS.DBAccess
             return resultList;
         }
 
-        public async Task<T> GetDataByIdAsync<T>(string soNo, string tableName)
-        {
-            string sqlStatement = $"SELECT * FROM idms.{tableName} WHERE so_no = '{soNo}'";
-            string urlApi_querydata = $"{_config["DBService:queryUrl"]}{EncodeUrl(sqlStatement)}";
-            var (status, result) = await Util.RestCallAsync(urlApi_querydata, HttpMethod.Get);
+        //public async Task<StoringOder> GetDataByIdAsync(string soNo, string tableName)
+        //{
+        //    string sqlStatement = $"SELECT * FROM idms.{tableName} WHERE so_no = '{soNo}'";
+        //    string urlApi_querydata = $"{_config["DBService:queryUrl"]}";
+        //    var (status, result) = await Util.RestCallAsync(urlApi_querydata, HttpMethod.Post, JsonConvert.SerializeObject(sqlStatement));
 
-            if (status == HttpStatusCode.OK)
-            {
-                var resultContent = $"{result}";
-                var resultJtoken = JObject.Parse(resultContent);
-                var ret = resultJtoken["result"];
-                if (ret != null)
-                {
-                    return ret.ToObject<List<T>>().FirstOrDefault();
-                }
-            }
-            return default(T);
-        }
+        //    if (status == HttpStatusCode.OK)
+        //    {
+        //        var resultContent = $"{result}";
+        //        var resultJtoken = JObject.Parse(resultContent);
+        //        var ret = resultJtoken["result"];
+        //        if (ret != null)
+        //        {
+        //            return ret.ToObject<List>;
+        //        }
+        //    }
+        //    return ;
+        //}
 
         //public async Task<Person> GetDataByIdAsync(int id)
         //{
@@ -244,5 +242,14 @@ namespace IDMS.DBAccess
             return sqlStatement_encoded;
         }
 
+        public Task<int> InsertDataAsync(SO_type so, List<storing_order_tank_type> soTanks)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> UpdateDataAsync(SO_type so, List<storing_order_tank_type> soTanks)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

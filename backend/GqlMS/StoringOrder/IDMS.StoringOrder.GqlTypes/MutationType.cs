@@ -1,11 +1,13 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate;
 using HotChocolate.Subscriptions;
-using IDMS.StoringOrder.Model;
 using IDMS.DBAccess.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
+using IDMS.StoringOrder.GqlTypes.Repo;
+using IDMS.StoringOrder.Model.Domain;
+using HotChocolate.Execution.Processing;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
@@ -16,25 +18,91 @@ namespace IDMS.StoringOrder.GqlTypes
 
         public MutationType(IDBAccess dBAccess)
         {
-            //cakes = new List<Cake>();
             _dbAccess = dBAccess;
         }
 
-        public async Task<StoringOder> UpdateStoringOrder(StoringOder newSO, [Service] ITopicEventSender topicEventSender)
+        public async Task<storing_order> CreateStoringOrder(SO_type so, List<SO_type> soTanks)
         {
-            if (await _dbAccess.UpdateDataAsync<StoringOder>(newSO, "storing_order") >= 1)
+            string userId = ;
+
+            CourseDTO courseDTO = new CourseDTO()
             {
-                string topicName = $"{nameof(SubscriptionType.SOUpdated)}";
-                await topicEventSender.SendAsync(topicName, newSO);
-                return newSO;
-            }
-            else
+                Name = courseInput.Name,
+                Subject = courseInput.Subject,
+                InstructorId = courseInput.InstructorId,
+                CreatorId = userId
+            };
+
+            courseDTO = await _coursesRepository.Create(courseDTO);
+
+            CourseResult course = new CourseResult()
             {
-                throw new GraphQLException(new Error("storing_order not found", "UPDATE FAIL"));
-            }
+                Id = courseDTO.Id,
+                Name = courseDTO.Name,
+                Subject = courseDTO.Subject,
+                InstructorId = courseDTO.InstructorId
+            };
+
+            await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+
+            return course;
         }
 
-        public async Task<StoringOder> DeleteStoringOrder(StoringOder deleteSO, [Service] ITopicEventSender sender)
+        public async Task<SO_type> UpdateStoringOrder(SO_type so, SODbContext context, [Service] ITopicEventSender topicEventSender)
+        {
+
+            //if updateSO have guid then i need call update command
+
+            //id updateSO dont have guid i need to call insert command
+
+            //for soTanks, if have guid and delete_dt > 1 need to call update (soft delete)
+
+
+            //if (await _dbAccess.UpdateDataAsync<StoringOder>(updateSO, "storing_order") >= 1)
+            //{
+            //    string topicName = $"{nameof(SubscriptionType.SOUpdated)}";
+            //    await topicEventSender.SendAsync(topicName, updateSO);
+            //    return updateSO;
+            //}
+            //else
+            //{
+            //    throw new GraphQLException(new Error("storing_order not found", "UPDATE FAIL"));
+            //}
+
+            await Task.Delay(1);
+            return null;
+        }
+
+
+        //public async Task<storing_order> UpdateStoringOrder(storing_order updateSO, List<storing_order_tank> soTanks, bool forCancel, [Service] ITopicEventSender topicEventSender)
+        //{
+
+        //    //if updateSO have guid then i need call update command
+
+        //    //id updateSO dont have guid i need to call insert command
+
+        //    //for soTanks, if have guid and delete_dt > 1 need to call update (soft delete)
+
+
+        //    //if (await _dbAccess.UpdateDataAsync<StoringOder>(updateSO, "storing_order") >= 1)
+        //    //{
+        //    //    string topicName = $"{nameof(SubscriptionType.SOUpdated)}";
+        //    //    await topicEventSender.SendAsync(topicName, updateSO);
+        //    //    return updateSO;
+        //    //}
+        //    //else
+        //    //{
+        //    //    throw new GraphQLException(new Error("storing_order not found", "UPDATE FAIL"));
+        //    //}
+
+        //    await Task.Delay(1);
+        //    return null;
+        //}
+
+
+
+
+        public async Task<SO_type> DeleteStoringOrder(SO_type deleteSO, [Service] ITopicEventSender sender)
         {
 
             if (await _dbAccess.DeleteDataAsync(deleteSO.guid, "storing_order") >= 1)
