@@ -454,7 +454,6 @@ DROP TABLE IF EXISTS `customer_company`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customer_company` (
   `guid` varchar(36) NOT NULL,
-  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
   `code` varchar(10) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
@@ -477,9 +476,8 @@ CREATE TABLE `customer_company` (
   `create_by` varchar(45) DEFAULT NULL,
   `update_by` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`guid`),
-  UNIQUE KEY `guid_UNIQUE` (`guid`),
-  UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `guid_UNIQUE` (`guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

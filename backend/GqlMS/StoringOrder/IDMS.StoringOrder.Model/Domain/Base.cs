@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CommonUtil.Core.Service;
 
-namespace IDMS.StoringOrder.Model
+namespace IDMS.StoringOrder.Model.Domain
 {
     public class Base
     {

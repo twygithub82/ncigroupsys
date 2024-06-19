@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace IDMS.StoringOrder.Model.Domain
 {
-    public class SO_type : Base
+    public class SOType : Base
     {
         public string guid { get; set; }
 
-        public string? contact_person_guid { get; set; }
+        public string? contact_person { get; set; }
 
         public int? status { get; set; }
 

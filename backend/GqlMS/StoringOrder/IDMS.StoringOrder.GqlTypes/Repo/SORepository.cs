@@ -14,24 +14,37 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
             _contextFactory = contextFactory;
         }
 
-        public async Task<IEnumerable<SO_type>> GetAll()
+        public async Task<IEnumerable<storing_order>> GetAll()
         {
             using (SODbContext context = _contextFactory.CreateDbContext())
             {
-                var ret = await context.storing_order.ToListAsync();
-
+                var ret = await context.storing_order
+                    .Include(so=>so.storing_order_tank)
+                    .Include(so=> so.customer_company)
+                    .ToListAsync();
                 return ret;
-                //return await context.StoringOrders.ToListAsync();
             }
         }
 
-        public async Task<SO_type> GetById(string soId)
+
+        public async Task<storing_order> Create(storing_order so)
         {
             using (SODbContext context = _contextFactory.CreateDbContext())
             {
-                return await context.storing_order.FirstOrDefaultAsync(c => c.guid == soId);
+                context.storing_order.Add(so);
+                await context.SaveChangesAsync();
+
+                return so;
             }
         }
+
+        //public async Task<SO_type> GetById(string soId)
+        //{
+        //    using (SODbContext context = _contextFactory.CreateDbContext())
+        //    {
+        //        return await context.storing_order.FirstOrDefaultAsync(c => c.guid == soId);
+        //    }
+        //}
 
         //public async Task<StoringOrdersDTO> Create(StoringOrdersDTO course)
         //{

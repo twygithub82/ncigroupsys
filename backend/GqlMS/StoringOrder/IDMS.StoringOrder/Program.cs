@@ -8,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using IDMS.StoringOrder.GqlTypes.Repo;
 using HotChocolate.Data;
+using AutoMapper;
+using IDMS.StoringOrder.Model.Type;
+using IDMS.StoringOrder.Model.Domain;
 
 namespace IDMS.StoringOrder.Application
 {
@@ -28,6 +31,16 @@ namespace IDMS.StoringOrder.Application
             string connectionString = builder.Configuration.GetConnectionString("default");
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddDbContext<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+
+
+            var mappingConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<SOTType, storing_order_tank>();
+                cfg.CreateMap<SOType, storing_order>();
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
 
             //builder.Services.AddDbContext<ApplicationDbContext>(
             //        options => options.UseSqlServer("YOUR_CONNECTION_STRING"));

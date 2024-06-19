@@ -10,25 +10,25 @@ namespace IDMS.StoringOrder.GqlTypes
     public class SubscriptionType
     {
         [Subscribe]
-        public SO_type SOCreated([EventMessage] SO_type result)
+        public SOType SOCreated([EventMessage] SOType result)
         {
             return result;
         }
 
         [Subscribe]
-        public SO_type SOUpdated([EventMessage] SO_type result)
+        public SOType SOUpdated([EventMessage] SOType result)
         {
             return result;
         }
 
 
-        //Old method, going to obsolette
-        [SubscribeAndResolve]
-        public async ValueTask<ISourceStream<CakeUpdateResult>> CakeUpdated(int id, [Service] ITopicEventReceiver topicEventReceiver)
-        {
-            string topicName = $"{id}_CakeUpdated";
-            return await topicEventReceiver.SubscribeAsync<CakeUpdateResult>(topicName);
-        }
+        ////Old method, going to obsolette
+        //[SubscribeAndResolve]
+        //public async ValueTask<ISourceStream<CakeUpdateResult>> CakeUpdated(int id, [Service] ITopicEventReceiver topicEventReceiver)
+        //{
+        //    string topicName = $"{id}_CakeUpdated";
+        //    return await topicEventReceiver.SubscribeAsync<CakeUpdateResult>(topicName);
+        //}
 
         /// <summary>
         /// Still need to work on this, not working yet

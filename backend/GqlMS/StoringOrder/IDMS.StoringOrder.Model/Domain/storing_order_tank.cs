@@ -5,13 +5,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace IDMS.StoringOrder.Model.Domain
 {
     public class storing_order_tank : Base
     {
+        [Key]
         public string? guid { get; set; }
-
         public string? unit_type_guid { get; set; }
         public string? tank_no { get; set; }
         public string? last_cargo_guid { get; set; }

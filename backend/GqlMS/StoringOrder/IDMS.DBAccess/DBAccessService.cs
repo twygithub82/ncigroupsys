@@ -49,7 +49,7 @@ namespace IDMS.DBAccess
             return 0;
         }
 
-        public async Task<int> UpdateDataAsync<T>(SO_type so, List<storing_order_tank_type> soTanks)
+        public async Task<int> UpdateDataAsync<T>(SOType so, List<storing_order_tank> soTanks)
         {
 
             string updateby = "edmund";
@@ -242,12 +242,12 @@ namespace IDMS.DBAccess
             return sqlStatement_encoded;
         }
 
-        public Task<int> InsertDataAsync(SO_type so, List<storing_order_tank_type> soTanks)
+        public Task<int> InsertDataAsync(SOType so, List<storing_order_tank> soTanks)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> UpdateDataAsync(SO_type so, List<storing_order_tank_type> soTanks)
+        public Task<int> UpdateDataAsync(SOType so, List<storing_order_tank> soTanks)
         {
             throw new NotImplementedException();
         }

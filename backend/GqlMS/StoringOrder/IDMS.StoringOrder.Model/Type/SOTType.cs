@@ -5,10 +5,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IDMS.StoringOrder.Model.Domain;
 
 namespace IDMS.StoringOrder.Model.Type
 {
-    public class SOT_type : Base
+    public class SOTType : Base
     {
         public string? guid { get; set; }
         public string? so_guid { get; set; }

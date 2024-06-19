@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,10 @@ namespace IDMS.StoringOrder.Model.Domain
 {
     public class storing_order : Base
     {
+        [Key]
         public string guid { get; set; }
 
-        public string? contact_person_guid { get; set; }
+        public string? contact_person { get; set; }
 
         public int? status { get; set; }
 

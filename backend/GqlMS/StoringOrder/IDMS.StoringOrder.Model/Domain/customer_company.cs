@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -9,6 +10,7 @@ namespace IDMS.StoringOrder.Model.Domain
 {
     public class customer_company : Base
     {
+        [Key]
         public string? guid { get; set; }
         public string name { get; set; }
         public string code { get; set; }
@@ -27,8 +29,10 @@ namespace IDMS.StoringOrder.Model.Domain
         public string website { get; set; }
         public string currency { get; set; }
         public string default_profile { get; set; }
-        public string person_in_charge { get; set; }
+        //public string person_in_charge { get; set; }
 
         public IEnumerable<storing_order>? storing_orders { get; set; }
+
+        public IEnumerable<customer_company_contact_person>? cc_contact_person { get; set; }
     }
 }
