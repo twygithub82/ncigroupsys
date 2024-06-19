@@ -1,19 +1,36 @@
 using IDMS.InGate.Class;
+using IDMS.InGate.DB;
 using IDMS.InGate.GqlTypes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args); builder.Services.AddHttpContextAccessor();
 
 var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
 var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
-var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
+var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration.GetConnectionString("DefaultConnection"));
+builder.Services.AddDbContextPool<ApplicationDBContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+ new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
+
+);
+//builder.Services.AddPooledDbContextFactory<ApplicationDBContext>(options =>
+//    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+// new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
+
+//);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
                 .AddAuthorization()
                .AddQueryType<InGate_QueryType>()
-               .AddMutationType<InGate_MutationType>();
+               .AddMutationType<InGate_MutationType>()
+               .AddFiltering()
+               .AddSorting();
+
+// .AddMutationType<InGate_MutationType>();
 
 
 
@@ -39,29 +56,6 @@ builder.Services.AddAuthentication(options => {
               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_secretKey))
           };
       });
-
-//builder.Services.AddAuthentication(options => {
-
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-
-//})
-//      .AddJwtBearer(options =>
-//      {
-
-//          options.SaveToken = true;
-//          options.RequireHttpsMetadata = false;
-//          options.TokenValidationParameters = new TokenValidationParameters
-//          {
-//              ValidateIssuer = true,
-//              ValidateAudience = true,
-//              ValidAudience = JWT_validAudience,
-//              ValidIssuer = JWT_validIssuer,
-//              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_secretKey))
-//          };
-//      });
-
 
 
 var app = builder.Build();
