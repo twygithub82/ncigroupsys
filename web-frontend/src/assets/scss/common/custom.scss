@@ -321,5 +321,18 @@
 .label-container {
   display: flex;
   align-items: center;
-  height: 30px; /* Adjust the height as needed */
+  height: 30px;
+  /* Adjust the height as needed */
+}
+
+.dialog-container-xl {
+  margin: 0 auto;
+  /* Center horizontally */
+  margin-top: 5vh;
+  /* Add vertical margins */
+  margin-bottom: 5vh;
+  max-width: 90%;
+  /* Ensure it doesn't exceed the screen width */
+  box-sizing: border-box;
+  /* Include padding and border in the element's total width and height */
 }

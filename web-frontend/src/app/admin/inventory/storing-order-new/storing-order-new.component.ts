@@ -27,6 +27,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
+import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { fromEvent } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -36,6 +37,7 @@ import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -68,7 +70,8 @@ import { StoringOrderService } from 'app/services/storing-order.service';
     MatPaginatorModule,
     FeatherIconsComponent,
     MatProgressSpinnerModule,
-    RouterLink
+    RouterLink,
+    MatRadioModule
   ]
 })
 export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -93,35 +96,37 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
   ]
 
-  NEW = 'COMMON-FORM.NEW'
-  HEADER = 'COMMON-FORM.HEADER'
-  CUSTOMER_CODE = 'COMMON-FORM.CUSTOMER-CODE'
-  SO_NO = 'COMMON-FORM.SO-NO'
-  CONTACT_PERSON = 'COMMON-FORM.CONTACT-PERSON'
-  SO_NOTES = 'COMMON-FORM.SO-NOTES'
-  HAULIER = 'COMMON-FORM.HAULIER'
-  ORDER_DETAILS = 'COMMON-FORM.ORDER-DETAILS'
-  UNIT_TYPE = 'COMMON-FORM.UNIT-TYPE'
-  TANK_NO = 'COMMON-FORM.TANK-NO'
-  PURPOSE = 'COMMON-FORM.PURPOSE'
-  STORAGE = 'COMMON-FORM.STORAGE'
-  STEAM = 'COMMON-FORM.STEAM'
-  CLEANING = 'COMMON-FORM.CLEANING'
-  REPAIR = 'COMMON-FORM.REPAIR'
-  LAST_CARGO = 'COMMON-FORM.LAST-CARGO'
-  CLEAN_STATUS = 'COMMON-FORM.CLEAN-STATUS'
-  CERTIFICATE = 'COMMON-FORM.CERTIFICATE'
-  REQUIRED_TEMP = 'COMMON-FORM.REQUIRED-TEMP'
-  FLASH_POINT = 'COMMON-FORM.FLASH-POINT'
-  JOB_NO = 'COMMON-FORM.JOB-NO'
-  ETA_DATE = 'COMMON-FORM.ETA-DATE'
-  REMARKS = 'COMMON-FORM.REMARKS'
-  ETR_DATE = 'COMMON-FORM.ETR-DATE'
-  ST = 'COMMON-FORM.ST'
-  O2_LEVEL = 'COMMON-FORM.O2-LEVEL'
-  OPEN_ON_GATE = 'COMMON-FORM.OPEN-ON-GATE'
-  SO_REQUIRED = 'COMMON-FORM.IS-REQUIRED'
-  STATUS = 'COMMON-FORM.STATUS'
+  langText = {
+    NEW: 'COMMON-FORM.NEW',
+    HEADER: 'COMMON-FORM.HEADER',
+    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    SO_NO: 'COMMON-FORM.SO-NO',
+    CONTACT_PERSON: 'COMMON-FORM.CONTACT-PERSON',
+    SO_NOTES: 'COMMON-FORM.SO-NOTES',
+    HAULIER: 'COMMON-FORM.HAULIER',
+    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
+    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
+    TANK_NO: 'COMMON-FORM.TANK-NO',
+    PURPOSE: 'COMMON-FORM.PURPOSE',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    STEAM: 'COMMON-FORM.STEAM',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    REPAIR: 'COMMON-FORM.REPAIR',
+    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
+    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
+    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    JOB_NO: 'COMMON-FORM.JOB-NO',
+    ETA_DATE: 'COMMON-FORM.ETA-DATE',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    ETR_DATE: 'COMMON-FORM.ETR-DATE',
+    ST: 'COMMON-FORM.ST',
+    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
+    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    STATUS: 'COMMON-FORM.STATUS'
+  }
 
   unit_typeList: string[] = [
     'IMO1',
@@ -237,15 +242,23 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     } else {
       tempDirection = 'ltr';
     }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: row,
-    //     action: 'edit',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    // });
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      data: {
+        item: row,
+        action: 'edit',
+        langText: this.langText,
+        populateData: {
+          unit_typeList: this.unit_typeList,
+          repairList: this.repairList,
+          clean_statusList: this.clean_statusList,
+          certificateList: this.certificateList
+        }
+      },
+      direction: tempDirection,
+      panelClass: 'dialog-container-xl',
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
   }
   deleteItem(row: StoringOrderTankItem, index: number) {
     //this.id = row.id;
@@ -257,12 +270,12 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
       data: row,
-      direction: tempDirection,
+      direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result === 'confirmed') {
         if (row.guid) {
-
+          // TODO :: update delete dt
         } else {
           const data = this.dataSourceDemo.data;
           data.splice(index, 1);
@@ -312,7 +325,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       var sot: StoringOrderTankItem = {
         guid: '',
         so_guid: '',
-        unit_type_guid: '',
+        unit_type_guid: this.sotForm.value['unit_type'],
         tank_no: this.sotForm.value['tank_no'],
         last_cargo_guid: this.sotForm.value['last_cargo'],
         job_no: this.sotForm.value['job_no'],
@@ -321,7 +334,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         purpose_steam: this.sotForm.value['purpose_steam'],
         purpose_cleaning: this.sotForm.value['purpose_cleaning'],
         repair: this.sotForm.value['repair'],
-        cleaan_status: this.sotForm.value['cleaan_status'],
+        clean_status: this.sotForm.value['clean_status'],
         certificate: this.sotForm.value['certificate'],
         required_temp: this.sotForm.value['required_temp'],
         remarks: this.sotForm.value['remarks'],
