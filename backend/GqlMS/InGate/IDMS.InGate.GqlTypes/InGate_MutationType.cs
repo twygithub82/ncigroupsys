@@ -14,9 +14,9 @@ namespace IDMS.InGate.GqlTypes
     public class InGate_MutationType
     {
        //[Authorize]
-        public async Task<EntityClass_InGate> AddInGate([Service] ApplicationDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,EntityClass_InGate InGate)
+        public async Task<int> AddInGate([Service] ApplicationDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,EntityClass_InGate InGate)
         {
-            EntityClass_InGate retval = new();   
+            int retval = 0;   
             try
             {
                 
@@ -42,8 +42,8 @@ namespace IDMS.InGate.GqlTypes
                 };
 
                 context.in_gate.Add(newInGate);
-                context.SaveChanges();
-                retval = InGate;
+                retval= context.SaveChanges();
+                
                 //var guid = Util.GenerateGUID();
                 //InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
                 //var command = @$"Insert into in_gate (guid,so_tank_guid,eir_no,eir_dt,vehicle_no,yard_guid,driver_name,LOLO,preinspection,haulier,create_dt,create_by)
@@ -68,9 +68,9 @@ namespace IDMS.InGate.GqlTypes
         }
 
         //[Authorize]
-        public async Task<EntityClass_InGateWithTank> UpdateInGate([Service] ApplicationDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, EntityClass_InGateWithTank InGate)
+        public async Task<int> UpdateInGate([Service] ApplicationDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, EntityClass_InGateWithTank InGate)
         {
-            EntityClass_InGateWithTank retval = new();
+            int retval = 0;
             try
             {
                 if (InGate != null)
@@ -80,8 +80,8 @@ namespace IDMS.InGate.GqlTypes
                     InGate.update_by = uid;
                     InGate.update_dt=epochNow;
                     context.in_gate.Update(InGate);
-                    context.SaveChanges(true);
-                    retval = InGate;
+                    retval= context.SaveChanges(true);
+                   // retval = InGate;
                 }
                 //long epochNow = GqlUtils.GetNowEpochInSec();
                 //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
@@ -141,10 +141,10 @@ namespace IDMS.InGate.GqlTypes
             return retval;
         }
 
-        public async Task<EntityClass_Result> DeleteInGate([Service] ApplicationDBContext context, [Service] IConfiguration config, 
+        public async Task<int> DeleteInGate([Service] ApplicationDBContext context, [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
         {
-            EntityClass_Result retval = new EntityClass_Result();
+            int retval =0;
             try
             {
 
@@ -158,7 +158,7 @@ namespace IDMS.InGate.GqlTypes
                     delInGate.update_by=uid;
                     delInGate.update_dt=epochNow;
                     context.in_gate.Update(delInGate);
-                    retval.result=context.SaveChanges(true);
+                    retval = context.SaveChanges(true);
                 }
 
                 //long epochNow = GqlUtils.GetNowEpochInSec();
