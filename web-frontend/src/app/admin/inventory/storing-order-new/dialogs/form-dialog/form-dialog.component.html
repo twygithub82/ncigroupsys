@@ -1,0 +1,197 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        {{dialogTitle}}
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    <form class="register-form m-4" [formGroup]="storingOrderTankForm" (ngSubmit)="submit">
+      <div class="row">
+        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.UNIT_TYPE | translate}}</mat-label>
+                <mat-select formControlName="unit_type" required>
+                  @for (option of data.populateData.unit_typeList; track option) {
+                  <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.TANK_NO | translate}}</mat-label>
+                <input matInput formControlName="tank_no" required>
+                @if (storingOrderTankForm.get('tank_no')?.hasError('required')) {
+                <mat-error>
+                  {{data.langText.TANK_NO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.LAST_CARGO | translate}}</mat-label>
+                <input matInput formControlName="last_cargo" required>
+                @if (storingOrderTankForm.get('last_cargo')?.hasError('required')) {
+                <mat-error>
+                  {{data.langText.LAST_CARGO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.JOB_NO | translate}}</mat-label>
+                <input matInput formControlName="job_no">
+                @if (storingOrderTankForm.get('job_no')?.hasError('required')) {
+                <mat-error>
+                  {{data.langText.JOB_NO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.ETA_DATE | translate}}</mat-label>
+                <input matInput formControlName="eta_date" [matDatepicker]="eta_date">
+                <mat-datepicker-toggle matSuffix [for]="eta_date"></mat-datepicker-toggle>
+                <mat-datepicker #eta_date></mat-datepicker>
+                @if (storingOrderTankForm.get('eta_date')?.hasError('required')) {
+                <mat-error>
+                  {{data.langText.ETA_DATE | translate}} {{data.langText.SO_REQUIRED | translate}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-0">
+          <div class="row">
+            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-1">
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+                  <small class="m-b-0 font-bold">{{data.langText.PURPOSE | translate}}</small>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+                  <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
+                    {{data.langText.STORAGE | translate}}
+                  </mat-checkbox>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+                  <mat-checkbox formControlName="purpose_steam" class="m-r-5" color="primary">
+                    {{data.langText.STEAM | translate}}
+                  </mat-checkbox>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+                  <mat-checkbox formControlName="purpose_cleaning" class="m-r-5" color="primary">
+                    {{data.langText.CLEANING | translate}}
+                  </mat-checkbox>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.REPAIR | translate}}</mat-label>
+                <mat-select formControlName="repair" required>
+                  @for (option of data.populateData.repairList; track option) {
+                  <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.CLEAN_STATUS | translate}}</mat-label>
+                <mat-select formControlName="clean_status">
+                  @for (option of data.populateData.clean_statusList; track option) {
+                  <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.CERTIFICATE | translate}}</mat-label>
+                <mat-select formControlName="certificate">
+                  @for (option of data.populateData.certificateList; track option) {
+                  <mat-option [value]="option">{{option}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.REQUIRED_TEMP | translate}}</mat-label>
+                <input matInput formControlName="required_temp" type="number">
+                <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1 p-t-20">
+              <h6>{{data.langText.FLASH_POINT | translate}}: -20&deg;C</h6>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
+                <input matInput formControlName="remarks">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-1">
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.ETR_DATE | translate}}</mat-label>
+                <input matInput formControlName="etr_date" [matDatepicker]="etr_date">
+                <mat-datepicker-toggle matSuffix [for]="etr_date"></mat-datepicker-toggle>
+                <mat-datepicker #etr_date></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
+              <mat-checkbox formControlName="st" color="primary">
+                {{data.langText.ST | translate}}
+              </mat-checkbox>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
+              <mat-checkbox formControlName="o2_level" color="primary">
+                {{data.langText.O2_LEVEL | translate}}
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-1">
+          <label class="font-bold">{{data.langText.OPEN_ON_GATE | translate}}:</label>
+          <mat-radio-group formControlName="open_on_gate" required>
+            @for (option of data.populateData.certificateList; track option) {
+            <mat-radio-button [value]="option" color="primary">{{option}}</mat-radio-button>
+            }
+          </mat-radio-group>
+          @if (storingOrderTankForm.get('open_on_gate')?.hasError('required')) {
+          <mat-error>
+            {{data.langText.ETR_DATE | translate}} {{data.langText.SO_REQUIRED | translate}}
+          </mat-error>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
