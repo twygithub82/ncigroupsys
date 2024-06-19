@@ -11,9 +11,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 export class StoringOrderService extends UnsubscribeOnDestroyAdapter {
   private readonly API_URL = 'assets/data/advanceTable.json';
   isTblLoading = true;
-  dataChange: BehaviorSubject<StoringOrderTankItem[]> = new BehaviorSubject<
-  StoringOrderTankItem[]
-  >([]);
+  dataChange: BehaviorSubject<StoringOrderTankItem[]> = new BehaviorSubject<StoringOrderTankItem[]>([]);
   // Temporarily stores data from dialogs
   dialogData!: StoringOrderTankItem;
   constructor(private httpClient: HttpClient) {

@@ -54,10 +54,10 @@ export const appConfig: ApplicationConfig = {
       provide: MAT_DATE_FORMATS,
       useValue: {
         parse: {
-          dateInput: 'YYYY-MM-DD',
+          dateInput: 'DD/MM/YYYY',
         },
         display: {
-          dateInput: 'YYYY-MM-DD',
+          dateInput: 'DD/MM/YYYY',
           monthYearLabel: 'YYYY MMM',
           dateA11yLabel: 'LL',
           monthYearA11yLabel: 'YYYY MMM',

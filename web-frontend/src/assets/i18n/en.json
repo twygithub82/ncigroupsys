@@ -170,7 +170,9 @@
     "ST": "ST",
     "O2-LEVEL": "O2 Level",
     "OPEN-ON-GATE": "Open On Gate",
-    "REPAIR": "Repair"
+    "REPAIR": "Repair",
+    "UPDATE": "Update",
+    "CANCEL": "Cancel"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

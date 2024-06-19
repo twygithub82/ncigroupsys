@@ -5,8 +5,6 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { StoringOrderService } from 'app/services/storing-order.service';
 
 export class StoringOrderTankItem {
   public guid?: string;
@@ -97,7 +95,6 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
   public loading$ = this.loadingSubject.asObservable();
   public totalCount = 0;
   constructor(
-    public exampleDatabase: StoringOrderService,
     public paginator: MatPaginator,
     public _sort: MatSort,
     private apollo: Apollo) {
