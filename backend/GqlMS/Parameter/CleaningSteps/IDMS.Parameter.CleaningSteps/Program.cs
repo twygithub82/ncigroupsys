@@ -3,18 +3,30 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes;
+using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
 var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
-var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
+var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+builder.Services.AddDbContextPool<ApplicationParameterDBContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+ new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
+
+);
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
                 .AddAuthorization()
                .AddQueryType<CleaningSteps_QueryType>()
-               .AddMutationType<CleanningStep_MutationType>();
+               .AddMutationType<CleanningStep_MutationType>()
+               .AddFiltering()
+               .AddProjections()
+               .AddSorting();
 
 
 
