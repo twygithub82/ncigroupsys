@@ -9,6 +9,7 @@
         "JWT_VALIDAUDIENCE": "http://localhost:4200",
         "JWT_VALIDISSUER": "http://localhost:5052"
       },
+      "launchUrl": "graphql",
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5224"
     },
