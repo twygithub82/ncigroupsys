@@ -1,0 +1,4 @@
+"guid";"customer_company_guid";"so_notes";"so_no";"contact_person";"haulier";"status";"remarks";"delete_dt";"create_dt";"create_by";"update_dt";"update_by"
+"1";"2a0fb8df25aa11efac2d74782781fe3e";"note1 test";"SO001";"";"Haulier1 test";0;"a";0;1717860395;"admin";1718750582;"admin"
+"2";"2a0fc22325aa11efac2d74782781fe3e";"Sample notes 3";"SO003";"contact_person_guid_3";"Haulier C";1;"d";0;1717860395;"admin";1717860395;"admin"
+"3";"2a0fc0be25aa11efac2d74782781fe3e";"Sample notes 2";"SO002";"contact_person_guid_2";"Haulier B";0;"s";0;1717860395;"admin";1717860395;"admin"
