@@ -175,7 +175,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 return retCodeValues.Select(c => new CodeValuesType()
                 {
                     Guid = c.Guid,
-                    CodeType = c.CodeType,
+                    CodeValue = c.CodeValue,
                     CodeValType = c.CodeValType,
                     Description= c.Description,
                     ChildCode = c.ChildCode
@@ -200,7 +200,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 return context.code_values.Select(c => new CodeValuesType()
                 {
                     Guid = c.Guid,
-                    CodeType = c.CodeType,
+                    CodeValue = c.CodeValue,
                     CodeValType = c.CodeValType,
                     Description = c.Description,
                     ChildCode = c.ChildCode,
