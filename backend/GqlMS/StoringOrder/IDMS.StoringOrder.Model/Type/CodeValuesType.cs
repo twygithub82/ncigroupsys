@@ -13,7 +13,7 @@ namespace IDMS.StoringOrder.Model.Type
         public string? Guid { get; set; }
         public string? Description { get; set; }
         public string CodeValType { get; set; }
-        public string? CodeType { get; set; }
+        public string? CodeValue { get; set; }
         public string? ChildCode { get; set; }
 
     }

@@ -21,7 +21,7 @@ namespace IDMS.StoringOrder.Model.Domain
         public string CodeValType { get; set; }
 
         [Column("code_val")]
-        public string? CodeType { get; set; }
+        public string? CodeValue { get; set; }
 
         [Column("child_code")]
         public string? ChildCode { get; set; }

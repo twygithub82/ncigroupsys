@@ -1,3 +1,5 @@
+import { formatDate } from "@angular/common";
+
 export class Utility {
     static formatString(template: string, ...values: any[]): string {
         return template.replace(/{(\d+)}/g, (match, index) => {
@@ -19,5 +21,21 @@ export class Utility {
             const v = c === 'x' ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
+    }
+
+    static formatDate(input: string): string {
+        return formatDate(input, 'dd/MM/yyyy', 'en-US')
+    }
+
+    static convertDateToStr(date: Date): string {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    static convertStrToDate(input: string): Date {
+        const [day, month, year] = input.split('/');
+        return new Date(+year, +month - 1, +day);
     }
 }
