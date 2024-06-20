@@ -17,6 +17,7 @@ namespace IDMS.Models.Parameter
         public EntityClass_CleaningProcedureWithSteps? clean_procedure { get; set; }
         
         public string? cleaning_step_guid { get; set; }
+
         public EntityClass_CleaningStep? clean_step { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes
     {
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        [UseProjection]
+       // [UseProjection]
         [UseFiltering()]
         [UseSorting]
         public  IQueryable<EntityClass_CleaningStep> QueryCleaningSteps([Service] ApplicationParameterDBContext context,
@@ -22,7 +22,7 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes
             {
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                query = context.cleaning_steps.Where(i => i.delete_dt == null).Include(s=>s.clean_procedures);
+                query = context.cleaning_steps.Where(i => i.delete_dt == null).Include(s=>s.clean_procedures.Where(cleanPro=>cleanPro.delete_dt==null));
 
 
             }
