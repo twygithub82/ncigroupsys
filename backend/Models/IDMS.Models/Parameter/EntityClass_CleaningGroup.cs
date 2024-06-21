@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace IDMS.Models.Parameter
 {
     
+   
 
     public class EntityClass_CleaningGroup : EntityClass_Dates
     {
@@ -17,6 +18,8 @@ namespace IDMS.Models.Parameter
         public string? group_name { get; set; }
 
         public string? description { get; set; }
+
+        public string? category { get; set; }
 
         public float? minimum_cost { get; set; }
 
