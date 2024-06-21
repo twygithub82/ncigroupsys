@@ -37,8 +37,9 @@ import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
-import { CodeValuesItem } from 'app/data-sources/code_values'
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code_values'
 import { MatRadioModule } from '@angular/material/radio';
+import { Apollo } from 'apollo-angular';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -168,18 +169,20 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   repairCv: CodeValuesItem[] = []
   yesnoCv: CodeValuesItem[] = []
 
-
   // selectedGroup?: CleanGroup;
+  cvDS: CodeValuesDS;
 
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
+    private apollo: Apollo
   ) {
     super();
     this.initSOForm();
     this.initSOTForm();
+    this.cvDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -191,6 +194,13 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.loadData();
   }
   public loadData() {
+    const queries = [
+      { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
+      { alias: 'repairCv', codeValType: 'REPAIR_OPTION'},
+      { alias: 'yesnoCv', codeValType: 'YES_NO'}
+      // Add more as needed
+    ];
+    this.cvDS.getCodeValuesByType(queries);
   }
   initSOForm() {
     this.soForm = this.fb.group({

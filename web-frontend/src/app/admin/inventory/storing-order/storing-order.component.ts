@@ -37,6 +37,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StoringOrderDS } from 'app/data-sources/storing-order';
+import { Apollo } from 'apollo-angular';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -142,13 +144,17 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   id?: number;
   advanceTable?: AdvanceTable;
 
+  sotDS: StoringOrderDS;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     public advanceTableService: AdvanceTableService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private apollo: Apollo
   ) {
     super();
+    this.sotDS = new StoringOrderDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;

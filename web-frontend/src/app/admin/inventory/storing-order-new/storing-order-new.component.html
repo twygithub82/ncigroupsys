@@ -169,7 +169,7 @@
                       <mat-form-field class="example-full-width">
                         <mat-label>{{langText.REPAIR | translate}}</mat-label>
                         <mat-select formControlName="repair">
-                          @for (codeValue of repairCv; track codeValue) {
+                          @for (codeValue of cvDS.connectAlias('repairCv') | async; track codeValue) {
                           <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                           }
                         </mat-select>
@@ -181,7 +181,7 @@
                       <mat-form-field class="example-full-width">
                         <mat-label>{{langText.CLEAN_STATUS | translate}}</mat-label>
                         <mat-select formControlName="clean_status">
-                          @for (codeValue of clean_statusCv; track codeValue) {
+                          @for (codeValue of cvDS.connectAlias('clean_statusCv') | async; track codeValue) {
                           <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                           }
                         </mat-select>
@@ -191,7 +191,7 @@
                       <mat-form-field class="example-full-width">
                         <mat-label>{{langText.CERTIFICATE | translate}}</mat-label>
                         <mat-select formControlName="certificate">
-                          @for (codeValue of yesnoCv; track codeValue) {
+                          @for (codeValue of cvDS.connectAlias('yesnoCv') | async; track codeValue) {
                           <mat-option [value]="codeValue.code_val">{{codeValue.description}}
                           </mat-option>
                           }
@@ -245,7 +245,7 @@
                 <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-1">
                   <label class="font-bold">{{langText.OPEN_ON_GATE | translate}}:</label>
                   <mat-radio-group formControlName="open_on_gate">
-                    @for (codeValue of yesnoCv; track codeValue) {
+                    @for (codeValue of cvDS.connectAlias('yesnoCv') | async; track codeValue) {
                       <mat-radio-button [value]="codeValue.code_val" color="primary">{{codeValue.description}}</mat-radio-button>
                     }
                   </mat-radio-group>
