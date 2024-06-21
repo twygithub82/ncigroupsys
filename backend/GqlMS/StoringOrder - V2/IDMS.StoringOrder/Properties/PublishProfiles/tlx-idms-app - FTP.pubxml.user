@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAczbJMk9j60WbPFV2uQjcNQAAAAACAAAAAAAQZgAAAAEAACAAAABgX7GulDw0qsgGY5lCVTAQVetp7+BOS3I6uoJffDq8cwAAAAAOgAAAAAIAACAAAADwPt1qJq6U7JqM7TYAHUgJOxJoZX1GP6cbr2RzkFYfWIAAAACeZjSRVmyCYGVuhv+ceArXFAaGdLjaEO0JJWvlADbn/HbOjhcmbIkR8cqVR6Oo7mmS+2V2P2ClM4+jqQWW/hZc5WCWBTUYe6f2UpDFu8+b9WLyoK6Z9JdKeaTT/h+r7gwUHwbTWnb8F4uJyCfMm7B+ws8fdhoXoflmnH/P8c3QSUAAAAAJ8Hf0mb1X8Yp8tsQFK/Pc5b9mr6FbjQqcpTzEzHFxfQvo29aDpmKiAO3dtE671Q/z4nThnzqPcqY0Qa6pVk/j</EncryptedPassword>
+    <_PublishTargetUrl>ftps://waws-prod-hk1-015.ftp.azurewebsites.windows.net/site/wwwroot</_PublishTargetUrl>
+    <History>True|2024-06-20T13:12:52.8804475Z||;False|2024-06-20T21:11:30.8980381+08:00||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="appsettings.Development.json">
+      <publishTime>06/20/2024 19:18:08</publishTime>
+    </File>
+    <File Include="appsettings.json">
+      <publishTime>06/09/2024 22:40:24</publishTime>
+    </File>
+    <File Include="AutoMapper.dll">
+      <publishTime>02/08/2024 05:45:30</publishTime>
+    </File>
+    <File Include="BananaCakePop.Middleware.dll">
+      <publishTime>05/10/2024 05:40:24</publishTime>
+    </File>
+    <File Include="CommonUtil.Core.Service.dll">
+      <publishTime>06/08/2024 22:58:10</publishTime>
+    </File>
+    <File Include="DWMS.DB.Implementation.dll">
+      <publishTime>06/03/2024 21:42:02</publishTime>
+    </File>
+    <File Include="DWMS.DB.Interface.dll">
+      <publishTime>06/03/2024 21:42:01</publishTime>
+    </File>
+    <File Include="GreenDonut.dll">
+      <publishTime>05/29/2024 05:24:46</publishTime>
+    </File>
+    <File Include="HotChocolate.Abstractions.dll">
+      <publishTime>05/29/2024 05:25:18</publishTime>
+    </File>
+    <File Include="HotChocolate.AspNetCore.dll">
+      <publishTime>05/29/2024 05:26:10</publishTime>
+    </File>
+    <File Include="HotChocolate.Authorization.dll">
+      <publishTime>05/29/2024 05:25:52</publishTime>
+    </File>
+    <File Include="HotChocolate.Data.dll">
+      <publishTime>05/29/2024 05:26:06</publishTime>
+    </File>
+    <File Include="HotChocolate.Data.EntityFramework.dll">
+      <publishTime>05/29/2024 05:26:22</publishTime>
+    </File>
+    <File Include="HotChocolate.Execution.Abstractions.dll">
+      <publishTime>05/29/2024 05:25:20</publishTime>
+    </File>
+    <File Include="HotChocolate.Execution.dll">
+      <publishTime>05/29/2024 05:25:44</publishTime>
+    </File>
+    <File Include="HotChocolate.Fetching.dll">
+      <publishTime>05/29/2024 05:25:38</publishTime>
+    </File>
+    <File Include="HotChocolate.Language.dll">
+      <publishTime>05/29/2024 05:25:14</publishTime>
+    </File>
+    <File Include="HotChocolate.Language.SyntaxTree.dll">
+      <publishTime>05/29/2024 05:24:52</publishTime>
+    </File>
+    <File Include="HotChocolate.Language.Utf8.dll">
+      <publishTime>05/29/2024 05:25:02</publishTime>
+    </File>
+    <File Include="HotChocolate.Language.Visitors.dll">
+      <publishTime>05/29/2024 05:25:02</publishTime>
+    </File>
+    <File Include="HotChocolate.Language.Web.dll">
+      <publishTime>05/29/2024 05:25:04</publishTime>
+    </File>
+    <File Include="HotChocolate.Subscriptions.dll">
+      <publishTime>05/29/2024 05:25:24</publishTime>
+    </File>
+    <File Include="HotChocolate.Subscriptions.InMemory.dll">
+      <publishTime>05/29/2024 05:25:26</publishTime>
+    </File>
+    <File Include="HotChocolate.Transport.Sockets.dll">
+      <publishTime>05/29/2024 05:25:00</publishTime>
+    </File>
+    <File Include="HotChocolate.Types.CursorPagination.dll">
+      <publishTime>05/29/2024 05:25:54</publishTime>
+    </File>
+    <File Include="HotChocolate.Types.dll">
+      <publishTime>05/29/2024 05:25:32</publishTime>
+    </File>
+    <File Include="HotChocolate.Types.Mutations.dll">
+      <publishTime>05/29/2024 05:25:54</publishTime>
+    </File>
+    <File Include="HotChocolate.Types.OffsetPagination.dll">
+      <publishTime>05/29/2024 05:25:52</publishTime>
+    </File>
+    <File Include="HotChocolate.Types.Scalars.Upload.dll">
+      <publishTime>05/29/2024 05:25:40</publishTime>
+    </File>
+    <File Include="HotChocolate.Types.Shared.dll">
+      <publishTime>05/29/2024 05:25:00</publishTime>
+    </File>
+    <File Include="HotChocolate.Utilities.DependencyInjection.dll">
+      <publishTime>05/29/2024 05:24:56</publishTime>
+    </File>
+    <File Include="HotChocolate.Utilities.dll">
+      <publishTime>05/29/2024 05:24:56</publishTime>
+    </File>
+    <File Include="HotChocolate.Validation.dll">
+      <publishTime>05/29/2024 05:25:40</publishTime>
+    </File>
+    <File Include="IDMS.DBAccess.Interface.dll">
+      <publishTime>06/20/2024 21:09:41</publishTime>
+    </File>
+    <File Include="IDMS.DBAccess.Interface.pdb">
+      <publishTime>06/20/2024 21:09:41</publishTime>
+    </File>
+    <File Include="IDMS.DBAccess.Service.dll">
+      <publishTime>06/20/2024 21:09:42</publishTime>
+    </File>
+    <File Include="IDMS.DBAccess.Service.pdb">
+      <publishTime>06/20/2024 21:09:42</publishTime>
+    </File>
+    <File Include="IDMS.StoringOrder.Application.deps.json">
+      <publishTime>06/20/2024 21:12:13</publishTime>
+    </File>
+    <File Include="IDMS.StoringOrder.Application.dll">
+      <publishTime>06/20/2024 21:12:13</publishTime>
+    </File>
+    <File Include="IDMS.StoringOrder.Application.exe">
+      <publishTime>06/20/2024 21:12:13</publishTime>
+    </File>
+    <File Include="IDMS.StoringOrder.Application.pdb">
+      <publishTime>06/20/2024 21:12:13</publishTime>
+    </File>
+    <File Include="IDMS.StoringOrder.Application.runtimeconfig.json">
+      <publishTime>06/20/2024 21:09:43</publishTime>
+    </File>
+    <File Include="IDMS.StoringOrder.GqlTypes.dll">
+      <publishTime>06/20/2024 21:09:42</publishTime>
+    </File>
+    <File Include="IDMS.StoringOrder.GqlTypes.pdb">
+      <publishTime>06/20/2024 21:09:42</publishTime>
+    </File>
+    <File Include="IDMS.StoringOrder.Model.dll">
+      <publishTime>06/20/2024 21:09:41</publishTime>
+    </File>
+    <File Include="IDMS.StoringOrder.Model.pdb">
+      <publishTime>06/20/2024 21:09:41</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Authentication.JwtBearer.dll">
+      <publishTime>05/20/2024 12:26:12</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Abstractions.dll">
+      <publishTime>05/20/2024 07:54:30</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.dll">
+      <publishTime>05/20/2024 07:55:04</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Relational.dll">
+      <publishTime>01/18/2024 18:49:16</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Abstractions.dll">
+      <publishTime>11/21/2023 09:54:14</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.JsonWebTokens.dll">
+      <publishTime>11/21/2023 09:11:54</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Logging.dll">
+      <publishTime>11/21/2023 09:14:30</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Protocols.dll">
+      <publishTime>11/21/2023 09:17:02</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Protocols.OpenIdConnect.dll">
+      <publishTime>11/21/2023 09:30:36</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Tokens.dll">
+      <publishTime>11/21/2023 09:23:16</publishTime>
+    </File>
+    <File Include="Microsoft.OpenApi.dll">
+      <publishTime>08/30/2020 04:14:12</publishTime>
+    </File>
+    <File Include="MySqlConnector.dll">
+      <publishTime>01/20/2024 20:54:02</publishTime>
+    </File>
+    <File Include="Newtonsoft.Json.dll">
+      <publishTime>03/08/2023 15:09:54</publishTime>
+    </File>
+    <File Include="Pomelo.EntityFrameworkCore.MySql.dll">
+      <publishTime>03/16/2024 17:50:50</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.Swagger.dll">
+      <publishTime>07/19/2022 23:21:22</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.SwaggerGen.dll">
+      <publishTime>07/19/2022 23:21:38</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.SwaggerUI.dll">
+      <publishTime>07/19/2022 23:21:48</publishTime>
+    </File>
+    <File Include="System.IdentityModel.Tokens.Jwt.dll">
+      <publishTime>11/21/2023 09:10:00</publishTime>
+    </File>
+    <File Include="System.IO.Hashing.dll">
+      <publishTime>10/19/2022 00:16:44</publishTime>
+    </File>
+    <File Include="web.config">
+      <publishTime>06/20/2024 21:12:13</publishTime>
+    </File>
+    <File Include="Yarp.ReverseProxy.dll">
+      <publishTime>11/17/2023 18:52:50</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

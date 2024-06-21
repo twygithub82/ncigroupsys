@@ -22,17 +22,17 @@ namespace IDMS.StoringOrder.Model.Domain
         public int? purpose_storage { get; set; }
         public int? purpose_steam { get; set; }
         public int? purpose_cleaning { get; set; }
-        public int? purpose_repair { get; set; }
+        public string? purpose_repair_cv { get; set; }
 
         public float? required_temp { get; set; }
-        public string? clean_status { get; set; }
-        public string? certificate { get; set; }
+        public string? clean_status_cv { get; set; }
+        public string? certificate_cv { get; set; }
         public string? remarks { get; set; }
         public long? etr_dt { get; set; } = 0;
         public int? st { get; set; } = 0;
         public int? o2_level { get; set; } = 0;
-        public int? open_on_gate { get; set; } = 0;
-        public int? status { get; set; } = 0;
+        public string? open_on_gate_cv { get; set; }
+        public string? status_cv { get; set; }
 
         public string? so_guid { get; set; }
         public storing_order? storing_order { get; set; }
