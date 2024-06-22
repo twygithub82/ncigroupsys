@@ -28,6 +28,7 @@ builder.Services.AddGraphQLServer()
                .AddQueryType<InGate_QueryType>()
                .AddMutationType<InGate_MutationType>()
                .AddFiltering()
+               .AddProjections()
                .AddSorting();
 
 // .AddMutationType<InGate_MutationType>();

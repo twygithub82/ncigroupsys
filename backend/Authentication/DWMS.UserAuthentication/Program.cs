@@ -6,6 +6,7 @@ using DWMS.UserAuthentication.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -66,6 +67,19 @@ builder.Services.AddSingleton<IRefreshTokenStore, RefreshTokenStore>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Add services to the container.
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigin",
+//           builder => builder.WithOrigins("https://example.com")
+//                             .AllowAnyHeader()
+//                             .AllowAnyMethod());
+//    options.AddPolicy("AllowAllOrigins",
+//       builder => builder
+//           .AllowAnyOrigin()
+//           .AllowAnyMethod()
+//           .AllowAnyHeader()
+//           .WithExposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Methods"));
+//});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -104,7 +118,7 @@ builder.Services.AddSwaggerGen(c =>
 
 
 var app = builder.Build();
-
+//app.UseCors("AllowAllOrigins");
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 {
@@ -112,6 +126,12 @@ var app = builder.Build();
     app.UseSwaggerUI();
 }
 
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("Request Path: " + context.Request.Path);
+    await next();
+    Console.WriteLine("Response Headers: " + string.Join(", ", context.Response.Headers.Select(h => h.Key + "=" + h.Value)));
+});
 
 app.UseCors(builder =>
 {

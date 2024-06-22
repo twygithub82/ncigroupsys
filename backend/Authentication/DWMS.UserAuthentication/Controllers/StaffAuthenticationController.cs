@@ -43,6 +43,21 @@ namespace DWMS.User.Authentication.API.Controllers
             _refreshTokenStore= refreshTokenStore;
         }
 
+        [HttpGet("Hello")]
+        [AllowAnonymous]
+        public async Task<string> HelloWorld()
+        {
+            return "Hello World";
+        }
+
+        [HttpPost("Hello")]
+        [AllowAnonymous]
+        public async Task<IActionResult> HelloWorld_Post([FromBody] LoginStaffModel staffModel)
+        {
+            staffModel.Username = "Hello";
+            staffModel.Password = "OK";
+            return Ok(staffModel);
+        }
 
         [HttpPost("StaffLogin")]
         [AllowAnonymous]

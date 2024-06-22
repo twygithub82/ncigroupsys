@@ -27,6 +27,7 @@ namespace IDMS.InGate.GqlTypes
         // public async Task<List<EntityClass_InGate>> QueryInGates([Service] ApplicationDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor , EntityClass_InGate queryInGate)
       //  [UseDbContext(typeof(ApplicationDBContext))]
         [UsePaging(IncludeTotalCount =true,DefaultPageSize =10)]
+       // [UseProjection]
         [UseFiltering(typeof(Filters.in_gate_filtertype))]
         [UseSorting]
         public  IQueryable<EntityClass_InGateWithTank> QueryInGates([Service] ApplicationDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
@@ -37,7 +38,7 @@ namespace IDMS.InGate.GqlTypes
             {
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                 query = context.in_gate.Where(i=>i.delete_dt == null).Include(s => s.tank);
+                 query = context.in_gate.Where(i=>i.delete_dt == null ).Include(s => s.tank.delete_dt==null );
 
             }
             catch

@@ -1,10 +1,13 @@
 ﻿using CommonUtil.Core.Service;
+using HotChocolate.Data;
+using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,60 +15,127 @@ namespace IDMS.Models.Parameter.CleaningProcedure.GqlTypes
 {
     public class CleanningProcedure_MutationType
     {
-
-        public async Task<EntityClass_CleaningProcedureWithSteps> AddCleaningProcedure([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, EntityClass_CleaningProcedureWithSteps NewCleanProcedureSteps)
+       
+        public async Task<int> AddCleaningProcedure([Service] ApplicationParameterDBContext context, [Service] IConfiguration config, 
+            [Service] IHttpContextAccessor httpContextAccessor, EntityClass_CleaningProcedure_Mutation NewCleanProcedureSteps)
         {
-            EntityClass_CleaningProcedureWithSteps retval = new();
+            int retval = 0;
             try
             {
-                var tablename = "idms.cleaning_procedure";
-                long epochNow = GqlUtils.GetNowEpochInSec();
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var guid = Util.GenerateGUID();
                 NewCleanProcedureSteps.guid = (string.IsNullOrEmpty(NewCleanProcedureSteps.guid) ? Util.GenerateGUID() : NewCleanProcedureSteps.guid);
-                var cleaningSteps = NewCleanProcedureSteps.CleaningSteps;
-                
-                var jtkNewCleanProcedureSteps = JObject.FromObject(NewCleanProcedureSteps);
-                jtkNewCleanProcedureSteps.Remove("CleaningSteps");
-                jtkNewCleanProcedureSteps["create_dt"] = epochNow;
-                jtkNewCleanProcedureSteps["create_by"] = uid;
-                jtkNewCleanProcedureSteps["update_by"] = uid;
-                
+                var newCleanProcedure = new EntityClass_CleaningProcedureWithSteps();
+                newCleanProcedure.guid = NewCleanProcedureSteps.guid;
+                newCleanProcedure.description = NewCleanProcedureSteps.description;
+                newCleanProcedure.clean_group_guid = NewCleanProcedureSteps.clean_group_guid;
+                newCleanProcedure.category= NewCleanProcedureSteps.category;
+                newCleanProcedure.procedure_name = NewCleanProcedureSteps.procedure_name;
+                newCleanProcedure.create_by = uid;
+                newCleanProcedure.create_dt = GqlUtils.GetNowEpochInSec();
+                context.cleaning_procedure.Add(newCleanProcedure);
+                InsertSteps(context,uid,newCleanProcedure.guid,NewCleanProcedureSteps.clean_steps);
+                //foreach (var step in NewCleanProcedureSteps.clean_steps)
+                //{
+                //    var newProduceStep = new EntityClass_CleaningProcedureSteps() { 
+                //      cleaning_step_guid =step.guid,
+                //       create_by =uid,
+                //        create_dt =GqlUtils.GetNowEpochInSec(),
+                //         guid =  Util.GenerateGUID(),
+                //          cleaning_procedure_guid= newCleanProcedure.guid
 
-                var cmd = GqlUtils.GenerateSqlInsert(jtkNewCleanProcedureSteps, tablename);
-                //var command = @$"Insert into in_gate (guid,so_tank_guid,eir_no,eir_dt,vehicle_no,yard_guid,driver_name,LOLO,preinspection,haulier,create_dt,create_by)
-                //            values ('{InGate.guid}','{InGate.so_tank_guid}','{InGate.eir_no}',{InGate.eir_dt},'{InGate.vehicle_no}','{InGate.yard_guid}','{InGate.driver_name}',
-                //            '{InGate.LOLO}','{InGate.preinspection}','{InGate.haulier}',{epochNow},'{uid}')";
+                //    };
+                //    context.cleaning_procedure_steps.Add(newProduceStep);
 
-                List<string> cmds = new List<string>();
-                cmds.Add(cmd);
+                //    var updStep = await context.cleaning_steps.FindAsync(step.guid);
+                //    if(updStep == null)
+                //    {
+                //        throw new GraphQLException(new Error("The Cleaning Step not found", "500"));
+                //    }
 
-                //Insert links for procedure and steps
-                foreach(var step in cleaningSteps)
+                //    if(updStep.duration!=step.duration)
+                //    {
+                //        updStep.duration = step.duration;
+                //        updStep.update_by = uid;
+                //        updStep.update_dt = GqlUtils.GetNowEpochInSec();
+                //        //context.cleaning_steps.Update(updStep);
+
+                //    }
+                //}
+              retval=context.SaveChanges();
+            }
+            catch { throw; }
+
+            
+            return retval;
+        }
+
+        private void InsertSteps(ApplicationParameterDBContext context, string uid,string cleaning_procedure_guid, IEnumerable<EntityClass_CleaningStep> InsertSteps )
+        {
+            try
+            {
+                foreach (var step in InsertSteps)
                 {
-                    JObject s = new JObject();
-                    s["guid"]= Util.GenerateGUID();
-                    s["cleaning_procedure_guid"] = NewCleanProcedureSteps.guid;
-                    s["cleaning_step_guid"] = step.guid;
-                    s["duration"] = step.duration;
-                    s["create_dt"] = epochNow;
-                    s["create_by"] = uid;
-                    s["update_by"] = uid;
-                    cmd = GqlUtils.GenerateSqlInsert(s, "idms.cleaning_procedure_steps");
-                    cmds.Add(cmd);
-
-                }
-
-                var result = await GqlUtils.RunNonQueryCommands(config, cmds);
-                if (result["result"] != null)
-                {
-                    int count = Convert.ToInt32(result["result"]);
-                    if (count > 0)
+                    var newProduceStep = new EntityClass_CleaningProcedureSteps()
                     {
-                        retval = NewCleanProcedureSteps;
-                        return retval;
+                        cleaning_step_guid = step.guid,
+                        create_by = uid,
+                        create_dt = GqlUtils.GetNowEpochInSec(),
+                        guid = Util.GenerateGUID(),
+                        cleaning_procedure_guid = cleaning_procedure_guid
+
+                    };
+                    context.cleaning_procedure_steps.Add(newProduceStep);
+
+                    var updStep =  context.cleaning_steps.Find(step.guid);
+                    if (updStep == null)
+                    {
+                        throw new GraphQLException(new Error("The Cleaning Step not found", "500"));
                     }
+
+                    if (updStep.duration != step.duration)
+                    {
+                        updStep.duration = step.duration;
+                        updStep.update_by = uid;
+                        updStep.update_dt = GqlUtils.GetNowEpochInSec();
+                  
+                    }
+                    
                 }
+            }
+            catch
+            { throw; }
+        }
+        public async Task<int> UpdateCleaningProcedure([Service] ApplicationParameterDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, EntityClass_CleaningProcedure_Mutation UpdateCleanProcedure)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdateCleanProcedure.guid;
+                var dbCleanProcedure = context.cleaning_procedure.Find(guid);
+                if(dbCleanProcedure == null)
+                {
+                    throw new GraphQLException(new Error("The Cleaning Procedure not found", "500"));
+                }
+                dbCleanProcedure.description = UpdateCleanProcedure.description;
+                dbCleanProcedure.clean_group_guid = UpdateCleanProcedure.clean_group_guid;
+                dbCleanProcedure.category = UpdateCleanProcedure.category;
+                dbCleanProcedure.procedure_name = UpdateCleanProcedure.procedure_name;
+                dbCleanProcedure.update_by = uid;
+                dbCleanProcedure.update_dt = GqlUtils.GetNowEpochInSec();
+                var updSteps = UpdateCleanProcedure.clean_steps;
+                var dbSteps = context.cleaning_procedure_steps.Where(s => s.cleaning_procedure_guid == guid);
+                foreach(var dbStep in dbSteps)
+                {
+                    dbStep.delete_dt=GqlUtils.GetNowEpochInSec();
+                    dbStep.update_by=uid;
+                    dbStep.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+
+                InsertSteps(context, uid, guid, updSteps);
+                retval = context.SaveChanges();
+             
             }
             catch (Exception ex)
             {
@@ -75,103 +145,30 @@ namespace IDMS.Models.Parameter.CleaningProcedure.GqlTypes
             return retval;
         }
 
-
-        public async Task<EntityClass_CleaningProcedureWithSteps> UpdateCleaningProcedure([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, EntityClass_CleaningProcedureWithSteps UpdateCleanProcedureSteps)
+        public async Task<int> DeleteCleaningProcedures([Service] ApplicationParameterDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteCleanProcedure_guids)
         {
-            EntityClass_CleaningProcedureWithSteps retval = new();
+            int retval = 0;
             try
             {
-                var tablename = "idms.cleaning_procedure";
-                long epochNow = GqlUtils.GetNowEpochInSec();
+
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var guid = Util.GenerateGUID();
-                if(string.IsNullOrEmpty(UpdateCleanProcedureSteps.guid))
+                var delCleanProcedures = context.cleaning_procedure.Where(s => DeleteCleanProcedure_guids.Contains(s.guid) && s.delete_dt == null);
+                var delCleanProcedureSteps = context.cleaning_procedure_steps.Where(s => DeleteCleanProcedure_guids.Contains(s.cleaning_procedure_guid) && s.delete_dt == null);
+                foreach (var dCleanProcedure in delCleanProcedures)
                 {
-                    throw new GraphQLException(new Error("guid can't be empty", "401"));
+                    dCleanProcedure.delete_dt=GqlUtils.GetNowEpochInSec();
+                    dCleanProcedure.update_by = uid;
+                    dCleanProcedure.update_dt= GqlUtils.GetNowEpochInSec();
                 }
 
-                var cleaningSteps = UpdateCleanProcedureSteps.CleaningSteps;
-
-                var jtkUpdateCleanProcedure = JObject.FromObject(UpdateCleanProcedureSteps);
-                jtkUpdateCleanProcedure["update_dt"] = epochNow;
-                jtkUpdateCleanProcedure["update_by"] = uid;
-                jtkUpdateCleanProcedure.Remove("guid");
-                jtkUpdateCleanProcedure.Remove("CleaningSteps");
-                string jsonString = $@"{{
-                        'set': 
-                         {jtkUpdateCleanProcedure.ToString()}
-                        ,
-                        'where': {{
-                            'guid': '{UpdateCleanProcedureSteps.guid}'
-                            
-                        }}
-                    }}";
-                jsonString = jsonString.Replace(Environment.NewLine, "");
-                var jtkJson = JToken.Parse(jsonString);
-                var cmd = GqlUtils.GenerateSqlUpdate(jtkJson, tablename);
-
-                List<string> cmds = new List<string>();
-                cmds.Add(cmd);
-                if (cleaningSteps != null)
+                foreach(var dCleanProcedureStep in delCleanProcedureSteps)
                 {
-                    cmd = $"update idms.cleaning_procedure_steps set delete_dt=now(), update_dt=now(), update_by='{uid}' where cleaning_procedure_guid='{UpdateCleanProcedureSteps.guid}' and delete_dt is null";
-                    cmds.Add(cmd);
-                    //Insert links for procedure and steps
-                    foreach (var step in cleaningSteps)
-                    {
-                        JObject s = new JObject();
-                        s["guid"] = Util.GenerateGUID();
-                        s["cleaning_procedure_guid"] = UpdateCleanProcedureSteps.guid;
-                        s["cleaning_step_guid"] = step.guid;
-                        s["duration"] = step.duration;
-                        s["create_dt"] = epochNow;
-                        s["create_by"] = uid;
-                        s["update_by"] = uid;
-                        cmd = GqlUtils.GenerateSqlInsert(s, "idms.cleaning_procedure_steps");
-                        cmds.Add(cmd);
-
-                    }
+                    dCleanProcedureStep.delete_dt = GqlUtils.GetNowEpochInSec();
+                    dCleanProcedureStep.update_by = uid;
+                    dCleanProcedureStep.update_dt = GqlUtils.GetNowEpochInSec();
                 }
-
-                var result = await GqlUtils.RunNonQueryCommands(config, cmds);
-                if (result["result"] != null)
-                {
-                    int count = Convert.ToInt32(result["result"]);
-                    if (count > 0)
-                    {
-                        retval = UpdateCleanProcedureSteps;
-                        return retval;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
-            }
-            return retval;
-        }
-
-        public async Task<EntityClass_Result> DeleteCleaningProcedures([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteCleanProcedure_guids)
-        {
-            EntityClass_Result retval = new EntityClass_Result();
-            try
-            {
-                var tablename = "idms.cleaning_procedure";
-                long epochNow = GqlUtils.GetNowEpochInSec();
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delNow = GqlUtils.GetNowEpochInSec();
-                var group_guids = string.Join(", ", DeleteCleanProcedure_guids.Select(guid => $"'{guid}'"));
-                var command = @$"update {tablename} set delete_dt={delNow},update_by='{uid}',update_dt={delNow}  where guid in ({group_guids}) ";
-                //var command = @$"Insert into in_gate (guid,so_tank_guid,eir_no,vehicle_no,yard_guid,driver_name,LOLO,preinspection,create_dt)
-                //            values ('{InGate.guid}','{InGate.so_tank_guid}','{InGate.eir_no}','{InGate.vehicle_no}','{InGate.yard_guid}','{InGate.driver_name}',
-                //            '{InGate.LOLO}','{InGate.preinspection}',{epochNow})";
-
-                var result = await GqlUtils.RunNonQueryCommand(config, command);
-                if (result["result"] != null)
-                {
-                    retval.result = Convert.ToInt32(result["result"]);
-                }
+                retval=context.SaveChanges();
+                
             }
             catch (Exception ex)
             {

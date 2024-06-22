@@ -90,6 +90,11 @@
                           </mat-option>
                           }
                         </mat-select>
+                        @if (soForm?.get('unit_type')?.hasError('required')) {
+                        <mat-error>
+                          {{langText.UNIT_TYPE | translate}} {{langText.SO_REQUIRED | translate}}
+                        </mat-error>
+                        }
                       </mat-form-field>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
@@ -122,11 +127,6 @@
                       <mat-form-field class="example-full-width">
                         <mat-label>{{langText.JOB_NO | translate}}</mat-label>
                         <input matInput formControlName="job_no">
-                        @if (soForm?.get('job_no')?.hasError('required')) {
-                        <mat-error>
-                          {{langText.JOB_NO | translate}} {{langText.SO_REQUIRED | translate}}
-                        </mat-error>
-                        }
                       </mat-form-field>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
@@ -135,11 +135,6 @@
                         <input matInput formControlName="eta_date" [matDatepicker]="eta_date">
                         <mat-datepicker-toggle matSuffix [for]="eta_date"></mat-datepicker-toggle>
                         <mat-datepicker #eta_date></mat-datepicker>
-                        @if (soForm?.get('eta_date')?.hasError('required')) {
-                        <mat-error>
-                          {{langText.ETA_DATE | translate}} {{langText.SO_REQUIRED | translate}}
-                        </mat-error>
-                        }
                       </mat-form-field>
                     </div>
                   </div>
@@ -173,10 +168,9 @@
                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{langText.REPAIR | translate}}</mat-label>
-                        <mat-select formControlName="repair" required>
-                          @for (topping of repairList; track topping) {
-                          <mat-option [value]="topping">{{topping}}
-                          </mat-option>
+                        <mat-select formControlName="repair">
+                          @for (codeValue of cvDS.connectAlias('repairCv') | async; track codeValue) {
+                          <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                           }
                         </mat-select>
                       </mat-form-field>
@@ -187,8 +181,8 @@
                       <mat-form-field class="example-full-width">
                         <mat-label>{{langText.CLEAN_STATUS | translate}}</mat-label>
                         <mat-select formControlName="clean_status">
-                          @for (topping of clean_statusList; track topping) {
-                          <mat-option [value]="topping">{{topping}}</mat-option>
+                          @for (codeValue of cvDS.connectAlias('clean_statusCv') | async; track codeValue) {
+                          <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                           }
                         </mat-select>
                       </mat-form-field>
@@ -197,8 +191,8 @@
                       <mat-form-field class="example-full-width">
                         <mat-label>{{langText.CERTIFICATE | translate}}</mat-label>
                         <mat-select formControlName="certificate">
-                          @for (topping of certificateList; track topping) {
-                          <mat-option [value]="topping">{{topping}}
+                          @for (codeValue of cvDS.connectAlias('yesnoCv') | async; track codeValue) {
+                          <mat-option [value]="codeValue.code_val">{{codeValue.description}}
                           </mat-option>
                           }
                         </mat-select>
@@ -220,11 +214,6 @@
                       <mat-form-field class="example-full-width">
                         <mat-label>{{langText.REMARKS | translate}}</mat-label>
                         <input matInput formControlName="remarks">
-                        @if (soForm?.get('remarks')?.hasError('required')) {
-                        <mat-error>
-                          {{langText.ETA_DATE | translate}} {{langText.SO_REQUIRED | translate}}
-                        </mat-error>
-                        }
                       </mat-form-field>
                     </div>
                   </div>
@@ -239,11 +228,6 @@
                         <input matInput formControlName="etr_date" [matDatepicker]="etr_date">
                         <mat-datepicker-toggle matSuffix [for]="etr_date"></mat-datepicker-toggle>
                         <mat-datepicker #etr_date></mat-datepicker>
-                        @if (soForm?.get('etr_date')?.hasError('required')) {
-                        <mat-error>
-                          {{langText.ETR_DATE | translate}} {{langText.SO_REQUIRED | translate}}
-                        </mat-error>
-                        }
                       </mat-form-field>
                     </div>
                     <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
@@ -261,10 +245,8 @@
                 <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-1">
                   <label class="font-bold">{{langText.OPEN_ON_GATE | translate}}:</label>
                   <mat-radio-group formControlName="open_on_gate">
-                    @for (topping of certificateList; track topping) {
-                      <mat-radio-button [value]="topping" color="primary">
-                        {{topping}}
-                      </mat-radio-button>
+                    @for (codeValue of cvDS.connectAlias('yesnoCv') | async; track codeValue) {
+                      <mat-radio-button [value]="codeValue.code_val" color="primary">{{codeValue.description}}</mat-radio-button>
                     }
                   </mat-radio-group>
                 </div>
@@ -279,7 +261,7 @@
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                   <div class="responsive_table">
-                    <table mat-table [dataSource]="dataSourceDemo" matSort class="mat-cell advance-table">
+                    <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table table-hover">
                       <!-- Checkbox Column -->
                       <!-- <ng-container matColumnDef="select">
                         <mat-header-cell *matHeaderCellDef [ngClass]="'p-l-0 tbl-col-width-per-5'">
@@ -336,7 +318,7 @@
                         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" matTooltip="{{row.last_cargo}}">
                           <span class="truncate-text">
                             <span class="mobile-label">{{langText.LAST_CARGO | translate}}:</span>
-                            {{row.last_cargo}}
+                            {{row.last_cargo_guid}}
                           </span>
                         </mat-cell>
                       </ng-container>
@@ -445,13 +427,13 @@
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                      <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;" (click)="editCall(row, i)"
                         [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                     </table>
                   </div>
-                  @if (!dataSourceDemo.data.length) {
-                  <div class="no-results" [style.display]="dataSourceDemo.data.length === 0 ? '' : 'none'">
+                  @if (!sotList.data.length) {
+                  <div class="no-results" [style.display]="sotList.data.length === 0 ? '' : 'none'">
                     No results
                   </div>
                   }

@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using HotChocolate.Data;
 
 namespace IDMS.Models.Inventory
 {
@@ -6,6 +7,7 @@ namespace IDMS.Models.Inventory
     public class EntityClass_InGate:EntityClass_Dates
     {
         public string guid { get; set; } = "";
+        [IsProjected(true)] 
         public string? so_tank_guid { get; set; } = "";
 
         public string? haulier { get; set; } = "";

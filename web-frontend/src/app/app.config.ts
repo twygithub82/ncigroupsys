@@ -23,6 +23,7 @@ import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { FeatherModule } from 'angular-feather';
 import { allIcons } from 'angular-feather/icons';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { GraphQLModule } from './apollo.config';;
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -54,10 +55,10 @@ export const appConfig: ApplicationConfig = {
       provide: MAT_DATE_FORMATS,
       useValue: {
         parse: {
-          dateInput: 'YYYY-MM-DD',
+          dateInput: 'DD/MM/YYYY',
         },
         display: {
-          dateInput: 'YYYY-MM-DD',
+          dateInput: 'DD/MM/YYYY',
           monthYearLabel: 'YYYY MMM',
           dateA11yLabel: 'LL',
           monthYearA11yLabel: 'YYYY MMM',
@@ -66,5 +67,6 @@ export const appConfig: ApplicationConfig = {
     },
     importProvidersFrom(FeatherModule.pick(allIcons)),
     provideCharts(withDefaultRegisterables()),
+    importProvidersFrom(GraphQLModule)
   ],
 };

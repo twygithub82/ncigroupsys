@@ -1,0 +1,4 @@
+"guid";"customer_guid";"name";"title";"job_title";"email";"department";"department_id";"phone";"email_alert";"delete_dt";"update_dt";"update_by";"create_dt";"create_by"
+"98af225425aa11efac2d74782781fe3e";"2a0fb8df25aa11efac2d74782781fe3e";"John Doe";"Mr.";"Software Engineer";"john.doe@example.com";"Engineering";"DEP001";"123-456-7890";0;0;0;"";1717860010;"admin"
+"98af289725aa11efac2d74782781fe3e";"2a0fc0be25aa11efac2d74782781fe3e";"Jane Smith";"Ms.";"Data Scientist";"jane.smith@example.com";"Analytics";"DEP002";"987-654-3210";0;0;0;"";1717860010;"admin"
+"98af297d25aa11efac2d74782781fe3e";"2a0fc22325aa11efac2d74782781fe3e";"Bob Johnson";"Mr.";"Project Manager";"bob.johnson@example.com";"Project Management";"DEP003";"456-789-0123";0;0;0;"";1717860010;"admin"

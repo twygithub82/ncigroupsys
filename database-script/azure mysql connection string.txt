@@ -1,4 +1,4 @@
 hostname=tlx-idms.mysql.database.azure.com
 username=idms_admin
-password=P@ssw0rd
+password=the usual password we use P@
 ssl-mode=require

@@ -3,7 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
+import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
@@ -37,7 +37,9 @@ import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code_values'
 import { MatRadioModule } from '@angular/material/radio';
+import { Apollo } from 'apollo-angular';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -89,13 +91,11 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     'certificate',
     'actions'
   ];
-
   pageTitle = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-NEW'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
   ]
-
   langText = {
     NEW: 'COMMON-FORM.NEW',
     HEADER: 'COMMON-FORM.HEADER',
@@ -125,7 +125,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
     OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    STATUS: 'COMMON-FORM.STATUS'
+    STATUS: 'COMMON-FORM.STATUS',
+    UPDATE: 'COMMON-FORM.UPDATE',
+    CANCEL: 'COMMON-FORM.CANCEL'
   }
 
   unit_typeList: string[] = [
@@ -160,19 +162,27 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   storingOrderService?: StoringOrderService;
   selection = new SelectionModel<StoringOrderTankItem>(true, []);
-  dataSourceDemo = new MatTableDataSource<StoringOrderTankItem>();
+  sotList = new MatTableDataSource<StoringOrderTankItem>();
+  //customer_companyList: CodeValuesItem[] = []
+  //unit_typeList: CodeValuesItem[] = []
+  clean_statusCv: CodeValuesItem[] = []
+  repairCv: CodeValuesItem[] = []
+  yesnoCv: CodeValuesItem[] = []
 
   // selectedGroup?: CleanGroup;
+  cvDS: CodeValuesDS;
 
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
+    private apollo: Apollo
   ) {
     super();
     this.initSOForm();
     this.initSOTForm();
+    this.cvDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -184,6 +194,13 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.loadData();
   }
   public loadData() {
+    const queries = [
+      { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
+      { alias: 'repairCv', codeValType: 'REPAIR_OPTION'},
+      { alias: 'yesnoCv', codeValType: 'YES_NO'}
+      // Add more as needed
+    ];
+    this.cvDS.getCodeValuesByType(queries);
   }
   initSOForm() {
     this.soForm = this.fb.group({
@@ -192,6 +209,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       so_notes: [''],
       haulier: [''],
     });
+    this.clean_statusCv = this.cleanStatusCodeValTest();
+    this.repairCv = this.repairCodeValTest();
+    this.yesnoCv = this.yesnoCodeValTest();
   }
   initSOTForm() {
     this.sotForm = this.fb.group({
@@ -234,7 +254,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       panelClass: colorName,
     });
   }
-  editCall(row: StoringOrderTankItem) {
+  editCall(row: StoringOrderTankItem, index: number) {
     //this.id = row.id;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -249,15 +269,21 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         langText: this.langText,
         populateData: {
           unit_typeList: this.unit_typeList,
-          repairList: this.repairList,
-          clean_statusList: this.clean_statusList,
-          certificateList: this.certificateList
-        }
+          repairCv: this.repairCv,
+          clean_statusCv: this.clean_statusCv,
+          yesnoCv: this.yesnoCv
+        },
+        index: index
       },
-      direction: tempDirection,
-      panelClass: 'dialog-container-xl',
+      direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Update the item at the specified index
+        const data = this.sotList.data;
+        data[result.index] = result.item;
+        this.updateData(data); // Refresh the data source
+      }
     });
   }
   deleteItem(row: StoringOrderTankItem, index: number) {
@@ -277,9 +303,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         if (row.guid) {
           // TODO :: update delete dt
         } else {
-          const data = this.dataSourceDemo.data;
+          const data = this.sotList.data;
           data.splice(index, 1);
-          this.dataSourceDemo.data = data;
+          this.sotList.data = data;
         }
       }
     });
@@ -329,7 +355,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         tank_no: this.sotForm.value['tank_no'],
         last_cargo_guid: this.sotForm.value['last_cargo'],
         job_no: this.sotForm.value['job_no'],
-        eta_date: this.sotForm.value['eta_date'],
+        eta_date: this.sotForm.value['eta_date'].getTime(),
         purpose_storage: this.sotForm.value['purpose_storage'],
         purpose_steam: this.sotForm.value['purpose_steam'],
         purpose_cleaning: this.sotForm.value['purpose_cleaning'],
@@ -338,12 +364,12 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         certificate: this.sotForm.value['certificate'],
         required_temp: this.sotForm.value['required_temp'],
         remarks: this.sotForm.value['remarks'],
-        etr_date: this.sotForm.value['etr_date'],
+        etr_date: this.sotForm.value['etr_date'].getTime(),
         st: this.sotForm.value['st'],
         o2_level: this.sotForm.value['o2_level'],
         open_on_gate: this.sotForm.value['open_on_gate']
       }
-      this.updateData([...this.dataSourceDemo.data, sot]);
+      this.updateData([...this.sotList.data, sot]);
     } else {
       console.log('Invalid sotForm', this.sotForm?.value);
     }
@@ -358,13 +384,36 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   updateData(newData: StoringOrderTankItem[]): void {
-    this.dataSourceDemo.data = newData;
+    this.sotList.data = newData;
   }
 
   handleDelete(event: Event, row: any, index: number): void {
     event.preventDefault();  // Prevents the form submission
     event.stopPropagation(); // Stops event propagation
     this.deleteItem(row, index);
+  }
+
+  cleanStatusCodeValTest(): CodeValuesItem[] {
+    return [
+      new CodeValuesItem({ description: 'Unknown', code_val_type: 'CLEAN_STATUS', code_val: 'UNKNOWN' }),
+      new CodeValuesItem({ description: 'Clean', code_val_type: 'CLEAN_STATUS', code_val: 'CLEAN' }),
+      new CodeValuesItem({ description: 'Dirty', code_val_type: 'CLEAN_STATUS', code_val: 'DIRTY' })
+    ]
+  }
+
+  repairCodeValTest(): CodeValuesItem[] {
+    return [
+      new CodeValuesItem({ description: 'Repair', code_val_type: 'REPAIR_OPTION', code_val: 'REPAIR' }),
+      new CodeValuesItem({ description: 'No Repair', code_val_type: 'REPAIR_OPTION', code_val: 'NO_REPAIR' }),
+      new CodeValuesItem({ description: 'Offhire', code_val_type: 'REPAIR_OPTION', code_val: 'OFFHIRE' })
+    ]
+  }
+
+  yesnoCodeValTest(): CodeValuesItem[] {
+    return [
+      new CodeValuesItem({ description: 'Yes', code_val_type: 'YES_NO', code_val: 'Y' }),
+      new CodeValuesItem({ description: 'No', code_val_type: 'YES_NO', code_val: 'N' })
+    ]
   }
 }
 

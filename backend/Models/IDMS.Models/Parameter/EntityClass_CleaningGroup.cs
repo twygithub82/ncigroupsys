@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace IDMS.Models.Parameter
 {
-    public class EntityClass_CleaningGroup_Short
+    
+   
+
+    public class EntityClass_CleaningGroup : EntityClass_Dates
     {
+        [Key]
         public string? guid { get; set; }
 
         public string? group_name { get; set; }
 
-    }
-
-    public class EntityClass_CleaningGroup : EntityClass_CleaningGroup_Short
-    {
-
         public string? description { get; set; }
+
+        public string? category { get; set; }
 
         public float? minimum_cost { get; set; }
 
@@ -28,9 +30,9 @@ namespace IDMS.Models.Parameter
 
     }
 
-    public class EntityClass_CleaningGroupWithCleanProcedureShort : EntityClass_CleaningGroup
+    public class EntityClass_CleaningGroupWithCleanProcedure : EntityClass_CleaningGroup
     {
-        public EntityClass_CleaningProcedure_Short?[]? CleanProcedures { get; set; }
+        public IEnumerable<EntityClass_CleaningProcedureWithSteps>? clean_procedures { get; set; }
     }
 
 }
