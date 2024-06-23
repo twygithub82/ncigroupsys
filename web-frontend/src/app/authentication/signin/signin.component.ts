@@ -86,7 +86,7 @@ export class SigninComponent
           },
           error: (error) => {
             console.log(error)
-            this.error = 'Error login';
+            this.error = 'Invalid Login';
             this.submitted = false;
             this.loading = false;
           },

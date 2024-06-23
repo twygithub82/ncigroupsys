@@ -10,7 +10,7 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <form class="register-form m-4" [formGroup]="storingOrderTankForm" (ngSubmit)="submit">
+    <form class="register-form m-4" [formGroup]="storingOrderTankForm" (ngSubmit)="submit()" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
           <div class="row">
@@ -64,9 +64,9 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.ETA_DATE | translate}}</mat-label>
-                <input matInput formControlName="eta_date" [matDatepicker]="eta_date">
-                <mat-datepicker-toggle matSuffix [for]="eta_date"></mat-datepicker-toggle>
-                <mat-datepicker #eta_date></mat-datepicker>
+                <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
+                <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
+                <mat-datepicker #eta_picker></mat-datepicker>
               </mat-form-field>
             </div>
           </div>
@@ -102,7 +102,7 @@
                 <mat-label>{{data.langText.REPAIR | translate}}</mat-label>
                 <mat-select formControlName="repair">
                   @for (codeValue of data.populateData.repairCv; track codeValue) {
-                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
@@ -114,7 +114,7 @@
                 <mat-label>{{data.langText.CLEAN_STATUS | translate}}</mat-label>
                 <mat-select formControlName="clean_status">
                   @for (codeValue of data.populateData.clean_statusCv; track codeValue) {
-                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
@@ -124,7 +124,7 @@
                 <mat-label>{{data.langText.CERTIFICATE | translate}}</mat-label>
                 <mat-select formControlName="certificate">
                   @for (codeValue of data.populateData.yesnoCv; track codeValue) {
-                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
@@ -156,20 +156,10 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.ETR_DATE | translate}}</mat-label>
-                <input matInput formControlName="etr_date" [matDatepicker]="etr_date">
-                <mat-datepicker-toggle matSuffix [for]="etr_date"></mat-datepicker-toggle>
-                <mat-datepicker #etr_date></mat-datepicker>
+                <input matInput formControlName="etr_dt" [matDatepicker]="etr_dt">
+                <mat-datepicker-toggle matSuffix [for]="etr_dt"></mat-datepicker-toggle>
+                <mat-datepicker #etr_dt></mat-datepicker>
               </mat-form-field>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
-              <mat-checkbox formControlName="st" color="primary">
-                {{data.langText.ST | translate}}
-              </mat-checkbox>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
-              <mat-checkbox formControlName="o2_level" color="primary">
-                {{data.langText.O2_LEVEL | translate}}
-              </mat-checkbox>
             </div>
           </div>
         </div>
@@ -177,7 +167,7 @@
           <label class="font-bold">{{data.langText.OPEN_ON_GATE | translate}}:</label>
           <mat-radio-group formControlName="open_on_gate" required>
             @for (codeValue of data.populateData.yesnoCv; track codeValue) {
-            <mat-radio-button [value]="codeValue.code_val" color="primary">{{codeValue.description}}</mat-radio-button>
+            <mat-radio-button [value]="codeValue.codeValue" color="primary">{{codeValue.description}}</mat-radio-button>
             }
           </mat-radio-group>
         </div>

@@ -24,7 +24,7 @@ export const ADMIN_ROUTE: Routes = [
     component: StoringOrderComponent,
   },
   {
-    path: "storing-order/storing-order-new",
+    path: "storing-order/new",
     component: StoringOrderNewComponent,
   }
 ];

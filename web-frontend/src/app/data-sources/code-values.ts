@@ -8,9 +8,9 @@ import { DocumentNode } from 'graphql';
 export class CodeValuesItem {
     public guid?: string;
     public description?: string;
-    public code_val_type?: string;
-    public code_val?: string;
-    public child_code?: string;
+    public codeValType?: string;
+    public codeValue?: string;
+    public childCode?: string;
     public create_dt?: number;
     public create_by?: string;
     public update_dt?: number;
@@ -20,9 +20,9 @@ export class CodeValuesItem {
     constructor(item: Partial<CodeValuesItem> = {}) {
         this.guid = item.guid;
         this.description = item.description;
-        this.code_val_type = item.code_val_type;
-        this.code_val = item.code_val;
-        this.child_code = item.child_code;
+        this.codeValType = item.codeValType;
+        this.codeValue = item.codeValue;
+        this.childCode = item.childCode;
         this.create_dt = item.create_dt;
         this.create_by = item.create_by;
         this.update_dt = item.update_dt;
@@ -66,6 +66,19 @@ export function getCodeValuesByTypeQueries(aliases: string[]): DocumentNode {
     `;
 }
 
+export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = 'Select an option', val: string = ''): CodeValuesItem[] {
+    // Check if the list already contains the default value
+    const containsDefault = list.some(item => item.codeValue === val);
+  
+    // If the default value is not present, add it to the list
+    if (!containsDefault) {
+        // Create a new array with the default option added at the beginning
+        return [{ codeValue: val, description: desc }, ...list];
+      }
+  
+    return list;
+  }
+
 export class CodeValuesDS extends DataSource<CodeValuesItem> {
     private itemsSubjects = new Map<string, BehaviorSubject<CodeValuesItem[]>>();
     private itemsSubject = new BehaviorSubject<CodeValuesItem[]>([]);
@@ -88,11 +101,10 @@ export class CodeValuesDS extends DataSource<CodeValuesItem> {
         const dynamicQuery: DocumentNode = getCodeValuesByTypeQueries(aliases);
 
         this.apollo
-            .watchQuery<any>({
+            .query<any>({
                 query: dynamicQuery,
                 variables: variables
             })
-            .valueChanges
             .pipe(
                 map((result) => result.data),
                 catchError(() => of(aliases.reduce((acc: any, alias) => {

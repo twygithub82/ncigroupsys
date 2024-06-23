@@ -37,8 +37,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS } from 'app/data-sources/storing-order';
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -88,36 +89,13 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     'MENUITEMS.HOME.TEXT'
   ]
 
-  STATUS = 'COMON-FORM.STATUS'
+  STATUS = 'COMMON-FORM.STATUS'
   SO_NO = 'COMMON-FORM.SO-NO'
   CUSTOMER_CODE = 'COMMON-FORM.CUSTOMER-CODE'
   CUSTOMER_NAME = 'COMMON-FORM.CUSTOMER-NAME'
   SO_DATE = 'COMMON-FORM.SO-DATE'
   NO_OF_TANKS = 'COMMON-FORM.NO-OF-TANKS'
 
-  soStatusList = [
-    {
-      'code_type': 'SO_STATUS',
-      'code_val': 'PENDING',
-      'description': 'Pending'
-    },
-    {
-      'code_type': 'SO_STATUS',
-      'code_val': 'COMPLETED',
-      'description': 'Completed'
-    },
-    {
-      'code_type': 'SO_STATUS',
-      'code_val': 'CANCELED',
-      'description': 'Canceled'
-    },
-    {
-      'code_type': 'SO_STATUS',
-      'code_val': 'PROSESSING',
-      'description': 'Processing'
-    }
-  ];
-  
   toppingList: string[] = [
     'Extra cheese',
     'Mushroom',
@@ -131,20 +109,22 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     tankNo: '',
     customerCode: '',
     lastCargo: '',
-    etaDate: '',
+    etaDt: '',
     soNo: '',
     jobNo: '',
     purpose: '',
     soStatus: ''
   }
 
-  exampleDatabase?: AdvanceTableService;
-  dataSource!: ExampleDataSource;
   selection = new SelectionModel<AdvanceTable>(true, []);
   id?: number;
   advanceTable?: AdvanceTable;
 
-  sotDS: StoringOrderDS;
+  cvDS: CodeValuesDS;
+  soDS: StoringOrderDS;
+  soList: StoringOrderItem[] = [];
+  soStatusCvList: CodeValuesItem[] = [];
+  loadingSoList: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -154,7 +134,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     private apollo: Apollo
   ) {
     super();
-    this.sotDS = new StoringOrderDS(this.apollo);
+    this.soDS = new StoringOrderDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -164,7 +145,6 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
-    Utility.addDefaultSelectOption(this.soStatusList, 'All', '');
   }
   refresh() {
     this.loadData();
@@ -185,133 +165,145 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       direction: tempDirection,
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result === 1) {
-        // After dialog is closed we're doing frontend updates
-        // For add we're just pushing a new row inside DataService
-        this.exampleDatabase?.dataChange.value.unshift(
-          this.advanceTableService.getDialogData()
-        );
-        this.refreshTable();
-        this.showNotification(
-          'snackbar-success',
-          'Add Record Successfully...!!!',
-          'bottom',
-          'center'
-        );
-      }
+      // if (result === 1) {
+      //   // After dialog is closed we're doing frontend updates
+      //   // For add we're just pushing a new row inside DataService
+      //   this.exampleDatabase?.dataChange.value.unshift(
+      //     this.advanceTableService.getDialogData()
+      //   );
+      //   this.refreshTable();
+      //   this.showNotification(
+      //     'snackbar-success',
+      //     'Add Record Successfully...!!!',
+      //     'bottom',
+      //     'center'
+      //   );
+      // }
     });
   }
   editCall(row: AdvanceTable) {
-    this.id = row.id;
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      data: {
-        advanceTable: row,
-        action: 'edit',
-      },
-      direction: tempDirection,
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result === 1) {
-        // When using an edit things are little different, firstly we find record inside DataService by id
-        const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-          (x) => x.id === this.id
-        );
-        // Then you update that record using data from dialogData (values you enetered)
-        if (foundIndex != null && this.exampleDatabase) {
-          this.exampleDatabase.dataChange.value[foundIndex] =
-            this.advanceTableService.getDialogData();
-          // And lastly refresh table
-          this.refreshTable();
-          this.showNotification(
-            'black',
-            'Edit Record Successfully...!!!',
-            'bottom',
-            'center'
-          );
-        }
-      }
-    });
+    // this.id = row.id;
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(FormDialogComponent, {
+    //   data: {
+    //     advanceTable: row,
+    //     action: 'edit',
+    //   },
+    //   direction: tempDirection,
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result === 1) {
+    //     // When using an edit things are little different, firstly we find record inside DataService by id
+    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
+    //       (x) => x.id === this.id
+    //     );
+    //     // Then you update that record using data from dialogData (values you enetered)
+    //     if (foundIndex != null && this.exampleDatabase) {
+    //       this.exampleDatabase.dataChange.value[foundIndex] =
+    //         this.advanceTableService.getDialogData();
+    //       // And lastly refresh table
+    //       this.refreshTable();
+    //       this.showNotification(
+    //         'black',
+    //         'Edit Record Successfully...!!!',
+    //         'bottom',
+    //         'center'
+    //       );
+    //     }
+    //   }
+    // });
   }
   deleteItem(row: AdvanceTable) {
-    this.id = row.id;
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: row,
-      direction: tempDirection,
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result === 1) {
-        const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-          (x) => x.id === this.id
-        );
-        // for delete we use splice in order to remove single object from DataService
-        if (foundIndex != null && this.exampleDatabase) {
-          this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-          this.refreshTable();
-          this.showNotification(
-            'snackbar-danger',
-            'Delete Record Successfully...!!!',
-            'bottom',
-            'center'
-          );
-        }
-      }
-    });
+    // this.id = row.id;
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    //   data: row,
+    //   direction: tempDirection,
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result === 1) {
+    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
+    //       (x) => x.id === this.id
+    //     );
+    //     // for delete we use splice in order to remove single object from DataService
+    //     if (foundIndex != null && this.exampleDatabase) {
+    //       this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
+    //       this.refreshTable();
+    //       this.showNotification(
+    //         'snackbar-danger',
+    //         'Delete Record Successfully...!!!',
+    //         'bottom',
+    //         'center'
+    //       );
+    //     }
+    //   }
+    // });
   }
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.renderedData.length;
-    return numSelected === numRows;
+    // const numSelected = this.selection.selected.length;
+    // const numRows = this.dataSource.renderedData.length;
+    // return numSelected === numRows;
+    return false;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected()
-      ? this.selection.clear()
-      : this.dataSource.renderedData.forEach((row) =>
-        this.selection.select(row)
-      );
+    // this.isAllSelected()
+    //   ? this.selection.clear()
+    //   : this.dataSource.renderedData.forEach((row) =>
+    //     this.selection.select(row)
+    //   );
   }
   removeSelectedRows() {
-    const totalSelect = this.selection.selected.length;
-    this.selection.selected.forEach((item) => {
-      const index: number = this.dataSource.renderedData.findIndex(
-        (d) => d === item
-      );
-      // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
-      this.exampleDatabase?.dataChange.value.splice(index, 1);
-      this.refreshTable();
-      this.selection = new SelectionModel<AdvanceTable>(true, []);
-    });
-    this.showNotification(
-      'snackbar-danger',
-      totalSelect + ' Record Delete Successfully...!!!',
-      'bottom',
-      'center'
-    );
+    // const totalSelect = this.selection.selected.length;
+    // this.selection.selected.forEach((item) => {
+    //   const index: number = this.dataSource.renderedData.findIndex(
+    //     (d) => d === item
+    //   );
+    //   // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
+    //   this.exampleDatabase?.dataChange.value.splice(index, 1);
+    //   this.refreshTable();
+    //   this.selection = new SelectionModel<AdvanceTable>(true, []);
+    // });
+    // this.showNotification(
+    //   'snackbar-danger',
+    //   totalSelect + ' Record Delete Successfully...!!!',
+    //   'bottom',
+    //   'center'
+    // );
   }
   public loadData() {
-    this.exampleDatabase = new AdvanceTableService(this.httpClient);
-    this.dataSource = new ExampleDataSource(
-      this.exampleDatabase,
-      this.paginator,
-      this.sort
-    );
+    this.soDS.loadItems({});
+    this.soDS.connect().subscribe(data => {
+      this.soList = data;
+      console.log(this.soList)
+    });
+    this.soDS.loading$.subscribe(loading => {
+      this.loadingSoList = loading;
+    });
+
+    const queries = [
+      { alias: 'soStatusCv', codeValType: 'SO_STATUS' }
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('soStatusCv').subscribe(data => {
+      this.soStatusCvList = data;
+      this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+    });
     // this.subs.sink = fromEvent(this.filter.nativeElement, 'keyup').subscribe(
     //   () => {
     //     if (!this.dataSource) {
@@ -338,19 +330,19 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   // export table data in excel file
   exportExcel() {
     // key name with space add in brackets
-    const exportData: Partial<TableElement>[] =
-      this.dataSource.filteredData.map((x) => ({
-        'First Name': x.fName,
-        'Last Name': x.lName,
-        Email: x.email,
-        Gender: x.gender,
-        'Birth Date': formatDate(new Date(x.bDate), 'yyyy-MM-dd', 'en') || '',
-        Mobile: x.mobile,
-        Address: x.address,
-        Country: x.country,
-      }));
+    // const exportData: Partial<TableElement>[] =
+    //   this.dataSource.filteredData.map((x) => ({
+    //     'First Name': x.fName,
+    //     'Last Name': x.lName,
+    //     Email: x.email,
+    //     Gender: x.gender,
+    //     'Birth Date': formatDate(new Date(x.bDate), 'yyyy-MM-dd', 'en') || '',
+    //     Mobile: x.mobile,
+    //     Address: x.address,
+    //     Country: x.country,
+    //   }));
 
-    TableExportUtil.exportToExcel(exportData, 'excel');
+    // TableExportUtil.exportToExcel(exportData, 'excel');
   }
 
   // context menu
@@ -366,6 +358,29 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   search() {
-    console.log(this.searchSO)
+    const where: any = {};
+
+    if (this.searchSO.soNo) {
+      where.so_no = { contains: this.searchSO.soNo };
+    }
+
+    if (this.searchSO.tankNo || this.searchSO.etaDt) {
+       const sotSome: any = {};
+
+      if (this.searchSO.tankNo) {
+        sotSome.tank_no = { contains: this.searchSO.tankNo };
+      }
+
+      if (this.searchSO.etaDt) {
+        sotSome.eta_dt = { gte: null, lte: null };
+      }
+      where.storing_order_tank = { some: sotSome };
+      debugger
+    }
+
+    if (this.searchSO.customerCode) {
+      where.customer_company = { code: { contains: this.searchSO.customerCode } };
+    }
+    this.soDS.loadItems(where);
   }
 }
