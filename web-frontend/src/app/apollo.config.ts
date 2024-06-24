@@ -11,7 +11,7 @@ import { InMemoryCache } from '@apollo/client/core';
       useFactory: (httpLink: HttpLink) => {
         return {
           cache: new InMemoryCache(),
-          link: httpLink.create({ uri: 'YOUR_GRAPHQL_ENDPOINT' }),
+          link: httpLink.create({ uri: 'https://tlx-idms-app.azurewebsites.net/graphql/' }),
         };
       },
       deps: [HttpLink],

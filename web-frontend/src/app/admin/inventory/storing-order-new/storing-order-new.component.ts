@@ -7,7 +7,7 @@ import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -37,8 +37,11 @@ import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
-import { CodeValuesItem } from 'app/data-sources/code_values'
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
+import { CustomerCompanyDS } from 'app/data-sources/customer-company'
 import { MatRadioModule } from '@angular/material/radio';
+import { Apollo } from 'apollo-angular';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -72,7 +75,8 @@ import { MatRadioModule } from '@angular/material/radio';
     FeatherIconsComponent,
     MatProgressSpinnerModule,
     RouterLink,
-    MatRadioModule
+    MatRadioModule,
+    MatDividerModule,
   ]
 })
 export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -138,11 +142,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     'IMO6',
   ];
 
-  clean_statusList: string[] = [
-    'Unknown',
-    'Clean',
-    'Dirty'
-  ];
+  clean_statusList: CodeValuesItem[] = [];
 
   repairList: string[] = [
     'No Repair',
@@ -168,18 +168,22 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   repairCv: CodeValuesItem[] = []
   yesnoCv: CodeValuesItem[] = []
 
-
   // selectedGroup?: CleanGroup;
+  cvDS: CodeValuesDS;
+  ccDS: CustomerCompanyDS;
 
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
+    private apollo: Apollo
   ) {
     super();
     this.initSOForm();
     this.initSOTForm();
+    this.cvDS = new CodeValuesDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -191,6 +195,23 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.loadData();
   }
   public loadData() {
+    const queries = [
+      { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
+      { alias: 'repairCv', codeValType: 'REPAIR_OPTION'},
+      { alias: 'yesnoCv', codeValType: 'YES_NO'}
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.ccDS.loadItems({}, { code: { contains: 'N' } });
+
+    this.cvDS.connectAlias('repairCv').subscribe(data => {
+      this.repairCv = data;
+    });
+    this.cvDS.connectAlias('clean_statusCv').subscribe(data => {
+      this.clean_statusCv = data;
+    });
+    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
+      this.yesnoCv = data;
+    });
   }
   initSOForm() {
     this.soForm = this.fb.group({
@@ -199,9 +220,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       so_notes: [''],
       haulier: [''],
     });
-    this.clean_statusCv = this.cleanStatusCodeValTest();
-    this.repairCv = this.repairCodeValTest();
-    this.yesnoCv = this.yesnoCodeValTest();
+    // this.clean_statusCv = this.cleanStatusCodeValTest();
+    // this.repairCv = this.repairCodeValTest();
+    // this.yesnoCv = this.yesnoCodeValTest();
   }
   initSOTForm() {
     this.sotForm = this.fb.group({
@@ -209,7 +230,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       tank_no: [''],
       last_cargo: [''],
       job_no: [''],
-      eta_date: [''],
+      eta_dt: [''],
       purpose_storage: [''],
       purpose_steam: [''],
       purpose_cleaning: [''],
@@ -219,7 +240,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       required_temp: [''],
       flash_point: [''],
       remarks: [''],
-      etr_date: [''],
+      etr_dt: [''],
       st: [''],
       o2_level: [''],
       open_on_gate: ['']
@@ -244,7 +265,42 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       panelClass: colorName,
     });
   }
-  editCall(row: StoringOrderTankItem, index: number) {
+  addOrderDetails(event: Event) {
+    event.preventDefault();  // Prevents the form submission
+    //this.id = row.id;
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      data: {
+        item: new StoringOrderTankItem(),
+        action: 'new',
+        langText: this.langText,
+        populateData: {
+          unit_typeList: this.unit_typeList,
+          repairCv: this.repairCv,
+          clean_statusCv: this.clean_statusCv,
+          yesnoCv: this.yesnoCv
+        },
+        index: -1
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Update the item at the specified index
+        // const data = this.sotList.data;
+        // data[result.index] = result.item;
+        // this.updateData(data); // Refresh the data source
+        this.updateData([...this.sotList.data, result.item]);
+      }
+    });
+  }
+  editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
+    event.preventDefault();  // Prevents the form submission
     //this.id = row.id;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -345,31 +401,23 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         tank_no: this.sotForm.value['tank_no'],
         last_cargo_guid: this.sotForm.value['last_cargo'],
         job_no: this.sotForm.value['job_no'],
-        eta_date: this.sotForm.value['eta_date'].getTime(),
+        eta_dt: Utility.convertToEpoch(this.sotForm.value['eta_dt']),
         purpose_storage: this.sotForm.value['purpose_storage'],
         purpose_steam: this.sotForm.value['purpose_steam'],
         purpose_cleaning: this.sotForm.value['purpose_cleaning'],
-        repair: this.sotForm.value['repair'],
-        clean_status: this.sotForm.value['clean_status'],
-        certificate: this.sotForm.value['certificate'],
+        purpose_repair_cv: this.sotForm.value['repair'],
+        clean_status_cv: this.sotForm.value['clean_status'],
+        certificate_cv: this.sotForm.value['certificate'],
         required_temp: this.sotForm.value['required_temp'],
         remarks: this.sotForm.value['remarks'],
-        etr_date: this.sotForm.value['etr_date'].getTime(),
+        etr_dt: Utility.convertToEpoch(this.sotForm.value['etr_dt']),
         st: this.sotForm.value['st'],
         o2_level: this.sotForm.value['o2_level'],
-        open_on_gate: this.sotForm.value['open_on_gate']
+        open_on_gate_cv: this.sotForm.value['open_on_gate']
       }
       this.updateData([...this.sotList.data, sot]);
     } else {
       console.log('Invalid sotForm', this.sotForm?.value);
-    }
-  }
-
-  submitSOForm(formDirective: any): void {
-    if (this.soForm!.valid) {
-      formDirective.onSubmit(undefined);  // Trigger the ngSubmit event
-    } else {
-      formDirective.onSubmit(undefined);
     }
   }
 
@@ -385,24 +433,24 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   cleanStatusCodeValTest(): CodeValuesItem[] {
     return [
-      new CodeValuesItem({ description: 'Unknown', code_val_type: 'CLEAN_STATUS', code_val: 'UNKNOWN' }),
-      new CodeValuesItem({ description: 'Clean', code_val_type: 'CLEAN_STATUS', code_val: 'CLEAN' }),
-      new CodeValuesItem({ description: 'Dirty', code_val_type: 'CLEAN_STATUS', code_val: 'DIRTY' })
+      new CodeValuesItem({ description: 'Unknown', codeValType: 'CLEAN_STATUS', codeValue: 'UNKNOWN' }),
+      new CodeValuesItem({ description: 'Clean', codeValType: 'CLEAN_STATUS', codeValue: 'CLEAN' }),
+      new CodeValuesItem({ description: 'Dirty', codeValType: 'CLEAN_STATUS', codeValue: 'DIRTY' })
     ]
   }
 
   repairCodeValTest(): CodeValuesItem[] {
     return [
-      new CodeValuesItem({ description: 'Repair', code_val_type: 'REPAIR_OPTION', code_val: 'REPAIR' }),
-      new CodeValuesItem({ description: 'No Repair', code_val_type: 'REPAIR_OPTION', code_val: 'NO_REPAIR' }),
-      new CodeValuesItem({ description: 'Offhire', code_val_type: 'REPAIR_OPTION', code_val: 'OFFHIRE' })
+      new CodeValuesItem({ description: 'Repair', codeValType: 'REPAIR_OPTION', codeValue: 'REPAIR' }),
+      new CodeValuesItem({ description: 'No Repair', codeValType: 'REPAIR_OPTION', codeValue: 'NO_REPAIR' }),
+      new CodeValuesItem({ description: 'Offhire', codeValType: 'REPAIR_OPTION', codeValue: 'OFFHIRE' })
     ]
   }
 
   yesnoCodeValTest(): CodeValuesItem[] {
     return [
-      new CodeValuesItem({ description: 'Yes', code_val_type: 'YES_NO', code_val: 'Y' }),
-      new CodeValuesItem({ description: 'No', code_val_type: 'YES_NO', code_val: 'N' })
+      new CodeValuesItem({ description: 'Yes', codeValType: 'YES_NO', codeValue: 'Y' }),
+      new CodeValuesItem({ description: 'No', codeValType: 'YES_NO', codeValue: 'N' })
     ]
   }
 }

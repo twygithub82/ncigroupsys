@@ -9,11 +9,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
+import { DatePipe } from '@angular/common';
 
 export interface DialogData {
   action?: string;
@@ -42,8 +42,8 @@ export interface DialogData {
     MatSelectModule,
     MatOptionModule,
     MatDialogClose,
+    DatePipe,
     MatNativeDateModule,
-    MatMomentDateModule,
     TranslateModule,
     MatCheckboxModule
   ],
@@ -90,23 +90,29 @@ export class FormDialogComponent {
       tank_no: [this.storingOrderTank.tank_no, [Validators.required]],
       last_cargo: [this.storingOrderTank.last_cargo_guid, [Validators.required]],
       job_no: [this.storingOrderTank.job_no, [Validators.required]],
-      eta_date: [this.storingOrderTank.eta_date ? new Date(this.storingOrderTank.eta_date) : ''],
+      eta_dt: [this.convertToDate(this.storingOrderTank.eta_dt)],
       purpose_storage: [this.storingOrderTank.purpose_storage],
       purpose_steam: [this.storingOrderTank.purpose_steam],
       purpose_cleaning: [this.storingOrderTank.purpose_cleaning],
-      repair: [this.storingOrderTank.repair],
-      clean_status: [this.storingOrderTank.clean_status],
-      certificate: [this.storingOrderTank.certificate],
+      repair: [this.storingOrderTank.purpose_repair_cv],
+      clean_status: [this.storingOrderTank.clean_status_cv],
+      certificate: [this.storingOrderTank.certificate_cv],
       required_temp: [this.storingOrderTank.required_temp],
       remarks: [this.storingOrderTank.remarks],
-      etr_date: [this.storingOrderTank.etr_date ? new Date(this.storingOrderTank.etr_date) : ''],
+      etr_dt: [this.convertToDate(this.storingOrderTank.etr_dt)],
       st: [this.storingOrderTank.st],
       o2_level: [this.storingOrderTank.o2_level],
-      open_on_gate: [this.storingOrderTank.open_on_gate]
+      open_on_gate: [this.storingOrderTank.open_on_gate_cv]
     });
   }
+  convertToDate(value: any): Date | '' {
+    if (value) {
+      const dt = new Date(value);
+      return dt;
+    }
+    return '';
+  }
   submit() {
-    // emppty stuff
     var sot: StoringOrderTankItem = {
       guid: '',
       so_guid: '',
@@ -114,19 +120,19 @@ export class FormDialogComponent {
       tank_no: this.storingOrderTankForm.value['tank_no'],
       last_cargo_guid: this.storingOrderTankForm.value['last_cargo'],
       job_no: this.storingOrderTankForm.value['job_no'],
-      eta_date: this.storingOrderTankForm.value['eta_date'].getTime(),
+      eta_dt: Utility.convertToEpoch(this.storingOrderTankForm.value['eta_dt']),// this.storingOrderTankForm.value['eta_dt'] ? this.storingOrderTankForm.value['eta_dt'].getTime() : this.storingOrderTankForm.value['eta_dt'],
       purpose_storage: this.storingOrderTankForm.value['purpose_storage'],
       purpose_steam: this.storingOrderTankForm.value['purpose_steam'],
       purpose_cleaning: this.storingOrderTankForm.value['purpose_cleaning'],
-      repair: this.storingOrderTankForm.value['repair'],
-      clean_status: this.storingOrderTankForm.value['clean_status'],
-      certificate: this.storingOrderTankForm.value['certificate'],
+      purpose_repair_cv: this.storingOrderTankForm.value['repair'],
+      clean_status_cv: this.storingOrderTankForm.value['clean_status'],
+      certificate_cv: this.storingOrderTankForm.value['certificate'],
       required_temp: this.storingOrderTankForm.value['required_temp'],
       remarks: this.storingOrderTankForm.value['remarks'],
-      etr_date: this.storingOrderTankForm.value['etr_date'].getTime(),
+      etr_dt: Utility.convertToEpoch(this.storingOrderTankForm.value['etr_dt']),
       st: this.storingOrderTankForm.value['st'],
       o2_level: this.storingOrderTankForm.value['o2_level'],
-      open_on_gate: this.storingOrderTankForm.value['open_on_gate']
+      open_on_gate_cv: this.storingOrderTankForm.value['open_on_gate_cv']
     }
     const returnDialog: DialogData = {
       item: sot,

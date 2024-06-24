@@ -23,6 +23,7 @@ import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { FeatherModule } from 'angular-feather';
 import { allIcons } from 'angular-feather/icons';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { GraphQLModule } from './apollo.config';;
 
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -66,5 +67,6 @@ export const appConfig: ApplicationConfig = {
     },
     importProvidersFrom(FeatherModule.pick(allIcons)),
     provideCharts(withDefaultRegisterables()),
+    importProvidersFrom(GraphQLModule)
   ],
 };
