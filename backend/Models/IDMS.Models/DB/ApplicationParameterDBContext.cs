@@ -53,6 +53,7 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB
 
         public DbSet<IDMS.Models.Parameter.EntityClass_CleaningProcedureSteps> cleaning_procedure_steps { get; set; }
 
+        public DbSet<IDMS.Models.Parameter.EntityClass_CleaningMethod> cleaning_method { get; set; }
 
     }
 }

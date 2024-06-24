@@ -13,8 +13,8 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using System.Diagnostics.Metrics;
 using IDMS.Models.Inventory;
-using IDMS.InGate.DB;
 using Microsoft.EntityFrameworkCore;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 
 namespace IDMS.InGate.GqlTypes
 {
@@ -28,9 +28,9 @@ namespace IDMS.InGate.GqlTypes
       //  [UseDbContext(typeof(ApplicationDBContext))]
         [UsePaging(IncludeTotalCount =true,DefaultPageSize =10)]
        // [UseProjection]
-        [UseFiltering(typeof(Filters.in_gate_filtertype))]
+        [UseFiltering(typeof(IDMS.Models.Filters.in_gate_filtertype))]
         [UseSorting]
-        public  IQueryable<EntityClass_InGateWithTank> QueryInGates([Service] ApplicationDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        public  IQueryable<EntityClass_InGateWithTank> QueryInGates([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             IQueryable<EntityClass_InGateWithTank> query = null;
            // List<EntityClass_InGate> retInGates = new List<EntityClass_InGate>();
@@ -38,7 +38,9 @@ namespace IDMS.InGate.GqlTypes
             {
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                 query = context.in_gate.Where(i=>i.delete_dt == null ).Include(s => s.tank.delete_dt==null );
+                 query = context.in_gate.Where(i=>i.delete_dt == null || i.delete_dt == 0)
+                    .Include(s => s.tank ).Where(i=>i.tank!=null).Where(i=>i.tank.delete_dt==null || i.tank.delete_dt==0)
+                    .Include(s=>s.tank.storing_order);
 
             }
             catch

@@ -1,8 +1,8 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate.Authorization;
-using IDMS.InGate.DB;
 using IDMS.Models;
 using IDMS.Models.Inventory;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +14,7 @@ namespace IDMS.InGate.GqlTypes
     public class InGate_MutationType
     {
        //[Authorize]
-        public async Task<int> AddInGate([Service] ApplicationDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,EntityClass_InGate InGate)
+        public async Task<int> AddInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,EntityClass_InGate InGate)
         {
             int retval = 0;   
             try
@@ -30,35 +30,41 @@ namespace IDMS.InGate.GqlTypes
                       create_dt = InGate.create_dt,
                       driver_name =InGate.driver_name,
                       eir_doc =InGate.eir_doc,
-                      eir_dt =InGate.eir_dt,
+                      eir_date =InGate.eir_date,
                       eir_no =InGate.eir_no,
                       guid =InGate.guid,
-                      haulier =InGate.haulier,
-                      LOLO   = InGate.LOLO, 
-                      preinspection =InGate.preinspection,
+                   //   haulier =InGate.haulier,
+                      lolo_cv   = InGate.lolo_cv, 
+                      preinspection_cv =InGate.preinspection_cv,
                       so_tank_guid =InGate.so_tank_guid,
                       vehicle_no =InGate.vehicle_no,
-                      yard_guid   =InGate.yard_guid,
+                      yard_cv   =InGate.yard_cv,
                 };
 
-                context.in_gate.Add(newInGate);
-                retval= context.SaveChanges();
-                
-                //var guid = Util.GenerateGUID();
-                //InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
-                //var command = @$"Insert into in_gate (guid,so_tank_guid,eir_no,eir_dt,vehicle_no,yard_guid,driver_name,LOLO,preinspection,haulier,create_dt,create_by)
-                //            values ('{InGate.guid}','{InGate.so_tank_guid}','{InGate.eir_no}',{InGate.eir_dt},'{InGate.vehicle_no}','{InGate.yard_guid}','{InGate.driver_name}',
-                //            '{InGate.LOLO}','{InGate.preinspection}','{InGate.haulier}',{epochNow},'{uid}')";
+              
+                var so_tank = context.storing_order_tank.Where(sot=> sot.guid ==InGate.so_tank_guid).Include(so=>so.storing_order).FirstOrDefault();
 
-                //var result = await GqlUtils.RunNonQueryCommand(config, command);
-                //if (result["result"]!=null)
-                //{
-                //    int count = Convert.ToInt32(result["result"]);
-                //    if(count > 0)
-                //    {
-                //        return InGate;
-                //    }
-                //}
+                if (so_tank == null)
+                {
+                    throw new GraphQLException(new Error("Tank not found", "404"));
+                }
+
+                var so = so_tank.storing_order;
+                if (so == null)
+                {
+                    throw new GraphQLException(new Error("Storing Order not found", "404"));
+                }
+
+                if(so.haulier!=InGate.haulier)
+                {
+                    so.haulier = InGate.haulier;
+                }
+
+                context.in_gate.Add(newInGate);
+
+                retval = context.SaveChanges();
+                
+               
             }
             catch
             {
@@ -68,7 +74,7 @@ namespace IDMS.InGate.GqlTypes
         }
 
         //[Authorize]
-        public async Task<int> UpdateInGate([Service] ApplicationDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, EntityClass_InGateWithTank InGate)
+        public async Task<int> UpdateInGate([Service] ApplicationInventoryDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, EntityClass_InGateWithTank InGate)
         {
             int retval = 0;
             try
@@ -79,60 +85,30 @@ namespace IDMS.InGate.GqlTypes
                     var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     InGate.update_by = uid;
                     InGate.update_dt=epochNow;
+
+                    var so_tank = context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefault();
+
+                    if (so_tank == null)
+                    {
+                        throw new GraphQLException(new Error("Tank not found", "404"));
+                    }
+
+                    var so = so_tank.storing_order;
+                    if (so == null)
+                    {
+                        throw new GraphQLException(new Error("Storing Order not found", "404"));
+                    }
+
+                    if (so.haulier != InGate.haulier)
+                    {
+                        so.haulier = InGate.haulier;
+                    }
+
                     context.in_gate.Update(InGate);
-                    retval= context.SaveChanges(true);
+                    retval= context.SaveChanges();
                    // retval = InGate;
                 }
-                //long epochNow = GqlUtils.GetNowEpochInSec();
-                //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //var guid = Util.GenerateGUID();
-                //InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
-                //var cmd = @$"update in_gate set eir_dt={InGate.eir_dt}, eir_no='{InGate.eir_no}',vehicle_no='{InGate.vehicle_no}',yard_guid='{InGate.yard_guid}',
-                //               driver_name='{InGate.driver_name}',LOLO='{InGate.LOLO}', haulier='{InGate.haulier}',
-                //              preinspection='{InGate.preinspection}',update_dt={epochNow},update_by='{uid}' where guid='{InGate.guid}' ";
-                //List<string> commands= new List<string>();
-                //commands.Add(cmd);
-                //if(InGate.tank!=null)
-                //{
-                //    var tnk=InGate.tank;
-                //    cmd = $@"update storing_order_tank set last_cargo_guid='{tnk.last_cargo_guid}', open_on_gate={(tnk.open_on_gate.Value)},
-                //        job_no='{tnk.job_no}', purpose_storage={(tnk.purpose_storage.Value)},o2_level={(tnk.o2_level.Value)}, 
-                //        remarks='{tnk.remarks}',update_dt={epochNow},update_by='{uid}' where guid='{InGate.so_tank_guid}'";
-                //    commands.Add(cmd);
-                //}
-                ////var command = @$"Insert into in_gate (guid,so_tank_guid,eir_no,vehicle_no,yard_guid,driver_name,LOLO,preinspection,create_dt)
-                ////            values ('{InGate.guid}','{InGate.so_tank_guid}','{InGate.eir_no}','{InGate.vehicle_no}','{InGate.yard_guid}','{InGate.driver_name}',
-                ////            '{InGate.LOLO}','{InGate.preinspection}',{epochNow})";
-
-                //var result = await GqlUtils.RunNonQueryCommands(config, commands);
-                //if (result["result"] != null)
-                //{
-                //    int count = Convert.ToInt32(result["result"]);
-                //    if(count > 0)
-                //    {
-                //        string sqlStatement = $"select * from idms.in_gate where guid='{InGate.guid}' and delete_dt is null";
-
-
-                //        var resultJtoken = await GqlUtils.QueryData(config, sqlStatement);
-                //        var inGateList = resultJtoken["result"];
-                //        if (inGateList?.Count() > 0)
-                //        {
-                //            var jsnInGate = inGateList[0];
-                //            var retInGate=jsnInGate.ToObject<EntityClass_InGateWithTank>();
-                //            var sqlQuery = $"select * from storing_order_tank where guid ='{retInGate.so_tank_guid}' and delete_dt is null";
-                //            var rst = await GqlUtils.QueryData(config, sqlQuery);
-
-                //            var tankList = rst["result"];
-                //            if (tankList?.Count() > 0)
-                //            {
-                //                var tankListCls = tankList.ToObject<List<EntityClass_Tank>>();
-                //                retInGate.tank = tankListCls[0];
-                //            }
-                //            return retInGate;
-
-                //        }
-                //    }
-                //}
+          
             }
             catch
             {
@@ -141,7 +117,7 @@ namespace IDMS.InGate.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteInGate([Service] ApplicationDBContext context, [Service] IConfiguration config, 
+        public async Task<int> DeleteInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
         {
             int retval =0;
@@ -157,7 +133,7 @@ namespace IDMS.InGate.GqlTypes
                     delInGate.delete_dt = epochNow;
                     delInGate.update_by=uid;
                     delInGate.update_dt=epochNow;
-                    context.in_gate.Update(delInGate);
+                
                     retval = context.SaveChanges(true);
                 }
 

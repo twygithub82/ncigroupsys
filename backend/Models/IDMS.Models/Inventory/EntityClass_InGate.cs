@@ -13,13 +13,13 @@ namespace IDMS.Models.Inventory
         public string? haulier { get; set; } = "";
         public string? eir_no { get; set; } = "";
         public string? vehicle_no { get; set; } = "";
-        public string? yard_guid { get; set; } = "";
+        public string? yard_cv { get; set; } = "";
         public string? driver_name { get; set; } = "";
-        public string? LOLO { get; set; } = "";
-        public string? preinspection { get; set; } = "";
+        public string? lolo_cv { get; set; } = "";
+        public string? preinspection_cv { get; set; } = "";
         public string? eir_doc { get; set; } = "";
 
-        public long? eir_dt { get; set; }
+        public long? eir_date { get; set; }
 
        // public EntityClass_Tank? tank { get; set; } = null;
 

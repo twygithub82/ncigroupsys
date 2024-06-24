@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.InGate.GqlTypes.Filters
+namespace IDMS.Models.Filters
 {
-    public class in_gate_filtertype:FilterInputType<EntityClass_InGateWithTank>
+    public class in_gate_filtertype : FilterInputType<EntityClass_InGateWithTank>
     {
         protected override void Configure(IFilterInputTypeDescriptor<EntityClass_InGateWithTank> descriptor)
         {
-            descriptor.Ignore(c=>c.tank);
-            
+            descriptor.Ignore(c => c.tank);
+
             base.Configure(descriptor);
         }
     }
