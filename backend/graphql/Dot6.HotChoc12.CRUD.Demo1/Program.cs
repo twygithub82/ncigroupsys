@@ -39,7 +39,7 @@ builder.Services.AddGraphQLServer()
 .AddSorting()
 .AddProjections()
 .AddMutationType<MutationType>()
-//.AddSubscriptionType<SubscriptionType>()
+.AddSubscriptionType<SubscriptionType>()
 .AddInMemorySubscriptions();
 
 

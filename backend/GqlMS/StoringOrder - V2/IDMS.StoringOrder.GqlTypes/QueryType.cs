@@ -1,13 +1,9 @@
 ﻿using HotChocolate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using System.Net;
 using CommonUtil.Core.Service;
 using System.Runtime.CompilerServices;
-using IDMS.DBAccess.Interface;
-using IDMS.StoringOrder.Model;
-using IDMS.StoringOrder.Model.DTOs;
 using IDMS.StoringOrder.GqlTypes.Repo;
 using Microsoft.EntityFrameworkCore;
 using HotChocolate.Types;
@@ -18,122 +14,78 @@ using IDMS.StoringOrder.Model.type;
 using IDMS.StoringOrder.Model.Type;
 using AutoMapper;
 using System.ComponentModel;
+using IDMS.StoringOrder.Model.CustomSorter;
+using Microsoft.EntityFrameworkCore.Query;
+using HotChocolate.Resolvers;
 
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     public class QueryType
     {
-        private readonly IDBAccess _dbAccess;
-        //private readonly SORepository _sORepository;
-
-        public QueryType([Service] IDBAccess dBAccess)
-        {
-            _dbAccess = dBAccess;
-            //_sORepository = sORepository;
-        }
-
-        [UsePaging]
+        [UsePaging(IncludeTotalCount = true , DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
-        [UseSorting]
-        public IQueryable<storing_order> GetAllStoringOrders(SODbContext context, [Service] IHttpContextAccessor httpContextAccessor)
-        {
-            var result = context.storing_order
-                 .Include(so => so.storing_order_tank)
-                 .Include(so => so.customer_company);
-
-
-
-            if(result != null)
-            {
-                return result;
-            }
-            
-            return null;
-        }
-
-
-        //[UseDbContext(typeof(SODbContext))]
-        public async Task<storing_order> GetStoringOrdersById(string id, SODbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        [UseSorting(typeof(SOSorter))]
+        public IQueryable<storing_order> GetAllStoringOrders(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
-                var courseDTO = context.storing_order
+                return context.storing_order.Where(d => d.delete_dt == null)
+                     .Include(so => so.storing_order_tank.Where(d => d.delete_dt == null))
+                     .Include(so => so.customer_company);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
+
+        [UseProjection]
+        public IQueryable<storing_order> GetStoringOrdersById(string id, AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                return context.storing_order.Where(c => c.guid.Equals(id))
+                    .Where(d => d.delete_dt == null)
                     .Include(so => so.storing_order_tank)
-                    .Include(so => so.customer_company)
-                    .FirstOrDefaultAsync(c => c.guid == id).Result;
-
-                //var courseDTO = await context.storing_order.FindAsync(id);
-
-                if (courseDTO == null)
-                {
-                    return null;
-                }
-
-                return courseDTO;
+                    .Include(so => so.customer_company);
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
-        [UsePaging]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<customer_company> GetCompany(CusComType customerCompany, SODbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<customer_company> GetCompany(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
-                IQueryable<customer_company> company;
-                if (string.IsNullOrEmpty(customerCompany.code))
-                {
-                    company = context.customer_company;
-                }
-                else
-                    company = context.customer_company.Where(c=>c.code.Contains(customerCompany.code));
-
-                if (company == null)
-                {
-                    return null;
-                }
-
-                return company;
+                return context.customer_company.Where(d => d.delete_dt == null);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
-        [UsePaging]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<customer_company_contact_person> GetContactPerson(CusComContPersonType ccContactPerson, SODbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<customer_company_contact_person> GetContactPerson(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
-                IQueryable<customer_company_contact_person> contactPerson;
-
-                contactPerson = context.customer_company_contact_person;
-                    //.Where(c => c.customer_guid == ccContactPerson.customer_guid)
-                    //.Where(c => c.name.Contains(ccContactPerson.name));
-
-                //var courseDTO = await context.storing_order.FindAsync(id);
-
-                if (contactPerson == null)
-                {
-                    return null;
-                }
-
-                return contactPerson;
+                return context.customer_company_contact_person.Where(d => d.delete_dt == null);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
@@ -141,8 +93,7 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<TankUnitType> GetTankUnitType(SODbContext context,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper)
+        public IQueryable<TankUnitType> GetTankUnitType(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
@@ -153,17 +104,16 @@ namespace IDMS.StoringOrder.GqlTypes
                     Description = c.Description
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
         [UseProjection]
-        //[UseFiltering]
+        [UseFiltering]
         [UseSorting]
-        public IQueryable<CodeValuesType> GetCodeValuesByType(CodeValuesType codeValuesType, SODbContext context,
-                [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper)
+        public IQueryable<CodeValuesType> GetCodeValuesByType(CodeValuesType codeValuesType, AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
@@ -178,23 +128,22 @@ namespace IDMS.StoringOrder.GqlTypes
                     Guid = c.Guid,
                     CodeValue = c.CodeValue,
                     CodeValType = c.CodeValType,
-                    Description= c.Description,
+                    Description = c.Description,
                     ChildCode = c.ChildCode
                 });
 
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
-        [UsePaging]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<CodeValuesType> GetCodeValues(SODbContext context,
-        [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper)
+        public IQueryable<CodeValuesType> GetCodeValues(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
@@ -207,63 +156,27 @@ namespace IDMS.StoringOrder.GqlTypes
                     ChildCode = c.ChildCode,
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
-        //[UseDbContext(typeof(SODbContext))]
-        //public IQueryable<StoringOrdersDTO> GetCourses([ScopedService] SODbContext context)
-        //{
-
-        //    context.StoringOrders.G
-
-        //    return context.StoringOrders.Select(c => new StoringOrdersDTO()
-        //    {
-        //         g
-
-
-        //    });
-        //}
-
-
-        //public async Task<List<CodeValues>> QueryCodeValues(CodeValues codeValues)
-        //{
-
-        //    List<CodeValues> codeValuesList = new List<CodeValues>();
-        //    return codeValuesList;
-        //    //Query code value table and return as a list
-
-        //}
-
-
-
-        //public async Task<StoringOder> QueryStoringOrderById(StoringOder so)
-        //{
-        //    var guid = so.guid;
-
-        //    //var order = await _dbAccess.GetDataByIdAsync<StoringOder>(soNo, "storing_order");
-        //    //if (order == null)
-        //    //{
-        //    //    throw new GraphQLException(new Error("storing order not found", "NOT_FOUND"));
-        //    //}
-        //    //return order;
-        //    return null;
-        //}
-
-        //public async Task<List<StoringOrderTank>> QueryStoringOrderTankBySOId(StoringOrderTank sot)
-        //{
-        //    var guid = sot.so_guid;
-        //    //Select Storing Ordrt Tank table n join  tarif cleaning table
-        //    //var order = await _dbAccess.GetDataByIdAsync<StoringOder>(soNo, "storing_order");
-        //    //if (order == null)
-        //    //{
-        //    //    throw new GraphQLException(new Error("storing order not found", "NOT_FOUND"));
-        //    //}
-        //    //return order;
-        //    return null;
-        //}
-
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<tariff_cleaning> GetLastCargo(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            IResolverContext resolverContext)
+        {
+            try
+            {
+                return context.tariff_cleaning.Where(tc => tc.delete_dt == null);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
     }
 }

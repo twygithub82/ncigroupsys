@@ -1,6 +1,4 @@
 using IDMS.StoringOrder.GqlTypes;
-using IDMS.DBAccess;
-using IDMS.DBAccess.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -30,7 +28,7 @@ namespace IDMS.StoringOrder.Application
 
             string connectionString = builder.Configuration.GetConnectionString("default");
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
-            builder.Services.AddDbContext<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+            builder.Services.AddDbContext<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
 
 
             var mappingConfig = new MapperConfiguration(cfg =>
@@ -53,13 +51,12 @@ namespace IDMS.StoringOrder.Application
             //builder.Services.AddEndpointsApiExplorer();
             //builder.Services.AddSwaggerGen();
             //builder.Services.AddScoped<IServiceProvider, ServiceProvider>();
-            builder.Services.AddSingleton<IDBAccess, DBAccessService>();
             //builder.Services.AddTransient<iDatabase, MySQLWrapper>();
 
 
             builder.Services.AddGraphQLServer()
-                            .RegisterService<IDBAccess>()
-                            .RegisterDbContext<SODbContext>(DbContextKind.Synchronized)
+                            .InitializeOnStartup()
+                            .RegisterDbContext<AppDbContext>(DbContextKind.Synchronized)
                             //.RegisterService<iDatabase>()
                             .AddQueryType<QueryType>()
                             .AddSubscriptionType<SubscriptionType>()

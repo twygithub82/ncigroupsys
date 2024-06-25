@@ -1,8 +1,6 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate;
 using HotChocolate.Subscriptions;
-using IDMS.DBAccess.Interface;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
 using IDMS.StoringOrder.GqlTypes.Repo;
@@ -18,16 +16,8 @@ namespace IDMS.StoringOrder.GqlTypes
 {
     public class MutationType
     {
-        //private readonly List<Cake> cakes;
-        private readonly IDBAccess _dbAccess;
-
-        public MutationType(IDBAccess dBAccess)
-        {
-            _dbAccess = dBAccess;
-        }
-
         public async Task<int> CreateStoringOrder(SOType so, List<SOTType> soTanks,
-            SODbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
             try
             {
@@ -56,17 +46,18 @@ namespace IDMS.StoringOrder.GqlTypes
                 context.storing_order.Add(soDomain);
                 var res = await context.SaveChangesAsync();
 
+                //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
 
         public async Task<int> UpdateStoringOrder(SOType so, List<SOTType> soTanks,
-            SODbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
             //id updateSO dont have guid i need to call insert command
             //for soTanks, if have guid and delete_dt > 1 need to call update (soft delete)
@@ -74,7 +65,8 @@ namespace IDMS.StoringOrder.GqlTypes
             try
             {
                 //if updateSO have guid then i need call update command
-                storing_order? soDomain = await context.storing_order.Include(s => s.storing_order_tank)
+                storing_order? soDomain = await context.storing_order.Where(d => d.delete_dt == null)
+                                        .Include(s => s.storing_order_tank)
                                         .FirstOrDefaultAsync(s => s.guid == so.guid);
                 if (soDomain == null)
                 {
@@ -173,15 +165,29 @@ namespace IDMS.StoringOrder.GqlTypes
                 context.storing_order.Update(soDomain);
                 var res = await context.SaveChangesAsync();
 
+                //TODO
                 //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
                 //await topicEventSender.SendAsync(updateCourseTopic, course);
                 return res;
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
+
+        //public async Task<SOType> DeleteStoringOrder(SOType deleteSO, [Service] ITopicEventSender sender)
+        //{
+        //    if (await _dbAccess.DeleteDataAsync(deleteSO.guid, "storing_order") >= 1)
+        //    {
+        //        await sender.SendAsync("SODeleted", deleteSO.so_no);
+        //        return deleteSO;
+        //    }
+        //    else
+        //    {
+        //        throw new GraphQLException(new Error("storing_order not found", "DELETE FAIL"));
+        //    }
+        //}
 
 
         //public async Task<storing_order> UpdateStoringOrder(storing_order updateSO, List<storing_order_tank> soTanks, bool forCancel, [Service] ITopicEventSender topicEventSender)
@@ -211,21 +217,6 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
 
-
-        public async Task<SOType> DeleteStoringOrder(SOType deleteSO, [Service] ITopicEventSender sender)
-        {
-
-            if (await _dbAccess.DeleteDataAsync(deleteSO.guid, "storing_order") >= 1)
-            {
-                await sender.SendAsync("SODeleted", deleteSO.so_no);
-                return deleteSO;
-            }
-            else
-            {
-                throw new GraphQLException(new Error("storing_order not found", "DELETE FAIL"));
-            }
-
-        }
 
 
         //public async Task<Person> CreatePerson(string name)

@@ -15,8 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IDMS.DBAccess.Interface\IDMS.DBAccess.Interface.csproj" />
-    <ProjectReference Include="..\IDMS.DBAccess\IDMS.DBAccess.Service.csproj" />
     <ProjectReference Include="..\IDMS.StoringOrder.GqlTypes\IDMS.StoringOrder.GqlTypes.csproj" />
     <ProjectReference Include="..\IDMS.StoringOrder.Model\IDMS.StoringOrder.Model.csproj" />
   </ItemGroup>

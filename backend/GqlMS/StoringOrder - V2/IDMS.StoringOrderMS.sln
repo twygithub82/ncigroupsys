@@ -9,10 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.StoringOrder.GqlTypes"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.StoringOrder.Model", "IDMS.StoringOrder.Model\IDMS.StoringOrder.Model.csproj", "{26740B81-8B32-43CA-88C5-79322FCEAF24}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.DBAccess.Service", "IDMS.DBAccess\IDMS.DBAccess.Service.csproj", "{F3F36529-4531-44F1-B303-5AE6CCB9B5C6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.DBAccess.Interface", "IDMS.DBAccess.Interface\IDMS.DBAccess.Interface.csproj", "{6D833187-ACA3-4330-8EE5-0904060AD5D0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,14 +27,6 @@ Global
 		{26740B81-8B32-43CA-88C5-79322FCEAF24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26740B81-8B32-43CA-88C5-79322FCEAF24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26740B81-8B32-43CA-88C5-79322FCEAF24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3F36529-4531-44F1-B303-5AE6CCB9B5C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3F36529-4531-44F1-B303-5AE6CCB9B5C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3F36529-4531-44F1-B303-5AE6CCB9B5C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3F36529-4531-44F1-B303-5AE6CCB9B5C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6D833187-ACA3-4330-8EE5-0904060AD5D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D833187-ACA3-4330-8EE5-0904060AD5D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D833187-ACA3-4330-8EE5-0904060AD5D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D833187-ACA3-4330-8EE5-0904060AD5D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
