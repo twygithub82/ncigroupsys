@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IDMS.Models.Tariff;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,8 +19,10 @@ namespace IDMS.Models.Parameter
 
         // public int? duration { get; set; }
 
-        public string? cleaning_group_cv { get; set; }
+        // public string? cleaning_group_cv { get; set; }
 
-        public double? cost { get; set; }
+        // public double? cost { get; set; }
+
+        public IEnumerable<EntityClass_TariffCleaning>? tariff_cleanings { get; set; }
     }
 }

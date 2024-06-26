@@ -1,4 +1,6 @@
 ﻿using IDMS.Models.Inventory;
+using IDMS.Models.Master;
+using IDMS.Models.Package;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,41 +21,64 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<EntityClass_CleaningGroupWithCleanProcedure>()
-                .HasMany(e => e.clean_procedures)
-                .WithOne(t => t.clean_group)
-                .HasForeignKey(t => t.clean_group_guid);
+            //modelBuilder.Entity<EntityClass_CleaningGroupWithCleanProcedure>()
+            //    .HasMany(e => e.clean_procedures)
+            //    .WithOne(t => t.clean_group)
+            //    .HasForeignKey(t => t.clean_group_guid);
 
 
-            modelBuilder.Entity<EntityClass_CleaningProcedureSteps>()
-                .HasOne(e=>e.clean_step)
-                .WithMany(t => t.clean_procedures)
-                .HasForeignKey(t=>t.cleaning_step_guid);
+            //modelBuilder.Entity<EntityClass_CleaningProcedureSteps>()
+            //    .HasOne(e=>e.clean_step)
+            //    .WithMany(t => t.clean_procedures)
+            //    .HasForeignKey(t=>t.cleaning_step_guid);
 
-            modelBuilder.Entity<EntityClass_CleaningProcedureSteps>()
-               .HasOne(e => e.clean_procedure)
-               .WithMany(t => t.clean_steps)
-               .HasForeignKey(t => t.cleaning_procedure_guid);
+            //modelBuilder.Entity<EntityClass_CleaningProcedureSteps>()
+            //   .HasOne(e => e.clean_procedure)
+            //   .WithMany(t => t.clean_steps)
+            //   .HasForeignKey(t => t.cleaning_procedure_guid);
 
             //modelBuilder.Entity<EntityClass_CleaningGroupWithCleanProcedure>()
             //    .HasKey(t => t.guid);
 
-            //modelBuilder.Entity<EntityClass_CleaningProcedure>()
-            //    .HasKey(e => e.guid);
+            //modelBuilder.Entity<EntityClass_CleaningCategory>()
+            //    .HasMany(i=>i.customer_companies).WithOne(c=>c.)
+            //modelBuilder.Entity<EntityClass_CleaningCategory>()
+            //    .HasMany(i => i.customer_company_cleaning_categories).WithOne(c => c.cleaning_category)
+            //    .HasForeignKey(f => f.cleaning_category_guid);
 
-            //modelBuilder.Entity<EntityClass_CleaningStep>()
-            //    .HasKey(e => e.guid);
+            //modelBuilder.Entity<EntityClass_CustomerCompany_CleaningCategory>()
+            //    .HasOne(cc => cc.customer_company).WithMany(c => c.package_cleaning)
+            //    .HasForeignKey(f => f.cleaning_category_guid);
+
+            //modelBuilder.Entity<EntityClass_CustomerCompany_CleaningCategory>()
+            //   .HasOne(cc => cc.cleaning_category).WithMany(c => c.customer_company_cleaning_categories)
+            //   .HasForeignKey(f => f.cleaning_category_guid);
+
+            modelBuilder.Entity<EntityClass_CustomerCompany>()
+                .HasKey(e => e.guid);
+
+
+            modelBuilder.Entity<EntityClass_CleaningCategory>()
+                .HasKey(e => e.guid);
+
+            modelBuilder.Entity<EntityClass_CleaningMethod>()
+                .HasKey(e => e.guid);
 
         }
 
-        public DbSet<IDMS.Models.Parameter.EntityClass_CleaningGroupWithCleanProcedure> cleaning_group { get; set; }
-        public DbSet<IDMS.Models.Parameter.EntityClass_CleaningProcedureWithSteps> cleaning_procedure { get; set; }
+        //public DbSet<IDMS.Models.Parameter.EntityClass_CleaningGroupWithCleanProcedure> cleaning_group { get; set; }
+        //public DbSet<IDMS.Models.Parameter.EntityClass_CleaningProcedureWithSteps> cleaning_procedure { get; set; }
 
-        public DbSet<IDMS.Models.Parameter.EntityClass_CleaningStep> cleaning_steps { get; set; }
+        //public DbSet<IDMS.Models.Parameter.EntityClass_CleaningStep> cleaning_steps { get; set; }
 
-        public DbSet<IDMS.Models.Parameter.EntityClass_CleaningProcedureSteps> cleaning_procedure_steps { get; set; }
+        //public DbSet<IDMS.Models.Parameter.EntityClass_CleaningProcedureSteps> cleaning_procedure_steps { get; set; }
 
         public DbSet<IDMS.Models.Parameter.EntityClass_CleaningMethod> cleaning_method { get; set; }
 
+        public DbSet<IDMS.Models.Parameter.EntityClass_CleaningCategory> cleaning_category { get; set; }
+
+        public DbSet<IDMS.Models.Master.EntityClass_CustomerCompany> customer_company { get; set; }
+
+        public DbSet<IDMS.Models.Package.EntityClass_CustomerCompany_CleaningCategory> customer_company_cleaning_category { get; set; }
     }
 }
