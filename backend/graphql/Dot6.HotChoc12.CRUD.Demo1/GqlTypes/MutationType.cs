@@ -12,7 +12,8 @@ public class MutationType
         {
             context.Cake.Add(newCake);
             await context.SaveChangesAsync();
-            //await topicEventSender.SendAsync(nameof(SubscriptionType.CakeCreated), newCake);
+            await topicEventSender.SendAsync(nameof(SubscriptionType.CakeCreated), newCake);
+
             return newCake;
         }
         catch(Exception ex)

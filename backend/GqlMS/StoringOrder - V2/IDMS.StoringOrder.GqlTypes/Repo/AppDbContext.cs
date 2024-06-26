@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace IDMS.StoringOrder.GqlTypes.Repo
 {
-    public class SODbContext : DbContext
+    public class AppDbContext : DbContext
     {
-        public SODbContext(DbContextOptions<SODbContext> options)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
         public DbSet<storing_order> storing_order { get; set; }
@@ -16,6 +16,7 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
         public DbSet<customer_company_contact_person> customer_company_contact_person { get; set; }
         public DbSet<TankUnit> tank_unit_type { get; set; }
         public DbSet<CodeValues> code_values { get; set; }
+        public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,10 +26,10 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
                 .HasForeignKey(x => x.customer_company_guid);
             });
 
-            modelBuilder.Entity<customer_company>(c =>
+            modelBuilder.Entity<customer_company>(e =>
             {
                 //c.HasKey(c => c.guid);
-                c.HasMany(c => c.cc_contact_person).WithOne(x => x.customer_company)
+                e.HasMany(c => c.cc_contact_person).WithOne(x => x.customer_company)
                 .HasForeignKey(x => x.customer_guid);
             });
 
@@ -37,6 +38,13 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
                 //e.HasKey(t => t.guid);
                 e.HasOne(st => st.storing_order).WithMany(st => st.storing_order_tank)       // Navigation property in StoringOrderTank
                 .HasForeignKey(st => st.so_guid);
+            });
+
+            modelBuilder.Entity<tariff_cleaning>(e =>
+            {
+                //c.HasKey(c => c.guid);
+                e.HasMany(tc => tc.sot).WithOne(st => st.tariff_cleaning)
+                .HasForeignKey(st => st.last_cargo_guid);
             });
 
             base.OnModelCreating(modelBuilder);

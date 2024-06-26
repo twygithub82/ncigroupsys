@@ -13,6 +13,7 @@ namespace IDMS.StoringOrder.Model.Domain
     public class storing_order : Base
     {
         [Key]
+        [IsProjected(true)]
         public string guid { get; set; }
 
         public string? contact_person { get; set; }
@@ -24,6 +25,8 @@ namespace IDMS.StoringOrder.Model.Domain
         public string? so_no { get; set; }
 
         public string? so_notes { get; set; }
+
+        public string? remarks { get; set; }
 
         public string? customer_company_guid { get; set; }
 

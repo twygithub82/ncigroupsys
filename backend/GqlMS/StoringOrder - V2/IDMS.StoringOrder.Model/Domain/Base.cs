@@ -10,7 +10,7 @@ namespace IDMS.StoringOrder.Model.Domain
 {
     public class Base
     {
-
+        [IsProjected(true)]
         public long? delete_dt { get; set; } = 0;
 
         public long? create_dt { get; set; } = DateTime.Now.ToEpochTime();
