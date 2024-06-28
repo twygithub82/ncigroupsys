@@ -6,7 +6,7 @@ using IDMS.Models.Tariff.Cleaning.GqlTypes;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
-
+using HotChocolate.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +23,7 @@ builder.Services.AddDbContextPool<ApplicationTariffDBContext>(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
+                .RegisterDbContext<ApplicationTariffDBContext>(DbContextKind.Synchronized)
                 .AddAuthorization()
                .AddQueryType<IDMS.Models.Tariff.Cleaning.GqlTypes.TariffCleaning_QueryType>()
                .AddMutationType<IDMS.Models.Tariff.Cleaning.GqlTypes.TariffCleanning_MutationType>()

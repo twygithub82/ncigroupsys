@@ -23,6 +23,18 @@ namespace IDMS.Models.Parameter
 
         // public double? cost { get; set; }
 
+        
+    }
+
+    public class EntityClass_CleaningMethodWithTariff: EntityClass_Dates
+    {
+        [Key]
+        public string? guid { get; set; }
+
+        public string? name { get; set; }
+
+        public string? description { get; set; }
+
         public IEnumerable<EntityClass_TariffCleaning>? tariff_cleanings { get; set; }
     }
 }

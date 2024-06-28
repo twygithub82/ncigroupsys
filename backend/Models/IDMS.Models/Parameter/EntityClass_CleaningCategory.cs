@@ -28,6 +28,23 @@ namespace IDMS.Models.Parameter
      
     }
 
+    public class EntityClass_CleaningCategoryWithTariff: EntityClass_Dates
+    {
+        [Key]
+        public string? guid { get; set; }
+
+        public string? name { get; set; }
+
+        public string? description { get; set; }
+
+        // public int? duration { get; set; }
+
+        // public string? cleaning_group_cv { get; set; }
+
+        public double? cost { get; set; }
+        public IEnumerable<EntityClass_TariffCleaning>? tariff_cleanings { get; set; }
+    }
+
     public class EntityClass_CleaningCategoryWithCustomerCompanyAndCleaningCategory: EntityClass_CleaningCategory
     {
         public IEnumerable<EntityClass_CustomerCompany>? customer_companies { get; set; }

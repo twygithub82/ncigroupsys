@@ -14,9 +14,9 @@ namespace IDMS.Models.Tariff
         [Key]
         public string guid {  get; set; }
 
-        public string? cargo_name {  get; set; }
+        public string? cargo {  get; set; }
 
-        public string? alias_name {  get; set; }
+        public string? alias {  get; set; }
 
         public string? description { get; set; }
 
@@ -26,28 +26,20 @@ namespace IDMS.Models.Tariff
 
         public string? cleaning_method_guid { get; set; }
 
-        public EntityClass_CleaningMethod? cleaning_method { get; set; }
-
-
         public string? cleaning_category_guid { get; set; }
-
-        public EntityClass_CleaningCategory? cleaning_category { get; set; }
-
-
-
-        // public IEnumerable<EntityClass_CustomerCompany_TariffCleaning>? customer_company_tariff_clean {  get; set; }  
         public int? flash_point {  get; set; }
         
         public string? in_gate_alert { get; set; }
 
         public string? depot_note { get; set; }
 
-        public double? cost { get; set; }
+        //public double? cost { get; set; }
 
-        public string? cost_type_cv { get; set; }
+        //public string? cost_type_cv { get; set; }
 
-        public string? class_no_cv { get; set; }
+        public string? class_cv { get; set; }
 
+        public string? class_child_cv { get; set; }
         public string? hazard_level_cv {  get; set; }
 
         public string? ban_type_cv { get; set; }
@@ -56,10 +48,14 @@ namespace IDMS.Models.Tariff
 
         public string? open_on_gate_cv { get; set; }
 
-        public string? rebate_type_cv { get; set; }
+        //public string? rebate_type_cv { get; set; }
+        public EntityClass_CleaningMethodWithTariff? cleaning_method { get; set; }
 
-
+        public EntityClass_CleaningCategoryWithTariff? cleaning_category { get; set; }
 
 
     }
+
+    
+
 }

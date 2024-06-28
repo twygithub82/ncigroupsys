@@ -24,9 +24,13 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
             {
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                query = context.tariff_cleaning.Where(i => i.delete_dt == null||i.delete_dt==0);
+                query = context.tariff_cleaning.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                      .Include(tc => tc.cleaning_method)
+                      .Include(tc => tc.cleaning_category)
+                      .Where(tc => (tc.cleaning_method.delete_dt == null || tc.cleaning_method.delete_dt == 0) &&
+                       (tc.cleaning_category.delete_dt == null || tc.cleaning_category.delete_dt == 0));
 
-                
+
 
             }
             catch
@@ -35,27 +39,7 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
             }
 
             return query;
-            //List<EntityClass_CleaningProcedure> retval = new List<EntityClass_CleaningProcedure>();
-            //try
-            //{
-
-            //    GqlUtils.IsAuthorize(config, httpContextAccessor);
-
-            //    string sqlStatement = "select * from idms.cleaning_procedure where  delete_dt is null";
-            //    var resultJtoken = await GqlUtils.QueryData(config, sqlStatement);
-            //    var resultList = resultJtoken["result"];
-            //    if (resultList?.Count() > 0)
-            //    {
-            //        retval = resultList.ToObject<List<EntityClass_CleaningProcedure>>();
-            //    }
-
-            //}
-            //catch
-            //{
-            //    throw;
-            //}
-
-            //return retval;
+           
         }
 
 

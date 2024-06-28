@@ -12,6 +12,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace IDMS.Models.Tariff.Cleaning.GqlTypes
 {
@@ -29,43 +30,29 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
                 var newTariffClean = new EntityClass_TariffCleaning();
                 newTariffClean.guid = NewTariffClean.guid;
                 newTariffClean.description = NewTariffClean.description;
-                newTariffClean.cost = NewTariffClean.cost;
-                newTariffClean.cargo_name = NewTariffClean.cargo_name;
+                newTariffClean.alias = NewTariffClean.alias;
+               // newTariffClean.cost = NewTariffClean.cost;
+                newTariffClean.cargo = NewTariffClean.cargo;
                 newTariffClean.un_no = NewTariffClean.un_no;
+                newTariffClean.cleaning_category_guid = NewTariffClean.cleaning_category_guid;
                 newTariffClean.cleaning_method_guid = NewTariffClean.cleaning_method_guid;
                 newTariffClean.ban_type_cv = NewTariffClean.ban_type_cv;
-                newTariffClean.class_no_cv = NewTariffClean.class_no_cv;
-                newTariffClean.cost_type_cv = NewTariffClean.cost_type_cv;
+                newTariffClean.class_cv = NewTariffClean.class_cv;
+                newTariffClean.class_child_cv = NewTariffClean.class_child_cv;
+                //  newTariffClean.cost_type_cv = NewTariffClean.cost_type_cv;
                 newTariffClean.depot_note = NewTariffClean.depot_note;
                 newTariffClean.flash_point = NewTariffClean.flash_point;
                 newTariffClean.hazard_level_cv = NewTariffClean.hazard_level_cv;
                 newTariffClean.nature_cv = NewTariffClean.nature_cv;
                 newTariffClean.open_on_gate_cv = NewTariffClean.open_on_gate_cv;
-                newTariffClean.rebate_type_cv = NewTariffClean.rebate_type_cv;
-                newTariffClean.alias_name = NewTariffClean.alias_name;
+             //   newTariffClean.rebate_type_cv = NewTariffClean.rebate_type_cv;
+                newTariffClean.alias = NewTariffClean.alias;
                 newTariffClean.in_gate_alert = NewTariffClean.in_gate_alert;
                 newTariffClean.remarks = NewTariffClean.remarks;
 
                 newTariffClean.create_by = uid;
                 newTariffClean.create_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_cleaning.Add(newTariffClean);
-
-                var customercompanies = context.customer_company.Where(i => i.delete_dt == null || i.delete_dt == 0);
-
-                foreach(var company in customercompanies)
-                {
-                    var customercompany_tariffcleaning = new EntityClass_CustomerCompany_TariffCleaning();
-                    customercompany_tariffcleaning.guid = Util.GenerateGUID();
-                    customercompany_tariffcleaning.tariff_cleaning_guid = NewTariffClean.guid;
-                    customercompany_tariffcleaning.initial_price = newTariffClean.cost;
-                    customercompany_tariffcleaning.adjusted_price = newTariffClean.cost;
-                    customercompany_tariffcleaning.remarks= newTariffClean.remarks;
-                    customercompany_tariffcleaning.customer_company_guid=company.guid;
-                    customercompany_tariffcleaning.create_by = uid;
-                    customercompany_tariffcleaning.create_dt= GqlUtils.GetNowEpochInSec();
-                    context.customer_company_tariff_cleaning.Add(customercompany_tariffcleaning);
-                }
-                
                
               retval=context.SaveChanges();
             }
@@ -85,29 +72,29 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var guid = UpdateTariffClean.guid;
-                var dbTarrifClean = context.tariff_cleaning.Find(guid);
-                if(dbTarrifClean == null)
+                var dbTariffClean = context.tariff_cleaning.Find(guid);
+                if(dbTariffClean == null)
                 {
                     throw new GraphQLException(new Error("The Cleaning Procedure not found", "500"));
                 }
-                dbTarrifClean.description = UpdateTariffClean.description;
-                dbTarrifClean.cost = UpdateTariffClean.cost;
-                dbTarrifClean.cargo_name = UpdateTariffClean.cargo_name;
-                dbTarrifClean.un_no = UpdateTariffClean.un_no;
-                dbTarrifClean.cleaning_method_guid = UpdateTariffClean.cleaning_method_guid;
-                dbTarrifClean.ban_type_cv = UpdateTariffClean.ban_type_cv;
-                dbTarrifClean.class_no_cv = UpdateTariffClean.class_no_cv;
-                dbTarrifClean.cost_type_cv = UpdateTariffClean.cost_type_cv;
-                dbTarrifClean.depot_note = UpdateTariffClean.depot_note;
-                dbTarrifClean.flash_point = UpdateTariffClean.flash_point;
-                dbTarrifClean.hazard_level_cv = UpdateTariffClean.hazard_level_cv;
-                dbTarrifClean.nature_cv = UpdateTariffClean.nature_cv;
-                dbTarrifClean.open_on_gate_cv = UpdateTariffClean.open_on_gate_cv;
-                dbTarrifClean.rebate_type_cv = UpdateTariffClean.rebate_type_cv;
-                dbTarrifClean.alias_name = UpdateTariffClean.alias_name;
-                dbTarrifClean.in_gate_alert = UpdateTariffClean.in_gate_alert;
-                dbTarrifClean.remarks = UpdateTariffClean.remarks;
-
+                dbTariffClean.description = UpdateTariffClean.description;
+                dbTariffClean.cargo = UpdateTariffClean.cargo;
+                dbTariffClean.un_no = UpdateTariffClean.un_no;
+                dbTariffClean.cleaning_category_guid = UpdateTariffClean.cleaning_category_guid;
+                dbTariffClean.cleaning_method_guid = UpdateTariffClean.cleaning_method_guid;
+                dbTariffClean.ban_type_cv = UpdateTariffClean.ban_type_cv;
+                dbTariffClean.class_cv = UpdateTariffClean.class_cv;
+                dbTariffClean.class_child_cv = UpdateTariffClean.class_child_cv;
+                dbTariffClean.depot_note = UpdateTariffClean.depot_note;
+                dbTariffClean.flash_point = UpdateTariffClean.flash_point;
+                dbTariffClean.hazard_level_cv = UpdateTariffClean.hazard_level_cv;
+                dbTariffClean.nature_cv = UpdateTariffClean.nature_cv;
+                dbTariffClean.open_on_gate_cv = UpdateTariffClean.open_on_gate_cv;
+                dbTariffClean.alias = UpdateTariffClean.alias;
+                dbTariffClean.in_gate_alert = UpdateTariffClean.in_gate_alert;
+                dbTariffClean.remarks = UpdateTariffClean.remarks;
+                dbTariffClean.update_by = uid;
+                dbTariffClean.update_dt = GqlUtils.GetNowEpochInSec();
                 retval = context.SaveChanges();
              
             }
