@@ -14,7 +14,7 @@ export class StoringOrderTankItem {
   public tank_no?: string;
   public last_cargo_guid?: string;
   public job_no?: string;
-  public eta_dt?: number;
+  public eta_dt?: number | Date;
   public purpose_storage?: boolean;
   public purpose_steam?: boolean;
   public purpose_cleaning?: boolean;
@@ -24,9 +24,7 @@ export class StoringOrderTankItem {
   public required_temp?: string;
   public flash_point?: string;
   public remarks?: string;
-  public etr_dt?: number;
-  public st?: string;
-  public o2_level?: string;
+  public etr_dt?: number | Date;
   public open_on_gate_cv?: string;
   public status_cv?: string;
   public storing_order?: StoringOrderItem
@@ -54,8 +52,6 @@ export class StoringOrderTankItem {
     this.flash_point = item.flash_point;
     this.remarks = item.remarks || '';
     this.etr_dt = item.etr_dt || undefined;
-    this.st = item.st || '';
-    this.o2_level = item.o2_level || '';
     this.open_on_gate_cv = item.open_on_gate_cv || '';
     this.status_cv = item.status_cv || '';
     this.create_dt = item.create_dt;

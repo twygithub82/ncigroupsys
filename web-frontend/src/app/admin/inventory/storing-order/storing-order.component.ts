@@ -30,7 +30,8 @@ import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { AdvanceTableService } from 'app/advance-table/advance-table.service';
 import { DeleteDialogComponent } from 'app/advance-table/dialogs/delete/delete.component';
 import { FormDialogComponent } from 'app/advance-table/dialogs/form-dialog/form-dialog.component';
-import { fromEvent } from 'rxjs';
+import { Observable, fromEvent } from 'rxjs';
+import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -40,6 +41,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -70,7 +73,8 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
     MatSelectModule,
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    MatAutocompleteModule,
   ]
 })
 export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -95,6 +99,11 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   CUSTOMER_NAME = 'COMMON-FORM.CUSTOMER-NAME'
   SO_DATE = 'COMMON-FORM.SO-DATE'
   NO_OF_TANKS = 'COMMON-FORM.NO-OF-TANKS'
+  LAST_CARGO = 'COMMON-FORM.LAST-CARGO'
+  TANK_NO = 'COMMON-FORM.TANK-NO'
+  JOB_NO = 'COMMON-FORM.JOB-NO'
+  PURPOSE = 'COMMON-FORM.PURPOSE'
+  ETA_DATE = 'COMMON-FORM.ETA-DATE'
 
   toppingList: string[] = [
     'Extra cheese',
@@ -105,16 +114,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     'Tomato',
   ];
 
-  searchSO = {
-    tankNo: '',
-    customerCode: '',
-    lastCargo: '',
-    etaDt: '',
-    soNo: '',
-    jobNo: '',
-    purpose: '',
-    soStatus: ''
-  }
+  searchForm?: UntypedFormGroup;
 
   selection = new SelectionModel<AdvanceTable>(true, []);
   id?: number;
@@ -122,8 +122,12 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
+  ccDS: CustomerCompanyDS;
   soList: StoringOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
+  customerCodeControl = new UntypedFormControl();
+  lastCargoControl = new UntypedFormControl();
+  customer_companyList?: Observable<CustomerCompanyItem[]>;
   loadingSoList: boolean = false;
 
   constructor(
@@ -131,11 +135,14 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     public dialog: MatDialog,
     public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
+    private fb: UntypedFormBuilder,
     private apollo: Apollo
   ) {
     super();
+    this.initSearchForm();
     this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -144,11 +151,24 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.initializeFilterCustomerCompany();
     this.loadData();
   }
   refresh() {
     this.loadData();
     console.log("test refresh");
+  }
+  initSearchForm() {
+    this.searchForm = this.fb.group({
+      so_no: [''],
+      customer_code: this.customerCodeControl,
+      last_cargo: this.lastCargoControl,
+      so_status: [''],
+      tank_no: [''],
+      job_no: [''],
+      purpose: [''],
+      eta_dt: [''],
+    });
   }
   addNew() {
     let tempDirection: Direction;
@@ -287,12 +307,11 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     // );
   }
   public loadData() {
-    this.soDS.loadItems({});
+    this.soDS.searchStoringOrder({});
     this.soDS.connect().subscribe(data => {
       this.soList = data;
-      console.log(this.soList)
     });
-    this.soDS.loading$.subscribe(loading => {
+    this.soDS.soLoading$.subscribe(loading => {
       this.loadingSoList = loading;
     });
 
@@ -304,6 +323,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       this.soStatusCvList = data;
       this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
+
+    this.customer_companyList = this.ccDS.connect();
     // this.subs.sink = fromEvent(this.filter.nativeElement, 'keyup').subscribe(
     //   () => {
     //     if (!this.dataSource) {
@@ -360,27 +381,49 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   search() {
     const where: any = {};
 
-    if (this.searchSO.soNo) {
-      where.so_no = { contains: this.searchSO.soNo };
+    if (this.searchForm!.value['so_no']) {
+      where.so_no = { contains: this.searchForm!.value['so_no'] };
     }
 
-    if (this.searchSO.tankNo || this.searchSO.etaDt) {
-       const sotSome: any = {};
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['eta_dt']) {
+      const sotSome: any = {};
 
-      if (this.searchSO.tankNo) {
-        sotSome.tank_no = { contains: this.searchSO.tankNo };
+      if (this.searchForm!.value['tank_no']) {
+        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
       }
 
-      if (this.searchSO.etaDt) {
-        sotSome.eta_dt = { gte: null, lte: null };
+      if (this.searchForm!.value['eta_dt']) {
+        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt']), lte: Utility.convertDate(this.searchForm!.value['eta_dt']) };
       }
       where.storing_order_tank = { some: sotSome };
-      debugger
     }
 
-    if (this.searchSO.customerCode) {
-      where.customer_company = { code: { contains: this.searchSO.customerCode } };
+    if (this.searchForm!.value['customer_code']) {
+      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
-    this.soDS.loadItems(where);
+
+    // TODO :: search criteria
+
+    this.soDS.searchStoringOrder(where);
+  }
+
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+
+  initializeFilterCustomerCompany() {
+    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'DESC' });
+      })
+    ).subscribe();
   }
 }

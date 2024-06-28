@@ -29,80 +29,90 @@
                     </button>
                   </div>
                   <div class="export-button m-l-10" matTooltip="XLSX">
-                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()" (click)="$event.stopPropagation()"/>
+                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                      (click)="$event.stopPropagation()" />
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
-              <div class="row">
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Tank No.</mat-label>
-                    <input matInput [(ngModel)]="searchSO.tankNo" >
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Customer Code</mat-label>
-                    <input matInput [(ngModel)]="searchSO.customerCode">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Last Cargo</mat-label>
-                    <input matInput [(ngModel)]="searchSO.lastCargo">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>ETA Date</mat-label>
-                    <input matInput [(ngModel)]="searchSO.etaDt" [matDatepicker]="eta_picker">
-                    <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
-                    <mat-datepicker #eta_picker></mat-datepicker>
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>SO No.</mat-label>
-                    <input matInput [(ngModel)]="searchSO.soNo">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Job No.</mat-label>
-                    <input matInput [(ngModel)]="searchSO.jobNo">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Purpose</mat-label>
-                    <mat-select multiple [(ngModel)]="searchSO.purpose">
-                      @for (topping of toppingList; track topping) {
-                        <mat-option [value]="topping">{{topping}}
+              <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+                <div class="row">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{SO_NO | translate}}</mat-label>
+                      <input matInput formControlName="so_no">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{CUSTOMER_CODE | translate}}</mat-label>
+                      <input matInput formControlName="customer_code" [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
+                      <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                        @for (cc of ccDS.connect() | async; track cc) {
+                        <mat-option [value]="cc">
+                          {{cc.code}} ({{cc.name}})
                         </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Status</mat-label>
-                    <mat-select [(ngModel)]="searchSO.soStatus">
-                      @for (codeValue of soStatusCvList; track codeValue) {
+                        }
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{LAST_CARGO | translate}}</mat-label>
+                      <input matInput formControlName="last_cargo" [formControl]="lastCargoControl">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{STATUS | translate}}</mat-label>
+                      <mat-select formControlName="so_status">
+                        @for (codeValue of soStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.codeValue">
                           {{codeValue.description}}
                         </mat-option>
                         }
-                    </mat-select>
-                  </mat-form-field>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
-                  <button mat-mini-fab color="primary" (click)="search()">
-                    <mat-icon>search</mat-icon>
-                  </button>
+                <div class="row">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{TANK_NO | translate}}</mat-label>
+                      <input matInput formControlName="tank_no">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{JOB_NO | translate}}</mat-label>
+                      <input matInput formControlName="job_no">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{PURPOSE | translate}}</mat-label>
+                      <mat-select multiple formControlName="purpose">
+                        @for (topping of toppingList; track topping) {
+                        <mat-option [value]="topping">{{topping}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{ETA_DATE | translate}}</mat-label>
+                      <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
+                      <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
+                      <mat-datepicker #eta_picker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                    <button mat-mini-fab color="primary" (click)="search()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </mat-expansion-panel>
           </mat-accordion>
           <div class="body overflow-auto">
@@ -128,7 +138,8 @@
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="so_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">{{SO_NO | translate}}</mat-header-cell>
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">{{SO_NO |
+                    translate}}</mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="table-img tbl-col-width-per-7">
                     <span class="mobile-label">{{SO_NO | translate}}:</span>{{row.so_no}}
                   </mat-cell>
@@ -146,8 +157,10 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="no_of_tanks">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'justify-content-center'">{{NO_OF_TANKS | translate}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'justify-content-center'">{{NO_OF_TANKS
+                    | translate}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'justify-content-center'">
                     <span class="mobile-label">{{NO_OF_TANKS | translate}}:</span> {{row.storing_order_tank.length}}
                   </mat-cell>
                 </ng-container>
@@ -172,13 +185,13 @@
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                <mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="['/admin/storing-order/edit', row.guid]"
                   [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>
             <!-- Loading spinner -->
-            @if (soDS.loading$ | async) {
+            @if (soDS.soLoading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>

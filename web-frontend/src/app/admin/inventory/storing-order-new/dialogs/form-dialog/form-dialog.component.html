@@ -2,7 +2,7 @@
   <div class="modalHeader">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        {{dialogTitle}}
+        <h3>{{dialogTitle}}</h3>
       </div>
     </div>
     <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -10,16 +10,16 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <form class="register-form m-4" [formGroup]="storingOrderTankForm" (ngSubmit)="submit()" #formDirective="ngForm">
+    <form class="register-form" [formGroup]="storingOrderTankForm" #formDirective="ngForm">
       <div class="row">
-        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-0">
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.UNIT_TYPE | translate}}</mat-label>
-                <mat-select formControlName="unit_type" required>
+                <mat-select formControlName="unit_type_guid" required>
                   @for (option of data.populateData.unit_typeList; track option) {
-                  <mat-option [value]="option">{{option}}</mat-option>
+                  <mat-option [value]="option.guid">{{option.unitType}}</mat-option>
                   }
                 </mat-select>
                 @if (storingOrderTankForm.get('unit_type')?.hasError('required')) {
@@ -38,40 +38,14 @@
                   {{data.langText.TANK_NO | translate}} {{data.langText.SO_REQUIRED | translate}}
                 </mat-error>
                 }
-              </mat-form-field>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.LAST_CARGO | translate}}</mat-label>
-                <input matInput formControlName="last_cargo" required>
-                @if (storingOrderTankForm.get('last_cargo')?.hasError('required')) {
+                @if (storingOrderTankForm.get('tank_no')?.hasError('invalidCheckDigit')) {
                 <mat-error>
-                  {{data.langText.LAST_CARGO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                  {{data.langText.TANK_NO | translate}} {{data.langText.SO_REQUIRED | translate}} HAHA
                 </mat-error>
                 }
               </mat-form-field>
             </div>
           </div>
-          <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.JOB_NO | translate}}</mat-label>
-                <input matInput formControlName="job_no">
-              </mat-form-field>
-            </div>
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.ETA_DATE | translate}}</mat-label>
-                <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
-                <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
-                <mat-datepicker #eta_picker></mat-datepicker>
-              </mat-form-field>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-0">
           <div class="row">
             <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-1">
               <div class="row">
@@ -86,16 +60,46 @@
                   </mat-checkbox>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
-                  <mat-checkbox formControlName="purpose_steam" class="m-r-5" color="primary">
-                    {{data.langText.STEAM | translate}}
-                  </mat-checkbox>
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                   <mat-checkbox formControlName="purpose_cleaning" class="m-r-5" color="primary">
                     {{data.langText.CLEANING | translate}}
                   </mat-checkbox>
                 </div>
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+                  <mat-checkbox formControlName="purpose_steam" class="m-r-5" color="primary"
+                    (change)="onPurposeSteamChange()">
+                    {{data.langText.STEAM | translate}}
+                  </mat-checkbox>
+                </div>
               </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.REQUIRED_TEMP | translate}}</mat-label>
+                <input matInput formControlName="required_temp" type="number">
+                <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.CLEAN_STATUS | translate}}</mat-label>
+                <mat-select formControlName="clean_status">
+                  @for (codeValue of data.populateData.clean_statusCv; track codeValue) {
+                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.CERTIFICATE | translate}}</mat-label>
+                <mat-select formControlName="certificate">
+                  @for (codeValue of data.populateData.yesnoCv; track codeValue) {
+                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
@@ -109,35 +113,49 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.CLEAN_STATUS | translate}}</mat-label>
-                <mat-select formControlName="clean_status">
-                  @for (codeValue of data.populateData.clean_statusCv; track codeValue) {
-                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
+                <mat-label>{{data.langText.JOB_NO | translate}}</mat-label>
+                <input matInput formControlName="job_no">
+              </mat-form-field>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.ETA_DATE | translate}}</mat-label>
+                <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
+                <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
+                <mat-datepicker #eta_picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.ETR_DATE | translate}}</mat-label>
+                <input matInput formControlName="etr_dt" [matDatepicker]="etr_picker">
+                <mat-datepicker-toggle matSuffix [for]="etr_picker"></mat-datepicker-toggle>
+                <mat-datepicker #etr_picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.LAST_CARGO | translate}}</mat-label>
+                <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo" formControlName="last_cargo_guid" required>
+                <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
+                  @for (tc of tcDS.connect() | async; track tc) {
+                  <mat-option [value]="tc">
+                    {{tc.cargo}}
+                  </mat-option>
                   }
-                </mat-select>
+                </mat-autocomplete>
+                @if (storingOrderTankForm.get('last_cargo_guid')?.hasError('required')) {
+                <mat-error>
+                  {{data.langText.LAST_CARGO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                </mat-error>
+                }
               </mat-form-field>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.CERTIFICATE | translate}}</mat-label>
-                <mat-select formControlName="certificate">
-                  @for (codeValue of data.populateData.yesnoCv; track codeValue) {
-                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.REQUIRED_TEMP | translate}}</mat-label>
-                <input matInput formControlName="required_temp" type="number">
-                <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
-              </mat-form-field>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1 p-t-20">
-              <h6>{{data.langText.FLASH_POINT | translate}}: -20&deg;C</h6>
             </div>
           </div>
           <div class="row">
@@ -148,35 +166,25 @@
               </mat-form-field>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-1">
           <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.ETR_DATE | translate}}</mat-label>
-                <input matInput formControlName="etr_dt" [matDatepicker]="etr_dt">
-                <mat-datepicker-toggle matSuffix [for]="etr_dt"></mat-datepicker-toggle>
-                <mat-datepicker #etr_dt></mat-datepicker>
-              </mat-form-field>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-10">
+              <label class="font-bold">{{data.langText.OPEN_ON_GATE | translate}}:</label>
+              <mat-radio-group formControlName="open_on_gate">
+                @for (codeValue of data.populateData.yesnoCv; track codeValue) {
+                <mat-radio-button [value]="codeValue.codeValue"
+                  color="primary">{{codeValue.description}}</mat-radio-button>
+                }
+              </mat-radio-group>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-20 p-l-20">
+              <h6>{{data.langText.FLASH_POINT | translate}}: -20&deg;C</h6>
             </div>
           </div>
         </div>
-        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-1">
-          <label class="font-bold">{{data.langText.OPEN_ON_GATE | translate}}:</label>
-          <mat-radio-group formControlName="open_on_gate" required>
-            @for (codeValue of data.populateData.yesnoCv; track codeValue) {
-            <mat-radio-button [value]="codeValue.codeValue" color="primary">{{codeValue.description}}</mat-radio-button>
-            }
-          </mat-radio-group>
-        </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
-          <button mat-flat-button color="primary" [mat-dialog-close]="1" (click)="submit()">
-            {{data.langText.UPDATE | translate}}
-          </button>
-          <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.langText.CANCEL | translate}}</button>
+        <button mat-flat-button color="primary" (click)="submit()">{{data.langText.UPDATE | translate}}</button>
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.langText.CANCEL | translate}}</button>
       </div>
     </form>
   </div>

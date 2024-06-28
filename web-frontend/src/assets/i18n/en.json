@@ -105,7 +105,8 @@
       "TEXT": "Inventory",
       "LIST": {
         "STORING-ORDER": "Storing Order",
-        "STORING-ORDER-NEW": "New Storing Order"
+        "STORING-ORDER-NEW": "New Storing Order",
+        "STORING-ORDER-EDIT": "Edit Storing Order"
       }
     }
   },
@@ -143,6 +144,7 @@
     "LAST-UPDATED": "Last Updated",
     "STATUS": "Status",
     "NEW": "New",
+    "EDIT": "Edit",
     "HEADER": "Header",
     "CUSTOMER-CODE": "Customer Code",
     "CUSTOMER-NAME": "Customer Name",

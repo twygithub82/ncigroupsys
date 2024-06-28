@@ -26,6 +26,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "storing-order/new",
     component: StoringOrderNewComponent,
+  },
+  {
+    path: "storing-order/edit/:id",
+    component: StoringOrderNewComponent,
   }
 ];
 

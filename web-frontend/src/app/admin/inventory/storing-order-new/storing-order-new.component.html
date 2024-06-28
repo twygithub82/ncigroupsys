@@ -2,57 +2,43 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="langText.NEW"></app-breadcrumb>
+      <app-breadcrumb [title]="this.so_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
+        [active_item]="this.so_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
     </div>
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <form class="ms-0" [formGroup]="soForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
           <div class="card">
             <div class="header">
-              <h2>{{langText.HEADER | translate}}</h2>
+              <h2>
+                {{langText.HEADER | translate}}
+                @if (this.so_guid) {
+                ({{ this.storingOrderItem ? this.storingOrderItem.so_no : '' }})
+                }
+              </h2>
             </div>
             <div class="body">
+              @if (soDS.soLoading$ | async) {
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
+              }
+              @if (!(soDS.soLoading$ | async)) {
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{langText.CUSTOMER_CODE | translate}}</mat-label>
                     <input type="text" matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
                       formControlName="customer_code" required>
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCleanGroupFn"
-                      (optionSelected)="onSelectCleanGroup($event)">
-                      <!-- @for (group of filteredCleanGroupOptions | async; track group) {
-                      <mat-option [value]="group">
-                        {{group.groupName}}
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                      @for (cc of ccDS.connect() | async; track cc) {
+                      <mat-option [value]="cc">
+                        {{cc.code}} ({{cc.name}})
                       </mat-option>
-                      } -->
+                      }
                     </mat-autocomplete>
                     @if (soForm?.get('customer_code')?.hasError('required')) {
                     <mat-error>
                       {{langText.CUSTOMER_CODE | translate}} {{langText.SO_REQUIRED | translate}}
-                    </mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{langText.CONTACT_PERSON | translate}}</mat-label>
-                    <input matInput formControlName="contact_person" required>
-                    @if (soForm?.get('contact_person')?.hasError('required')) {
-                    <mat-error>
-                      {{langText.CONTACT_PERSON | translate}} {{langText.SO_REQUIRED | translate}}
-                    </mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{langText.HAULIER | translate}}</mat-label>
-                    <input matInput formControlName="haulier" required>
-                    @if (soForm?.get('haulier')?.hasError('required')) {
-                    <mat-error>
-                      {{langText.HAULIER | translate}} {{langText.SO_REQUIRED | translate}}
                     </mat-error>
                     }
                   </mat-form-field>
@@ -66,6 +52,14 @@
                       {{langText.SO_NOTES | translate}} {{langText.SO_REQUIRED | translate}}
                     </mat-error>
                     }
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{langText.HAULIER | translate}}</mat-label>
+                    <input matInput formControlName="haulier">
                   </mat-form-field>
                 </div>
               </div>
@@ -199,32 +193,32 @@
                           }
                         </mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="repair">
+                      <ng-container matColumnDef="purpose_repair_cv">
                         <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'"
                           mat-sort-header>{{langText.REPAIR | translate}}</mat-header-cell>
                         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                           [ngClass]="'tbl-col-width-per-7'">
                           <span class="mobile-label">{{langText.REPAIR | translate}}:</span>
-                          {{row.repair}}
+                          {{row.purpose_repair_cv}}
                         </mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="status">
+                      <ng-container matColumnDef="status_cv">
                         <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'"
                           mat-sort-header>{{langText.STATUS | translate}}</mat-header-cell>
                         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                           [ngClass]="'tbl-col-width-per-7'">
                           <span class="mobile-label">{{langText.CLEAN_STATUS | translate}}:</span>
-                          {{row.clean_status}}
+                          {{row.status_cv}}
                         </mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="certificate">
+                      <ng-container matColumnDef="certificate_cv">
                         <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-9'"
                           mat-sort-header>{{langText.CERTIFICATE | translate}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                           [ngClass]="'tbl-col-width-per-9'">
                           <span class="mobile-label">{{langText.CERTIFICATE | translate}}:</span>
-                          {{row.certificate}}
+                          {{row.certificate_cv}}
                         </mat-cell>
                       </ng-container>
                       <!-- actions -->
@@ -232,7 +226,7 @@
                         <mat-header-cell class="pr-0" [ngClass]="'tbl-col-width-per-7'" *matHeaderCellDef>
                           <!-- <i class="fas fa-ellipsis-v"></i> -->
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i=index;" class="pr-0" [ngClass]="'tbl-col-width-per-7  '">
+                        <mat-cell *matCellDef="let row; let i=index;" class="pr-0" [ngClass]="'tbl-col-width-per-7'">
                           <button mat-icon-button color="accent" (click)="handleDelete($event, row, i)"
                             class="tbl-action-btn">
                             <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
@@ -240,7 +234,7 @@
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
+                      <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;" [ngClass]="{'deleted_row': row.delete_dt, 'edited_row': !row.delete_dt && row.edited}"
                         (click)="editOrderDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                     </table>
@@ -253,10 +247,12 @@
                   }
                 </div>
               </div>
+              }
               <mat-divider></mat-divider>
               <div class="row m-t-10">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                  <button mat-flat-button aria-label="Back to previoys page" [routerLink]="['/admin/storing-order']">
+                  <button mat-flat-button aria-label="Back to previoys page" (click)="$event.preventDefault();"
+                    [routerLink]="['/admin/storing-order']">
                     <mat-icon>chevron_left</mat-icon>Back
                   </button>
                 </div>
@@ -265,7 +261,7 @@
                     <mat-icon class="col-white">add</mat-icon>{{langText.ORDER_DETAILS | translate}}
                   </button>
                   <button mat-flat-button color="primary">
-                    Submit &amp; Save
+                    <mat-icon>save</mat-icon>Submit &amp; Save
                   </button>
                 </div>
               </div>

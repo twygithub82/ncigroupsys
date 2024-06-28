@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -28,8 +28,8 @@ import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-
 import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { fromEvent } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -38,10 +38,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS } from 'app/data-sources/customer-company'
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
 import { MatRadioModule } from '@angular/material/radio';
 import { Apollo } from 'apollo-angular';
 import { MatDividerModule } from '@angular/material/divider';
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { Observable } from 'rxjs';
+import { TankDS, TankItem } from 'app/data-sources/tank';
+import { TariffCleaningDS } from 'app/data-sources/tariff_cleaning'
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -89,22 +93,23 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     'purpose_storage',
     'purpose_steam',
     'purpose_cleaning',
-    'repair',
-    'status',
-    'certificate',
+    'purpose_repair_cv',
+    'status_cv',
+    'certificate_cv',
     'actions'
   ];
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-NEW'
+  pageTitleNew = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-NEW'
+  pageTitleEdit = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
   ]
   langText = {
     NEW: 'COMMON-FORM.NEW',
+    EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.HEADER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     SO_NO: 'COMMON-FORM.SO-NO',
-    CONTACT_PERSON: 'COMMON-FORM.CONTACT-PERSON',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
     ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
@@ -130,17 +135,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
-    CANCEL: 'COMMON-FORM.CANCEL'
+    CANCEL: 'COMMON-FORM.CANCEL',
+    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
   }
-
-  unit_typeList: string[] = [
-    'IMO1',
-    'IMO2',
-    'IMO3',
-    'IMO4',
-    'IMO5',
-    'IMO6',
-  ];
 
   clean_statusList: CodeValuesItem[] = [];
 
@@ -155,35 +152,41 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     'No'
   ];
 
+  so_guid?: string | null;
+
   soForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
-  customerCodeControl = new UntypedFormControl();
 
-  storingOrderService?: StoringOrderService;
+  storingOrderItem: StoringOrderItem = {}
   selection = new SelectionModel<StoringOrderTankItem>(true, []);
   sotList = new MatTableDataSource<StoringOrderTankItem>();
-  //customer_companyList: CodeValuesItem[] = []
-  //unit_typeList: CodeValuesItem[] = []
+  customer_companyList?: Observable<CustomerCompanyItem[]>;
+  unit_typeList: TankItem[] = []
   clean_statusCv: CodeValuesItem[] = []
   repairCv: CodeValuesItem[] = []
   yesnoCv: CodeValuesItem[] = []
 
-  // selectedGroup?: CleanGroup;
+  customerCodeControl = new UntypedFormControl();
+
+  soDS: StoringOrderDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
+  tDS: TankDS;
 
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
-    private apollo: Apollo
+    private apollo: Apollo,
+    private route: ActivatedRoute
   ) {
     super();
     this.initSOForm();
-    this.initSOTForm();
+    this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.tDS = new TankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -192,16 +195,56 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.initializeFilter();
     this.loadData();
   }
+  initSOForm() {
+    this.soForm = this.fb.group({
+      customer_company_guid: [''],
+      customer_code: this.customerCodeControl,
+      so_notes: [''],
+      haulier: [''],
+    });
+  }
+  initializeFilter() {
+    this.soForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+          this.soForm!.get('customer_company_guid')!.setValue(value.guid);
+        }
+        this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' });
+      })
+    ).subscribe();
+  }
   public loadData() {
+    this.customer_companyList = this.ccDS.connect();
+    this.so_guid = this.route.snapshot.paramMap.get('id');
+    if (this.so_guid) {
+      // EDIT
+      this.soDS.getStoringOrderByID(this.so_guid);
+      this.soDS.connect().subscribe(data => {
+        if (data && data[0]) {
+          this.storingOrderItem = data[0];
+          this.populateSOForm(this.storingOrderItem);
+        }
+      });
+    } else {
+      // NEW
+      //this.pageTitle = `${this.langText.NEW} ${this.langText.STORING_ORDER}` //'MENUITEMS.INVENTORY.LIST.STORING-ORDER-NEW';
+    }
     const queries = [
       { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
-      { alias: 'repairCv', codeValType: 'REPAIR_OPTION'},
-      { alias: 'yesnoCv', codeValType: 'YES_NO'}
+      { alias: 'repairCv', codeValType: 'REPAIR_OPTION' },
+      { alias: 'yesnoCv', codeValType: 'YES_NO' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.ccDS.loadItems({}, { code: { contains: 'N' } });
+    this.tDS.loadItems();
 
     this.cvDS.connectAlias('repairCv').subscribe(data => {
       this.repairCv = data;
@@ -212,45 +255,23 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCv = data;
     });
-  }
-  initSOForm() {
-    this.soForm = this.fb.group({
-      customer_code: [''],
-      contact_person: [''],
-      so_notes: [''],
-      haulier: [''],
-    });
-    // this.clean_statusCv = this.cleanStatusCodeValTest();
-    // this.repairCv = this.repairCodeValTest();
-    // this.yesnoCv = this.yesnoCodeValTest();
-  }
-  initSOTForm() {
-    this.sotForm = this.fb.group({
-      unit_type: [''],
-      tank_no: [''],
-      last_cargo: [''],
-      job_no: [''],
-      eta_dt: [''],
-      purpose_storage: [''],
-      purpose_steam: [''],
-      purpose_cleaning: [''],
-      repair: [''],
-      clean_status: [''],
-      certificate: [''],
-      required_temp: [''],
-      flash_point: [''],
-      remarks: [''],
-      etr_dt: [''],
-      st: [''],
-      o2_level: [''],
-      open_on_gate: ['']
+    this.tDS.connect().subscribe(data => {
+      this.unit_typeList = data
     });
   }
-  displayCleanGroupFn(group: CleanGroup): string {
-    return group && group.groupName ? group.groupName : '';
+  populateSOForm(so: StoringOrderItem): void {
+    this.soForm!.patchValue({
+      customer_company_guid: so.customer_company_guid, // Assuming companyId is the foreign key in the bill object
+      customer_code: so.customer_company, // This should be an object with code and name
+      so_notes: so.so_notes,
+      haulier: so.haulier
+    });
+    if (so.storing_order_tank) {
+      this.updateData(so.storing_order_tank);
+    }
   }
-  onSelectCleanGroup(event: any) {
-    // this.selectedGroup = event.option.value;
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
   showNotification(
     colorName: string,
@@ -291,10 +312,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Update the item at the specified index
-        // const data = this.sotList.data;
-        // data[result.index] = result.item;
-        // this.updateData(data); // Refresh the data source
         this.updateData([...this.sotList.data, result.item]);
       }
     });
@@ -325,10 +342,13 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Update the item at the specified index
-        const data = this.sotList.data;
-        data[result.index] = result.item;
-        this.updateData(data); // Refresh the data source
+        const data = [...this.sotList.data];
+        const updatedItem = {
+          ...result.item,
+          edited: true
+        };
+        data[result.index] = updatedItem;
+        this.updateData(data);
       }
     });
   }
@@ -341,17 +361,27 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: row,
+      data: {
+        item: row,
+        langText: this.langText,
+        index: index
+      },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result === 'confirmed') {
-        if (row.guid) {
-          // TODO :: update delete dt
+      if (result.action === 'confirmed') {
+        if (result.item.guid) {
+          const data = [...this.sotList.data];
+          const updatedItem = {
+            ...result.item,
+            delete_dt: Utility.getDeleteDtEpoch()
+          };
+          data[result.index] = updatedItem;
+          this.updateData(data); // Refresh the data source
         } else {
-          const data = this.sotList.data;
+          const data = [...this.sotList.data];
           data.splice(index, 1);
-          this.sotList.data = data;
+          this.updateData(data); // Refresh the data source
         }
       }
     });
@@ -372,6 +402,15 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     //     );
   }
 
+  applyFilter() {
+    this.sotList.filterPredicate = (data: StoringOrderTankItem, filter: string) => {
+      // Return true if delete_dt is null (row will be shown), otherwise false
+      return data.delete_dt === null;
+    };
+    this.sotList.filter = 'apply'; // Trigger the filter with a non-empty string
+    console.log(this.sotList.data)
+  }
+
   // context menu
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
     event.preventDefault();
@@ -386,7 +425,16 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   onSOFormSubmit() {
     if (this.soForm?.valid) {
-      console.log('soForm Value', this.soForm.value);
+      var so: StoringOrderItem = {
+        guid: '',
+        customer_company_guid: this.soForm.value['customer_company_guid'],
+        haulier: this.soForm.value['haulier'],
+        so_no: this.soForm.value['so_no'],
+        so_notes: this.soForm.value['so_notes']
+      }
+      var sot: StoringOrderTankItem[] = this.sotList.data
+      console.log('so Value', so);
+      console.log('sot Value', sot);
     } else {
       console.log('Invalid soForm', this.soForm?.value);
     }
@@ -394,86 +442,39 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   onSOTFormSubmit() {
     if (this.sotForm?.valid) {
-      var sot: StoringOrderTankItem = {
-        guid: '',
-        so_guid: '',
-        unit_type_guid: this.sotForm.value['unit_type'],
-        tank_no: this.sotForm.value['tank_no'],
-        last_cargo_guid: this.sotForm.value['last_cargo'],
-        job_no: this.sotForm.value['job_no'],
-        eta_dt: Utility.convertToEpoch(this.sotForm.value['eta_dt']),
-        purpose_storage: this.sotForm.value['purpose_storage'],
-        purpose_steam: this.sotForm.value['purpose_steam'],
-        purpose_cleaning: this.sotForm.value['purpose_cleaning'],
-        purpose_repair_cv: this.sotForm.value['repair'],
-        clean_status_cv: this.sotForm.value['clean_status'],
-        certificate_cv: this.sotForm.value['certificate'],
-        required_temp: this.sotForm.value['required_temp'],
-        remarks: this.sotForm.value['remarks'],
-        etr_dt: Utility.convertToEpoch(this.sotForm.value['etr_dt']),
-        st: this.sotForm.value['st'],
-        o2_level: this.sotForm.value['o2_level'],
-        open_on_gate_cv: this.sotForm.value['open_on_gate']
-      }
-      this.updateData([...this.sotList.data, sot]);
+      // var sot: StoringOrderTankItem = {
+      //   guid: '',
+      //   so_guid: '',
+      //   unit_type_guid: this.sotForm.value['unit_type'],
+      //   tank_no: this.sotForm.value['tank_no'],
+      //   last_cargo_guid: this.sotForm.value['last_cargo'],
+      //   job_no: this.sotForm.value['job_no'],
+      //   eta_dt: Utility.convertToEpoch(this.sotForm.value['eta_dt']),
+      //   purpose_storage: this.sotForm.value['purpose_storage'],
+      //   purpose_steam: this.sotForm.value['purpose_steam'],
+      //   purpose_cleaning: this.sotForm.value['purpose_cleaning'],
+      //   purpose_repair_cv: this.sotForm.value['repair'],
+      //   clean_status_cv: this.sotForm.value['clean_status'],
+      //   certificate_cv: this.sotForm.value['certificate'],
+      //   required_temp: this.sotForm.value['required_temp'],
+      //   remarks: this.sotForm.value['remarks'],
+      //   etr_dt: Utility.convertToEpoch(this.sotForm.value['etr_dt']),
+      //   open_on_gate_cv: this.sotForm.value['open_on_gate']
+      // }
+      // this.updateData([...this.sotList.data, sot]);
     } else {
       console.log('Invalid sotForm', this.sotForm?.value);
     }
   }
 
   updateData(newData: StoringOrderTankItem[]): void {
-    this.sotList.data = newData;
+    this.sotList.data = [...newData];
+    //this.applyFilter();
   }
 
   handleDelete(event: Event, row: any, index: number): void {
     event.preventDefault();  // Prevents the form submission
     event.stopPropagation(); // Stops event propagation
     this.deleteItem(row, index);
-  }
-
-  cleanStatusCodeValTest(): CodeValuesItem[] {
-    return [
-      new CodeValuesItem({ description: 'Unknown', codeValType: 'CLEAN_STATUS', codeValue: 'UNKNOWN' }),
-      new CodeValuesItem({ description: 'Clean', codeValType: 'CLEAN_STATUS', codeValue: 'CLEAN' }),
-      new CodeValuesItem({ description: 'Dirty', codeValType: 'CLEAN_STATUS', codeValue: 'DIRTY' })
-    ]
-  }
-
-  repairCodeValTest(): CodeValuesItem[] {
-    return [
-      new CodeValuesItem({ description: 'Repair', codeValType: 'REPAIR_OPTION', codeValue: 'REPAIR' }),
-      new CodeValuesItem({ description: 'No Repair', codeValType: 'REPAIR_OPTION', codeValue: 'NO_REPAIR' }),
-      new CodeValuesItem({ description: 'Offhire', codeValType: 'REPAIR_OPTION', codeValue: 'OFFHIRE' })
-    ]
-  }
-
-  yesnoCodeValTest(): CodeValuesItem[] {
-    return [
-      new CodeValuesItem({ description: 'Yes', codeValType: 'YES_NO', codeValue: 'Y' }),
-      new CodeValuesItem({ description: 'No', codeValType: 'YES_NO', codeValue: 'N' })
-    ]
-  }
-}
-
-export class CleanGroup {
-  id: string;
-  groupName: string = ""
-  category: string = ""
-  minCost: number = 0
-  maxCost: number = 0
-  latUpdateDt: string = ""
-  constructor(step: CleanGroup) {
-    this.id = step.id || this.getRandomID();
-    this.groupName = step.groupName || '';
-    this.category = step.category || ''
-    this.minCost = step.minCost || 0
-    this.maxCost = step.maxCost || 0
-    this.latUpdateDt = step.latUpdateDt || ''
-  }
-  public getRandomID(): string {
-    const S4 = () => {
-      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-    };
-    return S4() + S4();
   }
 }

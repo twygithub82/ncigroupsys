@@ -28,6 +28,7 @@ export class AuthService {
 
   login(username: string, password: string, isStaff: boolean, rememberMe: boolean): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    debugger
     const loginUrl = environment.apiUrl;
     const endpoint = isStaff ? api_endpoints.staff_auth : api_endpoints.user_auth;
     const url = `${loginUrl}${endpoint}`
