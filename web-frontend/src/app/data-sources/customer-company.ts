@@ -64,23 +64,13 @@ export interface CustomerCompanyResult {
 }
 
 export const GET_COMPANY_QUERY = gql`
-  query getCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!]) {
-    companyList: company(where: $where, order: $order) {
+  query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!]) {
+    companyList: queryCustomerCompany(where: $where, order: $order) {
       nodes {
         code
         name
         guid
       }
-    }
-  }
-`;
-
-export const GET_COMPANY_BY_ID = gql`
-  query getCompanyById($id: ID!) {
-    company(id: $id) {
-      code
-      name
-      guid
     }
   }
 `;
@@ -112,15 +102,6 @@ export class CustomerCompanyDS extends DataSource<CustomerCompanyItem> {
             this.itemsSubjects.next(result.companyList.nodes);
             this.totalCount = result.totalCount;
         });
-    }
-
-    getCompanyById(id: string): Observable<any> {
-        return this.apollo.watchQuery<any>({
-            query: GET_COMPANY_BY_ID,
-            variables: { id }
-        }).valueChanges.pipe(
-            map(result => result.data.company)
-        );
     }
 
     connect(): Observable<CustomerCompanyItem[]> {

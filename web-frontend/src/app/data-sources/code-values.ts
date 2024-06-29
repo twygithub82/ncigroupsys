@@ -36,21 +36,9 @@ export interface CodeValuesResult {
     totalCount: number;
 }
 
-export const GET_CODE_VALUES_BY_TYPE = gql`
-  query getCodeValuesByType($codeValType: String!) {
-    codeValuesByType(codeValuesType: { codeValType: $codeValType }) {
-      childCode
-      codeValType
-      codeValue
-      description
-      guid
-    }
-  }
-`;
-
 export function getCodeValuesByTypeQueries(aliases: string[]): DocumentNode {
     const queries = aliases.map(alias => `
-      ${alias}: codeValuesByType(codeValuesType: $${alias}Type, order: { codeValue: ASC }) {
+      ${alias}: queryCodeValuesByType(codeValuesType: $${alias}Type, order: { codeValue: ASC }) {
         childCode
         codeValType
         codeValue
@@ -60,7 +48,7 @@ export function getCodeValuesByTypeQueries(aliases: string[]): DocumentNode {
     `).join('\n');
 
     return gql`
-      query getCodeValuesByTypeQueries(${aliases.map(alias => `$${alias}Type: CodeValuesTypeInput!`).join(', ')}) {
+      query queryCodeValuesByTypeQueries(${aliases.map(alias => `$${alias}Type: CodeValuesRequestInput!`).join(', ')}) {
         ${queries}
       }
     `;

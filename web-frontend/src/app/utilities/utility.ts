@@ -31,17 +31,17 @@ export class Utility {
 
     // Check if the input is a Moment.js object and convert to epoch time
     if (moment.isMoment(date)) {
-      return date.valueOf(); // valueOf() returns the number of milliseconds since epoch
+      return date.valueOf() / 1000; // valueOf() returns milliseconds, convert to seconds
     }
 
-    // Check if the input is a JavaScript Date object and convert to epoch time
+    // Check if the input is a JavaScript Date object and convert to epoch time in seconds
     if (date instanceof Date) {
-      return date.getTime(); // getTime() returns the number of milliseconds since epoch
+      return date.getTime() / 1000; // getTime() returns milliseconds, convert to seconds
     }
 
     // If the input is a string that can be parsed as a date
     if (typeof date === 'string' && !isNaN(Date.parse(date))) {
-      return new Date(date).getTime();
+      return new Date(date).getTime() / 1000;
     }
 
     // If the input is a number, handle it as epoch time
@@ -122,4 +122,34 @@ export class Utility {
     const epoch = today.getTime();
     return epoch;
   }
+
+  static convertBoolean(input: string | number | boolean | undefined): number | boolean | undefined {
+    if (input === undefined) return input;
+  
+    // Handle boolean to number
+    if (typeof input === 'boolean') {
+      return +input; // true -> 1, false -> 0
+    }
+  
+    // Handle number to boolean
+    if (typeof input === 'number') {
+      return input !== 0; // 0 -> false, other numbers -> true
+    }
+  
+    // Handle string to number or boolean
+    if (typeof input === 'string') {
+      // Check if the string is a number
+      if (!isNaN(Number(input))) {
+        return Number(input); // Convert to number if it's a valid number string
+      }
+      // Check if the string is a boolean
+      if (input.toLowerCase() === 'true') {
+        return true;
+      }
+      if (input.toLowerCase() === 'false') {
+        return false;
+      }
+    }
+    return undefined;
+  }  
 }

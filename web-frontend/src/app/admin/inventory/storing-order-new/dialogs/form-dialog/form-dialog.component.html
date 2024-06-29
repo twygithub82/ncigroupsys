@@ -65,8 +65,7 @@
                   </mat-checkbox>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
-                  <mat-checkbox formControlName="purpose_steam" class="m-r-5" color="primary"
-                    (change)="onPurposeSteamChange()">
+                  <mat-checkbox formControlName="purpose_steam" class="m-r-5" color="primary">
                     {{data.langText.STEAM | translate}}
                   </mat-checkbox>
                 </div>
@@ -84,7 +83,7 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.CLEAN_STATUS | translate}}</mat-label>
-                <mat-select formControlName="clean_status">
+                <mat-select formControlName="clean_status_cv">
                   @for (codeValue of data.populateData.clean_statusCv; track codeValue) {
                   <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
                   }
@@ -94,7 +93,7 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.CERTIFICATE | translate}}</mat-label>
-                <mat-select formControlName="certificate">
+                <mat-select formControlName="certificate_cv">
                   @for (codeValue of data.populateData.yesnoCv; track codeValue) {
                   <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
                   }
@@ -104,7 +103,7 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.REPAIR | translate}}</mat-label>
-                <mat-select formControlName="repair">
+                <mat-select formControlName="purpose_repair_cv">
                   @for (codeValue of data.populateData.repairCv; track codeValue) {
                   <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
                   }
@@ -142,7 +141,7 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.LAST_CARGO | translate}}</mat-label>
-                <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo" formControlName="last_cargo_guid" required>
+                <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo" formControlName="last_cargo" required>
                 <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
                   @for (tc of tcDS.connect() | async; track tc) {
                   <mat-option [value]="tc">
@@ -177,7 +176,7 @@
               </mat-radio-group>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-20 p-l-20">
-              <h6>{{data.langText.FLASH_POINT | translate}}: -20&deg;C</h6>
+              <h6>{{data.langText.FLASH_POINT | translate}}: {{ storingOrderTankForm.get('flash_point')?.value }}&deg;C</h6>
             </div>
           </div>
         </div>

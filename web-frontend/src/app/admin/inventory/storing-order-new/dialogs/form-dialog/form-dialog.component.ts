@@ -61,7 +61,7 @@ export class FormDialogComponent {
   dialogTitle: string;
   storingOrderTankForm: UntypedFormGroup;
   storingOrderTank: StoringOrderTankItem;
-  
+
   tcDS: TariffCleaningDS;
   lastCargoControl = new UntypedFormControl();
   constructor(
@@ -82,8 +82,11 @@ export class FormDialogComponent {
     }
     this.index = data.index;
     this.storingOrderTankForm = this.createStorigOrderTankForm();
-    this.onPurposeSteamChange();
     this.initializeValueChange();
+
+    if (this.storingOrderTank.tariff_cleaning) {
+      this.lastCargoControl.setValue(this.storingOrderTank.tariff_cleaning);
+    }
   }
   formControl = new UntypedFormControl('', [
     Validators.required,
@@ -99,6 +102,7 @@ export class FormDialogComponent {
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
       guid: [this.storingOrderTank.guid],
+      so_guid: [this.storingOrderTank.so_guid],
       unit_type_guid: [this.storingOrderTank.unit_type_guid, [Validators.required]],
       tank_no: [this.storingOrderTank.tank_no, [Validators.required]],
       last_cargo: this.lastCargoControl,
@@ -108,36 +112,52 @@ export class FormDialogComponent {
       purpose_storage: [this.storingOrderTank.purpose_storage],
       purpose_steam: [this.storingOrderTank.purpose_steam],
       purpose_cleaning: [this.storingOrderTank.purpose_cleaning],
-      repair: [this.storingOrderTank.purpose_repair_cv],
-      clean_status: [this.storingOrderTank.clean_status_cv],
-      certificate: [this.storingOrderTank.certificate_cv],
+      purpose_repair_cv: [this.storingOrderTank.purpose_repair_cv],
+      clean_status_cv: [this.storingOrderTank.clean_status_cv],
+      certificate_cv: [this.storingOrderTank.certificate_cv],
       required_temp: [{ value: this.storingOrderTank.required_temp, disabled: !this.storingOrderTank.purpose_steam }],
-      remarks: [{ value: this.storingOrderTank.remarks, disabled: true }],
       etr_dt: [Utility.convertDate(this.storingOrderTank.etr_dt)],
-      open_on_gate: [{ value: this.storingOrderTank.open_on_gate_cv, disabled: true }]
+      remarks: [{ value: this.storingOrderTank.tariff_cleaning?.remarks, disabled: true }],
+      open_on_gate: [{ value: this.storingOrderTank.tariff_cleaning?.open_on_gate_cv, disabled: true }],
+      flash_point: [this.storingOrderTank.tariff_cleaning?.flash_point]
     });
   }
   submit() {
     if (this.storingOrderTankForm?.valid) {
       var sot: StoringOrderTankItem = {
-        guid: this.storingOrderTankForm.value['guid'],
-        so_guid: this.storingOrderTankForm.value['so_guid'],
+        ...this.storingOrderTank,
         unit_type_guid: this.storingOrderTankForm.value['unit_type_guid'],
         tank_no: this.storingOrderTankForm.value['tank_no'],
         last_cargo_guid: this.storingOrderTankForm.value['last_cargo_guid'],
+        tariff_cleaning: this.lastCargoControl.value,
         job_no: this.storingOrderTankForm.value['job_no'],
-        eta_dt: Utility.convertDate(this.storingOrderTankForm.value['eta_dt']),// this.storingOrderTankForm.value['eta_dt'] ? this.storingOrderTankForm.value['eta_dt'].getTime() : this.storingOrderTankForm.value['eta_dt'],
+        eta_dt: Utility.convertDate(this.storingOrderTankForm.value['eta_dt']),
         purpose_storage: this.storingOrderTankForm.value['purpose_storage'],
         purpose_steam: this.storingOrderTankForm.value['purpose_steam'],
         purpose_cleaning: this.storingOrderTankForm.value['purpose_cleaning'],
-        purpose_repair_cv: this.storingOrderTankForm.value['repair'],
-        clean_status_cv: this.storingOrderTankForm.value['clean_status'],
-        certificate_cv: this.storingOrderTankForm.value['certificate'],
+        purpose_repair_cv: this.storingOrderTankForm.value['purpose_repair_cv'],
+        clean_status_cv: this.storingOrderTankForm.value['clean_status_cv'],
+        certificate_cv: this.storingOrderTankForm.value['certificate_cv'],
         required_temp: this.storingOrderTankForm.value['required_temp'],
-        remarks: this.storingOrderTankForm.value['remarks'],
-        etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt']),
-        open_on_gate_cv: this.storingOrderTankForm.value['open_on_gate_cv']
+        etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt'])
       }
+      // var sot: StoringOrderTankItem = {
+      //   guid: this.storingOrderTankForm.value['guid'],
+      //   so_guid: this.storingOrderTankForm.value['so_guid'],
+      //   unit_type_guid: this.storingOrderTankForm.value['unit_type_guid'],
+      //   tank_no: this.storingOrderTankForm.value['tank_no'],
+      //   last_cargo_guid: this.storingOrderTankForm.value['last_cargo_guid'],
+      //   job_no: this.storingOrderTankForm.value['job_no'],
+      //   eta_dt: Utility.convertDate(this.storingOrderTankForm.value['eta_dt']),// this.storingOrderTankForm.value['eta_dt'] ? this.storingOrderTankForm.value['eta_dt'].getTime() : this.storingOrderTankForm.value['eta_dt'],
+      //   purpose_storage: this.storingOrderTankForm.value['purpose_storage'],
+      //   purpose_steam: this.storingOrderTankForm.value['purpose_steam'],
+      //   purpose_cleaning: this.storingOrderTankForm.value['purpose_cleaning'],
+      //   purpose_repair_cv: this.storingOrderTankForm.value['repair'],
+      //   clean_status_cv: this.storingOrderTankForm.value['clean_status'],
+      //   certificate_cv: this.storingOrderTankForm.value['certificate'],
+      //   required_temp: this.storingOrderTankForm.value['required_temp'],
+      //   etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt'])
+      // }
       const returnDialog: DialogData = {
         item: sot,
         index: this.index
@@ -167,7 +187,7 @@ export class FormDialogComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  onPurposeSteamChange() {
+  initializeValueChange() {
     this.storingOrderTankForm!.get('purpose_steam')!.valueChanges.subscribe(value => {
       const requiredTempControl = this.storingOrderTankForm.get('required_temp');
       if (value) {
@@ -176,8 +196,7 @@ export class FormDialogComponent {
         requiredTempControl!.disable();
       }
     });
-  }
-  initializeValueChange() {
+
     this.storingOrderTankForm.get('tank_no')?.valueChanges.subscribe(value => {
       // Custom validation logic for tank_no
       const isValid = Utility.verifyIsoContainerCheckDigit(value);
@@ -198,12 +217,20 @@ export class FormDialogComponent {
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value.cargo;
           this.storingOrderTankForm!.get('last_cargo_guid')!.setValue(value.guid);
         }
-        //this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' });
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' });
       })
     ).subscribe();
+
+    this.lastCargoControl.valueChanges.subscribe(value => {
+      if (value.guid) {
+        this.storingOrderTankForm.get('remarks')!.setValue(value.remarks);
+        this.storingOrderTankForm.get('flash_point')!.setValue(value.flash_point);
+        this.storingOrderTankForm.get('open_on_gate')!.setValue(value.open_on_gate);
+      }
+    });
   }
   findInvalidControls() {
     const controls = this.storingOrderTankForm.controls;
@@ -214,6 +241,6 @@ export class FormDialogComponent {
     }
   }
   displayLastCargoFn(tc: TariffCleaningItem): string {
-    return tc ? `${tc.cargo}` : '';
+    return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 }

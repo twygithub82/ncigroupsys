@@ -62,12 +62,12 @@ export interface TariffCleaningResult {
 }
 
 export const GET_TARIFF_CLEANING_QUERY = gql`
-  query GetLastCargo($where: tariff_cleaningFilterInput) {
-    lastCargo: lastCargo(where: $where) {
+  query queryTariffCleaning($where: tariff_cleaningFilterInput) {
+    lastCargo: queryTariffCleaning(where: $where) {
       nodes {
-        flash_point
         guid
-        cargo_name
+        cargo
+        flash_point
         remarks
         open_on_gate_cv
       }

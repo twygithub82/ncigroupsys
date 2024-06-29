@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import { CustomerCompanyItem } from './customer-company';
 import { StoringOrderTankItem } from './storing-order-tank';
 
-export class StoringOrderItem {
+export class StoringOrderGO {
   public guid?: string;
   public customer_company_guid?: string;
   public haulier?: string;
@@ -14,25 +14,34 @@ export class StoringOrderItem {
   public so_notes?: string;
   public status_cv?: string;
   public storing_order_tank?: StoringOrderTankItem[];
-  public customer_company?: CustomerCompanyItem;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<StoringOrderItem> = {}) {
+  constructor(item: Partial<StoringOrderGO> = {}) {
     this.guid = item.guid;
     this.customer_company_guid = item.customer_company_guid;
     this.haulier = item.haulier || '';
     this.so_no = item.so_no || '';
     this.so_notes = item.so_notes || '';
     this.status_cv = item.status_cv || '';
+    this.storing_order_tank = item.storing_order_tank;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+  }
+}
+
+export class StoringOrderItem extends StoringOrderGO {
+  public customer_company?: CustomerCompanyItem;
+
+  constructor(item: Partial<StoringOrderItem> = {}) {
+    super(item); // Call the constructor of the parent class
+    this.customer_company = item.customer_company;
   }
 }
 
@@ -42,8 +51,8 @@ export interface StoringOrderResult {
 }
 
 export const GET_STORING_ORDERS = gql`
-  query allStoringOrders($where: storing_orderFilterInput, $first: Int, $after: String, $last: Int, $before: String) {
-    soList: allStoringOrders(where: $where, first: $first, after: $after, last: $last, before: $before) {
+  query queryStoringOrder($where: storing_orderFilterInput, $first: Int, $after: String, $last: Int, $before: String) {
+    soList: queryStoringOrder(where: $where, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         guid
         so_no
@@ -62,13 +71,14 @@ export const GET_STORING_ORDERS = gql`
         hasPreviousPage
         startCursor
       }
+      totalCount
     }
   }
 `;
 
 export const GET_STORING_ORDER_BY_ID = gql`
-  query getStoringOrderById($id: String!) {
-    soList: storingOrdersById(id: $id) {
+  query queryStoringOrderById($id: String!) {
+    soList: queryStoringOrderById(id: $id) {
       guid
       haulier
       so_no
@@ -105,45 +115,27 @@ export const GET_STORING_ORDER_BY_ID = gql`
         unit_type_guid
         update_by
         update_dt
+        tariff_cleaning {
+          guid
+          cargo
+          flash_point
+          remarks
+          open_on_gate_cv
+        }
       }
     }
   }
 `;
 
-export const CREATE_STORING_ORDER = gql`
-  mutation CreateStoringOrder($so: SOTypeInput!, $soTanks: [SOTTypeInput!]) {
-    createStoringOrder(so: $so, soTanks: $soTanks) {
-      success
-      message
-      storingOrder {
-        guid
-        so_no
-        so_notes
-        status_cv
-        haulier
-        remarks
-        delete_dt
-        customer_company_guid
-        tanks {
-          certificate_cv
-          clean_status_cv
-          estimate_cv
-          eta_dt
-          etr_dt
-          job_no
-          last_cargo_guid
-          last_test_guid
-          purpose_cleaning
-          purpose_repair_cv
-          purpose_steam
-          purpose_storage
-          required_temp
-          status_cv
-          tank_no
-          unit_type_guid
-        }
-      }
-    }
+export const ADD_STORING_ORDER = gql`
+  mutation AddStoringOrder($so: StoringOrderRequestInput!, $soTanks: [StoringOrderTankRequestInput!]!) {
+    addStoringOrder(so: $so, soTanks: $soTanks)
+  }
+`;
+
+export const UPDATE_STORING_ORDER = gql`
+  mutation UpdateStoringOrder($so: StoringOrderRequestInput!, $soTanks: [StoringOrderTankRequestInput!]!) {
+    updateStoringOrder(so: $so, soTanks: $soTanks)
   }
 `;
 
@@ -192,9 +184,19 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
       });
   }
 
-  createStoringOrder(so: any, soTanks: any): Observable<any> {
+  addStoringOrder(so: any, soTanks: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: CREATE_STORING_ORDER,
+      mutation: ADD_STORING_ORDER,
+      variables: {
+        so,
+        soTanks
+      }
+    });
+  }
+
+  updateStoringOrder(so: any, soTanks: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_STORING_ORDER,
       variables: {
         so,
         soTanks

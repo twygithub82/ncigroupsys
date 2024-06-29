@@ -11,7 +11,11 @@ import { InMemoryCache } from '@apollo/client/core';
       useFactory: (httpLink: HttpLink) => {
         return {
           cache: new InMemoryCache(),
-          link: httpLink.create({ uri: 'https://tlx-idms-app.azurewebsites.net/graphql/' }),
+          link: httpLink.create({ uri: 'http://207.46.137.171/graphql/' }),
+          //link: httpLink.create({ uri: 'https://tlx-idms-app.azurewebsites.net/graphql/' }),
+          //link: httpLink.create({ uri: 'https://tlx-idms-parameter-v1.azurewebsites.net/graphql/' }),
+          //link: httpLink.create({ uri: 'https://tlx-idms-tariff-cleaning.azurewebsites.net/graphql/' }),
+          //link: httpLink.create({ uri: 'https://tlx-idms-inventory-ingate.azurewebsites.net/graphql/' }),
         };
       },
       deps: [HttpLink],

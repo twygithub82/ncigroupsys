@@ -35,14 +35,14 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
 import { MatRadioModule } from '@angular/material/radio';
 import { Apollo } from 'apollo-angular';
 import { MatDividerModule } from '@angular/material/divider';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Observable } from 'rxjs';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff_cleaning'
@@ -200,6 +200,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
   initSOForm() {
     this.soForm = this.fb.group({
+      guid: [''],
       customer_company_guid: [''],
       customer_code: this.customerCodeControl,
       so_notes: [''],
@@ -261,13 +262,15 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
   populateSOForm(so: StoringOrderItem): void {
     this.soForm!.patchValue({
-      customer_company_guid: so.customer_company_guid, // Assuming companyId is the foreign key in the bill object
-      customer_code: so.customer_company, // This should be an object with code and name
+      guid: so.guid,
+      customer_company_guid: so.customer_company_guid,
+      customer_code: so.customer_company,
       so_notes: so.so_notes,
       haulier: so.haulier
     });
     if (so.storing_order_tank) {
-      this.updateData(so.storing_order_tank);
+      const sotList: StoringOrderItem[] = so.storing_order_tank.map((item: Partial<StoringOrderTankGO> | undefined) => new StoringOrderTankItem(item));
+      this.updateData(sotList);
     }
   }
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -288,7 +291,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
   addOrderDetails(event: Event) {
     event.preventDefault();  // Prevents the form submission
-    //this.id = row.id;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -425,16 +427,25 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   onSOFormSubmit() {
     if (this.soForm?.valid) {
-      var so: StoringOrderItem = {
-        guid: '',
+      var so: StoringOrderGO = {
+        guid: this.soForm.value['guid'],
         customer_company_guid: this.soForm.value['customer_company_guid'],
         haulier: this.soForm.value['haulier'],
         so_no: this.soForm.value['so_no'],
         so_notes: this.soForm.value['so_notes']
       }
-      var sot: StoringOrderTankItem[] = this.sotList.data
+      const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankGO> | undefined) => new StoringOrderTankGO(item));
       console.log('so Value', so);
       console.log('sot Value', sot);
+      if (so.guid) {
+        this.soDS.updateStoringOrder(so, sot).subscribe(result => {
+          console.log(result)
+        });
+      } else {
+        this.soDS.addStoringOrder(so, sot).subscribe(result => {
+          console.log(result)
+        });
+      }
     } else {
       console.log('Invalid soForm', this.soForm?.value);
     }

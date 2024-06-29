@@ -32,8 +32,8 @@ export interface TankResult {
 }
 
 export const GET_TANK = gql`
-  query getTankUnitTypes {
-    tankUnitType {
+  query queryTank {
+    queryTank {
       guid
       unitType
       description
@@ -62,7 +62,7 @@ export class TankDS extends DataSource<TankItem> {
         finalize(() => this.loadingSubject.next(false))
       )
       .subscribe((result) => {
-        this.itemsSubject.next(result.tankUnitType);
+        this.itemsSubject.next(result.queryTank);
         this.totalCount = result.totalCount;
       });
   }
