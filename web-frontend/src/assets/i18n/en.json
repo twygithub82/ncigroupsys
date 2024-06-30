@@ -174,7 +174,20 @@
     "OPEN-ON-GATE": "Open On Gate",
     "REPAIR": "Repair",
     "UPDATE": "Update",
-    "CANCEL": "Cancel"
+    "CANCEL": "Cancel",
+    "NO-RESULT": "No results",
+    "SAVE-SUCCESS": "Saved successfully.",
+    "CANCELED-SUCCESS": "Canceled successfully.",
+    "BACK": "Back",
+    "SAVE-AND-SUBMIT": "Save & Submit",
+    "ARE-YOU-SURE-DELETE": "Are you sure to delete?",
+    "ARE-YOU-SURE-CANCEL": "Are you sure to cancel?",
+    "DELETE": "Delete",
+    "OK": "Ok",
+    "CLOSE": "Close",
+    "TO-BE-CANCELED": "To be canceled",
+    "INVALID": "Invalid",
+    "EXISTED": "Existed"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

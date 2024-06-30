@@ -125,17 +125,17 @@ export class Utility {
 
   static convertBoolean(input: string | number | boolean | undefined): number | boolean | undefined {
     if (input === undefined) return input;
-  
+
     // Handle boolean to number
     if (typeof input === 'boolean') {
       return +input; // true -> 1, false -> 0
     }
-  
+
     // Handle number to boolean
     if (typeof input === 'number') {
       return input !== 0; // 0 -> false, other numbers -> true
     }
-  
+
     // Handle string to number or boolean
     if (typeof input === 'string') {
       // Check if the string is a number
@@ -151,5 +151,5 @@ export class Utility {
       }
     }
     return undefined;
-  }  
+  }
 }

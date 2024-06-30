@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -25,15 +24,10 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { ExampleDataSource } from 'app/advance-table/advance-table.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { AdvanceTableService } from 'app/advance-table/advance-table.service';
-import { DeleteDialogComponent } from 'app/advance-table/dialogs/delete/delete.component';
-import { FormDialogComponent } from 'app/advance-table/dialogs/form-dialog/form-dialog.component';
 import { Observable, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
@@ -43,6 +37,10 @@ import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDividerModule } from '@angular/material/divider';
+import { CancelDialogComponent } from './dialogs/cancel/cancel.component';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -75,13 +73,13 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     ReactiveFormsModule,
     FormsModule,
     MatAutocompleteModule,
+    MatDividerModule,
   ]
 })
 export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'so_no',
-    'code',
     'customer_name',
     'no_of_tanks',
     'status',
@@ -93,50 +91,48 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     'MENUITEMS.HOME.TEXT'
   ]
 
-  STATUS = 'COMMON-FORM.STATUS'
-  SO_NO = 'COMMON-FORM.SO-NO'
-  CUSTOMER_CODE = 'COMMON-FORM.CUSTOMER-CODE'
-  CUSTOMER_NAME = 'COMMON-FORM.CUSTOMER-NAME'
-  SO_DATE = 'COMMON-FORM.SO-DATE'
-  NO_OF_TANKS = 'COMMON-FORM.NO-OF-TANKS'
-  LAST_CARGO = 'COMMON-FORM.LAST-CARGO'
-  TANK_NO = 'COMMON-FORM.TANK-NO'
-  JOB_NO = 'COMMON-FORM.JOB-NO'
-  PURPOSE = 'COMMON-FORM.PURPOSE'
-  ETA_DATE = 'COMMON-FORM.ETA-DATE'
-
-  toppingList: string[] = [
-    'Extra cheese',
-    'Mushroom',
-    'Onion',
-    'Pepperoni',
-    'Sausage',
-    'Tomato',
-  ];
+  langText = {
+    STATUS: 'COMMON-FORM.STATUS',
+    SO_NO: 'COMMON-FORM.SO-NO',
+    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
+    SO_DATE: 'COMMON-FORM.SO-DATE',
+    NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
+    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    TANK_NO: 'COMMON-FORM.TANK-NO',
+    JOB_NO: 'COMMON-FORM.JOB-NO',
+    PURPOSE: 'COMMON-FORM.PURPOSE',
+    ETA_DATE: 'COMMON-FORM.ETA-DATE',
+    NO_RESULT: 'COMMON-FORM.NO-RESULT',
+    ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    CANCEL: 'COMMON-FORM.CANCEL',
+    CLOSE: 'COMMON-FORM.CLOSE',
+    TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
+    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS'
+  }
 
   searchForm?: UntypedFormGroup;
-
-  selection = new SelectionModel<AdvanceTable>(true, []);
-  id?: number;
-  advanceTable?: AdvanceTable;
 
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
   ccDS: CustomerCompanyDS;
+
   soList: StoringOrderItem[] = [];
+  soSelection = new SelectionModel<StoringOrderItem>(true, []);
   soStatusCvList: CodeValuesItem[] = [];
+  purposeOptionCvList: CodeValuesItem[] = [];
+
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-  customer_companyList?: Observable<CustomerCompanyItem[]>;
-  loadingSoList: boolean = false;
+  customer_companyList?: CustomerCompanyItem[];
 
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
-    public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
-    private apollo: Apollo
+    private apollo: Apollo,
+    private translate: TranslateService
   ) {
     super();
     this.initSearchForm();
@@ -156,7 +152,6 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
   refresh() {
     this.loadData();
-    console.log("test refresh");
   }
   initSearchForm() {
     this.searchForm = this.fb.group({
@@ -170,169 +165,85 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       eta_dt: [''],
     });
   }
-  addNew() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      data: {
-        advanceTable: this.advanceTable,
-        action: 'add',
-      },
-      direction: tempDirection,
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      // if (result === 1) {
-      //   // After dialog is closed we're doing frontend updates
-      //   // For add we're just pushing a new row inside DataService
-      //   this.exampleDatabase?.dataChange.value.unshift(
-      //     this.advanceTableService.getDialogData()
-      //   );
-      //   this.refreshTable();
-      //   this.showNotification(
-      //     'snackbar-success',
-      //     'Add Record Successfully...!!!',
-      //     'bottom',
-      //     'center'
-      //   );
-      // }
-    });
-  }
-  editCall(row: AdvanceTable) {
+  cancelItem(row: StoringOrderItem) {
     // this.id = row.id;
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: row,
-    //     action: 'edit',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // When using an edit things are little different, firstly we find record inside DataService by id
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // Then you update that record using data from dialogData (values you enetered)
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value[foundIndex] =
-    //         this.advanceTableService.getDialogData();
-    //       // And lastly refresh table
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'black',
-    //         'Edit Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
-  }
-  deleteItem(row: AdvanceTable) {
-    // this.id = row.id;
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(DeleteDialogComponent, {
-    //   data: row,
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // for delete we use splice in order to remove single object from DataService
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'snackbar-danger',
-    //         'Delete Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
+    this.cancelSelectedRows([row])
   }
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    // const numSelected = this.selection.selected.length;
-    // const numRows = this.dataSource.renderedData.length;
-    // return numSelected === numRows;
+    const numSelected = this.soSelection.selected.length;
+    const numRows = this.soDS.totalCount;
+    return numSelected === numRows;
     return false;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    // this.isAllSelected()
-    //   ? this.selection.clear()
-    //   : this.dataSource.renderedData.forEach((row) =>
-    //     this.selection.select(row)
-    //   );
+    this.isAllSelected()
+      ? this.soSelection.clear()
+      : this.soList.forEach((row) =>
+        this.soSelection.select(row)
+      );
   }
-  removeSelectedRows() {
-    // const totalSelect = this.selection.selected.length;
-    // this.selection.selected.forEach((item) => {
-    //   const index: number = this.dataSource.renderedData.findIndex(
-    //     (d) => d === item
-    //   );
-    //   // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
-    //   this.exampleDatabase?.dataChange.value.splice(index, 1);
-    //   this.refreshTable();
-    //   this.selection = new SelectionModel<AdvanceTable>(true, []);
-    // });
-    // this.showNotification(
-    //   'snackbar-danger',
-    //   totalSelect + ' Record Delete Successfully...!!!',
-    //   'bottom',
-    //   'center'
-    // );
+  canCancelSelectedRows(): boolean {
+    return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
+      const index: number = this.soList.findIndex((d) => d === item);
+      return this.soDS.canCancel(this.soList[index]);
+    });
+  }
+  cancelSelectedRows(row: StoringOrderItem[]) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      data: {
+        item: [...row],
+        langText: this.langText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const guids = result.item.map((item: { guid: string }) => item.guid);
+        this.soDS.cancelStoringOrder(guids).subscribe(result => {
+          console.log(result)
+          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
+            let successMsg = this.langText.CANCELED_SUCCESS;
+            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
+              successMsg = res;
+              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+              this.loadData();
+            });
+          }
+        });
+      }
+    });
   }
   public loadData() {
-    this.soDS.searchStoringOrder({});
-    this.soDS.connect().subscribe(data => {
-      this.soList = data;
-    });
-    this.soDS.soLoading$.subscribe(loading => {
-      this.loadingSoList = loading;
+    this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
+      if (this.soDS.totalCount > 0) {
+        this.soList = data;
+      }
     });
 
     const queries = [
-      { alias: 'soStatusCv', codeValType: 'SO_STATUS' }
+      { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
       this.soStatusCvList = data;
       this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
-
-    this.customer_companyList = this.ccDS.connect();
-    // this.subs.sink = fromEvent(this.filter.nativeElement, 'keyup').subscribe(
-    //   () => {
-    //     if (!this.dataSource) {
-    //       return;
-    //     }
-    //     this.dataSource.filter = this.filter.nativeElement.value;
-    //   }
-    // );
+    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+      this.purposeOptionCvList = data;
+    });
   }
   showNotification(
     colorName: string,
@@ -367,7 +278,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: StoringOrderItem) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
@@ -403,8 +314,11 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     // TODO :: search criteria
-
-    this.soDS.searchStoringOrder(where);
+    this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
+      if (this.soDS.totalCount > 0) {
+        this.soList = data;
+      }
+    });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -422,7 +336,9 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         } else {
           searchCriteria = value.code;
         }
-        this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'DESC' });
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
       })
     ).subscribe();
   }

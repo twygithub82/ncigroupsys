@@ -50,21 +50,27 @@ export class TankDS extends DataSource<TankItem> {
     super();
   }
 
-  loadItems() {
+  loadItems(): Observable<TankItem[]> {
     this.loadingSubject.next(true);
-    this.apollo
+    return this.apollo
       .query<any>({
         query: GET_TANK
       })
       .pipe(
         map((result) => result.data),
         catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false))
-      )
-      .subscribe((result) => {
-        this.itemsSubject.next(result.queryTank);
-        this.totalCount = result.totalCount;
-      });
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const tankList = result.queryTank || { nodes: [], totalCount: 0 };
+          this.itemsSubject.next(tankList);
+          this.totalCount = tankList.length;
+          return tankList;
+        })
+      );
+    // .subscribe((result) => {
+    //   this.itemsSubject.next(result.queryTank);
+    //   this.totalCount = result.totalCount;
+    // });
   }
 
   connect(): Observable<TankItem[]> {

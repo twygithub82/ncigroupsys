@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
 
-export class CustomerCompanyItem {
+export class CustomerCompanyGO {
     public guid?: string;
     public name?: string;
     public code?: string;
@@ -31,7 +31,7 @@ export class CustomerCompanyItem {
     public update_by?: string;
     public delete_dt?: number;
 
-    constructor(item: Partial<CustomerCompanyItem> = {}) {
+    constructor(item: Partial<CustomerCompanyGO> = {}) {
         this.guid = item.guid;
         this.name = item.name;
         this.code = item.code;
@@ -55,6 +55,12 @@ export class CustomerCompanyItem {
         this.update_dt = item.update_dt;
         this.update_by = item.update_by;
         this.delete_dt = item.delete_dt;
+    }
+}
+
+export class CustomerCompanyItem extends CustomerCompanyGO {
+    constructor(item: Partial<CustomerCompanyItem> = {}) {
+        super(item);
     }
 }
 
@@ -83,25 +89,28 @@ export class CustomerCompanyDS extends DataSource<CustomerCompanyItem> {
     constructor(private apollo: Apollo) {
         super();
     }
-    loadItems(where?: any, order?: any) {
+    loadItems(where?: any, order?: any): Observable<CustomerCompanyItem[]> {
         this.loadingSubject.next(true);
-        this.apollo.watchQuery<any>({
-            query: GET_COMPANY_QUERY,
-            variables: { where, order }
-        })
-        .valueChanges
-        .pipe(
-            map((result) => result.data),
-            catchError((error: ApolloError) => {
-                console.error('GraphQL Error:', error);
-                return of([] as CustomerCompanyItem[]); // Return an empty array on error
-            }),
-            finalize(() => this.loadingSubject.next(false)),
-        )
-        .subscribe(result => {
-            this.itemsSubjects.next(result.companyList.nodes);
-            this.totalCount = result.totalCount;
-        });
+        return this.apollo
+            .watchQuery<any>({
+                query: GET_COMPANY_QUERY,
+                variables: { where, order }
+            })
+            .valueChanges
+            .pipe(
+                map((result) => result.data),
+                catchError((error: ApolloError) => {
+                    console.error('GraphQL Error:', error);
+                    return of([] as CustomerCompanyItem[]); // Return an empty array on error
+                }),
+                finalize(() => this.loadingSubject.next(false)),
+                map((result) => {
+                    const list = result.companyList || { nodes: [], totalCount: 0 };
+                    this.itemsSubjects.next(list.nodes);
+                    this.totalCount = list.totalCount;
+                    return list.nodes;
+                })
+            );
     }
 
     connect(): Observable<CustomerCompanyItem[]> {
@@ -109,17 +118,11 @@ export class CustomerCompanyDS extends DataSource<CustomerCompanyItem> {
     }
 
     disconnect(): void {
-        // this.itemsSubjects.forEach(subject => subject.complete());
         this.itemsSubjects.complete();
         this.loadingSubject.complete();
     }
 
-    // connectAlias(alias: string): Observable<CustomerCompanyItem[]> {
-    //     let subject = this.itemsSubjects.get(alias);
-    //     if (!subject) {
-    //         subject = new BehaviorSubject<CustomerCompanyItem[]>([]);
-    //         this.itemsSubjects.set(alias, subject);
-    //     }
-    //     return subject.asObservable();
-    // }
+    displayName(cc: CustomerCompanyItem): string {
+        return cc.code ? `${cc.code} (${cc.name})` : '';
+    }
 }

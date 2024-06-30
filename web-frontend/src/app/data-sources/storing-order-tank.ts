@@ -16,9 +16,9 @@ export class StoringOrderTankGO {
   public last_cargo_guid?: string;
   public job_no?: string;
   public eta_dt?: number | Date;
-  public purpose_storage?: boolean;
-  public purpose_steam?: boolean;
-  public purpose_cleaning?: boolean;
+  public purpose_storage: boolean = false;
+  public purpose_steam: boolean = false;
+  public purpose_cleaning: boolean = false;
   public purpose_repair_cv?: string;
   public clean_status_cv?: string;
   public certificate_cv?: string;

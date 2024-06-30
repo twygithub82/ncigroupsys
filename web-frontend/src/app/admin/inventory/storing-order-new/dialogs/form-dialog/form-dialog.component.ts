@@ -1,5 +1,5 @@
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
@@ -26,6 +26,7 @@ export interface DialogData {
   langText?: any;
   populateData?: any;
   index: number;
+  sotExistedList?: StoringOrderTankItem[]
 }
 
 @Component({
@@ -61,6 +62,8 @@ export class FormDialogComponent {
   dialogTitle: string;
   storingOrderTankForm: UntypedFormGroup;
   storingOrderTank: StoringOrderTankItem;
+  sotExistedList?: StoringOrderTankItem[];
+  startDate = new Date();
 
   tcDS: TariffCleaningDS;
   lastCargoControl = new UntypedFormControl();
@@ -73,6 +76,7 @@ export class FormDialogComponent {
     // Set the defaults
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.action = data.action!;
+    this.sotExistedList = data.sotExistedList;
     if (this.action === 'edit') {
       this.dialogTitle = 'Edit ' + data.item.tank_no;
       this.storingOrderTank = data.item;
@@ -87,17 +91,6 @@ export class FormDialogComponent {
     if (this.storingOrderTank.tariff_cleaning) {
       this.lastCargoControl.setValue(this.storingOrderTank.tariff_cleaning);
     }
-  }
-  formControl = new UntypedFormControl('', [
-    Validators.required,
-    // Validators.email,
-  ]);
-  getErrorMessage() {
-    return this.formControl.hasError('required')
-      ? 'Required field'
-      : this.formControl.hasError('email')
-        ? 'Not a valid email'
-        : '';
   }
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
@@ -164,11 +157,6 @@ export class FormDialogComponent {
       }
       console.log('valid');
       this.dialogRef.close(returnDialog);
-      // if (Utility.verifyIsoContainerCheckDigit(this.storingOrderTankForm.value['tank_no'])) {
-      // } else {
-      //   console.log('invalid tank no');
-      //   this.storingOrderTankForm.value['tank_no'];
-      // }
     } else {
       console.log('invalid');
       //this.findInvalidControls();
@@ -205,7 +193,12 @@ export class FormDialogComponent {
         this.storingOrderTankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
       } else {
         // Clear custom error if the value is valid
-        this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+        const found = this.sotExistedList?.filter(sot => sot.tank_no === value);
+        if (found?.length) {
+          this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+        } else {
+          this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+        }
       }
     });
 
@@ -228,7 +221,7 @@ export class FormDialogComponent {
       if (value.guid) {
         this.storingOrderTankForm.get('remarks')!.setValue(value.remarks);
         this.storingOrderTankForm.get('flash_point')!.setValue(value.flash_point);
-        this.storingOrderTankForm.get('open_on_gate')!.setValue(value.open_on_gate);
+        this.storingOrderTankForm.get('open_on_gate')!.setValue(value.open_on_gate_cv);
       }
     });
   }

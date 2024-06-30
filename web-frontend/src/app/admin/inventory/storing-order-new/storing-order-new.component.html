@@ -13,14 +13,16 @@
               <h2>
                 {{langText.HEADER | translate}}
                 @if (this.so_guid) {
-                ({{ this.storingOrderItem ? this.storingOrderItem.so_no : '' }})
+                ({{ soForm?.get('so_no')?.value}})
                 }
               </h2>
             </div>
             <div class="body">
               @if (soDS.soLoading$ | async) {
-              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-              </mat-progress-spinner>
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
               }
               @if (!(soDS.soLoading$ | async)) {
               <div class="row">
@@ -32,7 +34,7 @@
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of ccDS.connect() | async; track cc) {
                       <mat-option [value]="cc">
-                        {{cc.code}} ({{cc.name}})
+                        {{ccDS.displayName(cc)}}
                       </mat-option>
                       }
                     </mat-autocomplete>
@@ -223,18 +225,22 @@
                       </ng-container>
                       <!-- actions -->
                       <ng-container matColumnDef="actions">
-                        <mat-header-cell class="pr-0" [ngClass]="'tbl-col-width-per-7'" *matHeaderCellDef>
+                        <mat-header-cell class="pr-0" [ngClass]="'tbl-col-width-per-10'" *matHeaderCellDef>
                           <!-- <i class="fas fa-ellipsis-v"></i> -->
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i=index;" class="pr-0" [ngClass]="'tbl-col-width-per-7'">
+                        <mat-cell *matCellDef="let row; let i=index;" class="pr-0" [ngClass]="'tbl-col-width-per-10 justify-content-end'">
+                          <button mat-icon-button color="primary" (click)="handleDuplicateRow($event, row)" class="tbl-action-btn">
+                            <mat-icon [class]="''">add_to_photos</mat-icon>
+                          </button>
                           <button mat-icon-button color="accent" (click)="handleDelete($event, row, i)"
                             class="tbl-action-btn">
-                            <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+                            <mat-icon [class]="'tbl-fav-delete'">delete_forever</mat-icon>
                           </button>
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;" [ngClass]="{'deleted_row': row.delete_dt, 'edited_row': !row.delete_dt && row.edited}"
+                      <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
+                        [ngClass]="{'deleted_row': row.delete_dt, 'edited_row': row.guid && !row.delete_dt && row.edited}"
                         (click)="editOrderDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                     </table>
@@ -242,7 +248,7 @@
                   @if (!sotList.data.length) {
                   <mat-divider></mat-divider>
                   <div class="no-results m-l-20 pt-3" [style.display]="sotList.data.length === 0 ? '' : 'none'">
-                    <h5 class="m-b-15">No results</h5>
+                    <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
                   </div>
                   }
                 </div>
@@ -251,9 +257,9 @@
               <mat-divider></mat-divider>
               <div class="row m-t-10">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                  <button mat-flat-button aria-label="Back to previoys page" (click)="$event.preventDefault();"
+                  <button mat-flat-button aria-label="Back to previous page" (click)="$event.preventDefault();"
                     [routerLink]="['/admin/storing-order']">
-                    <mat-icon>chevron_left</mat-icon>Back
+                    <mat-icon>chevron_left</mat-icon>{{langText.BACK | translate}}
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
@@ -261,7 +267,7 @@
                     <mat-icon class="col-white">add</mat-icon>{{langText.ORDER_DETAILS | translate}}
                   </button>
                   <button mat-flat-button color="primary">
-                    <mat-icon>save</mat-icon>Submit &amp; Save
+                    <mat-icon>save</mat-icon>{{langText.SAVE_AND_SUBMIT | translate}}
                   </button>
                 </div>
               </div>

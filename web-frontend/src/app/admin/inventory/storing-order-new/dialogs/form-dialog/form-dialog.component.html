@@ -40,7 +40,12 @@
                 }
                 @if (storingOrderTankForm.get('tank_no')?.hasError('invalidCheckDigit')) {
                 <mat-error>
-                  {{data.langText.TANK_NO | translate}} {{data.langText.SO_REQUIRED | translate}} HAHA
+                  {{data.langText.TANK_NO | translate}}: {{data.langText.INVALID | translate}}
+                </mat-error>
+                }
+                @if (storingOrderTankForm.get('tank_no')?.hasError('existed')) {
+                <mat-error>
+                  {{data.langText.TANK_NO | translate}}: {{data.langText.EXISTED | translate}}
                 </mat-error>
                 }
               </mat-form-field>
@@ -121,15 +126,15 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.ETA_DATE | translate}}</mat-label>
-                <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
+                <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker" [min]="startDate">
                 <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
-                <mat-datepicker #eta_picker></mat-datepicker>
+                <mat-datepicker #eta_picker [startAt]="startDate"></mat-datepicker>
               </mat-form-field>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.ETR_DATE | translate}}</mat-label>
-                <input matInput formControlName="etr_dt" [matDatepicker]="etr_picker">
+                <input matInput formControlName="etr_dt" [matDatepicker]="etr_picker" [min]="startDate">
                 <mat-datepicker-toggle matSuffix [for]="etr_picker"></mat-datepicker-toggle>
                 <mat-datepicker #etr_picker></mat-datepicker>
               </mat-form-field>
@@ -141,7 +146,8 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.LAST_CARGO | translate}}</mat-label>
-                <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo" formControlName="last_cargo" required>
+                <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
+                  formControlName="last_cargo" required>
                 <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
                   @for (tc of tcDS.connect() | async; track tc) {
                   <mat-option [value]="tc">
@@ -170,13 +176,15 @@
               <label class="font-bold">{{data.langText.OPEN_ON_GATE | translate}}:</label>
               <mat-radio-group formControlName="open_on_gate">
                 @for (codeValue of data.populateData.yesnoCv; track codeValue) {
-                <mat-radio-button [value]="codeValue.codeValue"
-                  color="primary">{{codeValue.description}}</mat-radio-button>
+                <mat-radio-button [value]="codeValue.codeValue" color="primary">
+                  {{codeValue.description}}
+                </mat-radio-button>
                 }
               </mat-radio-group>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-20 p-l-20">
-              <h6>{{data.langText.FLASH_POINT | translate}}: {{ storingOrderTankForm.get('flash_point')?.value }}&deg;C</h6>
+              <h6>{{data.langText.FLASH_POINT | translate}}: {{ storingOrderTankForm.get('flash_point')?.value }}&deg;C
+              </h6>
             </div>
           </div>
         </div>

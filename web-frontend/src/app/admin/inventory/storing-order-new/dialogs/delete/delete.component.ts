@@ -2,6 +2,7 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDia
 import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface DialogData {
   action: string;
@@ -21,6 +22,7 @@ export interface DialogData {
         MatDialogActions,
         MatButtonModule,
         MatDialogClose,
+        TranslateModule,
     ],
 })
 export class DeleteDialogComponent {

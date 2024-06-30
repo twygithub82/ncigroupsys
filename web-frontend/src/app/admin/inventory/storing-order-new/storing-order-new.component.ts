@@ -29,8 +29,8 @@ import { AdvanceTable } from 'app/advance-table/advance-table.model';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
@@ -43,9 +43,10 @@ import { MatRadioModule } from '@angular/material/radio';
 import { Apollo } from 'apollo-angular';
 import { MatDividerModule } from '@angular/material/divider';
 import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff_cleaning'
+import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -87,7 +88,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   displayedColumns = [
     //'select',
     'tank_no',
-    'tank_no_validity',
+    //'tank_no_validity',
     'last_cargo',
     'job_no',
     'purpose_storage',
@@ -136,7 +137,16 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
-    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
+    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
+    NO_RESULT: 'COMMON-FORM.NO-RESULT',
+    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    BACK: 'COMMON-FORM.BACK',
+    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    DELETE: 'COMMON-FORM.DELETE',
+    CLOSE: 'COMMON-FORM.CLOSE',
+    INVALID: 'COMMON-FORM.INVALID',
+    EXISTED: 'COMMON-FORM.EXISTED'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -157,10 +167,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   soForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
-  storingOrderItem: StoringOrderItem = {}
+  storingOrderItem: StoringOrderItem = new StoringOrderItem();
   selection = new SelectionModel<StoringOrderTankItem>(true, []);
   sotList = new MatTableDataSource<StoringOrderTankItem>();
-  customer_companyList?: Observable<CustomerCompanyItem[]>;
+  customer_companyList?: CustomerCompanyItem[];
   unit_typeList: TankItem[] = []
   clean_statusCv: CodeValuesItem[] = []
   repairCv: CodeValuesItem[] = []
@@ -172,6 +182,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
+  //soSubscription: Subscription;
 
   constructor(
     public httpClient: HttpClient,
@@ -179,7 +190,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private translate: TranslateService
   ) {
     super();
     this.initSOForm();
@@ -198,11 +211,13 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.initializeFilter();
     this.loadData();
   }
+
   initSOForm() {
     this.soForm = this.fb.group({
       guid: [''],
       customer_company_guid: [''],
       customer_code: this.customerCodeControl,
+      so_no: [''],
       so_notes: [''],
       haulier: [''],
     });
@@ -219,25 +234,27 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           searchCriteria = value.code;
           this.soForm!.get('customer_company_guid')!.setValue(value.guid);
         }
-        this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' });
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
       })
     ).subscribe();
   }
   public loadData() {
-    this.customer_companyList = this.ccDS.connect();
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+      this.customer_companyList = data
+    });
     this.so_guid = this.route.snapshot.paramMap.get('id');
     if (this.so_guid) {
       // EDIT
-      this.soDS.getStoringOrderByID(this.so_guid);
-      this.soDS.connect().subscribe(data => {
-        if (data && data[0]) {
+      this.subs.sink = this.soDS.getStoringOrderByID(this.so_guid).subscribe(data => {
+        if (this.soDS.totalCount > 0) {
           this.storingOrderItem = data[0];
           this.populateSOForm(this.storingOrderItem);
         }
       });
     } else {
       // NEW
-      //this.pageTitle = `${this.langText.NEW} ${this.langText.STORING_ORDER}` //'MENUITEMS.INVENTORY.LIST.STORING-ORDER-NEW';
     }
     const queries = [
       { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
@@ -245,7 +262,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       { alias: 'yesnoCv', codeValType: 'YES_NO' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.tDS.loadItems();
+    this.subs.sink = this.tDS.loadItems().subscribe(data => {
+      this.unit_typeList = data
+    });
 
     this.cvDS.connectAlias('repairCv').subscribe(data => {
       this.repairCv = data;
@@ -256,24 +275,23 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCv = data;
     });
-    this.tDS.connect().subscribe(data => {
-      this.unit_typeList = data
-    });
   }
   populateSOForm(so: StoringOrderItem): void {
     this.soForm!.patchValue({
       guid: so.guid,
       customer_company_guid: so.customer_company_guid,
       customer_code: so.customer_company,
+      so_no: so.so_no,
       so_notes: so.so_notes,
       haulier: so.haulier
     });
     if (so.storing_order_tank) {
-      const sotList: StoringOrderItem[] = so.storing_order_tank.map((item: Partial<StoringOrderTankGO> | undefined) => new StoringOrderTankItem(item));
+      const sotList: StoringOrderTankItem[] = so.storing_order_tank.map((item: Partial<StoringOrderTankItem> | undefined) => new StoringOrderTankItem(item));
       this.updateData(sotList);
     }
   }
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    //cc.displayName();
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
   showNotification(
@@ -308,7 +326,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           clean_statusCv: this.clean_statusCv,
           yesnoCv: this.yesnoCv
         },
-        index: -1
+        index: -1,
+        sotExistedList: this.sotList.data
       },
       direction: tempDirection
     });
@@ -338,7 +357,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           clean_statusCv: this.clean_statusCv,
           yesnoCv: this.yesnoCv
         },
-        index: index
+        index: index,
+        sotExistedList: this.sotList.data
       },
       direction: tempDirection
     });
@@ -371,7 +391,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
+      if (result?.action === 'confirmed') {
         if (result.item.guid) {
           const data = [...this.sotList.data];
           const updatedItem = {
@@ -427,23 +447,23 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   onSOFormSubmit() {
     if (this.soForm?.valid) {
-      var so: StoringOrderGO = {
-        guid: this.soForm.value['guid'],
-        customer_company_guid: this.soForm.value['customer_company_guid'],
-        haulier: this.soForm.value['haulier'],
-        so_no: this.soForm.value['so_no'],
-        so_notes: this.soForm.value['so_notes']
-      }
+      let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
+      so.customer_company_guid = this.soForm.value['customer_company_guid'];
+      so.haulier = this.soForm.value['haulier'];
+      so.so_notes = this.soForm.value['so_notes'];
+
       const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankGO> | undefined) => new StoringOrderTankGO(item));
       console.log('so Value', so);
       console.log('sot Value', sot);
       if (so.guid) {
         this.soDS.updateStoringOrder(so, sot).subscribe(result => {
           console.log(result)
+          this.handleSaveSuccess(result);
         });
       } else {
         this.soDS.addStoringOrder(so, sot).subscribe(result => {
           console.log(result)
+          this.handleSaveSuccess(result);
         });
       }
     } else {
@@ -451,41 +471,43 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     }
   }
 
-  onSOTFormSubmit() {
-    if (this.sotForm?.valid) {
-      // var sot: StoringOrderTankItem = {
-      //   guid: '',
-      //   so_guid: '',
-      //   unit_type_guid: this.sotForm.value['unit_type'],
-      //   tank_no: this.sotForm.value['tank_no'],
-      //   last_cargo_guid: this.sotForm.value['last_cargo'],
-      //   job_no: this.sotForm.value['job_no'],
-      //   eta_dt: Utility.convertToEpoch(this.sotForm.value['eta_dt']),
-      //   purpose_storage: this.sotForm.value['purpose_storage'],
-      //   purpose_steam: this.sotForm.value['purpose_steam'],
-      //   purpose_cleaning: this.sotForm.value['purpose_cleaning'],
-      //   purpose_repair_cv: this.sotForm.value['repair'],
-      //   clean_status_cv: this.sotForm.value['clean_status'],
-      //   certificate_cv: this.sotForm.value['certificate'],
-      //   required_temp: this.sotForm.value['required_temp'],
-      //   remarks: this.sotForm.value['remarks'],
-      //   etr_dt: Utility.convertToEpoch(this.sotForm.value['etr_dt']),
-      //   open_on_gate_cv: this.sotForm.value['open_on_gate']
-      // }
-      // this.updateData([...this.sotList.data, sot]);
-    } else {
-      console.log('Invalid sotForm', this.sotForm?.value);
-    }
-  }
-
   updateData(newData: StoringOrderTankItem[]): void {
     this.sotList.data = [...newData];
-    //this.applyFilter();
   }
 
   handleDelete(event: Event, row: any, index: number): void {
     event.preventDefault();  // Prevents the form submission
     event.stopPropagation(); // Stops event propagation
     this.deleteItem(row, index);
+  }
+
+  handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
+    event.preventDefault();  // Prevents the form submission
+    event.stopPropagation(); // Stops event propagation
+    let newSot: StoringOrderTankItem = new StoringOrderTankItem();
+    newSot.unit_type_guid = row.unit_type_guid;
+    newSot.last_cargo_guid = row.last_cargo_guid;
+    newSot.tariff_cleaning = row.tariff_cleaning;
+    // newSot.purpose_cleaning = row.purpose_cleaning;
+    // newSot.purpose_storage = row.purpose_storage;
+    // newSot.purpose_repair_cv = row.purpose_repair_cv;
+    // newSot.purpose_steam = row.purpose_steam;
+    // newSot.required_temp = row.required_temp;
+    newSot.clean_status_cv = row.clean_status_cv;
+    newSot.certificate_cv = row.certificate_cv;
+    newSot.eta_dt = row.eta_dt;
+    newSot.etr_dt = row.etr_dt;
+    this.updateData([...this.sotList.data, newSot]);
+  }
+
+  handleSaveSuccess(result: any) {
+    if ((result?.data?.addStoringOrder ?? 0) > 0 || (result?.data?.updateStoringOrder ?? 0) > 0) {
+      let successMsg = this.langText.SAVE_SUCCESS;
+      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+        successMsg = res;
+        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        this.router.navigate(['/admin/storing-order']);
+      });
+    }
   }
 }

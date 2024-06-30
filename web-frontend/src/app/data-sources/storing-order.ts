@@ -13,7 +13,6 @@ export class StoringOrderGO {
   public so_no?: string;
   public so_notes?: string;
   public status_cv?: string;
-  public storing_order_tank?: StoringOrderTankItem[];
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -27,7 +26,6 @@ export class StoringOrderGO {
     this.so_no = item.so_no || '';
     this.so_notes = item.so_notes || '';
     this.status_cv = item.status_cv || '';
-    this.storing_order_tank = item.storing_order_tank;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -38,10 +36,12 @@ export class StoringOrderGO {
 
 export class StoringOrderItem extends StoringOrderGO {
   public customer_company?: CustomerCompanyItem;
+  public storing_order_tank?: StoringOrderTankItem[];
 
   constructor(item: Partial<StoringOrderItem> = {}) {
-    super(item); // Call the constructor of the parent class
+    super(item);
     this.customer_company = item.customer_company;
+    this.storing_order_tank = item.storing_order_tank;
   }
 }
 
@@ -62,6 +62,9 @@ export const GET_STORING_ORDERS = gql`
         }
         storing_order_tank {
           guid
+          tank_no
+          tank_status_cv
+          status_cv
         }
         status_cv
       }
@@ -139,6 +142,12 @@ export const UPDATE_STORING_ORDER = gql`
   }
 `;
 
+export const CANCEL_STORING_ORDER = gql`
+  mutation CancelStoringOrder($soGuids: [String!]!) {
+    cancelStoringOrder(soGuids: $soGuids)
+  }
+`;
+
 export class StoringOrderDS extends DataSource<StoringOrderItem> {
   private soItemsSubject = new BehaviorSubject<StoringOrderItem[]>([]);
   private soLoadingSubject = new BehaviorSubject<boolean>(false);
@@ -148,40 +157,46 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
     super();
   }
 
-  searchStoringOrder(where: any, first: number = 10, after?: string, last?: number, before?: string) {
+  searchStoringOrder(where: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderItem[]> {
     this.soLoadingSubject.next(true);
-    this.apollo
+    return this.apollo
       .query<any>({
         query: GET_STORING_ORDERS,
-        variables: { where, first, after, last, before }
+        variables: { where, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.soLoadingSubject.next(false))
-      )
-      .subscribe((result) => {
-        this.soItemsSubject.next(result.soList.nodes);
-        this.totalCount = result.totalCount;
-      });
+        catchError(() => of({ soList: { nodes: [], totalCount: 0 } })),
+        finalize(() => this.soLoadingSubject.next(false)),
+        map((result) => {
+          const soList = result.soList || { nodes: [], totalCount: 0 };
+          this.soItemsSubject.next(soList.nodes);
+          this.totalCount = soList.totalCount;
+          return soList.nodes;
+        })
+      );
   }
 
-  getStoringOrderByID(id: string) {
+  getStoringOrderByID(id: string): Observable<StoringOrderItem[]> {
     this.soLoadingSubject.next(true);
-    this.apollo
+    return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_BY_ID,
-        variables: { id }
+        variables: { id },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.soLoadingSubject.next(false))
-      )
-      .subscribe((result) => {
-        this.soItemsSubject.next(result.soList);
-        this.totalCount = result.totalCount;
-      });
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.soLoadingSubject.next(false)),
+        map((result) => {
+          const soList = result.soList || [];
+          this.soItemsSubject.next(soList);
+          this.totalCount = soList.length;
+          return soList;
+        })
+      );
   }
 
   addStoringOrder(so: any, soTanks: any): Observable<any> {
@@ -204,6 +219,15 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
     });
   }
 
+  cancelStoringOrder(soGuids: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: CANCEL_STORING_ORDER,
+      variables: {
+        soGuids
+      }
+    });
+  }
+
   connect(): Observable<StoringOrderItem[]> {
     return this.soItemsSubject.asObservable();
   }
@@ -211,5 +235,9 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
   disconnect(): void {
     this.soItemsSubject.complete();
     this.soLoadingSubject.complete();
+  }
+
+  canCancel(so: StoringOrderItem): boolean {
+    return so && (so.status_cv === 'PENDING' || so.status_cv === 'PROCESSING');
   }
 }
