@@ -336,3 +336,11 @@
   box-sizing: border-box;
   /* Include padding and border in the element's total width and height */
 }
+
+.deleted_row {
+  background-color: #b4b4b4 !important;
+}
+
+.edited_row {
+  background-color: #fffb00 !important;
+}

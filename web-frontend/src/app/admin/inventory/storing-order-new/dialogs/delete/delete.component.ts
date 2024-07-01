@@ -2,6 +2,14 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDia
 import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TranslateModule } from '@ngx-translate/core';
+
+export interface DialogData {
+  action: string;
+  item: StoringOrderTankItem;
+  langText?: any;
+  index: number;
+}
 
 @Component({
     selector: 'app-delete',
@@ -14,19 +22,29 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
         MatDialogActions,
         MatButtonModule,
         MatDialogClose,
+        TranslateModule,
     ],
 })
 export class DeleteDialogComponent {
+  storingOrderTank: StoringOrderTankItem;
+  index: number;
   constructor(
     public dialogRef: MatDialogRef<DeleteDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: StoringOrderTankItem,
-    //public advanceTableService: AdvanceTableService
-  ) {}
+    @Inject(MAT_DIALOG_DATA) public data: DialogData
+  ) {
+    // Set the defaults
+    this.storingOrderTank = data.item;
+    this.index = data.index;
+  }
   onNoClick(): void {
     this.dialogRef.close('cancel');
   }
   confirmDelete(): void {
-    //this.advanceTableService.deleteAdvanceTable(this.data.id);
-    this.dialogRef.close('confirmed');
+    const returnDialog: DialogData = {
+      action: 'confirmed',
+      item: this.storingOrderTank,
+      index: this.index
+    }
+    this.dialogRef.close(returnDialog);
   }
 }
