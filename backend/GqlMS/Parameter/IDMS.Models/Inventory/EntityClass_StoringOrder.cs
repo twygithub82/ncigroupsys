@@ -12,7 +12,7 @@ namespace IDMS.Models.Inventory
         [Key]
         public string guid { get; set; }
 
-       // public string? contact_person { get; set; }
+        public string? contact_person { get; set; }
 
         public string? status_cv { get; set; }
 

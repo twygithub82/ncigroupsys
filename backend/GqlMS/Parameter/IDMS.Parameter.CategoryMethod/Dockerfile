@@ -9,17 +9,17 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["IDMS.Parameters.CleaningSteps.csproj", "."]
-RUN dotnet restore "./IDMS.Parameters.CleaningSteps.csproj"
+COPY ["IDMS.Parameter.CategoryMethod.csproj", "."]
+RUN dotnet restore "./IDMS.Parameter.CategoryMethod.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "./IDMS.Parameters.CleaningSteps.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./IDMS.Parameter.CategoryMethod.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./IDMS.Parameters.CleaningSteps.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./IDMS.Parameter.CategoryMethod.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "IDMS.Parameters.CleaningSteps.dll"]
+ENTRYPOINT ["dotnet", "IDMS.Parameter.CategoryMethod.dll"]

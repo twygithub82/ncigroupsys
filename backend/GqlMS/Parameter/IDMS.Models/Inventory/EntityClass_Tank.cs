@@ -35,7 +35,6 @@ namespace IDMS.Models.Inventory
 
         public string? clean_status_cv { get; set; }
 
-        public string? estimate_cv { get; set; }
         public string? certificate_cv { get; set; }
 
         public string? remarks { get; set; }
@@ -48,7 +47,7 @@ namespace IDMS.Models.Inventory
 
         //public int? open_on_gate { get; set; }
 
-        public string? status_cv { get; set; }
+        public int? status_cv { get; set; }
 
         public EntityClass_InGateWithTank? in_gate { get; set; }
 
