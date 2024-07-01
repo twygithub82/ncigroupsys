@@ -1,5 +1,5 @@
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
@@ -13,7 +13,12 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { DatePipe } from '@angular/common';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff_cleaning';
+import { Apollo } from 'apollo-angular';
+import { CommonModule } from '@angular/common';
+import { startWith, debounceTime, tap } from 'rxjs';
 
 export interface DialogData {
   action?: string;
@@ -21,6 +26,7 @@ export interface DialogData {
   langText?: any;
   populateData?: any;
   index: number;
+  sotExistedList?: StoringOrderTankItem[]
 }
 
 @Component({
@@ -45,7 +51,9 @@ export interface DialogData {
     DatePipe,
     MatNativeDateModule,
     TranslateModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatAutocompleteModule,
+    CommonModule
   ],
 })
 export class FormDialogComponent {
@@ -54,93 +62,178 @@ export class FormDialogComponent {
   dialogTitle: string;
   storingOrderTankForm: UntypedFormGroup;
   storingOrderTank: StoringOrderTankItem;
+  sotExistedList?: StoringOrderTankItem[];
+  startDate = new Date();
+
+  tcDS: TariffCleaningDS;
+  lastCargoControl = new UntypedFormControl();
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
+    private apollo: Apollo
   ) {
     // Set the defaults
+    this.tcDS = new TariffCleaningDS(this.apollo);
     this.action = data.action!;
+    this.sotExistedList = data.sotExistedList;
     if (this.action === 'edit') {
       this.dialogTitle = 'Edit ' + data.item.tank_no;
       this.storingOrderTank = data.item;
     } else {
       this.dialogTitle = 'New Record';
-      const blankObject = {} as StoringOrderTankItem;
       this.storingOrderTank = new StoringOrderTankItem();
     }
     this.index = data.index;
     this.storingOrderTankForm = this.createStorigOrderTankForm();
-  }
-  formControl = new UntypedFormControl('', [
-    Validators.required,
-    // Validators.email,
-  ]);
-  getErrorMessage() {
-    return this.formControl.hasError('required')
-      ? 'Required field'
-      : this.formControl.hasError('email')
-        ? 'Not a valid email'
-        : '';
+    this.initializeValueChange();
+
+    if (this.storingOrderTank.tariff_cleaning) {
+      this.lastCargoControl.setValue(this.storingOrderTank.tariff_cleaning);
+    }
   }
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
       guid: [this.storingOrderTank.guid],
-      unit_type: [this.storingOrderTank.unit_type_guid, [Validators.required]],
+      so_guid: [this.storingOrderTank.so_guid],
+      unit_type_guid: [this.storingOrderTank.unit_type_guid, [Validators.required]],
       tank_no: [this.storingOrderTank.tank_no, [Validators.required]],
-      last_cargo: [this.storingOrderTank.last_cargo_guid, [Validators.required]],
+      last_cargo: this.lastCargoControl,
+      last_cargo_guid: [this.storingOrderTank.last_cargo_guid, [Validators.required]],
       job_no: [this.storingOrderTank.job_no, [Validators.required]],
-      eta_dt: [this.convertToDate(this.storingOrderTank.eta_dt)],
+      eta_dt: [Utility.convertDate(this.storingOrderTank.eta_dt)],
       purpose_storage: [this.storingOrderTank.purpose_storage],
       purpose_steam: [this.storingOrderTank.purpose_steam],
       purpose_cleaning: [this.storingOrderTank.purpose_cleaning],
-      repair: [this.storingOrderTank.purpose_repair_cv],
-      clean_status: [this.storingOrderTank.clean_status_cv],
-      certificate: [this.storingOrderTank.certificate_cv],
-      required_temp: [this.storingOrderTank.required_temp],
-      remarks: [this.storingOrderTank.remarks],
-      etr_dt: [this.convertToDate(this.storingOrderTank.etr_dt)],
-      st: [this.storingOrderTank.st],
-      o2_level: [this.storingOrderTank.o2_level],
-      open_on_gate: [this.storingOrderTank.open_on_gate_cv]
+      purpose_repair_cv: [this.storingOrderTank.purpose_repair_cv],
+      clean_status_cv: [this.storingOrderTank.clean_status_cv],
+      certificate_cv: [this.storingOrderTank.certificate_cv],
+      required_temp: [{ value: this.storingOrderTank.required_temp, disabled: !this.storingOrderTank.purpose_steam }],
+      etr_dt: [Utility.convertDate(this.storingOrderTank.etr_dt)],
+      remarks: [{ value: this.storingOrderTank.tariff_cleaning?.remarks, disabled: true }],
+      open_on_gate: [{ value: this.storingOrderTank.tariff_cleaning?.open_on_gate_cv, disabled: true }],
+      flash_point: [this.storingOrderTank.tariff_cleaning?.flash_point]
     });
   }
-  convertToDate(value: any): Date | '' {
-    if (value) {
-      const dt = new Date(value);
-      return dt;
-    }
-    return '';
-  }
   submit() {
-    var sot: StoringOrderTankItem = {
-      guid: '',
-      so_guid: '',
-      unit_type_guid: this.storingOrderTankForm.value['unit_type'],
-      tank_no: this.storingOrderTankForm.value['tank_no'],
-      last_cargo_guid: this.storingOrderTankForm.value['last_cargo'],
-      job_no: this.storingOrderTankForm.value['job_no'],
-      eta_dt: Utility.convertToEpoch(this.storingOrderTankForm.value['eta_dt']),// this.storingOrderTankForm.value['eta_dt'] ? this.storingOrderTankForm.value['eta_dt'].getTime() : this.storingOrderTankForm.value['eta_dt'],
-      purpose_storage: this.storingOrderTankForm.value['purpose_storage'],
-      purpose_steam: this.storingOrderTankForm.value['purpose_steam'],
-      purpose_cleaning: this.storingOrderTankForm.value['purpose_cleaning'],
-      purpose_repair_cv: this.storingOrderTankForm.value['repair'],
-      clean_status_cv: this.storingOrderTankForm.value['clean_status'],
-      certificate_cv: this.storingOrderTankForm.value['certificate'],
-      required_temp: this.storingOrderTankForm.value['required_temp'],
-      remarks: this.storingOrderTankForm.value['remarks'],
-      etr_dt: Utility.convertToEpoch(this.storingOrderTankForm.value['etr_dt']),
-      st: this.storingOrderTankForm.value['st'],
-      o2_level: this.storingOrderTankForm.value['o2_level'],
-      open_on_gate_cv: this.storingOrderTankForm.value['open_on_gate_cv']
+    if (this.storingOrderTankForm?.valid) {
+      var sot: StoringOrderTankItem = {
+        ...this.storingOrderTank,
+        unit_type_guid: this.storingOrderTankForm.value['unit_type_guid'],
+        tank_no: this.storingOrderTankForm.value['tank_no'],
+        last_cargo_guid: this.storingOrderTankForm.value['last_cargo_guid'],
+        tariff_cleaning: this.lastCargoControl.value,
+        job_no: this.storingOrderTankForm.value['job_no'],
+        eta_dt: Utility.convertDate(this.storingOrderTankForm.value['eta_dt']),
+        purpose_storage: this.storingOrderTankForm.value['purpose_storage'],
+        purpose_steam: this.storingOrderTankForm.value['purpose_steam'],
+        purpose_cleaning: this.storingOrderTankForm.value['purpose_cleaning'],
+        purpose_repair_cv: this.storingOrderTankForm.value['purpose_repair_cv'],
+        clean_status_cv: this.storingOrderTankForm.value['clean_status_cv'],
+        certificate_cv: this.storingOrderTankForm.value['certificate_cv'],
+        required_temp: this.storingOrderTankForm.value['required_temp'],
+        etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt'])
+      }
+      // var sot: StoringOrderTankItem = {
+      //   guid: this.storingOrderTankForm.value['guid'],
+      //   so_guid: this.storingOrderTankForm.value['so_guid'],
+      //   unit_type_guid: this.storingOrderTankForm.value['unit_type_guid'],
+      //   tank_no: this.storingOrderTankForm.value['tank_no'],
+      //   last_cargo_guid: this.storingOrderTankForm.value['last_cargo_guid'],
+      //   job_no: this.storingOrderTankForm.value['job_no'],
+      //   eta_dt: Utility.convertDate(this.storingOrderTankForm.value['eta_dt']),// this.storingOrderTankForm.value['eta_dt'] ? this.storingOrderTankForm.value['eta_dt'].getTime() : this.storingOrderTankForm.value['eta_dt'],
+      //   purpose_storage: this.storingOrderTankForm.value['purpose_storage'],
+      //   purpose_steam: this.storingOrderTankForm.value['purpose_steam'],
+      //   purpose_cleaning: this.storingOrderTankForm.value['purpose_cleaning'],
+      //   purpose_repair_cv: this.storingOrderTankForm.value['repair'],
+      //   clean_status_cv: this.storingOrderTankForm.value['clean_status'],
+      //   certificate_cv: this.storingOrderTankForm.value['certificate'],
+      //   required_temp: this.storingOrderTankForm.value['required_temp'],
+      //   etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt'])
+      // }
+      const returnDialog: DialogData = {
+        item: sot,
+        index: this.index
+      }
+      console.log('valid');
+      this.dialogRef.close(returnDialog);
+    } else {
+      console.log('invalid');
+      //this.findInvalidControls();
     }
-    const returnDialog: DialogData = {
-      item: sot,
-      index: this.index
-    }
-    this.dialogRef.close(returnDialog);
+  }
+  markFormGroupTouched(formGroup: UntypedFormGroup): void {
+    Object.keys(formGroup.controls).forEach((key) => {
+      const control = formGroup.get(key);
+      if (control instanceof UntypedFormGroup) {
+        this.markFormGroupTouched(control);
+      } else {
+        control!.markAsTouched();
+      }
+    });
   }
   onNoClick(): void {
-    this.dialogRef.close('cancel');
+    this.dialogRef.close();
+  }
+  initializeValueChange() {
+    this.storingOrderTankForm!.get('purpose_steam')!.valueChanges.subscribe(value => {
+      const requiredTempControl = this.storingOrderTankForm.get('required_temp');
+      if (value) {
+        requiredTempControl!.enable();
+      } else {
+        requiredTempControl!.disable();
+      }
+    });
+
+    this.storingOrderTankForm.get('tank_no')?.valueChanges.subscribe(value => {
+      // Custom validation logic for tank_no
+      const isValid = Utility.verifyIsoContainerCheckDigit(value);
+      if (!isValid) {
+        // Set custom error if the value is invalid
+        this.storingOrderTankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
+      } else {
+        // Clear custom error if the value is valid
+        const found = this.sotExistedList?.filter(sot => sot.tank_no === value);
+        if (found?.length) {
+          this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+        } else {
+          this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+        }
+      }
+    });
+
+    this.storingOrderTankForm!.get('last_cargo')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.cargo;
+          this.storingOrderTankForm!.get('last_cargo_guid')!.setValue(value.guid);
+        }
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' });
+      })
+    ).subscribe();
+
+    this.lastCargoControl.valueChanges.subscribe(value => {
+      if (value.guid) {
+        this.storingOrderTankForm.get('remarks')!.setValue(value.remarks);
+        this.storingOrderTankForm.get('flash_point')!.setValue(value.flash_point);
+        this.storingOrderTankForm.get('open_on_gate')!.setValue(value.open_on_gate_cv);
+      }
+    });
+  }
+  findInvalidControls() {
+    const controls = this.storingOrderTankForm.controls;
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        console.log(name);
+      }
+    }
+  }
+  displayLastCargoFn(tc: TariffCleaningItem): string {
+    return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 }

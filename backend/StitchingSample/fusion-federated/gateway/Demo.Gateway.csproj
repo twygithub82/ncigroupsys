@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Demo.Gateway</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(ImplicitUsings)' == 'enable'">
+    <Using Include="Demo.Gateway" />
+  </ItemGroup>
+
+  <ItemGroup>
+     <!--
+    <ProjectReference Include="/Users/michael/local/hc-3/src/HotChocolate/AspNetCore/src/AspNetCore/HotChocolate.AspNetCore.csproj" />
+    <ProjectReference Include="/Users/michael/local/hc-3/src/HotChocolate/Fusion/src/Core/HotChocolate.Fusion.csproj" />
+    <ProjectReference Include="/Users/michael/local/hc-3/src/HotChocolate/AspNetCore/src/AspNetCore.CommandLine/HotChocolate.AspNetCore.CommandLine.csproj" />
+    -->
+
+ 
+    <PackageReference Include="HotChocolate.AspNetCore" Version="14.0.0-preview.10.4" />
+    <PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="14.0.0-preview.10.4" />
+    <PackageReference Include="HotChocolate.Fusion" Version="14.0.0-preview.10.4" />
+  </ItemGroup>
+
+</Project>

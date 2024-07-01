@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "apis1": {
+      "restored": true,
+      "restoreTime": "2024-06-29T08:32:56.3016873Z"
+    },
+    "identityapp1": {
+      "restored": true,
+      "restoreTime": "2024-06-29T08:32:57.8140682Z"
+    }
+  },
+  "parameters": {}
+}

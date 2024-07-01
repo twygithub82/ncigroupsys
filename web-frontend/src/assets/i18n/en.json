@@ -105,7 +105,8 @@
       "TEXT": "Inventory",
       "LIST": {
         "STORING-ORDER": "Storing Order",
-        "STORING-ORDER-NEW": "New Storing Order"
+        "STORING-ORDER-NEW": "New Storing Order",
+        "STORING-ORDER-EDIT": "Edit Storing Order"
       }
     }
   },
@@ -143,6 +144,7 @@
     "LAST-UPDATED": "Last Updated",
     "STATUS": "Status",
     "NEW": "New",
+    "EDIT": "Edit",
     "HEADER": "Header",
     "CUSTOMER-CODE": "Customer Code",
     "CUSTOMER-NAME": "Customer Name",
@@ -172,7 +174,20 @@
     "OPEN-ON-GATE": "Open On Gate",
     "REPAIR": "Repair",
     "UPDATE": "Update",
-    "CANCEL": "Cancel"
+    "CANCEL": "Cancel",
+    "NO-RESULT": "No results",
+    "SAVE-SUCCESS": "Saved successfully.",
+    "CANCELED-SUCCESS": "Canceled successfully.",
+    "BACK": "Back",
+    "SAVE-AND-SUBMIT": "Save & Submit",
+    "ARE-YOU-SURE-DELETE": "Are you sure to delete?",
+    "ARE-YOU-SURE-CANCEL": "Are you sure to cancel?",
+    "DELETE": "Delete",
+    "OK": "Ok",
+    "CLOSE": "Close",
+    "TO-BE-CANCELED": "To be canceled",
+    "INVALID": "Invalid",
+    "EXISTED": "Existed"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

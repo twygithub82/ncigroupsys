@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -25,14 +24,10 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { ExampleDataSource } from 'app/advance-table/advance-table.component';
-import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { AdvanceTableService } from 'app/advance-table/advance-table.service';
-import { DeleteDialogComponent } from 'app/advance-table/dialogs/delete/delete.component';
-import { FormDialogComponent } from 'app/advance-table/dialogs/form-dialog/form-dialog.component';
-import { fromEvent } from 'rxjs';
+import { Observable, fromEvent } from 'rxjs';
+import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
@@ -40,6 +35,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDividerModule } from '@angular/material/divider';
+import { CancelDialogComponent } from './dialogs/cancel/cancel.component';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
   selector: 'app-cleaning-procedures',
@@ -70,14 +71,15 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
     MatSelectModule,
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    MatAutocompleteModule,
+    MatDividerModule,
   ]
 })
 export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'so_no',
-    'code',
     'customer_name',
     'no_of_tanks',
     'status',
@@ -89,53 +91,54 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     'MENUITEMS.HOME.TEXT'
   ]
 
-  STATUS = 'COMMON-FORM.STATUS'
-  SO_NO = 'COMMON-FORM.SO-NO'
-  CUSTOMER_CODE = 'COMMON-FORM.CUSTOMER-CODE'
-  CUSTOMER_NAME = 'COMMON-FORM.CUSTOMER-NAME'
-  SO_DATE = 'COMMON-FORM.SO-DATE'
-  NO_OF_TANKS = 'COMMON-FORM.NO-OF-TANKS'
-
-  toppingList: string[] = [
-    'Extra cheese',
-    'Mushroom',
-    'Onion',
-    'Pepperoni',
-    'Sausage',
-    'Tomato',
-  ];
-
-  searchSO = {
-    tankNo: '',
-    customerCode: '',
-    lastCargo: '',
-    etaDt: '',
-    soNo: '',
-    jobNo: '',
-    purpose: '',
-    soStatus: ''
+  langText = {
+    STATUS: 'COMMON-FORM.STATUS',
+    SO_NO: 'COMMON-FORM.SO-NO',
+    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
+    SO_DATE: 'COMMON-FORM.SO-DATE',
+    NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
+    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
+    TANK_NO: 'COMMON-FORM.TANK-NO',
+    JOB_NO: 'COMMON-FORM.JOB-NO',
+    PURPOSE: 'COMMON-FORM.PURPOSE',
+    ETA_DATE: 'COMMON-FORM.ETA-DATE',
+    NO_RESULT: 'COMMON-FORM.NO-RESULT',
+    ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    CANCEL: 'COMMON-FORM.CANCEL',
+    CLOSE: 'COMMON-FORM.CLOSE',
+    TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
+    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS'
   }
 
-  selection = new SelectionModel<AdvanceTable>(true, []);
-  id?: number;
-  advanceTable?: AdvanceTable;
+  searchForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
+  ccDS: CustomerCompanyDS;
+
   soList: StoringOrderItem[] = [];
+  soSelection = new SelectionModel<StoringOrderItem>(true, []);
   soStatusCvList: CodeValuesItem[] = [];
-  loadingSoList: boolean = false;
+  purposeOptionCvList: CodeValuesItem[] = [];
+
+  customerCodeControl = new UntypedFormControl();
+  lastCargoControl = new UntypedFormControl();
+  customer_companyList?: CustomerCompanyItem[];
 
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
-    public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
-    private apollo: Apollo
+    private fb: UntypedFormBuilder,
+    private apollo: Apollo,
+    private translate: TranslateService
   ) {
     super();
+    this.initSearchForm();
     this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -144,174 +147,103 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.initializeFilterCustomerCompany();
     this.loadData();
   }
   refresh() {
     this.loadData();
-    console.log("test refresh");
   }
-  addNew() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      data: {
-        advanceTable: this.advanceTable,
-        action: 'add',
-      },
-      direction: tempDirection,
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      // if (result === 1) {
-      //   // After dialog is closed we're doing frontend updates
-      //   // For add we're just pushing a new row inside DataService
-      //   this.exampleDatabase?.dataChange.value.unshift(
-      //     this.advanceTableService.getDialogData()
-      //   );
-      //   this.refreshTable();
-      //   this.showNotification(
-      //     'snackbar-success',
-      //     'Add Record Successfully...!!!',
-      //     'bottom',
-      //     'center'
-      //   );
-      // }
+  initSearchForm() {
+    this.searchForm = this.fb.group({
+      so_no: [''],
+      customer_code: this.customerCodeControl,
+      last_cargo: this.lastCargoControl,
+      so_status: [''],
+      tank_no: [''],
+      job_no: [''],
+      purpose: [''],
+      eta_dt: [''],
     });
   }
-  editCall(row: AdvanceTable) {
+  cancelItem(row: StoringOrderItem) {
     // this.id = row.id;
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: row,
-    //     action: 'edit',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // When using an edit things are little different, firstly we find record inside DataService by id
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // Then you update that record using data from dialogData (values you enetered)
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value[foundIndex] =
-    //         this.advanceTableService.getDialogData();
-    //       // And lastly refresh table
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'black',
-    //         'Edit Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
-  }
-  deleteItem(row: AdvanceTable) {
-    // this.id = row.id;
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(DeleteDialogComponent, {
-    //   data: row,
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // for delete we use splice in order to remove single object from DataService
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'snackbar-danger',
-    //         'Delete Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
+    this.cancelSelectedRows([row])
   }
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    // const numSelected = this.selection.selected.length;
-    // const numRows = this.dataSource.renderedData.length;
-    // return numSelected === numRows;
+    const numSelected = this.soSelection.selected.length;
+    const numRows = this.soDS.totalCount;
+    return numSelected === numRows;
     return false;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    // this.isAllSelected()
-    //   ? this.selection.clear()
-    //   : this.dataSource.renderedData.forEach((row) =>
-    //     this.selection.select(row)
-    //   );
+    this.isAllSelected()
+      ? this.soSelection.clear()
+      : this.soList.forEach((row) =>
+        this.soSelection.select(row)
+      );
   }
-  removeSelectedRows() {
-    // const totalSelect = this.selection.selected.length;
-    // this.selection.selected.forEach((item) => {
-    //   const index: number = this.dataSource.renderedData.findIndex(
-    //     (d) => d === item
-    //   );
-    //   // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
-    //   this.exampleDatabase?.dataChange.value.splice(index, 1);
-    //   this.refreshTable();
-    //   this.selection = new SelectionModel<AdvanceTable>(true, []);
-    // });
-    // this.showNotification(
-    //   'snackbar-danger',
-    //   totalSelect + ' Record Delete Successfully...!!!',
-    //   'bottom',
-    //   'center'
-    // );
+  canCancelSelectedRows(): boolean {
+    return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
+      const index: number = this.soList.findIndex((d) => d === item);
+      return this.soDS.canCancel(this.soList[index]);
+    });
+  }
+  cancelSelectedRows(row: StoringOrderItem[]) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      data: {
+        item: [...row],
+        langText: this.langText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const guids = result.item.map((item: { guid: string }) => item.guid);
+        this.soDS.cancelStoringOrder(guids).subscribe(result => {
+          console.log(result)
+          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
+            let successMsg = this.langText.CANCELED_SUCCESS;
+            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
+              successMsg = res;
+              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+              this.loadData();
+            });
+          }
+        });
+      }
+    });
   }
   public loadData() {
-    this.soDS.loadItems({});
-    this.soDS.connect().subscribe(data => {
-      this.soList = data;
-      console.log(this.soList)
-    });
-    this.soDS.loading$.subscribe(loading => {
-      this.loadingSoList = loading;
+    this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
+      if (this.soDS.totalCount > 0) {
+        this.soList = data;
+      }
     });
 
     const queries = [
-      { alias: 'soStatusCv', codeValType: 'SO_STATUS' }
+      { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
       this.soStatusCvList = data;
       this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
-    // this.subs.sink = fromEvent(this.filter.nativeElement, 'keyup').subscribe(
-    //   () => {
-    //     if (!this.dataSource) {
-    //       return;
-    //     }
-    //     this.dataSource.filter = this.filter.nativeElement.value;
-    //   }
-    // );
+    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+      this.purposeOptionCvList = data;
+    });
   }
   showNotification(
     colorName: string,
@@ -346,7 +278,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   // context menu
-  onContextMenu(event: MouseEvent, item: AdvanceTable) {
+  onContextMenu(event: MouseEvent, item: StoringOrderItem) {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
@@ -360,27 +292,54 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   search() {
     const where: any = {};
 
-    if (this.searchSO.soNo) {
-      where.so_no = { contains: this.searchSO.soNo };
+    if (this.searchForm!.value['so_no']) {
+      where.so_no = { contains: this.searchForm!.value['so_no'] };
     }
 
-    if (this.searchSO.tankNo || this.searchSO.etaDt) {
-       const sotSome: any = {};
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['eta_dt']) {
+      const sotSome: any = {};
 
-      if (this.searchSO.tankNo) {
-        sotSome.tank_no = { contains: this.searchSO.tankNo };
+      if (this.searchForm!.value['tank_no']) {
+        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
       }
 
-      if (this.searchSO.etaDt) {
-        sotSome.eta_dt = { gte: null, lte: null };
+      if (this.searchForm!.value['eta_dt']) {
+        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt']), lte: Utility.convertDate(this.searchForm!.value['eta_dt']) };
       }
       where.storing_order_tank = { some: sotSome };
-      debugger
     }
 
-    if (this.searchSO.customerCode) {
-      where.customer_company = { code: { contains: this.searchSO.customerCode } };
+    if (this.searchForm!.value['customer_code']) {
+      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
-    this.soDS.loadItems(where);
+
+    // TODO :: search criteria
+    this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
+      if (this.soDS.totalCount > 0) {
+        this.soList = data;
+      }
+    });
+  }
+
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  }
+
+  initializeFilterCustomerCompany() {
+    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
   }
 }

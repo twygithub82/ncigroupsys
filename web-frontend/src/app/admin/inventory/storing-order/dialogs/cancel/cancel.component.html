@@ -1,0 +1,34 @@
+<div class="container">
+    <h3 mat-dialog-title>{{data.langText.ARE_YOU_SURE_CANCEL | translate}}</h3>
+    <div mat-dialog-content>
+        @for (so of storingOrderTanks; track so) {
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
+                <mat-label>{{data.langText.SO_NO | translate}}:{{so.so_no}}</mat-label>
+            </div>
+        </div>
+        <mat-divider class="mb-2"></mat-divider>
+        @for (sot of so.storing_order_tank; track sot) {
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
+                <mat-label>
+                    {{data.langText.TANK_NO | translate}}:{{sot.tank_no}}
+                    @if (sot.status_cv === 'WAITING') {
+                    <span class="badge bg-red">{{data.langText.TO_BE_CANCELED | translate}}</span>
+                    }
+                </mat-label>
+            </div>
+        </div>
+        }
+        <mat-divider></mat-divider>
+        }
+    </div>
+    <div mat-dialog-actions class="mb-1">
+        <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmCancel()">
+            {{data.langText.CANCEL | translate}}
+        </button>
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+            {{data.langText.CLOSE | translate}}
+        </button>
+    </div>
+</div>

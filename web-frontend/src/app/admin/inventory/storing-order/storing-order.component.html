@@ -8,7 +8,7 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
           <mat-accordion>
-            <mat-expansion-panel hideToggle>
+            <mat-expansion-panel>
               <mat-expansion-panel-header>
                 <mat-panel-title>
                 </mat-panel-title>
@@ -24,85 +24,98 @@
                     </button>
                   </div>
                   <div class="m-l-10" matTooltip="CANCEL" (click)="$event.stopPropagation()">
-                    <button mat-mini-fab color="warn" (click)="removeSelectedRows()" [disabled]="!selection.hasValue()">
+                    <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
+                      [disabled]="canCancelSelectedRows()">
                       <mat-icon class="col-white">cancel</mat-icon>
                     </button>
                   </div>
                   <div class="export-button m-l-10" matTooltip="XLSX">
-                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()" (click)="$event.stopPropagation()"/>
+                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                      (click)="$event.stopPropagation()" />
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
-              <div class="row">
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Tank No.</mat-label>
-                    <input matInput [(ngModel)]="searchSO.tankNo" >
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Customer Code</mat-label>
-                    <input matInput [(ngModel)]="searchSO.customerCode">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Last Cargo</mat-label>
-                    <input matInput [(ngModel)]="searchSO.lastCargo">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>ETA Date</mat-label>
-                    <input matInput [(ngModel)]="searchSO.etaDt" [matDatepicker]="eta_picker">
-                    <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
-                    <mat-datepicker #eta_picker></mat-datepicker>
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>SO No.</mat-label>
-                    <input matInput [(ngModel)]="searchSO.soNo">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Job No.</mat-label>
-                    <input matInput [(ngModel)]="searchSO.jobNo">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Purpose</mat-label>
-                    <mat-select multiple [(ngModel)]="searchSO.purpose">
-                      @for (topping of toppingList; track topping) {
-                        <mat-option [value]="topping">{{topping}}
+              <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+                <div class="row">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{langText.SO_NO | translate}}</mat-label>
+                      <input matInput formControlName="so_no">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{langText.CUSTOMER_CODE | translate}}</mat-label>
+                      <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                        [matAutocomplete]="customerCode">
+                      <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                        @for (cc of customer_companyList; track cc) {
+                        <mat-option [value]="cc">
+                          {{ccDS.displayName(cc)}}
                         </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Status</mat-label>
-                    <mat-select [(ngModel)]="searchSO.soStatus">
-                      @for (codeValue of soStatusCvList; track codeValue) {
+                        }
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{langText.LAST_CARGO | translate}}</mat-label>
+                      <input matInput formControlName="last_cargo" [formControl]="lastCargoControl">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{langText.STATUS | translate}}</mat-label>
+                      <mat-select formControlName="so_status">
+                        @for (codeValue of soStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.codeValue">
                           {{codeValue.description}}
                         </mat-option>
                         }
-                    </mat-select>
-                  </mat-form-field>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
-                  <button mat-mini-fab color="primary" (click)="search()">
-                    <mat-icon>search</mat-icon>
-                  </button>
+                <div class="row">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{langText.TANK_NO | translate}}</mat-label>
+                      <input matInput formControlName="tank_no">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{langText.JOB_NO | translate}}</mat-label>
+                      <input matInput formControlName="job_no">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{langText.PURPOSE | translate}}</mat-label>
+                      <mat-select multiple formControlName="purpose">
+                        @for (codeValue of purposeOptionCvList; track codeValue) {
+                        <mat-option [value]="codeValue.codeValue">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{langText.ETA_DATE | translate}}</mat-label>
+                      <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
+                      <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
+                      <mat-datepicker #eta_picker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                    <button mat-mini-fab color="primary" (click)="search()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </mat-expansion-panel>
           </mat-accordion>
           <div class="body overflow-auto">
@@ -112,13 +125,13 @@
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-6'">
                     <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                      [checked]="soSelection.hasValue() && isAllSelected()"
+                      [indeterminate]="soSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-6'">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? soSelection.toggle(row) : null"
+                      [checked]="soSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
@@ -128,117 +141,84 @@
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="so_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">{{SO_NO | translate}}</mat-header-cell>
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">{{langText.SO_NO
+                    |
+                    translate}}</mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="table-img tbl-col-width-per-7">
-                    <span class="mobile-label">{{SO_NO | translate}}:</span>{{row.so_no}}
+                    <span class="mobile-label">{{langText.SO_NO | translate}}:</span>{{row.so_no}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="code">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{CUSTOMER_CODE | translate}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CUSTOMER_CODE |
+                    translate}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{CUSTOMER_CODE | translate}}:</span>{{row.customer_company.code}}
+                    <span class="mobile-label">{{langText.CUSTOMER_CODE |
+                      translate}}:</span>{{row.customer_company.code}} ({{row.customer_company.name}})
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_name">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{CUSTOMER_NAME | translate}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CUSTOMER_NAME |
+                    translate}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{CUSTOMER_NAME | translate}}:</span> {{row.customer_company.name}}
+                    <span class="mobile-label">{{langText.CUSTOMER_NAME | translate}}:</span>
+                    {{row.customer_company.code}} ({{row.customer_company.name}})
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="no_of_tanks">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'justify-content-center'">{{NO_OF_TANKS | translate}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
-                    <span class="mobile-label">{{NO_OF_TANKS | translate}}:</span> {{row.storing_order_tank.length}}
+                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                    [ngClass]="'justify-content-center'">{{langText.NO_OF_TANKS
+                    | translate}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'justify-content-center'">
+                    <span class="mobile-label">{{langText.NO_OF_TANKS | translate}}:</span>
+                    {{row.storing_order_tank.length}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{STATUS |
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.STATUS |
                     translate}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{STATUS | translate}}:</span> {{row.status_cv}}</mat-cell>
+                    <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.status_cv}}</mat-cell>
                 </ng-container>
                 <!-- actions -->
                 <ng-container matColumnDef="actions">
-                  <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
+                  <mat-header-cell class="pr-0" *matHeaderCellDef></mat-header-cell>
+                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0 justify-content-end">
+                    <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
                       class="tbl-action-btn">
                       <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
-                    </button>
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
+                    </button> -->
+                    @if (soDS.canCancel(row)) {
+                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="cancelItem(row)"
                       class="tbl-action-btn">
-                      <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+                      <mat-icon>cancel</mat-icon>
                     </button>
+                    }
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
-                  [style.cursor]="'pointer'" matRipple>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"
+                  [routerLink]="['/admin/storing-order/edit', row.guid]" [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>
+            <!-- No result -->
+            @if (!(soDS.soLoading$ | async) && !soList.length) {
+            <mat-divider></mat-divider>
+            <div class="no-results m-l-20 pt-3" [style.display]="soList.length === 0 ? '' : 'none'">
+              <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+            </div>
+            }
             <!-- Loading spinner -->
-            @if (soDS.loading$ | async) {
+            @if (soDS.soLoading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            <!-- context menu start -->
-            <div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
-              [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu">
-            </div>
-            <mat-menu #contextMenu="matMenu">
-              <ng-template matMenuContent let-item="item">
-                <!-- <button mat-menu-item (click)="addNew()">
-                  <mat-icon>add_box</mat-icon>
-                  <span>Add Record</span>
-                </button> -->
-                <button mat-menu-item (click)="editCall(item)">
-                  <mat-icon>create</mat-icon>
-                  <span>Edit</span>
-                </button>
-                <button mat-menu-item (click)="deleteItem(item)">
-                  <mat-icon>delete</mat-icon>
-                  <span>Cancel</span>
-                </button>
-                <!-- <button mat-menu-item (click)="refresh()">
-                  <mat-icon>refresh</mat-icon>
-                  <span>Refresh Record</span>
-                </button> -->
-                <!-- <button mat-menu-item disabled>
-                  <mat-icon>no_encryption</mat-icon>
-                  <span>Disable</span>
-                </button>
-                <button mat-menu-item [matMenuTriggerFor]="nestedmenu">
-                  <mat-icon>list_alt</mat-icon>
-                  <span> Nested Menu</span>
-                </button> -->
-              </ng-template>
-            </mat-menu>
-            <mat-menu #nestedmenu="matMenu">
-              <button mat-menu-item>
-                <mat-icon>mail_outline</mat-icon>
-                <span>Item 1</span>
-              </button>
-              <button mat-menu-item>
-                <mat-icon>call</mat-icon>
-                <span>Item 2</span>
-              </button>
-              <button mat-menu-item>
-                <mat-icon>chat</mat-icon>
-                <span>Item 3</span>
-              </button>
-            </mat-menu>
-            <!-- context menu end -->
-            <!-- @if (!soDS.loading$) {
-            <div class="no-results" [style.display]="soList.renderedData.length === 0 ? '' : 'none'">
-              No results
-            </div>
-            }
-            <mat-paginator #paginator [length]="dataSource.filteredData.length" [pageIndex]="0" [pageSize]="10"
+            <mat-paginator #paginator [length]="soDS.totalCount" [pageIndex]="0" [pageSize]="10"
               [pageSizeOptions]="[5, 10, 25, 100]">
-            </mat-paginator> -->
+            </mat-paginator>
           </div>
         </div>
       </div>
