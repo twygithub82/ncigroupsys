@@ -106,7 +106,8 @@
       "LIST": {
         "STORING-ORDER": "Storing Order",
         "STORING-ORDER-NEW": "New Storing Order",
-        "STORING-ORDER-EDIT": "Edit Storing Order"
+        "STORING-ORDER-EDIT": "Edit Storing Order",
+        "IN-GATE": "In Gate"
       }
     }
   },
@@ -187,7 +188,8 @@
     "CLOSE": "Close",
     "TO-BE-CANCELED": "To be canceled",
     "INVALID": "Invalid",
-    "EXISTED": "Existed"
+    "EXISTED": "Existed",
+    "SEARCH": "Search"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

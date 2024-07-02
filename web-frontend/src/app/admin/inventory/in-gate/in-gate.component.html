@@ -1,0 +1,91 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <div class="materialTableHeader">
+            <div class="left">
+              <ul class="header-buttons-left ms-0">
+                <li class="tbl-title">
+                  <h2>{{langText.SO_NO | translate}}/{{langText.TANK_NO | translate}}/{{langText.JOB_NO | translate}}
+                  </h2>
+                </li>
+                <li class="tbl-search-box">
+                  <input placeholder="Search" type="text" [(ngModel)]="searchField" #filter
+                    class="browser-default search-field no-prefix-search-field" aria-label="Search box">
+                </li>
+                <li class="ps-2">
+                  <button mat-mini-fab color="primary" (click)="search()">
+                    <mat-icon>search</mat-icon>
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div class="right">
+            </div>
+          </div>
+          <div class="body overflow-auto">
+            <div class="responsive_table">
+              <table mat-table [dataSource]="soList" matSort class="mat-cell advance-table">
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="tank_no">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">
+                    {{langText.TANK_NO | translate}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="table-img tbl-col-width-per-7">
+                    <span class="mobile-label">{{langText.TANK_NO | translate}}:</span>{{row.tank_no}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="customer_name">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{langText.CUSTOMER_CODE | translate}}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                    <span class="mobile-label">{{langText.CUSTOMER_CODE | translate}}:</span>{{ccDS.displayName(row.customer_company)}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="so_no">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">
+                    {{langText.SO_NO | translate}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="table-img tbl-col-width-per-7">
+                    <span class="mobile-label">{{langText.SO_NO | translate}}:</span>{{row.so_no}}
+                  </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"
+                  [routerLink]="['/admin/in-gate/details', row.guid]" [style.cursor]="'pointer'" matRipple>
+                </mat-row>
+              </table>
+            </div>
+            <!-- No result -->
+            @if (!(soDS.soLoading$ | async) && !soList.length) {
+            <mat-divider></mat-divider>
+            <div class="no-results m-l-20 pt-3" [style.display]="soList.length === 0 ? '' : 'none'">
+              <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+            </div>
+            }
+            <!-- Loading spinner -->
+            @if (soDS.soLoading$ | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
+            </div>
+            }
+            <mat-paginator #paginator [length]="soDS.totalCount" [pageIndex]="0" [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 100]">
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -38,14 +38,13 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
-  selector: 'app-storing-order',
+  selector: 'app-in-gate-details',
   standalone: true,
-  templateUrl: './storing-order.component.html',
-  styleUrl: './storing-order.component.scss',
+  templateUrl: './in-gate-details.component.html',
+  styleUrl: './in-gate-details.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -75,7 +74,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
     MatDividerModule,
   ]
 })
-export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'so_no',
@@ -194,35 +193,6 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        item: [...row],
-        langText: this.langText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const guids = result.item.map((item: { guid: string }) => item.guid);
-        this.soDS.cancelStoringOrder(guids).subscribe(result => {
-          console.log(result)
-          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-            let successMsg = this.langText.CANCELED_SUCCESS;
-            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-              successMsg = res;
-              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-              this.loadData();
-            });
-          }
-        });
-      }
-    });
   }
   public loadData() {
     this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {

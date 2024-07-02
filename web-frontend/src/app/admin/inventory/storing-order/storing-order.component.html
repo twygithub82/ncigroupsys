@@ -153,7 +153,7 @@
                     translate}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{langText.CUSTOMER_CODE |
-                      translate}}:</span>{{row.customer_company.code}} ({{row.customer_company.name}})
+                      translate}}:</span>{{ccDS.displayName(row.customer_company)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_name">

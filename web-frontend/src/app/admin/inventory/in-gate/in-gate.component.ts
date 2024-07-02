@@ -38,14 +38,13 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
-  selector: 'app-storing-order',
+  selector: 'app-in-gate',
   standalone: true,
-  templateUrl: './storing-order.component.html',
-  styleUrl: './storing-order.component.scss',
+  templateUrl: './in-gate.component.html',
+  styleUrl: './in-gate.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -75,17 +74,14 @@ import { ComponentUtil } from 'app/utilities/component-util';
     MatDividerModule,
   ]
 })
-export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'select',
-    'so_no',
+    'tank_no',
     'customer_name',
-    'no_of_tanks',
-    'status',
-    'actions'
+    'so_no'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -107,12 +103,13 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS'
+    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    SEARCH: "COMMON-FORM.SEARCH"
   }
 
   searchForm?: UntypedFormGroup;
+  searchField: string = "";
 
-  cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
   ccDS: CustomerCompanyDS;
 
@@ -136,7 +133,6 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     super();
     this.initSearchForm();
     this.soDS = new StoringOrderDS(this.apollo);
-    this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -194,55 +190,13 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        item: [...row],
-        langText: this.langText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const guids = result.item.map((item: { guid: string }) => item.guid);
-        this.soDS.cancelStoringOrder(guids).subscribe(result => {
-          console.log(result)
-          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-            let successMsg = this.langText.CANCELED_SUCCESS;
-            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-              successMsg = res;
-              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-              this.loadData();
-            });
-          }
-        });
-      }
-    });
   }
   public loadData() {
-    this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-      if (this.soDS.totalCount > 0) {
-        this.soList = data;
-      }
-    });
-
-    const queries = [
-      { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' }
-    ];
-    this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-      this.soStatusCvList = data;
-      this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
-    });
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
-    });
+    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
+    //   if (this.soDS.totalCount > 0) {
+    //     this.soList = data;
+    //   }
+    // });
   }
   showNotification(
     colorName: string,
@@ -289,35 +243,36 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   search() {
-    const where: any = {};
-
-    if (this.searchForm!.value['so_no']) {
-      where.so_no = { contains: this.searchForm!.value['so_no'] };
+    if (this.searchField) {
+      const searchField = this.searchField;
+      const where: any = {};
+      const or: any[] = [];
+    
+      // Add the primary search condition
+      or.push({ so_no: { contains: searchField } });
+    
+      // Add the nested search conditions
+      or.push({
+        storing_order_tank: {
+          some: {
+            or: [
+              { job_no: { contains: searchField } },
+              { tank_no: { contains: searchField } }
+            ]
+          }
+        }
+      });
+    
+      // Assign the or conditions to the where clause
+      where.or = or;
+    
+      // Execute the search
+      this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
+        if (this.soDS.totalCount > 0) {
+          this.soList = data;
+        }
+      });
     }
-
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['eta_dt']) {
-      const sotSome: any = {};
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
-      }
-
-      if (this.searchForm!.value['eta_dt']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt']), lte: Utility.convertDate(this.searchForm!.value['eta_dt']) };
-      }
-      where.storing_order_tank = { some: sotSome };
-    }
-
-    if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-    }
-
-    // TODO :: search criteria
-    this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
-      if (this.soDS.totalCount > 0) {
-        this.soList = data;
-      }
-    });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -325,20 +280,5 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   initializeFilterCustomerCompany() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.code;
-        }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-        });
-      })
-    ).subscribe();
   }
 }

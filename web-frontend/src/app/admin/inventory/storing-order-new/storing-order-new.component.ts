@@ -49,7 +49,7 @@ import { TariffCleaningDS } from 'app/data-sources/tariff_cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
-  selector: 'app-cleaning-procedures',
+  selector: 'app-storing-order-new',
   standalone: true,
   templateUrl: './storing-order-new.component.html',
   styleUrl: './storing-order-new.component.scss',
@@ -497,7 +497,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     newSot.certificate_cv = row.certificate_cv;
     newSot.eta_dt = row.eta_dt;
     newSot.etr_dt = row.etr_dt;
-    this.updateData([...this.sotList.data, newSot]);
+    this.editOrderDetails(event, newSot, -1);
   }
 
   handleSaveSuccess(result: any) {

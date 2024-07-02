@@ -5,6 +5,8 @@ import { CleaningProceduresComponent } from './cleaning-procedures/cleaning-proc
 import { CleaningProceduresNewComponent } from './cleaning-procedures-new/cleaning-procedures-new.component';
 import { StoringOrderComponent } from './inventory/storing-order/storing-order.component';
 import { StoringOrderNewComponent } from './inventory/storing-order-new/storing-order-new.component';
+import { InGateComponent } from './inventory/in-gate/in-gate.component';
+import { InGateDetailsComponent } from './inventory/in-gate-details/in-gate-details.component';
 
 export const ADMIN_ROUTE: Routes = [
   {
@@ -30,6 +32,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "storing-order/edit/:id",
     component: StoringOrderNewComponent,
+  },
+  {
+    path: "in-gate",
+    component: InGateComponent,
+  },
+  {
+    path: "in-gate/details/:id",
+    component: InGateDetailsComponent,
   }
 ];
 
