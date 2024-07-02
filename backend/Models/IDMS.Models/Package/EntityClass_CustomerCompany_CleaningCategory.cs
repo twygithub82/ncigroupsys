@@ -17,8 +17,6 @@ namespace IDMS.Models.Package
         public string? customer_company_guid { get; set; }
 
        
-
-
         public string? cleaning_category_guid { get; set; }
 
        
@@ -35,9 +33,9 @@ namespace IDMS.Models.Package
 
     public class EntityClass_CustomerCompany_CleaningCategoryWithCustomerCompany: EntityClass_CustomerCompany_CleaningCategory
     {
-        public EntityClass_CustomerCompany? customer_company { get; set; }
+        public customer_company? customer_company { get; set; }
 
-        public EntityClass_CleaningCategory? cleaning_category { get; set; }
+        public cleaning_category? cleaning_category { get; set; }
 
     }
 }

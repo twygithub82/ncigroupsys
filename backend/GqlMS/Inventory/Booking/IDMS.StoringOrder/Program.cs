@@ -1,14 +1,8 @@
 using IDMS.Booking.GqlTypes;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Booking.GqlTypes.Repo;
 using HotChocolate.Data;
 using AutoMapper;
-using IDMS.Booking.Model.Type;
-using IDMS.Booking.Model.Domain;
 
 namespace IDMS.Booking.Application
 {
@@ -33,8 +27,8 @@ namespace IDMS.Booking.Application
 
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<SOTType, storing_order_tank>();
-                cfg.CreateMap<SOType, storing_order>();
+                //cfg.CreateMap<SOTType, storing_order_tank>();
+                //cfg.CreateMap<SOType, storing_order>();
             });
 
             IMapper mapper = mappingConfig.CreateMapper();
@@ -58,9 +52,9 @@ namespace IDMS.Booking.Application
                             .InitializeOnStartup()
                             .RegisterDbContext<AppDbContext>(DbContextKind.Synchronized)
                             //.RegisterService<iDatabase>()
-                            .AddQueryType<QueryType>()
-                            .AddSubscriptionType<SubscriptionType>()
-                            .AddMutationType<MutationType>()
+                            .AddQueryType<BookingQuery>()
+                            .AddSubscriptionType<BookingSubscription>()
+                            .AddMutationType<BookingMutation>()
                             .AddFiltering()
                             .AddSorting()
                             .AddProjections()

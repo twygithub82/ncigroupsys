@@ -17,11 +17,11 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public  IQueryable<EntityClass_CleaningMethod?> QueryCleaningMethod(ApplicationParameterDBContext context,
+        public  IQueryable<cleaning_method?> QueryCleaningMethod(ApplicationParameterDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
-            IQueryable<EntityClass_CleaningMethod> query = null;
+            IQueryable<cleaning_method> query = null;
             try
             {
                // var context = _contextFactory.CreateDbContext();   
@@ -46,11 +46,11 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<EntityClass_CleaningCategory?> QueryCleaningCategory(ApplicationParameterDBContext context,
+        public IQueryable<cleaning_category?> QueryCleaningCategory(ApplicationParameterDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
-            IQueryable<EntityClass_CleaningCategory> query = null;
+            IQueryable<cleaning_category> query = null;
             try
             {
               // var context = _contextFactory.CreateDbContext();

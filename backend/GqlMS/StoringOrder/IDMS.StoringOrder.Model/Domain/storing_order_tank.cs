@@ -29,9 +29,9 @@ namespace IDMS.StoringOrder.Model.Domain
         public string? certificate_cv { get; set; }
         public string? remarks { get; set; }
         public long? etr_dt { get; set; } = 0;
-        public int? st { get; set; } = 0;
-        public int? o2_level { get; set; } = 0;
-        public string? open_on_gate_cv { get; set; }
+        //public int? st { get; set; } = 0;
+       // public int? o2_level { get; set; } = 0;
+        //public string? open_on_gate_cv { get; set; }
         public string? status_cv { get; set; }
 
         public string? so_guid { get; set; }

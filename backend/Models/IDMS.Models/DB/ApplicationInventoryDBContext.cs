@@ -1,4 +1,4 @@
-﻿using IDMS.Models.Inventory;
+﻿using IDMS.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
@@ -21,14 +21,14 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
                 .HasOne(e => e.tank).WithOne(t => t.in_gate)
                 .HasForeignKey<EntityClass_InGateWithTank>(t => t.so_tank_guid);
 
-            modelBuilder.Entity<EntityClass_Tank>(e =>
+            modelBuilder.Entity<storing_order_tank>(e =>
             {
                 //e.HasKey(t => t.guid);
                 e.HasOne(st => st.storing_order).WithMany(st => st.storing_order_tank)       // Navigation property in StoringOrderTank
                 .HasForeignKey(st => st.so_guid);
             });
 
-            modelBuilder.Entity<EntityClass_Tank>()
+            modelBuilder.Entity<storing_order_tank>()
                 .HasKey(t => t.guid);
 
             modelBuilder.Entity<EntityClass_InGateWithTank>()
@@ -39,11 +39,11 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         }
 
         public DbSet<IDMS.Models.Inventory.EntityClass_InGateWithTank> in_gate { get; set; }
-        public DbSet<IDMS.Models.Inventory.EntityClass_Tank> storing_order_tank { get; set; }
+        public DbSet<IDMS.Models.Inventory.storing_order_tank> storing_order_tank { get; set; }
 
-        public DbSet<IDMS.Models.Inventory.EntityClass_StoringOrder> storing_order { get; set; }
+        public DbSet<IDMS.Models.Inventory.storing_order> storing_order { get; set; }
 
-        public DbSet<IDMS.Models.Inventory.EntityClass_CodeValues> code_values { get; set; }
+        public DbSet<code_values> code_values { get; set; }
 
         
 

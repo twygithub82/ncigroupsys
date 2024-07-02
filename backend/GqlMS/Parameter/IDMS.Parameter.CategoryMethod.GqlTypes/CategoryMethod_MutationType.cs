@@ -24,14 +24,14 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
         public async Task<int> AddCleaningMethod(ApplicationParameterDBContext context, 
             [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, 
-            EntityClass_CleaningMethod NewCleanMethod)
+            cleaning_method NewCleanMethod)
         {
             int retval = 0;
             try
             {
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 NewCleanMethod.guid = (string.IsNullOrEmpty(NewCleanMethod.guid) ? Util.GenerateGUID() : NewCleanMethod.guid);
-                var newCleanMthd = new EntityClass_CleaningMethod();
+                var newCleanMthd = new cleaning_method();
                 newCleanMthd.guid = NewCleanMethod.guid;
                 newCleanMthd.description = NewCleanMethod.description;
                 newCleanMthd.name = NewCleanMethod.name;
@@ -51,7 +51,7 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
         public async Task<int> UpdateCleaningMethod(ApplicationParameterDBContext context, 
             [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, 
-            EntityClass_CleaningMethod UpdateCleanMethod)
+            cleaning_method UpdateCleanMethod)
         {
             int retval = 0;
             try
@@ -117,14 +117,14 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
 
         #region Cleaning Category
         public async Task<int> AddCleaningCategory(ApplicationParameterDBContext context, 
-            [Service] IConfiguration config,[Service] IHttpContextAccessor httpContextAccessor, EntityClass_CleaningCategory NewCleanCategory)
+            [Service] IConfiguration config,[Service] IHttpContextAccessor httpContextAccessor, cleaning_category NewCleanCategory)
         {
             int retval = 0;
             try
             {
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 NewCleanCategory.guid = (string.IsNullOrEmpty(NewCleanCategory.guid) ? Util.GenerateGUID() : NewCleanCategory.guid);
-                var newCleanCategory = new EntityClass_CleaningCategory();
+                var newCleanCategory = new cleaning_category();
                 newCleanCategory.guid = NewCleanCategory.guid;
                 newCleanCategory.description = NewCleanCategory.description;
                 newCleanCategory.name = NewCleanCategory.name;
@@ -160,7 +160,7 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
         public async Task<int> UpdateCleaningCategory( ApplicationParameterDBContext context, 
             [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, 
-            EntityClass_CleaningCategory UpdateCleanCategory)
+            cleaning_category UpdateCleanCategory)
         {
             int retval = 0;
             try

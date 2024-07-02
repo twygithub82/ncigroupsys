@@ -17,12 +17,12 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<EntityClass_TariffCleaning>()
+            modelBuilder.Entity<tariff_cleaning>()
                 .ToTable("tariff_cleaning")
                 .HasOne(t => t.cleaning_method).WithMany(m => m.tariff_cleanings)
                 .HasForeignKey(f => f.cleaning_method_guid);
 
-            modelBuilder.Entity<EntityClass_TariffCleaning>()
+            modelBuilder.Entity<tariff_cleaning>()
                 .ToTable("tariff_cleaning")
                 .HasOne(t => t.cleaning_category).WithMany(m => m.tariff_cleanings)
                 .HasForeignKey(f => f.cleaning_category_guid);
@@ -39,14 +39,14 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
             //   .HasForeignKey<EntityClass_CustomerCompany_TariffCleaning>(t => t.tariff_cleaning_guid);
         }
 
-        public DbSet<IDMS.Models.Tariff.EntityClass_TariffCleaning> tariff_cleaning { get; set; }
+        public DbSet<IDMS.Models.Tariff.tariff_cleaning> tariff_cleaning { get; set; }
 
         public DbSet<IDMS.Models.Parameter.EntityClass_CleaningMethodWithTariff> cleaning_method { get; set; }
 
         public DbSet<IDMS.Models.Parameter.EntityClass_CleaningCategoryWithTariff> cleaning_category { get; set; }
         
         public DbSet<IDMS.Models.Package.EntityClass_CustomerCompany_CleaningCategory> customer_company_cleaning_category { get; set; }
-        public DbSet<IDMS.Models.Master.EntityClass_CustomerCompany> customer_company { get; set; }
+        public DbSet<IDMS.Models.Master.customer_company> customer_company { get; set; }
 
     }
 }

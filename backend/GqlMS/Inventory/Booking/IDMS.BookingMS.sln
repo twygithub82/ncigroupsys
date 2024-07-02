@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Booking.GqlTypes", "ID
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Booking.Model", "IDMS.StoringOrder.Model\IDMS.Booking.Model.csproj", "{26740B81-8B32-43CA-88C5-79322FCEAF24}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Models", "..\..\..\Models\IDMS.Models\IDMS.Models.csproj", "{5495D0B7-A036-49F3-8CD3-3DCEC84FE53B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{26740B81-8B32-43CA-88C5-79322FCEAF24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26740B81-8B32-43CA-88C5-79322FCEAF24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26740B81-8B32-43CA-88C5-79322FCEAF24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5495D0B7-A036-49F3-8CD3-3DCEC84FE53B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5495D0B7-A036-49F3-8CD3-3DCEC84FE53B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5495D0B7-A036-49F3-8CD3-3DCEC84FE53B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5495D0B7-A036-49F3-8CD3-3DCEC84FE53B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
