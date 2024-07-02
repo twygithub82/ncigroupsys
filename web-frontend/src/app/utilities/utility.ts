@@ -1,5 +1,7 @@
 import { formatDate } from "@angular/common";
+import { TranslateService } from "@ngx-translate/core";
 import * as moment from "moment";
+import { Observable, from, map } from "rxjs";
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -151,5 +153,20 @@ export class Utility {
       }
     }
     return undefined;
+  }
+
+  static translateAllLangText(translate: TranslateService, langText: any): Observable<any> {
+    const keys: string[] = Object.keys(langText);
+    const values: string[] = Object.values(langText);
+
+    return from(translate.get(values)).pipe(
+      map((translations) => {
+        const translatedLangText: any = {};
+        keys.forEach((key, index) => {
+          translatedLangText[key] = translations[values[index]];
+        });
+        return translatedLangText;
+      })
+    );
   }
 }

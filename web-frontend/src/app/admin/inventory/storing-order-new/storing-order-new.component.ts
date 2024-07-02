@@ -105,6 +105,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
   ]
+  translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -146,7 +147,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
     INVALID: 'COMMON-FORM.INVALID',
-    EXISTED: 'COMMON-FORM.EXISTED'
+    EXISTED: 'COMMON-FORM.EXISTED',
+    DUPLICATE: 'COMMON-FORM.DUPLICATE',
+    SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -195,6 +199,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     private translate: TranslateService
   ) {
     super();
+    this.translateLangText();
     this.initSOForm();
     this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -220,6 +225,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       so_no: [''],
       so_notes: [''],
       haulier: [''],
+      sotList: ['']
     });
   }
   initializeFilter() {
@@ -364,13 +370,17 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const data = [...this.sotList.data];
-        const updatedItem = {
-          ...result.item,
-          edited: true
-        };
-        data[result.index] = updatedItem;
-        this.updateData(data);
+        if (result.index >= 0) {
+          const data = [...this.sotList.data];
+          const updatedItem = new StoringOrderTankItem({
+            ...result.item,
+            edited: true
+          });
+          data[result.index] = updatedItem;
+          this.updateData(data);
+        } else {
+          this.updateData([...this.sotList.data, result.item]);
+        }
       }
     });
   }
@@ -446,25 +456,30 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   onSOFormSubmit() {
+    this.soForm!.get('sotList')?.setErrors(null);
     if (this.soForm?.valid) {
-      let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
-      so.customer_company_guid = this.soForm.value['customer_company_guid'];
-      so.haulier = this.soForm.value['haulier'];
-      so.so_notes = this.soForm.value['so_notes'];
-
-      const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankGO> | undefined) => new StoringOrderTankGO(item));
-      console.log('so Value', so);
-      console.log('sot Value', sot);
-      if (so.guid) {
-        this.soDS.updateStoringOrder(so, sot).subscribe(result => {
-          console.log(result)
-          this.handleSaveSuccess(result);
-        });
+      if (!this.sotList.data.length) {
+        this.soForm.get('sotList')?.setErrors({ required: true });
       } else {
-        this.soDS.addStoringOrder(so, sot).subscribe(result => {
-          console.log(result)
-          this.handleSaveSuccess(result);
-        });
+        let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
+        so.customer_company_guid = this.soForm.value['customer_company_guid'];
+        so.haulier = this.soForm.value['haulier'];
+        so.so_notes = this.soForm.value['so_notes'];
+  
+        const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankGO> | undefined) => new StoringOrderTankGO(item));
+        console.log('so Value', so);
+        console.log('sot Value', sot);
+        if (so.guid) {
+          this.soDS.updateStoringOrder(so, sot).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result);
+          });
+        } else {
+          this.soDS.addStoringOrder(so, sot).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result);
+          });
+        }
       }
     } else {
       console.log('Invalid soForm', this.soForm?.value);
@@ -509,5 +524,11 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         this.router.navigate(['/admin/storing-order']);
       });
     }
+  }
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
   }
 }

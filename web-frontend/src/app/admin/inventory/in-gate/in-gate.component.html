@@ -30,34 +30,42 @@
           </div>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="soList" matSort class="mat-cell advance-table">
+              <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table">
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
                   <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="tank_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                     {{langText.TANK_NO | translate}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="table-img tbl-col-width-per-7">
+                  <mat-cell mat-cell *matCellDef="let row" class="">
                     <span class="mobile-label">{{langText.TANK_NO | translate}}:</span>{{row.tank_no}}
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="customer_name">
+                <ng-container matColumnDef="last_cargo">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
-                    {{langText.CUSTOMER_CODE | translate}}
+                    {{langText.LAST_CARGO | translate}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{langText.CUSTOMER_CODE | translate}}:</span>{{ccDS.displayName(row.customer_company)}}
+                    <span class="mobile-label">{{langText.LAST_CARGO | translate}}:</span>{{row.tariff_cleaning?.cargo}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="customer_code">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{langText.CUSTOMER_CODE | translate}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{langText.CUSTOMER_CODE | translate}}:</span>{{ccDS.displayName(row.storing_order?.customer_company)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="so_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                     {{langText.SO_NO | translate}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="table-img tbl-col-width-per-7">
-                    <span class="mobile-label">{{langText.SO_NO | translate}}:</span>{{row.so_no}}
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{langText.SO_NO | translate}}:</span>{{row.storing_order?.so_no}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -67,20 +75,20 @@
               </table>
             </div>
             <!-- No result -->
-            @if (!(soDS.soLoading$ | async) && !soList.length) {
+            @if (!(sotDS.loading$ | async) && !sotList.length) {
             <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="soList.length === 0 ? '' : 'none'">
+            <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if (soDS.soLoading$ | async) {
+            @if (sotDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            <mat-paginator #paginator [length]="soDS.totalCount" [pageIndex]="0" [pageSize]="10"
+            <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
               [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
           </div>

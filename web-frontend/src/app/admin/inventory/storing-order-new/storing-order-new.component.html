@@ -231,12 +231,12 @@
                         <mat-cell *matCellDef="let row; let i=index;" class="pr-0"
                           [ngClass]="'tbl-col-width-per-10 justify-content-end'">
                           <button mat-icon-button color="primary" (click)="handleDuplicateRow($event, row)"
-                            class="tbl-action-btn">
+                            [matTooltip]="translatedLangText.DUPLICATE" class="tbl-action-btn">
                             <mat-icon [class]="''">add_to_photos</mat-icon>
                           </button>
-                          @if (row.status_cv === "WAITING") {
+                          @if (row.status_cv === "WAITING" || !row.status_cv) {
                           <button mat-icon-button color="accent" (click)="handleDelete($event, row, i)"
-                            class="tbl-action-btn">
+                            [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
                             <mat-icon [class]="'tbl-fav-delete'">delete_forever</mat-icon>
                           </button>
                           }
@@ -244,7 +244,7 @@
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
-                        [ngClass]="{'deleted_row': row.delete_dt, 'edited_row': row.guid && !row.delete_dt && row.edited}"
+                        [ngClass]="{'deleted-row': row.delete_dt, 'edited-row': row.guid && !row.delete_dt && row.edited}"
                         (click)="editOrderDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                     </table>
@@ -259,6 +259,11 @@
               </div>
               }
               <mat-divider></mat-divider>
+              @if (soForm?.get('sotList')?.hasError('required')) {
+              <mat-error class="ps-3">
+                {{langText.ADD_ATLEAST_ONE | translate}}
+              </mat-error>
+              }
               <div class="row m-t-10">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button aria-label="Back to previous page" (click)="$event.preventDefault();"
@@ -268,9 +273,9 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (soDS.canCancel(storingOrderItem)) {
-                    <button mat-flat-button color="accent" [ngClass]="'m-r-10'" (click)="addOrderDetails($event)">
-                      <mat-icon class="col-white">add</mat-icon>{{langText.ORDER_DETAILS | translate}}
-                    </button>
+                  <button mat-flat-button color="accent" [ngClass]="'m-r-10'" (click)="addOrderDetails($event)">
+                    <mat-icon class="col-white">add</mat-icon>{{langText.ORDER_DETAILS | translate}}
+                  </button>
                   <button mat-flat-button color="primary">
                     <mat-icon>save</mat-icon>{{langText.SAVE_AND_SUBMIT | translate}}
                   </button>

@@ -39,6 +39,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 
 @Component({
   selector: 'app-in-gate',
@@ -77,8 +78,9 @@ import { ComponentUtil } from 'app/utilities/component-util';
 export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
-    'customer_name',
-    'so_no'
+    'last_cargo',
+    'so_no',
+    'customer_code'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
@@ -107,20 +109,12 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     SEARCH: "COMMON-FORM.SEARCH"
   }
 
-  searchForm?: UntypedFormGroup;
   searchField: string = "";
 
-  soDS: StoringOrderDS;
+  sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
 
-  soList: StoringOrderItem[] = [];
-  soSelection = new SelectionModel<StoringOrderItem>(true, []);
-  soStatusCvList: CodeValuesItem[] = [];
-  purposeOptionCvList: CodeValuesItem[] = [];
-
-  customerCodeControl = new UntypedFormControl();
-  lastCargoControl = new UntypedFormControl();
-  customer_companyList?: CustomerCompanyItem[];
+  sotList: StoringOrderTankItem[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -131,8 +125,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     private translate: TranslateService
   ) {
     super();
-    this.initSearchForm();
-    this.soDS = new StoringOrderDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -148,49 +141,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   refresh() {
     this.loadData();
   }
-  initSearchForm() {
-    this.searchForm = this.fb.group({
-      so_no: [''],
-      customer_code: this.customerCodeControl,
-      last_cargo: this.lastCargoControl,
-      so_status: [''],
-      tank_no: [''],
-      job_no: [''],
-      purpose: [''],
-      eta_dt: [''],
-    });
-  }
-  cancelItem(row: StoringOrderItem) {
-    // this.id = row.id;
-    this.cancelSelectedRows([row])
-  }
-  private refreshTable() {
-    this.paginator._changePageSize(this.paginator.pageSize);
-  }
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.soSelection.selected.length;
-    const numRows = this.soDS.totalCount;
-    return numSelected === numRows;
-    return false;
-  }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.isAllSelected()
-      ? this.soSelection.clear()
-      : this.soList.forEach((row) =>
-        this.soSelection.select(row)
-      );
-  }
-  canCancelSelectedRows(): boolean {
-    return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
-      const index: number = this.soList.findIndex((d) => d === item);
-      return this.soDS.canCancel(this.soList[index]);
-    });
-  }
-  cancelSelectedRows(row: StoringOrderItem[]) {
-  }
   public loadData() {
     // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
     //   if (this.soDS.totalCount > 0) {
@@ -245,31 +196,21 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   search() {
     if (this.searchField) {
       const searchField = this.searchField;
-      const where: any = {};
-      const or: any[] = [];
-    
-      // Add the primary search condition
-      or.push({ so_no: { contains: searchField } });
-    
-      // Add the nested search conditions
-      or.push({
-        storing_order_tank: {
-          some: {
+      const where: any = {
+        and: [
+          { status_cv: { eq: "WAITING" } },
+          {
             or: [
-              { job_no: { contains: searchField } },
-              { tank_no: { contains: searchField } }
+              { tank_no: { contains: searchField } }, { job_no: { contains: searchField } }
             ]
           }
-        }
-      });
-    
-      // Assign the or conditions to the where clause
-      where.or = or;
-    
+        ]
+      };
       // Execute the search
-      this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
-        if (this.soDS.totalCount > 0) {
-          this.soList = data;
+      this.subs.sink = this.sotDS.searchStoringOrderTanks(where).subscribe(data => {
+        if (this.sotDS.totalCount > 0) {
+          this.sotList = data;
+          console.log(data)
         }
       });
     }

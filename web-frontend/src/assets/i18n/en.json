@@ -189,7 +189,13 @@
     "TO-BE-CANCELED": "To be canceled",
     "INVALID": "Invalid",
     "EXISTED": "Existed",
-    "SEARCH": "Search"
+    "SEARCH": "Search",
+    "DUPLICATE": "Duplicate",
+    "ADD": "Add",
+    "REFRESH": "Refresh",
+    "EXPORT": "Export",
+    "SELECT-ATLEAST-ONE": "Please select atleast one.",
+    "ADD-ATLEAST-ONE": "Please add atleast one."
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
