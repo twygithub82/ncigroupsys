@@ -103,6 +103,70 @@ const GET_STORING_ORDER_TANKS = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANK_BY_ID = gql`
+  query getStoringOrderTankByID($where: EntityClass_InGateWithTankFilterInput) {
+    queryInGates(where: $where) {
+      totalCount
+      nodes {
+        guid
+        tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          remarks
+          required_temp
+          so_guid
+          status_cv
+          tank_no
+          unit_type_guid
+          update_by
+          update_dt
+          storing_order {
+            create_by
+            create_dt
+            customer_company_guid
+            delete_dt
+            guid
+            haulier
+            so_no
+            so_notes
+            status_cv
+            update_by
+            update_dt
+          }
+        }
+        create_by
+        create_dt
+        delete_dt
+        driver_name
+        eir_date
+        eir_doc
+        eir_no
+        haulier
+        lolo_cv
+        preinspection_cv
+        so_tank_guid
+        update_by
+        update_dt
+        vehicle_no
+        yard_cv
+      }
+    }
+  }
+`;
+
 export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   get filter(): string {
@@ -131,6 +195,28 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
       .pipe(
         map((result) => result.data),
         catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.itemsSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTankByID(id: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = {guid: { eq: id }}
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };

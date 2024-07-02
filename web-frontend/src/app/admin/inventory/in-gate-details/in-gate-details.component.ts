@@ -26,7 +26,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -39,6 +39,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -84,7 +85,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     'actions'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -106,14 +107,19 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS'
+    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS'
   }
 
-  searchForm?: UntypedFormGroup;
+  inGateForm?: UntypedFormGroup;
+
+  storingOrderTankItem?: StoringOrderTankItem;
 
   cvDS: CodeValuesDS;
-  soDS: StoringOrderDS;
+  sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
+
+  sot_guid?: string | null;
 
   soList: StoringOrderItem[] = [];
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -130,11 +136,13 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private route: ActivatedRoute,
+    private router: Router,
   ) {
     super();
     this.initSearchForm();
-    this.soDS = new StoringOrderDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
   }
@@ -152,7 +160,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     this.loadData();
   }
   initSearchForm() {
-    this.searchForm = this.fb.group({
+    this.inGateForm = this.fb.group({
       so_no: [''],
       customer_code: this.customerCodeControl,
       last_cargo: this.lastCargoControl,
@@ -173,7 +181,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.soSelection.selected.length;
-    const numRows = this.soDS.totalCount;
+    const numRows = this.sotDS.totalCount;
     return numSelected === numRows;
     return false;
   }
@@ -186,20 +194,22 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         this.soSelection.select(row)
       );
   }
-  canCancelSelectedRows(): boolean {
-    return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
-      const index: number = this.soList.findIndex((d) => d === item);
-      return this.soDS.canCancel(this.soList[index]);
-    });
-  }
+  
   cancelSelectedRows(row: StoringOrderItem[]) {
   }
   public loadData() {
-    this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-      if (this.soDS.totalCount > 0) {
-        this.soList = data;
-      }
-    });
+    this.sot_guid = this.route.snapshot.paramMap.get('id');
+    if (this.sot_guid) {
+      // EDIT
+      this.subs.sink = this.sotDS.getStoringOrderTankByID(this.sot_guid).subscribe(data => {
+        if (this.sotDS.totalCount > 0) {
+          this.storingOrderTankItem = data[0];
+          // this.populateSOForm(this.storingOrderItem);
+        }
+      });
+    } else {
+      // NEW
+    }
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
@@ -258,44 +268,12 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     }
   }
 
-  search() {
-    const where: any = {};
-
-    if (this.searchForm!.value['so_no']) {
-      where.so_no = { contains: this.searchForm!.value['so_no'] };
-    }
-
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['eta_dt']) {
-      const sotSome: any = {};
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
-      }
-
-      if (this.searchForm!.value['eta_dt']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt']), lte: Utility.convertDate(this.searchForm!.value['eta_dt']) };
-      }
-      where.storing_order_tank = { some: sotSome };
-    }
-
-    if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-    }
-
-    // TODO :: search criteria
-    this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
-      if (this.soDS.totalCount > 0) {
-        this.soList = data;
-      }
-    });
-  }
-
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
   initializeFilterCustomerCompany() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    this.inGateForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -310,5 +288,13 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         });
       })
     ).subscribe();
+  }
+
+  onSOFormSubmit() {
+    this.inGateForm!.get('sotList')?.setErrors(null);
+    if (this.inGateForm?.valid) {
+    } else {
+      console.log('Invalid soForm', this.inGateForm?.value);
+    }
   }
 }
