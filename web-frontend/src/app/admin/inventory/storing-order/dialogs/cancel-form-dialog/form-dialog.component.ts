@@ -46,26 +46,36 @@ export interface DialogData {
     TranslateModule,
     CommonModule,
     MatDividerModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
 })
 export class CancelFormDialogComponent {
   index: number;
   dialogTitle?: string;
   storingOrderTanks: StoringOrderItem[];
+  storingOrderForm: UntypedFormGroup;
   startDate = new Date();
 
   lastCargoControl = new UntypedFormControl();
   constructor(
     public dialogRef: MatDialogRef<CancelFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    private fb: UntypedFormBuilder,
     private translate: TranslateService
   ) {
     // Set the defaults
     this.storingOrderTanks = data.item;
+    this.storingOrderForm = this.createStorigOrderForm();
     this.translate.get(data.langText.ARE_YOU_SURE_CANCEL).subscribe((res: string) => {
       this.dialogTitle = res;
     });
     this.index = data.index;
+  }
+  createStorigOrderForm(): UntypedFormGroup {
+    return this.fb.group({
+      remarks: [''],
+    });
   }
   onNoClick(): void {
     this.dialogRef.close();

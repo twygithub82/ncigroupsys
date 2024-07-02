@@ -82,11 +82,20 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseWebSockets();
+
+//app.UseCors(builder =>
+//{
+//    builder
+//    .AllowAnyOrigin()
+//    .AllowAnyMethod()
+//    .AllowAnyHeader();
+//});
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 
 
-//app.MapGet("/", () => "Hello World!");
+app.MapGet("/hello", () => "Hello World!");
 app.MapGraphQL();
 //app.MapControllers();
 

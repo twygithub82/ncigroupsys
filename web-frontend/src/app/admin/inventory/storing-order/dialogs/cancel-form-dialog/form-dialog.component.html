@@ -4,29 +4,39 @@
   </div>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
-    @for (so of storingOrderTanks; track so; let index = $index) {
-    <div [class]="'row ' + (index % 2 == 0 ? '' : 'bg-grey')">
-      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div [class]="'row pt-2'">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
-            <h5>{{data.langText.SO_NO | translate}}: {{so.so_no}}</h5>
+    <form class="register-form" [formGroup]="storingOrderForm" #formDirective="ngForm">
+      @for (so of storingOrderTanks; track so; let index = $index) {
+      <div [class]="'row ' + (index % 2 == 0 ? '' : 'bg-grey')">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+          <div [class]="'row pt-2'">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
+              <h5>{{data.langText.SO_NO | translate}}: {{so.so_no}}</h5>
+            </div>
+          </div>
+          @for (sot of so.storing_order_tank; track sot) {
+          <div [class]="'row'">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
+              <mat-label>
+                {{data.langText.TANK_NO | translate}}: {{sot.tank_no}}
+                @if (sot.status_cv === 'WAITING') {
+                <span class="badge bg-red">{{data.langText.TO_BE_CANCELED | translate}}</span>
+                }
+              </mat-label>
+            </div>
+          </div>
+          }
+        </div>
+        <div class="row">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
+              <input matInput formControlName="remarks">
+            </mat-form-field>
           </div>
         </div>
-        @for (sot of so.storing_order_tank; track sot) {
-        <div [class]="'row'">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
-            <mat-label>
-              {{data.langText.TANK_NO | translate}}: {{sot.tank_no}}
-              @if (sot.status_cv === 'WAITING') {
-              <span class="badge bg-red">{{data.langText.TO_BE_CANCELED | translate}}</span>
-              }
-            </mat-label>
-          </div>
-        </div>
-        }
       </div>
-    </div>
-    }
+      }
+    </form>
   </div>
   <div mat-dialog-actions class="mb-3">
     <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmCancel()">

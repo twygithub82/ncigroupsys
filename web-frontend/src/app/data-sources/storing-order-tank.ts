@@ -61,10 +61,12 @@ export class StoringOrderTankGO {
 
 export class StoringOrderTankItem extends StoringOrderTankGO {
   public tariff_cleaning?: TariffCleaningItem;
+  public edited: boolean = false;
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
     super(item); // Call the constructor of the parent class
     this.tariff_cleaning = item.tariff_cleaning;
+    this.edited = item.edited ?? false;
   }
 }
 
@@ -73,13 +75,28 @@ export interface StoringOrderResult {
   totalCount: number;
 }
 
-const GET_ITEMS_QUERY = gql`
-  query GetItems($pageIndex: Int, $pageSize: Int, $sortField: String, $sortDirection: String) {
-    items(pageIndex: $pageIndex, pageSize: $pageSize, sortField: $sortField, sortDirection: $sortDirection) {
-      items {
-        id
-        name
-        value
+const GET_STORING_ORDER_TANKS = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        job_no
+        guid
+        tank_no
+        so_guid
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+        }
+        storing_order {
+          so_no
+          so_notes
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
       }
       totalCount
     }
@@ -100,29 +117,28 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
   public totalCount = 0;
-  constructor(
-    public paginator: MatPaginator,
-    public _sort: MatSort,
-    private apollo: Apollo) {
+  constructor(private apollo: Apollo) {
     super();
   }
-  loadItems(pageIndex: number, pageSize: number, sortField: string, sortDirection: string) {
+  searchStoringOrderTanks(where: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
 
-    this.apollo
-      .watchQuery<StoringOrderResult>({
-        query: GET_ITEMS_QUERY,
-        variables: { pageIndex, pageSize, sortField, sortDirection },
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS,
+        variables: { where, first, after, last, before },
       })
-      .valueChanges.pipe(
+      .pipe(
         map((result) => result.data),
         catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false))
-      )
-      .subscribe((result) => {
-        this.itemsSubject.next(result.items);
-        this.totalCount = result.totalCount;
-      });
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.itemsSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          return sotList.nodes;
+        })
+      );
   }
   connect(): Observable<StoringOrderTankItem[]> {
     return this.itemsSubject.asObservable();

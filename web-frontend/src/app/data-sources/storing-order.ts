@@ -143,7 +143,7 @@ export const UPDATE_STORING_ORDER = gql`
 `;
 
 export const CANCEL_STORING_ORDER = gql`
-  mutation CancelStoringOrder($soGuids: [String!]!) {
+  mutation CancelStoringOrder($soGuids: [StoringOrderRequestInput!]!) {
     cancelStoringOrder(soGuids: $soGuids)
   }
 `;
@@ -238,6 +238,6 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
   }
 
   canCancel(so: StoringOrderItem): boolean {
-    return so && (so.status_cv === 'PENDING' || so.status_cv === 'PROCESSING');
+    return so && (!so.status_cv || so.status_cv === 'PENDING' || so.status_cv === 'PROCESSING');
   }
 }

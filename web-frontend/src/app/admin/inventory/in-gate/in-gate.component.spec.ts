@@ -1,20 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CancelComponent } from './cancel.component';
+import { InGateComponent } from './in-gate.component';
 
-describe('DeleteComponent', () => {
-  let component: CancelComponent;
-  let fixture: ComponentFixture<CancelComponent>;
+describe('CleaningProceduresComponent', () => {
+  let component: InGateComponent;
+  let fixture: ComponentFixture<InGateComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [CancelComponent]
-})
+      imports: [InGateComponent]
+    })
     .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CancelComponent);
+    
+    fixture = TestBed.createComponent(InGateComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

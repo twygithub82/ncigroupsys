@@ -10,7 +10,7 @@
       },
       "launchUrl": "graphql",
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5041"
+      "applicationUrl": "http://localhost:5042"
     },
     "https": {
       "commandName": "Project",

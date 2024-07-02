@@ -106,7 +106,8 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteTariffClean([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffClean_guids)
+        public async Task<int> DeleteTariffClean([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, 
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffClean_guids)
         {
             int retval = 0;
             try

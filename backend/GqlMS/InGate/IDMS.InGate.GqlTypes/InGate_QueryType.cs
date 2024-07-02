@@ -38,13 +38,14 @@ namespace IDMS.InGate.GqlTypes
             {
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                 query = context.in_gate.Where(i=>i.delete_dt == null || i.delete_dt == 0)
-                    .Include(s => s.tank ).Where(i=>i.tank!=null).Where(i=>i.tank.delete_dt==null || i.tank.delete_dt==0)
+                query = context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                    .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0)
                     .Include(s=>s.tank.storing_order);
 
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 throw;
             }
 
