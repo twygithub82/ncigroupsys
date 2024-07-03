@@ -1,12 +1,11 @@
 ﻿using CommonUtil.Core.Service;
-using IDMS.StoringOrder.Model.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.StoringOrder.Model.Type
+namespace IDMS.StoringOrder.Model.Request
 {
     public class CodeValuesRequest
     {

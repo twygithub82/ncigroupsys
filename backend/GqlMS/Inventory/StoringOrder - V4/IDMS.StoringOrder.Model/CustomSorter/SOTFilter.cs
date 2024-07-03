@@ -1,11 +1,11 @@
 ﻿using HotChocolate.Data.Filters;
 using HotChocolate.Types;
-using IDMS.StoringOrder.Model.Domain.StoringOrder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IDMS.Models.Inventory;
 
 namespace IDMS.StoringOrder.Model.CustomSorter
 { 

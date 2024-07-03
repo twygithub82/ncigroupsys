@@ -1,20 +1,17 @@
 ﻿using HotChocolate;
 using IDMS.StoringOrder.GqlTypes.Repo;
 using HotChocolate.Types;
-using IDMS.StoringOrder.Model.Domain;
 using Microsoft.AspNetCore.Http;
-using IDMS.StoringOrder.Model.Type;
 using AutoMapper;
 using HotChocolate.Resolvers;
-using IDMS.StoringOrder.Model.Domain.Customer;
-
+using IDMS.Models.Master;
+using IDMS.Models.Shared;
+using IDMS.StoringOrder.Model.Request;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     public class Query
     {
-
-
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]

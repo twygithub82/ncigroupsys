@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace IDMS.StoringOrder.Model.Domain
+namespace IDMS.Models.Shared
 {
-    [Table("tank")]
-    public class tank : Base
+    public class tank : Dates
     {
         [Key]
         [Column("guid")]

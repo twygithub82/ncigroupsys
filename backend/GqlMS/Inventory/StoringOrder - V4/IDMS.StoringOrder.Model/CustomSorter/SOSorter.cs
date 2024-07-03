@@ -1,14 +1,10 @@
 ﻿using HotChocolate.Data.Sorting;
-using IDMS.StoringOrder.Model.Domain.StoringOrder;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using IDMS.Models.Inventory;
+
 
 namespace IDMS.StoringOrder.Model.CustomSorter
 {
-    public class SOSorter: SortInputType<storing_order>
+    public class SOSorter: SortInputType<IDMS.Models.Inventory.storing_order>
     {
         protected override void Configure(ISortInputTypeDescriptor<storing_order> descriptor)
         {

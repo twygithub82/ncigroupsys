@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.StoringOrder.Model.Domain.Customer
+namespace IDMS.Models.Master
 {
-    public class customer_company_contact_person : Base
+    public class customer_company_contact_person : Dates
     {
         [Key]
         public string? guid { get; set; }
