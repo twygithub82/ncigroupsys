@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>D:\Useful Doc\Personal\Project\ncigroupsys\backend\GqlMS\StoringOrder - V3\IDMS.StoringOrder\Properties\PublishProfiles\tlx-idms-app - Web Deploy1.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\Useful Doc\Personal\Project\ncigroupsys\backend\GqlMS\Inventory\StoringOrder - V4\IDMS.StoringOrder\Properties\PublishProfiles\tlx-idms-app - FTP.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
