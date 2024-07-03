@@ -5,41 +5,48 @@
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
     <form class="register-form" [formGroup]="storingOrderForm" #formDirective="ngForm">
-      @for (so of storingOrderTanks; track so; let index = $index) {
-      <div [class]="'row ' + (index % 2 == 0 ? '' : 'bg-grey')">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-          <div [class]="'row pt-2'">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
-              <h5>{{data.langText.SO_NO | translate}}: {{so.so_no}}</h5>
+      <div formArrayName="storingOrder">
+        @for (so of storingOrderArray().controls; track so; let index = $index) {
+        <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-grey')">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+            <div [class]="'row pt-2'">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
+                <h5>{{data.langText.SO_NO | translate}}: {{so.get('so_no')?.value}}</h5>
+              </div>
             </div>
+            @for (sot of getStoringOrderTanksArray(so).controls; track sot) {
+            <div [class]="'row'">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
+                <mat-label>
+                  {{data.langText.TANK_NO | translate}}: {{sot.get('tank_no')?.value}}
+                  @if (sot.get('status_cv')?.value === 'WAITING') {
+                  <span class="badge bg-red">{{data.langText.TO_BE_CANCELED | translate}}</span>
+                  }
+                </mat-label>
+              </div>
+            </div>
+            }
           </div>
-          @for (sot of so.storing_order_tank; track sot) {
-          <div [class]="'row'">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
-              <mat-label>
-                {{data.langText.TANK_NO | translate}}: {{sot.tank_no}}
-                @if (sot.status_cv === 'WAITING') {
-                <span class="badge bg-red">{{data.langText.TO_BE_CANCELED | translate}}</span>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
+                <input matInput formControlName="remarks">
+                @if (so?.get('remarks')?.hasError('required')) {
+                <mat-error>
+                  {{data.langText.REMARKS | translate}} {{data.langText.SO_REQUIRED | translate}}
+                </mat-error>
                 }
-              </mat-label>
+              </mat-form-field>
             </div>
           </div>
-          }
         </div>
-        <div class="row">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
-              <input matInput formControlName="remarks">
-            </mat-form-field>
-          </div>
-        </div>
+        }
       </div>
-      }
     </form>
   </div>
   <div mat-dialog-actions class="mb-3">
-    <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmCancel()">
+    <button mat-flat-button color="warn" (click)="confirmCancel()">
       {{data.langText.CANCEL | translate}}
     </button>
     <button mat-flat-button (click)="onNoClick()" tabindex="-1">

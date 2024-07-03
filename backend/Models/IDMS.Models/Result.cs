@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models
 {
-    public class EntityClass_Result
+    public class Result
     {
         public int result { get; set; } = -1;
     }

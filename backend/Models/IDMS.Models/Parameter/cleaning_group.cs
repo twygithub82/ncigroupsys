@@ -10,7 +10,7 @@ namespace IDMS.Models.Parameter
     
    
 
-    public class cleaning_group : EntityClass_Dates
+    public class cleaning_group : Dates
     {
         [Key]
         public string? guid { get; set; }

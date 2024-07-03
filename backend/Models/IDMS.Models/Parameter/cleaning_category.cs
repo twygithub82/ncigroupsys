@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Parameter
 {
-    public class cleaning_category:EntityClass_Dates
+    public class cleaning_category:Dates
     {
         [Key]
         public string? guid { get; set; }
@@ -28,7 +28,7 @@ namespace IDMS.Models.Parameter
      
     }
 
-    public class EntityClass_CleaningCategoryWithTariff: EntityClass_Dates
+    public class CleaningCategoryWithTariff: Dates
     {
         [Key]
         public string? guid { get; set; }
@@ -49,7 +49,7 @@ namespace IDMS.Models.Parameter
     {
         public IEnumerable<customer_company>? customer_companies { get; set; }
 
-        public IEnumerable<EntityClass_CustomerCompany_CleaningCategory>? customer_company_cleaning_categories { get; set; }
+        public IEnumerable<customer_company_cleaning_category>? customer_company_cleaning_categories { get; set; }
     }
 
 }

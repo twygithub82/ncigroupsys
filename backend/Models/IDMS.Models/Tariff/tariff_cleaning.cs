@@ -1,4 +1,6 @@
-﻿using IDMS.Models.Package;
+﻿using HotChocolate;
+using IDMS.Models.Inventory;
+using IDMS.Models.Package;
 using IDMS.Models.Parameter;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Tariff
 {
-    public class tariff_cleaning:EntityClass_Dates
+    public class tariff_cleaning:Dates
     {
         [Key]
         public string guid {  get; set; }
@@ -27,15 +29,12 @@ namespace IDMS.Models.Tariff
         public string? cleaning_method_guid { get; set; }
 
         public string? cleaning_category_guid { get; set; }
+
         public int? flash_point {  get; set; }
         
         public string? in_gate_alert { get; set; }
 
         public string? depot_note { get; set; }
-
-        //public double? cost { get; set; }
-
-        //public string? cost_type_cv { get; set; }
 
         public string? class_cv { get; set; }
 
@@ -49,10 +48,13 @@ namespace IDMS.Models.Tariff
         public string? open_on_gate_cv { get; set; }
 
         //public string? rebate_type_cv { get; set; }
-        public EntityClass_CleaningMethodWithTariff? cleaning_method { get; set; }
+        [GraphQLName("cleaning_category_with_tariff")]
+        public CleaningMethodWithTariff? cleaning_method { get; set; }
 
-        public EntityClass_CleaningCategoryWithTariff? cleaning_category { get; set; }
+        [GraphQLName("cleaning_category_with_tariff")]
+        public CleaningCategoryWithTariff? cleaning_category { get; set; }
 
+        public IEnumerable<storing_order_tank>? sot { get; set; }
 
     }
 

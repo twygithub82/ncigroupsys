@@ -122,35 +122,6 @@ namespace IDMS.StoringOrder.GqlTypes
                     }
                 }
 
-                //List<storing_order_tank> storingOrderTanks = new();
-                //foreach (var sot in soTanks)
-                //{
-                //    storing_order_tank tank = mapper.Map<SOT_type, storing_order_tank>(sot);
-                //    if (string.IsNullOrEmpty(sot.guid))
-                //    {
-                //        //For Insert
-                //        //tank = mapper.Map<SOT_type, storing_order_tank>(sot);
-                //        tank.guid = Util.GenerateGUID();
-                //        tank.create_dt = currentDateTime;
-                //        tank.create_by = user;
-                //    }
-
-                //    if (sot.delete_dt > 1)
-                //    {
-                //        //For delete
-                //        tank.delete_dt = currentDateTime;
-                //        tank.update_dt = currentDateTime;
-                //        tank.update_by = user;
-                //    }
-                //    else
-                //    {
-                //        //For Update
-                //        //tank = mapper.Map<SOT_type, storing_order_tank>(sot);
-                //        tank.update_dt = currentDateTime;
-                //        tank.update_by = user;
-                //    }
-                //    storingOrderTanks.Add(tank);
-                //}
 
                 if (so.delete_dt > 0)
                 {
@@ -184,28 +155,94 @@ namespace IDMS.StoringOrder.GqlTypes
             }
         }
 
-        public async Task<int> CancelStoringOrder(string[] soGuids, [Service] ITopicEventSender sender,
-            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+        //public async Task<int> CancelStoringOrder(string[] soGuids, [Service] ITopicEventSender sender,
+        //    AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+        //{
+        //    try
+        //    {
+        //        string user = "admin";
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
+
+        //        var storingOrders = context.storing_order.Where(s => soGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0))
+        //                                                 .Include(s => s.storing_order_tank);
+
+        //        if (storingOrders.Any())
+        //        {
+        //            foreach (var so in storingOrders)
+        //            {
+        //                if (!(PENDING.EqualsIgnore(so.status_cv) || PROCESSING.EqualsIgnore(so.status_cv)))
+        //                    throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
+
+        //                int tnkAlreadyAcceptedCount = 0;
+        //                string finalSOStatus = CANCELED;
+
+        //                var tanks = so.storing_order_tank?.Where(t => t.so_guid == so.guid);
+        //                if (tanks != null && tanks.Any())
+        //                {
+        //                    foreach (var tnk in tanks)
+        //                    {
+        //                        if (string.IsNullOrEmpty(tnk.tank_status_cv) || WAITING.EqualsIgnore(tnk.tank_status_cv))
+        //                        {
+        //                            tnk.status_cv = CANCELED;
+        //                            tnk.update_dt = currentDateTime;
+        //                            tnk.update_by = user;
+        //                        }
+
+        //                        if (ACCEPTED.EqualsIgnore(tnk.status_cv))
+        //                            tnkAlreadyAcceptedCount++;
+        //                    }
+
+        //                    if (tnkAlreadyAcceptedCount == tanks.Count())
+        //                        throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
+
+        //                    if (tnkAlreadyAcceptedCount > 0 && tnkAlreadyAcceptedCount != tanks.Count())
+        //                        finalSOStatus = COMPLETED;
+
+        //                }
+        //                //so.status_cv = CANCEL;
+        //                so.update_dt = currentDateTime;
+        //                so.update_by = user;
+        //                so.status_cv = finalSOStatus;
+        //            }
+
+        //            var res = await context.SaveChangesAsync();
+        //            //TODO
+        //            //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
+        //            //await topicEventSender.SendAsync(updateCourseTopic, course);
+        //            return res;
+        //        }
+        //        else
+        //        {
+        //            throw new GraphQLException(new Error("Storing Order Not Found.", "NOT_FOUND"));
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+        //    }
+        public async Task<int> CancelStoringOrder(List<StoringOrderRequest> so, [Service] ITopicEventSender sender,
+          AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
             try
             {
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var storingOrders = context.storing_order.Where(s => soGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0))
-                                                         .Include(s => s.storing_order_tank);
-
-                if (storingOrders.Any())
+                foreach (StoringOrderRequest soRequest in so)
                 {
-                    foreach (var so in storingOrders)
+                    var storingOrder = context.storing_order.Where(s => s.guid == soRequest.guid && (s.delete_dt == null || s.delete_dt == 0))
+                                                 .Include(s => s.storing_order_tank).FirstOrDefault();
+
+                    if (storingOrder != null)
                     {
-                        if (!(PENDING.EqualsIgnore(so.status_cv) || PROCESSING.EqualsIgnore(so.status_cv)))
+                        if (!(PENDING.EqualsIgnore(storingOrder.status_cv) || PROCESSING.EqualsIgnore(storingOrder.status_cv)))
                             throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
 
                         int tnkAlreadyAcceptedCount = 0;
                         string finalSOStatus = CANCELED;
 
-                        var tanks = so.storing_order_tank?.Where(t => t.so_guid == so.guid);
+                        var tanks = storingOrder.storing_order_tank?.Where(t => t.so_guid == storingOrder.guid);
                         if (tanks != null && tanks.Any())
                         {
                             foreach (var tnk in tanks)
@@ -229,22 +266,18 @@ namespace IDMS.StoringOrder.GqlTypes
 
                         }
                         //so.status_cv = CANCEL;
-                        so.update_dt = currentDateTime;
-                        so.update_by = user;
-                        so.status_cv = finalSOStatus;
+                        storingOrder.update_dt = currentDateTime;
+                        storingOrder.update_by = user;
+                        storingOrder.status_cv = finalSOStatus;
+                        storingOrder.remarks = soRequest.remarks;
                     }
-
-                    var res = await context.SaveChangesAsync();
-                    //TODO
-                    //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
-                    //await topicEventSender.SendAsync(updateCourseTopic, course);
-                    return res;
-                }
-                else
-                {
-                    throw new GraphQLException(new Error("Storing Order Not Found.", "NOT_FOUND"));
                 }
 
+                var res = await context.SaveChangesAsync();
+                //TODO
+                //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
+                //await topicEventSender.SendAsync(updateCourseTopic, course);
+                return res;
             }
             catch (Exception ex)
             {
@@ -252,8 +285,10 @@ namespace IDMS.StoringOrder.GqlTypes
             }
         }
 
+
+
         public async Task<int> DeleteStoringOrder(string[] soGuids, [Service] ITopicEventSender sender,
-            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+        AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
 
             try

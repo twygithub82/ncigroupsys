@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models
 {
-    public class EntityClass_Dates
+    public class Dates
     {
         [IsProjected(true)]
         public long? delete_dt {  get; set; }

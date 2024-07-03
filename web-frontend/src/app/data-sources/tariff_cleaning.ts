@@ -83,25 +83,27 @@ export class TariffCleaningDS extends DataSource<TariffCleaningItem> {
     constructor(private apollo: Apollo) {
         super();
     }
-    loadItems(where?: any, order?: any) {
+    loadItems(where?: any, order?: any): Observable<TariffCleaningItem[]> {
         this.loadingSubject.next(true);
-        this.apollo.watchQuery<any>({
-            query: GET_TARIFF_CLEANING_QUERY,
-            variables: { where, order }
-        })
-        .valueChanges
-        .pipe(
-            map((result) => result.data),
-            catchError((error: ApolloError) => {
-                console.error('GraphQL Error:', error);
-                return of([] as TariffCleaningItem[]); // Return an empty array on error
-            }),
-            finalize(() => this.loadingSubject.next(false)),
-        )
-        .subscribe(result => {
-            this.itemsSubjects.next(result.lastCargo.nodes);
-            this.totalCount = result.totalCount;
-        });
+        return this.apollo
+            .query<any>({
+                query: GET_TARIFF_CLEANING_QUERY,
+                variables: { where, order }
+            })
+            .pipe(
+                map((result) => result.data),
+                catchError((error: ApolloError) => {
+                    console.error('GraphQL Error:', error);
+                    return of([] as TariffCleaningItem[]); // Return an empty array on error
+                }),
+                finalize(() => this.loadingSubject.next(false)),
+                map((result) => {
+                    const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
+                    this.itemsSubjects.next(lastCargo.nodes);
+                    this.totalCount = lastCargo.totalCount;
+                    return lastCargo.nodes;
+                })
+            );
     }
 
     connect(): Observable<TariffCleaningItem[]> {

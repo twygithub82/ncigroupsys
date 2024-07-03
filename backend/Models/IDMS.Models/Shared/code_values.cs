@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Shared
 {
-    public class code_values : EntityClass_Dates
+    public class code_values : Dates
     {
         [Key]
         [Column("guid")]

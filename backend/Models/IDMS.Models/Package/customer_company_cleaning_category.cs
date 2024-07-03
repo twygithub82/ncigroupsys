@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Package
 {
-    public class EntityClass_CustomerCompany_CleaningCategory:EntityClass_Dates
+    public class customer_company_cleaning_category:Dates
     {
         [Key]
         public string? guid { get; set; }
@@ -31,7 +31,7 @@ namespace IDMS.Models.Package
 
     }
 
-    public class EntityClass_CustomerCompany_CleaningCategoryWithCustomerCompany: EntityClass_CustomerCompany_CleaningCategory
+    public class customer_company_cleaning_category_with_customer_company: customer_company_cleaning_category
     {
         public customer_company? customer_company { get; set; }
 

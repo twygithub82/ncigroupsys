@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Parameter
 {
-    public  class cleaning_method:EntityClass_Dates
+    public  class cleaning_method:Dates
     {
         [Key]
         public string? guid { get; set; }
@@ -26,7 +26,7 @@ namespace IDMS.Models.Parameter
         
     }
 
-    public class EntityClass_CleaningMethodWithTariff: EntityClass_Dates
+    public class CleaningMethodWithTariff: Dates
     {
         [Key]
         public string? guid { get; set; }
