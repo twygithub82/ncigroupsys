@@ -63,6 +63,7 @@ export class FormDialogComponent {
   storingOrderTankForm: UntypedFormGroup;
   storingOrderTank: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
+  last_cargoList?: TariffCleaningItem[];
   startDate = new Date();
 
   tcDS: TariffCleaningDS;
@@ -205,7 +206,9 @@ export class FormDialogComponent {
           searchCriteria = value.cargo;
           this.storingOrderTankForm!.get('last_cargo_guid')!.setValue(value.guid);
         }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' });
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+          this.last_cargoList = data
+        });
       })
     ).subscribe();
 
