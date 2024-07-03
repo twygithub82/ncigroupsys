@@ -20,6 +20,48 @@
                 </mat-progress-spinner>
               </div>
               }
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.SO_NO | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.so_no}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.CUSTOMER | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.CUSTOMER | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.so_no}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.SO_NO | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.so_no}}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </mat-card-content>
             </div>
           </div>
         </form>
