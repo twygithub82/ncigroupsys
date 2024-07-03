@@ -6,14 +6,15 @@
     "iisExpress": {
       "applicationUrl": "http://localhost:10254",
       "sslPort": 44325
-    }
+    },
+    "launchUrl": "graphql"
   },
   "profiles": {
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "graphql",
       "applicationUrl": "http://localhost:5138",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -23,7 +24,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "graphql",
       "applicationUrl": "https://localhost:7047;http://localhost:5138",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

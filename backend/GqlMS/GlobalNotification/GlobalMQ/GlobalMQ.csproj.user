@@ -2,6 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
+    <NameOfLastUsedPublishProfile>D:\personal\project\DMS\code\ncigroupsys\backend\GqlMS\GlobalNotification\GlobalMQ\Properties\PublishProfiles\tlx-idms-global-notification - Zip Deploy.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>

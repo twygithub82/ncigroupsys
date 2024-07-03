@@ -40,8 +40,8 @@ namespace GraphQLConsoleApp
             var jsonPayload = JsonConvert.SerializeObject(requestPayload);
 
             // Define the URL of the GraphQL endpoint
-            var url = "http://localhost:5114/graphql/";
-
+            var url = "https://tlx-idms-global-notification.azurewebsites.net//graphql/";
+            //var url = "http://localhost:5138/graphql/";
             // Create an HttpClient instance
             using (var client = new HttpClient())
             {

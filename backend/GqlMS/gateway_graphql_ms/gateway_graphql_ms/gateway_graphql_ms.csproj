@@ -7,13 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="resolver\SubscriptionType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
 	  <PackageReference Include="HotChocolate.Stitching" Version="13.9.5" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 	  <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.5" />
+	  <PackageReference Include="HotChocolate.AspNetCore.Subscriptions" Version="10.5.5" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="resolver\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="IDMS.Models">
+      <HintPath>..\..\Parameter\IDMS.Parameter.CategoryMethod\dependencies\IDMS.Models.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

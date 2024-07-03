@@ -1,6 +1,8 @@
 using gateway_graphql_ms;
+using gateway_graphql_ms.GqlTypes;
 using HotChocolate.AspNetCore;
 using Microsoft.Extensions.Configuration;
+using static HotChocolate.ErrorCodes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,46 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 
-ConfigureServices(builder.Services,builder.Configuration);
+ConfigureServices(builder.Services, builder.Configuration);
+var server = builder.Services.AddGraphQLServer("local");
+
+server.AddQueryType<QueryType>();
+server.AddSubscriptionType<SubscriptionType>();
+//server.RenameType("Message", "MessageLocal");
+server.AddInMemorySubscriptions();
+
+server = builder.Services.AddGraphQLServer();
+server.ModifyOptions(o =>
+{
+    o.StrictValidation = false;
+}
+    );
+//server.AddQueryType<QueryType>();
+
+
+
+server.AddLocalSchema("local")
+    .RenameType("Message", "MessageLocal");
+// server.AddQueryType(d => d.Name("Query"))
+//       .AddSubscriptionType(d => d.Name("Subscription"));
+////server.AddSubscriptionType<SubscriptionType>();
+
+//server.AddQueryType(d => d.Name("Query"));
+//server.AddQueryType<QueryType>();
+//server.AddSubscriptionType<SubscriptionType>();
+//.AddSubscriptionType<SubscriptionType>()
+//.AddQueryType<QueryType>();
+//server.AddInMemorySubscriptions();
+//server.AddSubscriptionType<SubscriptionType>();
+
+
+//builder.Services.AddGraphQLServer()
+// .AddTypeExtension<Message>()
+//.AddQueryType<QueryType>()
+//.AddSubscriptionType<SubscriptionType>()
+//.AddInMemorySubscriptions();
+
+
 
 var app = builder.Build();
 
@@ -27,7 +68,10 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseWebSockets();
+
 app.UseRouting()
+          .UseWebSockets()
           .UseEndpoints(endpoints =>
           {
               endpoints.MapGraphQL();
@@ -49,12 +93,13 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
                 
     }
 
+    var server = services.AddGraphQLServer();
+
     foreach (var service in graphqlServiceSettings)
     {
-        services.AddGraphQLServer().AddRemoteSchema(service.Key.ToLower());
-    
+        server.AddRemoteSchema(service.Key.ToLower());
+        
     }
-
-
+   
     // Add other services and configurations as needed
 }
