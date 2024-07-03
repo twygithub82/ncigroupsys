@@ -1,20 +1,17 @@
 ﻿using HotChocolate;
 using IDMS.StoringOrder.GqlTypes.Repo;
 using HotChocolate.Types;
-using IDMS.StoringOrder.Model.Domain;
 using Microsoft.AspNetCore.Http;
-using IDMS.StoringOrder.Model.Type;
 using AutoMapper;
 using HotChocolate.Resolvers;
-using IDMS.StoringOrder.Model.Domain.Customer;
-
+using IDMS.Models.Master;
+using IDMS.Models.Shared;
+using IDMS.StoringOrder.Model.Request;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     public class Query
     {
-
-
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -70,7 +67,7 @@ namespace IDMS.StoringOrder.GqlTypes
         {
             try
             {
-                var retCodeValues = context.code_values.Where(c => c.code_val_type.Equals(codeValuesType.CodeValType) &
+                var retCodeValues = context.code_values.Where(c => c.code_val_type.Equals(codeValuesType.code_val_type) &
                                                               (c.delete_dt == null || c.delete_dt == 0 ));
                 if (retCodeValues.Count() <= 0)
                 {

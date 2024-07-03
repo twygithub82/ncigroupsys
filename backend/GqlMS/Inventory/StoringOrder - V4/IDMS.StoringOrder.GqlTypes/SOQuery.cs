@@ -50,7 +50,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
-        [UseFiltering]
+        [UseFiltering(typeof(SOTFilter))]
         //[UseSorting(typeof(SOSorter))]
         public IQueryable<storing_order_tank> QueryStoringOrderTank(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {

@@ -106,7 +106,6 @@ export const GET_STORING_ORDER_BY_ID = gql`
         guid
         job_no
         last_cargo_guid
-        last_test_guid
         purpose_cleaning
         purpose_repair_cv
         purpose_steam
@@ -184,8 +183,8 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
     this.soLoadingSubject.next(true);
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDERS,
-        variables: { where: { guid: { eq: id } } },
+        query: GET_STORING_ORDER_BY_ID,
+        variables: { id },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -193,10 +192,10 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
         catchError(() => of({ soList: [] })),
         finalize(() => this.soLoadingSubject.next(false)),
         map((result) => {
-          const soList = result.soList || { nodes: [], totalCount: 0 };
-          this.soItemsSubject.next(soList.nodes);
-          this.totalCount = soList.totalCount;
-          return soList.nodes;
+          const soList = result.soList;
+          this.soItemsSubject.next(soList);
+          this.totalCount = soList.length;
+          return soList;
         })
       );
   }

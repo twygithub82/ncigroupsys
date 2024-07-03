@@ -1,7 +1,7 @@
 ﻿using IDMS.Models.Inventory;
-using IDMS.StoringOrder.Model.Domain;
-using IDMS.StoringOrder.Model.Domain.Customer;
-//using IDMS.StoringOrder.Model.Domain.StoringOrder;
+using IDMS.Models.Master;
+using IDMS.Models.Shared;
+using IDMS.Models.Tariff;
 using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.StoringOrder.GqlTypes.Repo
@@ -37,6 +37,10 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
             modelBuilder.Entity<storing_order_tank>(e =>
             {
                 //e.HasKey(t => t.guid);
+                e.Ignore("InGateWithTank");
+
+                e.HasOne(t => t.in_gate).WithOne(t => t.tank).HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
+
                 e.HasOne(st => st.storing_order).WithMany(st => st.storing_order_tank)       // Navigation property in StoringOrderTank
                 .HasForeignKey(st => st.so_guid);
 

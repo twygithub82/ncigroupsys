@@ -1,20 +1,19 @@
 ﻿using CommonUtil.Core.Service;
-using IDMS.StoringOrder.Model.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.StoringOrder.Model.Type
+namespace IDMS.StoringOrder.Model.Request
 {
     public class CodeValuesRequest
     {
-        public string? Guid { get; set; }
-        public string? Description { get; set; }
-        public string CodeValType { get; set; }
-        public string? CodeValue { get; set; }
-        public string? ChildCode { get; set; }
+        public string? guid { get; set; }
+        public string? description { get; set; }
+        public string code_val_type { get; set; }
+        public string? code_val { get; set; }
+        public string? child_code { get; set; }
 
     }
 }

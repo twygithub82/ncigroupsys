@@ -7,9 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.StoringOrder.GqlTypes.Repo;
 using HotChocolate.Data;
 using AutoMapper;
-using IDMS.StoringOrder.Model.Type;
-using IDMS.StoringOrder.Model.Domain;
-using IDMS.StoringOrder.Model.Domain.StoringOrder;
+using IDMS.StoringOrder.Model.Request;
+using IDMS.Models.Inventory;
 
 namespace IDMS.StoringOrder.Application
 {

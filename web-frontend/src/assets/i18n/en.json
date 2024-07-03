@@ -195,7 +195,8 @@
     "REFRESH": "Refresh",
     "EXPORT": "Export",
     "SELECT-ATLEAST-ONE": "Please select atleast one.",
-    "ADD-ATLEAST-ONE": "Please add atleast one."
+    "ADD-ATLEAST-ONE": "Please add atleast one.",
+    "CUSTOMER": "Customer"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

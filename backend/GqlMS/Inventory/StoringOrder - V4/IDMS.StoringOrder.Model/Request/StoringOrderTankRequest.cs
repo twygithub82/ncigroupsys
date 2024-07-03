@@ -5,9 +5,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IDMS.StoringOrder.Model.Domain;
 
-namespace IDMS.StoringOrder.Model.Type
+
+namespace IDMS.StoringOrder.Model.Request
 {
     public class StoringOrderTankRequest : Base
     {

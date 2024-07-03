@@ -151,28 +151,6 @@
                           }
                         </mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="purpose_steam">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'"
-                          mat-sort-header>{{langText.STEAM | translate}}</mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                          [ngClass]="'tbl-col-width-per-7'">
-                          <span class="mobile-label">{{langText.STEAM | translate}}:</span>
-                          @if (row.purpose_steam) {
-                          <div>
-                            <span class="badge badge-solid-green">
-                              <mat-icon>done</mat-icon>
-                            </span>
-                          </div>
-                          }
-                          @if (!row.purpose_steam) {
-                          <div>
-                            <span class="badge badge-solid-purple">
-                              <mat-icon>clear</mat-icon>
-                            </span>
-                          </div>
-                          }
-                        </mat-cell>
-                      </ng-container>
                       <ng-container matColumnDef="purpose_cleaning">
                         <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-8 justify-content-center'"
                           mat-sort-header>{{langText.CLEANING | translate}}</mat-header-cell>
@@ -187,6 +165,28 @@
                           </div>
                           }
                           @if (!row.purpose_cleaning) {
+                          <div>
+                            <span class="badge badge-solid-purple">
+                              <mat-icon>clear</mat-icon>
+                            </span>
+                          </div>
+                          }
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="purpose_steam">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'"
+                          mat-sort-header>{{langText.STEAM | translate}}</mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                          [ngClass]="'tbl-col-width-per-7'">
+                          <span class="mobile-label">{{langText.STEAM | translate}}:</span>
+                          @if (row.purpose_steam) {
+                          <div>
+                            <span class="badge badge-solid-green">
+                              <mat-icon>done</mat-icon>
+                            </span>
+                          </div>
+                          }
+                          @if (!row.purpose_steam) {
                           <div>
                             <span class="badge badge-solid-purple">
                               <mat-icon>clear</mat-icon>

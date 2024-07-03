@@ -10,19 +10,10 @@ namespace IDMS.Models.Shared
     public class code_values : Dates
     {
         [Key]
-        [Column("guid")]
         public string? guid { get; set; }
-
-        [Column("description")]
         public string? description { get; set; }
-
-        [Column("code_val_type")]
-        public string code_val_type { get; set; }
-
-        [Column("code_val")]
+        public string? code_val_type { get; set; }
         public string? code_val { get; set; }
-
-        [Column("child_code")]
         public string? child_code { get; set; }
     }
 }

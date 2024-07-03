@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.StoringOrder.Model.Type
-{
+namespace IDMS.StoringOrder.Model.Request
+{ 
     public class CompanyContPersonRequest
     {
         public string? guid { get; set; }

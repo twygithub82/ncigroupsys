@@ -40,6 +40,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -73,6 +74,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatCardModule,
   ]
 })
 export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -108,7 +110,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
-    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS'
+    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER'
   }
 
   inGateForm?: UntypedFormGroup;

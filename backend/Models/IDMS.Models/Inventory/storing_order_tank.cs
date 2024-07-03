@@ -54,6 +54,8 @@ namespace IDMS.Models.Inventory
 
         public string? status_cv { get; set; }
 
+        public string? tank_status_cv { get; set; }
+
         [GraphQLName("in_gate_with_tank")]
         public InGateWithTank? in_gate { get; set; }
 

@@ -4,9 +4,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using IDMS.StoringOrder.Model.Domain;
 
-namespace IDMS.StoringOrder.Model.type
+namespace IDMS.StoringOrder.Model.Request
 {
     public class CustomerCompanyRequest : Base
     {

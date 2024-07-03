@@ -30,6 +30,8 @@ namespace IDMS.Models.Tariff
 
         public string? cleaning_category_guid { get; set; }
 
+        public string? msds_guid { get; set; }  
+
         public int? flash_point {  get; set; }
         
         public string? in_gate_alert { get; set; }
@@ -39,6 +41,7 @@ namespace IDMS.Models.Tariff
         public string? class_cv { get; set; }
 
         public string? class_child_cv { get; set; }
+
         public string? hazard_level_cv {  get; set; }
 
         public string? ban_type_cv { get; set; }
