@@ -48,7 +48,7 @@ namespace IDMS.Models.Tariff
         public string? open_on_gate_cv { get; set; }
 
         //public string? rebate_type_cv { get; set; }
-        [GraphQLName("cleaning_category_with_tariff")]
+        [GraphQLName("cleaning_method_with_tariff")]
         public CleaningMethodWithTariff? cleaning_method { get; set; }
 
         [GraphQLName("cleaning_category_with_tariff")]

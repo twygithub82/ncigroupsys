@@ -25,7 +25,7 @@ namespace IDMS.InGate.GqlTypes
                 InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
                 InGate.create_by = uid;
                 InGate.create_dt = GqlUtils.GetNowEpochInSec();
-                EntityClass_InGateWithTank newInGate = new() { 
+                InGateWithTank newInGate = new() { 
                       create_by =InGate.create_by,
                       create_dt = InGate.create_dt,
                       driver_name =InGate.driver_name,
@@ -74,7 +74,7 @@ namespace IDMS.InGate.GqlTypes
         }
 
         //[Authorize]
-        public async Task<int> UpdateInGate([Service] ApplicationInventoryDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, EntityClass_InGateWithTank InGate)
+        public async Task<int> UpdateInGate([Service] ApplicationInventoryDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, InGateWithTank InGate)
         {
             int retval = 0;
             try

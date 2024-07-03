@@ -32,7 +32,7 @@ namespace IDMS.Models.Parameter
 
     public class EntityClass_CleaningGroupWithCleanProcedure : cleaning_group
     {
-        public IEnumerable<EntityClass_CleaningProcedureWithSteps>? clean_procedures { get; set; }
+        //public IEnumerable<EntityClass_CleaningProcedureWithSteps>? clean_procedures { get; set; }
     }
 
 }
