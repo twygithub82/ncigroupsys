@@ -304,6 +304,10 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       where.so_no = { contains: this.searchForm!.value['so_no'] };
     }
 
+    if (this.searchForm!.value['so_status']) {
+      where.status_cv = { contains: this.searchForm!.value['so_status'] };
+    }
+
     if (this.searchForm!.value['tank_no'] || this.searchForm!.value['eta_dt']) {
       const sotSome: any = {};
 
@@ -323,9 +327,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
     // TODO :: search criteria
     this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
-      if (this.soDS.totalCount > 0) {
-        this.soList = data;
-      }
+      this.soList = data;
     });
   }
 

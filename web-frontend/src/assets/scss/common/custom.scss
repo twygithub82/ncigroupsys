@@ -352,3 +352,21 @@
 .no-prefix-search-field {
   padding-left: 2vh !important;
 }
+
+@media (max-width: 768px) {
+  .align-left-mobile {
+    text-align: left !important;
+  }
+
+  .align-center-mobile {
+    text-align: center !important;
+  }
+
+  .align-right-mobile {
+    text-align: right !important;
+  }
+
+  .align-justify-mobile {
+    text-align: justify !important;
+  }
+}

@@ -66,6 +66,24 @@ export class Utility {
     return undefined;
   }
 
+  static convertEpochToDateStr(date: number | undefined): string | undefined {
+    // If the input is a number, handle it as epoch time
+    if (typeof date === 'number' && !isNaN(date)) {
+      // Check if the number is more likely to be in seconds or milliseconds
+      if (date.toString().length === 10) {
+        // If it's in seconds, convert to milliseconds
+        return this.convertDateToStr(new Date(date * 1000));
+      } else if (date.toString().length === 13) {
+        // If it's in milliseconds, just return the Date object
+        return this.convertDateToStr(new Date(date));
+      } else {
+        console.error('Invalid epoch time format:', date);
+        return undefined;
+      }
+    }
+    return undefined;
+  }
+
   static verifyIsoContainerCheckDigit(containerNumber: string): boolean {
     // Regular expression to validate container number format:
     const containerNumberRegex = /^[A-Z]{4}[0-9]{7}$/;

@@ -112,6 +112,11 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
         guid
         tank_no
         so_guid
+        purpose_storage
+        purpose_cleaning
+        purpose_steam
+        purpose_repair_cv
+        clean_status_cv
         tariff_cleaning {
           guid
           open_on_gate_cv
@@ -120,6 +125,8 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
         storing_order {
           so_no
           so_notes
+          create_dt
+          status_cv
           customer_company {
             code
             guid
