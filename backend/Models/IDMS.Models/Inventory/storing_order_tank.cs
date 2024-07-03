@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IDMS.Models.Tariff;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,6 +55,6 @@ namespace IDMS.Models.Inventory
 
         public storing_order? storing_order { get; set; }
 
-
+        public tariff_cleaning? tariff_cleaning { get; set; }
     }
 }
