@@ -15,11 +15,11 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public  IQueryable<EntityClass_TariffCleaning?> QueryTariffCleaning([Service] ApplicationTariffDBContext context,
+        public  IQueryable<tariff_cleaning?> QueryTariffCleaning([Service] ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
-            IQueryable<EntityClass_TariffCleaning> query = null;
+            IQueryable<tariff_cleaning> query = null;
             try
             {
 

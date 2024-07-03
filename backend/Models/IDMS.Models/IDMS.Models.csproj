@@ -17,8 +17,4 @@
 	  </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\GqlMS\Inventory\StoringOrder - V4\IDMS.StoringOrder\IDMS.StoringOrder.Application.csproj" />
-  </ItemGroup>
-
 </Project>

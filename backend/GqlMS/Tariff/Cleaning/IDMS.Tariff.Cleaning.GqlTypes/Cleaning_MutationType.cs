@@ -20,14 +20,14 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
     {
        
         public async Task<int> AddTariffCleaning([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, 
-            [Service] IHttpContextAccessor httpContextAccessor, EntityClass_TariffCleaning NewTariffClean)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_cleaning NewTariffClean)
         {
             int retval = 0;
             try
             {
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 NewTariffClean.guid = (string.IsNullOrEmpty(NewTariffClean.guid) ? Util.GenerateGUID() : NewTariffClean.guid);
-                var newTariffClean = new EntityClass_TariffCleaning();
+                var newTariffClean = new tariff_cleaning();
                 newTariffClean.guid = NewTariffClean.guid;
                 newTariffClean.description = NewTariffClean.description;
                 newTariffClean.alias = NewTariffClean.alias;
@@ -64,7 +64,7 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
 
        
         public async Task<int> UpdateTariffClean([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, 
-            [Service] IHttpContextAccessor httpContextAccessor, EntityClass_TariffCleaning UpdateTariffClean)
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_cleaning UpdateTariffClean)
         {
             int retval = 0;
             try
