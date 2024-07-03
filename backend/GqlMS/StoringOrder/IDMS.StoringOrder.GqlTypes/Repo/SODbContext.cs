@@ -19,11 +19,11 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<storing_order>(c =>
-            {
-                c.HasOne(c => c.customer_company).WithMany(cc => cc.storing_orders)
-                .HasForeignKey(x => x.customer_company_guid);
-            });
+            //modelBuilder.Entity<storing_order>(c =>
+            //{
+            //    c.HasOne(c => c.customer_company).WithMany(cc => cc.storing_orders)
+            //    .HasForeignKey(x => x.customer_company_guid);
+            //});
 
             modelBuilder.Entity<customer_company>(c =>
             {

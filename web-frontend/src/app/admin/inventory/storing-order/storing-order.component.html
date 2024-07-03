@@ -13,23 +13,23 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <div class="m-l-" matTooltip="ADD">
+                  <div class="m-l-" [matTooltip]="translatedLangText.ADD">
                     <button mat-mini-fab color="primary" [routerLink]="['/admin/storing-order/new']">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" matTooltip="REFRESH">
+                  <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                     <button mat-mini-fab color="primary" (click)="refresh()" (click)="$event.stopPropagation()">
                       <mat-icon class="col-white">refresh</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" matTooltip="CANCEL" (click)="$event.stopPropagation()">
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
                     <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
                       [disabled]="canCancelSelectedRows()">
                       <mat-icon class="col-white">cancel</mat-icon>
                     </button>
                   </div>
-                  <div class="export-button m-l-10" matTooltip="XLSX">
+                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
                   </div>
@@ -141,27 +141,19 @@
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="so_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">{{langText.SO_NO
-                    |
-                    translate}}</mat-header-cell>
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">
+                    {{langText.SO_NO | translate}}
+                  </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="table-img tbl-col-width-per-7">
                     <span class="mobile-label">{{langText.SO_NO | translate}}:</span>{{row.so_no}}
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="code">
+                <ng-container matColumnDef="customer_code">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CUSTOMER_CODE |
                     translate}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{langText.CUSTOMER_CODE |
-                      translate}}:</span>{{row.customer_company.code}} ({{row.customer_company.name}})
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="customer_name">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CUSTOMER_NAME |
-                    translate}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{langText.CUSTOMER_NAME | translate}}:</span>
-                    {{row.customer_company.code}} ({{row.customer_company.name}})
+                      translate}}:</span>{{ccDS.displayName(row.customer_company)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="no_of_tanks">
@@ -189,7 +181,7 @@
                       <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
                     </button> -->
                     @if (soDS.canCancel(row)) {
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="cancelItem(row)"
+                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="cancelItem(row)" [matTooltip]="translatedLangText.CANCEL"
                       class="tbl-action-btn">
                       <mat-icon>cancel</mat-icon>
                     </button>

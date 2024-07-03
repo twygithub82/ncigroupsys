@@ -54,8 +54,13 @@
           <div class="row">
             <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-1">
               <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex">
                   <small class="m-b-0 font-bold">{{data.langText.PURPOSE | translate}}</small>
+                  @if (storingOrderTankForm.get('purpose')?.hasError('required')) {
+                  <mat-error class="ps-2 font-12">
+                    {{data.langText.SELECT_ATLEAST_ONE | translate}}
+                  </mat-error>
+                  }
                 </div>
               </div>
               <div class="row">
@@ -81,6 +86,11 @@
                 <mat-label>{{data.langText.REQUIRED_TEMP | translate}}</mat-label>
                 <input matInput formControlName="required_temp" type="number">
                 <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
+                @if (storingOrderTankForm.get('required_temp')?.hasError('required')) {
+                <mat-error>
+                  {{data.langText.REQUIRED_TEMP | translate}} {{data.langText.SO_REQUIRED | translate}}
+                </mat-error>
+                }
               </mat-form-field>
             </div>
           </div>

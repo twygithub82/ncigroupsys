@@ -38,12 +38,11 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
-import { CancelDialogComponent } from './dialogs/cancel/cancel.component';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
-  selector: 'app-cleaning-procedures',
+  selector: 'app-storing-order',
   standalone: true,
   templateUrl: './storing-order.component.html',
   styleUrl: './storing-order.component.scss',
@@ -80,7 +79,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   displayedColumns = [
     'select',
     'so_no',
-    'customer_name',
+    'customer_code',
     'no_of_tanks',
     'status',
     'actions'
@@ -91,6 +90,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     'MENUITEMS.HOME.TEXT'
   ]
 
+  translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -108,7 +108,11 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS'
+    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    REMARKS: 'COMMON-FORM.REMARKS'
   }
 
   searchForm?: UntypedFormGroup;
@@ -135,6 +139,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     private translate: TranslateService
   ) {
     super();
+    this.translateLangText();
     this.initSearchForm();
     this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -177,7 +182,6 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     const numSelected = this.soSelection.selected.length;
     const numRows = this.soDS.totalCount;
     return numSelected === numRows;
-    return false;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
@@ -210,9 +214,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const guids = result.item.map((item: { guid: string }) => item.guid);
-        this.soDS.cancelStoringOrder(guids).subscribe(result => {
-          console.log(result)
+        //const guids = result.item.map((item: { guid: string, remarks: string }) => new StoringOrder);
+        this.soDS.cancelStoringOrder(result.item).subscribe(result => {
           if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
             let successMsg = this.langText.CANCELED_SUCCESS;
             this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
@@ -322,7 +325,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return this.ccDS.displayName(cc);
   }
 
   initializeFilterCustomerCompany() {
@@ -341,5 +344,11 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         });
       })
     ).subscribe();
+  }
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
   }
 }

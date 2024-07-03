@@ -14,7 +14,7 @@ namespace IDMS.InGate.GqlTypes
     public class InGate_MutationType
     {
        //[Authorize]
-        public async Task<int> AddInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,EntityClass_InGate InGate)
+        public async Task<int> AddInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,in_gate InGate)
         {
             int retval = 0;   
             try

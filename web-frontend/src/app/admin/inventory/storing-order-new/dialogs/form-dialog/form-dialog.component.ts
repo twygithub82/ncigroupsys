@@ -102,6 +102,7 @@ export class FormDialogComponent {
       last_cargo_guid: [this.storingOrderTank.last_cargo_guid, [Validators.required]],
       job_no: [this.storingOrderTank.job_no, [Validators.required]],
       eta_dt: [Utility.convertDate(this.storingOrderTank.eta_dt)],
+      purpose: [''],
       purpose_storage: [this.storingOrderTank.purpose_storage],
       purpose_steam: [this.storingOrderTank.purpose_steam],
       purpose_cleaning: [this.storingOrderTank.purpose_cleaning],
@@ -116,47 +117,37 @@ export class FormDialogComponent {
     });
   }
   submit() {
+    this.storingOrderTankForm.get('purpose')?.setErrors(null);
+    this.storingOrderTankForm.get('required_temp')?.setErrors(null);
     if (this.storingOrderTankForm?.valid) {
-      var sot: StoringOrderTankItem = {
-        ...this.storingOrderTank,
-        unit_type_guid: this.storingOrderTankForm.value['unit_type_guid'],
-        tank_no: this.storingOrderTankForm.value['tank_no'],
-        last_cargo_guid: this.storingOrderTankForm.value['last_cargo_guid'],
-        tariff_cleaning: this.lastCargoControl.value,
-        job_no: this.storingOrderTankForm.value['job_no'],
-        eta_dt: Utility.convertDate(this.storingOrderTankForm.value['eta_dt']),
-        purpose_storage: this.storingOrderTankForm.value['purpose_storage'],
-        purpose_steam: this.storingOrderTankForm.value['purpose_steam'],
-        purpose_cleaning: this.storingOrderTankForm.value['purpose_cleaning'],
-        purpose_repair_cv: this.storingOrderTankForm.value['purpose_repair_cv'],
-        clean_status_cv: this.storingOrderTankForm.value['clean_status_cv'],
-        certificate_cv: this.storingOrderTankForm.value['certificate_cv'],
-        required_temp: this.storingOrderTankForm.value['required_temp'],
-        etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt'])
+      if (!this.validatePurpose()) {
+        this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
+      } else {
+        this.storingOrderTankForm.get('purpose')?.setErrors(null);
+        var sot: StoringOrderTankItem = {
+          ...this.storingOrderTank,
+          unit_type_guid: this.storingOrderTankForm.value['unit_type_guid'],
+          tank_no: this.storingOrderTankForm.value['tank_no'],
+          last_cargo_guid: this.storingOrderTankForm.value['last_cargo_guid'],
+          tariff_cleaning: this.lastCargoControl.value,
+          job_no: this.storingOrderTankForm.value['job_no'],
+          eta_dt: Utility.convertDate(this.storingOrderTankForm.value['eta_dt']),
+          purpose_storage: this.storingOrderTankForm.value['purpose_storage'],
+          purpose_steam: this.storingOrderTankForm.value['purpose_steam'],
+          purpose_cleaning: this.storingOrderTankForm.value['purpose_cleaning'],
+          purpose_repair_cv: this.storingOrderTankForm.value['purpose_repair_cv'],
+          clean_status_cv: this.storingOrderTankForm.value['clean_status_cv'],
+          certificate_cv: this.storingOrderTankForm.value['certificate_cv'],
+          required_temp: this.storingOrderTankForm.value['required_temp'],
+          etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt'])
+        }
+        const returnDialog: DialogData = {
+          item: sot,
+          index: this.index
+        }
+        console.log('valid');
+        this.dialogRef.close(returnDialog);
       }
-      // var sot: StoringOrderTankItem = {
-      //   guid: this.storingOrderTankForm.value['guid'],
-      //   so_guid: this.storingOrderTankForm.value['so_guid'],
-      //   unit_type_guid: this.storingOrderTankForm.value['unit_type_guid'],
-      //   tank_no: this.storingOrderTankForm.value['tank_no'],
-      //   last_cargo_guid: this.storingOrderTankForm.value['last_cargo_guid'],
-      //   job_no: this.storingOrderTankForm.value['job_no'],
-      //   eta_dt: Utility.convertDate(this.storingOrderTankForm.value['eta_dt']),// this.storingOrderTankForm.value['eta_dt'] ? this.storingOrderTankForm.value['eta_dt'].getTime() : this.storingOrderTankForm.value['eta_dt'],
-      //   purpose_storage: this.storingOrderTankForm.value['purpose_storage'],
-      //   purpose_steam: this.storingOrderTankForm.value['purpose_steam'],
-      //   purpose_cleaning: this.storingOrderTankForm.value['purpose_cleaning'],
-      //   purpose_repair_cv: this.storingOrderTankForm.value['repair'],
-      //   clean_status_cv: this.storingOrderTankForm.value['clean_status'],
-      //   certificate_cv: this.storingOrderTankForm.value['certificate'],
-      //   required_temp: this.storingOrderTankForm.value['required_temp'],
-      //   etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt'])
-      // }
-      const returnDialog: DialogData = {
-        item: sot,
-        index: this.index
-      }
-      console.log('valid');
-      this.dialogRef.close(returnDialog);
     } else {
       console.log('invalid');
       //this.findInvalidControls();
@@ -182,6 +173,7 @@ export class FormDialogComponent {
         requiredTempControl!.enable();
       } else {
         requiredTempControl!.disable();
+        requiredTempControl!.setValue(''); // Clear the value if disabled
       }
     });
 
@@ -236,4 +228,27 @@ export class FormDialogComponent {
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
+  validatePurpose(): boolean {
+    let isValid = true;
+    const purposeStorage = this.storingOrderTankForm.get('purpose_storage')?.value;
+    const purposeSteam = this.storingOrderTankForm.get('purpose_steam')?.value;
+    const purposeCleaning = this.storingOrderTankForm.get('purpose_cleaning')?.value;
+    const purposeRepairCV = this.storingOrderTankForm.get('purpose_repair_cv')?.value;
+    const requiredTemp = this.storingOrderTankForm.get('required_temp')?.value;
+  
+    // Validate that at least one of the purpose checkboxes is checked
+    if (!purposeStorage && !purposeSteam && !purposeCleaning && !purposeRepairCV) {
+      isValid = false; // At least one purpose must be selected
+      this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
+    }
+  
+    // Validate that required_temp is filled in if purpose_steam is checked
+    if (purposeSteam && !requiredTemp) {
+      isValid = false; // required_temp must be filled if purpose_steam is checked
+      this.storingOrderTankForm.get('required_temp')?.setErrors({ required: true });
+    }
+  
+    return isValid;
+  }
+  
 }

@@ -18,6 +18,7 @@ using IDMS.StoringOrder.Model.type;
 using IDMS.StoringOrder.Model.Type;
 using AutoMapper;
 using System.ComponentModel;
+using System;
 
 
 namespace IDMS.StoringOrder.GqlTypes
@@ -210,6 +211,24 @@ namespace IDMS.StoringOrder.GqlTypes
             catch
             {
                 throw;
+            }
+        }
+
+        [UsePaging]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<storing_order_tank> QueryStoringOrderTank(SODbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                return context.storing_order_tank.Where(d => d.delete_dt == null);
+                                //.Include(d => d.storing_order);
+                                //.Include(d => d.tariff_cleaning)
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
 

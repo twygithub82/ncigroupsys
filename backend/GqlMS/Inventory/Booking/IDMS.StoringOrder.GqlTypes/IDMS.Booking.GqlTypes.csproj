@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
     <ProjectReference Include="..\IDMS.StoringOrder.Model\IDMS.Booking.Model.csproj" />
   </ItemGroup>
 

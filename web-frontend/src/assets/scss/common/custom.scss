@@ -337,10 +337,18 @@
   /* Include padding and border in the element's total width and height */
 }
 
-.deleted_row {
+.deleted-row {
   background-color: #b4b4b4 !important;
 }
 
-.edited_row {
+.edited-row {
   background-color: #fffb00 !important;
+}
+
+.new-row {
+  background-color: #00ff88 !important;
+}
+
+.no-prefix-search-field {
+  padding-left: 2vh !important;
 }

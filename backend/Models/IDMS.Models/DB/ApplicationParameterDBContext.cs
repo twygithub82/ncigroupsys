@@ -54,14 +54,14 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB
             //   .HasOne(cc => cc.cleaning_category).WithMany(c => c.customer_company_cleaning_categories)
             //   .HasForeignKey(f => f.cleaning_category_guid);
 
-            modelBuilder.Entity<EntityClass_CustomerCompany>()
+            modelBuilder.Entity<customer_company>()
                 .HasKey(e => e.guid);
 
 
-            modelBuilder.Entity<EntityClass_CleaningCategory>()
+            modelBuilder.Entity<cleaning_category>()
                 .HasKey(e => e.guid);
 
-            modelBuilder.Entity<EntityClass_CleaningMethod>()
+            modelBuilder.Entity<cleaning_method>()
                 .HasKey(e => e.guid);
 
         }
@@ -73,11 +73,11 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB
 
         //public DbSet<IDMS.Models.Parameter.EntityClass_CleaningProcedureSteps> cleaning_procedure_steps { get; set; }
 
-        public DbSet<IDMS.Models.Parameter.EntityClass_CleaningMethod> cleaning_method { get; set; }
+        public DbSet<IDMS.Models.Parameter.cleaning_method> cleaning_method { get; set; }
 
-        public DbSet<IDMS.Models.Parameter.EntityClass_CleaningCategory> cleaning_category { get; set; }
+        public DbSet<IDMS.Models.Parameter.cleaning_category> cleaning_category { get; set; }
 
-        public DbSet<IDMS.Models.Master.EntityClass_CustomerCompany> customer_company { get; set; }
+        public DbSet<IDMS.Models.Master.customer_company> customer_company { get; set; }
 
         public DbSet<IDMS.Models.Package.EntityClass_CustomerCompany_CleaningCategory> customer_company_cleaning_category { get; set; }
     }
