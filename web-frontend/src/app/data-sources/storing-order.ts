@@ -12,6 +12,7 @@ export class StoringOrderGO {
   public haulier?: string;
   public so_no?: string;
   public so_notes?: string;
+  public remarks?: string;
   public status_cv?: string;
   public create_dt?: number;
   public create_by?: string;
@@ -25,6 +26,7 @@ export class StoringOrderGO {
     this.haulier = item.haulier || '';
     this.so_no = item.so_no || '';
     this.so_notes = item.so_notes || '';
+    this.remarks = item.remarks || '';
     this.status_cv = item.status_cv || '';
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
@@ -143,8 +145,8 @@ export const UPDATE_STORING_ORDER = gql`
 `;
 
 export const CANCEL_STORING_ORDER = gql`
-  mutation CancelStoringOrder($soGuids: [StoringOrderRequestInput!]!) {
-    cancelStoringOrder(soGuids: $soGuids)
+  mutation CancelStoringOrder($so: [StoringOrderRequestInput!]!) {
+    cancelStoringOrder(so: $so)
   }
 `;
 
@@ -182,8 +184,8 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
     this.soLoadingSubject.next(true);
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_BY_ID,
-        variables: { id },
+        query: GET_STORING_ORDERS,
+        variables: { where: { guid: { eq: id } } },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -191,10 +193,10 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
         catchError(() => of({ soList: [] })),
         finalize(() => this.soLoadingSubject.next(false)),
         map((result) => {
-          const soList = result.soList || [];
-          this.soItemsSubject.next(soList);
-          this.totalCount = soList.length;
-          return soList;
+          const soList = result.soList || { nodes: [], totalCount: 0 };
+          this.soItemsSubject.next(soList.nodes);
+          this.totalCount = soList.totalCount;
+          return soList.nodes;
         })
       );
   }
@@ -219,11 +221,11 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
     });
   }
 
-  cancelStoringOrder(soGuids: any): Observable<any> {
+  cancelStoringOrder(so: any): Observable<any> {
     return this.apollo.mutate({
       mutation: CANCEL_STORING_ORDER,
       variables: {
-        soGuids
+        so
       }
     });
   }

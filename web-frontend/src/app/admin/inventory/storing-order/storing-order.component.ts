@@ -32,7 +32,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -40,6 +40,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff_cleaning';
 
 @Component({
   selector: 'app-storing-order',
@@ -112,7 +113,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
-    REMARKS: 'COMMON-FORM.REMARKS'
+    REMARKS: 'COMMON-FORM.REMARKS',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED'
   }
 
   searchForm?: UntypedFormGroup;
@@ -120,6 +122,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
   ccDS: CustomerCompanyDS;
+  tcDS: TariffCleaningDS;
 
   soList: StoringOrderItem[] = [];
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -129,6 +132,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
+  last_cargoList?: TariffCleaningItem[];
 
   constructor(
     public httpClient: HttpClient,
@@ -144,6 +148,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.tcDS = new TariffCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -214,8 +219,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        //const guids = result.item.map((item: { guid: string, remarks: string }) => new StoringOrder);
-        this.soDS.cancelStoringOrder(result.item).subscribe(result => {
+        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
+        this.soDS.cancelStoringOrder(so).subscribe(result => {
           if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
             let successMsg = this.langText.CANCELED_SUCCESS;
             this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
@@ -325,7 +330,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return this.ccDS.displayName(cc);
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    //return this.ccDS.displayName(cc);
   }
 
   initializeFilterCustomerCompany() {
@@ -344,11 +350,31 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         });
       })
     ).subscribe();
+
+    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.cargo;
+        }
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+          this.last_cargoList = data
+        });
+      })
+    ).subscribe();
   }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+  
+  displayLastCargoFn(tc: TariffCleaningItem): string {
+    return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 }
