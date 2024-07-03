@@ -15,11 +15,11 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<EntityClass_InGateWithTank>()
+            modelBuilder.Entity<InGateWithTank>()
                 .Ignore(e=>e.haulier )
                 .Ignore(e => e.eir_doc)
                 .HasOne(e => e.tank).WithOne(t => t.in_gate)
-                .HasForeignKey<EntityClass_InGateWithTank>(t => t.so_tank_guid);
+                .HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
 
             modelBuilder.Entity<storing_order_tank>(e =>
             {
@@ -31,14 +31,14 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
             modelBuilder.Entity<storing_order_tank>()
                 .HasKey(t => t.guid);
 
-            modelBuilder.Entity<EntityClass_InGateWithTank>()
+            modelBuilder.Entity<InGateWithTank>()
                 .HasKey(e => e.guid);
 
 
            
         }
 
-        public DbSet<IDMS.Models.Inventory.EntityClass_InGateWithTank> in_gate { get; set; }
+        public DbSet<IDMS.Models.Inventory.InGateWithTank> in_gate { get; set; }
         public DbSet<IDMS.Models.Inventory.storing_order_tank> storing_order_tank { get; set; }
 
         public DbSet<IDMS.Models.Inventory.storing_order> storing_order { get; set; }

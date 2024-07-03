@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models
 {
-    public class release_order:EntityClass_Dates
+    public class release_order:Dates
     {
         [Key]
         [IsProjected(true)]

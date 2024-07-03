@@ -1,6 +1,7 @@
-﻿using IDMS.StoringOrder.Model.Domain;
+﻿using IDMS.Models.Inventory;
+using IDMS.StoringOrder.Model.Domain;
 using IDMS.StoringOrder.Model.Domain.Customer;
-using IDMS.StoringOrder.Model.Domain.StoringOrder;
+//using IDMS.StoringOrder.Model.Domain.StoringOrder;
 using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.StoringOrder.GqlTypes.Repo

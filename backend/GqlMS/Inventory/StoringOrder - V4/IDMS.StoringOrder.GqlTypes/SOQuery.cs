@@ -1,8 +1,9 @@
 ﻿using HotChocolate;
 using HotChocolate.Types;
+using IDMS.Models.Inventory;
 using IDMS.StoringOrder.GqlTypes.Repo;
 using IDMS.StoringOrder.Model.CustomSorter;
-using IDMS.StoringOrder.Model.Domain.StoringOrder;
+//using IDMS.StoringOrder.Model.Domain.StoringOrder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Inventory
 {
-    public class booking : EntityClass_Dates
+    public class booking : Dates
     {
         [Key]
         [IsProjected(true)]
