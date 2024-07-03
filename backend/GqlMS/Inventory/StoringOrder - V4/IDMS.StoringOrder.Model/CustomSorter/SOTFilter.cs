@@ -17,6 +17,7 @@ namespace IDMS.StoringOrder.Model.CustomSorter
         {
             //descriptor.Ignore(s => s.storing_order);
             //descriptor.Ignore(s => s.tariff_cleaning);
+            descriptor.Ignore(s => s.in_gate);
             base.Configure(descriptor);
         }
     }

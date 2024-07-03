@@ -1,11 +1,13 @@
 ﻿using HotChocolate;
 using HotChocolate.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace IDMS.Models.Inventory
 {
 
     public class in_gate:Dates
     {
+        [Key]
         public string guid { get; set; } = "";
         [IsProjected(true)] 
         public string? so_tank_guid { get; set; } = "";

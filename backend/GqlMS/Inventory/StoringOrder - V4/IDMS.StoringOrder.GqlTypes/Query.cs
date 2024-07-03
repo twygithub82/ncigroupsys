@@ -67,7 +67,7 @@ namespace IDMS.StoringOrder.GqlTypes
         {
             try
             {
-                var retCodeValues = context.code_values.Where(c => c.code_val_type.Equals(codeValuesType.CodeValType) &
+                var retCodeValues = context.code_values.Where(c => c.code_val_type.Equals(codeValuesType.code_val_type) &
                                                               (c.delete_dt == null || c.delete_dt == 0 ));
                 if (retCodeValues.Count() <= 0)
                 {

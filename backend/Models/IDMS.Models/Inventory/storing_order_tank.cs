@@ -2,6 +2,7 @@
 using IDMS.Models.Tariff;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace IDMS.Models.Inventory
 {
     public class storing_order_tank:Dates
     {
+        [Key]
         public string? guid { get; set; }
 
         public string? so_guid {  get; set; }
