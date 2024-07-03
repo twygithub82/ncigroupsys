@@ -21,21 +21,24 @@ server.AddSubscriptionType<SubscriptionType>();
 //server.RenameType("Message", "MessageLocal");
 server.AddInMemorySubscriptions();
 
+//server = builder.Services.AddGraphQLServer();
+//server.ModifyOptions(o =>
+//{
+//    o.StrictValidation = false;
+//}
+//    );
+////server.AddQueryType<QueryType>();
+
+
+
+//server.AddLocalSchema("local")
+//    .RenameType("Message", "MessageLocal");
+//server.AddQueryType(d => d.Name("Query"))
+// server.AddSubscriptionType(d => d.Name("Subscription"));
 server = builder.Services.AddGraphQLServer();
-server.ModifyOptions(o =>
-{
-    o.StrictValidation = false;
-}
-    );
+server.AddLocalSchema("local");
 //server.AddQueryType<QueryType>();
-
-
-
-server.AddLocalSchema("local")
-    .RenameType("Message", "MessageLocal");
-// server.AddQueryType(d => d.Name("Query"))
-//       .AddSubscriptionType(d => d.Name("Subscription"));
-////server.AddSubscriptionType<SubscriptionType>();
+//server.AddSubscriptionType<SubscriptionType>();
 
 //server.AddQueryType(d => d.Name("Query"));
 //server.AddQueryType<QueryType>();
