@@ -24,7 +24,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
             modelBuilder.Entity<storing_order_tank>(e =>
             {
                 //e.HasKey(t => t.guid);
-                e.Ignore("tariff_cleaning");
+               // e.Ignore("tariff_cleaning");
                 e.HasOne(st => st.storing_order).WithMany(st => st.storing_order_tank)       // Navigation property in StoringOrderTank
                 .HasForeignKey(st => st.so_guid);
             });
