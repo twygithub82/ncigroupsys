@@ -1,5 +1,8 @@
 ﻿using IDMS.Models.Inventory;
 using IDMS.Models.Package;
+//using IDMS.StoringOrder.Model.Domain.Customer;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace IDMS.Models.Master
@@ -29,7 +32,7 @@ namespace IDMS.Models.Master
         public string? currency_cv { get; set; }
 
         public IEnumerable<storing_order>? storing_orders { get; set; }
-        public IEnumerable<customer_company_contact_person>? cc_contact_person { get; set; }
+        //public IEnumerable<customer_company_contact_person>? cc_contact_person { get; set; }
     }
 
 

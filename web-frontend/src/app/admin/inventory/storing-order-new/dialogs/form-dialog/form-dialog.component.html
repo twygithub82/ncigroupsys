@@ -19,7 +19,7 @@
                 <mat-label>{{data.langText.UNIT_TYPE | translate}}</mat-label>
                 <mat-select formControlName="unit_type_guid" required>
                   @for (option of data.populateData.unit_typeList; track option) {
-                  <mat-option [value]="option.guid">{{option.unitType}}</mat-option>
+                  <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
                   }
                 </mat-select>
                 @if (storingOrderTankForm.get('unit_type')?.hasError('required')) {
@@ -159,7 +159,7 @@
                 <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
                   formControlName="last_cargo" required>
                 <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
-                  @for (tc of tcDS.connect() | async; track tc) {
+                  @for (tc of last_cargoList; track tc) {
                   <mat-option [value]="tc">
                     {{tc.cargo}}
                   </mat-option>

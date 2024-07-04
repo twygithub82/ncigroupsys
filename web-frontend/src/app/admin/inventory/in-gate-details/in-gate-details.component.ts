@@ -40,6 +40,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -73,6 +74,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatCardModule,
   ]
 })
 export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -90,6 +92,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     'MENUITEMS.HOME.TEXT'
   ]
 
+  translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -108,7 +111,13 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
-    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS'
+    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
+    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
+    SO_NOTES: 'COMMON-FORM.SO-NOTES',
+    TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    CLEANING_CONDITIONS: 'COMMON-FORM.CLEANING-CONDITIONS'
   }
 
   inGateForm?: UntypedFormGroup;
@@ -141,6 +150,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     private router: Router,
   ) {
     super();
+    this.translateLangText();
     this.initSearchForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -171,32 +181,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       eta_dt: [''],
     });
   }
-  cancelItem(row: StoringOrderItem) {
-    // this.id = row.id;
-    this.cancelSelectedRows([row])
-  }
-  private refreshTable() {
-    this.paginator._changePageSize(this.paginator.pageSize);
-  }
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.soSelection.selected.length;
-    const numRows = this.sotDS.totalCount;
-    return numSelected === numRows;
-    return false;
-  }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.isAllSelected()
-      ? this.soSelection.clear()
-      : this.soList.forEach((row) =>
-        this.soSelection.select(row)
-      );
-  }
-  
-  cancelSelectedRows(row: StoringOrderItem[]) {
-  }
   public loadData() {
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
@@ -204,7 +189,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       this.subs.sink = this.sotDS.getStoringOrderTankByID(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.storingOrderTankItem = data[0];
-          // this.populateSOForm(this.storingOrderItem);
         }
       });
     } else {
@@ -272,6 +256,35 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
+  }
+
+  displayTankPurpose() {
+    let purposes: any[] = [];
+    if (this.storingOrderTankItem?.purpose_storage) {
+        purposes.push(this.getCodeDescription('STORAGE'));
+    }
+    if (this.storingOrderTankItem?.purpose_cleaning) {
+        purposes.push(this.getCodeDescription('CLEANING'));
+    }
+    if (this.storingOrderTankItem?.purpose_steam) {
+        purposes.push(this.getCodeDescription('STEAM'));
+    }
+    if (this.storingOrderTankItem?.purpose_repair_cv) {
+        purposes.push(this.storingOrderTankItem?.purpose_repair_cv);
+    }
+    return purposes.join(', ');
+  }
+
+  getCodeDescription(codeValType: string): string | undefined {
+    let cv = this.purposeOptionCvList.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
+  }
+
   initializeFilterCustomerCompany() {
     this.inGateForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
@@ -296,5 +309,11 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     } else {
       console.log('Invalid soForm', this.inGateForm?.value);
     }
+  }
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
   }
 }

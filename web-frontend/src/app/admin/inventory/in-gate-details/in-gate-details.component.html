@@ -20,6 +20,127 @@
                 </mat-progress-spinner>
               </div>
               }
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.SO_NO | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.so_no}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.SO_NOTES | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.so_notes}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right alig">
+                        <span>{{langText.CUSTOMER | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.ALIAS_NAME | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.customer_company?.alias}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.SO_DATE | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.STATUS | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.status_cv}}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </mat-card-content>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{langText.TANK_DETAILS | translate}}
+              </h2>
+            </div>
+            <div class="body">
+              @if (sotDS.loading$ | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.TANK_NO | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{storingOrderTankItem?.tank_no}}</div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.PURPOSE | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{displayTankPurpose()}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.EIR_NO | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <!-- <div class="contact-detail-info">{{ccDS.displayName(storingOrderTankItem?.storing_order?.eir_no)}}</div> -->
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-5 align-right">
+                        <span>{{langText.CLEANING_CONDITIONS | translate}}:</span>
+                      </div>
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
+                        <div class="contact-detail-info">{{storingOrderTankItem?.clean_status_cv}}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 align-right">
+                        
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </mat-card-content>
             </div>
           </div>
         </form>

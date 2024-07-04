@@ -95,6 +95,7 @@ const GET_STORING_ORDER_TANKS = gql`
             code
             guid
             name
+            alias
           }
         }
       }
@@ -104,65 +105,37 @@ const GET_STORING_ORDER_TANKS = gql`
 `;
 
 const GET_STORING_ORDER_TANK_BY_ID = gql`
-  query getStoringOrderTankByID($where: EntityClass_InGateWithTankFilterInput) {
-    queryInGates(where: $where) {
-      totalCount
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
       nodes {
+        job_no
         guid
-        tank {
-          certificate_cv
-          clean_status_cv
-          create_by
-          create_dt
-          delete_dt
-          estimate_cv
-          eta_dt
-          etr_dt
+        tank_no
+        so_guid
+        purpose_storage
+        purpose_cleaning
+        purpose_steam
+        purpose_repair_cv
+        clean_status_cv
+        tariff_cleaning {
           guid
-          job_no
-          last_cargo_guid
-          purpose_cleaning
-          purpose_repair_cv
-          purpose_steam
-          purpose_storage
-          remarks
-          required_temp
-          so_guid
+          open_on_gate_cv
+          cargo
+        }
+        storing_order {
+          so_no
+          so_notes
+          create_dt
           status_cv
-          tank_no
-          unit_type_guid
-          update_by
-          update_dt
-          storing_order {
-            create_by
-            create_dt
-            customer_company_guid
-            delete_dt
+          customer_company {
+            code
             guid
-            haulier
-            so_no
-            so_notes
-            status_cv
-            update_by
-            update_dt
+            name
+            alias
           }
         }
-        create_by
-        create_dt
-        delete_dt
-        driver_name
-        eir_date
-        eir_doc
-        eir_no
-        haulier
-        lolo_cv
-        preinspection_cv
-        so_tank_guid
-        update_by
-        update_dt
-        vehicle_no
-        yard_cv
       }
+      totalCount
     }
   }
 `;
@@ -210,7 +183,7 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
     let where: any = {guid: { eq: id }}
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANKS,
+        query: GET_STORING_ORDER_TANK_BY_ID,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

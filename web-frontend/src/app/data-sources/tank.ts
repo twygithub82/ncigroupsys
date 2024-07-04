@@ -35,7 +35,7 @@ export const GET_TANK = gql`
   query queryTank {
     queryTank {
       guid
-      unitType
+      unit_type
       description
     }
   }

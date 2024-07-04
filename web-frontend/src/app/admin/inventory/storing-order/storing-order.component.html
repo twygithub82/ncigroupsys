@@ -61,7 +61,7 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{langText.LAST_CARGO | translate}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
-                        formControlName="last_cargo" required>
+                        formControlName="last_cargo">
                       <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
                         @for (tc of last_cargoList; track tc) {
                         <mat-option [value]="tc">
@@ -76,7 +76,7 @@
                       <mat-label>{{langText.STATUS | translate}}</mat-label>
                       <mat-select formControlName="so_status">
                         @for (codeValue of soStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.codeValue">
+                        <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
                         }
@@ -102,7 +102,7 @@
                       <mat-label>{{langText.PURPOSE | translate}}</mat-label>
                       <mat-select multiple formControlName="purpose">
                         @for (codeValue of purposeOptionCvList; track codeValue) {
-                        <mat-option [value]="codeValue.codeValue">
+                        <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
                         }

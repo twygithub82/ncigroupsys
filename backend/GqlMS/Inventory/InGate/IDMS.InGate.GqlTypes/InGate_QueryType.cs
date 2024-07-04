@@ -30,9 +30,9 @@ namespace IDMS.InGate.GqlTypes
        // [UseProjection]
         [UseFiltering(typeof(IDMS.Models.Filters.in_gate_filtertype))]
         [UseSorting]
-        public  IQueryable<EntityClass_InGateWithTank> QueryInGates([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        public  IQueryable<InGateWithTank> QueryInGates([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
-            IQueryable<EntityClass_InGateWithTank> query = null;
+            IQueryable<InGateWithTank> query = null;
            // List<EntityClass_InGate> retInGates = new List<EntityClass_InGate>();
             try
             {
@@ -40,6 +40,7 @@ namespace IDMS.InGate.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
                     .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0)
+                    .Include(s=>s.tank.tariff_cleaning)
                     .Include(s=>s.tank.storing_order);
 
             }

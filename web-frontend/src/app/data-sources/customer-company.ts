@@ -122,7 +122,7 @@ export class CustomerCompanyDS extends DataSource<CustomerCompanyItem> {
         this.loadingSubject.complete();
     }
 
-    displayName(cc: CustomerCompanyItem): string {
-        return cc.code ? `${cc.code} (${cc.name})` : '';
+    displayName(cc?: CustomerCompanyItem): string {
+        return cc?.code ? `${cc.code} (${cc.name})` : '';
     }
 }
