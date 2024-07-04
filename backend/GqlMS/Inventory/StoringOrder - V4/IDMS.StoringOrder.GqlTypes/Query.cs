@@ -52,7 +52,7 @@ namespace IDMS.StoringOrder.GqlTypes
         {
             try
             {
-                return context.tank_unit_type.Where(t => t.delete_dt == null || t.delete_dt == 0);
+                return context.tank.Where(t => t.delete_dt == null || t.delete_dt == 0);
             }
             catch (Exception ex)
             {

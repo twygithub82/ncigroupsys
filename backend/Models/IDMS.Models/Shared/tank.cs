@@ -7,13 +7,13 @@ namespace IDMS.Models.Shared
     {
         [Key]
         [Column("guid")]
-        public string Guid { get; set; }
+        public string guid { get; set; }
 
         [Column("unit_type")]
-        public string UnitType { get; set; }
+        public string unit_type { get; set; }
 
         [Column("description")]
-        public string? Description { get; set; }
+        public string? description { get; set; }
 
     }
 }

@@ -15,7 +15,7 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
         public DbSet<customer_company> customer_company { get; set; }
         public DbSet<storing_order_tank> storing_order_tank { get; set; }
         public DbSet<customer_company_contact_person> customer_company_contact_person { get; set; }
-        public DbSet<tank> tank_unit_type { get; set; }
+        public DbSet<tank> tank { get; set; }
         public DbSet<code_values> code_values { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
 
@@ -37,7 +37,7 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
             modelBuilder.Entity<storing_order_tank>(e =>
             {
                 //e.HasKey(t => t.guid);
-                e.Ignore("InGateWithTank");
+                e.Ignore(e => e.in_gate);
 
                 e.HasOne(t => t.in_gate).WithOne(t => t.tank).HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
 

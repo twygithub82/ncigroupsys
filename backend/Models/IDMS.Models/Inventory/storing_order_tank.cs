@@ -46,12 +46,6 @@ namespace IDMS.Models.Inventory
 
         public long? etr_dt { get; set; }
 
-        //public int? st { get; set; }
-
-        //public int? o2_level { get; set; }
-
-        //public int? open_on_gate { get; set; }
-
         public string? status_cv { get; set; }
 
         public string? tank_status_cv { get; set; }
