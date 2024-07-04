@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.InGate", "IDMS.InGate\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.InGate.GqlTypes", "IDMS.InGate.GqlTypes\IDMS.InGate.GqlTypes.csproj", "{DFFECE22-1580-4356-85F4-D7047C42A346}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Models", "..\..\Models\IDMS.Models\IDMS.Models.csproj", "{CF9E6C56-6D94-449E-B7EB-399C1B8C647C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Models", "..\..\..\Models\IDMS.Models\IDMS.Models.csproj", "{1221C5FD-F305-42CA-86BF-C9242B3B341F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{DFFECE22-1580-4356-85F4-D7047C42A346}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFFECE22-1580-4356-85F4-D7047C42A346}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFFECE22-1580-4356-85F4-D7047C42A346}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF9E6C56-6D94-449E-B7EB-399C1B8C647C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF9E6C56-6D94-449E-B7EB-399C1B8C647C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF9E6C56-6D94-449E-B7EB-399C1B8C647C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF9E6C56-6D94-449E-B7EB-399C1B8C647C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1221C5FD-F305-42CA-86BF-C9242B3B341F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1221C5FD-F305-42CA-86BF-C9242B3B341F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1221C5FD-F305-42CA-86BF-C9242B3B341F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1221C5FD-F305-42CA-86BF-C9242B3B341F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
