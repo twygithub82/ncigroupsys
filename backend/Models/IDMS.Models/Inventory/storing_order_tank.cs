@@ -50,7 +50,7 @@ namespace IDMS.Models.Inventory
 
         public string? tank_status_cv { get; set; }
 
-        [GraphQLName("in_gate_with_tank")]
+        [GraphQLName("in_gate")]
         public InGateWithTank? in_gate { get; set; }
 
         public storing_order? storing_order { get; set; }

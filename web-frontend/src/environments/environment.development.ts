@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://207.46.137.171',
+  //apiUrl: 'http://207.46.137.171',
+  apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
   graphQLUrl: 'http://localhost:5293',
 };
 

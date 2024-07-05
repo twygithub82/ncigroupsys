@@ -6,18 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using IDMS.Models.Inventory;
 using IDMS.StoringOrder.Model.Request;
+using IDMS.StoringOrder.Model;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     public class SOMutation
     {
-        const string CANCELED = "CANCELED";
-        const string PROCESSING = "PROCESSING";
-        const string COMPLETED = "COMPLETED";
-        const string PENDING = "PENDING";
-        const string WAITING = "WAITING";
-        const string ACCEPTED = "ACCEPTED";
-
         public async Task<int> AddStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
             AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
@@ -29,7 +23,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 storing_order soDomain = new();
                 mapper.Map(so, soDomain);
                 soDomain.guid = Util.GenerateGUID();
-                soDomain.status_cv = PENDING;
+                soDomain.status_cv = SOStatus.PENDING;
                 soDomain.create_dt = currentDateTime;
                 soDomain.create_by = user;
 
@@ -43,7 +37,7 @@ namespace IDMS.StoringOrder.GqlTypes
                     newTank.so_guid = soDomain.guid;
                     newTank.create_dt = currentDateTime;
                     newTank.create_by = user;
-                    newTank.status_cv = WAITING;
+                    newTank.status_cv = SOTankStatus.WAITING;
                     context.storing_order_tank.Add(newTank);
                 }
 
@@ -233,25 +227,25 @@ namespace IDMS.StoringOrder.GqlTypes
 
                     if (storingOrder != null)
                     {
-                        if (!(PENDING.EqualsIgnore(storingOrder.status_cv) || PROCESSING.EqualsIgnore(storingOrder.status_cv)))
+                        if (!(SOStatus.PENDING.EqualsIgnore(storingOrder.status_cv) || SOStatus.PROCESSING.EqualsIgnore(storingOrder.status_cv)))
                             throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
 
                         int tnkAlreadyAcceptedCount = 0;
-                        string finalSOStatus = CANCELED;
+                        string finalSOStatus = SOStatus.CANCELED;
 
                         var tanks = storingOrder.storing_order_tank?.Where(t => t.so_guid == storingOrder.guid);
                         if (tanks != null && tanks.Any())
                         {
                             foreach (var tnk in tanks)
                             {
-                                if (string.IsNullOrEmpty(tnk.tank_status_cv) || WAITING.EqualsIgnore(tnk.tank_status_cv))
+                                if (string.IsNullOrEmpty(tnk.tank_status_cv) || SOTankStatus.WAITING.EqualsIgnore(tnk.tank_status_cv))
                                 {
-                                    tnk.status_cv = CANCELED;
+                                    tnk.status_cv = SOTankStatus.CANCELED;
                                     tnk.update_dt = currentDateTime;
                                     tnk.update_by = user;
                                 }
 
-                                if (ACCEPTED.EqualsIgnore(tnk.status_cv))
+                                if (SOTankStatus.ACCEPTED.EqualsIgnore(tnk.status_cv))
                                     tnkAlreadyAcceptedCount++;
                             }
 
@@ -259,7 +253,7 @@ namespace IDMS.StoringOrder.GqlTypes
                                 throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
 
                             if (tnkAlreadyAcceptedCount > 0 && tnkAlreadyAcceptedCount != tanks.Count())
-                                finalSOStatus = COMPLETED;
+                                finalSOStatus = SOStatus.COMPLETED;
 
                         }
                         //so.status_cv = CANCEL;
