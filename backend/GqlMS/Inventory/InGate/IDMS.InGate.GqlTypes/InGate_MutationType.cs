@@ -29,7 +29,7 @@ namespace IDMS.InGate.GqlTypes
                       create_by =InGate.create_by,
                       create_dt = InGate.create_dt,
                       driver_name =InGate.driver_name,
-                      eir_doc =InGate.eir_doc,
+                      //eir_doc =InGate.eir_doc,
                       eir_date =InGate.eir_date,
                       eir_no =InGate.eir_no,
                       guid =InGate.guid,

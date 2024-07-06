@@ -29,9 +29,6 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
                       .Include(tc => tc.cleaning_category)
                       .Where(tc => (tc.cleaning_method.delete_dt == null || tc.cleaning_method.delete_dt == 0) &&
                        (tc.cleaning_category.delete_dt == null || tc.cleaning_category.delete_dt == 0));
-
-
-
             }
             catch
             {

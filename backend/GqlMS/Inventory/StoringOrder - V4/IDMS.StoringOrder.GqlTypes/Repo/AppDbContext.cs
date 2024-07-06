@@ -16,6 +16,7 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
         public DbSet<storing_order_tank> storing_order_tank { get; set; }
         public DbSet<customer_company_contact_person> customer_company_contact_person { get; set; }
         public DbSet<tank> tank { get; set; }
+        public DbSet<InGateWithTank> in_gate { get; set; }
         public DbSet<code_values> code_values { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
 
@@ -37,10 +38,9 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
             modelBuilder.Entity<storing_order_tank>(e =>
             {
                 //e.HasKey(t => t.guid);
-                e.Ignore(e => e.in_gate);
+                //e.Ignore(e => e.in_gate);
 
                 e.HasOne(t => t.in_gate).WithOne(t => t.tank).HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
-
                 e.HasOne(st => st.storing_order).WithMany(st => st.storing_order_tank)       // Navigation property in StoringOrderTank
                 .HasForeignKey(st => st.so_guid);
 
@@ -52,6 +52,13 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
                 e.HasMany(tc => tc.sot).WithOne(st => st.tariff_cleaning)
                 .HasForeignKey(st => st.last_cargo_guid);
             });
+
+            //modelBuilder.Entity<InGateWithTank>(e =>
+            //{
+            //    e.HasKey(e => e.guid);
+            //    e.Ignore(e => e.tank);
+            //    //.HasDiscriminator().HasValue(typeof(InGateWithTank), "tank");
+            //});
 
             base.OnModelCreating(modelBuilder);
         }

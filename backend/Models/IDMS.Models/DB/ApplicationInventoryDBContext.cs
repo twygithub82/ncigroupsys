@@ -8,8 +8,6 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
     {
         public ApplicationInventoryDBContext(DbContextOptions<ApplicationInventoryDBContext> options) : base(options)
         {
-
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -17,8 +15,8 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<InGateWithTank>()
-                .Ignore(e=>e.haulier )
-                .Ignore(e => e.eir_doc)
+                .Ignore(e=>e.haulier)
+                //.Ignore(e => e.eir_doc)
                 .HasOne(e => e.tank).WithOne(t => t.in_gate)
                 .HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
 
@@ -59,14 +57,11 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
                 .HasForeignKey(st => st.cleaning_category_guid);
             });
 
-            modelBuilder.Entity<storing_order_tank>()
-                .HasKey(t => t.guid);
+            //modelBuilder.Entity<storing_order_tank>()
+            //    .HasKey(t => t.guid);
 
-            modelBuilder.Entity<InGateWithTank>()
-                .HasKey(e => e.guid);
-
-
-           
+            //modelBuilder.Entity<InGateWithTank>()
+            //    .HasKey(e => e.guid);
         }
 
         public DbSet<IDMS.Models.Inventory.InGateWithTank> in_gate { get; set; }

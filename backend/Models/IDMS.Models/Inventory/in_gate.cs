@@ -18,8 +18,7 @@ namespace IDMS.Models.Inventory
         public string? driver_name { get; set; } = "";
         public string? lolo_cv { get; set; } = "";
         public string? preinspection_cv { get; set; } = "";
-        public string? eir_doc { get; set; } = "";
-
+        //public string? eir_doc { get; set; } = "";
         public long? eir_date { get; set; }
 
         //public storing_order_tank? tank { get; set; } = null;
@@ -30,9 +29,5 @@ namespace IDMS.Models.Inventory
     {
         public storing_order_tank? tank { get; set; } = null;
     }
-
-
-  
-
 
 }
