@@ -18,7 +18,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
 
             modelBuilder.Entity<InGateWithTank>()
                 .Ignore(e=>e.haulier )
-                .Ignore(e => e.eir_doc)
+                //.Ignore(e => e.eir_doc)
                 .HasOne(e => e.tank).WithOne(t => t.in_gate)
                 .HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
 
