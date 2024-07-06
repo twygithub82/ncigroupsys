@@ -92,6 +92,8 @@
     "CLEANING-MANAGEMENT": {
       "TEXT": "Cleaning Management",
       "LIST": {
+        "CLEAN-METHODS":"Cleaning Methods",
+        "CLEAN-CATEGORY":"Cleaning Category",
         "CLEAN-STEPS": "Cleaning Steps",
         "CLEAN-PROCEDURES": "Cleaning Procedures",
         "CLEAN-PROCEDURES-NEW": "New Cleaning Procedures",
@@ -124,6 +126,8 @@
     "LOGIN": "Login"
   },
   "COMMON-FORM": {
+    "CATEGORY-DESCRIPTION":"Category Description",
+    "CATEGORY-NAME":"Category Name",
     "CLEAN-PROCEDURES": "Cleaning Procedures",
     "CLEAN-GROUPS": "Cleaning Groups",
     "PROCEDURE-DETAILS": "Procedure Details",

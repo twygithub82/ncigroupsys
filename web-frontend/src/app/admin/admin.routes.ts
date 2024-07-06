@@ -7,7 +7,8 @@ import { StoringOrderComponent } from './inventory/storing-order/storing-order.c
 import { StoringOrderNewComponent } from './inventory/storing-order-new/storing-order-new.component';
 import { InGateComponent } from './inventory/in-gate/in-gate.component';
 import { InGateDetailsComponent } from './inventory/in-gate-details/in-gate-details.component';
-
+import {CleaningCategoryComponent} from './parameter/cleaning-category/cleaning-category.component';
+import { CleaningMethodsComponent } from './parameter/cleaning-methods/cleaning-methods.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "cleaning-steps",
@@ -40,6 +41,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "in-gate/details/:id",
     component: InGateDetailsComponent,
+  },
+  {
+    path: "parameter/cleaning-category",
+    component: CleaningCategoryComponent,
+  },
+  {
+    path: "parameter/cleaning-methods",
+    component: CleaningMethodsComponent,
   }
 ];
 
