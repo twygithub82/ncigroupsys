@@ -8,12 +8,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAczbJMk9j60WbPFV2uQjcNQAAAAACAAAAAAAQZgAAAAEAACAAAABgX7GulDw0qsgGY5lCVTAQVetp7+BOS3I6uoJffDq8cwAAAAAOgAAAAAIAACAAAADwPt1qJq6U7JqM7TYAHUgJOxJoZX1GP6cbr2RzkFYfWIAAAACeZjSRVmyCYGVuhv+ceArXFAaGdLjaEO0JJWvlADbn/HbOjhcmbIkR8cqVR6Oo7mmS+2V2P2ClM4+jqQWW/hZc5WCWBTUYe6f2UpDFu8+b9WLyoK6Z9JdKeaTT/h+r7gwUHwbTWnb8F4uJyCfMm7B+ws8fdhoXoflmnH/P8c3QSUAAAAAJ8Hf0mb1X8Yp8tsQFK/Pc5b9mr6FbjQqcpTzEzHFxfQvo29aDpmKiAO3dtE671Q/z4nThnzqPcqY0Qa6pVk/j</EncryptedPassword>
     <_PublishTargetUrl>ftps://waws-prod-hk1-015.ftp.azurewebsites.windows.net/site/wwwroot</_PublishTargetUrl>
-    <History>True|2024-07-03T15:51:05.1980919Z||;False|2024-07-03T23:50:49.5446582+08:00||;True|2024-07-03T23:39:09.2028875+08:00||;False|2024-07-03T23:37:40.7626086+08:00||;True|2024-07-03T22:46:41.5904512+08:00||;False|2024-07-03T22:46:00.9007258+08:00||;False|2024-07-03T22:26:27.1073513+08:00||;False|2024-07-03T22:26:01.5906659+08:00||;True|2024-07-03T20:28:09.4887635+08:00||;False|2024-07-03T20:27:42.6990331+08:00||;False|2024-07-03T20:27:03.9167216+08:00||;False|2024-07-03T20:26:34.0390982+08:00||;False|2024-07-03T20:26:09.3101548+08:00||;True|2024-07-03T19:41:10.6679505+08:00||;True|2024-06-23T21:47:43.3904030+08:00||;True|2024-06-20T21:12:52.8804475+08:00||;False|2024-06-20T21:11:30.8980381+08:00||;</History>
+    <History>True|2024-07-06T09:06:28.9367663Z||;False|2024-07-06T17:04:43.7611323+08:00||;True|2024-07-03T23:51:05.1980919+08:00||;False|2024-07-03T23:50:49.5446582+08:00||;True|2024-07-03T23:39:09.2028875+08:00||;False|2024-07-03T23:37:40.7626086+08:00||;True|2024-07-03T22:46:41.5904512+08:00||;False|2024-07-03T22:46:00.9007258+08:00||;False|2024-07-03T22:26:27.1073513+08:00||;False|2024-07-03T22:26:01.5906659+08:00||;True|2024-07-03T20:28:09.4887635+08:00||;False|2024-07-03T20:27:42.6990331+08:00||;False|2024-07-03T20:27:03.9167216+08:00||;False|2024-07-03T20:26:34.0390982+08:00||;False|2024-07-03T20:26:09.3101548+08:00||;True|2024-07-03T19:41:10.6679505+08:00||;True|2024-06-23T21:47:43.3904030+08:00||;True|2024-06-20T21:12:52.8804475+08:00||;False|2024-06-20T21:11:30.8980381+08:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
   <ItemGroup>
     <File Include="appsettings.Development.json">
-      <publishTime>07/02/2024 20:58:43</publishTime>
+      <publishTime>07/05/2024 21:06:20</publishTime>
     </File>
     <File Include="appsettings.json">
       <publishTime>06/09/2024 22:40:24</publishTime>
@@ -124,37 +124,37 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/23/2024 21:47:24</publishTime>
     </File>
     <File Include="IDMS.Models.dll">
-      <publishTime>07/03/2024 23:50:38</publishTime>
+      <publishTime>07/06/2024 17:04:21</publishTime>
     </File>
     <File Include="IDMS.Models.pdb">
-      <publishTime>07/03/2024 23:50:38</publishTime>
+      <publishTime>07/06/2024 17:04:21</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.deps.json">
-      <publishTime>07/03/2024 23:50:54</publishTime>
+      <publishTime>07/06/2024 17:06:09</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.dll">
-      <publishTime>07/03/2024 23:50:54</publishTime>
+      <publishTime>07/06/2024 17:06:09</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.exe">
-      <publishTime>07/03/2024 23:50:54</publishTime>
+      <publishTime>07/06/2024 17:06:09</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.pdb">
-      <publishTime>07/03/2024 23:50:54</publishTime>
+      <publishTime>07/06/2024 17:06:09</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.runtimeconfig.json">
-      <publishTime>07/03/2024 22:45:49</publishTime>
+      <publishTime>07/06/2024 17:04:22</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.GqlTypes.dll">
-      <publishTime>07/03/2024 23:50:39</publishTime>
+      <publishTime>07/06/2024 17:04:22</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.GqlTypes.pdb">
-      <publishTime>07/03/2024 23:50:39</publishTime>
+      <publishTime>07/06/2024 17:04:22</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Model.dll">
-      <publishTime>07/03/2024 23:50:38</publishTime>
+      <publishTime>07/06/2024 17:04:21</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Model.pdb">
-      <publishTime>07/03/2024 23:50:38</publishTime>
+      <publishTime>07/06/2024 17:04:21</publishTime>
     </File>
     <File Include="Microsoft.AspNetCore.Authentication.JwtBearer.dll">
       <publishTime>05/20/2024 12:26:12</publishTime>
@@ -214,7 +214,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/19/2022 00:16:44</publishTime>
     </File>
     <File Include="web.config">
-      <publishTime>07/03/2024 23:50:54</publishTime>
+      <publishTime>07/06/2024 17:06:09</publishTime>
     </File>
     <File Include="Yarp.ReverseProxy.dll">
       <publishTime>11/17/2023 18:52:50</publishTime>

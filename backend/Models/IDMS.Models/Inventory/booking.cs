@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,9 @@ namespace IDMS.Models.Inventory
     {
         [Key]
         [IsProjected(true)]
-        public string guid { get; set; }
+        public string? guid { get; set; }
+
+        [ForeignKey("so_tank")]
         public string? sot_guid { get; set; }
         public string? surveyor_guid { get; set; }
         public string? report_guid { get; set; }
@@ -24,8 +27,7 @@ namespace IDMS.Models.Inventory
         public long? repair_complete_dt { get; set; }
 
         //public customer_company customer_company { get; set; }
-
-        //public IEnumerable<storing_order_tank>? storing_order_tank { get; set; }
+        public storing_order_tank so_tank { get; set; }
     }
 
 }

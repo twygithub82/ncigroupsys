@@ -38,10 +38,12 @@ namespace IDMS.Booking.GqlTypes
         {
             try
             {
-                return context.booking.Where(d => d.delete_dt == null || d.delete_dt == 0);
+                var bookingDetail = context.booking;
+
                 //.Include(c => c.code_values);
-                //.Include(so => so.storing_order_tank.Where(d => d.delete_dt == null))
+                //.Include(b => b.so_tank);//.Where(d => d.delete_dt == null || d.delete_dt == 0);
                 //.Include(so => so.customer_company);
+                return bookingDetail;
             }
             catch (Exception ex)
             {
