@@ -69,6 +69,21 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
                     <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table table-hover">
+                      <!-- Checkbox Column -->
+                      <ng-container matColumnDef="select">
+                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-6'">
+                          <mat-checkbox (change)="$event ? masterToggle() : null"
+                            [checked]="sotSelection.hasValue() && isAllSelected()"
+                            [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                          </mat-checkbox>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-6'">
+                          <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? sotSelection.toggle(row) : null" [checked]="sotSelection.isSelected(row)"
+                            [ngClass]="'tbl-checkbox'">
+                          </mat-checkbox>
+                        </mat-cell>
+                      </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
@@ -226,9 +241,8 @@
                       <!-- actions -->
                       <ng-container matColumnDef="actions">
                         <mat-header-cell class="pr-0" [ngClass]="'tbl-col-width-per-10'" *matHeaderCellDef>
-                          <!-- <i class="fas fa-ellipsis-v"></i> -->
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i=index;" class="pr-0"
+                        <!-- <mat-cell *matCellDef="let row; let i=index;" class="pr-0"
                           [ngClass]="'tbl-col-width-per-10 justify-content-end'">
                           <button mat-icon-button color="primary" (click)="handleDuplicateRow($event, row)"
                             [matTooltip]="translatedLangText.DUPLICATE" class="tbl-action-btn">
@@ -240,6 +254,36 @@
                             <mat-icon [class]="'tbl-fav-delete'">delete_forever</mat-icon>
                           </button>
                           }
+                        </mat-cell> -->
+                        <mat-cell *matCellDef="let row; let i=index;"
+                          class="psl-3 tbl-col-width-per-10 justify-content-end">
+                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                            <mat-icon>more_vert</mat-icon>
+                          </button>
+                          <mat-menu #menu="matMenu">
+                            @if (sotDS.canAddRemove(row)) {
+                            <button mat-menu-item (click)="handleDuplicateRow($event, row)">
+                              <mat-icon>add_to_photos</mat-icon>
+                              <span>{{translatedLangText.DUPLICATE}}</span>
+                            </button>
+                            <button mat-menu-item (click)="handleDelete($event, row, i)">
+                              <mat-icon>delete_forever</mat-icon>
+                              <span>{{translatedLangText.DELETE}}</span>
+                            </button>
+                            } @else if (sotDS.canCancel(row)) {
+                            <button mat-menu-item (click)="cancelItem($event, row)">
+                              <mat-icon>cancel</mat-icon>
+                              <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                                ""}}{{translatedLangText.CANCEL}}</span>
+                            </button>
+                            } @else if (sotDS.canRollbackStatus(row)) {
+                            <button mat-menu-item (click)="handleDuplicateRow($event, row)">
+                              <mat-icon>undo</mat-icon>
+                              <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                                ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
+                            </button>
+                            }
+                          </mat-menu>
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -272,10 +316,12 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (soDS.canCancel(storingOrderItem)) {
+                  @if (soDS.canAddRemove(storingOrderItem)) {
                   <button mat-flat-button color="accent" [ngClass]="'m-r-10'" (click)="addOrderDetails($event)">
                     <mat-icon class="col-white">add</mat-icon>{{langText.ORDER_DETAILS | translate}}
                   </button>
+                  }
+                  @if (isAnyItemEdited()) {
                   <button mat-flat-button color="primary">
                     <mat-icon>save</mat-icon>{{langText.SAVE_AND_SUBMIT | translate}}
                   </button>

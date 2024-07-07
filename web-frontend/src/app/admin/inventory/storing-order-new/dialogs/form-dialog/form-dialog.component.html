@@ -100,7 +100,7 @@
                 <mat-label>{{data.langText.CLEAN_STATUS | translate}}</mat-label>
                 <mat-select formControlName="clean_status_cv">
                   @for (codeValue of data.populateData.clean_statusCv; track codeValue) {
-                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
@@ -110,7 +110,7 @@
                 <mat-label>{{data.langText.CERTIFICATE | translate}}</mat-label>
                 <mat-select formControlName="certificate_cv">
                   @for (codeValue of data.populateData.yesnoCv; track codeValue) {
-                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
@@ -120,7 +120,7 @@
                 <mat-label>{{data.langText.REPAIR | translate}}</mat-label>
                 <mat-select formControlName="purpose_repair_cv">
                   @for (codeValue of data.populateData.repairCv; track codeValue) {
-                  <mat-option [value]="codeValue.codeValue">{{codeValue.description}}</mat-option>
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
@@ -186,7 +186,7 @@
               <label class="font-bold">{{data.langText.OPEN_ON_GATE | translate}}:</label>
               <mat-radio-group formControlName="open_on_gate">
                 @for (codeValue of data.populateData.yesnoCv; track codeValue) {
-                <mat-radio-button [value]="codeValue.codeValue" color="primary">
+                <mat-radio-button [value]="codeValue.code_val" color="primary">
                   {{codeValue.description}}
                 </mat-radio-button>
                 }
