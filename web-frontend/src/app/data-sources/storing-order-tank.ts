@@ -104,6 +104,47 @@ const GET_STORING_ORDER_TANKS = gql`
   }
 `;
 
+const RELOAD_STORING_ORDER_TANKS = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        certificate_cv
+        clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        eta_dt
+        etr_dt
+        guid
+        job_no
+        last_cargo_guid
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        remarks
+        required_temp
+        so_guid
+        status_cv
+        tank_no
+        tank_status_cv
+        unit_type_guid
+        update_by
+        update_dt
+        tariff_cleaning {
+          guid
+          cargo
+          flash_point
+          remarks
+          open_on_gate_cv
+        }
+      }
+      totalCount
+    }
+  }
+`;
+
 const GET_STORING_ORDER_TANK_BY_ID = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
@@ -137,6 +178,12 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
       }
       totalCount
     }
+  }
+`;
+
+export const CANCEL_STORING_ORDER_TANK = gql`
+  mutation CancelStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
+    cancelStoringOrderTank(sot: $sot)
   }
 `;
 
@@ -178,9 +225,30 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
       );
   }
 
+  reloadStoringOrderTanks(where: any): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: RELOAD_STORING_ORDER_TANKS,
+        variables: { where },
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.itemsSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          return sotList.nodes;
+        })
+      );
+  }
+
   getStoringOrderTankByID(id: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-    let where: any = {guid: { eq: id }}
+    let where: any = { guid: { eq: id } }
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANK_BY_ID,
@@ -199,6 +267,16 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
         })
       );
   }
+
+  cancelStoringOrderTank(sot: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: CANCEL_STORING_ORDER_TANK,
+      variables: {
+        sot
+      }
+    });
+  }
+
   connect(): Observable<StoringOrderTankItem[]> {
     return this.itemsSubject.asObservable();
   }
@@ -206,5 +284,17 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
   disconnect(): void {
     this.itemsSubject.complete();
     this.loadingSubject.complete();
+  }
+
+  canAddRemove(sot: StoringOrderTankItem): boolean {
+    return sot && !sot.status_cv;
+  }
+
+  canCancel(sot: StoringOrderTankItem): boolean {
+    return sot && sot.status_cv === 'WAITING';
+  }
+
+  canRollbackStatus(sot: StoringOrderTankItem): boolean {
+    return sot && sot.status_cv === 'CANCELED' || sot.status_cv === 'ACCEPTED';
   }
 }

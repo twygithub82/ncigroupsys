@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="modalHeader">
+    <h3 mat-dialog-title>{{data.translatedLangText.ARE_YOU_SURE_CANCEL}}</h3>
+  </div>
+  <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
+    <mat-divider></mat-divider>
+    <form class="register-form" [formGroup]="storingOrderTankForm" #formDirective="ngForm">
+      <div formArrayName="storingOrderTank">
+        @for (sot of getStoringOrderTanksArray().controls; track sot; let index = $index) {
+        <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-grey')">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+            <div [class]="'row pt-2'">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
+                <mat-label>
+                  {{data.translatedLangText.TANK_NO}}: {{sot.get('tank_no')?.value}}
+                </mat-label>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+            <input matInput formControlName="remarks">
+            @if (storingOrderTankForm.get('remarks')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div mat-dialog-actions class="mb-3">
+    <button mat-flat-button color="warn" (click)="confirmCancel()">
+      {{data.translatedLangText.CANCEL | translate}}
+    </button>
+    <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+      {{data.translatedLangText.CLOSE | translate}}
+    </button>
+  </div>
+</div>

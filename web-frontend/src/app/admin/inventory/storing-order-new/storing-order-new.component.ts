@@ -47,6 +47,7 @@ import { Observable, Subscription } from 'rxjs';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff_cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 
 @Component({
   selector: 'app-storing-order-new',
@@ -82,11 +83,12 @@ import { ComponentUtil } from 'app/utilities/component-util';
     RouterLink,
     MatRadioModule,
     MatDividerModule,
+    MatMenuModule,
   ]
 })
 export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    //'select',
+    'select',
     'tank_no',
     //'tank_no_validity',
     'last_cargo',
@@ -150,21 +152,14 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     EXISTED: 'COMMON-FORM.EXISTED',
     DUPLICATE: 'COMMON-FORM.DUPLICATE',
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
-    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE'
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
+    ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
+    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    BULK: 'COMMON-FORM.BULK'
   }
 
   clean_statusList: CodeValuesItem[] = [];
-
-  repairList: string[] = [
-    'No Repair',
-    'Repair',
-    'Offhire'
-  ];
-
-  certificateList: string[] = [
-    'Yes',
-    'No'
-  ];
 
   so_guid?: string | null;
 
@@ -172,8 +167,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   sotForm?: UntypedFormGroup;
 
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  selection = new SelectionModel<StoringOrderTankItem>(true, []);
   sotList = new MatTableDataSource<StoringOrderTankItem>();
+  sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
   unit_typeList: TankItem[] = []
   clean_statusCv: CodeValuesItem[] = []
@@ -183,10 +178,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   customerCodeControl = new UntypedFormControl();
 
   soDS: StoringOrderDS;
+  sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
-  //soSubscription: Subscription;
 
   constructor(
     public httpClient: HttpClient,
@@ -202,6 +197,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.translateLangText();
     this.initSOForm();
     this.soDS = new StoringOrderDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
@@ -259,8 +255,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           this.populateSOForm(this.storingOrderItem);
         }
       });
-    } else {
-      // NEW
     }
     const queries = [
       { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
@@ -282,6 +276,18 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.yesnoCv = data;
     });
   }
+  reloadSOT() {
+    if (this.so_guid) {
+      // EDIT
+      const where: any = { so_guid: { eq: this.so_guid } };
+      this.subs.sink = this.sotDS.reloadStoringOrderTanks(where).subscribe(data => {
+        if (data.length > 0) {
+          this.storingOrderItem.storing_order_tank = data;
+          this.populateSOT(data);
+        }
+      });
+    }
+  }
   populateSOForm(so: StoringOrderItem): void {
     this.soForm!.patchValue({
       guid: so.guid,
@@ -292,7 +298,12 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       haulier: so.haulier
     });
     if (so.storing_order_tank) {
-      const sotList: StoringOrderTankItem[] = so.storing_order_tank.map((item: Partial<StoringOrderTankItem> | undefined) => new StoringOrderTankItem(item));
+      this.populateSOT(so.storing_order_tank);
+    }
+  }
+  populateSOT(sot: StoringOrderTankItem[]) {
+    if (sot?.length) {
+      const sotList: StoringOrderTankItem[] = sot.map((item: Partial<StoringOrderTankItem> | undefined) => new StoringOrderTankItem(item));
       this.updateData(sotList);
     }
   }
@@ -314,7 +325,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
   addOrderDetails(event: Event) {
-    event.preventDefault();  // Prevents the form submission
+    this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -344,7 +355,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
   editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
-    event.preventDefault();  // Prevents the form submission
+    this.preventDefault(event);  // Prevents the form submission
     //this.id = row.id;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -418,20 +429,48 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       }
     });
   }
+  cancelSelectedRows(row: StoringOrderTankItem[]) {
+    //this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      data: {
+        item: [...row],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
+        this.sotDS.cancelStoringOrderTank(sot).subscribe(result => {
+          if ((result?.data?.cancelStoringOrderTank ?? 0) > 0) {
+            let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+            ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+            this.reloadSOT();
+          }
+        });
+      }
+    });
+  }
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = 0;//this.storingOrderTanksDS.renderedData.length;
+    const numSelected = this.sotSelection.selected.length;
+    const numRows = this.storingOrderItem.storing_order_tank?.length;
     return numSelected === numRows;
   }
 
   masterToggle() {
-    // this.isAllSelected()
-    //   ? this.selection.clear()
-    //   : this.storingOrderTanksDS.renderedData.forEach((row) =>
-    //       this.selection.select(row)
-    //     );
+    this.isAllSelected()
+      ? this.sotSelection.clear()
+      : this.sotList.data?.forEach((row) =>
+        this.sotSelection.select(row)
+      );
   }
 
   applyFilter() {
@@ -445,7 +484,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   // context menu
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
-    event.preventDefault();
+    this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
     if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
@@ -465,7 +504,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         so.customer_company_guid = this.soForm.value['customer_company_guid'];
         so.haulier = this.soForm.value['haulier'];
         so.so_notes = this.soForm.value['so_notes'];
-  
+
         const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankGO> | undefined) => new StoringOrderTankGO(item));
         console.log('so Value', so);
         console.log('sot Value', sot);
@@ -491,14 +530,21 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   handleDelete(event: Event, row: any, index: number): void {
-    event.preventDefault();  // Prevents the form submission
-    event.stopPropagation(); // Stops event propagation
+    //this.stopEventTrigger(event);
     this.deleteItem(row, index);
   }
 
+  cancelItem(event: Event, row: StoringOrderTankItem) {
+    // this.id = row.id;
+    if (this.sotSelection.hasValue()) {
+      this.cancelSelectedRows(this.sotSelection.selected)
+    } else {
+      this.cancelSelectedRows([row])
+    }
+  }
+
   handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
-    event.preventDefault();  // Prevents the form submission
-    event.stopPropagation(); // Stops event propagation
+    //this.stopEventTrigger(event);
     let newSot: StoringOrderTankItem = new StoringOrderTankItem();
     newSot.unit_type_guid = row.unit_type_guid;
     newSot.last_cargo_guid = row.last_cargo_guid;
@@ -530,5 +576,22 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
+
+  isAnyItemEdited(): boolean {
+    return !this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.edited) ?? false);
   }
 }

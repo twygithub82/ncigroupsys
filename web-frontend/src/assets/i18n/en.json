@@ -205,7 +205,9 @@
     "SO-DATE": "SO Date",
     "TANK-DETAILS": "Tank Details",
     "EIR-NO": "EIR No.",
-    "CLEANING-CONDITIONS": "Cleaning Conditions"
+    "CLEANING-CONDITIONS": "Cleaning Conditions",
+    "ROLLBACK-STATUS": "Rollback Status",
+    "BULK": "Bulk"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

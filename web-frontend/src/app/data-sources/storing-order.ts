@@ -241,4 +241,8 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
   canCancel(so: StoringOrderItem): boolean {
     return so && (!so.status_cv || so.status_cv === 'PENDING' || so.status_cv === 'PROCESSING');
   }
+
+  canAddRemove(so: StoringOrderItem): boolean {
+    return !so.status_cv;
+  }
 }
