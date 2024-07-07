@@ -14,7 +14,7 @@ namespace IDMS.Models.Inventory
         [IsProjected(true)]
         public string? guid { get; set; }
 
-        [ForeignKey("so_tank")]
+        [ForeignKey("storing_order_tank")]
         public string? sot_guid { get; set; }
         public string? surveyor_guid { get; set; }
         public string? report_guid { get; set; }
@@ -25,9 +25,7 @@ namespace IDMS.Models.Inventory
         public long? booking_dt { get; set; }
         public long? clean_dt { get; set; }
         public long? repair_complete_dt { get; set; }
-
-        //public customer_company customer_company { get; set; }
-        public storing_order_tank so_tank { get; set; }
+        public storing_order_tank? storing_order_tank { get; set; }
     }
 
 }

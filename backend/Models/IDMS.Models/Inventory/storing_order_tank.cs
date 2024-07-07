@@ -3,6 +3,7 @@ using IDMS.Models.Tariff;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,7 +58,7 @@ namespace IDMS.Models.Inventory
 
         public tariff_cleaning? tariff_cleaning { get; set; }
 
-        public booking booking { get; set; }
+        public booking? booking { get; set; }
 
     }
 }

@@ -55,10 +55,10 @@ namespace IDMS.InGate.GqlTypes
                     throw new GraphQLException(new Error("Storing Order not found", "404"));
                 }
 
-                if(so.haulier!=InGate.haulier)
-                {
-                    so.haulier = InGate.haulier;
-                }
+                //if(so.haulier!=InGate.haulier)
+                //{
+                //    so.haulier = InGate.haulier;
+                //}
 
                 context.in_gate.Add(newInGate);
 

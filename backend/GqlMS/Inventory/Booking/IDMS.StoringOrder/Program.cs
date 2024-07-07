@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Booking.GqlTypes.Repo;
 using HotChocolate.Data;
 using AutoMapper;
+using IDMS.Booking.Model.Request;
+using IDMS.Models.Inventory;
 
 namespace IDMS.Booking.Application
 {
@@ -27,7 +29,7 @@ namespace IDMS.Booking.Application
 
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-                //cfg.CreateMap<SOTType, storing_order_tank>();
+                cfg.CreateMap<BookingRequest, booking>();
                 //cfg.CreateMap<SOType, storing_order>();
             });
 
@@ -53,7 +55,7 @@ namespace IDMS.Booking.Application
                             .RegisterDbContext<AppDbContext>(DbContextKind.Synchronized)
                             .AddQueryType<BookingQuery>()
                             .AddSubscriptionType<BookingSubscription>()
-                            //.AddMutationType<BookingMutation>()
+                            .AddMutationType<BookingMutation>()
                             .AddFiltering()
                             .AddSorting()
                             .AddProjections()

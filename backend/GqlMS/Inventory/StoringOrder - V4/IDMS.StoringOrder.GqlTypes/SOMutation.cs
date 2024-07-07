@@ -227,7 +227,10 @@ namespace IDMS.StoringOrder.GqlTypes
 
                     if (storingOrder != null)
                     {
-                        if (!(SOStatus.PENDING.EqualsIgnore(storingOrder.status_cv) || SOStatus.PROCESSING.EqualsIgnore(storingOrder.status_cv)))
+                        //if (!(SOStatus.PENDING.EqualsIgnore(storingOrder.status_cv) || SOStatus.PROCESSING.EqualsIgnore(storingOrder.status_cv)))
+                        //    throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
+
+                        if (SOStatus.PROCESSING.EqualsIgnore(storingOrder.status_cv) || SOStatus.COMPLETED.EqualsIgnore(storingOrder.status_cv))
                             throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
 
                         int tnkAlreadyAcceptedCount = 0;
@@ -238,7 +241,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         {
                             foreach (var tnk in tanks)
                             {
-                                if (string.IsNullOrEmpty(tnk.tank_status_cv) || SOTankStatus.WAITING.EqualsIgnore(tnk.tank_status_cv))
+                                if (string.IsNullOrEmpty(tnk.status_cv) || SOTankStatus.WAITING.EqualsIgnore(tnk.status_cv))
                                 {
                                     tnk.status_cv = SOTankStatus.CANCELED;
                                     tnk.update_dt = currentDateTime;

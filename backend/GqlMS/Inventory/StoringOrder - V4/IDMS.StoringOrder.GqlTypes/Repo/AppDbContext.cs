@@ -30,7 +30,7 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
             });
 
             modelBuilder.Entity<customer_company>(e =>
-            {
+            { 
                 e.HasMany(c => c.cc_contact_person).WithOne(x => x.customer_company)
                 .HasForeignKey(x => x.customer_guid);
             });
@@ -53,7 +53,8 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
                 .HasForeignKey(st => st.last_cargo_guid);
             });
 
-            //modelBuilder.Entity<InGateWithTank>(e =>
+            modelBuilder.Entity<InGateWithTank>()
+                .Ignore(i => i.haulier);
             //{
             //    e.HasKey(e => e.guid);
             //    e.Ignore(e => e.tank);

@@ -57,6 +57,7 @@ namespace IDMS.Models.Tariff
         [GraphQLName("cleaning_category_with_tariff")]
         public CleaningCategoryWithTariff? cleaning_category { get; set; }
 
+        [GraphQLName("storing_order_tank")]
         public IEnumerable<storing_order_tank>? sot { get; set; }
 
     }

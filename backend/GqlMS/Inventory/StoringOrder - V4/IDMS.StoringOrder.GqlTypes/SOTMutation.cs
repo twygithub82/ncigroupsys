@@ -110,14 +110,14 @@ namespace IDMS.StoringOrder.GqlTypes
 
         private async void VoidInGateEIR(string[] sotGuids, string user, long currentDateTime,  AppDbContext context)
         {
-            //var InGates = context.in_gate.Where(i => sotGuids.Contains(i.so_tank_guid) && (i.delete_dt == null || i.delete_dt == 0));
-            //foreach (var ig in InGates)
-            //{
-            //    ig.update_dt = currentDateTime;
-            //    ig.update_by = user;
-            //    ig.delete_dt = currentDateTime;
-            //}
-            //await context.SaveChangesAsync();
+            var InGates = context.in_gate.Where(i => sotGuids.Contains(i.so_tank_guid) && (i.delete_dt == null || i.delete_dt == 0));
+            foreach (var ig in InGates)
+            {
+                ig.update_dt = currentDateTime;
+                ig.update_by = user;
+                ig.delete_dt = currentDateTime;
+            }
+            await context.SaveChangesAsync();
         }
     }
 }
