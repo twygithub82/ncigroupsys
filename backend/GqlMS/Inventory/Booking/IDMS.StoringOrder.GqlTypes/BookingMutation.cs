@@ -1,36 +1,36 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate;
 using HotChocolate.Subscriptions;
-using System;
-using System.Net;
 using IDMS.Booking.GqlTypes.Repo;
 using IDMS.Models.Inventory;
 using HotChocolate.Execution.Processing;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using System.Net.NetworkInformation;
 using IDMS.Booking.Model.Request;
-using IDMS.Models.Shared;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 
 namespace IDMS.Booking.GqlTypes
 {
     public class BookingMutation
     {
-        public async Task<int> AddBooking(List<BookingRequest> bookings,
-            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+        public async Task<int> AddBooking(List<booking> bookings,
+            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
             try
             {
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                foreach (BookingRequest bk in bookings)
+                foreach (booking bk in bookings)
                 {
                     bk.guid = Util.GenerateGUID();
                     bk.create_by = user;
                     bk.create_dt = currentDateTime;
                     bk.status_cv = "NEW";
-                    context.booking.Add(bk);
+
+                    var newBooking = new BookingWithTanks();
+                    mapper.Map(bk, newBooking);
+                    context.booking.Add(newBooking);
                 }
                 var res = await context.SaveChangesAsync();
 
@@ -45,7 +45,7 @@ namespace IDMS.Booking.GqlTypes
         }
 
         public async Task<int> UpdateBooking(List<BookingRequest> bookings,
-         AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+         [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace IDMS.Booking.GqlTypes
         }
 
         public async Task<int> DeleteBooking(string[] bookingGuids,
-            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
 
             try

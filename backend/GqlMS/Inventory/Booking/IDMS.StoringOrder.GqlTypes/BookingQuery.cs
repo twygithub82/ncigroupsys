@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using HotChocolate.Types;
 using Microsoft.AspNetCore.Http;
 using IDMS.Models.Inventory;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 
 namespace IDMS.Booking.GqlTypes
 {
@@ -13,18 +14,19 @@ namespace IDMS.Booking.GqlTypes
         [UseProjection]
         [UseFiltering]
         //[UseSorting(typeof(SOSorter))]
-        public IQueryable<booking> QueryBooking(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<BookingWithTanks> QueryBooking([Service] ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
-                var bookings = context.booking.Where(d => d.delete_dt == null || d.delete_dt == 0)
+                var bookingDetail = context.booking.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(b => b.storing_order_tank)
                         .ThenInclude(s => s.tariff_cleaning)
                     .Include(b => b.storing_order_tank)
                         .ThenInclude(s => s.storing_order)
                             .ThenInclude(c => c.customer_company);
-                            
-                return bookings;
+
+                return bookingDetail;
+
             }
             catch (Exception ex)
             {

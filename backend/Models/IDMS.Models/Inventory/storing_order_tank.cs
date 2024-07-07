@@ -58,7 +58,8 @@ namespace IDMS.Models.Inventory
 
         public tariff_cleaning? tariff_cleaning { get; set; }
 
-        public booking? booking { get; set; }
+        [GraphQLName("booking")]
+        public BookingWithTanks? booking { get; set; }
 
     }
 }

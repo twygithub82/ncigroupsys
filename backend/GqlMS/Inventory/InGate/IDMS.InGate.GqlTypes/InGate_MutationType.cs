@@ -19,7 +19,6 @@ namespace IDMS.InGate.GqlTypes
             int retval = 0;   
             try
             {
-                
                 //long epochNow = GqlUtils.GetNowEpochInSec();
                 var uid=GqlUtils.IsAuthorize(config,httpContextAccessor);
                 InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);

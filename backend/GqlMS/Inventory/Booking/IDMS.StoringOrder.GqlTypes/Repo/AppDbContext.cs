@@ -11,7 +11,7 @@ namespace IDMS.Booking.GqlTypes.Repo
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
-        public DbSet<booking> booking { get; set; }
+        public DbSet<BookingWithTanks> booking { get; set; }
         public DbSet<storing_order> storing_order { get; set; }
         public DbSet<storing_order_tank> storing_order_tank { get; set; }
         public DbSet<customer_company> customer_company { get; set; }
@@ -24,11 +24,11 @@ namespace IDMS.Booking.GqlTypes.Repo
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<booking>(c =>
-            {
-                c.HasOne(c => c.storing_order_tank).WithOne(s => s.booking)
-                .HasForeignKey<booking>(c => c.sot_guid);
-            });
+            //modelBuilder.Entity<BookingWithTanks>(c =>
+            //{
+            //    c.HasOne(c => c.storing_order_tank).WithOne(s => s.)
+            //    .HasForeignKey<booking>(c => c.sot_guid);
+            //});
 
             modelBuilder.Entity<storing_order>(c =>
             {
@@ -44,7 +44,8 @@ namespace IDMS.Booking.GqlTypes.Repo
             });
 
             modelBuilder.Entity<storing_order_tank>(e =>
-            {                
+            {
+                //e.HasOne(e => e.booking).WithOne(b => b.storing_order_tank).HasForeignKey<BookingWithTanks>(t => t.sot_guid);
                 e.HasOne(t => t.in_gate).WithOne(t => t.tank).HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
                 e.HasOne(st => st.storing_order).WithMany(st => st.storing_order_tank)       // Navigation property in StoringOrderTank
                 .HasForeignKey(st => st.so_guid);

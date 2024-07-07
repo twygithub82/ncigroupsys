@@ -24,6 +24,8 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
 
         public DbSet<cleaning_method> cleaning_method { get; set; }
         public DbSet<cleaning_category> cleaning_category { get; set; }
+
+        public DbSet<BookingWithTanks> booking { get; set; }
         
         public DbSet<code_values> code_values { get; set; }
 
