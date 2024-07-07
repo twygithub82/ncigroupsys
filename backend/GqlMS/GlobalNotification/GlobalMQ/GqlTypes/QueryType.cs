@@ -5,7 +5,7 @@ namespace GlobalMQ.GqlTypes
 {
     public class QueryType
     {
-        public async Task<string> SendMessage(EntityClass_Message message, [Service] ITopicEventSender topicEventSender)
+        public async Task<string> SendMessage(Message message, [Service] ITopicEventSender topicEventSender)
         {
             string value = "ok";
             try

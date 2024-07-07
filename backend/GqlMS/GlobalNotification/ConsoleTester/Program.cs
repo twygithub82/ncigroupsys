@@ -24,7 +24,7 @@ namespace GraphQLConsoleApp
                 message = new
                 {
                     event_id = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
-                    event_name = "Hello, World!"
+                    event_name = "Hello, World1!"
                     
                 }
             };
@@ -50,10 +50,10 @@ namespace GraphQLConsoleApp
 
                 // Send the POST request
                 var response = await client.PostAsync(url, content);
-
+                Thread.Sleep(100);
                 // Read the response content
                 var responseContent = await response.Content.ReadAsStringAsync();
-
+                
                 // Print the response content
                 Console.WriteLine(responseContent);
             }

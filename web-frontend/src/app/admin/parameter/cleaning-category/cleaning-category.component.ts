@@ -43,6 +43,9 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff_cleaning';
+import {GraphqlNotificationService} from '../../../services/global-notification.service'
+import { Subscription } from 'rxjs';
+//import {messageReceived}  from '../../../data-sources/message-received';
 
 @Component({
   selector: 'app-cleaning-category',
@@ -146,7 +149,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private graphqlNotificationService: GraphqlNotificationService
   ) {
     super();
     this.translateLangText();
@@ -161,9 +165,19 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   @ViewChild(MatMenuTrigger)
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
+  messages = [];
+  messageSubscription?: Subscription;
+
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.loadData();
+    this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
+      (message) => {
+        alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
+
+      },
+      (error) => console.error(error),
+    );
   }
   refresh() {
     this.loadData();

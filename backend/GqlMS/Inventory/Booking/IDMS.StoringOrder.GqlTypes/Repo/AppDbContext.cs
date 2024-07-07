@@ -27,11 +27,11 @@ namespace IDMS.Booking.GqlTypes.Repo
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            //modelBuilder.Entity<booking>(c =>
-            //{
-            //    c.HasOne(c => c.so_tank).WithOne(s => s.booking)
-            //    .HasForeignKey<booking>(c => c.sot_guid);
-            //});
+            modelBuilder.Entity<booking>(c =>
+            {
+                c.HasOne(c => c.so_tank).WithOne(s => s.booking)
+                .HasForeignKey<booking>(c => c.sot_guid);
+            });
 
             modelBuilder.Entity<storing_order>(c =>
             {

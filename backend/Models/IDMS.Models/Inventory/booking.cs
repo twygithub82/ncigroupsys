@@ -27,7 +27,7 @@ namespace IDMS.Models.Inventory
         public long? repair_complete_dt { get; set; }
 
         //public customer_company customer_company { get; set; }
-        public storing_order_tank so_tank { get; set; }
+        public storing_order_tank? so_tank { get; set; }
     }
 
 }
