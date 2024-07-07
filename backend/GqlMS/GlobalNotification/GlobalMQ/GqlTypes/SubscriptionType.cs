@@ -5,6 +5,6 @@ namespace GlobalMQ.GqlTypes
     public class SubscriptionType
     {
         [Subscribe]
-        public EntityClass_Message MessageReceived([EventMessage] EntityClass_Message message) => message;
+        public Message MessageReceived([EventMessage] Message message) => message;
     }
 }

@@ -1,0 +1,62 @@
+fragment StoringOrderTankFields on StoringOrderTank {
+  certificate_cv
+  clean_status_cv
+  create_by
+  create_dt
+  delete_dt
+  estimate_cv
+  eta_dt
+  etr_dt
+  guid
+  job_no
+  last_cargo_guid
+  purpose_cleaning
+  purpose_repair_cv
+  purpose_steam
+  purpose_storage
+  remarks
+  required_temp
+  so_guid
+  status_cv
+  tank_no
+  tank_status_cv
+  unit_type_guid
+  update_by
+  update_dt
+}
+
+fragment TariffCleaningFields on StoringOrderTank {
+  certificate_cv
+  clean_status_cv
+  create_by
+  create_dt
+  delete_dt
+  estimate_cv
+  eta_dt
+  etr_dt
+  guid
+  job_no
+  last_cargo_guid
+  purpose_cleaning
+  purpose_repair_cv
+  purpose_steam
+  purpose_storage
+  remarks
+  required_temp
+  so_guid
+  status_cv
+  tank_no
+  tank_status_cv
+  unit_type_guid
+  update_by
+  update_dt
+}
+
+query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+  sotList: queryStoringOrderTank(where: $where) {
+    nodes {
+      ...StoringOrderTankEdit
+    }
+    totalCount
+  }
+}
