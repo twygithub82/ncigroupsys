@@ -26,7 +26,7 @@ namespace IDMS.Booking.GqlTypes.Repo
 
             modelBuilder.Entity<booking>(c =>
             {
-                c.HasOne(c => c.so_tank).WithOne(s => s.booking)
+                c.HasOne(c => c.storing_order_tank).WithOne(s => s.booking)
                 .HasForeignKey<booking>(c => c.sot_guid);
             });
 
