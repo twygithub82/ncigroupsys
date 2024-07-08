@@ -3,6 +3,7 @@ import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
+import { BaseDataSource } from './base-ds';
 
 export class TankItem {
   public guid?: string;
@@ -41,10 +42,7 @@ export const GET_TANK = gql`
   }
 `;
 
-export class TankDS extends DataSource<TankItem> {
-  private itemsSubject = new BehaviorSubject<TankItem[]>([]);
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  public loading$ = this.loadingSubject.asObservable();
+export class TankDS extends BaseDataSource<TankItem> {
   public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
@@ -62,7 +60,7 @@ export class TankDS extends DataSource<TankItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const tankList = result.queryTank || { nodes: [], totalCount: 0 };
-          this.itemsSubject.next(tankList);
+          this.dataSubject.next(tankList);
           this.totalCount = tankList.length;
           return tankList;
         })
@@ -71,14 +69,5 @@ export class TankDS extends DataSource<TankItem> {
     //   this.itemsSubject.next(result.queryTank);
     //   this.totalCount = result.totalCount;
     // });
-  }
-
-  connect(): Observable<TankItem[]> {
-    return this.itemsSubject.asObservable();
-  }
-
-  disconnect(): void {
-    this.itemsSubject.complete();
-    this.loadingSubject.complete();
   }
 }

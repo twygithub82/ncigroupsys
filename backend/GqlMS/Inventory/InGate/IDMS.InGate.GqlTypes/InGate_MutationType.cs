@@ -19,7 +19,6 @@ namespace IDMS.InGate.GqlTypes
             int retval = 0;   
             try
             {
-                
                 //long epochNow = GqlUtils.GetNowEpochInSec();
                 var uid=GqlUtils.IsAuthorize(config,httpContextAccessor);
                 InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
@@ -55,10 +54,10 @@ namespace IDMS.InGate.GqlTypes
                     throw new GraphQLException(new Error("Storing Order not found", "404"));
                 }
 
-                if(so.haulier!=InGate.haulier)
-                {
-                    so.haulier = InGate.haulier;
-                }
+                //if(so.haulier!=InGate.haulier)
+                //{
+                //    so.haulier = InGate.haulier;
+                //}
 
                 context.in_gate.Add(newInGate);
 

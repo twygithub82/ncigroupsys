@@ -37,7 +37,7 @@ import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
 import { MatRadioModule } from '@angular/material/radio';
 import { Apollo } from 'apollo-angular';
@@ -45,7 +45,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Observable, Subscription } from 'rxjs';
 import { TankDS, TankItem } from 'app/data-sources/tank';
-import { TariffCleaningDS } from 'app/data-sources/tariff_cleaning'
+import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 
@@ -156,7 +156,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
-    BULK: 'COMMON-FORM.BULK'
+    ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    BULK: 'COMMON-FORM.BULK',
+    CONFIRM: 'COMMON-FORM.CONFIRM'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -224,6 +226,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       sotList: ['']
     });
   }
+
   initializeFilter() {
     this.soForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
@@ -242,6 +245,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       })
     ).subscribe();
   }
+
   public loadData() {
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
       this.customer_companyList = data
@@ -267,7 +271,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
 
     this.cvDS.connectAlias('repairCv').subscribe(data => {
-      this.repairCv = data;
+      this.repairCv = addDefaultSelectOption(data, "No Repair");
     });
     this.cvDS.connectAlias('clean_statusCv').subscribe(data => {
       this.clean_statusCv = data;
@@ -276,6 +280,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.yesnoCv = data;
     });
   }
+
   reloadSOT() {
     if (this.so_guid) {
       // EDIT
@@ -288,6 +293,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       });
     }
   }
+
   populateSOForm(so: StoringOrderItem): void {
     this.soForm!.patchValue({
       guid: so.guid,
@@ -301,16 +307,19 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.populateSOT(so.storing_order_tank);
     }
   }
+
   populateSOT(sot: StoringOrderTankItem[]) {
     if (sot?.length) {
       const sotList: StoringOrderTankItem[] = sot.map((item: Partial<StoringOrderTankItem> | undefined) => new StoringOrderTankItem(item));
       this.updateData(sotList);
     }
   }
+
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     //cc.displayName();
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -324,6 +333,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       panelClass: colorName,
     });
   }
+
   addOrderDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -354,6 +364,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       }
     });
   }
+
   editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     //this.id = row.id;
@@ -395,6 +406,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       }
     });
   }
+
   deleteItem(row: StoringOrderTankItem, index: number) {
     //this.id = row.id;
     let tempDirection: Direction;
@@ -429,6 +441,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       }
     });
   }
+
   cancelSelectedRows(row: StoringOrderTankItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -439,6 +452,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       data: {
+        action: "cancel",
         item: [...row],
         translatedLangText: this.translatedLangText
       },
@@ -449,6 +463,36 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
         this.sotDS.cancelStoringOrderTank(sot).subscribe(result => {
           if ((result?.data?.cancelStoringOrderTank ?? 0) > 0) {
+            let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+            ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+            this.reloadSOT();
+          }
+        });
+      }
+    });
+  }
+
+  rollbackSelectedRows(row: StoringOrderTankItem[]) {
+    //this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      data: {
+        action: "rollback",
+        item: [...row],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
+        this.sotDS.rollbackStoringOrderTank(sot).subscribe(result => {
+          if ((result?.data?.rollbackStoringOrderTank ?? 0) > 0) {
             let successMsg = this.translatedLangText.CANCELED_SUCCESS;
             ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
             this.reloadSOT();
@@ -540,6 +584,15 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.cancelSelectedRows(this.sotSelection.selected)
     } else {
       this.cancelSelectedRows([row])
+    }
+  }
+
+  rollbackItem(event: Event, row: StoringOrderTankItem) {
+    // this.id = row.id;
+    if (this.sotSelection.hasValue()) {
+      this.rollbackSelectedRows(this.sotSelection.selected)
+    } else {
+      this.rollbackSelectedRows([row])
     }
   }
 

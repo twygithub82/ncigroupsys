@@ -116,6 +116,14 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
 
   sotList: StoringOrderTankItem[] = [];
 
+  pageIndex = 0;
+  pageSize = 10;
+  lastSearchCriteria: any;
+  endCursor: string | undefined = undefined;
+  startCursor: string | undefined = undefined;
+  hasNextPage = false;
+  hasPreviousPage = false;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -201,11 +209,14 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
           { status_cv: { eq: "WAITING" } },
           {
             or: [
+              { storing_order: { so_no: { contains: searchField } } },
               { tank_no: { contains: searchField } }, { job_no: { contains: searchField } }
             ]
           }
         ]
       };
+      this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+      debugger
       // Execute the search
       this.subs.sink = this.sotDS.searchStoringOrderTanks(where).subscribe(data => {
         if (this.sotDS.totalCount > 0) {

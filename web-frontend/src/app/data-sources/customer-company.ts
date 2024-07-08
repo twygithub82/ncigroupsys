@@ -5,6 +5,7 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { BaseDataSource } from './base-ds';
 
 export class CustomerCompanyGO {
     public guid?: string;
@@ -81,10 +82,7 @@ export const GET_COMPANY_QUERY = gql`
   }
 `;
 
-export class CustomerCompanyDS extends DataSource<CustomerCompanyItem> {
-    private itemsSubjects = new BehaviorSubject<CustomerCompanyItem[]>([]);
-    private loadingSubject = new BehaviorSubject<boolean>(false);
-    public loading$ = this.loadingSubject.asObservable();
+export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     public totalCount = 0;
     constructor(private apollo: Apollo) {
         super();
@@ -106,20 +104,11 @@ export class CustomerCompanyDS extends DataSource<CustomerCompanyItem> {
                 finalize(() => this.loadingSubject.next(false)),
                 map((result) => {
                     const list = result.companyList || { nodes: [], totalCount: 0 };
-                    this.itemsSubjects.next(list.nodes);
+                    this.dataSubject.next(list.nodes);
                     this.totalCount = list.totalCount;
                     return list.nodes;
                 })
             );
-    }
-
-    connect(): Observable<CustomerCompanyItem[]> {
-        return this.itemsSubjects.asObservable();
-    }
-
-    disconnect(): void {
-        this.itemsSubjects.complete();
-        this.loadingSubject.complete();
     }
 
     displayName(cc?: CustomerCompanyItem): string {

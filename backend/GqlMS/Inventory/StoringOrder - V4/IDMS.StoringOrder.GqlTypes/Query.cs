@@ -75,15 +75,6 @@ namespace IDMS.StoringOrder.GqlTypes
                 }
 
                 return retCodeValues;
-                //return retCodeValues.Select(c => new CodeValuesRequest()
-                //{
-                //    Guid = c.guid,
-                //    CodeValue = c.code_val,
-                //    CodeValType = c.code_val_type,
-                //    Description = c.description,
-                //    ChildCode = c.child_code,
-                //});
-
             }
             catch (Exception ex)
             {

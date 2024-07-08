@@ -199,6 +199,7 @@
     "SAVE-AND-SUBMIT": "Save & Submit",
     "ARE-YOU-SURE-DELETE": "Are you sure to delete?",
     "ARE-YOU-SURE-CANCEL": "Are you sure to cancel?",
+    "ARE-YOU-SURE-ROLLBACK": "Are you sure to rollback?",
     "DELETE": "Delete",
     "OK": "Ok",
     "CLOSE": "Close",
@@ -230,6 +231,10 @@
     "CARGO-METHOD":"Method",
     "CARGO-HAZARD-LEVEL":"Hazard Level",
     "CARGO-BAN-TYPE":"Ban Type"
+    "BULK": "Bulk",
+    "CARGO-DETAILS": "Cargo Details",
+    "CARGO": "Cargo",
+    "CONFIRM": "Confirm"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

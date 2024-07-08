@@ -1,8 +1,11 @@
 using IDMS.Booking.GqlTypes;
 using Microsoft.EntityFrameworkCore;
-using IDMS.Booking.GqlTypes.Repo;
+//using IDMS.Booking.GqlTypes.Repo;
 using HotChocolate.Data;
 using AutoMapper;
+using IDMS.Booking.Model.Request;
+using IDMS.Models.Inventory;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 
 namespace IDMS.Booking.Application
 {
@@ -22,12 +25,12 @@ namespace IDMS.Booking.Application
 
             string connectionString = builder.Configuration.GetConnectionString("default");
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
-            builder.Services.AddDbContext<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+            builder.Services.AddDbContextPool<ApplicationInventoryDBContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
 
 
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-                //cfg.CreateMap<SOTType, storing_order_tank>();
+                cfg.CreateMap<booking, BookingWithTanks>();
                 //cfg.CreateMap<SOType, storing_order>();
             });
 
@@ -50,10 +53,10 @@ namespace IDMS.Booking.Application
 
             builder.Services.AddGraphQLServer()
                             .InitializeOnStartup()
-                            .RegisterDbContext<AppDbContext>(DbContextKind.Synchronized)
+                            //.RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Synchronized)
                             .AddQueryType<BookingQuery>()
                             .AddSubscriptionType<BookingSubscription>()
-                            //.AddMutationType<BookingMutation>()
+                            .AddMutationType<BookingMutation>()
                             .AddFiltering()
                             .AddSorting()
                             .AddProjections()

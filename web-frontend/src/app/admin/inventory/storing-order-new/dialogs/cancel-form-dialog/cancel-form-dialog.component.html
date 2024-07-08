@@ -1,6 +1,6 @@
 <div class="container">
   <div class="modalHeader">
-    <h3 mat-dialog-title>{{data.translatedLangText.ARE_YOU_SURE_CANCEL}}</h3>
+    <h3 mat-dialog-title>{{data.action === 'cancel' ? data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h3>
   </div>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
@@ -36,8 +36,8 @@
     </form>
   </div>
   <div mat-dialog-actions class="mb-3">
-    <button mat-flat-button color="warn" (click)="confirmCancel()">
-      {{data.translatedLangText.CANCEL | translate}}
+    <button mat-flat-button color="warn" (click)="confirm()">
+      {{data.translatedLangText.CONFIRM | translate}}
     </button>
     <button mat-flat-button (click)="onNoClick()" tabindex="-1">
       {{data.translatedLangText.CLOSE | translate}}

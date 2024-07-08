@@ -1,6 +1,7 @@
 ﻿using HotChocolate;
 using HotChocolate.Data;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.Models.Inventory
 {
@@ -9,7 +10,9 @@ namespace IDMS.Models.Inventory
     {
         [Key]
         public string guid { get; set; } = "";
-        [IsProjected(true)] 
+        [IsProjected(true)]
+
+        [ForeignKey("tank")]
         public string? so_tank_guid { get; set; } = "";
         public string? haulier { get; set; } = "";
         public string? eir_no { get; set; } = "";
