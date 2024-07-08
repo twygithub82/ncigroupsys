@@ -158,7 +158,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     BULK: 'COMMON-FORM.BULK',
-    CONFIRM: 'COMMON-FORM.CONFIRM'
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    UNDO: 'COMMON-FORM.UNDO'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -396,7 +397,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           const data = [...this.sotList.data];
           const updatedItem = new StoringOrderTankItem({
             ...result.item,
-            edited: true
+            action: Array.isArray(data[index].action)
+              ? [...new Set([...data[index].action, 'edit'])]
+              : ['edit']
           });
           data[result.index] = updatedItem;
           this.updateData(data);
@@ -429,7 +432,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           const data = [...this.sotList.data];
           const updatedItem = {
             ...result.item,
-            delete_dt: Utility.getDeleteDtEpoch()
+            delete_dt: Utility.getDeleteDtEpoch(),
+            action: Array.isArray(data[index].action)
+              ? [...new Set([...data[index].action, 'delete'])]
+              : ['delete']
           };
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
@@ -460,14 +466,31 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
-        this.sotDS.cancelStoringOrderTank(sot).subscribe(result => {
-          if ((result?.data?.cancelStoringOrderTank ?? 0) > 0) {
-            let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-            ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-            this.reloadSOT();
+        const data = [...this.sotList.data];
+        result.item.forEach((newItem: StoringOrderTankItem) => {
+          // Find the index of the item in data with the same id
+          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+
+          // If the item is found, update the properties
+          if (index !== -1) {
+            data[index] = {
+              ...data[index],
+              ...newItem,
+              action: Array.isArray(data[index].action)
+                ? [...new Set([...data[index].action, 'cancel'])]
+                : ['cancel']
+            };
           }
         });
+        this.updateData(data);
+        // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
+        // this.sotDS.cancelStoringOrderTank(sot).subscribe(result => {
+        //   if ((result?.data?.cancelStoringOrderTank ?? 0) > 0) {
+        //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+        //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        //     this.reloadSOT();
+        //   }
+        // });
       }
     });
   }
@@ -490,16 +513,53 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
-        this.sotDS.rollbackStoringOrderTank(sot).subscribe(result => {
-          if ((result?.data?.rollbackStoringOrderTank ?? 0) > 0) {
-            let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-            ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-            this.reloadSOT();
+        const data = [...this.sotList.data];
+        result.item.forEach((newItem: StoringOrderTankItem) => {
+          // Find the index of the item in data with the same id
+          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+
+          // If the item is found, update the properties
+          if (index !== -1) {
+            data[index] = {
+              ...data[index],
+              ...newItem,
+              action: Array.isArray(data[index].action)
+                ? [...new Set([...data[index].action, 'rollback'])]
+                : ['rollback']
+            };
           }
         });
+        this.updateData(data);
+        // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
+        // this.sotDS.rollbackStoringOrderTank(sot).subscribe(result => {
+        //   if ((result?.data?.rollbackStoringOrderTank ?? 0) > 0) {
+        //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+        //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        //     this.reloadSOT();
+        //   }
+        // });
       }
     });
+  }
+
+  undoTempAction(row: StoringOrderTankItem[], actionToBeRemove: string) {
+    const data = [...this.sotList.data];
+    row.forEach((newItem: StoringOrderTankItem) => {
+      // Find the index of the item in data with the same id
+      const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+
+      // If the item is found, update the properties
+      if (index !== -1) {
+        data[index] = {
+          ...data[index],
+          ...newItem,
+          action: Array.isArray(data[index].action)
+            ? data[index].action.filter(action => action !== actionToBeRemove)
+            : []
+        };
+      }
+    });
+    this.updateData(data);
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
@@ -571,6 +631,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   updateData(newData: StoringOrderTankItem[]): void {
     this.sotList.data = [...newData];
+    this.sotSelection.clear();
   }
 
   handleDelete(event: Event, row: any, index: number): void {
@@ -593,6 +654,16 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.rollbackSelectedRows(this.sotSelection.selected)
     } else {
       this.rollbackSelectedRows([row])
+    }
+  }
+
+  undoAction(event: Event, row: StoringOrderTankItem, action: string) {
+    // this.id = row.id;
+    this.stopPropagation(event);
+    if (this.sotSelection.hasValue()) {
+      this.undoTempAction(this.sotSelection.selected, action)
+    } else {
+      this.undoTempAction([row], action)
     }
   }
 
@@ -645,6 +716,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   isAnyItemEdited(): boolean {
-    return !this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.edited) ?? false);
+    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 }

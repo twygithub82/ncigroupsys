@@ -62,12 +62,12 @@ export class StoringOrderTankGO {
 
 export class StoringOrderTankItem extends StoringOrderTankGO {
   public tariff_cleaning?: TariffCleaningItem;
-  public edited: boolean = false;
+  public action: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
     super(item); // Call the constructor of the parent class
     this.tariff_cleaning = item.tariff_cleaning;
-    this.edited = item.edited ?? false;
+    this.action = item.action || [];
   }
 }
 

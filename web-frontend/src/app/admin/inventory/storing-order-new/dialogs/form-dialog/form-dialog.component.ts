@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
@@ -67,6 +67,7 @@ export class FormDialogComponent {
   startDate = new Date();
 
   tcDS: TariffCleaningDS;
+  sotDS: StoringOrderTankDS;
   lastCargoControl = new UntypedFormControl();
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -76,6 +77,7 @@ export class FormDialogComponent {
   ) {
     // Set the defaults
     this.tcDS = new TariffCleaningDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
     this.action = data.action!;
     this.sotExistedList = data.sotExistedList;
     if (this.action === 'edit') {
@@ -94,24 +96,29 @@ export class FormDialogComponent {
     }
   }
   createStorigOrderTankForm(): UntypedFormGroup {
+    if (!this.canEdit()) {
+      this.lastCargoControl.disable();
+    } else {
+      this.lastCargoControl.enable();
+    }
     return this.fb.group({
       guid: [this.storingOrderTank.guid],
       so_guid: [this.storingOrderTank.so_guid],
-      unit_type_guid: [this.storingOrderTank.unit_type_guid, [Validators.required]],
-      tank_no: [this.storingOrderTank.tank_no, [Validators.required]],
+      unit_type_guid: [{ value: this.storingOrderTank.unit_type_guid, disabled: !this.canEdit() }, [Validators.required]],
+      tank_no: [{ value: this.storingOrderTank.tank_no, disabled: !this.canEdit() }, [Validators.required]],
       last_cargo: this.lastCargoControl,
-      last_cargo_guid: [this.storingOrderTank.last_cargo_guid, [Validators.required]],
-      job_no: [this.storingOrderTank.job_no, [Validators.required]],
-      eta_dt: [Utility.convertDate(this.storingOrderTank.eta_dt)],
+      last_cargo_guid: [{ value: this.storingOrderTank.last_cargo_guid, disabled: !this.canEdit() }, [Validators.required]],
+      job_no: [{ value: this.storingOrderTank.job_no, disabled: !this.canEdit() }, [Validators.required]],
+      eta_dt: [{ value: Utility.convertDate(this.storingOrderTank.eta_dt), disabled: !this.canEdit() }],
       purpose: [''],
-      purpose_storage: [this.storingOrderTank.purpose_storage],
-      purpose_steam: [this.storingOrderTank.purpose_steam],
-      purpose_cleaning: [this.storingOrderTank.purpose_cleaning],
-      purpose_repair_cv: [this.storingOrderTank.purpose_repair_cv],
-      clean_status_cv: [this.storingOrderTank.clean_status_cv],
-      certificate_cv: [this.storingOrderTank.certificate_cv],
-      required_temp: [{ value: this.storingOrderTank.required_temp, disabled: !this.storingOrderTank.purpose_steam }],
-      etr_dt: [Utility.convertDate(this.storingOrderTank.etr_dt)],
+      purpose_storage: [{ value: this.storingOrderTank.purpose_storage, disabled: !this.canEdit() }],
+      purpose_steam: [{ value: this.storingOrderTank.purpose_steam, disabled: !this.canEdit() }],
+      purpose_cleaning: [{ value: this.storingOrderTank.purpose_cleaning, disabled: !this.canEdit() }],
+      purpose_repair_cv: [{ value: this.storingOrderTank.purpose_repair_cv, disabled: !this.canEdit() }],
+      clean_status_cv: [{ value: this.storingOrderTank.clean_status_cv, disabled: !this.canEdit() }],
+      certificate_cv: [{ value: this.storingOrderTank.certificate_cv, disabled: !this.canEdit() }],
+      required_temp: [{ value: this.storingOrderTank.required_temp, disabled: !this.storingOrderTank.purpose_steam || !this.canEdit() }],
+      etr_dt: [{ value: Utility.convertDate(this.storingOrderTank.etr_dt), disabled: !this.canEdit() }],
       remarks: [{ value: this.storingOrderTank.tariff_cleaning?.remarks, disabled: true }],
       open_on_gate: [{ value: this.storingOrderTank.tariff_cleaning?.open_on_gate_cv, disabled: true }],
       flash_point: [this.storingOrderTank.tariff_cleaning?.flash_point]
@@ -238,20 +245,22 @@ export class FormDialogComponent {
     const purposeCleaning = this.storingOrderTankForm.get('purpose_cleaning')?.value;
     const purposeRepairCV = this.storingOrderTankForm.get('purpose_repair_cv')?.value;
     const requiredTemp = this.storingOrderTankForm.get('required_temp')?.value;
-  
+
     // Validate that at least one of the purpose checkboxes is checked
     if (!purposeStorage && !purposeSteam && !purposeCleaning && !purposeRepairCV) {
       isValid = false; // At least one purpose must be selected
       this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
     }
-  
+
     // Validate that required_temp is filled in if purpose_steam is checked
     if (purposeSteam && !requiredTemp) {
       isValid = false; // required_temp must be filled if purpose_steam is checked
       this.storingOrderTankForm.get('required_temp')?.setErrors({ required: true });
     }
-  
+
     return isValid;
   }
-  
+  canEdit(): boolean {
+    return !this.sotDS.canRollbackStatus(this.storingOrderTank) && !this.storingOrderTank.action.includes('cancel') && !this.storingOrderTank.action.includes('rollback');
+  }
 }

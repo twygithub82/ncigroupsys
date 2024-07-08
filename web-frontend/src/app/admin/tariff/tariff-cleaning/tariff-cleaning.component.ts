@@ -39,7 +39,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff_cleaning';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import {CleaningCategoryDS,CleaningCategoryItem } from 'app/data-sources/cleaning_category';
 import {CleaningMethodDS,CleaningMethodItem} from 'app/data-sources/cleaning_method';
 

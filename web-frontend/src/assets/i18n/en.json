@@ -230,11 +230,11 @@
     "CARGO-CATEGORY":"Category",
     "CARGO-METHOD":"Method",
     "CARGO-HAZARD-LEVEL":"Hazard Level",
-    "CARGO-BAN-TYPE":"Ban Type"
-    "BULK": "Bulk",
+    "CARGO-BAN-TYPE":"Ban Type",
     "CARGO-DETAILS": "Cargo Details",
     "CARGO": "Cargo",
-    "CONFIRM": "Confirm"
+    "CONFIRM": "Confirm",
+    "UNDO": "Undo"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
