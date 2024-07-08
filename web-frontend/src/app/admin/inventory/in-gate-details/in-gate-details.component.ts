@@ -41,6 +41,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatGridListModule } from '@angular/material/grid-list';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -75,6 +77,8 @@ import { MatCardModule } from '@angular/material/card';
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+    MatTabsModule,
+    MatGridListModule
   ]
 })
 export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -117,7 +121,17 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
     EIR_NO: 'COMMON-FORM.EIR-NO',
-    CLEANING_CONDITIONS: 'COMMON-FORM.CLEANING-CONDITIONS'
+    CLEANING_CONDITIONS: 'COMMON-FORM.CLEANING-CONDITIONS',
+    CARGO_DETAILS: 'COMMON-FORM.CARGO-DETAILS',
+    CARGO: 'COMMON-FORM.CARGO',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CLASS_NO: 'COMMON-FORM.CLASS-NO',
+    UN_NO: 'COMMON-FORM.UN-NO',
+    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
+    HAZARD_LEVEL: 'COMMON-FORM.HAZARD-LEVEL',
+    BAN_TYPE: 'COMMON-FORM.BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
+    CLEANING_CATEGORY: 'COMMON-FORM.CLEANING-CATEGORY'
   }
 
   inGateForm?: UntypedFormGroup;
@@ -130,8 +144,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
   sot_guid?: string | null;
 
-  soList: StoringOrderItem[] = [];
-  soSelection = new SelectionModel<StoringOrderItem>(true, []);
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
 
@@ -263,16 +275,16 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   displayTankPurpose() {
     let purposes: any[] = [];
     if (this.storingOrderTankItem?.purpose_storage) {
-        purposes.push(this.getCodeDescription('STORAGE'));
+      purposes.push(this.getCodeDescription('STORAGE'));
     }
     if (this.storingOrderTankItem?.purpose_cleaning) {
-        purposes.push(this.getCodeDescription('CLEANING'));
+      purposes.push(this.getCodeDescription('CLEANING'));
     }
     if (this.storingOrderTankItem?.purpose_steam) {
-        purposes.push(this.getCodeDescription('STEAM'));
+      purposes.push(this.getCodeDescription('STEAM'));
     }
     if (this.storingOrderTankItem?.purpose_repair_cv) {
-        purposes.push(this.storingOrderTankItem?.purpose_repair_cv);
+      purposes.push(this.storingOrderTankItem?.purpose_repair_cv);
     }
     return purposes.join(', ');
   }

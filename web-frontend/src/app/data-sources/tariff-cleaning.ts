@@ -5,6 +5,7 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
+import { BaseDataSource } from './base-ds';
 
 export class TariffCleaningItem {
     public guid?: string;
@@ -61,6 +62,33 @@ export interface TariffCleaningResult {
     totalCount: number;
 }
 
+export const TARIFF_CLEANING_FRAGMENT = gql`
+  fragment TariffCleaningFields on storing_order_tariff_cleaning {
+    alias
+    ban_type_cv
+    cargo
+    class_child_cv
+    class_cv
+    cleaning_category_guid
+    cleaning_method_guid
+    create_by
+    create_dt
+    delete_dt
+    depot_note
+    description
+    flash_point
+    guid
+    hazard_level_cv
+    in_gate_alert
+    nature_cv
+    open_on_gate_cv
+    remarks
+    un_no
+    update_by
+    update_dt
+  }
+`;
+
 export const GET_TARIFF_CLEANING_QUERY = gql`
   query queryTariffCleaning($where: tariff_cleaningFilterInput) {
     lastCargo: queryTariffCleaning(where: $where) {
@@ -75,10 +103,7 @@ export const GET_TARIFF_CLEANING_QUERY = gql`
   }
 `;
 
-export class TariffCleaningDS extends DataSource<TariffCleaningItem> {
-    private itemsSubjects = new BehaviorSubject<TariffCleaningItem[]>([]);
-    private loadingSubject = new BehaviorSubject<boolean>(false);
-    public loading$ = this.loadingSubject.asObservable();
+export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     public totalCount = 0;
     constructor(private apollo: Apollo) {
         super();
@@ -99,19 +124,10 @@ export class TariffCleaningDS extends DataSource<TariffCleaningItem> {
                 finalize(() => this.loadingSubject.next(false)),
                 map((result) => {
                     const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
-                    this.itemsSubjects.next(lastCargo.nodes);
+                    this.dataSubject.next(lastCargo.nodes);
                     this.totalCount = lastCargo.totalCount;
                     return lastCargo.nodes;
                 })
             );
-    }
-
-    connect(): Observable<TariffCleaningItem[]> {
-        return this.itemsSubjects.asObservable();
-    }
-
-    disconnect(): void {
-        this.itemsSubjects.complete();
-        this.loadingSubject.complete();
     }
 }

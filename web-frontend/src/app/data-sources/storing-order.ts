@@ -5,6 +5,8 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { CustomerCompanyItem } from './customer-company';
 import { StoringOrderTankItem } from './storing-order-tank';
+import { PageInfo } from '@core/models/pageInfo';
+import { BaseDataSource } from './base-ds';
 
 export class StoringOrderGO {
   public guid?: string;
@@ -81,6 +83,58 @@ export const GET_STORING_ORDERS = gql`
   }
 `;
 
+export const SEARCH_STORING_ORDER_BY_ID = gql`
+  query queryStoringOrder($where: storing_orderFilterInput) {
+    soList: queryStoringOrder(where: $where) {
+      nodes {
+        guid
+        haulier
+        so_no
+        so_notes
+        customer_company {
+          code
+          name
+        }
+        storing_order_tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          remarks
+          required_temp
+          so_guid
+          status_cv
+          tank_no
+          tank_status_cv
+          unit_type_guid
+          update_by
+          update_dt
+          tariff_cleaning {
+            guid
+            cargo
+            flash_point
+            remarks
+            open_on_gate_cv
+          }
+        }
+        status_cv
+      }
+      totalCount
+    }
+  }
+`;
+
 export const GET_STORING_ORDER_BY_ID = gql`
   query queryStoringOrderById($id: String!) {
     soList: queryStoringOrderById(id: $id) {
@@ -149,17 +203,18 @@ export const CANCEL_STORING_ORDER = gql`
   }
 `;
 
-export class StoringOrderDS extends DataSource<StoringOrderItem> {
+export class StoringOrderDS extends BaseDataSource<StoringOrderItem> {
   private soItemsSubject = new BehaviorSubject<StoringOrderItem[]>([]);
   private soLoadingSubject = new BehaviorSubject<boolean>(false);
   public soLoading$ = this.soLoadingSubject.asObservable();
   public totalCount = 0;
+  public pageInfo?: PageInfo;
   constructor(private apollo: Apollo) {
     super();
   }
 
   searchStoringOrder(where: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderItem[]> {
-    this.soLoadingSubject.next(true);
+    this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDERS,
@@ -174,6 +229,7 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
           const soList = result.soList || { nodes: [], totalCount: 0 };
           this.soItemsSubject.next(soList.nodes);
           this.totalCount = soList.totalCount;
+          this.pageInfo = soList.pageInfo;
           return soList.nodes;
         })
       );
@@ -181,10 +237,13 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
 
   getStoringOrderByID(id: string): Observable<StoringOrderItem[]> {
     this.soLoadingSubject.next(true);
+    debugger
+    let where = this.addDeleteDtCriteria({ guid: { eq: id } });
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_BY_ID,
-        variables: { id },
+        //query: GET_STORING_ORDER_BY_ID,
+        query: SEARCH_STORING_ORDER_BY_ID,
+        variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -192,10 +251,14 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
         catchError(() => of({ soList: [] })),
         finalize(() => this.soLoadingSubject.next(false)),
         map((result) => {
-          const soList = result.soList;
-          this.soItemsSubject.next(soList);
-          this.totalCount = soList.length;
-          return soList;
+          // const soList = result.soList;
+          // this.soItemsSubject.next(soList);
+          // this.totalCount = soList.length;
+          // return soList;
+          const soList = result.soList || { nodes: [], totalCount: 0 };
+          this.soItemsSubject.next(soList.nodes);
+          this.totalCount = soList.totalCount;
+          return soList.nodes;
         })
       );
   }
@@ -229,17 +292,8 @@ export class StoringOrderDS extends DataSource<StoringOrderItem> {
     });
   }
 
-  connect(): Observable<StoringOrderItem[]> {
-    return this.soItemsSubject.asObservable();
-  }
-
-  disconnect(): void {
-    this.soItemsSubject.complete();
-    this.soLoadingSubject.complete();
-  }
-
   canCancel(so: StoringOrderItem): boolean {
-    return so && (!so.status_cv || so.status_cv === 'PENDING' || so.status_cv === 'PROCESSING');
+    return so && (!so.status_cv || so.status_cv === 'PENDING');
   }
 
   canAddRemove(so: StoringOrderItem): boolean {

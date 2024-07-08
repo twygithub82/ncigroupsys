@@ -42,7 +42,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff_cleaning';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import {GraphqlNotificationService} from '../../../services/global-notification.service'
 import { Subscription } from 'rxjs';
 //import {messageReceived}  from '../../../data-sources/message-received';

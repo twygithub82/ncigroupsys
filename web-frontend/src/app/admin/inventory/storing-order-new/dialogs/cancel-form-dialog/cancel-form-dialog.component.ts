@@ -15,7 +15,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { DatePipe } from '@angular/common';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff_cleaning';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Apollo } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
@@ -83,7 +83,7 @@ export class CancelFormDialogComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  confirmCancel(): void {
+  confirm(): void {
     if (this.storingOrderTankForm.valid) {
       let remarks = this.storingOrderTankForm.value['remarks']
       this.storingOrderTank.forEach(row => row.remarks = remarks);

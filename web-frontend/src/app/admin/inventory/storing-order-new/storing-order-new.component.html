@@ -277,7 +277,7 @@
                                 ""}}{{translatedLangText.CANCEL}}</span>
                             </button>
                             } @else if (sotDS.canRollbackStatus(row)) {
-                            <button mat-menu-item (click)="handleDuplicateRow($event, row)">
+                            <button mat-menu-item (click)="rollbackItem($event, row)">
                               <mat-icon>undo</mat-icon>
                               <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
                                 ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
@@ -297,6 +297,12 @@
                   <mat-divider></mat-divider>
                   <div class="no-results m-l-20 pt-3" [style.display]="sotList.data.length === 0 ? '' : 'none'">
                     <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+                  </div>
+                  }
+                  @if (sotDS.loading$ | async) {
+                  <div class="tbl-spinner">
+                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                    </mat-progress-spinner>
                   </div>
                   }
                 </div>

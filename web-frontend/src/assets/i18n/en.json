@@ -187,6 +187,7 @@
     "SAVE-AND-SUBMIT": "Save & Submit",
     "ARE-YOU-SURE-DELETE": "Are you sure to delete?",
     "ARE-YOU-SURE-CANCEL": "Are you sure to cancel?",
+    "ARE-YOU-SURE-ROLLBACK": "Are you sure to rollback?",
     "DELETE": "Delete",
     "OK": "Ok",
     "CLOSE": "Close",
@@ -207,7 +208,10 @@
     "EIR-NO": "EIR No.",
     "CLEANING-CONDITIONS": "Cleaning Conditions",
     "ROLLBACK-STATUS": "Rollback Status",
-    "BULK": "Bulk"
+    "BULK": "Bulk",
+    "CARGO-DETAILS": "Cargo Details",
+    "CARGO": "Cargo",
+    "CONFIRM": "Confirm"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

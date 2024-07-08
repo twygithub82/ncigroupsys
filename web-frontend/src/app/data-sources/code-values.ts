@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
+import { BaseDataSource } from './base-ds';
 
 export class CodeValuesItem {
   public guid?: string;
@@ -67,11 +68,8 @@ export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = 'S
   return list;
 }
 
-export class CodeValuesDS extends DataSource<CodeValuesItem> {
+export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
   private itemsSubjects = new Map<string, BehaviorSubject<CodeValuesItem[]>>();
-  private itemsSubject = new BehaviorSubject<CodeValuesItem[]>([]);
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  public loading$ = this.loadingSubject.asObservable();
   public totalCount = 0;
   public totalCounts = new Map<string, number>();
   constructor(private apollo: Apollo) {
@@ -109,16 +107,6 @@ export class CodeValuesDS extends DataSource<CodeValuesItem> {
           this.totalCounts.set(alias, result[alias].length);
         });
       });
-  }
-
-  connect(): Observable<CodeValuesItem[]> {
-    return this.itemsSubject.asObservable();
-  }
-
-  disconnect(): void {
-    this.itemsSubjects.forEach(subject => subject.complete());
-    this.itemsSubject.complete();
-    this.loadingSubject.complete();
   }
 
   connectAlias(alias: string): Observable<CodeValuesItem[]> {

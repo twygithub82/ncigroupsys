@@ -17,7 +17,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -40,7 +40,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff_cleaning';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
   selector: 'app-storing-order',
@@ -134,6 +134,14 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
+  pageIndex = 0;
+  pageSize = 10;
+  lastSearchCriteria: any;
+  endCursor: string | undefined = undefined;
+  startCursor: string | undefined = undefined;
+  hasNextPage = false;
+  hasPreviousPage = false;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -161,7 +169,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.loadData();
   }
   refresh() {
-    this.loadData();
+    this.refreshTable();
   }
   initSearchForm() {
     this.searchForm = this.fb.group({
@@ -175,13 +183,16 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       eta_dt: [''],
     });
   }
+
   cancelItem(row: StoringOrderItem) {
     // this.id = row.id;
     this.cancelSelectedRows([row])
   }
+
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.soSelection.selected.length;
@@ -197,12 +208,14 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         this.soSelection.select(row)
       );
   }
+
   canCancelSelectedRows(): boolean {
     return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
       const index: number = this.soList.findIndex((d) => d === item);
       return this.soDS.canCancel(this.soList[index]);
     });
   }
+
   cancelSelectedRows(row: StoringOrderItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -226,17 +239,23 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
             this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
               successMsg = res;
               ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-              this.loadData();
+              this.refreshTable();
             });
           }
         });
       }
     });
   }
+
   public loadData() {
-    this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
+    this.lastSearchCriteria = this.soDS.addDeleteDtCriteria({});
+    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria).subscribe(data => {
       if (this.soDS.totalCount > 0) {
         this.soList = data;
+        this.endCursor = this.soDS.pageInfo?.endCursor;
+        this.startCursor = this.soDS.pageInfo?.startCursor;
+        this.hasNextPage = this.soDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.soDS.pageInfo?.hasPreviousPage ?? false;
       }
     });
 
@@ -253,6 +272,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       this.purposeOptionCvList = data;
     });
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -324,12 +344,65 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.searchForm!.value['customer_code']) {
       where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
-
+    
+    this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     // TODO :: search criteria
-    this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
+    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria).subscribe(data => {
       this.soList = data;
+      this.endCursor = this.soDS.pageInfo?.endCursor;
+      this.startCursor = this.soDS.pageInfo?.startCursor;
+      this.hasNextPage = this.soDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.soDS.pageInfo?.hasPreviousPage ?? false;
     });
   }
+
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first = pageSize;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursor;
+      }
+    }
+
+    this.pageIndex = pageIndex;
+    this.pageSize = pageSize;
+
+    this.soDS.searchStoringOrder(this.lastSearchCriteria, first, after, last, before).subscribe(data => {
+      this.soList = data;
+      this.endCursor = this.soDS.pageInfo?.endCursor;
+      this.startCursor = this.soDS.pageInfo?.startCursor;
+      this.hasNextPage = this.soDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.soDS.pageInfo?.hasPreviousPage ?? false;
+    });
+  }
+
+  // mergeCriteria(criteria: any) {
+  //   return {
+  //     and: [
+  //       { delete_dt: { eq: null } },
+  //       criteria
+  //     ]
+  //   };
+  // }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -375,7 +448,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       this.translatedLangText = translations;
     });
   }
-  
+
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }

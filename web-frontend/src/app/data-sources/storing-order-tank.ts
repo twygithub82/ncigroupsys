@@ -6,7 +6,8 @@ import gql from 'graphql-tag';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { StoringOrderItem } from './storing-order';
-import { TariffCleaningItem } from './tariff_cleaning';
+import { TARIFF_CLEANING_FRAGMENT, TariffCleaningItem } from './tariff-cleaning';
+import { BaseDataSource } from './base-ds';
 
 export class StoringOrderTankGO {
   public guid?: string;
@@ -146,6 +147,7 @@ const RELOAD_STORING_ORDER_TANKS = gql`
 `;
 
 const GET_STORING_ORDER_TANK_BY_ID = gql`
+  ${TARIFF_CLEANING_FRAGMENT}
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
       nodes {
@@ -159,9 +161,7 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
         purpose_repair_cv
         clean_status_cv
         tariff_cleaning {
-          guid
-          open_on_gate_cv
-          cargo
+          ...TariffCleaningFields
         }
         storing_order {
           so_no
@@ -187,7 +187,13 @@ export const CANCEL_STORING_ORDER_TANK = gql`
   }
 `;
 
-export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
+export const ROLLBACK_STORING_ORDER_TANK = gql`
+  mutation RollbackStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
+    rollbackStoringOrderTank(sot: $sot)
+  }
+`;
+
+export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   get filter(): string {
     return this.filterChange.value;
@@ -197,9 +203,6 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
   }
   filteredData: StoringOrderTankItem[] = [];
   renderedData: StoringOrderTankItem[] = [];
-  private itemsSubject = new BehaviorSubject<StoringOrderTankItem[]>([]);
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  public loading$ = this.loadingSubject.asObservable();
   public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
@@ -218,7 +221,7 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          this.itemsSubject.next(sotList.nodes);
+          this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
           return sotList.nodes;
         })
@@ -239,7 +242,7 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          this.itemsSubject.next(sotList.nodes);
+          this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
           return sotList.nodes;
         })
@@ -261,7 +264,7 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          this.itemsSubject.next(sotList.nodes);
+          this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
           return sotList.nodes;
         })
@@ -277,13 +280,13 @@ export class StoringOrderTankDS extends DataSource<StoringOrderTankItem> {
     });
   }
 
-  connect(): Observable<StoringOrderTankItem[]> {
-    return this.itemsSubject.asObservable();
-  }
-
-  disconnect(): void {
-    this.itemsSubject.complete();
-    this.loadingSubject.complete();
+  rollbackStoringOrderTank(sot: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_STORING_ORDER_TANK,
+      variables: {
+        sot
+      }
+    });
   }
 
   canAddRemove(sot: StoringOrderTankItem): boolean {
