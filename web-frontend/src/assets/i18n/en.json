@@ -89,6 +89,16 @@
     "ADMIN": {
       "TEXT": "Admin"
     },
+    "TARIFF":{
+      "TEXT" :"Tariff",
+      "LIST":{
+        "TARIFF-CLEANING":"Cleaning",
+        "TARIFF-LABOUR":"Labour Cost",
+        "TARIFF-DEPOT":"Depot Cost",
+        "TARIFF-REPAIR":"Repair",
+        "TARIFF-BUFFER":"Buffer Cleaning"
+      }
+    },
     "CLEANING-MANAGEMENT": {
       "TEXT": "Cleaning Management",
       "LIST": {
@@ -126,6 +136,8 @@
     "LOGIN": "Login"
   },
   "COMMON-FORM": {
+
+    "TARIFF-CLEANING":"Cleaning",
     "CATEGORY-DESCRIPTION":"Category Description",
     "CATEGORY-NAME":"Category Name",
     "CLEAN-PROCEDURES": "Cleaning Procedures",
@@ -207,7 +219,17 @@
     "EIR-NO": "EIR No.",
     "CLEANING-CONDITIONS": "Cleaning Conditions",
     "ROLLBACK-STATUS": "Rollback Status",
-    "BULK": "Bulk"
+    "BULK": "Bulk",
+    "CARGO-NAME":"Cargo Name",
+    "CARGO-DESCRIPTION":"Cargo Description",
+    "CARGO-UN-NO":"UN No",
+    "CARGO-CLASS":"Class No",
+    "CARGO-FLASH-POINT":"Flash Point",
+    "CARGO-COST":"Cost",
+    "CARGO-CATEGORY":"Category",
+    "CARGO-METHOD":"Method",
+    "CARGO-HAZARD-LEVEL":"Hazard Level",
+    "CARGO-BAN-TYPE":"Ban Type"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

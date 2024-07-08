@@ -1,0 +1,282 @@
+<section class="content">
+    <div class="content-block">
+      <div class="block-header">
+        <!-- breadcrumb -->
+        <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <mat-accordion>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                      <button mat-mini-fab color="primary" [routerLink]="['/admin/storing-order/new']">
+                        <mat-icon class="col-white">add</mat-icon>
+                      </button>
+                    </div>
+                    <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
+                      <button mat-mini-fab color="primary" (click)="refresh()" (click)="$event.stopPropagation()">
+                        <mat-icon class="col-white">refresh</mat-icon>
+                      </button>
+                    </div>
+                    <!-- <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
+                      <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
+                        [disabled]="canCancelSelectedRows()">
+                        <mat-icon class="col-white">cancel</mat-icon>
+                      </button>
+                    </div> -->
+                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                        (click)="$event.stopPropagation()" />
+                    </div>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+                  <div class="row">
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{langText.CARGO_NAME | translate}}</mat-label>
+                        <input matInput formControlName="cargo_name">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{langText.CARGO_CLASS | translate}}</mat-label>
+                        <input matInput formControlName="class_no" [formControl]="classNoControl"
+                          [matAutocomplete]="classNo">
+                        <mat-autocomplete #classNo="matAutocomplete" >
+                            @for (cn of classNoCvList; track cn) {
+                                <mat-option [value]="cn.code_val">
+                                  {{cn.code_val}}
+                                </mat-option>
+                                }
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{langText.CARGO_METHOD | translate}}</mat-label>
+                        <input matInput formControlName="method" [formControl]="methodControl"
+                          [matAutocomplete]="method">
+                        <mat-autocomplete #method="matAutocomplete" [displayWith]="displayMethodFn" >
+                            @for (cm of cMethodList; track cm) {
+                                <mat-option [value]="cm">
+                                  {{cm.name}}
+                                </mat-option>
+                                }
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{langText.CARGO_CATEGORY | translate}}</mat-label>
+                        <input matInput formControlName="category" [formControl]="categoryControl"
+                          [matAutocomplete]="category">
+                        <mat-autocomplete #category="matAutocomplete" [displayWith]="displayCategoryFn" >
+                            @for (cCat of cCategoryList; track cCat) {
+                                <mat-option [value]="cCat">
+                                  {{cCat.name}}
+                                </mat-option>
+                                }
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{langText.CARGO_FLASH_POINT | translate}}</mat-label>
+                        <input matInput formControlName="flash_point">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
+                        <input matInput formControlName="un_no">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{langText.CARGO_BAN_TYPE | translate}}</mat-label>
+                        <input matInput formControlName="ban_type" [formControl]="banTypeControl"
+                        [matAutocomplete]="banType">
+                      <mat-autocomplete #banType="matAutocomplete"  >
+                          @for (bType of banTypeCvList; track bType) {
+                              <mat-option [value]="bType.code_val">
+                                {{bType.code_val}}
+                              </mat-option>
+                              }
+                      </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>{{langText.CARGO_HAZARD_LEVEL | translate}}</mat-label>
+                            <input matInput formControlName="hazard_level" [formControl]="hazardLevelControl"
+                            [matAutocomplete]="hazardLevel">
+                          <mat-autocomplete #hazardLevel="matAutocomplete"  >
+                              @for (hLevel of hazardLevelCvList; track hLevel) {
+                                  <mat-option [value]="hLevel.code_val">
+                                    {{hLevel.code_val}}
+                                  </mat-option>
+                                  }
+                          </mat-autocomplete>
+                          </mat-form-field>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                      <button mat-mini-fab color="primary" (click)="search()">
+                        <mat-icon>search</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </mat-expansion-panel>
+            </mat-accordion>
+            <div class="body overflow-auto">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="tcList" matSort class="mat-cell advance-table">
+                  <!-- Checkbox Column
+                  <ng-container matColumnDef="select">
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-6'">
+                      <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="soSelection.hasValue() && isAllSelected()"
+                        [indeterminate]="soSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-6'">
+                      <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? soSelection.toggle(row) : null"
+                        [checked]="soSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-cell>
+                  </ng-container> -->
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                    <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="so_no">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_NAME |
+                      translate}}</mat-header-cell>
+                    <!-- <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">
+                      {{langText.CARGO_NAME | translate}}
+                    </mat-header-cell> -->
+                    <mat-cell mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{langText.CUSTOMER_CODE | translate}}:</span>{{row.cargo}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="customer_code">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_DESCRIPTION |
+                      translate}}</mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row" >
+                        <span class="mobile-label">{{langText.CARGO_DESCRIPTION | translate}}:</span>{{row.description}}
+                      </mat-cell>
+                    <!-- <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{langText.CUSTOMER_CODE |
+                        translate}}:</span>{{ccDS.displayName(row.customer_company)}}
+                    </mat-cell> -->
+                  </ng-container>
+                  <ng-container matColumnDef="no_of_tanks">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header
+                      [ngClass]="'justify-content-center'">{{langText.CARGO_CLASS
+                      | translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                      [ngClass]="'justify-content-center'">
+                      <span class="mobile-label">{{langText.NO_OF_TANKS | translate}}:</span>
+                      {{row.class_cv}}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_UN_NO |
+                      translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.un_no}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="category">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_CATEGORY |
+                      translate}}</mat-header-cell>
+                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                    <div *ngIf="row.cleaning_category_with_tariff !== null && row.cleaning_category_with_tariff !== undefined; else elseBlock">
+                       <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.cleaning_category_with_tariff.name}}
+                    </div>
+                    <ng-template #elseBlock>
+                      <span class="mobile-label">{{langText.STATUS | translate}}:</span> -
+                    </ng-template>
+                  </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="method">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_METHOD |
+                      translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <div *ngIf="row.cleaning_method_with_tariff!== null && row.cleaning_method_with_tariff !== undefined; else elseBlock">
+                         <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.cleaning_method_with_tariff.name}}
+                      </div>
+                      <ng-template #elseBlock>
+                        <span class="mobile-label">{{langText.STATUS | translate}}:</span> -
+                      </ng-template>
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="flash_point">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_FLASH_POINT |
+                      translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.flash_point}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="cost">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_COST |
+                      translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                        <div *ngIf="row.cleaning_category_with_tariff !== null && row.cleaning_category_with_tariff !== undefined; else elseBlock">
+                           <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.cleaning_category_with_tariff.cost}}
+                        </div>
+                        <ng-template #elseBlock>
+                          <span class="mobile-label">{{langText.STATUS | translate}}:</span> -
+                        </ng-template>
+                      </mat-cell>
+                    <!-- <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.un_no}}</mat-cell> -->
+                  </ng-container>
+                  <!-- actions -->
+                  <!-- <ng-container matColumnDef="actions">
+                    <mat-header-cell class="pr-0" *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let row; let i=index;" class="pr-0 justify-content-end">
+                       @if (soDS.canCancel(row)) {
+                      <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="cancelItem(row)" [matTooltip]="translatedLangText.CANCEL"
+                        class="tbl-action-btn">
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                      } 
+                    </mat-cell>
+                  </ng-container> -->
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;"
+                    [routerLink]="['/admin/storing-order/edit', row.guid]" [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+              <!-- No result -->
+              @if (!(tcDS.loading$ | async) && !tcList.length) {
+              <mat-divider></mat-divider>
+              <div class="no-results m-l-20 pt-3" [style.display]="tcList.length === 0 ? '' : 'none'">
+                <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+              </div>
+              }
+              <!-- Loading spinner -->
+              @if (tcDS.loading$ | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              <mat-paginator #paginator [length]="soDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]">
+              </mat-paginator>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
