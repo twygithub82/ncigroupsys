@@ -250,7 +250,7 @@
                           }
                         </mat-cell> -->
                         <mat-cell *matCellDef="let row; let i=index;" class="psl-3 justify-content-end">
-                          {{row.action}}
+                          {{row.actions}}
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
                           </button>
@@ -267,27 +267,27 @@
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
                             }
-                            @if (!row.action.includes('cancel') && sotDS.canCancel(row)) {
+                            @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
                             <button mat-menu-item (click)="cancelItem($event, row)">
                               <mat-icon>cancel</mat-icon>
                               <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
                                 ""}}{{translatedLangText.CANCEL}}</span>
                             </button>
                             }
-                            @if (!row.action.includes('rollback') && sotDS.canRollbackStatus(row)) {
+                            @if (!row.actions.includes('rollback') && sotDS.canRollbackStatus(row)) {
                             <button mat-menu-item (click)="rollbackItem($event, row)">
                               <mat-icon>undo</mat-icon>
                               <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
                                 ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
                             </button>
                             }
-                            @if (row.action.includes('cancel')) {
+                            @if (row.actions.includes('cancel')) {
                             <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
                               <mat-icon>undo</mat-icon>
                               <span>{{translatedLangText.UNDO}} {{translatedLangText.CANCEL}}</span>
                             </button>
                             }
-                            @if (row.action.includes('rollback')) {
+                            @if (row.actions.includes('rollback')) {
                             <button mat-menu-item (click)="undoAction($event, row, 'rollback')">
                               <mat-icon>undo</mat-icon>
                               <span>{{translatedLangText.UNDO}} {{translatedLangText.ROLLBACK_STATUS}}</span>
