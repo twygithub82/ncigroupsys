@@ -80,7 +80,6 @@ export const TARIFF_CLEANING_FRAGMENT = gql`
     alias
     ban_type_cv
     cargo
-    class_child_cv
     class_cv
     cleaning_category_guid
     cleaning_method_guid
