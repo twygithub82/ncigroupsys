@@ -44,7 +44,7 @@ namespace IDMS.Booking.GqlTypes
             }
         }
 
-        public async Task<int> UpdateBooking(List<BookingRequest> bookings,
+        public async Task<int> UpdateBooking(List<booking> bookings,
          [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
             try
@@ -52,7 +52,7 @@ namespace IDMS.Booking.GqlTypes
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                foreach (BookingRequest bk in bookings)
+                foreach (booking bk in bookings)
                 {
                     // Find the corresponding existing child entity or add a new one if necessary
                     var existingBooking = context.booking.Where(b => b.guid == bk.guid & (b.delete_dt == null || b.delete_dt == 0)).FirstOrDefault();
@@ -77,7 +77,7 @@ namespace IDMS.Booking.GqlTypes
             }
         }
 
-        public async Task<int> DeleteBooking(string[] bookingGuids,
+        public async Task<int> CancelBooking(List<booking> bookings,
             [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
         {
 
@@ -86,14 +86,18 @@ namespace IDMS.Booking.GqlTypes
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var bookings = context.storing_order.Where(b => bookingGuids.Contains(b.guid) && b.delete_dt == null);
+                //string[] soGuids = bookings.Select(s => s.guid).ToArray();
+
+                //var bookings = context.booking.Where(b => bookingGuids.Contains(b.guid) && b.delete_dt == null);
 
                 foreach (var bk in bookings)
                 {
                     //so.status_cv = CANCEL;
-                    bk.delete_dt = currentDateTime;
+                    //bk.delete_dt = currentDateTime;
                     bk.update_dt = currentDateTime;
                     bk.update_by = user;
+                    bk.status_cv = "CANCELED";
+                    bk.reference = bk.reference;
                 }
 
                 var res = await context.SaveChangesAsync();
