@@ -36,5 +36,8 @@ namespace IDMS.StoringOrder.Model.Request
 
         public long? eta_dt { get; set; } = 0;
         public long? etr_dt { get; set; } = 0;
+
+        [NotMapped]
+        public string? action { get; set; }
     }
 }

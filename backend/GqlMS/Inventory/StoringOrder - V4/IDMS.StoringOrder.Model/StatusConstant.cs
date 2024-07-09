@@ -28,7 +28,13 @@ namespace IDMS.StoringOrder.Model
         public const string STEAM = "STEAM";
         public const string STORAGE = "STORAGE";
         public const string RO = "RO_GENERATED";
+    }
 
-
+    public static class SOTankAction
+    {
+        public const string NEW = "NEW";
+        public const string EDIT = "EDIT";
+        public const string ROLLBACK = "ROLLBACK";
+        public const string CANCEL = "CANCEL";
     }
 }
