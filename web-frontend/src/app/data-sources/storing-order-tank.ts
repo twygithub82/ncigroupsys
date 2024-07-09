@@ -28,6 +28,7 @@ export class StoringOrderTankGO {
   public etr_dt?: number | Date;
   public status_cv?: string;
   public storing_order?: StoringOrderItem
+  public action?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -52,6 +53,7 @@ export class StoringOrderTankGO {
     this.remarks = item.remarks || '';
     this.etr_dt = item.etr_dt || undefined;
     this.status_cv = item.status_cv || '';
+    this.action = item.action || '';
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -62,12 +64,12 @@ export class StoringOrderTankGO {
 
 export class StoringOrderTankItem extends StoringOrderTankGO {
   public tariff_cleaning?: TariffCleaningItem;
-  public action: string[] = [];
+  public actions: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
     super(item); // Call the constructor of the parent class
     this.tariff_cleaning = item.tariff_cleaning;
-    this.action = item.action || [];
+    this.actions = item.actions || [];
   }
 }
 

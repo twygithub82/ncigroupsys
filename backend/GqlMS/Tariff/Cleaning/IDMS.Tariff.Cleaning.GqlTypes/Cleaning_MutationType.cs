@@ -38,7 +38,7 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
                 newTariffClean.cleaning_method_guid = NewTariffClean.cleaning_method_guid;
                 newTariffClean.ban_type_cv = NewTariffClean.ban_type_cv;
                 newTariffClean.class_cv = NewTariffClean.class_cv;
-                newTariffClean.class_child_cv = NewTariffClean.class_child_cv;
+                //newTariffClean.class_child_cv = NewTariffClean.class_child_cv;
                 //  newTariffClean.cost_type_cv = NewTariffClean.cost_type_cv;
                 newTariffClean.depot_note = NewTariffClean.depot_note;
                 newTariffClean.flash_point = NewTariffClean.flash_point;
@@ -84,7 +84,7 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes
                 dbTariffClean.cleaning_method_guid = UpdateTariffClean.cleaning_method_guid;
                 dbTariffClean.ban_type_cv = UpdateTariffClean.ban_type_cv;
                 dbTariffClean.class_cv = UpdateTariffClean.class_cv;
-                dbTariffClean.class_child_cv = UpdateTariffClean.class_child_cv;
+               // dbTariffClean.class_child_cv = UpdateTariffClean.class_child_cv;
                 dbTariffClean.depot_note = UpdateTariffClean.depot_note;
                 dbTariffClean.flash_point = UpdateTariffClean.flash_point;
                 dbTariffClean.hazard_level_cv = UpdateTariffClean.hazard_level_cv;

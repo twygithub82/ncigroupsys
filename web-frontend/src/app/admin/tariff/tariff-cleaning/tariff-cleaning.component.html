@@ -47,10 +47,10 @@
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{langText.CARGO_CLASS | translate}}</mat-label>
                         <input matInput formControlName="class_no" [formControl]="classNoControl"
-                          [matAutocomplete]="classNo">
-                        <mat-autocomplete #classNo="matAutocomplete" >
+                          [matAutocomplete]="class_no">
+                        <mat-autocomplete #class_no="matAutocomplete" [displayWith]="displayCodeValueFn" >
                             @for (cn of classNoCvList; track cn) {
-                                <mat-option [value]="cn.code_val">
+                                <mat-option [value]="cn">
                                   {{cn.code_val}}
                                 </mat-option>
                                 }
@@ -103,10 +103,10 @@
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{langText.CARGO_BAN_TYPE | translate}}</mat-label>
                         <input matInput formControlName="ban_type" [formControl]="banTypeControl"
-                        [matAutocomplete]="banType">
-                      <mat-autocomplete #banType="matAutocomplete"  >
+                        [matAutocomplete]="ban_type">
+                      <mat-autocomplete #ban_type="matAutocomplete"  [displayWith]="displayCodeValueFn">
                           @for (bType of banTypeCvList; track bType) {
-                              <mat-option [value]="bType.code_val">
+                              <mat-option [value]="bType">
                                 {{bType.code_val}}
                               </mat-option>
                               }
@@ -117,10 +117,10 @@
                         <mat-form-field class="example-full-width" appearance="fill">
                             <mat-label>{{langText.CARGO_HAZARD_LEVEL | translate}}</mat-label>
                             <input matInput formControlName="hazard_level" [formControl]="hazardLevelControl"
-                            [matAutocomplete]="hazardLevel">
-                          <mat-autocomplete #hazardLevel="matAutocomplete"  >
+                            [matAutocomplete]="hazard_level">
+                          <mat-autocomplete #hazard_level="matAutocomplete"  [displayWith]="displayCodeValueFn" >
                               @for (hLevel of hazardLevelCvList; track hLevel) {
-                                  <mat-option [value]="hLevel.code_val">
+                                  <mat-option [value]="hLevel">
                                     {{hLevel.code_val}}
                                   </mat-option>
                                   }
@@ -271,7 +271,7 @@
                 </mat-progress-spinner>
               </div>
               }
-              <mat-paginator #paginator [length]="soDS.totalCount" [pageIndex]="0" [pageSize]="10"
+              <mat-paginator #paginator [length]="tcDS.totalCount" [pageIndex]="0" [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]">
               </mat-paginator>
             </div>

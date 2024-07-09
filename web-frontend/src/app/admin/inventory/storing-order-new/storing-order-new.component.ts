@@ -361,7 +361,17 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.updateData([...this.sotList.data, result.item]);
+        //this.updateData([...this.sotList.data, result.item]);
+        const data = [...this.sotList.data];
+        const newItem = new StoringOrderTankItem({
+          ...result.item,
+          actions: ['new']
+        });
+
+        // Add the new item to the end of the list
+        data.push(newItem);
+
+        this.updateData(data);
       }
     });
   }
@@ -395,11 +405,13 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       if (result) {
         if (result.index >= 0) {
           const data = [...this.sotList.data];
+          let actions = Array.isArray(data[index].actions) ? [...data[index].actions] : [];
+          if (!actions.includes('new')) {
+            actions = [...new Set([...actions, 'edit'])];
+          }
           const updatedItem = new StoringOrderTankItem({
             ...result.item,
-            action: Array.isArray(data[index].action)
-              ? [...new Set([...data[index].action, 'edit'])]
-              : ['edit']
+            actions: actions
           });
           data[result.index] = updatedItem;
           this.updateData(data);
@@ -433,8 +445,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
-            action: Array.isArray(data[index].action)
-              ? [...new Set([...data[index].action, 'delete'])]
+            actions: Array.isArray(data[index].actions)
+              ? [...new Set([...data[index].actions, 'delete'])]
               : ['delete']
           };
           data[result.index] = updatedItem;
@@ -476,8 +488,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
             data[index] = {
               ...data[index],
               ...newItem,
-              action: Array.isArray(data[index].action)
-                ? [...new Set([...data[index].action, 'cancel'])]
+              actions: Array.isArray(data[index].actions)
+                ? [...new Set([...data[index].actions, 'cancel'])]
                 : ['cancel']
             };
           }
@@ -523,8 +535,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
             data[index] = {
               ...data[index],
               ...newItem,
-              action: Array.isArray(data[index].action)
-                ? [...new Set([...data[index].action, 'rollback'])]
+              actions: Array.isArray(data[index].actions)
+                ? [...new Set([...data[index].actions, 'rollback'])]
                 : ['rollback']
             };
           }
@@ -553,8 +565,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         data[index] = {
           ...data[index],
           ...newItem,
-          action: Array.isArray(data[index].action)
-            ? data[index].action.filter(action => action !== actionToBeRemove)
+          actions: Array.isArray(data[index].actions)
+            ? data[index].actions.filter(action => action !== actionToBeRemove)
             : []
         };
       }
@@ -609,18 +621,27 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         so.haulier = this.soForm.value['haulier'];
         so.so_notes = this.soForm.value['so_notes'];
 
-        const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankGO> | undefined) => new StoringOrderTankGO(item));
+        const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankItem>) => {
+          // Ensure action is an array and take the last action only
+          const actions = Array.isArray(item!.actions) ? item!.actions : [];
+          const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
+        
+          return new StoringOrderTankGO({
+            ...item,
+            action: latestAction // Set the latest action as the single action
+          });
+        });
         console.log('so Value', so);
         console.log('sot Value', sot);
         if (so.guid) {
           this.soDS.updateStoringOrder(so, sot).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result);
+            this.handleSaveSuccess(result?.data?.updateStoringOrder);
           });
         } else {
           this.soDS.addStoringOrder(so, sot).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result);
+            this.handleSaveSuccess(result?.data?.addStoringOrder);
           });
         }
       }
@@ -685,8 +706,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     this.editOrderDetails(event, newSot, -1);
   }
 
-  handleSaveSuccess(result: any) {
-    if ((result?.data?.addStoringOrder ?? 0) > 0 || (result?.data?.updateStoringOrder ?? 0) > 0) {
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;

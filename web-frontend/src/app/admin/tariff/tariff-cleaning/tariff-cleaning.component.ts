@@ -17,7 +17,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatPaginatorModule, MatPaginator,PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -40,8 +40,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import {CleaningCategoryDS,CleaningCategoryItem } from 'app/data-sources/cleaning_category';
-import {CleaningMethodDS,CleaningMethodItem} from 'app/data-sources/cleaning_method';
+import {CleaningCategoryDS,CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import {CleaningMethodDS,CleaningMethodItem} from 'app/data-sources/cleaning-method';
+import { sequence } from '@angular/animations';
 
 @Component({
   selector: 'app-tariff-cleaning',
@@ -136,7 +137,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   searchForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
-  soDS: StoringOrderDS;
+  //soDS: StoringOrderDS;
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   cCategoryDS:CleaningCategoryDS;
@@ -165,7 +166,13 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   banTypeControl= new UntypedFormControl();
   hazardLevelControl= new UntypedFormControl();
 
-  
+  pageIndex = 0;
+  pageSize = 10;
+  lastSearchCriteria: any;
+  endCursor: string | undefined = undefined;
+  startCursor: string | undefined = undefined;
+  hasNextPage = false;
+  hasPreviousPage = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -178,7 +185,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.soDS = new StoringOrderDS(this.apollo);
+   // this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
@@ -198,6 +205,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
   refresh() {
     this.loadData();
+    this.initSearchForm();
   }
   initSearchForm() {
     this.searchForm = this.fb.group({
@@ -226,9 +234,10 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.soSelection.selected.length;
-    const numRows = this.soDS.totalCount;
-    return numSelected === numRows;
+   // const numSelected = this.soSelection.selected.length;
+   // const numRows = this.soDS.totalCount;
+   // return numSelected === numRows;
+   return false;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
@@ -242,7 +251,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   canCancelSelectedRows(): boolean {
     return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
       const index: number = this.soList.findIndex((d) => d === item);
-      return this.soDS.canCancel(this.soList[index]);
+      //return this.soDS.canCancel(this.soList[index]);
+      return false;
     });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
@@ -276,21 +286,29 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     // });
   }
   public loadData() {
-    this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-      if (this.soDS.totalCount > 0) {
-        this.soList = data;
-      }
+    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
+    //   if (this.soDS.totalCount > 0) {
+    //     this.soList = data;
+    //   }
+    // });
+
+    // this.tcDS.loadItemsWithCategoryMethod({}).subscribe(data=>{
+    //   if(this.tcDS.totalCount>0)
+    //   {
+    //     this.tcList=data;
+    //   }
+
+    // });
+    this.lastSearchCriteria=this.tcDS.addDeleteDtCriteria({});
+    this.tcDS.SearchTariffCleaning(this.lastSearchCriteria).subscribe(data => {
+      this.tcList = data;
+      this.endCursor = this.tcDS.pageInfo?.endCursor;
+      this.startCursor = this.tcDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
     });
 
-    this.tcDS.loadItemsWithCategoryMethod({}).subscribe(data=>{
-      if(this.tcDS.totalCount>0)
-      {
-        this.tcList=data;
-      }
-
-    });
-
-    this.cCategoryDS.loadItems({}).subscribe(data=>{
+    this.cCategoryDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
       if(this.cCategoryDS.totalCount>0)
       {
         this.cCategoryList=data;
@@ -298,7 +316,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     });
 
-    this.cMethodDS.loadItems({}).subscribe(data=>{
+    this.cMethodDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
       if(this.cMethodDS.totalCount>0)
       {
         this.cMethodList=data;
@@ -307,16 +325,20 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     });
 
     const queries = [
-      { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' }
+      { alias: 'ctHazardLevelCv', codeValType: 'HAZARD_LEVEL' },
+      { alias: 'classNoCv', codeValType: 'CLASS_NO' },
+      { alias: 'banTypeCv', codeValType: 'BAN_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-      this.soStatusCvList = data;
-      this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+    this.cvDS.connectAlias('ctHazardLevelCv').subscribe(data => {
+      this.hazardLevelCvList = data;
+     // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
+    this.cvDS.connectAlias('classNoCv').subscribe(data => {
+      this.classNoCvList = data;
+    });
+    this.cvDS.connectAlias('banTypeCv').subscribe(data => {
+      this.banTypeCvList = data;
     });
   }
   showNotification(
@@ -363,13 +385,85 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first = pageSize;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+    let order:any|undefined=undefined;
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursor;
+      }
+    }
+
+    this.pageIndex = pageIndex;
+    this.pageSize = pageSize;
+
+    this.tcDS.SearchTariffCleaning(this.lastSearchCriteria,order, first, after, last, before).subscribe(data => {
+      this.tcList = data;
+      this.endCursor = this.tcDS.pageInfo?.endCursor;
+      this.startCursor = this.tcDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
+    });
+  }
+
   search() {
     const where: any = {};
 
-    // if (this.searchForm!.value['so_no']) {
-    //   where.so_no = { contains: this.searchForm!.value['so_no'] };
-    // }
+    if (this.searchForm!.value['cargo_name']) {
+      where.cargo = { contains: this.searchForm!.value['cargo_name'] };
+    }
 
+    if (this.searchForm!.value['class_no']) {
+      const classNo:CodeValuesItem = this.searchForm!.value['class_no'];
+      where.class_no = { contains: classNo.code_val };
+    }
+
+    if (this.searchForm!.value['hazard_level']) {
+      const hazardLevel:CodeValuesItem = this.searchForm!.value['hazard_level'];
+      where.hazard_level = { contains: hazardLevel.code_val };
+    }
+
+    if (this.searchForm!.value['ban_type']) {
+      const banType:CodeValuesItem = this.searchForm!.value['ban_type'];
+      where.ban_type = { contains: banType.code_val };
+    }
+
+    if (this.searchForm!.value['method']) {
+       const cMethod :CleaningMethodItem =this.searchForm!.value['method'];
+      where.cleaning_method_guid = { contains: cMethod.guid };
+    }
+
+    if (this.searchForm!.value['category']) {
+      const cCat :CleaningCategoryItem =this.searchForm!.value['category'];
+     where.cleaning_category_guid = { contains: cCat.guid };
+   }
+
+   if (this.searchForm!.value['flash_point']) {
+    const flashPoint :number =Number(this.searchForm!.value['flash_point']);
+      where.flash_point = { eq: flashPoint };
+    }
+
+    if (this.searchForm!.value['un_no']) {
+        where.un_no = { contains: this.searchForm!.value['un_no'] };
+    }
     // if (this.searchForm!.value['so_status']) {
     //   where.status_cv = { contains: this.searchForm!.value['so_status'] };
     // }
@@ -392,9 +486,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     // }
 
     // // TODO :: search criteria
-    // this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
-    //   this.soList = data;
-    // });
+    this.subs.sink = this.tcDS.SearchTariffCleaning(where).subscribe(data => {
+      this.tcList = data;
+    });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -409,6 +503,11 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   displayMethodFn(cMethod: CleaningMethodItem): string {
     return  cMethod && cMethod.name ? `${cMethod.name}` : '';
+    //return this.ccDS.displayName(cc);
+  }
+
+  displayCodeValueFn(cValue: CodeValuesItem): string {
+    return  cValue && cValue.code_val ? `${cValue.code_val}` : '';
     //return this.ccDS.displayName(cc);
   }
 

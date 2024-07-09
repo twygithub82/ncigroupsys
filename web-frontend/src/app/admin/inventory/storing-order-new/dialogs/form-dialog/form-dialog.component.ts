@@ -19,6 +19,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { Apollo } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 export interface DialogData {
   action?: string;
@@ -33,7 +34,7 @@ export interface DialogData {
   selector: 'app-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
-  providers: [],
+  providers: [provideNgxMask()],
   standalone: true,
   imports: [
     MatButtonModule,
@@ -53,7 +54,8 @@ export interface DialogData {
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
-    CommonModule
+    CommonModule,
+    NgxMaskDirective,
   ],
 })
 export class FormDialogComponent {
@@ -193,11 +195,13 @@ export class FormDialogComponent {
         this.storingOrderTankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
       } else {
         // Clear custom error if the value is valid
-        const found = this.sotExistedList?.filter(sot => sot.tank_no === value);
-        if (found?.length) {
-          this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
-        } else {
-          this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+        if (this.action !== 'edit') {
+          const found = this.sotExistedList?.filter(sot => sot.tank_no === value);
+          if (found?.length) {
+            this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+          } else {
+            this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+          }
         }
       }
     });
@@ -261,6 +265,6 @@ export class FormDialogComponent {
     return isValid;
   }
   canEdit(): boolean {
-    return !this.sotDS.canRollbackStatus(this.storingOrderTank) && !this.storingOrderTank.action.includes('cancel') && !this.storingOrderTank.action.includes('rollback');
+    return !this.sotDS.canRollbackStatus(this.storingOrderTank) && !this.storingOrderTank.actions.includes('cancel') && !this.storingOrderTank.actions.includes('rollback');
   }
 }
