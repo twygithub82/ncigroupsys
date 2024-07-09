@@ -136,7 +136,7 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.ETA_DATE | translate}}</mat-label>
-                <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker" [min]="startDate">
+                <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
                 <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
                 <mat-datepicker #eta_picker [startAt]="startDate"></mat-datepicker>
               </mat-form-field>
@@ -144,7 +144,7 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.ETR_DATE | translate}}</mat-label>
-                <input matInput formControlName="etr_dt" [matDatepicker]="etr_picker" [min]="startDate">
+                <input matInput formControlName="etr_dt" [matDatepicker]="etr_picker">
                 <mat-datepicker-toggle matSuffix [for]="etr_picker"></mat-datepicker-toggle>
                 <mat-datepicker #etr_picker></mat-datepicker>
               </mat-form-field>
@@ -200,7 +200,9 @@
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
-        <button mat-flat-button color="primary" (click)="submit()">{{data.langText.UPDATE | translate}}</button>
+        @if (canEdit()) {
+          <button mat-flat-button color="primary" (click)="submit()">{{data.langText.UPDATE | translate}}</button>
+        }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.langText.CANCEL | translate}}</button>
       </div>
     </form>

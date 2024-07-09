@@ -137,7 +137,7 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
                 var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null);
                 foreach(var customerCompany in customerCompanies)
                 {
-                    var customerCom_CleanCat = new EntityClass_CustomerCompany_CleaningCategory();
+                    var customerCom_CleanCat = new customer_company_cleaning_category();
                     customerCom_CleanCat.guid = Util.GenerateGUID();
                     customerCom_CleanCat.adjusted_price = newCleanCategory.cost;
                     customerCom_CleanCat.initial_price= newCleanCategory.cost;

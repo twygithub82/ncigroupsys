@@ -15,6 +15,7 @@ namespace IDMS.Models.Parameter
 
         public string? name { get; set; }
 
+        public int? sequence { get; set; }
         public string? description { get; set; }
 
         // public int? duration { get; set; }
