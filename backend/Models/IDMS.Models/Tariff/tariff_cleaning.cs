@@ -40,7 +40,7 @@ namespace IDMS.Models.Tariff
 
         public string? class_cv { get; set; }
 
-        public string? class_child_cv { get; set; }
+        //public string? class_child_cv { get; set; }
 
         public string? hazard_level_cv {  get; set; }
 

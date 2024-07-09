@@ -5,30 +5,35 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-import {CLEANING_METHOD_FRAGMENT} from './fragments';
+import {CLEANING_CATEGORY_FRAGMENT} from './fragments';
 
-export const GET_CLEANING_METHOD_QUERY = gql`
-  query {queryCleaningMethod {
+
+export const GET_CLEANING_CATEGORY_QUERY = gql`
+  query queryCleaningCategory($where: cleaning_categoryFilterInput , $order:[cleaning_categorySortInput!]){
+      queryCleaningCategory(where: $where , order: $order){
     nodes {
-       create_by
+       cost
+        create_by
         create_dt
         delete_dt
         description
+        sequence
         guid
         name
         update_by
         update_dt
-     }
+    }
       totalCount
-  }
-}
-  
-  `;
 
-export class CleaningMethodItem {
+
+}
+}
+  `;
+export class CleaningCategoryItem {
     public guid?: string;
     public name?: string;
     public description?: string;
+    public cost?: number;
     public sequence?: number;
     public create_dt?: number;
     public create_by?: string;
@@ -36,10 +41,11 @@ export class CleaningMethodItem {
     public update_by?: string;
     public delete_dt?: number;
 
-    constructor(item: Partial<CleaningMethodItem> = {}) {
+    constructor(item: Partial<CleaningCategoryItem> = {}) {
         this.guid = item.guid;
         this.name = item.name;
         this.description = item.description;
+        this.cost = item.cost;
         this.sequence = item.sequence;
         this.create_dt = item.create_dt;
         this.create_by = item.create_by;
@@ -47,10 +53,13 @@ export class CleaningMethodItem {
         this.update_by = item.update_by;
         this.delete_dt = item.delete_dt;
     }
+
+    
 }
 
-export class CleaningMethodDS extends DataSource<CleaningMethodItem> {
-    private itemsSubjects = new BehaviorSubject<CleaningMethodItem[]>([]);
+
+export class CleaningCategoryDS extends DataSource<CleaningCategoryItem> {
+    private itemsSubjects = new BehaviorSubject<CleaningCategoryItem[]>([]);
     private loadingSubject = new BehaviorSubject<boolean>(false);
     public loading$ = this.loadingSubject.asObservable();
     public totalCount = 0;
@@ -60,22 +69,22 @@ export class CleaningMethodDS extends DataSource<CleaningMethodItem> {
 
     
 
-    loadItems(where?: any, order?: any): Observable<CleaningMethodItem[]> {
+    loadItems(where?: any, order?: any): Observable<CleaningCategoryItem[]> {
         this.loadingSubject.next(true);
         return this.apollo
             .query<any>({
-                query: GET_CLEANING_METHOD_QUERY,
+                query: GET_CLEANING_CATEGORY_QUERY,
                 variables: { where, order }
             })
             .pipe(
                 map((result) => result.data),
                 catchError((error: ApolloError) => {
                     console.error('GraphQL Error:', error);
-                    return of([] as CleaningMethodItem[]); // Return an empty array on error
+                    return of([] as CleaningCategoryItem[]); // Return an empty array on error
                 }),
                 finalize(() => this.loadingSubject.next(false)),
                 map((result) => {
-                    const rst = result.queryCleaningMethod || { nodes: [], totalCount: 0 };
+                    const rst = result.queryCleaningCategory || { nodes: [], totalCount: 0 };
                     this.itemsSubjects.next(rst.nodes);
                     this.totalCount = rst.totalCount;
                     return rst.nodes;
@@ -83,7 +92,7 @@ export class CleaningMethodDS extends DataSource<CleaningMethodItem> {
             );
     }
 
-    connect(): Observable<CleaningMethodItem[]> {
+    connect(): Observable<CleaningCategoryItem[]> {
         return this.itemsSubjects.asObservable();
     }
 
