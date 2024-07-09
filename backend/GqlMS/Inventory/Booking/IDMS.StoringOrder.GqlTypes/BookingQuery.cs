@@ -8,6 +8,7 @@ using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 
 namespace IDMS.Booking.GqlTypes
 {
+    [ExtendObjectType(typeof(Query))]
     public class BookingQuery
     {
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]

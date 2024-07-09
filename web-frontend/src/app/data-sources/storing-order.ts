@@ -237,7 +237,6 @@ export class StoringOrderDS extends BaseDataSource<StoringOrderItem> {
 
   getStoringOrderByID(id: string): Observable<StoringOrderItem[]> {
     this.soLoadingSubject.next(true);
-    debugger
     let where = this.addDeleteDtCriteria({ guid: { eq: id } });
     return this.apollo
       .query<any>({
@@ -296,7 +295,11 @@ export class StoringOrderDS extends BaseDataSource<StoringOrderItem> {
     return so && (!so.status_cv || so.status_cv === 'PENDING');
   }
 
-  canAddRemove(so: StoringOrderItem): boolean {
+  canAdd(so: StoringOrderItem): boolean {
+    return !so.status_cv || so.status_cv === 'PENDING' || so.status_cv === 'PROCESSING';
+  }
+
+  canRemove(so: StoringOrderItem): boolean {
     return !so.status_cv;
   }
 }

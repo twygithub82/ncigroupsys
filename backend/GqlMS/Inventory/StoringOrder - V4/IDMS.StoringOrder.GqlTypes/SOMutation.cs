@@ -230,8 +230,8 @@ namespace IDMS.StoringOrder.GqlTypes
                         //if (!(SOStatus.PENDING.EqualsIgnore(storingOrder.status_cv) || SOStatus.PROCESSING.EqualsIgnore(storingOrder.status_cv)))
                         //    throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
 
-                        if (SOStatus.PROCESSING.EqualsIgnore(storingOrder.status_cv) || SOStatus.COMPLETED.EqualsIgnore(storingOrder.status_cv))
-                            throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
+                        //if (SOStatus.PROCESSING.EqualsIgnore(storingOrder.status_cv) || SOStatus.COMPLETED.EqualsIgnore(storingOrder.status_cv))
+                        //    throw new GraphQLException(new Error("Storing Order Cannot be Canceled.", "INVALID_OPERATION"));
 
                         int tnkAlreadyAcceptedCount = 0;
                         string finalSOStatus = SOStatus.CANCELED;

@@ -18,7 +18,6 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<customer_company> customer_company { get; set; }
         public DbSet<customer_company_contact_person> customer_company_contact_person { get; set; }
 
-        public DbSet<tank> tank { get; set; }
         public DbSet<InGateWithTank> in_gate { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
 
@@ -26,8 +25,10 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<cleaning_category> cleaning_category { get; set; }
 
         public DbSet<BookingWithTanks> booking { get; set; }
-        
+
+        public DbSet<tank> tank { get; set; }
         public DbSet<code_values> code_values { get; set; }
+        public DbSet<surveyor> surveyor { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

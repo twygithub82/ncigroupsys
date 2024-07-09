@@ -11,69 +11,69 @@ import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragment
 import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
 export class TariffCleaningGO {
-    public guid?: string;
-    public cleaning_method_guid?: string;
-    public cleaning_category_guid?: string;
-    public msds_guid?: string;
-    public cargo?: string;
-    public alias?: string;
-    public un_no?: string;
-    public flash_point?: string;
-    public description?: string;
-    public class_cv?: string;
-    public hazard_level_cv?: string;
-    public ban_type_cv?: string;
-    public nature_cv?: string;
-    public open_on_gate_cv?: string;
-    public in_gate_alert?: string;
-    public depot_note?: number;
-    public remarks?: number;
-    public create_dt?: number;
-    public create_by?: string;
-    public update_dt?: number;
-    public update_by?: string;
-    public delete_dt?: number;
+  public guid?: string;
+  public cleaning_method_guid?: string;
+  public cleaning_category_guid?: string;
+  public msds_guid?: string;
+  public cargo?: string;
+  public alias?: string;
+  public un_no?: string;
+  public flash_point?: string;
+  public description?: string;
+  public class_cv?: string;
+  public hazard_level_cv?: string;
+  public ban_type_cv?: string;
+  public nature_cv?: string;
+  public open_on_gate_cv?: string;
+  public in_gate_alert?: string;
+  public depot_note?: number;
+  public remarks?: number;
+  public create_dt?: number;
+  public create_by?: string;
+  public update_dt?: number;
+  public update_by?: string;
+  public delete_dt?: number;
 
-    constructor(item: Partial<TariffCleaningGO> = {}) {
-        this.guid = item.guid;
-        this.cleaning_method_guid = item.cleaning_method_guid;
-        this.cleaning_category_guid = item.cleaning_category_guid;
-        this.msds_guid = item.msds_guid;
-        this.cargo = item.cargo;
-        this.alias = item.alias;
-        this.un_no = item.un_no;
-        this.flash_point = item.flash_point;
-        this.description = item.description;
-        this.class_cv = item.class_cv;
-        this.hazard_level_cv = item.hazard_level_cv;
-        this.ban_type_cv = item.ban_type_cv;
-        this.nature_cv = item.nature_cv;
-        this.open_on_gate_cv = item.open_on_gate_cv;
-        this.in_gate_alert = item.in_gate_alert;
-        this.depot_note = item.depot_note;
-        this.remarks = item.remarks;
-        this.create_dt = item.create_dt;
-        this.create_by = item.create_by;
-        this.update_dt = item.update_dt;
-        this.update_by = item.update_by;
-        this.delete_dt = item.delete_dt;
-    }
+  constructor(item: Partial<TariffCleaningGO> = {}) {
+    this.guid = item.guid;
+    this.cleaning_method_guid = item.cleaning_method_guid;
+    this.cleaning_category_guid = item.cleaning_category_guid;
+    this.msds_guid = item.msds_guid;
+    this.cargo = item.cargo;
+    this.alias = item.alias;
+    this.un_no = item.un_no;
+    this.flash_point = item.flash_point;
+    this.description = item.description;
+    this.class_cv = item.class_cv;
+    this.hazard_level_cv = item.hazard_level_cv;
+    this.ban_type_cv = item.ban_type_cv;
+    this.nature_cv = item.nature_cv;
+    this.open_on_gate_cv = item.open_on_gate_cv;
+    this.in_gate_alert = item.in_gate_alert;
+    this.depot_note = item.depot_note;
+    this.remarks = item.remarks;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+  }
 }
 
 export class TariffCleaningItem extends TariffCleaningGO {
-    public cleaning_category?: CleaningCategoryItem;
-    public cleaning_method?: CleaningMethodItem;
-  
-    constructor(item: Partial<TariffCleaningItem> = {}) {
-      super(item);
-      this.cleaning_category = item.cleaning_category;
-      this.cleaning_method = item.cleaning_method;
-    }
+  public cleaning_category?: CleaningCategoryItem;
+  public cleaning_method?: CleaningMethodItem;
+
+  constructor(item: Partial<TariffCleaningItem> = {}) {
+    super(item);
+    this.cleaning_category = item.cleaning_category;
+    this.cleaning_method = item.cleaning_method;
   }
+}
 
 export interface TariffCleaningResult {
-    items: TariffCleaningItem[];
-    totalCount: number;
+  items: TariffCleaningItem[];
+  totalCount: number;
 }
 
 export const TARIFF_CLEANING_FRAGMENT = gql`
@@ -106,7 +106,7 @@ export const GET_TARIFF_CLEANING_QUERY = gql`
   query queryTariffCleaning($where: tariff_cleaningFilterInput) {
     lastCargo: queryTariffCleaning(where: $where) {
       nodes {
-         alias
+        alias
         ban_type_cv
         cargo
         class_cv
@@ -127,16 +127,12 @@ export const GET_TARIFF_CLEANING_QUERY = gql`
         un_no
         update_by
         update_dt
-       
-        
-        
       }
-      
       pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
       }
       totalCount
     }
@@ -147,7 +143,7 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD = gql`
   query queryTariffCleaning($where: tariff_cleaningFilterInput ) {
     lastCargo: queryTariffCleaning(where: $where) {
       nodes {
-         alias
+        alias
         ban_type_cv
         cargo
         class_cv
@@ -216,19 +212,17 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
         update_by
         update_dt
         cleaning_category_with_tariff {
-        ...CleaningCategoryFragment
-      }
+          ...CleaningCategoryFragment
+        }
         cleaning_method_with_tariff {
-        ...CleaningMethodFragment
-       } 
-        
+          ...CleaningMethodFragment
+        }
       }
-      
       pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
       }
       totalCount
     }
@@ -290,26 +284,26 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
           );
   }
 
-    loadItems(where?: any, order?: any): Observable<TariffCleaningItem[]> {
-        this.loadingSubject.next(true);
-        return this.apollo
-            .query<any>({
-                query: GET_TARIFF_CLEANING_QUERY,
-                variables: { where, order }
-            })
-            .pipe(
-                map((result) => result.data),
-                catchError((error: ApolloError) => {
-                    console.error('GraphQL Error:', error);
-                    return of([] as TariffCleaningItem[]); // Return an empty array on error
-                }),
-                finalize(() => this.loadingSubject.next(false)),
-                map((result) => {
-                    const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
-                    this.dataSubject.next(lastCargo.nodes);
-                    this.totalCount = lastCargo.totalCount;
-                    return lastCargo.nodes;
-                })
-            );
-    }
+  loadItems(where?: any, order?: any): Observable<TariffCleaningItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_TARIFF_CLEANING_QUERY,
+        variables: { where, order }
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(lastCargo.nodes);
+          this.totalCount = lastCargo.totalCount;
+          return lastCargo.nodes;
+        })
+      );
+  }
 }
