@@ -8,6 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { StoringOrderItem } from './storing-order';
 import { TARIFF_CLEANING_FRAGMENT, TariffCleaningItem } from './tariff-cleaning';
 import { BaseDataSource } from './base-ds';
+import { InGateItem } from './in-gate';
 
 export class StoringOrderTankGO {
   public guid?: string;
@@ -64,11 +65,13 @@ export class StoringOrderTankGO {
 
 export class StoringOrderTankItem extends StoringOrderTankGO {
   public tariff_cleaning?: TariffCleaningItem;
+  public in_gate?: InGateItem;
   public actions: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
     super(item); // Call the constructor of the parent class
     this.tariff_cleaning = item.tariff_cleaning;
+    this.in_gate = item.in_gate;
     this.actions = item.actions || [];
   }
 }
@@ -153,15 +156,47 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
       nodes {
-        job_no
-        guid
-        tank_no
-        so_guid
-        purpose_storage
-        purpose_cleaning
-        purpose_steam
-        purpose_repair_cv
+        certificate_cv
         clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        eta_dt
+        etr_dt
+        guid
+        job_no
+        last_cargo_guid
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        remarks
+        required_temp
+        so_guid
+        status_cv
+        tank_no
+        tank_status_cv
+        unit_type_guid
+        update_by
+        update_dt
+        in_gate {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          eir_date
+          eir_no
+          guid
+          haulier
+          lolo_cv
+          preinspection_cv
+          so_tank_guid
+          update_by
+          update_dt
+          vehicle_no
+          yard_cv
+        }
         tariff_cleaning {
           ...TariffCleaningFields
         }

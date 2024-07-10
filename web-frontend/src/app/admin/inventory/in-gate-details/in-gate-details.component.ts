@@ -43,6 +43,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -78,7 +79,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    MatGridListModule
+    MatGridListModule,
+    MatRadioModule,
   ]
 })
 export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -125,13 +127,28 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     CARGO_DETAILS: 'COMMON-FORM.CARGO-DETAILS',
     CARGO: 'COMMON-FORM.CARGO',
     CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
-    CLASS_NO: 'COMMON-FORM.CLASS-NO',
-    UN_NO: 'COMMON-FORM.UN-NO',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    HAZARD_LEVEL: 'COMMON-FORM.HAZARD-LEVEL',
-    BAN_TYPE: 'COMMON-FORM.BAN-TYPE',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
-    CLEANING_CATEGORY: 'COMMON-FORM.CLEANING-CATEGORY'
+    CLEANING_CATEGORY: 'COMMON-FORM.CLEANING-CATEGORY',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    TOTAL_CLEANED: 'COMMON-FORM.TOTAL-CLEANED',
+    IN_GATE_ALERT: 'COMMON-FORM.IN-GATE-ALERT',
+    MSDS: 'COMMON-FORM.MSDS',
+    IN_GATE: 'COMMON-FORM.IN-GATE',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
+    HAULIER: 'COMMON-FORM.HAULIER',
+    VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
+    DRIVER_NAME: 'COMMON-FORM.DRIVER-NAME',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    YARD: 'COMMON-FORM.YARD',
+    PRE_INSPECTION: 'COMMON-FORM.PRE-INSPECTION',
+    LOLO: 'COMMON-FORM.LOLO'
   }
 
   inGateForm?: UntypedFormGroup;
@@ -146,6 +163,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
+  yesnoCv: CodeValuesItem[] = [];
+  yardCv: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -163,7 +182,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   ) {
     super();
     this.translateLangText();
-    this.initSearchForm();
+    this.createInGateForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
@@ -178,19 +197,26 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     this.initializeFilterCustomerCompany();
     this.loadData();
   }
+
   refresh() {
     this.loadData();
   }
-  initSearchForm() {
+
+  createInGateForm() {
     this.inGateForm = this.fb.group({
-      so_no: [''],
-      customer_code: this.customerCodeControl,
+      eir_dt: [{ value: new Date(), disabled: true }],
+      job_no: [],
+      haulier: [],
+      vehicle_no: [''],
+      driver_name: [''],
+      remarks: [''],
+      last_cargo_guid: [''],
       last_cargo: this.lastCargoControl,
-      so_status: [''],
-      tank_no: [''],
-      job_no: [''],
-      purpose: [''],
-      eta_dt: [''],
+      purpose_storage: [''],
+      open_on_gate: [{ value: '', disabled: true }],
+      yard: [''],
+      pre_inspection: [''],
+      lolo: ['']
     });
   }
 
@@ -201,6 +227,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       this.subs.sink = this.sotDS.getStoringOrderTankByID(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.storingOrderTankItem = data[0];
+          this.populateInGateForm(this.storingOrderTankItem);
         }
       });
     } else {
@@ -209,7 +236,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' }
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      { alias: 'yardCv', codeValType: 'YARD' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -218,6 +247,12 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
+    });
+    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
+      this.yesnoCv = data;
+    });
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      this.yardCv = data;
     });
   }
   showNotification(
@@ -231,6 +266,24 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       verticalPosition: placementFrom,
       horizontalPosition: placementAlign,
       panelClass: colorName,
+    });
+  }
+
+  populateInGateForm(sot: StoringOrderTankItem): void {
+    this.inGateForm!.patchValue({
+      haulier: sot.storing_order?.haulier,
+      vehicle_no: [''],
+      driver_name: [''],
+      eir_dt: sot.in_gate?.create_dt ? Utility.convertDate(sot.in_gate?.create_dt) : new Date(),
+      job_no: sot.job_no,
+      remarks: sot.in_gate?.remarks,
+      last_cargo_guid: sot.last_cargo_guid,
+      last_cargo: this.lastCargoControl,
+      purpose_storage: sot.purpose_storage,
+      open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
+      yard: [''],
+      pre_inspection: [''],
+      lolo: ['']
     });
   }
 
@@ -298,21 +351,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   initializeFilterCustomerCompany() {
-    this.inGateForm!.get('customer_code')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.code;
-        }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-        });
-      })
-    ).subscribe();
   }
 
   onSOFormSubmit() {

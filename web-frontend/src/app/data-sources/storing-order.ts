@@ -91,6 +91,14 @@ export const SEARCH_STORING_ORDER_BY_ID = gql`
         haulier
         so_no
         so_notes
+        customer_company_guid
+        remarks
+        status_cv
+        create_by
+        create_dt
+        delete_dt
+        update_by
+        update_dt
         customer_company {
           code
           name

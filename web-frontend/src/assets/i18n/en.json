@@ -232,9 +232,21 @@
     "CARGO-HAZARD-LEVEL":"Hazard Level",
     "CARGO-BAN-TYPE":"Ban Type",
     "CARGO-DETAILS": "Cargo Details",
+    "CARGO-NATURE": "Cargo Nature",
+    "CLEANING-CATEGORY": "Cleaning Category",
+    "TOTAL-CLEANED": "Total Cleaned",
+    "IN-GATE-ALERT": "In-Gate Alert",
+    "MSDS": "MSDS",
     "CARGO": "Cargo",
     "CONFIRM": "Confirm",
-    "UNDO": "Undo"
+    "UNDO": "Undo",
+    "IN-GATE": "In Gate",
+    "EIR-DATE": "EIR Date",
+    "VEHICLE-NO": "Vehicle No.",
+    "DRIVER-NAME": "Driver Name",
+    "YARD": "Yard",
+    "PRE-INSPECTION": "Pre-Inspection",
+    "LOLO": "LOLO"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
