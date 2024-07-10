@@ -5,8 +5,8 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-import { CleaningCategoryItem } from './cleaning_category';
-import { CleaningMethodItem } from './cleaning_method';
+// import { CleaningCategoryItem } from './cleaning_category';
+// import { CleaningMethodItem } from './cleaning_method';
 import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
 import { BaseDataSource } from './base-ds';
 export class InGateGO {
@@ -60,14 +60,14 @@ export class InGateGO {
 }
 
 export class InGateItem extends InGateGO {
-  public cleaning_category?: CleaningCategoryItem;
-  public cleaning_method?: CleaningMethodItem;
+  // public cleaning_category?: CleaningCategoryItem;
+  // public cleaning_method?: CleaningMethodItem;
 
-  constructor(item: Partial<InGateItem> = {}) {
-    super(item);
-    this.cleaning_category = item.cleaning_category;
-    this.cleaning_method = item.cleaning_method;
-  }
+  // constructor(item: Partial<InGateItem> = {}) {
+  //   super(item);
+  //   this.cleaning_category = item.cleaning_category;
+  //   this.cleaning_method = item.cleaning_method;
+  // }
 }
 
 export interface InGateResult {
