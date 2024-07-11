@@ -14,6 +14,7 @@ import {TariffLabourComponent} from "./tariff/tariff-labour/tariff-labour.compon
 import {TariffDepotComponent} from "./tariff/tariff-depot/tariff-depot.component";
 import {TariffBufferComponent} from "./tariff/tariff-buffer/tariff-buffer.component";
 import {TariffRepairComponent} from "./tariff/tariff-repair/tariff-repair.component";
+import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-cleaning-new.component';
 
 export const ADMIN_ROUTE: Routes = [
   {
@@ -59,6 +60,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "tariff/tariff-cleaning",
     component: TariffCleaningComponent,
+  },
+  {
+    path: "tariff/tariff-cleaning-new",
+    component: TariffCleaningNewComponent,
   },
   {
     path: "tariff/tariff-labour",

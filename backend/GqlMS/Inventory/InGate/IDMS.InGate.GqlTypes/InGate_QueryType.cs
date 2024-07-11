@@ -42,7 +42,12 @@ namespace IDMS.InGate.GqlTypes
                     .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0)
                     .Include(s=>s.tank.tariff_cleaning)
                     .Include(s=>s.tank.storing_order);
-
+                foreach(var q in query)
+                {
+                    if (q.tank != null)
+                        if (q.tank.storing_order != null)
+                            q.haulier = q.tank.storing_order.haulier;
+                }
             }
             catch(Exception ex)
             {

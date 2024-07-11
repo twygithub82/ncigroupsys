@@ -23,7 +23,6 @@ export const GET_CLEANING_METHOD_QUERY = gql`
       totalCount
   }
 }
-  
   `;
 
 export class CleaningMethodItem {

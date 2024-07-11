@@ -96,7 +96,9 @@
         "TARIFF-LABOUR":"Labour Cost",
         "TARIFF-DEPOT":"Depot Cost",
         "TARIFF-REPAIR":"Repair",
-        "TARIFF-BUFFER":"Buffer Cleaning"
+        "TARIFF-BUFFER":"Buffer Cleaning",
+        "TARIFF-CLEANING-NEW":"New Tariff Cleaning",
+        "TARIFF-CLEANING-EDIT":"Edit Tariff Cleaning"
       }
     },
     "CLEANING-MANAGEMENT": {
@@ -211,7 +213,7 @@
     "ADD": "Add",
     "REFRESH": "Refresh",
     "EXPORT": "Export",
-    "SELECT-ATLEAST-ONE": "Please select atleast one.",
+    "SELECT-ATLEAST-ONE": "Please select at least one.",
     "ADD-ATLEAST-ONE": "Please add atleast one.",
     "CUSTOMER": "Customer",
     "ALIAS-NAME": "Alias Name",
@@ -222,9 +224,11 @@
     "ROLLBACK-STATUS": "Rollback Status",
     "BULK": "Bulk",
     "CARGO-NAME":"Cargo Name",
+    "CARGO-ALIAS":"Alias Name",
     "CARGO-DESCRIPTION":"Cargo Description",
     "CARGO-UN-NO":"UN No",
     "CARGO-CLASS":"Class No",
+    "CARGO-CLASS-SELECT":"Cargo Class",
     "CARGO-FLASH-POINT":"Flash Point",
     "CARGO-COST":"Cost",
     "CARGO-CATEGORY":"Category",
@@ -232,6 +236,10 @@
     "CARGO-HAZARD-LEVEL":"Hazard Level",
     "CARGO-BAN-TYPE":"Ban Type",
     "CARGO-DETAILS": "Cargo Details",
+    "CARGO-OTHER-DETAILS": "Other Details",
+    "CARGO-NATURE": "Nature",
+    "CARGO-ALERT":"In-Gate Alert",
+    "CARGO-NOTE":"Depot Note",
     "CARGO": "Cargo",
     "CONFIRM": "Confirm",
     "UNDO": "Undo"

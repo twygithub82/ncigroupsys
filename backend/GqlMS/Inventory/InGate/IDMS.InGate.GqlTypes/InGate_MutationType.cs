@@ -14,7 +14,7 @@ namespace IDMS.InGate.GqlTypes
     public class InGate_MutationType
     {
        //[Authorize]
-        public async Task<int> AddInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,in_gate InGate)
+        public async Task<int> AddInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, InGateWithTank InGate)
         {
             int retval = 0;   
             try
@@ -38,9 +38,10 @@ namespace IDMS.InGate.GqlTypes
                       so_tank_guid =InGate.so_tank_guid,
                       vehicle_no =InGate.vehicle_no,
                       yard_cv   =InGate.yard_cv,
+                      
                 };
 
-              
+                
                 var so_tank = context.storing_order_tank.Where(sot=> sot.guid ==InGate.so_tank_guid).Include(so=>so.storing_order).FirstOrDefault();
 
                 if (so_tank == null)
@@ -54,6 +55,21 @@ namespace IDMS.InGate.GqlTypes
                     throw new GraphQLException(new Error("Storing Order not found", "404"));
                 }
 
+                if (so.haulier != InGate.haulier)
+                {
+                    so.haulier = InGate.haulier;
+                    so.update_by = uid;
+                    so.update_dt=GqlUtils.GetNowEpochInSec();
+                }
+
+                if (InGate.tank != null)
+                {
+                    so_tank.job_no = InGate.tank.job_no;
+                    so_tank.status_cv = "ACCEPTED";
+                    so_tank.update_by = uid;
+                    so_tank.update_dt=GqlUtils.GetNowEpochInSec();
+                }
+                newInGate.eir_no = $"{so.so_no}-{GqlUtils.GetNowEpochInSec()}";
                 //if(so.haulier!=InGate.haulier)
                 //{
                 //    so.haulier = InGate.haulier;
@@ -84,7 +100,7 @@ namespace IDMS.InGate.GqlTypes
                     var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     InGate.update_by = uid;
                     InGate.update_dt=epochNow;
-
+                    
                     var so_tank = context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefault();
 
                     if (so_tank == null)
@@ -93,6 +109,7 @@ namespace IDMS.InGate.GqlTypes
                     }
 
                     var so = so_tank.storing_order;
+                    
                     if (so == null)
                     {
                         throw new GraphQLException(new Error("Storing Order not found", "404"));
@@ -101,6 +118,16 @@ namespace IDMS.InGate.GqlTypes
                     if (so.haulier != InGate.haulier)
                     {
                         so.haulier = InGate.haulier;
+                        so.update_by = uid;
+                        so.update_dt = GqlUtils.GetNowEpochInSec();
+                    }
+
+                    if(InGate.tank!=null)
+                    {
+                        so_tank.job_no= InGate.tank.job_no;
+                        so_tank.status_cv="ACCEPTED";
+                        so_tank.update_by = uid;
+                        so_tank.update_dt = GqlUtils.GetNowEpochInSec();
                     }
 
                     context.in_gate.Update(InGate);
