@@ -77,7 +77,7 @@ export interface TariffCleaningResult {
 }
 
 export const TARIFF_CLEANING_FRAGMENT = gql`
-  fragment TariffCleaningFields on storing_order_tariff_cleaning {
+  fragment TariffCleaningFields on tariff_cleaning {
     alias
     ban_type_cv
     cargo
