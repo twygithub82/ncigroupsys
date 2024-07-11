@@ -187,4 +187,17 @@ export class Utility {
       })
     );
   }
+
+  static formatContainerNumber(containerNumber: string): string {
+    // Extract the owner code, serial number, and check digit
+    const ownerCode = containerNumber.slice(0, 4);
+    const serialNumber = containerNumber.slice(4, 10);
+    const checkDigit = containerNumber.slice(10);
+  
+    // Format the serial number with a hyphen before the last digit
+    const formattedSerialNumber = `${serialNumber.slice(0, -1)}-${serialNumber.slice(-1)}`;
+  
+    // Combine the parts into the final format
+    return `${ownerCode} ${formattedSerialNumber}-${checkDigit}`;
+  }
 }

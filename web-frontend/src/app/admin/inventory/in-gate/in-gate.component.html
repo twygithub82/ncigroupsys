@@ -15,7 +15,7 @@
                   </h2>
                 </li>
                 <li class="tbl-search-box">
-                  <input placeholder="Search" type="text" [(ngModel)]="searchField" #filter
+                  <input placeholder="Search" type="text" [(ngModel)]="searchField" #filter (keydown.enter)="search()"
                     class="browser-default search-field no-prefix-search-field" aria-label="Search box">
                 </li>
                 <li class="ps-2">
@@ -25,8 +25,8 @@
                 </li>
               </ul>
             </div>
-            <div class="right">
-            </div>
+            <!-- <div class="right">
+            </div> -->
           </div>
           <div class="body overflow-auto">
             <div class="responsive_table">

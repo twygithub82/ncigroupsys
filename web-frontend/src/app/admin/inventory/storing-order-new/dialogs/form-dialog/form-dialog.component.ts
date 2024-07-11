@@ -97,6 +97,7 @@ export class FormDialogComponent {
       this.lastCargoControl.setValue(this.storingOrderTank.tariff_cleaning);
     }
   }
+
   createStorigOrderTankForm(): UntypedFormGroup {
     if (!this.canEdit()) {
       this.lastCargoControl.disable();
@@ -126,6 +127,7 @@ export class FormDialogComponent {
       flash_point: [this.storingOrderTank.tariff_cleaning?.flash_point]
     });
   }
+
   submit() {
     this.storingOrderTankForm.get('purpose')?.setErrors(null);
     this.storingOrderTankForm.get('required_temp')?.setErrors(null);
@@ -137,7 +139,7 @@ export class FormDialogComponent {
         var sot: StoringOrderTankItem = {
           ...this.storingOrderTank,
           unit_type_guid: this.storingOrderTankForm.value['unit_type_guid'],
-          tank_no: this.storingOrderTankForm.value['tank_no'],
+          tank_no: Utility.formatContainerNumber(this.storingOrderTankForm.value['tank_no']),
           last_cargo_guid: this.storingOrderTankForm.value['last_cargo_guid'],
           tariff_cleaning: this.lastCargoControl.value,
           job_no: this.storingOrderTankForm.value['job_no'],

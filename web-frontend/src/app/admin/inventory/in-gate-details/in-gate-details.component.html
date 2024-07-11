@@ -6,11 +6,11 @@
     </div>
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <form class="ms-0" [formGroup]="inGateForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
+        <form class="ms-0" [formGroup]="inGateForm!" (ngSubmit)="onInGateFormSubmit()" #formDirective="ngForm">
           <div class="card">
             <div class="header">
               <h2>
-                {{langText.ORDER_DETAILS | translate}}
+                {{translatedLangText.ORDER_DETAILS}}
               </h2>
             </div>
             <div class="body">
@@ -20,42 +20,43 @@
                 </mat-progress-spinner>
               </div>
               }
+              @if (!(sotDS.loading$ | async)) {
               <mat-card-content>
                 <div class="row">
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{langText.SO_NO | translate}}:</span>
+                        <span>{{translatedLangText.SO_NO}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.so_no}}</div>
+                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_no}}</div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{langText.SO_NOTES | translate}}:</span>
+                        <span>{{translatedLangText.SO_NOTES}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.so_notes}}</div>
+                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_notes}}</div>
                       </div>
                     </div>
                   </div>
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{langText.CUSTOMER | translate}}:</span>
+                        <span>{{translatedLangText.CUSTOMER}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">
+                        <div class="contact-detail-info font-bold">
                           {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{langText.ALIAS_NAME | translate}}:</span>
+                        <span>{{translatedLangText.ALIAS_NAME}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">
+                        <div class="contact-detail-info font-bold">
                           {{storingOrderTankItem?.storing_order?.customer_company?.alias}}</div>
                       </div>
                     </div>
@@ -63,81 +64,277 @@
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{langText.SO_DATE | translate}}:</span>
+                        <span>{{translatedLangText.SO_DATE}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">{{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
+                        <div class="contact-detail-info font-bold">{{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
                         </div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{langText.STATUS | translate}}:</span>
+                        <span>{{translatedLangText.STATUS}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.status_cv}}</div>
+                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.status_cv}}</div>
                       </div>
                     </div>
                   </div>
                 </div>
               </mat-card-content>
+              }
             </div>
           </div>
           <div class="row">
             <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 m-b-5">
-              <div class="card">
-                <div class="header">
-                  <h2>
-                    {{langText.TANK_DETAILS | translate}}
-                  </h2>
-                </div>
-                <div class="body">
-                  @if (sotDS.loading$ | async) {
-                  <div class="tbl-spinner">
-                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                    </mat-progress-spinner>
-                  </div>
-                  }
-                  <mat-card-content>
-                    <div class="row">
-                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                            <span>{{langText.TANK_NO | translate}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                            <div class="contact-detail-info">{{storingOrderTankItem?.tank_no}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                            <span>{{langText.PURPOSE | translate}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                            <div class="contact-detail-info">{{displayTankPurpose()}}</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                            <span>{{langText.EIR_NO | translate}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                            <!-- <div class="contact-detail-info">{{ccDS.displayName(storingOrderTankItem?.storing_order?.eir_no)}}</div> -->
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                            <span>{{langText.CLEANING_CONDITIONS | translate}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                            <div class="contact-detail-info">{{storingOrderTankItem?.clean_status_cv}}</div>
-                          </div>
-                        </div>
-                      </div>
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                  <div class="card">
+                    <div class="header">
+                      <h2>
+                        {{translatedLangText.TANK_DETAILS}}
+                      </h2>
                     </div>
-                  </mat-card-content>
+                    <div class="body">
+                      @if (sotDS.loading$ | async) {
+                      <div class="tbl-spinner">
+                        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                        </mat-progress-spinner>
+                      </div>
+                      }
+                      @if (!(sotDS.loading$ | async)) {
+                      <mat-card-content>
+                        <div class="row">
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
+                            <div class="row">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                                <span>{{translatedLangText.TANK_NO}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                                <div class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                                <span>{{translatedLangText.PURPOSE}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                                <div class="contact-detail-info font-bold">{{displayTankPurpose()}}</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
+                            <div class="row">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                                <span>{{translatedLangText.EIR_NO}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                                <!-- <div class="contact-detail-info">{{ccDS.displayName(storingOrderTankItem?.storing_order?.eir_no)}}</div> -->
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                                <span>{{translatedLangText.CLEANING_CONDITIONS}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                                <div class="contact-detail-info">
+                                  <span [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv}}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </mat-card-content>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                  <div class="card">
+                    <div class="header">
+                      <h2>
+                        {{translatedLangText.IN_GATE}}
+                      </h2>
+                    </div>
+                    <div class="body">
+                      @if (sotDS.loading$ | async) {
+                      <div class="tbl-spinner">
+                        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                        </mat-progress-spinner>
+                      </div>
+                      }
+                      @if (!(sotDS.loading$ | async)) {
+                      <mat-card-content>
+                        <div class="row">
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.HAULIER}}</mat-label>
+                                  <input matInput formControlName="haulier" required>
+                                  @if (inGateForm?.get('haulier')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
+                                  <input matInput formControlName="vehicle_no" required>
+                                  @if (inGateForm?.get('vehicle_no')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
+                                  <input matInput formControlName="driver_name" required>
+                                  @if (inGateForm?.get('driver_name')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                                  <input matInput formControlName="remarks" required>
+                                </mat-form-field>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.YARD}}</mat-label>
+                                  <mat-select formControlName="yard_cv" required>
+                                    @for (codeValue of yardCv; track codeValue) {
+                                    <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                                    }
+                                  </mat-select>
+                                  @if (inGateForm?.get('yard_cv')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.YARD}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.PRE_INSPECTION}}</mat-label>
+                                  <mat-select formControlName="pre_inspection_cv" required>
+                                    @for (codeValue of yesnoCv; track codeValue) {
+                                    <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                                    }
+                                  </mat-select>
+                                  @if (inGateForm?.get('pre_inspection_cv')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.PRE_INSPECTION}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.LOLO}}</mat-label>
+                                  <mat-select formControlName="lolo_cv" required>
+                                    @for (codeValue of loloCv; track codeValue) {
+                                    <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                                    }
+                                  </mat-select>
+                                  @if (inGateForm?.get('lolo_cv')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.LOLO}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                            <div class="row">
+                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
+                                  <input matInput formControlName="eir_dt" [matDatepicker]="eir_picker">
+                                  <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
+                                  <mat-datepicker #eir_picker></mat-datepicker>
+                                </mat-form-field>
+                              </div>
+                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
+                                  <input matInput formControlName="job_no" required>
+                                </mat-form-field>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
+                                  <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
+                                    formControlName="last_cargo" required>
+                                  <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
+                                    @for (tc of last_cargoList; track tc) {
+                                    <mat-option [value]="tc">
+                                      {{tc.cargo}}
+                                    </mat-option>
+                                    }
+                                  </mat-autocomplete>
+                                </mat-form-field>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-10">
+                                <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
+                                  {{translatedLangText.STORAGE}}
+                                </mat-checkbox>
+                              </div>
+                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-10">
+                                <label>{{translatedLangText.OPEN_ON_GATE}}:</label>
+                                <mat-radio-group formControlName="open_on_gate">
+                                  @for (codeValue of yesnoCv; track codeValue) {
+                                  <mat-radio-button [value]="codeValue.code_val" color="primary">
+                                    {{codeValue.description}}
+                                  </mat-radio-button>
+                                  }
+                                </mat-radio-group>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <div class="row m-t-10">
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <button mat-flat-button aria-label="Back to previous page" (click)="$event.preventDefault();"
+                              [routerLink]="['/admin/storing-order']">
+                              <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                            </button>
+                          </div>
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                            <button mat-flat-button color="primary" [ngClass]="'m-r-10'">
+                              <i class="fas fa-ambulance m-r-10"></i>{{translatedLangText.DELIVERED}}
+                            </button>
+                            <button mat-flat-button color="primary">
+                              <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}
+                            </button>
+                          </div>
+                        </div>
+                      </mat-card-content>
+                      }
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -145,41 +342,131 @@
               <div class="card">
                 <div class="header">
                   <h2>
-                    {{langText.CARGO | translate}}
+                    {{translatedLangText.CARGO}}
                   </h2>
                 </div>
                 <div class="body p-1">
+                  @if (sotDS.loading$ | async) {
+                  <div class="tbl-spinner">
+                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                    </mat-progress-spinner>
+                  </div>
+                  }
+                  @if (!(sotDS.loading$ | async)) {
                   <mat-card-content>
                     <mat-tab-group mat-stretch-tabs>
-                      <mat-tab label="Cargo Details">
-                        <!-- <mat-grid-list cols="2">
-                          <mat-grid-tile class="align-right">Cargo Name:</mat-grid-tile>
-                          <mat-grid-tile>{{storingOrderTankItem?.tariff_cleaning?.cargo}}</mat-grid-tile>
-                          <mat-grid-tile>3</mat-grid-tile>
-                          <mat-grid-tile>4</mat-grid-tile>
-                        </mat-grid-list> -->
+                      <mat-tab [label]="translatedLangText.CARGO_DETAILS">
                         <div class="container pt-2">
                           <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{langText.CARGO_NAME | translate}}
+                              {{translatedLangText.CARGO_NAME}}:
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.cargo}}
+                              {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
                             </div>
                           </div>
                           <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              Other Info:
+                              {{translatedLangText.DESCRIPTION}}:
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              Some other data
+                              {{storingOrderTankItem?.tariff_cleaning?.description ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.ALIAS_NAME}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.alias ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.CARGO_CLASS}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.class_cv ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.CARGO_UN_NO}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.un_no ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.CARGO_FLASH_POINT}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.flash_point ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.CARGO_HAZARD_LEVEL}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.hazard_level_cv ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.CARGO_BAN_TYPE}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.ban_type_cv ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.CARGO_NATURE}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.nature_cv ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.CLEANING_CATEGORY}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.cleaning_category?.name ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.TOTAL_CLEANED}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.IN_GATE_ALERT}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.in_gate_alert ?? "-"}}
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                              {{translatedLangText.MSDS}}:
+                            </div>
+                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                              {{storingOrderTankItem?.tariff_cleaning?.msds_guid ?? "-"}}
                             </div>
                           </div>
                         </div>
                       </mat-tab>
-                      <mat-tab label="Cargo Nature">Cargo Nature</mat-tab>
+                      <mat-tab [label]="translatedLangText.CARGO_NATURE">Cargo Nature</mat-tab>
                     </mat-tab-group>
                   </mat-card-content>
+                  }
                 </div>
               </div>
             </div>

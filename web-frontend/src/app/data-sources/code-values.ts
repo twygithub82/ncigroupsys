@@ -54,7 +54,7 @@ export function getCodeValuesByTypeQueries(aliases: string[]): DocumentNode {
   `;
 }
 
-export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = 'Select an option', val: string = ''): CodeValuesItem[] {
+export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
   // Check if the list already contains the default value
   const containsDefault = list.some(item => item.code_val === val);
 

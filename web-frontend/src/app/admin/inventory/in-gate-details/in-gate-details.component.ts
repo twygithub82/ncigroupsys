@@ -43,6 +43,9 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatRadioModule } from '@angular/material/radio';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -78,7 +81,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    MatGridListModule
+    MatGridListModule,
+    MatRadioModule,
   ]
 })
 export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -125,13 +129,32 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     CARGO_DETAILS: 'COMMON-FORM.CARGO-DETAILS',
     CARGO: 'COMMON-FORM.CARGO',
     CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
-    CLASS_NO: 'COMMON-FORM.CLASS-NO',
-    UN_NO: 'COMMON-FORM.UN-NO',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    HAZARD_LEVEL: 'COMMON-FORM.HAZARD-LEVEL',
-    BAN_TYPE: 'COMMON-FORM.BAN-TYPE',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
-    CLEANING_CATEGORY: 'COMMON-FORM.CLEANING-CATEGORY'
+    CLEANING_CATEGORY: 'COMMON-FORM.CLEANING-CATEGORY',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    TOTAL_CLEANED: 'COMMON-FORM.TOTAL-CLEANED',
+    IN_GATE_ALERT: 'COMMON-FORM.IN-GATE-ALERT',
+    MSDS: 'COMMON-FORM.MSDS',
+    IN_GATE: 'COMMON-FORM.IN-GATE',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
+    HAULIER: 'COMMON-FORM.HAULIER',
+    VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
+    DRIVER_NAME: 'COMMON-FORM.DRIVER-NAME',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    YARD: 'COMMON-FORM.YARD',
+    PRE_INSPECTION: 'COMMON-FORM.PRE-INSPECTION',
+    LOLO: 'COMMON-FORM.LOLO',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    BACK: 'COMMON-FORM.BACK',
+    DELIVERED: 'COMMON-FORM.DELIVERED',
+    EIR_FORM: 'COMMON-FORM.EIR-FORM',
   }
 
   inGateForm?: UntypedFormGroup;
@@ -141,15 +164,20 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   cvDS: CodeValuesDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
+  tcDS: TariffCleaningDS;
+  igDS: InGateDS;
 
   sot_guid?: string | null;
 
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
+  yesnoCv: CodeValuesItem[] = [];
+  yardCv: CodeValuesItem[] = [];
+  loloCv: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-  customer_companyList?: CustomerCompanyItem[];
+  last_cargoList?: TariffCleaningItem[];
 
   constructor(
     public httpClient: HttpClient,
@@ -163,10 +191,12 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   ) {
     super();
     this.translateLangText();
-    this.initSearchForm();
+    this.createInGateForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.tcDS = new TariffCleaningDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -175,22 +205,29 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeFilterCustomerCompany();
+    this.initializeFilter();
     this.loadData();
   }
+
   refresh() {
     this.loadData();
   }
-  initSearchForm() {
+
+  createInGateForm() {
     this.inGateForm = this.fb.group({
-      so_no: [''],
-      customer_code: this.customerCodeControl,
+      eir_dt: [{ value: new Date(), disabled: true }],
+      job_no: [],
+      haulier: [],
+      vehicle_no: [''],
+      driver_name: [''],
+      remarks: [''],
+      last_cargo_guid: [''],
       last_cargo: this.lastCargoControl,
-      so_status: [''],
-      tank_no: [''],
-      job_no: [''],
-      purpose: [''],
-      eta_dt: [''],
+      purpose_storage: [''],
+      open_on_gate: [{ value: '', disabled: true }],
+      yard_cv: [''],
+      pre_inspection_cv: [''],
+      lolo_cv: ['BOTH'] // default BOTH
     });
   }
 
@@ -201,6 +238,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       this.subs.sink = this.sotDS.getStoringOrderTankByID(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.storingOrderTankItem = data[0];
+          this.populateInGateForm(this.storingOrderTankItem);
         }
       });
     } else {
@@ -209,17 +247,29 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' }
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'loloCv', codeValType: 'LOLO' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
       this.soStatusCvList = data;
-      this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
+    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
+      this.yesnoCv = data;
+    });
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      this.yardCv = data;
+    });
+    this.cvDS.connectAlias('loloCv').subscribe(data => {
+      this.loloCv = data;
+    });
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -232,6 +282,28 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       horizontalPosition: placementAlign,
       panelClass: colorName,
     });
+  }
+
+  populateInGateForm(sot: StoringOrderTankItem): void {
+    this.inGateForm!.patchValue({
+      haulier: sot.storing_order?.haulier,
+      vehicle_no: '',
+      driver_name: '',
+      eir_dt: sot.in_gate?.create_dt ? Utility.convertDate(sot.in_gate?.create_dt) : new Date(),
+      job_no: sot.job_no,
+      remarks: sot.in_gate?.remarks,
+      last_cargo_guid: sot.last_cargo_guid,
+      last_cargo: this.lastCargoControl,
+      purpose_storage: sot.purpose_storage,
+      open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
+      yard_cv: '',
+      pre_inspection_cv: '',
+      lolo_cv: 'BOTH' // default BOTH
+    });
+
+    if (sot.tariff_cleaning) {
+      this.lastCargoControl.setValue(sot.tariff_cleaning);
+    }
   }
 
   // export table data in excel file
@@ -275,21 +347,21 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   displayTankPurpose() {
     let purposes: any[] = [];
     if (this.storingOrderTankItem?.purpose_storage) {
-      purposes.push(this.getCodeDescription('STORAGE'));
+      purposes.push(this.getPurposeOptionDescription('STORAGE'));
     }
     if (this.storingOrderTankItem?.purpose_cleaning) {
-      purposes.push(this.getCodeDescription('CLEANING'));
+      purposes.push(this.getPurposeOptionDescription('CLEANING'));
     }
     if (this.storingOrderTankItem?.purpose_steam) {
-      purposes.push(this.getCodeDescription('STEAM'));
+      purposes.push(this.getPurposeOptionDescription('STEAM'));
     }
     if (this.storingOrderTankItem?.purpose_repair_cv) {
-      purposes.push(this.storingOrderTankItem?.purpose_repair_cv);
+      purposes.push(this.getPurposeOptionDescription(this.storingOrderTankItem?.purpose_repair_cv));
     }
-    return purposes.join(', ');
+    return purposes.join('; ');
   }
 
-  getCodeDescription(codeValType: string): string | undefined {
+  getPurposeOptionDescription(codeValType: string): string | undefined {
     let cv = this.purposeOptionCvList.filter(cv => cv.code_val === codeValType);
     if (cv.length) {
       return cv[0].description;
@@ -297,8 +369,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     return '';
   }
 
-  initializeFilterCustomerCompany() {
-    this.inGateForm!.get('customer_code')!.valueChanges.pipe(
+  initializeFilter() {
+    this.inGateForm!.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -306,20 +378,24 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value.cargo;
         }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+          this.last_cargoList = data
         });
       })
     ).subscribe();
   }
 
-  onSOFormSubmit() {
-    this.inGateForm!.get('sotList')?.setErrors(null);
+  onInGateFormSubmit() {
     if (this.inGateForm?.valid) {
+      console.log('Valid inGateForm', this.inGateForm?.value);
+      // let ig = new InGateGO({
+      //   so_tank_guid: this.storingOrderTankItem?.guid
+      // })
+      // this.igDS.addInGate(ig);
     } else {
-      console.log('Invalid soForm', this.inGateForm?.value);
+      console.log('Invalid inGateForm', this.inGateForm?.value);
     }
   }
 
@@ -327,5 +403,20 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  displayLastCargoFn(tc: TariffCleaningItem): string {
+    return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  cleanStatusColor(clean_status_cv?: string): string {
+    if (clean_status_cv === 'DIRTY') {
+      return "label bg-red";
+    }
+
+    if (clean_status_cv === 'CLEAN') {
+      return "label bg-green";
+    }
+    return "";
   }
 }
