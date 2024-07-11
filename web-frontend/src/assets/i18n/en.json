@@ -246,7 +246,9 @@
     "DRIVER-NAME": "Driver Name",
     "YARD": "Yard",
     "PRE-INSPECTION": "Pre-Inspection",
-    "LOLO": "LOLO"
+    "LOLO": "LOLO",
+    "DELIVERED": "Delivered",
+    "EIR-FORM": "EIR Form"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

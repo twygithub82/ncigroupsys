@@ -44,6 +44,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatRadioModule } from '@angular/material/radio';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -148,7 +150,11 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     REMARKS: 'COMMON-FORM.REMARKS',
     YARD: 'COMMON-FORM.YARD',
     PRE_INSPECTION: 'COMMON-FORM.PRE-INSPECTION',
-    LOLO: 'COMMON-FORM.LOLO'
+    LOLO: 'COMMON-FORM.LOLO',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    BACK: 'COMMON-FORM.BACK',
+    DELIVERED: 'COMMON-FORM.DELIVERED',
+    EIR_FORM: 'COMMON-FORM.EIR-FORM',
   }
 
   inGateForm?: UntypedFormGroup;
@@ -158,6 +164,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   cvDS: CodeValuesDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
+  tcDS: TariffCleaningDS;
+  igDS: InGateDS;
 
   sot_guid?: string | null;
 
@@ -165,10 +173,11 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   purposeOptionCvList: CodeValuesItem[] = [];
   yesnoCv: CodeValuesItem[] = [];
   yardCv: CodeValuesItem[] = [];
+  loloCv: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-  customer_companyList?: CustomerCompanyItem[];
+  last_cargoList?: TariffCleaningItem[];
 
   constructor(
     public httpClient: HttpClient,
@@ -186,6 +195,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.tcDS = new TariffCleaningDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -194,7 +205,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeFilterCustomerCompany();
+    this.initializeFilter();
     this.loadData();
   }
 
@@ -214,9 +225,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       last_cargo: this.lastCargoControl,
       purpose_storage: [''],
       open_on_gate: [{ value: '', disabled: true }],
-      yard: [''],
-      pre_inspection: [''],
-      lolo: ['']
+      yard_cv: [''],
+      pre_inspection_cv: [''],
+      lolo_cv: ['BOTH'] // default BOTH
     });
   }
 
@@ -238,12 +249,12 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      { alias: 'yardCv', codeValType: 'YARD' }
+      { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'loloCv', codeValType: 'LOLO' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
       this.soStatusCvList = data;
-      this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
@@ -254,7 +265,11 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCv = data;
     });
+    this.cvDS.connectAlias('loloCv').subscribe(data => {
+      this.loloCv = data;
+    });
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -272,8 +287,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   populateInGateForm(sot: StoringOrderTankItem): void {
     this.inGateForm!.patchValue({
       haulier: sot.storing_order?.haulier,
-      vehicle_no: [''],
-      driver_name: [''],
+      vehicle_no: '',
+      driver_name: '',
       eir_dt: sot.in_gate?.create_dt ? Utility.convertDate(sot.in_gate?.create_dt) : new Date(),
       job_no: sot.job_no,
       remarks: sot.in_gate?.remarks,
@@ -281,10 +296,14 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       last_cargo: this.lastCargoControl,
       purpose_storage: sot.purpose_storage,
       open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
-      yard: [''],
-      pre_inspection: [''],
-      lolo: ['']
+      yard_cv: '',
+      pre_inspection_cv: '',
+      lolo_cv: 'BOTH' // default BOTH
     });
+
+    if (sot.tariff_cleaning) {
+      this.lastCargoControl.setValue(sot.tariff_cleaning);
+    }
   }
 
   // export table data in excel file
@@ -328,21 +347,21 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   displayTankPurpose() {
     let purposes: any[] = [];
     if (this.storingOrderTankItem?.purpose_storage) {
-      purposes.push(this.getCodeDescription('STORAGE'));
+      purposes.push(this.getPurposeOptionDescription('STORAGE'));
     }
     if (this.storingOrderTankItem?.purpose_cleaning) {
-      purposes.push(this.getCodeDescription('CLEANING'));
+      purposes.push(this.getPurposeOptionDescription('CLEANING'));
     }
     if (this.storingOrderTankItem?.purpose_steam) {
-      purposes.push(this.getCodeDescription('STEAM'));
+      purposes.push(this.getPurposeOptionDescription('STEAM'));
     }
     if (this.storingOrderTankItem?.purpose_repair_cv) {
-      purposes.push(this.storingOrderTankItem?.purpose_repair_cv);
+      purposes.push(this.getPurposeOptionDescription(this.storingOrderTankItem?.purpose_repair_cv));
     }
-    return purposes.join(', ');
+    return purposes.join('; ');
   }
 
-  getCodeDescription(codeValType: string): string | undefined {
+  getPurposeOptionDescription(codeValType: string): string | undefined {
     let cv = this.purposeOptionCvList.filter(cv => cv.code_val === codeValType);
     if (cv.length) {
       return cv[0].description;
@@ -350,14 +369,33 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     return '';
   }
 
-  initializeFilterCustomerCompany() {
+  initializeFilter() {
+    this.inGateForm!.get('last_cargo')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.cargo;
+        }
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+          this.last_cargoList = data
+        });
+      })
+    ).subscribe();
   }
 
-  onSOFormSubmit() {
-    this.inGateForm!.get('sotList')?.setErrors(null);
+  onInGateFormSubmit() {
     if (this.inGateForm?.valid) {
+      console.log('Valid inGateForm', this.inGateForm?.value);
+      // let ig = new InGateGO({
+      //   so_tank_guid: this.storingOrderTankItem?.guid
+      // })
+      // this.igDS.addInGate(ig);
     } else {
-      console.log('Invalid soForm', this.inGateForm?.value);
+      console.log('Invalid inGateForm', this.inGateForm?.value);
     }
   }
 
@@ -365,5 +403,20 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  displayLastCargoFn(tc: TariffCleaningItem): string {
+    return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  cleanStatusColor(clean_status_cv?: string): string {
+    if (clean_status_cv === 'DIRTY') {
+      return "label bg-red";
+    }
+
+    if (clean_status_cv === 'CLEAN') {
+      return "label bg-green";
+    }
+    return "";
   }
 }

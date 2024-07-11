@@ -6,7 +6,7 @@
     </div>
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <form class="ms-0" [formGroup]="inGateForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
+        <form class="ms-0" [formGroup]="inGateForm!" (ngSubmit)="onInGateFormSubmit()" #formDirective="ngForm">
           <div class="card">
             <div class="header">
               <h2>
@@ -29,7 +29,7 @@
                         <span>{{translatedLangText.SO_NO}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.so_no}}</div>
+                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_no}}</div>
                       </div>
                     </div>
                     <div class="row">
@@ -37,7 +37,7 @@
                         <span>{{translatedLangText.SO_NOTES}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.so_notes}}</div>
+                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_notes}}</div>
                       </div>
                     </div>
                   </div>
@@ -47,7 +47,7 @@
                         <span>{{translatedLangText.CUSTOMER}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">
+                        <div class="contact-detail-info font-bold">
                           {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
                       </div>
                     </div>
@@ -56,7 +56,7 @@
                         <span>{{translatedLangText.ALIAS_NAME}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">
+                        <div class="contact-detail-info font-bold">
                           {{storingOrderTankItem?.storing_order?.customer_company?.alias}}</div>
                       </div>
                     </div>
@@ -67,7 +67,7 @@
                         <span>{{translatedLangText.SO_DATE}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">{{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
+                        <div class="contact-detail-info font-bold">{{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
                         </div>
                       </div>
                     </div>
@@ -76,7 +76,7 @@
                         <span>{{translatedLangText.STATUS}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info">{{storingOrderTankItem?.storing_order?.status_cv}}</div>
+                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.status_cv}}</div>
                       </div>
                     </div>
                   </div>
@@ -111,7 +111,7 @@
                                 <span>{{translatedLangText.TANK_NO}}:</span>
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                                <div class="contact-detail-info">{{storingOrderTankItem?.tank_no}}</div>
+                                <div class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</div>
                               </div>
                             </div>
                             <div class="row">
@@ -119,7 +119,7 @@
                                 <span>{{translatedLangText.PURPOSE}}:</span>
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                                <div class="contact-detail-info">{{displayTankPurpose()}}</div>
+                                <div class="contact-detail-info font-bold">{{displayTankPurpose()}}</div>
                               </div>
                             </div>
                           </div>
@@ -137,7 +137,9 @@
                                 <span>{{translatedLangText.CLEANING_CONDITIONS}}:</span>
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                                <div class="contact-detail-info">{{storingOrderTankItem?.clean_status_cv}}</div>
+                                <div class="contact-detail-info">
+                                  <span [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv}}</span>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -172,6 +174,11 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                                   <input matInput formControlName="haulier" required>
+                                  @if (inGateForm?.get('haulier')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
                                 </mat-form-field>
                               </div>
                             </div>
@@ -180,15 +187,82 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
                                   <input matInput formControlName="vehicle_no" required>
+                                  @if (inGateForm?.get('vehicle_no')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
                                 </mat-form-field>
                               </div>
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
                                   <input matInput formControlName="driver_name" required>
+                                  @if (inGateForm?.get('driver_name')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
                                 </mat-form-field>
                               </div>
                             </div>
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                                  <input matInput formControlName="remarks" required>
+                                </mat-form-field>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.YARD}}</mat-label>
+                                  <mat-select formControlName="yard_cv" required>
+                                    @for (codeValue of yardCv; track codeValue) {
+                                    <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                                    }
+                                  </mat-select>
+                                  @if (inGateForm?.get('yard_cv')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.YARD}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.PRE_INSPECTION}}</mat-label>
+                                  <mat-select formControlName="pre_inspection_cv" required>
+                                    @for (codeValue of yesnoCv; track codeValue) {
+                                    <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                                    }
+                                  </mat-select>
+                                  @if (inGateForm?.get('pre_inspection_cv')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.PRE_INSPECTION}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.LOLO}}</mat-label>
+                                  <mat-select formControlName="lolo_cv" required>
+                                    @for (codeValue of loloCv; track codeValue) {
+                                    <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                                    }
+                                  </mat-select>
+                                  @if (inGateForm?.get('lolo_cv')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.LOLO}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
@@ -208,23 +282,21 @@
                             <div class="row">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
-                                  <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                                  <input matInput formControlName="remarks" required>
-                                </mat-form-field>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
-                            <div class="row">
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                                <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                                  <input matInput formControlName="last_cargo_guid" required>
+                                  <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
+                                    formControlName="last_cargo" required>
+                                  <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
+                                    @for (tc of last_cargoList; track tc) {
+                                    <mat-option [value]="tc">
+                                      {{tc.cargo}}
+                                    </mat-option>
+                                    }
+                                  </mat-autocomplete>
                                 </mat-form-field>
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
                                   {{translatedLangText.STORAGE}}
                                 </mat-checkbox>
@@ -233,45 +305,30 @@
                                 <label>{{translatedLangText.OPEN_ON_GATE}}:</label>
                                 <mat-radio-group formControlName="open_on_gate">
                                   @for (codeValue of yesnoCv; track codeValue) {
-                                    <mat-radio-button [value]="codeValue.code_val" color="primary">
-                                      {{codeValue.description}}
-                                    </mat-radio-button>
-                                    }
+                                  <mat-radio-button [value]="codeValue.code_val" color="primary">
+                                    {{codeValue.description}}
+                                  </mat-radio-button>
+                                  }
                                 </mat-radio-group>
                               </div>
                             </div>
-                            <div class="row">
-                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
-                                <mat-form-field class="example-full-width">
-                                  <mat-label>{{translatedLangText.YARD}}</mat-label>
-                                  <mat-select formControlName="yard" required>
-                                    <!-- @for (option of data.populateData.unit_typeList; track option) {
-                                      <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
-                                      } -->
-                                  </mat-select>
-                                </mat-form-field>
-                              </div>
-                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
-                                <mat-form-field class="example-full-width">
-                                  <mat-label>{{translatedLangText.PRE_INSPECTION}}</mat-label>
-                                  <mat-select formControlName="pre_inspection" required>
-                                    <!-- @for (option of data.populateData.unit_typeList; track option) {
-                                      <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
-                                      } -->
-                                  </mat-select>
-                                </mat-form-field>
-                              </div>
-                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
-                                <mat-form-field class="example-full-width">
-                                  <mat-label>{{translatedLangText.LOLO}}</mat-label>
-                                  <mat-select formControlName="lolo" required>
-                                    <!-- @for (option of data.populateData.unit_typeList; track option) {
-                                      <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
-                                      } -->
-                                  </mat-select>
-                                </mat-form-field>
-                              </div>
-                            </div>
+                          </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <div class="row m-t-10">
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <button mat-flat-button aria-label="Back to previous page" (click)="$event.preventDefault();"
+                              [routerLink]="['/admin/storing-order']">
+                              <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                            </button>
+                          </div>
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                            <button mat-flat-button color="primary" [ngClass]="'m-r-10'">
+                              <i class="fas fa-ambulance m-r-10"></i>{{translatedLangText.DELIVERED}}
+                            </button>
+                            <button mat-flat-button color="primary">
+                              <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}
+                            </button>
                           </div>
                         </div>
                       </mat-card-content>

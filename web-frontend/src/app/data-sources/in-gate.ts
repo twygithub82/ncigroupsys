@@ -5,28 +5,20 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-// import { CleaningCategoryItem } from './cleaning_category';
-// import { CleaningMethodItem } from './cleaning_method';
-import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
 import { BaseDataSource } from './base-ds';
+
 export class InGateGO {
   public guid?: string;
-  public cleaning_method_guid?: string;
-  public cleaning_category_guid?: string;
-  public msds_guid?: string;
-  public cargo?: string;
-  public alias?: string;
-  public un_no?: string;
-  public flash_point?: string;
-  public description?: string;
-  public class_cv?: string;
-  public hazard_level_cv?: string;
-  public ban_type_cv?: string;
-  public nature_cv?: string;
-  public open_on_gate_cv?: string;
-  public in_gate_alert?: string;
-  public depot_note?: number;
-  public remarks?: number;
+  public driver_name?: string;
+  public eir_date?: string;
+  public eir_doc?: string;
+  public eir_no?: string;
+  public lolo_cv?: string;
+  public preinspection_cv?: string;
+  public so_tank_guid?: string;
+  public vehicle_no?: string;
+  public yard_cv?: string;
+  public remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -35,21 +27,15 @@ export class InGateGO {
 
   constructor(item: Partial<InGateGO> = {}) {
     this.guid = item.guid;
-    this.cleaning_method_guid = item.cleaning_method_guid;
-    this.cleaning_category_guid = item.cleaning_category_guid;
-    this.msds_guid = item.msds_guid;
-    this.cargo = item.cargo;
-    this.alias = item.alias;
-    this.un_no = item.un_no;
-    this.flash_point = item.flash_point;
-    this.description = item.description;
-    this.class_cv = item.class_cv;
-    this.hazard_level_cv = item.hazard_level_cv;
-    this.ban_type_cv = item.ban_type_cv;
-    this.nature_cv = item.nature_cv;
-    this.open_on_gate_cv = item.open_on_gate_cv;
-    this.in_gate_alert = item.in_gate_alert;
-    this.depot_note = item.depot_note;
+    this.driver_name = item.driver_name;
+    this.eir_date = item.eir_date;
+    this.eir_doc = item.eir_doc;
+    this.eir_no = item.eir_no;
+    this.lolo_cv = item.lolo_cv;
+    this.preinspection_cv = item.preinspection_cv;
+    this.so_tank_guid = item.so_tank_guid;
+    this.vehicle_no = item.vehicle_no;
+    this.yard_cv = item.yard_cv;
     this.remarks = item.remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
@@ -75,29 +61,25 @@ export interface InGateResult {
   totalCount: number;
 }
 
-export const TARIFF_CLEANING_FRAGMENT = gql`
-  fragment TariffCleaningFields on storing_order_tariff_cleaning {
-    alias
-    ban_type_cv
-    cargo
-    class_cv
-    cleaning_category_guid
-    cleaning_method_guid
+export const IN_GATE_FRAGMENT = gql`
+  fragment in_gateInputFields on in_gateInput {
     create_by
     create_dt
     delete_dt
-    depot_note
-    description
-    flash_point
+    driver_name
+    eir_date
+    eir_doc
+    eir_no
     guid
-    hazard_level_cv
-    in_gate_alert
-    nature_cv
-    open_on_gate_cv
+    haulier
+    lolo_cv
+    preinspection_cv
+    so_tank_guid
     remarks
-    un_no
     update_by
     update_dt
+    vehicle_no
+    yard_cv
   }
 `;
 
@@ -138,79 +120,16 @@ export const GET_TARIFF_CLEANING_QUERY = gql`
   }
 `;
 
-export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD = gql`
-  query queryTariffCleaning($where: tariff_cleaningFilterInput) {
-    lastCargo: queryTariffCleaning(where: $where) {
-      nodes {
-        alias
-        ban_type_cv
-        cargo
-        class_child_cv
-        class_cv
-        cleaning_category_guid
-        cleaning_method_guid
-        create_by
-        create_dt
-        delete_dt
-        depot_note
-        description
-        flash_point
-        guid
-        hazard_level_cv
-        in_gate_alert
-        nature_cv
-        open_on_gate_cv
-        remarks
-        un_no
-        update_by
-        update_dt
-        cleaning_category_with_tariff {
-          ...CleaningCategoryFragment
-        }
-        cleaning_method_with_tariff {
-          ...CleaningMethodFragment
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      totalCount
-    }
+export const ADD_IN_GATE = gql`
+  mutation AddInGate($inGate: in_gateInput!) {
+    addInGate(inGate: $inGate)
   }
-  ${CLEANING_METHOD_FRAGMENT}
-  ${CLEANING_CATEGORY_FRAGMENT}
 `;
 
-export class TariffCleaningDS extends BaseDataSource<InGateItem> {
+export class InGateDS extends BaseDataSource<InGateItem> {
   public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
-  }
-
-  loadItemsWithCategoryMethod(where?: any, order?: any): Observable<InGateItem[]> {
-    this.loadingSubject.next(true);
-    return this.apollo
-      .query<any>({
-        query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD,
-        variables: { where, order }
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of([] as InGateItem[]); // Return an empty array on error
-        }),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(lastCargo.nodes);
-          this.totalCount = lastCargo.totalCount;
-          return lastCargo.nodes;
-        })
-      );
   }
 
   loadItems(where?: any, order?: any): Observable<InGateItem[]> {
@@ -234,5 +153,14 @@ export class TariffCleaningDS extends BaseDataSource<InGateItem> {
           return lastCargo.nodes;
         })
       );
+  }
+
+  addInGate(inGate: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ADD_IN_GATE,
+      variables: {
+        inGate
+      }
+    });
   }
 }
