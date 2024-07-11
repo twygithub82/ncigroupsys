@@ -20,6 +20,7 @@ import { Apollo } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 
 export interface DialogData {
   action?: string;
@@ -70,7 +71,7 @@ export class FormDialogComponent {
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
-  lastCargoControl = new UntypedFormControl();
+  lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -131,6 +132,7 @@ export class FormDialogComponent {
   submit() {
     this.storingOrderTankForm.get('purpose')?.setErrors(null);
     this.storingOrderTankForm.get('required_temp')?.setErrors(null);
+    debugger
     if (this.storingOrderTankForm?.valid) {
       if (!this.validatePurpose()) {
         this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
@@ -162,7 +164,7 @@ export class FormDialogComponent {
       }
     } else {
       console.log('invalid');
-      //this.findInvalidControls();
+      this.findInvalidControls();
     }
   }
   markFormGroupTouched(formGroup: UntypedFormGroup): void {

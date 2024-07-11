@@ -166,9 +166,14 @@
                   </mat-option>
                   }
                 </mat-autocomplete>
-                @if (storingOrderTankForm.get('last_cargo_guid')?.hasError('required')) {
+                @if (storingOrderTankForm.get('last_cargo')?.hasError('required')) {
                 <mat-error>
                   {{data.langText.LAST_CARGO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                </mat-error>
+                }
+                @if (storingOrderTankForm.get('last_cargo')?.hasError('invalidSelection')) {
+                <mat-error>
+                  {{data.langText.INVALID_SELECTION | translate}}
                 </mat-error>
                 }
               </mat-form-field>

@@ -29,7 +29,6 @@ export class StoringOrderTankGO {
   public etr_dt?: number | Date;
   public status_cv?: string;
   public storing_order?: StoringOrderItem
-  public action?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -54,7 +53,7 @@ export class StoringOrderTankGO {
     this.remarks = item.remarks || '';
     this.etr_dt = item.etr_dt || undefined;
     this.status_cv = item.status_cv || '';
-    this.action = item.action || '';
+    this.storing_order = item.storing_order || undefined;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -73,6 +72,15 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.tariff_cleaning = item.tariff_cleaning;
     this.in_gate = item.in_gate;
     this.actions = item.actions || [];
+  }
+}
+
+export class StoringOrderTankUpdateSO extends StoringOrderTankGO {
+  public action?: string;
+
+  constructor(item: Partial<StoringOrderTankUpdateSO> = {}) {
+    super(item); // Call the constructor of the parent class
+    this.action = item.action || '';
   }
 }
 
@@ -203,8 +211,10 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
         storing_order {
           so_no
           so_notes
+          haulier
           create_dt
           status_cv
+          customer_company_guid
           customer_company {
             code
             guid

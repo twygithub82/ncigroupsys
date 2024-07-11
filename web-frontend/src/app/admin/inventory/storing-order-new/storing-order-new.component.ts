@@ -35,7 +35,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
@@ -159,7 +159,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
-    UNDO: 'COMMON-FORM.UNDO'
+    UNDO: 'COMMON-FORM.UNDO',
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -613,6 +614,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   onSOFormSubmit() {
     this.soForm!.get('sotList')?.setErrors(null);
     if (this.soForm?.valid) {
+      debugger
       if (!this.sotList.data.length) {
         this.soForm.get('sotList')?.setErrors({ required: true });
       } else {
@@ -626,7 +628,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           const actions = Array.isArray(item!.actions) ? item!.actions : [];
           const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
         
-          return new StoringOrderTankGO({
+          return new StoringOrderTankUpdateSO({
             ...item,
             action: latestAction // Set the latest action as the single action
           });

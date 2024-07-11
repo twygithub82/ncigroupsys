@@ -33,7 +33,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
@@ -416,12 +416,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         so.haulier = this.tcForm.value['haulier'];
         so.so_notes = this.tcForm.value['so_notes'];
 
-        const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankItem>) => {
+        const sot: StoringOrderTankUpdateSO[] = this.sotList.data.map((item: Partial<StoringOrderTankItem>) => {
           // Ensure action is an array and take the last action only
           const actions = Array.isArray(item!.actions) ? item!.actions : [];
           const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
         
-          return new StoringOrderTankGO({
+          return new StoringOrderTankUpdateSO({
             ...item,
             action: latestAction // Set the latest action as the single action
           });

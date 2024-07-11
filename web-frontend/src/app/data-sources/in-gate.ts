@@ -6,12 +6,12 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
+import { StoringOrderTankGO } from './storing-order-tank';
 
 export class InGateGO {
   public guid?: string;
   public driver_name?: string;
   public eir_date?: string;
-  public eir_doc?: string;
   public eir_no?: string;
   public lolo_cv?: string;
   public preinspection_cv?: string;
@@ -19,6 +19,7 @@ export class InGateGO {
   public vehicle_no?: string;
   public yard_cv?: string;
   public remarks?: string;
+  public tank?: StoringOrderTankGO;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -29,7 +30,6 @@ export class InGateGO {
     this.guid = item.guid;
     this.driver_name = item.driver_name;
     this.eir_date = item.eir_date;
-    this.eir_doc = item.eir_doc;
     this.eir_no = item.eir_no;
     this.lolo_cv = item.lolo_cv;
     this.preinspection_cv = item.preinspection_cv;
@@ -37,6 +37,7 @@ export class InGateGO {
     this.vehicle_no = item.vehicle_no;
     this.yard_cv = item.yard_cv;
     this.remarks = item.remarks;
+    this.tank = item.tank;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -62,7 +63,7 @@ export interface InGateResult {
 }
 
 export const IN_GATE_FRAGMENT = gql`
-  fragment in_gateInputFields on in_gateInput {
+  fragment InGateWithTankInputFields on InGateWithTankInput {
     create_by
     create_dt
     delete_dt
@@ -121,7 +122,7 @@ export const GET_TARIFF_CLEANING_QUERY = gql`
 `;
 
 export const ADD_IN_GATE = gql`
-  mutation AddInGate($inGate: in_gateInput!) {
+  mutation AddInGate($inGate: InGateWithTankInput!) {
     addInGate(inGate: $inGate)
   }
 `;

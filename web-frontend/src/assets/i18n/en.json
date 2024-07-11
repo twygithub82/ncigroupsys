@@ -242,7 +242,6 @@
     "IN-GATE-ALERT": "In-Gate Alert",
     "MSDS": "MSDS",
     "CARGO-OTHER-DETAILS": "Other Details",
-    "CARGO-NATURE": "Nature",
     "CARGO-ALERT":"In-Gate Alert",
     "CARGO-NOTE":"Depot Note",
     "CARGO": "Cargo",
@@ -256,7 +255,8 @@
     "PRE-INSPECTION": "Pre-Inspection",
     "LOLO": "LOLO",
     "DELIVERED": "Delivered",
-    "EIR-FORM": "EIR Form"
+    "EIR-FORM": "EIR Form",
+    "INVALID-SELECTION": "Invalid Selection"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

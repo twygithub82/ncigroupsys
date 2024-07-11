@@ -210,7 +210,7 @@
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                                  <input matInput formControlName="remarks" required>
+                                  <input matInput formControlName="remarks">
                                 </mat-form-field>
                               </div>
                             </div>
@@ -218,7 +218,7 @@
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.YARD}}</mat-label>
-                                  <mat-select formControlName="yard_cv" required>
+                                  <mat-select formControlName="yard_cv">
                                     @for (codeValue of yardCv; track codeValue) {
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
@@ -233,12 +233,12 @@
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.PRE_INSPECTION}}</mat-label>
-                                  <mat-select formControlName="pre_inspection_cv" required>
+                                  <mat-select formControlName="preinspection_cv">
                                     @for (codeValue of yesnoCv; track codeValue) {
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
                                   </mat-select>
-                                  @if (inGateForm?.get('pre_inspection_cv')?.hasError('required')) {
+                                  @if (inGateForm?.get('preinspection_cv')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.PRE_INSPECTION}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
