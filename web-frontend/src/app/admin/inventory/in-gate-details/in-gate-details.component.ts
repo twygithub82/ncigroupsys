@@ -217,8 +217,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   createInGateForm() {
     this.inGateForm = this.fb.group({
       eir_dt: [{ value: new Date(), disabled: true }],
-      job_no: [],
-      haulier: [],
+      job_no: [''],
+      haulier: [''],
       vehicle_no: [''],
       driver_name: [''],
       remarks: [''],
@@ -440,7 +440,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      //this.router.navigate(['/admin/storing-order']);
+      this.router.navigate(['/admin/in-gate']);
     }
   }
 }

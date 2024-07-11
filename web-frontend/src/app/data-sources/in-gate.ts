@@ -9,7 +9,7 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankGO } from './storing-order-tank';
 
 export class InGateGO {
-  public guid?: string;
+  public guid?: string = '';
   public driver_name?: string;
   public eir_date?: string;
   public eir_no?: string;
@@ -27,7 +27,7 @@ export class InGateGO {
   public delete_dt?: number;
 
   constructor(item: Partial<InGateGO> = {}) {
-    this.guid = item.guid;
+    this.guid = item.guid || '';
     this.driver_name = item.driver_name;
     this.eir_date = item.eir_date;
     this.eir_no = item.eir_no;
