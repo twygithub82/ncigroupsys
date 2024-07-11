@@ -143,9 +143,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   cCategoryDS:CleaningCategoryDS;
   cMethodDS:CleaningMethodDS;
 
-  cCategoryList : CleaningCategoryItem[]=[];
-  cMethodList : CleaningMethodItem[]=[];
-  tcList :TariffCleaningItem[]=[];
+  
   
   
   soList: StoringOrderItem[] = [];
@@ -155,6 +153,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
+  cCategoryList : CleaningCategoryItem[]=[];
+  cMethodList : CleaningMethodItem[]=[];
+  tcList :TariffCleaningItem[]=[];
   classNoCvList :CodeValuesItem[] = [];
   banTypeCvList :CodeValuesItem[] = [];
   hazardLevelCvList :CodeValuesItem[] = [];
