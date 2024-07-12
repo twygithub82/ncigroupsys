@@ -32,14 +32,14 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -155,6 +155,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     BACK: 'COMMON-FORM.BACK',
     DELIVERED: 'COMMON-FORM.DELIVERED',
     EIR_FORM: 'COMMON-FORM.EIR-FORM',
+    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
   }
 
   inGateForm?: UntypedFormGroup;
@@ -216,8 +217,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   createInGateForm() {
     this.inGateForm = this.fb.group({
       eir_dt: [{ value: new Date(), disabled: true }],
-      job_no: [],
-      haulier: [],
+      job_no: [''],
+      haulier: [''],
       vehicle_no: [''],
       driver_name: [''],
       remarks: [''],
@@ -226,7 +227,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       purpose_storage: [''],
       open_on_gate: [{ value: '', disabled: true }],
       yard_cv: [''],
-      pre_inspection_cv: [''],
+      preinspection_cv: [''],
       lolo_cv: ['BOTH'] // default BOTH
     });
   }
@@ -297,7 +298,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       purpose_storage: sot.purpose_storage,
       open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
       yard_cv: '',
-      pre_inspection_cv: '',
+      preinspection_cv: '',
       lolo_cv: 'BOTH' // default BOTH
     });
 
@@ -390,10 +391,25 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   onInGateFormSubmit() {
     if (this.inGateForm?.valid) {
       console.log('Valid inGateForm', this.inGateForm?.value);
-      // let ig = new InGateGO({
-      //   so_tank_guid: this.storingOrderTankItem?.guid
-      // })
-      // this.igDS.addInGate(ig);
+      this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.value['haulier'];
+      let so = new StoringOrderGO(this.storingOrderTankItem!.storing_order);
+      let sot = new StoringOrderTankGO(this.storingOrderTankItem);
+      sot.storing_order = so;
+      let ig = new InGateGO({
+        so_tank_guid: this.storingOrderTankItem?.guid,
+        driver_name: this.inGateForm.value['driver_name'],
+        vehicle_no: this.inGateForm.value['vehicle_no'],
+        remarks: this.inGateForm.value['remarks'],
+        tank: sot,
+        yard_cv: this.inGateForm.value['yard_cv'],
+        preinspection_cv: this.inGateForm.value['preinspection_cv'],
+        lolo_cv: this.inGateForm.value['lolo_cv'],
+      })
+      console.log(ig);
+      this.igDS.addInGate(ig).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result?.data?.addInGate);
+      });
     } else {
       console.log('Invalid inGateForm', this.inGateForm?.value);
     }
@@ -418,5 +434,13 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       return "label bg-green";
     }
     return "";
+  }
+
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/in-gate']);
+    }
   }
 }
