@@ -249,9 +249,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   public loadData() {
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-      this.customer_companyList = data
-    });
     this.so_guid = this.route.snapshot.paramMap.get('id');
     if (this.so_guid) {
       // EDIT
@@ -260,6 +257,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           this.storingOrderItem = data[0];
           this.populateSOForm(this.storingOrderItem);
         }
+      });
+    } else {
+      this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+        this.customer_companyList = data
       });
     }
     const queries = [
@@ -299,8 +300,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   populateSOForm(so: StoringOrderItem): void {
     this.soForm!.patchValue({
       guid: so.guid,
-      customer_company_guid: so.customer_company_guid,
       customer_code: so.customer_company,
+      customer_company_guid: so.customer_company_guid,
       so_no: so.so_no,
       so_notes: so.so_notes,
       haulier: so.haulier
@@ -612,9 +613,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   onSOFormSubmit() {
+    console.log(this.soForm!.value['customer_company_guid']);
     this.soForm!.get('sotList')?.setErrors(null);
     if (this.soForm?.valid) {
-      debugger
       if (!this.sotList.data.length) {
         this.soForm.get('sotList')?.setErrors({ required: true });
       } else {
@@ -627,7 +628,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           // Ensure action is an array and take the last action only
           const actions = Array.isArray(item!.actions) ? item!.actions : [];
           const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
-        
+
           return new StoringOrderTankUpdateSO({
             ...item,
             action: latestAction // Set the latest action as the single action

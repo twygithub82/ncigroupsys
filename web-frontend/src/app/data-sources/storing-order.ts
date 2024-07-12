@@ -100,6 +100,7 @@ export const SEARCH_STORING_ORDER_BY_ID = gql`
         update_by
         update_dt
         customer_company {
+          guid
           code
           name
         }

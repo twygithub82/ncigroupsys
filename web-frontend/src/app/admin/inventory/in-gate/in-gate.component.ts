@@ -218,10 +218,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
       this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
       // Execute the search
       this.subs.sink = this.sotDS.searchStoringOrderTanks(where).subscribe(data => {
-        if (this.sotDS.totalCount > 0) {
-          this.sotList = data;
-          console.log(data)
-        }
+        this.sotList = data;
       });
     }
   }
