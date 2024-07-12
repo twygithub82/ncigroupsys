@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Data.SqlTypes;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace IDMS.InGate.GqlTypes
@@ -19,6 +20,7 @@ namespace IDMS.InGate.GqlTypes
             int retval = 0;   
             try
             {
+                string so_guid = "";
                 //long epochNow = GqlUtils.GetNowEpochInSec();
                 var uid=GqlUtils.IsAuthorize(config,httpContextAccessor);
                 InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
@@ -40,7 +42,7 @@ namespace IDMS.InGate.GqlTypes
                       yard_cv   =InGate.yard_cv,
                       
                 };
-
+                
                 
                 var so_tank = context.storing_order_tank.Where(sot=> sot.guid ==InGate.so_tank_guid).Include(so=>so.storing_order).FirstOrDefault();
 
@@ -64,12 +66,20 @@ namespace IDMS.InGate.GqlTypes
 
                 if (InGate.tank != null)
                 {
+                    if(so_tank.status_cv!="WAITING")
+                    {
+                        throw new GraphQLException(new Error("Tank status is not waiting", "404"));
+                    }
                     so_tank.job_no = InGate.tank.job_no;
                     so_tank.status_cv = "ACCEPTED";
+                 //   so_tank.purpose_cleaning = InGate.tank.purpose_cleaning;
+                 //   so_tank.purpose_steam= InGate.tank.purpose_steam;
+                    so_tank.purpose_storage=InGate.tank.purpose_storage;
                     so_tank.update_by = uid;
                     so_tank.update_dt=GqlUtils.GetNowEpochInSec();
+                    so_guid = so_tank.so_guid;
                 }
-                newInGate.eir_no = $"{so.so_no}-{GqlUtils.GetNowEpochInSec()}";
+                newInGate.eir_no = $"{so.so_no}";
                 //if(so.haulier!=InGate.haulier)
                 //{
                 //    so.haulier = InGate.haulier;
@@ -77,9 +87,13 @@ namespace IDMS.InGate.GqlTypes
 
                 context.in_gate.Add(newInGate);
 
-                retval = context.SaveChanges();
-                
                
+                if (!string.IsNullOrEmpty(so_guid))
+                {
+                    CheckAndUpdateSOStatus(context, so_guid);
+                }
+
+                retval = context.SaveChanges();
             }
             catch
             {
@@ -92,6 +106,7 @@ namespace IDMS.InGate.GqlTypes
         public async Task<int> UpdateInGate([Service] ApplicationInventoryDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, InGateWithTank InGate)
         {
             int retval = 0;
+            string so_guid = "";
             try
             {
                 if (InGate != null)
@@ -126,13 +141,24 @@ namespace IDMS.InGate.GqlTypes
                     {
                         so_tank.job_no= InGate.tank.job_no;
                         so_tank.status_cv="ACCEPTED";
+                        //so_tank.purpose_cleaning = InGate.tank.purpose_cleaning;
+                      //  so_tank.purpose_steam = InGate.tank.purpose_steam;
+                        so_tank.purpose_storage = InGate.tank.purpose_storage;
                         so_tank.update_by = uid;
                         so_tank.update_dt = GqlUtils.GetNowEpochInSec();
+                        so_guid = so_tank.so_guid;
                     }
 
                     context.in_gate.Update(InGate);
-                    retval= context.SaveChanges();
-                   // retval = InGate;
+                   
+
+                    if (!string.IsNullOrEmpty(so_guid))
+                    {
+                        CheckAndUpdateSOStatus(context, so_guid);
+                    }
+
+                    retval = context.SaveChanges();
+                    // retval = InGate;
                 }
           
             }
@@ -183,6 +209,62 @@ namespace IDMS.InGate.GqlTypes
                 throw;
             }
             return retval;
+        }
+
+
+        private void CheckAndUpdateSOStatus([Service] ApplicationInventoryDBContext context, string guid)
+        {
+            try
+            {
+                var tanks = context.storing_order_tank.Where(t => t.so_guid == guid);
+                var Status = "PROCESSING";
+                int nCountCancel = 0;
+                int nCountWait = 0;
+                int nCountAccept = 0;
+                foreach (var tank in tanks)
+                {
+                    switch (tank.status_cv.Trim())
+                    {
+                        case "WATING":
+                            nCountWait++;
+                            break;
+                        case "ACCEPTED":
+                            nCountAccept++;
+                            break;
+                        case "CANCELED":
+                            nCountCancel++;
+                            break;
+                    }
+                }
+
+                if (nCountWait == 0)
+                {
+                    if ((nCountAccept + nCountCancel) == tanks.Count())
+                    {
+                        if (nCountAccept > 0)
+                        {
+                            Status = "COMPLETED";
+                        }
+                        else
+                        {
+                            Status = "CANCELED";
+                        }
+                    }
+
+                }
+
+                var so = context.storing_order.Where(so => so.guid == guid).FirstOrDefault();
+                if (so != null)
+                {
+                    so.status_cv = Status;
+                }
+
+            }
+            catch
+            {
+                throw;
+
+            }
         }
     }
 }

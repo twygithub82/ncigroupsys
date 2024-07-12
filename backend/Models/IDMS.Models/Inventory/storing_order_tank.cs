@@ -27,11 +27,11 @@ namespace IDMS.Models.Inventory
 
         public long? eta_dt { get; set; }
 
-        public int? purpose_steam { get; set; }
+        public bool? purpose_steam { get; set; }
 
-        public int? purpose_storage { get; set; }
+        public bool? purpose_storage { get; set; }
 
-        public int? purpose_cleaning { get; set; }
+        public bool? purpose_cleaning { get; set; }
 
         public string? purpose_repair_cv { get; set; }
 

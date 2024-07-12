@@ -9,7 +9,7 @@ namespace IDMS.Models.Inventory
     public class in_gate:Dates
     {
         [Key]
-        public string guid { get; set; } = "";
+        public string? guid { get; set; } = "";
         [IsProjected(true)]
 
         [ForeignKey("tank")]
