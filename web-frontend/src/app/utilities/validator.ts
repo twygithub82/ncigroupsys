@@ -1,11 +1,11 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 export function AutocompleteSelectionValidator(validOptions: any[] | undefined): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    if (!control.value) {
-      return { required: true }; // If the control is empty, it's invalid
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    if (!validOptions) {
+      return { 'invalidAutocompleteSelection': { value: control.value } };
     }
-    const selected = validOptions?.find(option => option.cargo === control.value);
-    return selected ? null : { invalidSelection: true };
+    const isValid = validOptions.some(option => option.guid === control.value?.guid);
+    return isValid ? null : { 'invalidAutocompleteSelection': { value: control.value } };
   };
 }

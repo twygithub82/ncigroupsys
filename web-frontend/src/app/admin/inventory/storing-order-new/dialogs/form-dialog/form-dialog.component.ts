@@ -68,10 +68,11 @@ export class FormDialogComponent {
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
   startDate = new Date();
+  valueChangesDisabled: boolean = false;
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
-  lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+  lastCargoControl: UntypedFormControl;;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -91,6 +92,7 @@ export class FormDialogComponent {
       this.storingOrderTank = new StoringOrderTankItem();
     }
     this.index = data.index;
+    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.storingOrderTankForm = this.createStorigOrderTankForm();
     this.initializeValueChange();
 
@@ -132,7 +134,6 @@ export class FormDialogComponent {
   submit() {
     this.storingOrderTankForm.get('purpose')?.setErrors(null);
     this.storingOrderTankForm.get('required_temp')?.setErrors(null);
-    debugger
     if (this.storingOrderTankForm?.valid) {
       if (!this.validatePurpose()) {
         this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
@@ -167,6 +168,7 @@ export class FormDialogComponent {
       this.findInvalidControls();
     }
   }
+
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
@@ -177,11 +179,13 @@ export class FormDialogComponent {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
+
   initializeValueChange() {
-    this.storingOrderTankForm!.get('purpose_steam')!.valueChanges.subscribe(value => {
+    this.storingOrderTankForm?.get('purpose_steam')!.valueChanges.subscribe(value => {
       const requiredTempControl = this.storingOrderTankForm.get('required_temp');
       if (value) {
         requiredTempControl!.enable();
@@ -191,7 +195,7 @@ export class FormDialogComponent {
       }
     });
 
-    this.storingOrderTankForm.get('tank_no')?.valueChanges.subscribe(value => {
+    this.storingOrderTankForm?.get('tank_no')?.valueChanges.subscribe(value => {
       // Custom validation logic for tank_no
       const isValid = Utility.verifyIsoContainerCheckDigit(value);
       if (!isValid) {
@@ -210,7 +214,8 @@ export class FormDialogComponent {
       }
     });
 
-    this.storingOrderTankForm!.get('last_cargo')!.valueChanges.pipe(
+    
+    this.storingOrderTankForm?.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -223,18 +228,33 @@ export class FormDialogComponent {
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
+          this.updateValidators(this.last_cargoList);
         });
       })
     ).subscribe();
 
     this.lastCargoControl.valueChanges.subscribe(value => {
-      if (value.guid) {
-        this.storingOrderTankForm.get('remarks')!.setValue(value.remarks);
-        this.storingOrderTankForm.get('flash_point')!.setValue(value.flash_point);
-        this.storingOrderTankForm.get('open_on_gate')!.setValue(value.open_on_gate_cv);
+      if (!this.valueChangesDisabled) {
+        this.handleValueChange(value);
       }
     });
   }
+
+  handleValueChange(value: any) {
+    this.valueChangesDisabled = true;
+    if (value && value.guid) {
+      this.storingOrderTankForm.get('remarks')!.setValue(value.remarks);
+      this.storingOrderTankForm.get('flash_point')!.setValue(value.flash_point);
+      this.storingOrderTankForm.get('open_on_gate')!.setValue(value.open_on_gate_cv);
+    } else {
+      this.storingOrderTankForm.get('remarks')!.reset();
+      this.storingOrderTankForm.get('flash_point')!.reset();
+      this.storingOrderTankForm.get('open_on_gate')!.reset();
+    }
+    this.lastCargoControl.updateValueAndValidity();
+    this.valueChangesDisabled = false;
+  }
+
   findInvalidControls() {
     const controls = this.storingOrderTankForm.controls;
     for (const name in controls) {
@@ -243,9 +263,11 @@ export class FormDialogComponent {
       }
     }
   }
+
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
+
   validatePurpose(): boolean {
     let isValid = true;
     const purposeStorage = this.storingOrderTankForm.get('purpose_storage')?.value;
@@ -268,7 +290,15 @@ export class FormDialogComponent {
 
     return isValid;
   }
+
   canEdit(): boolean {
     return !this.sotDS.canRollbackStatus(this.storingOrderTank) && !this.storingOrderTank.actions.includes('cancel') && !this.storingOrderTank.actions.includes('rollback');
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.lastCargoControl.setValidators([
+      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 }
