@@ -338,8 +338,15 @@
                   </button>
                   }
                   @if (isAnyItemEdited()) {
-                  <button mat-flat-button color="primary">
-                    <mat-icon>save</mat-icon>{{langText.SAVE_AND_SUBMIT | translate}}
+                  <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)">
+                    <mat-icon>
+                      @if (!(soDS.loading$ | async)) {
+                      save
+                      } @else if ((soDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{langText.SAVE_AND_SUBMIT | translate}}
                   </button>
                   }
                 </div>
