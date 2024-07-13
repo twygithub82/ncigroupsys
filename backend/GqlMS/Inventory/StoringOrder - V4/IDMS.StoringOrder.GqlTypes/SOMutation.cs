@@ -194,6 +194,9 @@ namespace IDMS.StoringOrder.GqlTypes
                         continue;
                     }
 
+                    if(string.IsNullOrEmpty(tnk?.guid) || string.IsNullOrEmpty(tnk.last_cargo_guid))
+                        throw new GraphQLException(new Error("Compulsory fields cant be null", "Error"));
+
                     // Find the corresponding existing child entity or add a new one if necessary
                     var existingTank = soDomain.storing_order_tank.FirstOrDefault(t => t.guid == tnk.guid && (t.delete_dt == null || t.delete_dt == 0));
                     mapper.Map(tnk, existingTank);

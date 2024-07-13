@@ -13,7 +13,7 @@ namespace IDMS.StoringOrder.Model.Request
     {
         public string? guid { get; set; }
 
-        public string so_guid { get; set; }
+        public string? so_guid { get; set; }
         public string? unit_type_guid { get; set; }
         public string last_cargo_guid { get; set; }
         public string? last_test_guid { get; set; }
