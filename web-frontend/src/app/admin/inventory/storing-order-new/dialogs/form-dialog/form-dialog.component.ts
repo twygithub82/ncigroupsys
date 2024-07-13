@@ -204,7 +204,7 @@ export class FormDialogComponent {
       } else {
         // Clear custom error if the value is valid
         if (this.action !== 'edit') {
-          const found = this.sotExistedList?.filter(sot => sot.tank_no === value);
+          const found = this.sotExistedList?.filter(sot => sot.tank_no === Utility.formatContainerNumber(value));
           if (found?.length) {
             this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
           } else {

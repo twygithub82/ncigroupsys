@@ -55,8 +55,8 @@ export interface StoringOrderResult {
 }
 
 export const GET_STORING_ORDERS = gql`
-  query queryStoringOrder($where: storing_orderFilterInput, $first: Int, $after: String, $last: Int, $before: String) {
-    soList: queryStoringOrder(where: $where, first: $first, after: $after, last: $last, before: $before) {
+  query queryStoringOrder($where: storing_orderFilterInput, $order: [storing_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    soList: queryStoringOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         guid
         so_no
@@ -222,12 +222,12 @@ export class StoringOrderDS extends BaseDataSource<StoringOrderItem> {
     super();
   }
 
-  searchStoringOrder(where: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderItem[]> {
+  searchStoringOrder(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDERS,
-        variables: { where, first, after, last, before },
+        variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

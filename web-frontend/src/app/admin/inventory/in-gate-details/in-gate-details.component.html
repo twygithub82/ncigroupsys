@@ -37,7 +37,8 @@
                         <span>{{translatedLangText.SO_NOTES}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_notes}}</div>
+                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_notes}}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -67,7 +68,8 @@
                         <span>{{translatedLangText.SO_DATE}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
+                        <div class="contact-detail-info font-bold">
+                          {{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
                         </div>
                       </div>
                     </div>
@@ -76,7 +78,8 @@
                         <span>{{translatedLangText.STATUS}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.status_cv}}</div>
+                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.status_cv}}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -138,7 +141,8 @@
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <div class="contact-detail-info">
-                                  <span [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv}}</span>
+                                  <span
+                                    [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv}}</span>
                                 </div>
                               </div>
                             </div>
@@ -168,7 +172,7 @@
                       @if (!(sotDS.loading$ | async)) {
                       <mat-card-content>
                         <div class="row">
-                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                          <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
@@ -218,7 +222,7 @@
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.YARD}}</mat-label>
-                                  <mat-select formControlName="yard_cv">
+                                  <mat-select formControlName="yard_cv" required>
                                     @for (codeValue of yardCv; track codeValue) {
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
@@ -233,7 +237,7 @@
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.PRE_INSPECTION}}</mat-label>
-                                  <mat-select formControlName="preinspection_cv">
+                                  <mat-select formControlName="preinspection_cv" required>
                                     @for (codeValue of yesnoCv; track codeValue) {
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
@@ -262,7 +266,7 @@
                               </div>
                             </div>
                           </div>
-                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
@@ -296,12 +300,12 @@
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-10">
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
                                   {{translatedLangText.STORAGE}}
                                 </mat-checkbox>
                               </div>
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-10">
+                              <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <label>{{translatedLangText.OPEN_ON_GATE}}:</label>
                                 <mat-radio-group formControlName="open_on_gate">
                                   @for (codeValue of yesnoCv; track codeValue) {
@@ -317,14 +321,25 @@
                         <mat-divider></mat-divider>
                         <div class="row m-t-10">
                           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                            <button mat-flat-button aria-label="Back to previous page" (click)="$event.preventDefault();"
-                              [routerLink]="['/admin/storing-order']">
+                            <button mat-flat-button aria-label="Back to previous page"
+                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/in-gate/']">
                               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                             </button>
                           </div>
                           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                            <button mat-flat-button color="primary" [ngClass]="'m-r-10'">
-                              <i class="fas fa-ambulance m-r-10"></i>{{translatedLangText.DELIVERED}}
+                            <button mat-flat-button class="bg-blue m-r-10" (click)="resetForm($event)">
+                              {{translatedLangText.RESET}}
+                            </button>
+                            <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
+                              [disabled]="(igDS.loading$| async)">
+                              <mat-icon>
+                                @if (!(igDS.loading$ | async)) {
+                                move_to_inbox
+                                } @else if ((igDS.loading$ | async)) {
+                                <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                                }
+                              </mat-icon>
+                              {{translatedLangText.ACCEPT}}
                             </button>
                             <button mat-flat-button color="primary">
                               <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}

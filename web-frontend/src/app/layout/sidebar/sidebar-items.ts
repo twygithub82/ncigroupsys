@@ -170,7 +170,7 @@ export const ROUTES: RouteInfo[] = [
     badgeClass: "",
     submenu: [
       {
-        path: "admin/storing-order",
+        path: "admin/inventory/storing-order",
         title: "MENUITEMS.INVENTORY.LIST.STORING-ORDER",
         iconType: "",
         icon: "",
@@ -181,8 +181,19 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },
       {
-        path: "admin/in-gate",
+        path: "admin/inventory/in-gate",
         title: "MENUITEMS.INVENTORY.LIST.IN-GATE",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/inventory/in-gate-survey",
+        title: "MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY",
         iconType: "",
         icon: "",
         class: "ml-menu",

@@ -14,7 +14,6 @@ import { Kind, OperationTypeNode } from 'graphql';
       provide: APOLLO_OPTIONS,
       useFactory: (httpLink: HttpLink) => {
         const http = httpLink.create({ uri: 'https://tlx-idms-gateway.azurewebsites.net/graphql' });
-        //const http = httpLink.create({ uri: 'http://localhost:5071/graphql' });
 
         // Create a WebSocket link:
         const ws = new GraphQLWsLink(

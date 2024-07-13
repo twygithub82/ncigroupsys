@@ -319,6 +319,28 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
+  // isTankNoAvailableToAdd(tank_no: string): Observable<StoringOrderTankItem[]> {
+  //   this.loadingSubject.next(true);
+  //   let where: any = { guid: { eq: id } }
+  //   return this.apollo
+  //     .query<any>({
+  //       query: GET_STORING_ORDER_TANK_BY_ID,
+  //       variables: { where },
+  //       fetchPolicy: 'no-cache' // Ensure fresh data
+  //     })
+  //     .pipe(
+  //       map((result) => result.data),
+  //       catchError(() => of({ soList: [] })),
+  //       finalize(() => this.loadingSubject.next(false)),
+  //       map((result) => {
+  //         const sotList = result.sotList || { nodes: [], totalCount: 0 };
+  //         this.dataSubject.next(sotList.nodes);
+  //         this.totalCount = sotList.totalCount;
+  //         return sotList.nodes;
+  //       })
+  //     );
+  // }
+
   cancelStoringOrderTank(sot: any): Observable<any> {
     return this.apollo.mutate({
       mutation: CANCEL_STORING_ORDER_TANK,
