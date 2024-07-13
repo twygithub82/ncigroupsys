@@ -319,7 +319,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    //cc.displayName();
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
@@ -363,7 +362,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        //this.updateData([...this.sotList.data, result.item]);
         const data = [...this.sotList.data];
         const newItem = new StoringOrderTankItem({
           ...result.item,
@@ -380,7 +378,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
-    //this.id = row.id;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -425,7 +422,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   deleteItem(row: StoringOrderTankItem, index: number) {
-    //this.id = row.id;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -529,10 +525,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       if (result?.action === 'confirmed') {
         const data = [...this.sotList.data];
         result.item.forEach((newItem: StoringOrderTankItem) => {
-          // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
-          // If the item is found, update the properties
           if (index !== -1) {
             data[index] = {
               ...data[index],
@@ -559,10 +553,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   undoTempAction(row: StoringOrderTankItem[], actionToBeRemove: string) {
     const data = [...this.sotList.data];
     row.forEach((newItem: StoringOrderTankItem) => {
-      // Find the index of the item in data with the same id
       const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
-      // If the item is found, update the properties
       if (index !== -1) {
         data[index] = {
           ...data[index],
@@ -659,7 +651,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   handleDelete(event: Event, row: any, index: number): void {
-    //this.stopEventTrigger(event);
     this.deleteItem(row, index);
   }
 

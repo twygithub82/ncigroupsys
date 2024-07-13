@@ -78,9 +78,10 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
+    'customer_code',
+    'job_no',
     'last_cargo',
     'so_no',
-    'customer_code'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'

@@ -121,7 +121,9 @@
         "STORING-ORDER": "Storing Order",
         "STORING-ORDER-NEW": "New Storing Order",
         "STORING-ORDER-EDIT": "Edit Storing Order",
-        "IN-GATE": "In Gate"
+        "IN-GATE": "In Gate",
+        "IN-GATE-NEW": "New In Gate",
+        "IN-GATE-SURVEY": "In Gate Survey"
       }
     }
   },
@@ -257,7 +259,8 @@
     "DELIVERED": "Delivered",
     "ACCEPT": "Accept",
     "EIR-FORM": "EIR Form",
-    "INVALID-SELECTION": "Invalid Selection"
+    "INVALID-SELECTION": "Invalid Selection",
+    "RESET": "Reset"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

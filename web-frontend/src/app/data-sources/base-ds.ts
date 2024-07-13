@@ -24,4 +24,11 @@ export abstract class BaseDataSource<T> extends DataSource<T> {
         ]
       };
     }
+
+    // public addCreateDtDescOrder(order: any) {
+    //   return {
+    //     ...order,
+    //     create_dt: "DESC"
+    //   };
+    // }
 }

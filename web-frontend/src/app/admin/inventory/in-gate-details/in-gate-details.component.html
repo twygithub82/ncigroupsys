@@ -172,7 +172,7 @@
                       @if (!(sotDS.loading$ | async)) {
                       <mat-card-content>
                         <div class="row">
-                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                          <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
@@ -222,7 +222,7 @@
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.YARD}}</mat-label>
-                                  <mat-select formControlName="yard_cv">
+                                  <mat-select formControlName="yard_cv" required>
                                     @for (codeValue of yardCv; track codeValue) {
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
@@ -237,7 +237,7 @@
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.PRE_INSPECTION}}</mat-label>
-                                  <mat-select formControlName="preinspection_cv">
+                                  <mat-select formControlName="preinspection_cv" required>
                                     @for (codeValue of yesnoCv; track codeValue) {
                                     <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                     }
@@ -266,7 +266,7 @@
                               </div>
                             </div>
                           </div>
-                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
@@ -300,12 +300,12 @@
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-10">
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
                                   {{translatedLangText.STORAGE}}
                                 </mat-checkbox>
                               </div>
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-10">
+                              <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <label>{{translatedLangText.OPEN_ON_GATE}}:</label>
                                 <mat-radio-group formControlName="open_on_gate">
                                   @for (codeValue of yesnoCv; track codeValue) {
@@ -327,6 +327,9 @@
                             </button>
                           </div>
                           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                            <button mat-flat-button class="bg-blue m-r-10" (click)="resetForm($event)">
+                              {{translatedLangText.RESET}}
+                            </button>
                             <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
                               [disabled]="(igDS.loading$| async)">
                               <mat-icon>

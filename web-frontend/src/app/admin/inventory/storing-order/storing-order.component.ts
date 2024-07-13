@@ -139,6 +139,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
+  lastOrderBy: any = { so_no: "DESC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -171,9 +172,11 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.initializeFilterCustomerCompany();
     this.loadData();
   }
+
   refresh() {
     this.refreshTable();
   }
+
   initSearchForm() {
     this.searchForm = this.fb.group({
       so_no: [''],
@@ -252,7 +255,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   public loadData() {
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria({});
-    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria).subscribe(data => {
+    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
       if (this.soDS.totalCount > 0) {
         this.soList = data;
         this.endCursor = this.soDS.pageInfo?.endCursor;
@@ -355,10 +358,10 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.searchForm!.value['customer_code']) {
       where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
-    
+
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     // TODO :: search criteria
-    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria).subscribe(data => {
+    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
       this.soList = data;
       this.endCursor = this.soDS.pageInfo?.endCursor;
       this.startCursor = this.soDS.pageInfo?.startCursor;
@@ -397,7 +400,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.pageIndex = pageIndex;
     this.pageSize = pageSize;
 
-    this.soDS.searchStoringOrder(this.lastSearchCriteria, first, after, last, before).subscribe(data => {
+    this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
       this.soList = data;
       this.endCursor = this.soDS.pageInfo?.endCursor;
       this.startCursor = this.soDS.pageInfo?.startCursor;

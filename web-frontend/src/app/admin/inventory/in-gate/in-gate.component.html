@@ -44,6 +44,14 @@
                     <span class="mobile-label">{{langText.TANK_NO | translate}}:</span>{{row.tank_no}}
                   </mat-cell>
                 </ng-container>
+                <ng-container matColumnDef="job_no">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{langText.JOB_NO | translate}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{langText.JOB_NO | translate}}:</span>{{row.job_no}}
+                  </mat-cell>
+                </ng-container>
                 <ng-container matColumnDef="last_cargo">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
                     {{langText.LAST_CARGO | translate}}

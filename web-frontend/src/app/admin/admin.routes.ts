@@ -15,6 +15,7 @@ import {TariffDepotComponent} from "./tariff/tariff-depot/tariff-depot.component
 import {TariffBufferComponent} from "./tariff/tariff-buffer/tariff-buffer.component";
 import {TariffRepairComponent} from "./tariff/tariff-repair/tariff-repair.component";
 import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-cleaning-new.component';
+import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey.component';
 
 export const ADMIN_ROUTE: Routes = [
   {
@@ -48,6 +49,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "inventory/in-gate/details/:id",
     component: InGateDetailsComponent,
+  },
+  {
+    path: "inventory/in-gate-survey",
+    component: InGateSurveyComponent,
   },
   {
     path: "parameter/cleaning-category",

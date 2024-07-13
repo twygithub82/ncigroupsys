@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InGateComponent } from './in-gate.component';
+import { InGateSurveyComponent } from './in-gate-survey.component';
 
 describe('CleaningProceduresComponent', () => {
-  let component: InGateComponent;
-  let fixture: ComponentFixture<InGateComponent>;
+  let component: InGateSurveyComponent;
+  let fixture: ComponentFixture<InGateSurveyComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InGateComponent]
+      imports: [InGateSurveyComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(InGateComponent);
+    fixture = TestBed.createComponent(InGateSurveyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

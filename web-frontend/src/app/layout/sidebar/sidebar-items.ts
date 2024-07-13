@@ -190,6 +190,17 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+      },
+      {
+        path: "admin/inventory/in-gate-survey",
+        title: "MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
       }
     ]
   },
