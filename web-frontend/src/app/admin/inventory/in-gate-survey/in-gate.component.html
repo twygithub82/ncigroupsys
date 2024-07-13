@@ -70,7 +70,7 @@
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/inventory/in-gate/details', row.guid]" [style.cursor]="'pointer'" matRipple>
+                  [routerLink]="['/admin/in-gate/details', row.guid]" [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>

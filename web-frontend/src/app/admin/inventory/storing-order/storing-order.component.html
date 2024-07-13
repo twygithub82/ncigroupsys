@@ -14,7 +14,7 @@
                 </mat-panel-title>
                 <mat-panel-description>
                   <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                    <button mat-mini-fab color="primary" [routerLink]="['/admin/storing-order/new']">
+                    <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/storing-order/new']">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
@@ -203,7 +203,7 @@
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/storing-order/edit', row.guid]" [style.cursor]="'pointer'" matRipple>
+                  [routerLink]="['/admin/inventory/storing-order/edit', row.guid]" [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>

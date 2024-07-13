@@ -30,23 +30,23 @@ export const ADMIN_ROUTE: Routes = [
     component: CleaningProceduresNewComponent,
   },
   {
-    path: "storing-order",
+    path: "inventory/storing-order",
     component: StoringOrderComponent,
   },
   {
-    path: "storing-order/new",
+    path: "inventory/storing-order/new",
     component: StoringOrderNewComponent,
   },
   {
-    path: "storing-order/edit/:id",
+    path: "inventory/storing-order/edit/:id",
     component: StoringOrderNewComponent,
   },
   {
-    path: "in-gate",
+    path: "inventory/in-gate",
     component: InGateComponent,
   },
   {
-    path: "in-gate/details/:id",
+    path: "inventory/in-gate/details/:id",
     component: InGateDetailsComponent,
   },
   {
