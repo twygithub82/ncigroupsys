@@ -69,6 +69,11 @@
                         </mat-option>
                         }
                       </mat-autocomplete>
+                      @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
+                      <mat-error>
+                        {{langText.INVALID_SELECTION | translate}}
+                      </mat-error>
+                      }
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
