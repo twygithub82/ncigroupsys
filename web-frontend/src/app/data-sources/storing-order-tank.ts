@@ -12,7 +12,7 @@ import { InGateItem } from './in-gate';
 
 export class StoringOrderTankGO {
   public guid?: string;
-  public so_guid?: string;
+  public so_guid?: string | null;
   public unit_type_guid?: string;
   public tank_no?: string;
   public last_cargo_guid?: string;

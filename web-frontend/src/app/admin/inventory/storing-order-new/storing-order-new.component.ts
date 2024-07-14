@@ -277,7 +277,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.repairCv = addDefaultSelectOption(data, "No Repair");
     });
     this.cvDS.connectAlias('clean_statusCv').subscribe(data => {
-      this.clean_statusCv = data;
+      this.clean_statusCv = addDefaultSelectOption(data, "Unknown");;
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCv = data;
@@ -336,7 +336,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  addOrderDetails(event: Event) {
+  addOrderDetails(event: Event, row?: StoringOrderTankItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -344,9 +344,11 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     } else {
       tempDirection = 'ltr';
     }
+    const addSot = row ?? new StoringOrderTankItem();
+    addSot.so_guid = addSot.so_guid ?? this.so_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
-        item: new StoringOrderTankItem(),
+        item: row ? row : new StoringOrderTankItem(),
         action: 'new',
         langText: this.langText,
         populateData: {
@@ -695,9 +697,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     // newSot.required_temp = row.required_temp;
     newSot.clean_status_cv = row.clean_status_cv;
     newSot.certificate_cv = row.certificate_cv;
+    newSot.so_guid = row.so_guid;
     newSot.eta_dt = row.eta_dt;
     newSot.etr_dt = row.etr_dt;
-    this.editOrderDetails(event, newSot, -1);
+    this.addOrderDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {
@@ -706,7 +709,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        this.router.navigate(['/admin/storing-order']);
+        this.router.navigate(['/admin/inventory/storing-order']);
       });
     }
   }

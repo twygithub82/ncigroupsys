@@ -89,10 +89,10 @@ export class FormDialogComponent {
       this.storingOrderTank = data.item;
     } else {
       this.dialogTitle = 'New Record';
-      this.storingOrderTank = new StoringOrderTankItem();
+      this.storingOrderTank = data.item ? data.item : new StoringOrderTankItem();
     }
     this.index = data.index;
-    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
     this.storingOrderTankForm = this.createStorigOrderTankForm();
     this.initializeValueChange();
 
@@ -214,7 +214,6 @@ export class FormDialogComponent {
       }
     });
 
-    
     this.storingOrderTankForm?.get('last_cargo')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
