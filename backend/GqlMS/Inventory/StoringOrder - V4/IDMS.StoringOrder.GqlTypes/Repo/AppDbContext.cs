@@ -14,20 +14,20 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
             : base(options) { }
 
 
-        public override async Task<int>  SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            var entities = ChangeTracker.Entries<storing_order>()
-                .Where(e => e.State == EntityState.Added)
-                .Select(e => e.Entity);
+        //public override async Task<int>  SaveChangesAsync(CancellationToken cancellationToken = default)
+        //{
+        //    var entities = ChangeTracker.Entries<storing_order>()
+        //        .Where(e => e.State == EntityState.Added)
+        //        .Select(e => e.Entity);
 
-            foreach (var entity in entities)
-            {
-                int rowCount = storing_order.Count();
-                entity.so_no = $"SO{(rowCount + 1).ToString().PadLeft(6, '0')}";
-            }
+        //    foreach (var entity in entities)
+        //    {
+        //        int rowCount = storing_order.Count();
+        //        entity.so_no = $"SO{(rowCount + 1).ToString().PadLeft(6, '0')}";
+        //    }
 
-            return await base.SaveChangesAsync(cancellationToken);
-        }
+        //    return await base.SaveChangesAsync(cancellationToken);
+        //}
 
         public DbSet<storing_order> storing_order { get; set; }
         public DbSet<customer_company> customer_company { get; set; }

@@ -15,6 +15,8 @@ import {TariffDepotComponent} from "./tariff/tariff-depot/tariff-depot.component
 import {TariffBufferComponent} from "./tariff/tariff-buffer/tariff-buffer.component";
 import {TariffRepairComponent} from "./tariff/tariff-repair/tariff-repair.component";
 import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-cleaning-new.component';
+import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey.component';
+import { InGateSurveyFormComponent } from './inventory/in-gate-survey-form/in-gate-survey-form.component';
 
 export const ADMIN_ROUTE: Routes = [
   {
@@ -30,24 +32,32 @@ export const ADMIN_ROUTE: Routes = [
     component: CleaningProceduresNewComponent,
   },
   {
-    path: "storing-order",
+    path: "inventory/storing-order",
     component: StoringOrderComponent,
   },
   {
-    path: "storing-order/new",
+    path: "inventory/storing-order/new",
     component: StoringOrderNewComponent,
   },
   {
-    path: "storing-order/edit/:id",
+    path: "inventory/storing-order/edit/:id",
     component: StoringOrderNewComponent,
   },
   {
-    path: "in-gate",
+    path: "inventory/in-gate",
     component: InGateComponent,
   },
   {
-    path: "in-gate/details/:id",
+    path: "inventory/in-gate/details/:id",
     component: InGateDetailsComponent,
+  },
+  {
+    path: "inventory/in-gate-survey",
+    component: InGateSurveyComponent,
+  },
+  {
+    path: "inventory/in-gate-survey/survey-form/:id",
+    component: InGateSurveyFormComponent,
   },
   {
     path: "parameter/cleaning-category",

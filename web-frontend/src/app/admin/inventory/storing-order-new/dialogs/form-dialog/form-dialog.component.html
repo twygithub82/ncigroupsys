@@ -22,7 +22,7 @@
                   <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
                   }
                 </mat-select>
-                @if (storingOrderTankForm.get('unit_type')?.hasError('required')) {
+                @if (storingOrderTankForm.get('unit_type_guid')?.hasError('required')) {
                 <mat-error>
                   {{data.langText.UNIT_TYPE | translate}} {{data.langText.SO_REQUIRED | translate}}
                 </mat-error>
@@ -131,7 +131,12 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.langText.JOB_NO | translate}}</mat-label>
-                <input matInput formControlName="job_no">
+                <input matInput formControlName="job_no" required>
+                @if (storingOrderTankForm.get('job_no')?.hasError('required')) {
+                <mat-error>
+                  {{data.langText.JOB_NO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                </mat-error>
+                }
               </mat-form-field>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
@@ -166,12 +171,12 @@
                   </mat-option>
                   }
                 </mat-autocomplete>
-                @if (storingOrderTankForm.get('last_cargo')?.hasError('required')) {
+                @if (lastCargoControl.get('last_cargo')?.hasError('required')) {
                 <mat-error>
                   {{data.langText.LAST_CARGO | translate}} {{data.langText.SO_REQUIRED | translate}}
                 </mat-error>
                 }
-                @if (storingOrderTankForm.get('last_cargo')?.hasError('invalidSelection')) {
+                @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
                 <mat-error>
                   {{data.langText.INVALID_SELECTION | translate}}
                 </mat-error>

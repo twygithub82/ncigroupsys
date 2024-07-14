@@ -83,24 +83,28 @@ namespace IDMS.Booking.GqlTypes
 
             try
             {
+                var res = 0;
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 //string[] soGuids = bookings.Select(s => s.guid).ToArray();
 
                 //var bookings = context.booking.Where(b => bookingGuids.Contains(b.guid) && b.delete_dt == null);
-
-                foreach (var bk in bookings)
+                if (bookings.Any())
                 {
-                    //so.status_cv = CANCEL;
-                    //bk.delete_dt = currentDateTime;
-                    bk.update_dt = currentDateTime;
-                    bk.update_by = user;
-                    bk.status_cv = "CANCELED";
-                    bk.reference = bk.reference;
+                    foreach (var bk in bookings)
+                    {
+                        //so.status_cv = CANCEL;
+                        //bk.delete_dt = currentDateTime;
+                        bk.update_dt = currentDateTime;
+                        bk.update_by = user;
+                        bk.status_cv = "CANCELED";
+                        bk.reference = bk.reference;
+                    }
+                    context.UpdateRange(bookings);  
+                    res = await context.SaveChangesAsync();
                 }
 
-                var res = await context.SaveChangesAsync();
                 //TODO
                 //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
                 //await topicEventSender.SendAsync(updateCourseTopic, course);

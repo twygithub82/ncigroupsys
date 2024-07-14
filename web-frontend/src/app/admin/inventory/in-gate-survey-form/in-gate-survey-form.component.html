@@ -2,7 +2,7 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="langText.SURVEY_FORM"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -13,7 +13,7 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                  <!-- <div class="m-l-" [matTooltip]="translatedLangText.ADD">
                     <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/storing-order/new']">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
@@ -23,29 +23,23 @@
                       <mat-icon class="col-white">refresh</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
-                    <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
-                      [disabled]="canCancelSelectedRows()">
-                      <mat-icon class="col-white">cancel</mat-icon>
-                    </button>
-                  </div>
                   <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
-                  </div>
+                  </div> -->
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                 <div class="row">
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.SO_NO | translate}}</mat-label>
+                      <mat-label>{{translatedLangText.SO_NO}}</mat-label>
                       <input matInput formControlName="so_no">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.CUSTOMER_CODE | translate}}</mat-label>
+                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
                       <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
                         [matAutocomplete]="customerCode">
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
@@ -55,11 +49,11 @@
                         </mat-option>
                         }
                       </mat-autocomplete>
-                    </mat-form-field>
+                    </mat-form-field> -->
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.LAST_CARGO | translate}}</mat-label>
+                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
                         formControlName="last_cargo">
                       <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
@@ -71,14 +65,14 @@
                       </mat-autocomplete>
                       @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
                       <mat-error>
-                        {{langText.INVALID_SELECTION | translate}}
+                        {{translatedLangText.INVALID_SELECTION}}
                       </mat-error>
                       }
-                    </mat-form-field>
+                    </mat-form-field> -->
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.STATUS | translate}}</mat-label>
+                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.STATUS}}</mat-label>
                       <mat-select formControlName="so_status">
                         @for (codeValue of soStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
@@ -86,25 +80,25 @@
                         </mat-option>
                         }
                       </mat-select>
-                    </mat-form-field>
+                    </mat-form-field> -->
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.TANK_NO | translate}}</mat-label>
+                      <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                       <input matInput formControlName="tank_no">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.JOB_NO | translate}}</mat-label>
-                      <input matInput formControlName="job_no">
+                      <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
+                      <input matInput formControlName="eir_no">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.PURPOSE | translate}}</mat-label>
+                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
                       <mat-select multiple formControlName="purpose">
                         @for (codeValue of purposeOptionCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
@@ -112,15 +106,15 @@
                         </mat-option>
                         }
                       </mat-select>
-                    </mat-form-field>
+                    </mat-form-field> -->
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{langText.ETA_DATE | translate}}</mat-label>
+                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.ETA_DATE}}</mat-label>
                       <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
                       <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
                       <mat-datepicker #eta_picker></mat-datepicker>
-                    </mat-form-field>
+                    </mat-form-field> -->
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
                     <button mat-mini-fab color="primary" (click)="search()">
@@ -133,97 +127,90 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="soList" matSort class="mat-cell advance-table">
-                <!-- Checkbox Column -->
-                <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-6'">
-                    <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="soSelection.hasValue() && isAllSelected()"
-                      [indeterminate]="soSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-6'">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? soSelection.toggle(row) : null"
-                      [checked]="soSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-cell>
-                </ng-container>
+              <table mat-table [dataSource]="inGateList" matSort class="mat-cell advance-table">
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
                   <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="so_no">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-7'">
-                    {{langText.SO_NO | translate}}
+                <ng-container matColumnDef="tank_no">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.TANK_NO}}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" class="tbl-col-width-per-7">
-                    <span class="mobile-label">{{langText.SO_NO | translate}}:</span>{{row.so_no}}
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.tank?.tank_no}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_code">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.CUSTOMER_CODE}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE}}:</span>{{ccDS.displayName(row.tank?.storing_order?.customer_company)}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="eir_no">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.EIR_NO}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.eir_no}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="eir_dt">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.EIR_DATE}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{row.eir_dt}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="last_cargo">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
-                    {{langText.CUSTOMER_CODE | translate}}
+                    {{translatedLangText.LAST_CARGO}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{langText.CUSTOMER_CODE |
-                      translate}}:</span>{{ccDS.displayName(row.customer_company)}}
+                    <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.tank?.tariff_cleaning?.cargo}}
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="no_of_tanks">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
-                    [ngClass]="'justify-content-center'">{{langText.NO_OF_TANKS
-                    | translate}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'justify-content-center'">
-                    <span class="mobile-label">{{langText.NO_OF_TANKS | translate}}:</span>
-                    {{row.storing_order_tank.length}}
+                <ng-container matColumnDef="purpose">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.PURPOSE}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.PURPOSE}}:</span>{{displayTankPurpose(row.tank)}}
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.STATUS |
-                    translate}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.status_cv}}</mat-cell>
-                </ng-container>
-                <!-- actions -->
-                <ng-container matColumnDef="actions">
-                  <mat-header-cell class="pr-0" *matHeaderCellDef></mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0 justify-content-end">
-                    <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
-                      class="tbl-action-btn">
-                      <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
-                    </button> -->
-                    @if (soDS.canCancel(row)) {
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="cancelItem(row)" [matTooltip]="translatedLangText.CANCEL"
-                      class="tbl-action-btn">
-                      <mat-icon>cancel</mat-icon>
-                    </button>
-                    }
+                <ng-container matColumnDef="tank_status_cv">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.STATUS}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{row.tank?.tank_status_cv}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/inventory/storing-order/edit', row.guid]" [style.cursor]="'pointer'" matRipple>
+                  [routerLink]="['/admin/inventory/in-gate-survey/survey', row.guid]" [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>
             <!-- No result -->
-            @if (!(soDS.soLoading$ | async) && !soList.length) {
+            @if (!(sotDS.loading$ | async) && !inGateList.length) {
             <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="soList.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+            <div class="no-results m-l-20 pt-3" [style.display]="inGateList.length === 0 ? '' : 'none'">
+              <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if (soDS.soLoading$ | async) {
+            @if (sotDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            <mat-paginator #paginator [length]="soDS.totalCount" [pageIndex]="0" [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+            <mat-paginator #paginator [length]="igDS.totalCount" [pageIndex]="0" [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
           </div>
         </div>

@@ -12,7 +12,7 @@ import { InGateItem } from './in-gate';
 
 export class StoringOrderTankGO {
   public guid?: string;
-  public so_guid?: string;
+  public so_guid?: string | null;
   public unit_type_guid?: string;
   public tank_no?: string;
   public last_cargo_guid?: string;
@@ -261,6 +261,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       .query<any>({
         query: GET_STORING_ORDER_TANKS,
         variables: { where, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),
@@ -317,6 +318,28 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         })
       );
   }
+
+  // isTankNoAvailableToAdd(tank_no: string): Observable<StoringOrderTankItem[]> {
+  //   this.loadingSubject.next(true);
+  //   let where: any = { guid: { eq: id } }
+  //   return this.apollo
+  //     .query<any>({
+  //       query: GET_STORING_ORDER_TANK_BY_ID,
+  //       variables: { where },
+  //       fetchPolicy: 'no-cache' // Ensure fresh data
+  //     })
+  //     .pipe(
+  //       map((result) => result.data),
+  //       catchError(() => of({ soList: [] })),
+  //       finalize(() => this.loadingSubject.next(false)),
+  //       map((result) => {
+  //         const sotList = result.sotList || { nodes: [], totalCount: 0 };
+  //         this.dataSubject.next(sotList.nodes);
+  //         this.totalCount = sotList.totalCount;
+  //         return sotList.nodes;
+  //       })
+  //     );
+  // }
 
   cancelStoringOrderTank(sot: any): Observable<any> {
     return this.apollo.mutate({

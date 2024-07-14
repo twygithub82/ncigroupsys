@@ -249,9 +249,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   public loadData() {
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-      this.customer_companyList = data
-    });
     this.so_guid = this.route.snapshot.paramMap.get('id');
     if (this.so_guid) {
       // EDIT
@@ -260,6 +257,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           this.storingOrderItem = data[0];
           this.populateSOForm(this.storingOrderItem);
         }
+      });
+    } else {
+      this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+        this.customer_companyList = data
       });
     }
     const queries = [
@@ -276,7 +277,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.repairCv = addDefaultSelectOption(data, "No Repair");
     });
     this.cvDS.connectAlias('clean_statusCv').subscribe(data => {
-      this.clean_statusCv = data;
+      this.clean_statusCv = addDefaultSelectOption(data, "Unknown");;
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCv = data;
@@ -299,8 +300,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   populateSOForm(so: StoringOrderItem): void {
     this.soForm!.patchValue({
       guid: so.guid,
-      customer_company_guid: so.customer_company_guid,
       customer_code: so.customer_company,
+      customer_company_guid: so.customer_company_guid,
       so_no: so.so_no,
       so_notes: so.so_notes,
       haulier: so.haulier
@@ -318,7 +319,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    //cc.displayName();
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
@@ -336,7 +336,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  addOrderDetails(event: Event) {
+  addOrderDetails(event: Event, row?: StoringOrderTankItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -344,9 +344,11 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     } else {
       tempDirection = 'ltr';
     }
+    const addSot = row ?? new StoringOrderTankItem();
+    addSot.so_guid = addSot.so_guid ?? this.so_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
-        item: new StoringOrderTankItem(),
+        item: row ? row : new StoringOrderTankItem(),
         action: 'new',
         langText: this.langText,
         populateData: {
@@ -362,7 +364,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        //this.updateData([...this.sotList.data, result.item]);
         const data = [...this.sotList.data];
         const newItem = new StoringOrderTankItem({
           ...result.item,
@@ -379,7 +380,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
-    //this.id = row.id;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -424,7 +424,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   deleteItem(row: StoringOrderTankItem, index: number) {
-    //this.id = row.id;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -528,10 +527,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       if (result?.action === 'confirmed') {
         const data = [...this.sotList.data];
         result.item.forEach((newItem: StoringOrderTankItem) => {
-          // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
-          // If the item is found, update the properties
           if (index !== -1) {
             data[index] = {
               ...data[index],
@@ -558,10 +555,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   undoTempAction(row: StoringOrderTankItem[], actionToBeRemove: string) {
     const data = [...this.sotList.data];
     row.forEach((newItem: StoringOrderTankItem) => {
-      // Find the index of the item in data with the same id
       const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
-      // If the item is found, update the properties
       if (index !== -1) {
         data[index] = {
           ...data[index],
@@ -612,9 +607,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   onSOFormSubmit() {
+    console.log(this.soForm!.value['customer_company_guid']);
     this.soForm!.get('sotList')?.setErrors(null);
     if (this.soForm?.valid) {
-      debugger
       if (!this.sotList.data.length) {
         this.soForm.get('sotList')?.setErrors({ required: true });
       } else {
@@ -627,7 +622,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           // Ensure action is an array and take the last action only
           const actions = Array.isArray(item!.actions) ? item!.actions : [];
           const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
-        
+
           return new StoringOrderTankUpdateSO({
             ...item,
             action: latestAction // Set the latest action as the single action
@@ -658,7 +653,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   handleDelete(event: Event, row: any, index: number): void {
-    //this.stopEventTrigger(event);
     this.deleteItem(row, index);
   }
 
@@ -703,9 +697,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     // newSot.required_temp = row.required_temp;
     newSot.clean_status_cv = row.clean_status_cv;
     newSot.certificate_cv = row.certificate_cv;
+    newSot.so_guid = row.so_guid;
     newSot.eta_dt = row.eta_dt;
     newSot.etr_dt = row.etr_dt;
-    this.editOrderDetails(event, newSot, -1);
+    this.addOrderDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {
@@ -714,7 +709,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        this.router.navigate(['/admin/storing-order']);
+        this.router.navigate(['/admin/inventory/storing-order']);
       });
     }
   }

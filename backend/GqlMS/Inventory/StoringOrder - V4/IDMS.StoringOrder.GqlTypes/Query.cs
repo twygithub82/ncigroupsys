@@ -7,6 +7,10 @@ using HotChocolate.Resolvers;
 using IDMS.Models.Master;
 using IDMS.Models.Shared;
 using IDMS.StoringOrder.Model.Request;
+using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
+using IDMS.Models.Tariff;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.StoringOrder.GqlTypes
 {

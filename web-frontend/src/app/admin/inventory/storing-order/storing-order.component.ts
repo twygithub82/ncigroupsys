@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -41,6 +41,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 
 @Component({
   selector: 'app-storing-order',
@@ -114,7 +115,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
-    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED'
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION'
   }
 
   searchForm?: UntypedFormGroup;
@@ -137,6 +139,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
+  lastOrderBy: any = { so_no: "DESC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -153,6 +156,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     super();
     this.translateLangText();
     this.initSearchForm();
+    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
@@ -168,9 +172,11 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.initializeFilterCustomerCompany();
     this.loadData();
   }
+
   refresh() {
     this.refreshTable();
   }
+
   initSearchForm() {
     this.searchForm = this.fb.group({
       so_no: [''],
@@ -249,7 +255,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   public loadData() {
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria({});
-    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria).subscribe(data => {
+    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
       if (this.soDS.totalCount > 0) {
         this.soList = data;
         this.endCursor = this.soDS.pageInfo?.endCursor;
@@ -328,11 +334,19 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       where.status_cv = { contains: this.searchForm!.value['so_status'] };
     }
 
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['eta_dt']) {
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || this.searchForm!.value['eta_dt']) {
       const sotSome: any = {};
+
+      if (this.searchForm!.value['last_cargo']) {
+        where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+      }
 
       if (this.searchForm!.value['tank_no']) {
         sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
+      }
+
+      if (this.searchForm!.value['job_no']) {
+        sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
       }
 
       if (this.searchForm!.value['eta_dt']) {
@@ -344,10 +358,10 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.searchForm!.value['customer_code']) {
       where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
-    
+
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     // TODO :: search criteria
-    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria).subscribe(data => {
+    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
       this.soList = data;
       this.endCursor = this.soDS.pageInfo?.endCursor;
       this.startCursor = this.soDS.pageInfo?.startCursor;
@@ -386,7 +400,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.pageIndex = pageIndex;
     this.pageSize = pageSize;
 
-    this.soDS.searchStoringOrder(this.lastSearchCriteria, first, after, last, before).subscribe(data => {
+    this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
       this.soList = data;
       this.endCursor = this.soDS.pageInfo?.endCursor;
       this.startCursor = this.soDS.pageInfo?.startCursor;
@@ -438,6 +452,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
+          this.updateValidators(this.last_cargoList);
         });
       })
     ).subscribe();
@@ -451,5 +466,12 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.lastCargoControl.setValidators([
+      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 }

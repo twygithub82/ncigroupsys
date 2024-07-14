@@ -121,7 +121,10 @@
         "STORING-ORDER": "Storing Order",
         "STORING-ORDER-NEW": "New Storing Order",
         "STORING-ORDER-EDIT": "Edit Storing Order",
-        "IN-GATE": "In Gate"
+        "IN-GATE": "In Gate",
+        "IN-GATE-DETAILS": "In Gate Details",
+        "IN-GATE-SURVEY": "In Gate Survey",
+        "IN-GATE-SURVEY-FORM": "In Gate Survey Form"
       }
     }
   },
@@ -255,8 +258,12 @@
     "PRE-INSPECTION": "Pre-Inspection",
     "LOLO": "LOLO",
     "DELIVERED": "Delivered",
+    "ACCEPT": "Accept",
     "EIR-FORM": "EIR Form",
-    "INVALID-SELECTION": "Invalid Selection"
+    "INVALID-SELECTION": "Invalid Selection",
+    "RESET": "Reset",
+    "SURVEY-FORM": "Survey Form",
+    "DETAILS": "Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

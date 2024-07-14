@@ -158,7 +158,7 @@ namespace IDMS.StoringOrder.GqlTypes
             try
             {
                 //if updateSO have guid then i need call update command
-                storing_order? soDomain = await context.storing_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
+                storing_order soDomain = await context.storing_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
                                         .Include(s => s.storing_order_tank)
                                         .FirstOrDefaultAsync(s => s.guid == so.guid);
                 if (soDomain == null)
@@ -166,16 +166,21 @@ namespace IDMS.StoringOrder.GqlTypes
                     throw new GraphQLException(new Error("Storing Order not found.", "NOT_FOUND"));
                 }
 
+                if (string.IsNullOrEmpty(soDomain.customer_company_guid))
+                {
+                    throw new GraphQLException(new Error("customer_company_guid cant be null", "Error"));
+                }
+
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
                 List<string> rollbackSOTGuids = new List<string>();
 
-                //map the SO changes to domain object
-                mapper.Map(so, soDomain);
-
                 // Update child entities (StoringOrderTanks)
                 foreach (var tnk in soTanks)
                 {
+                    if (string.IsNullOrEmpty(tnk?.action))
+                        continue;
+
                     if (SOTankAction.NEW.EqualsIgnore(tnk?.action))
                     {
                         //For Insert
@@ -188,6 +193,9 @@ namespace IDMS.StoringOrder.GqlTypes
                         context.storing_order_tank.Add(newTank);
                         continue;
                     }
+
+                    if(string.IsNullOrEmpty(tnk?.guid) || string.IsNullOrEmpty(tnk.last_cargo_guid))
+                        throw new GraphQLException(new Error("Compulsory fields cant be null", "Error"));
 
                     // Find the corresponding existing child entity or add a new one if necessary
                     var existingTank = soDomain.storing_order_tank.FirstOrDefault(t => t.guid == tnk.guid && (t.delete_dt == null || t.delete_dt == 0));
@@ -215,7 +223,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         existingTank.update_by = user;
                         existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.CANCELED;
-                       //context.storing_order_tank.Update(newTank);
+                        //context.storing_order_tank.Update(newTank);
                         continue;
                     }
 
@@ -259,33 +267,16 @@ namespace IDMS.StoringOrder.GqlTypes
                     //All tank has been cancelled
                     soDomain.status_cv = SOStatus.CANCELED;
 
+                soDomain.remarks = so.remarks;
+                soDomain.haulier = so.haulier;
+                soDomain.customer_company_guid = so.customer_company_guid;
+                soDomain.so_notes = so.so_notes;
                 soDomain.update_by = user;
                 soDomain.update_dt = currentDateTime;
                 var res = await context.SaveChangesAsync();
 
                 if (rollbackSOTGuids.Any())
                     VoidInGateEIR(rollbackSOTGuids.ToArray(), user, currentDateTime, context);
-
-                //if (so.delete_dt > 0)
-                //{
-                //    soDomain.delete_dt = currentDateTime;
-                //    soDomain.update_dt = currentDateTime;
-                //    soDomain.update_by = user;
-                //}
-                //else
-                //{
-                //    //soDomain.status_cv = so.status_cv;
-                //    soDomain.customer_company_guid = so.customer_company_guid;
-                //    soDomain.haulier = so.haulier;
-                //    //soDomain.so_no = so.so_no;
-                //    soDomain.so_notes = so.so_notes;
-                //    soDomain.update_dt = currentDateTime;
-                //    soDomain.update_by = user;
-                //}
-
-                //soDomain.storing_order_tank = storingOrderTanks;
-                // context.storing_order.Update(soDomain);
-                //var res = await context.SaveChangesAsync();
 
                 //TODO
                 //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";

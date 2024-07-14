@@ -41,6 +41,20 @@ namespace IDMS.StoringOrder.Application
             IMapper mapper = mappingConfig.CreateMapper();
             builder.Services.AddSingleton(mapper);
 
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200") // Allow only this domain
+                               .AllowAnyMethod()
+                               .AllowAnyHeader()
+                               .AllowCredentials();
+                    });
+            });
+
+
             //builder.Services.AddDbContext<ApplicationDbContext>(
             //        options => options.UseSqlServer("YOUR_CONNECTION_STRING"));
 
@@ -71,6 +85,8 @@ namespace IDMS.StoringOrder.Application
                             .AddSorting()
                             .AddProjections()
                             .AddInMemorySubscriptions();// Must add this as well for websocket
+
+
 
             //------------------------------------------------------------------------------
             //This portion is for Authentication matter
@@ -110,7 +126,7 @@ namespace IDMS.StoringOrder.Application
             //app.UseHttpsRedirection();
 
             //app.UseAuthorization();
-
+            app.UseCors("AllowSpecificOrigin"); // Apply CORS policy
             //app.UseAuthentication();
             app.UseWebSockets();//Subscription using websockets, must add this middleware
             app.MapGraphQL();

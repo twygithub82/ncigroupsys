@@ -84,39 +84,66 @@ export const IN_GATE_FRAGMENT = gql`
   }
 `;
 
-export const GET_TARIFF_CLEANING_QUERY = gql`
-  query queryTariffCleaning($where: tariff_cleaningFilterInput) {
-    lastCargo: queryTariffCleaning(where: $where) {
+export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
+  query queryInGateForSurvey($where: InGateWithTankFilterInput, $order: [InGateWithTankSortInput!]) {
+    inGates: queryInGates(where: $where, order: $order) {
+      totalCount
       nodes {
-        alias
-        ban_type_cv
-        cargo
-        class_cv
-        cleaning_category_guid
-        cleaning_method_guid
         create_by
         create_dt
         delete_dt
-        depot_note
-        description
-        flash_point
+        driver_name
+        eir_date
+        eir_no
         guid
-        hazard_level_cv
-        in_gate_alert
-        nature_cv
-        open_on_gate_cv
+        haulier
+        lolo_cv
+        preinspection_cv
         remarks
-        un_no
+        so_tank_guid
         update_by
         update_dt
+        vehicle_no
+        yard_cv
+        tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          remarks
+          required_temp
+          so_guid
+          status_cv
+          tank_no
+          tank_status_cv
+          unit_type_guid
+          update_by
+          update_dt
+          tariff_cleaning {
+            cargo
+            guid
+          }
+          storing_order {
+            customer_company {
+              code
+              name
+              guid
+            }
+          }
+        }
+        eir_status_cv
       }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      totalCount
     }
   }
 `;
@@ -137,7 +164,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
-        query: GET_TARIFF_CLEANING_QUERY,
+        query: SEARCH_IN_GATE_FOR_SURVEY_QUERY,
         variables: { where, order }
       })
       .pipe(
@@ -148,10 +175,10 @@ export class InGateDS extends BaseDataSource<InGateItem> {
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(lastCargo.nodes);
-          this.totalCount = lastCargo.totalCount;
-          return lastCargo.nodes;
+          const retResult = result.inGates || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          return retResult.nodes;
         })
       );
   }

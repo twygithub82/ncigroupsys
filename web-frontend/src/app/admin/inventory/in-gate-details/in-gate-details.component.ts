@@ -95,13 +95,15 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     'actions'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
+  pageTitleNew = 'MENUITEMS.INVENTORY.LIST.IN-GATE-DETAILS'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.INVENTORY.LIST.IN-GATE'
   ]
 
   translatedLangText: any = {};
   langText = {
+    DETAILS: 'COMMON-FORM.DETAILS',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
@@ -153,9 +155,10 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     LOLO: 'COMMON-FORM.LOLO',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     BACK: 'COMMON-FORM.BACK',
-    DELIVERED: 'COMMON-FORM.DELIVERED',
+    ACCEPT: 'COMMON-FORM.ACCEPT',
     EIR_FORM: 'COMMON-FORM.EIR-FORM',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    RESET: 'COMMON-FORM.RESET',
   }
 
   inGateForm?: UntypedFormGroup;
@@ -440,7 +443,16 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/in-gate']);
+      this.router.navigate(['/admin/inventory/in-gate']);
     }
+  }
+
+  resetForm(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+    this.inGateForm!.patchValue({
+      haulier: this.storingOrderTankItem!.storing_order?.haulier,
+      vehicle_no: '',
+      driver_name: ''
+    });
   }
 }

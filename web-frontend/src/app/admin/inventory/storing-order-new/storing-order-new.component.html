@@ -327,7 +327,7 @@
               <div class="row m-t-10">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button aria-label="Back to previous page" (click)="$event.preventDefault();"
-                    [routerLink]="['/admin/storing-order']">
+                    [routerLink]="['/admin/inventory/storing-order']">
                     <mat-icon>chevron_left</mat-icon>{{langText.BACK | translate}}
                   </button>
                 </div>
@@ -338,8 +338,15 @@
                   </button>
                   }
                   @if (isAnyItemEdited()) {
-                  <button mat-flat-button color="primary">
-                    <mat-icon>save</mat-icon>{{langText.SAVE_AND_SUBMIT | translate}}
+                  <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)">
+                    <mat-icon>
+                      @if (!(soDS.loading$ | async)) {
+                      save
+                      } @else if ((soDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{langText.SAVE_AND_SUBMIT | translate}}
                   </button>
                   }
                 </div>

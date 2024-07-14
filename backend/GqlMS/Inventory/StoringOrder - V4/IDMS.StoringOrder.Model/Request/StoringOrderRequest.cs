@@ -11,7 +11,7 @@ namespace IDMS.StoringOrder.Model.Request
     public class StoringOrderRequest : Base
     {
         public string? guid { get; set; }
-        public string? customer_company_guid { get; set; }
+        public string customer_company_guid { get; set; }
         public string? status_cv { get; set; }
         public string? haulier { get; set; }
         public string? so_no { get; set; }
