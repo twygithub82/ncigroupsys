@@ -27,7 +27,7 @@ export interface DialogData {
   action?: string;
   selectedValue?:string;
   // item: StoringOrderTankItem;
-  // langText?: any;
+   langText?: any;
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]

@@ -484,24 +484,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         tc.flash_point= Number(this.tcForm.value['flash_point']);
         tc.un_no=this.tcForm.value['un_no'];
         tc.nature_cv=this.tcForm.value['nature'];
-        // const cvClass :CodeValuesItem= this.tcForm.value['class_no'];
-        // if(cvClass) tc.class_cv=cvClass;
-        // const clnCategory:CleaningCategoryItem= this.tcForm.value['category'];
-        // if(clnCategory) tc.cleaning_category_guid=clnCategory;
-        // const clnMethod:CleaningMethodItem= this.tcForm.value['method'];
-        // if(clnMethod)  tc.cleaning_method_guid=clnMethod;
-        // const cvHazardLevel :CodeValuesItem= this.tcForm.value['hazard_level'];
-        // if(cvHazardLevel) tc.hazard_level_cv=cvHazardLevel;
-        // const cvBanType :CodeValuesItem= this.tcForm.value['ban_type'];
-        // if(cvBanType) tc.ban_type_cv=cvBanType.code_val;
-        // const cvOpenGate :CodeValuesItem= this.tcForm.value['open_gate'];
-        // if(cvOpenGate) tc.open_on_gate_cv=cvOpenGate.code_val;
-        // const cvFlashPoint :CodeValuesItem= this.tcForm.value['flash_open'];
-        // if(cvFlashPoint) tc.flash_point=cvOpenGate.code_val;
-        // const cvUnNo :CodeValuesItem= this.tcForm.value['un_no'];
-        // if(cvUnNo)tc.un_no=cvUnNo.code_val;
-        // const cvNature :CodeValuesItem= this.tcForm.value['nature'];
-        // if(cvNature) tc.nature_cv=cvNature.code_val;
+        
        
         if (tc.guid) {
           this.tcDS.updateTariffCleaning(tc).subscribe(result => {
@@ -516,34 +499,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
               this.handleSaveSuccess(result?.data?.addTariffCleaning);
             });
         }
-        // so.customer_company_guid = this.tcForm.value['customer_company_guid'];
-        // so.haulier = this.tcForm.value['haulier'];
-        // so.so_notes = this.tcForm.value['so_notes'];
-
-        // const sot: StoringOrderTankUpdateSO[] = this.sotList.data.map((item: Partial<StoringOrderTankItem>) => {
-        //   // Ensure action is an array and take the last action only
-        //   const actions = Array.isArray(item!.actions) ? item!.actions : [];
-        //   const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
-        
-        //   return new StoringOrderTankUpdateSO({
-        //     ...item,
-        //     action: latestAction // Set the latest action as the single action
-        //   });
-        // });
-        // console.log('so Value', so);
-        // console.log('sot Value', sot);
-        // if (so.guid) {
-        //   this.soDS.updateStoringOrder(so, sot).subscribe(result => {
-        //     console.log(result)
-        //     this.handleSaveSuccess(result?.data?.updateStoringOrder);
-        //   });
-        // } else {
-          // this.soDS.addStoringOrder(so, sot).subscribe(result => {
-          //   console.log(result)
-          //   this.handleSaveSuccess(result?.data?.addStoringOrder);
-          // });
-        //}
-     // }
+      
     } 
     else {
       console.log('Invalid tcForm', this.tcForm?.value);
@@ -597,6 +553,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
     const dialogRef = this.dialog.open(FormDialogComponent,{
       data: {
+        action: 'new',
+        langText: this.langText,
       }
         
     });
