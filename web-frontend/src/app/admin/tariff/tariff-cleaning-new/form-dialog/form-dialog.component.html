@@ -1,0 +1,63 @@
+
+<div class="addContainer" >
+  <div class="card">
+    <div class="header">
+      <h2>
+        {{this.data.langText.CARGO_CLASS_SELECT | translate}}
+      
+      </h2>
+    </div>
+    <div class="body">
+        <div class="row">
+        
+        <mat-tab-group >
+         
+           <mat-tab label="1.x">
+            
+             
+             
+            <div class="row">
+              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
+                  <img src="assets/images/idms/tariff/explosive.png" alt="Explosive"
+                    (click)="selectClassNo('Explosive')">
+                </div>
+              
+              
+                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
+                  <img src="assets/images/idms/tariff/1_4.png" alt="1.4" (click)="selectClassNo('1.4')">
+                </div>
+           
+            
+            
+                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
+                <img src="assets/images/idms/tariff/1_5.png" alt="1.5" (click)="selectClassNo('1.5')">
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
+                <img src="assets/images/idms/tariff/1_6.png" alt="1.6" (click)="selectClassNo('1.6')">
+              </div> 
+            </div>
+          </mat-tab>
+          <mat-tab label="2.x">
+            <div class="row">
+              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" (click)="selectClassNo('Explosive')">
+                <img src="assets/images/idms/tariff/explosive.png" alt="Explosive"
+                  (click)="selectClassNo('Explosive')">
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
+                <img src="assets/images/idms/tariff/1_4.png" alt="1.4" (click)="selectClassNo('2.4')">
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
+                <img src="assets/images/idms/tariff/1_5.png" alt="1.5" (click)="selectClassNo('2.5')">
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
+                <img src="assets/images/idms/tariff/1_6.png" alt="1.6" (click)="selectClassNo('2.6')">
+              </div>
+            </div>
+          </mat-tab> 
+        
+        </mat-tab-group>
+        </div>
+    </div>
+  </div>
+</div>
+  

@@ -5,6 +5,7 @@ using IDMS.Models.Parameter;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,8 +27,12 @@ namespace IDMS.Models.Tariff
 
         public string? un_no { get; set; }
 
+        
+        [ForeignKey("cleaning_method")]
         public string? cleaning_method_guid { get; set; }
 
+        
+        [ForeignKey("cleaning_category")]
         public string? cleaning_category_guid { get; set; }
 
         public string? msds_guid { get; set; }  
@@ -52,9 +57,11 @@ namespace IDMS.Models.Tariff
 
         //public string? rebate_type_cv { get; set; }
         [GraphQLName("cleaning_method_with_tariff")]
+        //public cleaning_method? cleaning_method { get; set; }
         public CleaningMethodWithTariff? cleaning_method { get; set; }
 
         [GraphQLName("cleaning_category_with_tariff")]
+       // public cleaning_category? cleaning_category { get; set; }
         public CleaningCategoryWithTariff? cleaning_category { get; set; }
 
         [GraphQLName("storing_order_tank")]

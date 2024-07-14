@@ -1,0 +1,28 @@
+
+  
+//    mat-tab-group img {
+//      width:30vh;
+//      transition: transform 0.2s;
+//    }
+  
+.row  img:hover {
+    transform: scale(1.1);
+  }
+
+
+  
+  .row {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    justify-content: center;
+    align-items: center;
+    height: 95%;
+    overflow: hidden;
+  }
+  
+  .row img {
+    max-width: 100%;
+    height: auto;
+    cursor: hand;
+    transition: transform 0.2s;
+  }

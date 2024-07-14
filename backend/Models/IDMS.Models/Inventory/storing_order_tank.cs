@@ -15,10 +15,12 @@ namespace IDMS.Models.Inventory
         [Key]
         public string? guid { get; set; }
 
+        [ForeignKey("storing_order")]
         public string? so_guid {  get; set; }
 
         public string? unit_type_guid { get; set; }
 
+        [ForeignKey("tariff_cleaning")]
         public string? last_cargo_guid { get; set; }
 
         public string? tank_no { get; set; }

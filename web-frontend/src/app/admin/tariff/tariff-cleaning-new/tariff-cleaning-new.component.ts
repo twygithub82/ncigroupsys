@@ -43,12 +43,12 @@ import { MatDividerModule } from '@angular/material/divider';
 import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Observable, Subscription } from 'rxjs';
 import { TankDS, TankItem } from 'app/data-sources/tank';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
+import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-tariff-cleaning-new',
@@ -206,8 +206,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   natureControl=new UntypedFormControl();
   tcForm?: UntypedFormGroup;
 
-  storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  sotList = new MatTableDataSource<StoringOrderTankItem>();
+  tariffCleaningItem:TariffCleaningItem=new TariffCleaningItem();
+
+ // storingOrderItem: StoringOrderItem = new StoringOrderItem();
+  //sotList = new MatTableDataSource<StoringOrderTankItem>();
   tc_guid?: string | null;
 
   cvDS: CodeValuesDS;
@@ -235,7 +237,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   ) {
     super();
     this.translateLangText();
-    this.initTcForm();
+   // this.loadData();
+   this.initTcForm();
     this.soDS = new StoringOrderDS(this.apollo);
     this.tcDS=new TariffCleaningDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -246,7 +249,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   initTcForm() {
     this.tcForm = this.fb.group({
-      guid: [''],
+      guid: [{value:''}],
       cargo_name: [''],
       cargo_alias:[''],
       cargo_description:[''],
@@ -255,7 +258,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       category:this.categoryControl,
       hazard_level:this.hazardLevelControl,
       ban_type:this.banTypeControl,
-      open_gate:this.openGateCvList,
+      open_gate:this.openGateControl,
       flash_point:[''],
       un_no:[''],
       nature:this.natureCvList,
@@ -267,6 +270,29 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   ngOnInit() {
     //this.initializeFilter();
     this.loadData();
+  }
+
+  populatetcForm(tc: TariffCleaningItem):void {
+    //this.tcForm!.patchValue({
+    this.tcForm=  this.fb.group({
+      guid: tc.guid,
+      cargo_name: tc.cargo,
+      cargo_alias:tc.alias,
+      cargo_description:tc.description,
+      class_no: { value: tc.class_cv, disabled: false },
+      method: { value: tc.cleaning_method_guid, disabled: false },
+      category:{ value: tc.cleaning_category_guid, disabled: false },
+      hazard_level:{ value: tc.hazard_level_cv, disabled: false },
+      ban_type:{ value: tc.ban_type_cv, disabled: false },
+     
+      open_gate:{ value: tc.open_on_gate_cv, disabled: false },
+      flash_point:tc.flash_point,
+      un_no:tc.un_no,
+      nature:{ value: tc.nature_cv, disabled: false },
+      in_gate_alert:tc.in_gate_alert,
+      depot_note:tc.depot_note
+    });
+   
   }
 
   public loadData() {
@@ -292,6 +318,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     //   this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
     // });
 
+    
     this.cCategoryDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
       if(this.cCategoryDS.totalCount>0)
       {
@@ -313,6 +340,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       { alias: 'classNoCv', codeValType: 'CLASS_NO' },
       { alias: 'banTypeCv', codeValType: 'BAN_TYPE' },
       { alias: 'openGateCv', codeValType: 'YES_NO' },
+      { alias: 'natureCv', codeValType: 'NATURE_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('ctHazardLevelCv').subscribe(data => {
@@ -328,6 +356,32 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS.connectAlias('openGateCv').subscribe(data => {
       this.openGateCvList = data;
     });
+    this.cvDS.connectAlias('natureCv').subscribe(data => {
+      this.natureCvList = data;
+    });
+
+    this.tc_guid = this.route.snapshot.paramMap.get('id');
+    if(this.tc_guid)
+    {
+      {
+        const where: any = {};
+        where.guid ={eq:this.tc_guid};
+       
+        // EDIT
+        this.subs.sink = this.tcDS.SearchTariffCleaning(where).subscribe(data => {
+          if (this.tcDS.totalCount > 0) {
+            this.tariffCleaningItem = data[0];
+            this.populatetcForm(this.tariffCleaningItem);
+           // this.populateSOForm(this.storingOrderItem);
+          }
+        });
+      }
+
+    }
+    // else
+    // {
+    //   this.initTcForm();
+    // }
   }
 
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
@@ -405,43 +459,50 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
-  onSOFormSubmit() {
-    this.tcForm!.get('sotList')?.setErrors(null);
-    if (this.tcForm?.valid) {
-      if (!this.sotList.data.length) {
-        this.tcForm.get('sotList')?.setErrors({ required: true });
-      } else {
-        let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
-        so.customer_company_guid = this.tcForm.value['customer_company_guid'];
-        so.haulier = this.tcForm.value['haulier'];
-        so.so_notes = this.tcForm.value['so_notes'];
+  onTCFormSubmit() {
+   //this.tcForm!.get('sotList')?.setErrors(null);
+    if (this.tcForm?.valid) 
+      {
+      // if (!this.sotList.data.length) {
+      //   this.tcForm.get('sotList')?.setErrors({ required: true });
+      // } else 
+     // {
+        let tc: TariffCleaningItem = new TariffCleaningItem(this.tariffCleaningItem);
+       // tc.guid='';
+        tc.cargo=this.tcForm.value['cargo_name'];
+        tc.alias=this.tcForm.value['cargo_alias'];
+        tc.description=this.tcForm.value['cargo_description'];
+        tc.in_gate_alert=this.tcForm.value['in_gate_alert'];
+        tc.depot_note=this.tcForm.value['depot_note'];;
 
-        const sot: StoringOrderTankUpdateSO[] = this.sotList.data.map((item: Partial<StoringOrderTankItem>) => {
-          // Ensure action is an array and take the last action only
-          const actions = Array.isArray(item!.actions) ? item!.actions : [];
-          const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
+        tc.class_cv=this.tcForm.value['class_no'];
+        tc.cleaning_category_guid=this.tcForm.value['category'];
+        tc.cleaning_method_guid=this.tcForm.value['method'];
+        tc.hazard_level_cv=this.tcForm.value['hazard_level'];
+        tc.ban_type_cv=this.tcForm.value['ban_type'];
+        tc.open_on_gate_cv=this.tcForm.value['open_gate'];
+        tc.flash_point= Number(this.tcForm.value['flash_point']);
+        tc.un_no=this.tcForm.value['un_no'];
+        tc.nature_cv=this.tcForm.value['nature'];
         
-          return new StoringOrderTankUpdateSO({
-            ...item,
-            action: latestAction // Set the latest action as the single action
-          });
-        });
-        console.log('so Value', so);
-        console.log('sot Value', sot);
-        if (so.guid) {
-          this.soDS.updateStoringOrder(so, sot).subscribe(result => {
+       
+        if (tc.guid) {
+          this.tcDS.updateTariffCleaning(tc).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result?.data?.updateStoringOrder);
-          });
-        } else {
-          this.soDS.addStoringOrder(so, sot).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.addStoringOrder);
+            this.handleSaveSuccess(result?.data?.updateTariffClean);
           });
         }
-      }
-    } else {
-      console.log('Invalid soForm', this.tcForm?.value);
+        else
+        {
+          this.tcDS.addNewTariffCleaning(tc).subscribe(result => {
+              console.log(result)
+              this.handleSaveSuccess(result?.data?.addTariffCleaning);
+            });
+        }
+      
+    } 
+    else {
+      console.log('Invalid tcForm', this.tcForm?.value);
     }
   }
 
@@ -480,5 +541,76 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     var codeValue = new CodeValuesItem();
     codeValue.code_val=value;
     this.classNoControl.setValue(codeValue);
+  }
+
+  addOrderDetails(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent,{
+      data: {
+        action: 'new',
+        langText: this.langText,
+      }
+        
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         if (result) {
+          if(result.selectedValue)
+          {
+            this.tcForm!.patchValue({
+              class_no: result.selectedValue,
+            });
+          //this.tcForm?.setValue({"class_no":result.selectedValue});
+          }
+      //     //this.updateData([...this.sotList.data, result.item]);
+      //     const data = [...this.sotList.data];
+      //     const newItem = new StoringOrderTankItem({
+      //       ...result.item,
+      //       actions: ['new']
+      //     });
+  
+      //     // Add the new item to the end of the list
+      //     data.push(newItem);
+  
+      //     this.updateData(data);
+      }
+      });
+    // const dialogRef = this.dialog.open(FormDialogComponent, {
+    //   data: {
+    //     item: new StoringOrderTankItem(),
+    //     action: 'new',
+    //     langText: this.langText,
+    //     populateData: {
+    //       unit_typeList: this.unit_typeList,
+    //       repairCv: this.repairCv,
+    //       clean_statusCv: this.clean_statusCv,
+    //       yesnoCv: this.yesnoCv
+    //     },
+    //     index: -1,
+    //     sotExistedList: this.sotList.data
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result) {
+    //     //this.updateData([...this.sotList.data, result.item]);
+    //     const data = [...this.sotList.data];
+    //     const newItem = new StoringOrderTankItem({
+    //       ...result.item,
+    //       actions: ['new']
+    //     });
+
+    //     // Add the new item to the end of the list
+    //     data.push(newItem);
+
+    //     this.updateData(data);
+    //   }
+    // });
   }
 }

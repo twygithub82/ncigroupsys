@@ -37,15 +37,15 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
                 .HasMany(e => e.sot).WithOne(e => e.tariff_cleaning)
                 .HasForeignKey(e=>e.last_cargo_guid) ;
 
-            modelBuilder.Entity<tariff_cleaning>()
-                .ToTable("tariff_cleaning")
-                .HasOne(t => t.cleaning_method).WithMany(m => m.tariff_cleanings)
-                .HasForeignKey(f => f.cleaning_method_guid);
+            //modelBuilder.Entity<tariff_cleaning>()
+            //    .ToTable("tariff_cleaning")
+            //    .HasOne(t => t.cleaning_method).WithMany(m => m.tariff_cleanings)
+            //    .HasForeignKey(f => f.cleaning_method_guid);
 
-            modelBuilder.Entity<tariff_cleaning>()
-                .ToTable("tariff_cleaning")
-                .HasOne(t => t.cleaning_category).WithMany(m => m.tariff_cleanings)
-                .HasForeignKey(f => f.cleaning_category_guid);
+            //modelBuilder.Entity<tariff_cleaning>()
+            //    .ToTable("tariff_cleaning")
+            //    .HasOne(t => t.cleaning_category).WithMany(m => m.tariff_cleanings)
+            //    .HasForeignKey(f => f.cleaning_category_guid);
          
         }
 

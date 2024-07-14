@@ -5,8 +5,8 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-import {CleaningCategoryItem} from './cleaning-category';
-import {CleaningMethodItem} from './cleaning-method';
+import { CleaningCategoryItem } from './cleaning-category';
+import { CleaningMethodItem } from './cleaning-method';
 import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
 import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
@@ -18,7 +18,7 @@ export class TariffCleaningGO {
   public cargo?: string;
   public alias?: string;
   public un_no?: string;
-  public flash_point?: string;
+  public flash_point?: number;
   public description?: string;
   public class_cv?: string;
   public hazard_level_cv?: string;
@@ -36,6 +36,7 @@ export class TariffCleaningGO {
 
   constructor(item: Partial<TariffCleaningGO> = {}) {
     this.guid = item.guid;
+    if (!this.guid) this.guid = '';
     this.cleaning_method_guid = item.cleaning_method_guid;
     this.cleaning_category_guid = item.cleaning_category_guid;
     this.msds_guid = item.msds_guid;
@@ -164,14 +165,28 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD = gql`
         un_no
         update_by
         update_dt
-        cleaning_category_with_tariff {
-        ...CleaningCategoryFragment
-      }
+       cleaning_category_with_tariff {
+           cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          update_by
+          update_dt
+        }
         cleaning_method_with_tariff {
-        ...CleaningMethodFragment
-       } 
-        
-      }
+           create_by
+        create_dt
+        delete_dt
+        description
+        guid
+        name
+        update_by
+        update_dt
+        }
+        }
       
       pageInfo {
       endCursor
@@ -182,8 +197,7 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD = gql`
       totalCount
     }
   }
-  ${CLEANING_METHOD_FRAGMENT}
-  ${CLEANING_CATEGORY_FRAGMENT}
+ 
 `;
 
 export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
@@ -212,10 +226,25 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
         update_by
         update_dt
         cleaning_category_with_tariff {
-          ...CleaningCategoryFragment
+           cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          name
+          update_by
+          update_dt
         }
         cleaning_method_with_tariff {
-          ...CleaningMethodFragment
+           create_by
+        create_dt
+        delete_dt
+        description
+        guid
+        name
+        update_by
+        update_dt
         }
       }
       pageInfo {
@@ -227,61 +256,77 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
       totalCount
     }
   }
-  ${CLEANING_METHOD_FRAGMENT}
-  ${CLEANING_CATEGORY_FRAGMENT}
+
 `;
 
+
+export const ADD_TARIFF_CLEANING = gql`
+  mutation addTariffCleaning($tc: tariff_cleaningInput!) {
+    addTariffCleaning(newTariffClean: $tc)
+  }
+`;
+
+export const UPDATE_TARIFF_CLEANING = gql`
+  mutation updateTariffClean($tc: tariff_cleaningInput!) {
+    updateTariffClean(updateTariffClean: $tc)
+  }
+`;
+
+
 export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
-    public totalCount = 0;
-    public pageInfo?: PageInfo;
-    constructor(private apollo: Apollo) {
-        super();
-    }
+  public totalCount = 0;
+  public pageInfo?: PageInfo;
+  constructor(private apollo: Apollo) {
+    super();
+  }
 
-    loadItemsWithCategoryMethod(where?: any, order?: any): Observable<TariffCleaningItem[]> {
-        this.loadingSubject.next(true);
-        return this.apollo
-            .query<any>({
-                query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD,
-                variables: { where, order }
-            })
-            .pipe(
-                map((result) => result.data),
-                catchError((error: ApolloError) => {
-                    console.error('GraphQL Error:', error);
-                    return of([] as TariffCleaningItem[]); // Return an empty array on error
-                }),
-                finalize(() => this.loadingSubject.next(false)),
-                map((result) => {
-                    const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
-                    this.dataSubject.next(lastCargo.nodes);
-                    this.totalCount = lastCargo.totalCount;
-                    return lastCargo.nodes;
-                })
-            );
-    }
+  loadItemsWithCategoryMethod(where?: any, order?: any): Observable<TariffCleaningItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD,
+        variables: { where, order }
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(lastCargo.nodes);
+          this.pageInfo = lastCargo.pageInfo;
+          this.totalCount = lastCargo.totalCount;
+          return lastCargo.nodes;
+        })
+      );
+  }
 
-    SearchTariffCleaning(where?: any, order?: any,first: number = 10, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
-      this.loadingSubject.next(true);
-      return this.apollo
-          .query<any>({
-              query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION,
-              variables: { where, order, first, after, last, before  }
-          })
-          .pipe(
-              map((result) => result.data),
-              catchError((error: ApolloError) => {
-                  console.error('GraphQL Error:', error);
-                  return of([] as TariffCleaningItem[]); // Return an empty array on error
-              }),
-              finalize(() => this.loadingSubject.next(false)),
-              map((result) => {
-                  const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
-                  this.dataSubject.next(lastCargo.nodes);
-                  this.totalCount = lastCargo.totalCount;
-                  return lastCargo.nodes;
-              })
-          );
+  SearchTariffCleaning(where?: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const lastCargo = result.lastCargo || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(lastCargo.nodes);
+          this.pageInfo = lastCargo.pageInfo;
+          this.totalCount = lastCargo.totalCount;
+          return lastCargo.nodes;
+        })
+      );
   }
 
   loadItems(where?: any, order?: any): Observable<TariffCleaningItem[]> {
@@ -305,5 +350,29 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
           return lastCargo.nodes;
         })
       );
+  }
+
+
+  addNewTariffCleaning(tc: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ADD_TARIFF_CLEANING,
+      variables: {
+        tc
+      }
+    });
+  }
+
+  updateTariffCleaning(tc: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_TARIFF_CLEANING,
+      variables: {
+        tc
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
   }
 }

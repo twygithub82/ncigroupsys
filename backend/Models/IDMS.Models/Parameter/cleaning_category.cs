@@ -4,6 +4,7 @@ using IDMS.Models.Tariff;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace IDMS.Models.Parameter
     public class cleaning_category:Dates
     {
         [Key]
+        [IsProjected(true)]
         public string? guid { get; set; }
 
         public string? name { get; set; }
@@ -26,11 +28,12 @@ namespace IDMS.Models.Parameter
         // public string? cleaning_group_cv { get; set; }
 
          public double? cost { get; set; }
+        public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
 
-     
     }
 
-    public class CleaningCategoryWithTariff: Dates
+    //[Table("cleaning_category")]
+    public class CleaningCategoryWithTariff: Dates 
     {
         [Key]
         public string? guid { get; set; }
@@ -42,7 +45,7 @@ namespace IDMS.Models.Parameter
         // public int? duration { get; set; }
 
         // public string? cleaning_group_cv { get; set; }
-
+        public int? sequence { get; set; }
         public double? cost { get; set; }
 
         public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
