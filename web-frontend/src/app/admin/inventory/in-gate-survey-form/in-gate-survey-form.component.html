@@ -2,7 +2,7 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="langText.SURVEY_FORM"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -191,7 +191,7 @@
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/inventory/in-gate-survey/survey-form', row.guid]" [style.cursor]="'pointer'" matRipple>
+                  [routerLink]="['/admin/inventory/in-gate-survey/survey', row.guid]" [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>

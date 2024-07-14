@@ -16,6 +16,7 @@ import {TariffBufferComponent} from "./tariff/tariff-buffer/tariff-buffer.compon
 import {TariffRepairComponent} from "./tariff/tariff-repair/tariff-repair.component";
 import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-cleaning-new.component';
 import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey.component';
+import { InGateSurveyFormComponent } from './inventory/in-gate-survey-form/in-gate-survey-form.component';
 
 export const ADMIN_ROUTE: Routes = [
   {
@@ -53,6 +54,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "inventory/in-gate-survey",
     component: InGateSurveyComponent,
+  },
+  {
+    path: "inventory/in-gate-survey/survey-form/:id",
+    component: InGateSurveyFormComponent,
   },
   {
     path: "parameter/cleaning-category",
