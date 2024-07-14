@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AutoMapper;
+using IDMS.Models.Inventory;
+using IDMS.InGateSurvey.Model.Request;
 
 
 var builder = WebApplication.CreateBuilder(args); builder.Services.AddHttpContextAccessor();
@@ -59,6 +62,16 @@ builder.Services.AddGraphQLServer()
 //              IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_secretKey))
 //          };
 //      });
+
+var mappingConfig = new MapperConfiguration(cfg =>
+{
+    cfg.CreateMap<InGateSurveyRequest, in_gate_survey>();
+    //cfg.CreateMap<StoringOrderRequest, storing_order>();
+});
+
+IMapper mapper = mappingConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
 
 builder.Services.AddCors(options =>
 {

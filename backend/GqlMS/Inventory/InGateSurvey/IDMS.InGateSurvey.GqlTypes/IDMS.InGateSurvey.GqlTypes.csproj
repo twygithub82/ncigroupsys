@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
+    <ProjectReference Include="..\IDMS.InGateSurvey.Model\IDMS.InGateSurvey.Model.csproj" />
   </ItemGroup>
 
   <ItemGroup>

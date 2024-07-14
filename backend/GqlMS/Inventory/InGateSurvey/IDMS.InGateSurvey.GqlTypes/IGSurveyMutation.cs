@@ -15,154 +15,51 @@ namespace IDMS.InGateSurvey.GqlTypes
 {
     public class IGSurveyMutation
     {
-       //[Authorize]
-        public async Task<int> AddInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, 
-            [Service] IHttpContextAccessor httpContextAccessor, InGateSurveyRequest inGateSurvey)
-        {
-            int retval = 0;   
-            try
-            {
-                string so_guid = "";
-                //long epochNow = GqlUtils.GetNowEpochInSec();
-                var uid=GqlUtils.IsAuthorize(config,httpContextAccessor);
-                InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
-                InGate.create_by = uid;
-                InGate.create_dt = GqlUtils.GetNowEpochInSec();
-                InGateWithTank newInGate = new() { 
-                      create_by =InGate.create_by,
-                      create_dt = InGate.create_dt,
-                      driver_name =InGate.driver_name,
-                      //eir_doc =InGate.eir_doc,
-                      eir_date =InGate.eir_date,
-                      eir_no =InGate.eir_no,
-                      guid =InGate.guid,
-                   //   haulier =InGate.haulier,
-                      lolo_cv   = InGate.lolo_cv, 
-                      preinspection_cv =InGate.preinspection_cv,
-                      so_tank_guid =InGate.so_tank_guid,
-                      vehicle_no =InGate.vehicle_no,
-                      yard_cv   =InGate.yard_cv,
-                      
-                };
-                
-                
-                var so_tank = context.storing_order_tank.Where(sot=> sot.guid ==InGate.so_tank_guid).Include(so=>so.storing_order).FirstOrDefault();
+        ////[Authorize]
+        // public async Task<int> AddInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, 
+        //     [Service] IHttpContextAccessor httpContextAccessor, InGateSurveyRequest inGateSurvey)
+        // {
+        //     int retval = 0;   
 
-                if (so_tank == null)
-                {
-                    throw new GraphQLException(new Error("Tank not found", "404"));
-                }
+        //     try
+        //     {
+        //         //string so_guid = "";
+        //         //long epochNow = GqlUtils.GetNowEpochInSec();
+        //         //var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
+        //         string user = "admin";
+        //         long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var so = so_tank.storing_order;
-                if (so == null)
-                {
-                    throw new GraphQLException(new Error("Storing Order not found", "404"));
-                }
 
-                if (so.haulier != InGate.haulier)
-                {
-                    so.haulier = InGate.haulier;
-                    so.update_by = uid;
-                    so.update_dt=GqlUtils.GetNowEpochInSec();
-                }
-
-                if (InGate.tank != null)
-                {
-                    if(so_tank.status_cv!="WAITING")
-                    {
-                        throw new GraphQLException(new Error("Tank status is not waiting", "404"));
-                    }
-                    so_tank.job_no = InGate.tank.job_no;
-                    so_tank.status_cv = "ACCEPTED";
-                 //   so_tank.purpose_cleaning = InGate.tank.purpose_cleaning;
-                 //   so_tank.purpose_steam= InGate.tank.purpose_steam;
-                    so_tank.purpose_storage=InGate.tank.purpose_storage;
-                    so_tank.update_by = uid;
-                    so_tank.update_dt=GqlUtils.GetNowEpochInSec();
-                    so_guid = so_tank.so_guid;
-                }
-                newInGate.eir_no = $"{so.so_no}";
-                //if(so.haulier!=InGate.haulier)
-                //{
-                //    so.haulier = InGate.haulier;
-                //}
-
-                context.in_gate.Add(newInGate);
-
-               
-                if (!string.IsNullOrEmpty(so_guid))
-                {
-                    CheckAndUpdateSOStatus(context, so_guid);
-                }
-
-                retval = context.SaveChanges();
-            }
-            catch
-            {
-                throw;
-            }
-            return retval;
-        }
+        //         retval = context.SaveChanges();
+        //     }
+        //     catch
+        //     {
+        //         throw;
+        //     }
+        //     return retval;
+        // }
 
         //[Authorize]
-        public async Task<int> UpdateInGateSurvey([Service] ApplicationInventoryDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, InGateWithTank InGate)
+        public async Task<int> UpdateInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, InGateSurveyRequest inGateSurveyRequest)
         {
             int retval = 0;
-            string so_guid = "";
+
             try
             {
-                if (InGate != null)
-                {
-                    long epochNow = GqlUtils.GetNowEpochInSec();
-                    var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                    InGate.update_by = uid;
-                    InGate.update_dt=epochNow;
-                    
-                    var so_tank = context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefault();
+                in_gate_survey  ingateSurvey = context.in_gate_survey.Where(i=>i.delete_dt == null || i.delete_dt == 0).FirstOrDefault();
+                if (ingateSurvey == null)
+                    throw new GraphQLException(new Error("Ingate survey not found.", "NOT_FOUND"));
+              
+                if(ingateSurvey.in_gate_guid == null)
+                    throw new GraphQLException(new Error("Ingate Guid cant be null.", "Error"));
 
-                    if (so_tank == null)
-                    {
-                        throw new GraphQLException(new Error("Tank not found", "404"));
-                    }
 
-                    var so = so_tank.storing_order;
-                    
-                    if (so == null)
-                    {
-                        throw new GraphQLException(new Error("Storing Order not found", "404"));
-                    }
 
-                    if (so.haulier != InGate.haulier)
-                    {
-                        so.haulier = InGate.haulier;
-                        so.update_by = uid;
-                        so.update_dt = GqlUtils.GetNowEpochInSec();
-                    }
+                retval = context.SaveChanges();
+                // retval = InGate;
 
-                    if(InGate.tank!=null)
-                    {
-                        so_tank.job_no= InGate.tank.job_no;
-                        so_tank.status_cv="ACCEPTED";
-                        //so_tank.purpose_cleaning = InGate.tank.purpose_cleaning;
-                      //  so_tank.purpose_steam = InGate.tank.purpose_steam;
-                        so_tank.purpose_storage = InGate.tank.purpose_storage;
-                        so_tank.update_by = uid;
-                        so_tank.update_dt = GqlUtils.GetNowEpochInSec();
-                        so_guid = so_tank.so_guid;
-                    }
 
-                    context.in_gate.Update(InGate);
-                   
-
-                    if (!string.IsNullOrEmpty(so_guid))
-                    {
-                        CheckAndUpdateSOStatus(context, so_guid);
-                    }
-
-                    retval = context.SaveChanges();
-                    // retval = InGate;
-                }
-          
             }
             catch
             {
@@ -171,23 +68,23 @@ namespace IDMS.InGateSurvey.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, 
+        public async Task<int> DeleteInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
         {
-            int retval =0;
+            int retval = 0;
             try
             {
 
-                var uid=GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var query = context.in_gate.Where(i=>i.guid==$"{InGate_guid}");
-                if(query.Any())
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var query = context.in_gate.Where(i => i.guid == $"{InGate_guid}");
+                if (query.Any())
                 {
                     long epochNow = GqlUtils.GetNowEpochInSec();
-                    var delInGate= query.FirstOrDefault();
+                    var delInGate = query.FirstOrDefault();
                     delInGate.delete_dt = epochNow;
-                    delInGate.update_by=uid;
-                    delInGate.update_dt=epochNow;
-                
+                    delInGate.update_by = uid;
+                    delInGate.update_dt = epochNow;
+
                     retval = context.SaveChanges(true);
                 }
 
@@ -214,4 +111,3 @@ namespace IDMS.InGateSurvey.GqlTypes
         }
     }
 }
-    
