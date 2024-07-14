@@ -1,28 +1,31 @@
 
   
-//    mat-tab-group img {
-//      width:30vh;
-//      transition: transform 0.2s;
-//    }
+   mat-tab-group {
+     width:50vh;
+     //height: 70vh;
+    // transition: transform 0.2s;
+   }
   
-.row  img:hover {
+td div img:hover {
     transform: scale(1.1);
+    cursor: pointer;
   }
 
 
   
-  .row {
-    display: flex;
+  td div {
+    //display: flex;
     flex-wrap: nowrap; /* Prevent wrapping */
     justify-content: center;
     align-items: center;
     height: 95%;
-    overflow: hidden;
+    //overflow: hidden;
   }
   
-  .row img {
-    max-width: 100%;
-    height: auto;
-    cursor: hand;
+  td div img {
+    max-width: 50vh;
+    height: 10vh;
+   
     transition: transform 0.2s;
+    padding-right: 10px;
   }
