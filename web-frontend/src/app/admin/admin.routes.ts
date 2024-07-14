@@ -62,7 +62,11 @@ export const ADMIN_ROUTE: Routes = [
     component: TariffCleaningComponent,
   },
   {
-    path: "tariff/tariff-cleaning-new",
+    path: "tariff/tariff-cleaning/new",
+    component: TariffCleaningNewComponent,
+  },
+  {
+    path: "tariff/tariff-cleaning/edit/:id",
     component: TariffCleaningNewComponent,
   },
   {

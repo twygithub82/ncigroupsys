@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 export const CLEANING_METHOD_FRAGMENT = gql`
-  fragment CleaningMethodFragment on CleaningMethodWithTariff {
+  fragment CleaningMethodFragment on storing_order_CleaningMethodWithTariff {
         create_by
         create_dt
         delete_dt
@@ -15,7 +15,7 @@ export const CLEANING_METHOD_FRAGMENT = gql`
 
 
 export const CLEANING_CATEGORY_FRAGMENT = gql`
-  fragment CleaningCategoryFragment on CleaningCategoryWithTariff {
+  fragment CleaningCategoryFragment on storing_order_CleaningCategoryWithTariff {
         cost
         create_by
         create_dt

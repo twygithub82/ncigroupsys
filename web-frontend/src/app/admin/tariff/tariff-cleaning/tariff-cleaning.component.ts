@@ -82,10 +82,10 @@ import { sequence } from '@angular/animations';
 export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
    //'select',
-    'so_no',
-    'customer_code',
-    'no_of_tanks',
-    'status',
+    'cargo',
+    'desc',
+    'class',
+    'un_no',
     'method',
     'flash_point',
     'category',
@@ -434,7 +434,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.searchForm!.value['class_no']) {
       const classNo:CodeValuesItem = this.searchForm!.value['class_no'];
-      where.class_no = { contains: classNo.code_val };
+      where.class_cv = { contains: classNo.code_val };
     }
 
     if (this.searchForm!.value['hazard_level']) {
@@ -492,6 +492,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
+ 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
     //return this.ccDS.displayName(cc);

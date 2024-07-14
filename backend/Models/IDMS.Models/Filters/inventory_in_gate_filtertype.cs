@@ -12,7 +12,7 @@ namespace IDMS.Models.Filters
     {
         protected override void Configure(IFilterInputTypeDescriptor<InGateWithTank> descriptor)
         {
-            descriptor.Ignore(c => c.tank);
+            //descriptor.Ignore(c => c.tank);
 
             base.Configure(descriptor);
         }

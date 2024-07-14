@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,18 +25,19 @@ namespace IDMS.Models.Parameter
 
         // public double? cost { get; set; }
 
-        
+        public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
     }
 
-    public class CleaningMethodWithTariff: Dates
+    
+    public class CleaningMethodWithTariff: cleaning_method
     {
-        [Key]
-        public string? guid { get; set; }
+        //[Key]
+        //public string? guid { get; set; }
 
-        public string? name { get; set; }
+        //public string? name { get; set; }
 
-        public string? description { get; set; }
+        //public string? description { get; set; }
 
-        public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
+        //public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
     }
 }

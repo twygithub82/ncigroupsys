@@ -14,7 +14,7 @@
                   </mat-panel-title>
                   <mat-panel-description>
                     <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                      <button mat-mini-fab color="primary" [routerLink]="['/admin/tariff/tariff-cleaning-new']">
+                      <button mat-mini-fab color="primary" [routerLink]="['/admin/tariff/tariff-cleaning/new']">
                         <mat-icon class="col-white">add</mat-icon>
                       </button>
                     </div>
@@ -158,7 +158,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                     <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                   </ng-container>
-                  <ng-container matColumnDef="so_no">
+                  <ng-container matColumnDef="cargo">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_NAME |
                       translate}}</mat-header-cell>
                     <!-- <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">
@@ -168,7 +168,7 @@
                       <span class="mobile-label">{{langText.CUSTOMER_CODE | translate}}:</span>{{row.cargo}}
                     </mat-cell>
                   </ng-container>
-                  <ng-container matColumnDef="customer_code">
+                  <ng-container matColumnDef="desc">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_DESCRIPTION |
                       translate}}</mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" >
@@ -179,7 +179,7 @@
                         translate}}:</span>{{ccDS.displayName(row.customer_company)}}
                     </mat-cell> -->
                   </ng-container>
-                  <ng-container matColumnDef="no_of_tanks">
+                  <ng-container matColumnDef="class">
                     <mat-header-cell *matHeaderCellDef mat-sort-header
                       [ngClass]="'justify-content-center'">{{langText.CARGO_CLASS
                       | translate}}</mat-header-cell>
@@ -189,7 +189,7 @@
                       {{row.class_cv}}
                     </mat-cell>
                   </ng-container>
-                  <ng-container matColumnDef="status">
+                  <ng-container matColumnDef="un_no">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_UN_NO |
                       translate}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -253,7 +253,7 @@
                   </ng-container> -->
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns;"
-                    [routerLink]="['/admin/storing-order/edit', row.guid]" [style.cursor]="'pointer'" matRipple>
+                    [routerLink]="['/admin/tariff/tariff-cleaning/edit', row.guid]" [style.cursor]="'pointer'" matRipple>
                   </mat-row>
                 </table>
               </div>
@@ -272,7 +272,7 @@
               </div>
               }
               <mat-paginator #paginator [length]="tcDS.totalCount" [pageIndex]="0" [pageSize]="10"
-                [pageSizeOptions]="[5, 10, 25, 100]">
+                [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
               </mat-paginator>
             </div>
           </div>

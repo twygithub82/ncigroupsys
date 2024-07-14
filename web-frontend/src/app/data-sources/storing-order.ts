@@ -211,7 +211,7 @@ export const CANCEL_STORING_ORDER = gql`
   }
 `;
 
-export class StoringOrderDS extends BaseDataSource<StoringOrderItem> {
+export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
   private soItemsSubject = new BehaviorSubject<StoringOrderItem[]>([]);
   private soLoadingSubject = new BehaviorSubject<boolean>(false);
   public soLoading$ = this.soLoadingSubject.asObservable();

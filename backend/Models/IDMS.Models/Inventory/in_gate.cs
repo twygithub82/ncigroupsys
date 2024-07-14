@@ -16,6 +16,7 @@ namespace IDMS.Models.Inventory
         public string? so_tank_guid { get; set; } = "";
         public string? haulier { get; set; } = "";
         public string? eir_no { get; set; } = "";
+        public string? eir_status_cv { get; set; } = "";
         public string? vehicle_no { get; set; } = "";
         public string? yard_cv { get; set; } = "";
         public string? driver_name { get; set; } = "";
@@ -24,6 +25,7 @@ namespace IDMS.Models.Inventory
         //public string? eir_doc { get; set; } = "";
         public long? eir_date { get; set; }
 
+        public string? remarks { get; set; }
         //public storing_order_tank? tank { get; set; } = null;
 
     }
