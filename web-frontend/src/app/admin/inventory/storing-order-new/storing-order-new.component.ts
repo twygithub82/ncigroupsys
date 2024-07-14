@@ -736,4 +736,21 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   isAnyItemEdited(): boolean {
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
+
+  getLastAction(actions: string[]): string {
+    return actions[actions.length - 1];
+  }
+
+  getBadgeClass(action: string): string {
+    switch (action) {
+      case 'edit':
+        return 'badge-solid-green';
+      case 'rollback':
+        return 'badge-solid-blue';
+      case 'cancel':
+        return 'badge-solid-orange';
+      default:
+        return '';
+    }
+  }
 }

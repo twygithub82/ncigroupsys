@@ -408,6 +408,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         preinspection_cv: this.inGateForm.value['preinspection_cv'],
         lolo_cv: this.inGateForm.value['lolo_cv'],
       })
+      ig.haulier = this.inGateForm.value['haulier'];
       console.log(ig);
       this.igDS.addInGate(ig).subscribe(result => {
         console.log(result)
