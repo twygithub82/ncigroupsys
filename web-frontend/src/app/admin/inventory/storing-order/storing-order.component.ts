@@ -84,6 +84,9 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     'customer_code',
     'no_of_tanks',
     'status',
+    'accept_status',
+    'waiting_status',
+    'cancel_status',
     'actions'
   ];
 
@@ -116,7 +119,11 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION'
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
+    ACCEPTED: 'COMMON-FORM.ACCEPTED',
+    WAITING: 'COMMON-FORM.WAITING',
+    CANCELED: 'COMMON-FORM.CANCELED',
+    TANKS: 'COMMON-FORM.TANKS'
   }
 
   searchForm?: UntypedFormGroup;

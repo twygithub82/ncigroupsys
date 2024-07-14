@@ -20,6 +20,7 @@ export class InGateGO {
   public yard_cv?: string;
   public remarks?: string;
   public tank?: StoringOrderTankGO;
+  public haulier?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -38,6 +39,7 @@ export class InGateGO {
     this.yard_cv = item.yard_cv;
     this.remarks = item.remarks;
     this.tank = item.tank;
+    this.haulier = item.haulier;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;

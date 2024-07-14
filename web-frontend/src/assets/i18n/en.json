@@ -263,7 +263,10 @@
     "INVALID-SELECTION": "Invalid Selection",
     "RESET": "Reset",
     "SURVEY-FORM": "Survey Form",
-    "DETAILS": "Details"
+    "ACCEPTED": "Accepted",
+    "WAITING": "Waiting",
+    "CANCELED": "Canceled",
+    "TANKS": "Tanks"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
