@@ -71,13 +71,15 @@
                     <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table table-hover">
                       <!-- Checkbox Column -->
                       <ng-container matColumnDef="select">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <mat-checkbox (change)="$event ? masterToggle() : null"
                             [checked]="sotSelection.hasValue() && isAllSelected()"
                             [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                           </mat-checkbox>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="''">
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <mat-checkbox (click)="$event.stopPropagation()"
                             (change)="$event ? sotSelection.toggle(row) : null" [checked]="sotSelection.isSelected(row)"
                             [ngClass]="'tbl-checkbox'">
@@ -90,21 +92,27 @@
                         <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="tank_no">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''">{{langText.TANK_NO |
-                          translate}}</mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{langText.TANK_NO | translate}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">
                             {{ langText.TANK_NO | translate}}:
                           </span>
                           {{row.tank_no}}
+                          <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.actions)) + ' ms-1'">{{ getLastAction(row.actions) | uppercase }}</div>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="tank_no_validity">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
                           <i class="fas fa-ellipsis-h"></i>
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                          [ngClass]="''">
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">Validity:</span>
                           @if (row.tank_no_validity==='valid') {
                           <div>
@@ -123,10 +131,13 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="last_cargo">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.LAST_CARGO |
-                          translate}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                          matTooltip="{{row.last_cargo}}">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{langText.LAST_CARGO | translate}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{langText.LAST_CARGO | translate}}:</span>
                             {{row.tariff_cleaning?.cargo}}
@@ -134,18 +145,25 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="job_no">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>{{langText.JOB_NO |
-                          translate}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{langText.JOB_NO | translate}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{langText.JOB_NO | translate}}:</span>
                           {{row.job_no}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="purpose_storage">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>{{langText.STORAGE |
-                          translate}}</mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{langText.STORAGE | translate}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{langText.STORAGE | translate}}:</span>
                           @if (row.purpose_storage) {
                           <div>
@@ -164,10 +182,13 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="purpose_cleaning">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>{{langText.CLEANING |
-                          translate}}</mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{langText.CLEANING |translate}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{langText.CLEANING | translate}}:</span>
                           @if (row.purpose_cleaning) {
                           <div>
@@ -186,10 +207,13 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="purpose_steam">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>{{langText.STEAM |
-                          translate}}</mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                          [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{langText.STEAM |translate}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{langText.STEAM | translate}}:</span>
                           @if (row.purpose_steam) {
                           <div>
@@ -208,26 +232,37 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="purpose_repair_cv">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>{{langText.REPAIR |
-                          translate}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{langText.REPAIR |translate}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{langText.REPAIR | translate}}:</span>
                           {{row.purpose_repair_cv}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="status_cv">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>{{langText.STATUS |
-                          translate}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{langText.STATUS |translate}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{langText.STATUS | translate}}:</span>
                           <span [matTooltip]="row.remarks ? ('Remarks: ' + row.remarks) : ''">{{row.status_cv}}</span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="certificate_cv">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>{{langText.CERTIFICATE |
-                          translate}}
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{langText.CERTIFICATE |translate}}
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{langText.CERTIFICATE | translate}}:</span>
                           {{row.certificate_cv}}
                         </mat-cell>
@@ -249,7 +284,7 @@
                           </button>
                           }
                         </mat-cell> -->
-                        <mat-cell *matCellDef="let row; let i=index;" class="psl-3 justify-content-end">
+                        <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
                           {{row.actions}}
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>

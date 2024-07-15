@@ -19,6 +19,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<customer_company_contact_person> customer_company_contact_person { get; set; }
 
         public DbSet<InGateWithTank> in_gate { get; set; }
+        public DbSet<in_gate_survey> in_gate_survey { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
 
         public DbSet<IDMS.Models.Parameter.CleaningMethodWithTariff> cleaning_method { get; set; }

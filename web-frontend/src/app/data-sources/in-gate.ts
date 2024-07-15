@@ -6,12 +6,13 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankGO } from './storing-order-tank';
+import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
+import { AnyObject } from 'chart.js/dist/types/basic';
 
 export class InGateGO {
   public guid?: string = '';
   public driver_name?: string;
-  public eir_date?: string;
+  public eir_dt?: number;
   public eir_no?: string;
   public lolo_cv?: string;
   public preinspection_cv?: string;
@@ -20,6 +21,7 @@ export class InGateGO {
   public yard_cv?: string;
   public remarks?: string;
   public tank?: StoringOrderTankGO;
+  public haulier?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -29,7 +31,7 @@ export class InGateGO {
   constructor(item: Partial<InGateGO> = {}) {
     this.guid = item.guid || '';
     this.driver_name = item.driver_name;
-    this.eir_date = item.eir_date;
+    this.eir_dt = item.eir_dt;
     this.eir_no = item.eir_no;
     this.lolo_cv = item.lolo_cv;
     this.preinspection_cv = item.preinspection_cv;
@@ -38,6 +40,7 @@ export class InGateGO {
     this.yard_cv = item.yard_cv;
     this.remarks = item.remarks;
     this.tank = item.tank;
+    this.haulier = item.haulier;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -47,14 +50,13 @@ export class InGateGO {
 }
 
 export class InGateItem extends InGateGO {
-  // public cleaning_category?: CleaningCategoryItem;
+  public override tank?: StoringOrderTankItem;
   // public cleaning_method?: CleaningMethodItem;
 
-  // constructor(item: Partial<InGateItem> = {}) {
-  //   super(item);
-  //   this.cleaning_category = item.cleaning_category;
-  //   this.cleaning_method = item.cleaning_method;
-  // }
+  constructor(item: Partial<InGateItem> = {}) {
+    super(item);
+    this.tank = item.tank;
+  }
 }
 
 export interface InGateResult {
@@ -68,7 +70,7 @@ export const IN_GATE_FRAGMENT = gql`
     create_dt
     delete_dt
     driver_name
-    eir_date
+    eir_dt
     eir_doc
     eir_no
     guid
@@ -93,7 +95,7 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
         create_dt
         delete_dt
         driver_name
-        eir_date
+        eir_dt
         eir_no
         guid
         haulier
@@ -148,6 +150,91 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
   }
 `;
 
+export const GET_IN_GATE_BY_ID = gql`
+  query getInGateByID($where: InGateWithTankFilterInput) {
+    inGates: queryInGates(where: $where) {
+      nodes {
+        create_by
+        create_dt
+        delete_dt
+        driver_name
+        eir_dt
+        eir_no
+        eir_status_cv
+        guid
+        haulier
+        lolo_cv
+        preinspection_cv
+        remarks
+        so_tank_guid
+        update_by
+        update_dt
+        vehicle_no
+        yard_cv
+        tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          remarks
+          required_temp
+          so_guid
+          status_cv
+          tank_no
+          tank_status_cv
+          unit_type_guid
+          update_by
+          update_dt
+          tariff_cleaning {
+            alias
+            ban_type_cv
+            cargo
+            class_cv
+            cleaning_category_guid
+            cleaning_method_guid
+            create_by
+            create_dt
+            delete_dt
+            depot_note
+            description
+            flash_point
+            guid
+            hazard_level_cv
+            in_gate_alert
+            msds_guid
+            nature_cv
+            open_on_gate_cv
+            remarks
+            un_no
+            update_by
+            update_dt
+          }
+          storing_order {
+            so_no
+            haulier
+            customer_company {
+              name
+              guid
+              code
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const ADD_IN_GATE = gql`
   mutation AddInGate($inGate: InGateWithTankInput!) {
     addInGate(inGate: $inGate)
@@ -166,6 +253,30 @@ export class InGateDS extends BaseDataSource<InGateItem> {
       .query<any>({
         query: SEARCH_IN_GATE_FOR_SURVEY_QUERY,
         variables: { where, order }
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.inGates || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          return retResult.nodes;
+        })
+      );
+  }
+
+  getInGateByID(id: string): Observable<InGateItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = { guid: { eq: id } }
+    return this.apollo
+      .query<any>({
+        query: GET_IN_GATE_BY_ID,
+        variables: { where }
       })
       .pipe(
         map((result) => result.data),

@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 .header .header-button {
   margin-right: auto;
   margin-left: unset;
@@ -370,3 +372,57 @@
     text-align: justify !important;
   }
 }
+
+// Define breakpoints
+$breakpoints: (
+  "xs": 0px,
+  "sm": 576px,
+  "md": 768px,
+  "lg": 992px,
+  "xl": 1200px
+);
+
+// Mixin to generate width classes
+@mixin generate-width($name, $fraction) {
+  $width: math.percentage(math.div($fraction, 12));
+
+  // Responsive widths for breakpoints
+  @each $breakpoint, $size in $breakpoints {
+    @if $size != 0px {
+      @media (min-width: $size) {
+        .#{$name}-#{$breakpoint} {
+          width: $width !important;
+          flex: 0 0 $width !important;
+          max-width: $width !important;
+        }
+      }
+    } @else {
+      .#{$name} {
+        width: $width !important;
+        flex: 0 0 $width !important;
+        max-width: $width !important;
+      }
+    }
+  }
+}
+
+// Generate classes for each fraction
+@for $i from 12 through 1 {
+  @include generate-width("tbl-col-width-per-#{$i}", $i);
+}
+
+// Additional fractional widths
+@include generate-width("tbl-col-width-per-0_5", 0.5);
+@include generate-width("tbl-col-width-per-0_25", 0.25);
+@include generate-width("tbl-col-width-per-0_75", 0.75);
+@include generate-width("tbl-col-width-per-1_5", 1.5);
+@include generate-width("tbl-col-width-per-2_5", 2.5);
+@include generate-width("tbl-col-width-per-3_5", 3.5);
+@include generate-width("tbl-col-width-per-4_5", 4.5);
+@include generate-width("tbl-col-width-per-5_5", 5.5);
+@include generate-width("tbl-col-width-per-6_5", 6.5);
+@include generate-width("tbl-col-width-per-7_5", 7.5);
+@include generate-width("tbl-col-width-per-8_5", 8.5);
+@include generate-width("tbl-col-width-per-9_5", 9.5);
+@include generate-width("tbl-col-width-per-10_5", 10.5);
+@include generate-width("tbl-col-width-per-11_5", 11.5);

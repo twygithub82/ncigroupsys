@@ -193,7 +193,7 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
           create_dt
           delete_dt
           driver_name
-          eir_date
+          eir_dt
           eir_no
           guid
           haulier
