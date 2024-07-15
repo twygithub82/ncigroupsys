@@ -26,7 +26,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -41,6 +41,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-in-gate',
@@ -74,6 +75,7 @@ import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatCardModule,
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -118,6 +120,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     EIR_DATE: "COMMON-FORM.EIR-DATE"
   }
 
+  in_gate_guid: string | null | undefined;
+  in_gate: InGateItem | null | undefined;
+
   searchForm?: UntypedFormGroup;
 
   sotDS: StoringOrderTankDS;
@@ -142,6 +147,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
+    private route: ActivatedRoute,
+    private router: Router,
     private translate: TranslateService
   ) {
     super();
@@ -178,6 +185,18 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   public loadData() {
+    this.in_gate_guid = this.route.snapshot.paramMap.get('id');
+    if (this.in_gate_guid) {
+      // EDIT
+      this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
+        if (this.igDS.totalCount > 0) {
+          this.in_gate = data[0];
+          // this.populateSOForm(this.storingOrderItem);
+        }
+      });
+    } else {
+    }
+
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
     ];
@@ -185,7 +204,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
-    this.search();
   }
   showNotification(
     colorName: string,
@@ -337,5 +355,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  displayDateTime(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateTimeStr(input);
   }
 }
