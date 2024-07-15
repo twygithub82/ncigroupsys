@@ -1,4 +1,5 @@
 ﻿using CommonUtil.Core.Service;
+using HotChocolate.Language;
 using IDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -127,6 +129,30 @@ namespace IDMS.InGate.GqlTypes
                 throw;
             }
             return uid;
+        }
+
+        public static async Task  SendGlobalNotification([Service] IConfiguration config, string eventId, string eventName)
+        {
+            try
+            {
+                string httpURL = $"{config["GlobalNotificationURL"]}";
+                if(!string.IsNullOrEmpty(httpURL))
+                {
+                   
+                    var query = new
+                    {
+                        query= "query { sendMessage(message: { event_id: \""+eventId+"\", event_name: \""+eventName+"\" }) { } }"
+                    };
+
+                    HttpClient _httpClient = new();
+                    string queryStatement = JsonConvert.SerializeObject(query);
+                    var content = new StringContent(queryStatement, Encoding.UTF8, "application/json");
+                    var data=await _httpClient.PostAsync(httpURL, content);
+                    Console.WriteLine(data);
+                }
+            }
+            catch(Exception ex)
+            { }
         }
     }
 }

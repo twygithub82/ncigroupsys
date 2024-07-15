@@ -15,7 +15,8 @@ namespace IDMS.InGate.GqlTypes
     public class InGate_MutationType
     {
        //[Authorize]
-        public async Task<int> AddInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, InGateWithTank InGate)
+        public async Task<int> AddInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor
+            , InGateWithTank InGate)
         {
             int retval = 0;   
             try
@@ -31,7 +32,7 @@ namespace IDMS.InGate.GqlTypes
                       create_dt = InGate.create_dt,
                       driver_name =InGate.driver_name,
                       //eir_doc =InGate.eir_doc,
-                      eir_date =InGate.eir_date,
+                      eir_dt =InGate.eir_dt,
                       eir_no =InGate.eir_no,
                       guid =InGate.guid,
                    //   haulier =InGate.haulier,
@@ -94,6 +95,12 @@ namespace IDMS.InGate.GqlTypes
                 }
 
                 retval = context.SaveChanges();
+                if (config != null)
+                {
+                    string evtId = "2000";
+                    string evtName = "New In-Gate inserted";
+                    GqlUtils.SendGlobalNotification(config, evtId, evtName);
+                }
             }
             catch
             {

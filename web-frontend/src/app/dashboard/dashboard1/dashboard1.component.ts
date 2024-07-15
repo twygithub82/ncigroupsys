@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApexAxisChartSeries, ApexChart, ApexXAxis, ApexDataLabels, ApexTooltip, ApexYAxis, ApexPlotOptions, ApexStroke, ApexLegend, ApexFill, ApexMarkers, ApexGrid, ApexTitleSubtitle, ApexResponsive, NgApexchartsModule } from 'ng-apexcharts';
+
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -30,6 +31,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { Subscription } from 'rxjs';
+import { Apollo } from 'apollo-angular';
+import {GraphqlNotificationService} from '../../services/global-notification.service'
+
 @Component({
     selector: 'app-dashboard1',
     templateUrl: './dashboard1.component.html',
@@ -60,16 +65,34 @@ export class Dashboard1Component implements OnInit {
   public earningOptions!: Partial<ChartOptions>;
   public performanceRateChartOptions!: Partial<ChartOptions>;
 
-  constructor() {
+  constructor(
+    private apollo: Apollo,
+    private graphqlNotificationService: GraphqlNotificationService
+  ) {
     //constructor
   }
+  messageSubscription?: Subscription;
+
   ngOnInit() {
     this.chart1();
     this.chart3();
     this.chart2();
     this.chart4();
+    this.messageSubscribe();
+
   }
 
+  
+  private messageSubscribe(){
+
+    this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
+      (message) => {
+        alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
+
+      },
+      (error) => console.error(error),
+    );
+  }
   private chart1() {
     this.areaChartOptions = {
       series: [
