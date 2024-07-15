@@ -131,22 +131,48 @@ namespace IDMS.InGate.GqlTypes
             return uid;
         }
 
-        public static async Task  SendGlobalNotification([Service] IConfiguration config, string eventId, string eventName)
+        public static async Task  SendGlobalNotification([Service] IConfiguration config, string eventId, string eventName,int count)
         {
             try
             {
                 string httpURL = $"{config["GlobalNotificationURL"]}";
                 if(!string.IsNullOrEmpty(httpURL))
                 {
-                   
-                    var query = new
+                    var query = @"
+                    query($message: MessageInput!) {
+                        sendMessage(message: $message) {
+                  
+                        }
+                    }";
+
+                    // Define the variables for the query
+                    var variables = new
                     {
-                        query= "query { sendMessage(message: { event_id: \""+eventId+"\", event_name: \""+eventName+"\" }) { } }"
+                        message = new
+                        {
+                            event_id = eventId,
+                            event_name = eventName,
+                            event_dt = GqlUtils.GetNowEpochInSec(),
+                            count=count
+
+                        }
                     };
+
+                    // Create the GraphQL request payload
+                    var requestPayload = new
+                    {
+                        query = query,
+                        variables = variables
+                    };
+
+                    // Serialize the payload to JSON
+                    var jsonPayload = JsonConvert.SerializeObject(requestPayload);
+
+                   
 
                     HttpClient _httpClient = new();
                     string queryStatement = JsonConvert.SerializeObject(query);
-                    var content = new StringContent(queryStatement, Encoding.UTF8, "application/json");
+                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                     var data=await _httpClient.PostAsync(httpURL, content);
                     Console.WriteLine(data);
                 }

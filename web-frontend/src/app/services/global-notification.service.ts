@@ -7,6 +7,8 @@ const NEW_MESSAGES_SUBSCRIPTION = gql`
    messageReceived {
     event_id
     event_name
+    event_dt
+    count
    }
   }
 `;

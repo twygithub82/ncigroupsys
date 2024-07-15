@@ -10,5 +10,9 @@ namespace IDMS.Models
     {
         public string event_id { get; set; } = "";
         public string event_name { get; set; } = "";
+
+        public long event_dt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        public long count { get; set; } = 0;
     }
 }

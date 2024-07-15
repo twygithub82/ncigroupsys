@@ -99,7 +99,14 @@ namespace IDMS.InGate.GqlTypes
                 {
                     string evtId = "2000";
                     string evtName = "New In-Gate inserted";
-                    GqlUtils.SendGlobalNotification(config, evtId, evtName);
+                     int count = context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                    .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0)
+                    .Include(s => s.tank.tariff_cleaning)
+                    .Include(s => s.tank.storing_order)
+                    .Include(s => s.tank.storing_order.customer_company)
+                    .Include(s => s.tank.tariff_cleaning.cleaning_method)
+                    .Include(s => s.tank.tariff_cleaning.cleaning_category).Count();
+                    GqlUtils.SendGlobalNotification(config, evtId, evtName,count);
                 }
             }
             catch

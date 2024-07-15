@@ -64,6 +64,14 @@ export interface InGateResult {
   totalCount: number;
 }
 
+export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
+ query queryInGateForSurvey($where: InGateWithTankFilterInput) {
+    inGates: queryInGates(where: $where) {
+      totalCount
+  }
+}
+`;
+
 export const IN_GATE_FRAGMENT = gql`
   fragment InGateWithTankInputFields on InGateWithTankInput {
     create_by
@@ -302,4 +310,30 @@ export class InGateDS extends BaseDataSource<InGateItem> {
       }
     });
   }
+
+  getInGateCountForYetToSurvey(): Observable<number> {
+    this.loadingSubject.next(true);
+    let where: any = { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
+    return this.apollo
+      .query<any>({
+        query: GET_IN_GATE_YET_TO_SURVEY_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.inGates || { nodes: [], totalCount: 0 };
+        
+          return retResult.totalCount;
+        })
+      );
+  }
 }
+
+

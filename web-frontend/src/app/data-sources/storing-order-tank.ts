@@ -89,6 +89,14 @@ export interface StoringOrderResult {
   totalCount: number;
 }
 
+const GET_STORING_ORDER_TANKS_COUNT = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      totalCount
+    }
+  }
+`;
+
 const GET_STORING_ORDER_TANKS = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
@@ -315,6 +323,26 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
           this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
           return sotList.nodes;
+        })
+      );
+  }
+
+  getWaitingStoringOrderTankCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    let where: any = { status_cv: { eq: "WAITING" } }
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
         })
       );
   }
