@@ -64,8 +64,10 @@ export interface InGateResult {
   totalCount: number;
 }
 
+
+
 export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
- query queryInGateForSurvey($where: InGateWithTankFilterInput) {
+ query queryInGateCount($where: InGateWithTankFilterInput) {
     inGates: queryInGates(where: $where) {
       totalCount
   }
