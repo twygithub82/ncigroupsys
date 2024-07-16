@@ -14,7 +14,7 @@ namespace IDMS.InGateSurvey.GqlTypes
         //[UseProjection]
         //[UseFiltering]
         //[UseSorting]
-        //public IQueryable<tank> QueryCladding([Service] ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        //public IQueryable<tank> QueryPeriodicTest([Service] ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         //{
         //    try
         //    {

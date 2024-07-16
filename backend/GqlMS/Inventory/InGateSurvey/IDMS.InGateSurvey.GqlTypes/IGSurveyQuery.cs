@@ -32,15 +32,6 @@ namespace IDMS.InGateSurvey.GqlTypes
                 //GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.in_gate_survey.Where(i => i.delete_dt == null || i.delete_dt == 0)
                                                 .Include(i=>i.in_gate);
-                    //.Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0)
-                    //.Include(s=>s.tank.tariff_cleaning)
-                    //.Include(s=>s.tank.storing_order);
-                //foreach(var q in query)
-                //
-                //    if (q.tank != null)
-                //        if (q.tank.storing_order != null)
-                //            q.haulier = q.tank.storing_order.haulier;
-                //}
             }
             catch(Exception ex)
             {

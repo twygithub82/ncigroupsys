@@ -8,13 +8,15 @@ using IDMS.Models.Inventory;
 using IDMS.StoringOrder.Model.Request;
 using IDMS.StoringOrder.Model;
 using HotChocolate.Utilities;
+using Microsoft.Extensions.Configuration;
+using IDMS.Models;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     public class SOMutation
     {
         public async Task<int> AddStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
-            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config)
         {
             try
             {
@@ -47,6 +49,9 @@ namespace IDMS.StoringOrder.GqlTypes
                 var res = await context.SaveChangesAsync();
 
                 //TODO
+                string evtId = EventId.NEW_SOT;
+                string evtName = EventName.NEW_SOT;
+                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
             }

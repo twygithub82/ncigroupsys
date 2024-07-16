@@ -12,9 +12,9 @@ using IDMS.InGateSurvey.Model.Request;
 
 var builder = WebApplication.CreateBuilder(args); builder.Services.AddHttpContextAccessor();
 
-var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
-var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
-var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration.GetConnectionString("DefaultConnection"));
+//var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
+//var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
+//var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 builder.Services.AddDbContextPool<ApplicationInventoryDBContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("Default"),
@@ -28,7 +28,7 @@ builder.Services.AddDbContextPool<ApplicationInventoryDBContext>(options =>
 //);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
-                .AddAuthorization()
+                //.AddAuthorization()
                .AddQueryType<Query>()
                .AddTypeExtension<IGSurveyQuery>()
                .AddMutationType<IGSurveyMutation>()
@@ -89,11 +89,7 @@ var app = builder.Build();
 
 app.UseWebSockets();
 app.UseHttpsRedirection();
-app.UseAuthentication();
+//app.UseAuthentication();
 app.UseCors("AllowSpecificOrigin"); // Apply CORS policy
-
-//app.MapGet("/", () => "Hello World!");
 app.MapGraphQL();
-
-
 app.Run();
