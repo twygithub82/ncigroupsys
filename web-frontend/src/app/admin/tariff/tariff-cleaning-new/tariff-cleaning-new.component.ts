@@ -395,7 +395,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
   }
   preventDefault(event: Event) {
-    event.preventDefault(); // Prevents the form submission
+    //event.preventDefault(); // Prevents the form submission
   }
   stopEventTrigger(event: Event) {
     this.preventDefault(event);
@@ -461,6 +461,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   onTCFormSubmit() {
    //this.tcForm!.get('sotList')?.setErrors(null);
+   this.tcForm?.get('un_no')?.setErrors(null);
     if (this.tcForm?.valid) 
       {
       // if (!this.sotList.data.length) {
@@ -485,20 +486,32 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         tc.un_no=this.tcForm.value['un_no'];
         tc.nature_cv=this.tcForm.value['nature'];
         
+        this.tcDS.CheckTheExistingUnNo(String(tc.un_no)).subscribe(result=>{
+          if(result==0)
+          {
+            if (tc.guid) {
+              this.tcDS.updateTariffCleaning(tc).subscribe(result => {
+                console.log(result)
+                this.handleSaveSuccess(result?.data?.updateTariffClean);
+              });
+            }
+            else
+            {
+              this.tcDS.addNewTariffCleaning(tc).subscribe(result => {
+                  console.log(result)
+                  this.handleSaveSuccess(result?.data?.addTariffCleaning);
+                });
+            }
+          }
+          else
+          {
+            this.tcForm?.get('un_no')?.setErrors({ existed: true });
+            
+            
+          }
+        });
        
-        if (tc.guid) {
-          this.tcDS.updateTariffCleaning(tc).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.updateTariffClean);
-          });
-        }
-        else
-        {
-          this.tcDS.addNewTariffCleaning(tc).subscribe(result => {
-              console.log(result)
-              this.handleSaveSuccess(result?.data?.addTariffCleaning);
-            });
-        }
+        
       
     } 
     else {

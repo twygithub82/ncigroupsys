@@ -174,12 +174,17 @@
                             {{langText.CARGO_UN_NO | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
                           }
+                          @if (tcForm?.get('un_no')?.hasError('existed')) {
+                            <mat-error>
+                              {{langText.CARGO_UN_NO | translate}}: {{langText.EXISTED | translate}}
+                            </mat-error>
+                            }
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{langText.CARGO_FLASH_POINT | translate}}</mat-label>
-                          <input matInput formControlName="flash_point" required>
+                          <input matInput formControlName="flash_point" required type="number">
                           @if (tcForm?.get('flash_point')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_FLASH_POINT | translate}} {{langText.CARGO_REQUIRED | translate}}
