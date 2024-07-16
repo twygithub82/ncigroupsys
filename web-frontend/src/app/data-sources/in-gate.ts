@@ -107,6 +107,7 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
         driver_name
         eir_dt
         eir_no
+        eir_status_cv
         guid
         haulier
         lolo_cv
@@ -154,7 +155,6 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
             }
           }
         }
-        eir_status_cv
       }
     }
   }
@@ -163,6 +163,7 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
 export const GET_IN_GATE_BY_ID = gql`
   query getInGateByID($where: InGateWithTankFilterInput) {
     inGates: queryInGates(where: $where) {
+      totalCount
       nodes {
         create_by
         create_dt
@@ -299,6 +300,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
           const retResult = result.inGates || { nodes: [], totalCount: 0 };
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
+          console.log(retResult);
           return retResult.nodes;
         })
       );

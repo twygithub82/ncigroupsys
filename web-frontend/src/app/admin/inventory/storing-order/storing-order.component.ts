@@ -123,7 +123,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     ACCEPTED: 'COMMON-FORM.ACCEPTED',
     WAITING: 'COMMON-FORM.WAITING',
     CANCELED: 'COMMON-FORM.CANCELED',
-    TANKS: 'COMMON-FORM.TANKS'
+    TANKS: 'COMMON-FORM.TANKS',
+    CONFIRM: 'COMMON-FORM.CONFIRM'
   }
 
   searchForm?: UntypedFormGroup;

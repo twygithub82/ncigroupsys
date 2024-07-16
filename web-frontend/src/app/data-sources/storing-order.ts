@@ -60,6 +60,7 @@ export const GET_STORING_ORDERS = gql`
       nodes {
         guid
         so_no
+        customer_company_guid
         customer_company {
           code
           name

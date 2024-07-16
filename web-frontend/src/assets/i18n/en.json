@@ -266,7 +266,19 @@
     "ACCEPTED": "Accepted",
     "WAITING": "Waiting",
     "CANCELED": "Canceled",
-    "TANKS": "Tanks"
+    "TANKS": "Tanks",
+    "OWNER": "Owner",
+    "CURRENT-STATUS": "Current Status",
+    "EIR-DATE-TIME": "EIR Date & Time",
+    "SURVEY-INFO": "Survey Info",
+    "DATE-OF-INSPECTION": "Date Of Inspection",
+    "PERIODIC-TEST": "Periodic Test",
+    "LAST-TEST": "Last Test",
+    "NEXT-TEST": "Next Test",
+    "TEST-TYPE": "Test Type",
+    "DATE": "Date",
+    "CLASS": "Class",
+    "DETAILS": "Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

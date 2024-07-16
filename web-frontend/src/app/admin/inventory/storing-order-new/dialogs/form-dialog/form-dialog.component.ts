@@ -67,7 +67,8 @@ export class FormDialogComponent {
   storingOrderTank: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
-  startDate = new Date();
+  startDateETA = new Date();
+  startDateETR = new Date();
   valueChangesDisabled: boolean = false;
 
   tcDS: TariffCleaningDS;
@@ -103,12 +104,13 @@ export class FormDialogComponent {
   }
 
   createStorigOrderTankForm(): UntypedFormGroup {
-    
     if (!this.canEdit()) {
       this.lastCargoControl.disable();
     } else {
       this.lastCargoControl.enable();
     }
+    this.startDateETA = this.storingOrderTank.eta_dt ? (Utility.convertDate(this.storingOrderTank.eta_dt) as Date) : this.startDateETA;
+    this.startDateETR = this.storingOrderTank.etr_dt ? (Utility.convertDate(this.storingOrderTank.etr_dt) as Date) : this.startDateETR;
     return this.fb.group({
       guid: [this.storingOrderTank.guid],
       so_guid: [this.storingOrderTank.so_guid],

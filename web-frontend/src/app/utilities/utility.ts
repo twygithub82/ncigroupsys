@@ -85,21 +85,26 @@ export class Utility {
   }
 
   static convertEpochToDateTimeStr(date: number | undefined): string | undefined {
-    // If the input is a number, handle it as epoch time
     if (typeof date === 'number' && !isNaN(date)) {
-      // Check if the number is more likely to be in seconds or milliseconds
       if (date.toString().length === 10) {
-        // If it's in seconds, convert to milliseconds
-        return this.convertDateToStr(new Date(date * 1000));
+        return this.formatDateTo12Hour(new Date(date * 1000));
       } else if (date.toString().length === 13) {
-        // If it's in milliseconds, just return the Date object
-        return this.convertDateToStr(new Date(date));
+        return this.formatDateTo12Hour(new Date(date));
       } else {
         console.error('Invalid epoch time format:', date);
         return undefined;
       }
     }
     return undefined;
+  }
+
+  static formatDateTo12Hour(date: Date): string {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // convert 0 to 12 for midnight
+    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+    return `${formattedHours}:${formattedMinutes} ${ampm}`;
   }
 
   static verifyIsoContainerCheckDigit(containerNumber: string): boolean {

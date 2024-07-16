@@ -117,13 +117,27 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     EIR_NO: "COMMON-FORM.EIR-NO",
-    EIR_DATE: "COMMON-FORM.EIR-DATE"
+    EIR_DATE: "COMMON-FORM.EIR-DATE",
+    ORDER_DETAILS: "COMMON-FORM.ORDER-DETAILS",
+    CUSTOMER: "COMMON-FORM.CUSTOMER",
+    OWNER: "COMMON-FORM.OWNER",
+    CLEAN_STATUS: "COMMON-FORM.CLEAN-STATUS",
+    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
+    EIR_DATE_TIME: "COMMON-FORM.EIR-DATE-TIME",
+    SURVEY_INFO: "COMMON-FORM.SURVEY-INFO",
+    DATE_OF_INSPECTION: "COMMON-FORM.DATE-OF-INSPECTION",
+    PERIODIC_TEST: "COMMON-FORM.PERIODIC-TEST",
+    LAST_TEST: "COMMON-FORM.LAST-TEST",
+    NEXT_TEST: "COMMON-FORM.NEXT-TEST",
+    TEST_TYPE: "COMMON-FORM.TEST-TYPE",
+    DATE: "COMMON-FORM.DATE",
+    CLASS: "COMMON-FORM.CLASS"
   }
 
   in_gate_guid: string | null | undefined;
   in_gate: InGateItem | null | undefined;
 
-  searchForm?: UntypedFormGroup;
+  surveyForm?: UntypedFormGroup;
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
@@ -132,14 +146,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   inGateList: InGateItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
+  cleanStatusCvList: CodeValuesItem[] = [];
+  testTypeCvList: CodeValuesItem[] = [];
 
-  pageIndex = 0;
-  pageSize = 10;
-  lastSearchCriteria: any;
-  endCursor: string | undefined = undefined;
-  startCursor: string | undefined = undefined;
-  hasNextPage = false;
-  hasPreviousPage = false;
+  dateOfInspection: Date = new Date();
+  startDateTest: Date = new Date();
 
   constructor(
     public httpClient: HttpClient,
@@ -171,15 +182,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initSearchForm() {
-    this.searchForm = this.fb.group({
-      so_no: [''],
+    this.surveyForm = this.fb.group({
+      test_type_cv: [''],
       // customer_code: this.customerCodeControl,
       // last_cargo: this.lastCargoControl,
-      eir_status: [''],
-      eir_no: [''],
-      tank_no: [''],
-      job_no: [''],
-      purpose: [''],
+      test_dt: [''],
+      // test_class_cv: ['']
       //eta_dt: [''],
     });
   }
@@ -199,11 +207,19 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'cleanStatusCv', codeValType: 'CLEAN_STATUS' },
+      //{ alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
+    this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
+      this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");;
+    });
+    // this.cvDS.connectAlias('testTypeCv').subscribe(data => {
+    //   this.testTypeCvList = addDefaultSelectOption(data, "--Select--");;
+    // });
   }
   showNotification(
     colorName: string,
@@ -237,6 +253,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     // TableExportUtil.exportToExcel(exportData, 'excel');
   }
 
+  onSOFormSubmit() {
+
+  }
+
   // context menu
   onContextMenu(event: MouseEvent, item: StoringOrderItem) {
     event.preventDefault();
@@ -247,76 +267,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.contextMenu.menu.focusFirstItem('mouse');
       this.contextMenu.openMenu();
     }
-  }
-
-  search() {
-    // const searchField = this.searchField;
-    // const where: any = {
-    //   and: [
-    //     { eir_status_cv: { eq: "YET_TO_SURVEY" } },
-    //     {
-    //       or: [
-    //         {
-    //           tank: {
-    //             or: [
-    //               {
-    //                 tank_no: { contains: searchField },
-    //               },
-    //               {
-    //                 job_no: { contains: searchField },
-    //               },
-    //               // {
-    //               //   storing_order: { so_no: { contains: searchField } },
-    //               // }
-    //             ]
-    //           }
-    //         }
-    //       ]
-    //     }
-    //   ]
-    // };
-    const where: any = {};
-
-    if (this.searchForm!.value['eir_no']) {
-      where.eir_no = { contains: this.searchForm!.value['eir_no'] };
-    }
-
-    if (this.searchForm!.value['eir_status']) {
-      where.eir_status = { contains: this.searchForm!.value['eir_status'] };
-    }
-
-    if (this.searchForm!.value['eir_dt']) {
-      where.eir_dt = { contains: this.searchForm!.value['eir_status'] };
-    }
-
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no']) {
-      const sotSearch: any = {};
-
-      // if (this.searchForm!.value['last_cargo']) {
-      //   where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-      // }
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSearch.tank_no = { contains: this.searchForm!.value['tank_no'] };
-      }
-
-      if (this.searchForm!.value['job_no']) {
-        sotSearch.job_no = { contains: this.searchForm!.value['job_no'] };
-      }
-
-      // if (this.searchForm!.value['customer_code']) {
-      //   where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-      // }
-      where.tank = sotSearch;
-    }
-
-    this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
-
-    // TODO :: should order by accepted dt, where to find?
-    const order = { create_dt: "DESC" };
-    this.subs.sink = this.igDS.loadItems(this.lastSearchCriteria, order).subscribe(data => {
-      this.inGateList = data;
-    });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -340,8 +290,16 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return purposes.join('; ');
   }
 
-  getPurposeOptionDescription(codeValType: string): string | undefined {
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
     let cv = this.purposeOptionCvList.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
+  }
+
+  getCleanStatusDescription(codeValType: string | undefined): string | undefined {
+    let cv = this.cleanStatusCvList.filter(cv => cv.code_val === codeValType);
     if (cv.length) {
       return cv[0].description;
     }
@@ -359,5 +317,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   displayDateTime(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateTimeStr(input);
+  }
+
+  displayDate(): string {
+    return Utility.convertDateToStr(this.dateOfInspection);
   }
 }
