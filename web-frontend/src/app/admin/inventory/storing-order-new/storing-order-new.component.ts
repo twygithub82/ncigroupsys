@@ -348,7 +348,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     addSot.so_guid = addSot.so_guid ?? this.so_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
-        item: row ? row : new StoringOrderTankItem(),
+        item: row ? row : addSot,
         action: 'new',
         langText: this.langText,
         populateData: {

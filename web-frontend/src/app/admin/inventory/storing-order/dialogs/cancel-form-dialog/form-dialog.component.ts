@@ -81,6 +81,7 @@ export class CancelFormDialogComponent {
     return this.fb.group({
       guid: [so.guid],
       so_no: [so.so_no],
+      customer_company_guid: [so.customer_company_guid],
       storing_order_tank: this.fb.array(so.storing_order_tank.map((tank: any) => this.createTankGroup(tank))),
       remarks: [so.remarks, Validators.required]
     });
