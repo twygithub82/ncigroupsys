@@ -29,3 +29,10 @@ td div img:hover {
     transition: transform 0.2s;
     padding-right: 10px;
   }
+
+  .mat-tab-group {
+    margin-bottom: 48px;
+  }
+  .mat-tab-labels{ 
+    flex-wrap: wrap;
+   }
