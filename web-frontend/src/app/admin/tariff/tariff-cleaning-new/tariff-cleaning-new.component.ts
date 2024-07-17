@@ -495,9 +495,15 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         tc.nature_cv=this.tcForm.value['nature'];
         
         this.tcDS.CheckTheExistingUnNo(String(tc.un_no)).subscribe(result=>{
-          if(result==0)
+          if(this.tcDS.totalCount==0)
           {
-            
+            if (tc.guid) {
+              this.tcDS.updateTariffCleaning(tc).subscribe(result => {
+                console.log(result)
+                this.handleSaveSuccess(result?.data?.updateTariffClean);
+              });
+            }
+            else
             {
               this.tcDS.addNewTariffCleaning(tc).subscribe(result => {
                   console.log(result)
@@ -507,12 +513,23 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           }
           else
           {
+           // let allowUpdate :boolean=true;
+            let allowUpdate:boolean =true;
+            for (let i = 0; i < result.length; i++) {
+              if (result[i].guid != tc.guid) {
+                allowUpdate = false;
+                break;  // Exit the loop
+              }
+            }
+            if(allowUpdate)
+            {
 
-            if (tc.guid) {
-              this.tcDS.updateTariffCleaning(tc).subscribe(result => {
-                console.log(result)
-                this.handleSaveSuccess(result?.data?.updateTariffClean);
-              });
+              if (tc.guid) {
+                this.tcDS.updateTariffCleaning(tc).subscribe(result => {
+                  console.log(result)
+                  this.handleSaveSuccess(result?.data?.updateTariffClean);
+                });
+              }
             }
             else
             {

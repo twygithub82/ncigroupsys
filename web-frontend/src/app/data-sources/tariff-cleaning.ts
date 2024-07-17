@@ -80,6 +80,30 @@ export interface TariffCleaningResult {
 const QUERY_TARIFF_CLEAN_UN_NO = gql`
   query queryTariffCleaning($where: tariff_cleaningFilterInput) {
     lastCargo: queryTariffCleaning(where: $where) {
+    nodes {
+        alias
+        ban_type_cv
+        cargo
+        class_cv
+        cleaning_category_guid
+        cleaning_method_guid
+        create_by
+        create_dt
+        delete_dt
+        depot_note
+        description
+        flash_point
+        guid
+        hazard_level_cv
+        in_gate_alert
+        nature_cv
+        open_on_gate_cv
+        remarks
+        un_no
+        update_by
+        update_dt
+      
+        }
       totalCount
     }
   }
@@ -370,7 +394,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     });
   }
 
-  CheckTheExistingUnNo(un_no_value:string):Observable<number>{
+  CheckTheExistingUnNo(un_no_value:string):Observable<TariffCleaningItem[]>{
     let where: any = { un_no: { eq: un_no_value } }
     return this.apollo
       .query<any>({
@@ -387,8 +411,8 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const retResult = result.lastCargo || { nodes: [], totalCount: 0 };
-        
-          return retResult.totalCount;
+          this.totalCount=retResult.totalCount;
+          return retResult.nodes;
         })
       );
   }
