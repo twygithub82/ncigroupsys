@@ -77,6 +77,14 @@ export interface TariffCleaningResult {
   totalCount: number;
 }
 
+const QUERY_TARIFF_CLEAN_UN_NO = gql`
+  query queryTariffCleaning($where: tariff_cleaningFilterInput) {
+    lastCargo: queryTariffCleaning(where: $where) {
+      totalCount
+    }
+  }
+`;
+
 export const TARIFF_CLEANING_FRAGMENT = gql`
   fragment TariffCleaningFields on tariff_cleaning {
     alias
@@ -361,6 +369,30 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       }
     });
   }
+
+  CheckTheExistingUnNo(un_no_value:string):Observable<number>{
+    let where: any = { un_no: { eq: un_no_value } }
+    return this.apollo
+      .query<any>({
+        query: QUERY_TARIFF_CLEAN_UN_NO,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.lastCargo || { nodes: [], totalCount: 0 };
+        
+          return retResult.totalCount;
+        })
+      );
+  }
+
 
   updateTariffCleaning(tc: any): Observable<any> {
     return this.apollo.mutate({

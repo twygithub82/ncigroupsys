@@ -111,10 +111,15 @@ export class Dashboard1Component implements OnInit {
     this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
       (message) => {
         //alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
-        if(message.messageReceived.event_id=="2000")
+        if(message.messageReceived.event_id=="2000" || message.messageReceived.event_id=="2010")
         {
           this.igDS.getInGateCountForYetToSurvey().subscribe(data=>{
             this.in_gate_yet_to_survey=data;
+      
+          });
+
+          this.sotDS.getWaitingStoringOrderTankCount().subscribe(data=>{
+            this.sot_waiting=data;
       
           });
         }

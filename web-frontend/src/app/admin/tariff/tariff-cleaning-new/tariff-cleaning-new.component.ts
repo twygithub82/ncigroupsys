@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild,HostListener } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
@@ -33,8 +33,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { StoringOrderService } from 'app/services/storing-order.service';
+// import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
+// import { StoringOrderService } from 'app/services/storing-order.service';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
 import { MatRadioModule } from '@angular/material/radio';
@@ -184,6 +184,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
     CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
+
   }
 
 
@@ -398,60 +406,60 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     event.preventDefault(); // Prevents the form submission
   }
   stopEventTrigger(event: Event) {
-    this.preventDefault(event);
+    //this.preventDefault(event);
     this.stopPropagation(event);
   }
 
   
   stopPropagation(event: Event) {
-    event.stopPropagation(); // Stops event propagation
+   // event.stopPropagation(); // Stops event propagation
   }
   
-  editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
-    this.preventDefault(event);  // Prevents the form submission
-    //this.id = row.id;
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     item: row,
-    //     action: 'edit',
-    //     langText: this.langText,
-    //     populateData: {
-    //       unit_typeList: this.unit_typeList,
-    //       repairCv: this.repairCv,
-    //       clean_statusCv: this.clean_statusCv,
-    //       yesnoCv: this.yesnoCv
-    //     },
-    //     index: index,
-    //     sotExistedList: this.sotList.data
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     if (result.index >= 0) {
-    //       const data = [...this.sotList.data];
-    //       let actions = Array.isArray(data[index].actions) ? [...data[index].actions] : [];
-    //       if (!actions.includes('new')) {
-    //         actions = [...new Set([...actions, 'edit'])];
-    //       }
-    //       const updatedItem = new StoringOrderTankItem({
-    //         ...result.item,
-    //         actions: actions
-    //       });
-    //       data[result.index] = updatedItem;
-    //       this.updateData(data);
-    //     } else {
-    //       this.updateData([...this.sotList.data, result.item]);
-    //     }
-    //   }
-    // });
-  }
+  // editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
+  //   this.preventDefault(event);  // Prevents the form submission
+  //   //this.id = row.id;
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   // const dialogRef = this.dialog.open(FormDialogComponent, {
+  //   //   data: {
+  //   //     item: row,
+  //   //     action: 'edit',
+  //   //     langText: this.langText,
+  //   //     populateData: {
+  //   //       unit_typeList: this.unit_typeList,
+  //   //       repairCv: this.repairCv,
+  //   //       clean_statusCv: this.clean_statusCv,
+  //   //       yesnoCv: this.yesnoCv
+  //   //     },
+  //   //     index: index,
+  //   //     sotExistedList: this.sotList.data
+  //   //   },
+  //   //   direction: tempDirection
+  //   // });
+  //   // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  //   //   if (result) {
+  //   //     if (result.index >= 0) {
+  //   //       const data = [...this.sotList.data];
+  //   //       let actions = Array.isArray(data[index].actions) ? [...data[index].actions] : [];
+  //   //       if (!actions.includes('new')) {
+  //   //         actions = [...new Set([...actions, 'edit'])];
+  //   //       }
+  //   //       const updatedItem = new StoringOrderTankItem({
+  //   //         ...result.item,
+  //   //         actions: actions
+  //   //       });
+  //   //       data[result.index] = updatedItem;
+  //   //       this.updateData(data);
+  //   //     } else {
+  //   //       this.updateData([...this.sotList.data, result.item]);
+  //   //     }
+  //   //   }
+  //   // });
+  // }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -461,6 +469,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   onTCFormSubmit() {
    //this.tcForm!.get('sotList')?.setErrors(null);
+   //this.tcForm?.get('un_no')?.setErrors({ exited: false });
     if (this.tcForm?.valid) 
       {
       // if (!this.sotList.data.length) {
@@ -485,20 +494,36 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         tc.un_no=this.tcForm.value['un_no'];
         tc.nature_cv=this.tcForm.value['nature'];
         
+        this.tcDS.CheckTheExistingUnNo(String(tc.un_no)).subscribe(result=>{
+          if(result==0)
+          {
+            
+            {
+              this.tcDS.addNewTariffCleaning(tc).subscribe(result => {
+                  console.log(result)
+                  this.handleSaveSuccess(result?.data?.addTariffCleaning);
+                });
+            }
+          }
+          else
+          {
+
+            if (tc.guid) {
+              this.tcDS.updateTariffCleaning(tc).subscribe(result => {
+                console.log(result)
+                this.handleSaveSuccess(result?.data?.updateTariffClean);
+              });
+            }
+            else
+            {
+            this.tcForm?.get('un_no')?.setErrors({ existed: true });
+            }
+            
+            
+          }
+        });
        
-        if (tc.guid) {
-          this.tcDS.updateTariffCleaning(tc).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.updateTariffClean);
-          });
-        }
-        else
-        {
-          this.tcDS.addNewTariffCleaning(tc).subscribe(result => {
-              console.log(result)
-              this.handleSaveSuccess(result?.data?.addTariffCleaning);
-            });
-        }
+        
       
     } 
     else {
@@ -542,6 +567,17 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     codeValue.code_val=value;
     this.classNoControl.setValue(codeValue);
   }
+
+  // @HostListener('document:keydown.enter', ['$event'])
+  // handleEnterKey(event: KeyboardEvent) {
+  //   if (this.tcForm?.valid) {
+  //     this.onTCFormSubmit();
+  //   }
+  //   else
+  //   {
+  //    event.preventDefault();
+  //   }
+  // }
 
   addOrderDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission

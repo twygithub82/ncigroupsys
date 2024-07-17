@@ -158,7 +158,11 @@
                             </mat-option>
                             }
                           </mat-select>
-    
+                          @if (tcForm?.get('nature')?.hasError('required')) {
+                            <mat-error>
+                              {{langText.CARGO_NATURE | translate}} {{langText.CARGO_REQUIRED | translate}}
+                            </mat-error>
+                            }
                         </mat-form-field>
                       </div>
                     
@@ -174,12 +178,17 @@
                             {{langText.CARGO_UN_NO | translate}} {{langText.CARGO_REQUIRED | translate}}
                           </mat-error>
                           }
+                          @if (tcForm?.get('un_no')?.hasError('existed')) {
+                            <mat-error>
+                              {{langText.CARGO_UN_NO | translate}}: {{langText.EXISTED | translate}}
+                            </mat-error>
+                            }
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{langText.CARGO_FLASH_POINT | translate}}</mat-label>
-                          <input matInput formControlName="flash_point" required>
+                          <input matInput formControlName="flash_point" required type="number">
                           @if (tcForm?.get('flash_point')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_FLASH_POINT | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -191,6 +200,11 @@
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{langText.CARGO_CLASS | translate}}</mat-label>
                           <input matInput formControlName="class_no" readonly required (click)="addOrderDetails($event)">
+                          @if (tcForm?.get('class_no')?.hasError('required')) {
+                            <mat-error>
+                              {{langText.CARGO_CLASS | translate}} {{langText.CARGO_REQUIRED | translate}}
+                            </mat-error>
+                            }
                           <!-- <mat-select formControlName="class_no" required>
                             @for (cn of classNoCvList; track cn) {
                             <mat-option [value]="cn.code_val">
@@ -202,43 +216,7 @@
                         </mat-form-field>
                       </div>
                     </div>
-                  <!-- <mat-tab-group>
-
-                    <mat-tab label="1.x">
-                      <div class="row">
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                          <img src="assets/images/idms/tariff/explosive.png" alt="Explosive"
-                            (click)="selectClassNo('Explosive')">
-                        </div>
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                          <img src="assets/images/idms/tariff/1_4.png" alt="1.4" (click)="selectClassNo('1.4')">
-                        </div>
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                          <img src="assets/images/idms/tariff/1_5.png" alt="1.5" (click)="selectClassNo('1.5')">
-                        </div>
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                          <img src="assets/images/idms/tariff/1_6.png" alt="1.6" (click)="selectClassNo('1.6')">
-                        </div>
-                      </div>
-                    </mat-tab>
-                    <mat-tab label="2.x">
-                      <div class="row">
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2" (click)="selectClassNo('Explosive')">
-                          <img src="assets/images/idms/tariff/explosive.png" alt="Explosive"
-                            (click)="selectClassNo('Explosive')">
-                        </div>
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                          <img src="assets/images/idms/tariff/1_4.png" alt="1.4" (click)="selectClassNo('2.4')">
-                        </div>
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                          <img src="assets/images/idms/tariff/1_5.png" alt="1.5" (click)="selectClassNo('2.5')">
-                        </div>
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                          <img src="assets/images/idms/tariff/1_6.png" alt="1.6" (click)="selectClassNo('2.6')">
-                        </div>
-                      </div>
-                    </mat-tab>
-                  </mat-tab-group> -->
+                  
               </div>
              </div>
             </div>
@@ -279,19 +257,22 @@
           </div>
           
           <div class="row m-t-10">
+           
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
               <button mat-flat-button aria-label="Back to previous page" (click)="$event.preventDefault();"
-                [routerLink]="['/admin/tariff/tariff-cleaning']">
-                <mat-icon>chevron_left</mat-icon>{{langText.BACK | translate}}
-              </button>
-            </div>
+               [routerLink]="['/admin/tariff/tariff-cleaning']"  type="button">
+               <mat-icon>chevron_left</mat-icon>{{langText.BACK | translate}}
+             </button> 
+           </div>
+
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
 
-              <button mat-flat-button color="primary">
+              <button mat-flat-button color="primary" type="submit">
                 <mat-icon>save</mat-icon>{{langText.SAVE_AND_SUBMIT | translate}}
               </button>
 
             </div>
+           
           </div>
         </form>
       </div>

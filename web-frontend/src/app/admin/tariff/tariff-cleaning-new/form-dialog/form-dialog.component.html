@@ -10,23 +10,23 @@
     <div class="body">
         <div class="row">
         
-        <mat-tab-group >
+        <mat-tab-group  >
          
            <mat-tab label="1.x">
             <table>
               <tr>
-                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" (click)="selectClassNo('Explosive')">
-                  <img src="assets/images/idms/tariff/explosive.png" alt="Explosive"
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" (click)="selectClassNo(translatedLangText.CARGO_CLASS_1)">
+                  <img src="assets/images/idms/tariff/1.jpg" alt={{translatedLangText.CARGO_CLASS_1}}
                     (click)="selectClassNo('Explosive')">
                 </div></td>
                 <td><div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
-                  <img src="assets/images/idms/tariff/1_4.png" alt="1.4" (click)="selectClassNo('1.4')">
+                  <img src="assets/images/idms/tariff/1_4.jpg" alt={{translatedLangText.CARGO_CLASS_1_4}} (click)="selectClassNo(translatedLangText.CARGO_CLASS_1_4)">
                 </div></td>
                 <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
-                  <img src="assets/images/idms/tariff/1_5.png" alt="1.5" (click)="selectClassNo('1.5')">
+                  <img src="assets/images/idms/tariff/1_5.jpg" alt={{translatedLangText.CARGO_CLASS_1_5}} (click)="selectClassNo(translatedLangText.CARGO_CLASS_1_5)">
                 </div></td>
                 <td><div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
-                  <img src="assets/images/idms/tariff/1_6.png" alt="1.6" (click)="selectClassNo('1.6')">
+                  <img src="assets/images/idms/tariff/1_6.jpg" alt={{translatedLangText.CARGO_CLASS_1_6}} (click)="selectClassNo(translatedLangText.CARGO_CLASS_1_6)">
                 </div></td>
               </tr>
             </table>
@@ -34,18 +34,16 @@
           <mat-tab label="2.x">
             <table>
               <tr>
-                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" (click)="selectClassNo('Explosive')">
-                  <img src="assets/images/idms/tariff/explosive.png" alt="Explosive"
-                    (click)="selectClassNo('Explosive')">
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/2_1.jpg" alt={{translatedLangText.CARGO_CLASS_2_1}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_2_1)">
+                    
                 </div></td>
                 <td><div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
-                  <img src="assets/images/idms/tariff/1_4.png" alt="1.4" (click)="selectClassNo('2.4')">
+                  <img src="assets/images/idms/tariff/2_2.jpg" alt={{translatedLangText.CARGO_CLASS_2_2}} (click)="selectClassNo(translatedLangText.CARGO_CLASS_2_2)">
                 </div></td>
                 <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
-                  <img src="assets/images/idms/tariff/1_5.png" alt="1.5" (click)="selectClassNo('2.5')">
-                </div></td>
-                <td><div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
-                  <img src="assets/images/idms/tariff/1_6.png" alt="1.6" (click)="selectClassNo('2.6')">
+                  <img src="assets/images/idms/tariff/2_3.jpg" alt={{translatedLangText.CARGO_CLASS_2_3}} (click)="selectClassNo(translatedLangText.CARGO_CLASS_2_3)">
                 </div></td>
               </tr>
             </table>
@@ -53,23 +51,103 @@
           <mat-tab label="3.x">
             <table>
               <tr>
-                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" (click)="selectClassNo('Explosive')">
-                  <img src="assets/images/idms/tariff/explosive.png" alt="Explosive"
-                    (click)="selectClassNo('Explosive')">
-                </div></td>
-                <td><div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
-                  <img src="assets/images/idms/tariff/1_4.png" alt="1.4" (click)="selectClassNo('3.4')">
-                </div></td>
-                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
-                  <img src="assets/images/idms/tariff/1_5.png" alt="1.5" (click)="selectClassNo('3.5')">
-                </div></td>
-                <td><div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1">
-                  <img src="assets/images/idms/tariff/1_6.png" alt="1.6" (click)="selectClassNo('3.6')">
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/3.jpg" alt={{translatedLangText.CARGO_CLASS_3}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_3)">
                 </div></td>
               </tr>
             </table>
           </mat-tab> 
-        
+          <mat-tab label="4.x">
+            <table>
+              <tr>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/4_1.jpg" alt={{translatedLangText.CARGO_CLASS_4_1}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_4_1)">
+                </div></td>
+
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/4_2.jpg" alt={{translatedLangText.CARGO_CLASS_4_2}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_4_2)">
+                   
+                </div></td>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/4_3.jpg" alt={{translatedLangText.CARGO_CLASS_4_3}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_4_3)">
+                </div></td>
+              </tr>
+            </table>
+          </mat-tab> 
+          <mat-tab label="5.x">
+            <table>
+              <tr>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/5_1.jpg" alt={{translatedLangText.CARGO_CLASS_5_1}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_5_1)">
+                </div></td>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/5_2.jpg" alt={{translatedLangText.CARGO_CLASS_5_2}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_5_2)">
+                </div></td>
+              </tr>
+            </table>
+          </mat-tab> 
+          <mat-tab label="6.x">
+            <table>
+              <tr>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/6_1.jpg" alt={{translatedLangText.CARGO_CLASS_6_1}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_6_1)">
+                </div></td>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/6_2.jpg" alt={{translatedLangText.CARGO_CLASS_6_2}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_6_2)">
+                </div></td>
+              </tr>
+            </table>
+          </mat-tab> 
+          <mat-tab label="7.x">
+            <table>
+              <tr>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/7_1.jpg" alt={{translatedLangText.CARGO_CLASS_7_1}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_7_1)">
+                </div></td>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/7_2.jpg" alt={{translatedLangText.CARGO_CLASS_7_2}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_7_2)">
+                </div></td>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/7_3.jpg" alt={{translatedLangText.CARGO_CLASS_7_3}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_7_3)">
+                </div></td>
+              </tr>
+            </table>
+          </mat-tab> 
+          <mat-tab label="8.x">
+            <table>
+              <tr>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/8.jpg" alt={{translatedLangText.CARGO_CLASS_8}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_8)">
+                </div></td>
+              </tr>
+            </table>
+          </mat-tab> 
+          <mat-tab label="9.x">
+            <table>
+              <tr>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/9_1.jpg" alt={{translatedLangText.CARGO_CLASS_9_1}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_9_1)">
+                </div></td>
+                <td> <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2  mb-1" >
+                  <img src="assets/images/idms/tariff/9_2.jpg" alt={{translatedLangText.CARGO_CLASS_9_2}}
+                    (click)="selectClassNo(translatedLangText.CARGO_CLASS_9_2)">
+                </div></td>
+              </tr>
+            </table>
+          </mat-tab> 
         </mat-tab-group>
         </div>
     </div>

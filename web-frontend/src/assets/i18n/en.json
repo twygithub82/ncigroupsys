@@ -140,6 +140,7 @@
     "FORGOTPASSWORD": "Forgot password?",
     "LOGIN": "Login"
   },
+  
   "COMMON-FORM": {
 
     "TARIFF-CLEANING":"Cleaning",
@@ -278,7 +279,29 @@
     "TEST-TYPE": "Test Type",
     "DATE": "Date",
     "CLASS": "Class",
-    "DETAILS": "Details"
+    "DETAILS": "Details",
+    "CARGO-CLASS-1":"EXPOSIVE",
+    "CARGO-CLASS-1-4":"1.4",
+    "CARGO-CLASS-1-5":"1.5",
+    "CARGO-CLASS-1-6":"1.6",
+    "CARGO-CLASS-2-1":"2.1",
+    "CARGO-CLASS-2-2":"2.2",
+    "CARGO-CLASS-2-3":"2.3",
+    "CARGO-CLASS-3":"3",
+    "CARGO-CLASS-4-1":"4.1",
+    "CARGO-CLASS-4-2":"4.2",
+    "CARGO-CLASS-4-3":"4.3",
+    "CARGO-CLASS-5-1":"5.1",
+    "CARGO-CLASS-5-2":"5.2",
+    "CARGO-CLASS-6-1":"6.1",
+    "CARGO-CLASS-6-2":"6.2",
+    "CARGO-CLASS-7-1":"7.1",
+    "CARGO-CLASS-7-2":"7.2",
+    "CARGO-CLASS-7-3":"7.3",
+    "CARGO-CLASS-8":"8",
+    "CARGO-CLASS-9-1":"9.1",
+    "CARGO-CLASS-9-2":"9.2"
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
