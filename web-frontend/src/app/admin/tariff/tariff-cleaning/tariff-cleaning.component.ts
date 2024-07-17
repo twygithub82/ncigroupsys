@@ -295,6 +295,10 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       {
         lastSrchCriteria.pageIndex=0;
         lastSrchCriteria.length=0;
+        this.endCursor=undefined;
+        this.startCursor=undefined;
+        this.hasNextPage=false;
+        this.hasPreviousPage= false;
       }
 
       this.onPageEvent({pageIndex:lastSrchCriteria.pageIndex,pageSize:this.pageSize,length:lastSrchCriteria.length})
