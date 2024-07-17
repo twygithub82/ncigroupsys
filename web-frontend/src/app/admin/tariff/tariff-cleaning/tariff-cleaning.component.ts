@@ -43,6 +43,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import {CleaningCategoryDS,CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import {CleaningMethodDS,CleaningMethodItem} from 'app/data-sources/cleaning-method';
 import { sequence } from '@angular/animations';
+import {SearchCriteriaService} from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-tariff-cleaning',
@@ -181,7 +182,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchCriteriaService: SearchCriteriaService
+    
   ) {
     super();
     this.translateLangText();
@@ -218,12 +221,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       ban_type:this.banTypeControl,
       flash_point:[''],
       un_no:['']
-      // so_status: [''],
-      // tank_no: [''],
-      // job_no: [''],
-      // purpose: [''],
-      // eta_dt: [''],
-      // cln_mth:[''],
     });
   }
   cancelItem(row: StoringOrderItem) {
@@ -257,57 +254,71 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     item: [...row],
-    //     langText: this.langText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-    //     this.soDS.cancelStoringOrder(so).subscribe(result => {
-    //       if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-    //         let successMsg = this.langText.CANCELED_SUCCESS;
-    //         this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-    //           successMsg = res;
-    //           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-    //           this.loadData();
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
+    
   }
   public loadData() {
-    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-    //   if (this.soDS.totalCount > 0) {
-    //     this.soList = data;
-    //   }
-    // });
+    
+    let lastSrchCriteria = this.searchCriteriaService.getCriteria();
 
-    // this.tcDS.loadItemsWithCategoryMethod({}).subscribe(data=>{
-    //   if(this.tcDS.totalCount>0)
-    //   {
-    //     this.tcList=data;
-    //   }
-
-    // });
     this.lastSearchCriteria=this.tcDS.addDeleteDtCriteria({});
-    this.tcDS.SearchTariffCleaning(this.lastSearchCriteria).subscribe(data => {
-      this.tcList = data;
-      this.endCursor = this.tcDS.pageInfo?.endCursor;
-      this.startCursor = this.tcDS.pageInfo?.startCursor;
-      this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
-    });
+    // let where:any = this.lastSearchCriteria;
+   
+    
+    // let first = this.pageSize;
+    // let after: string | undefined = undefined;
+    // let last: number | undefined = undefined;
+    // let before: string | undefined = undefined;
+    // let order:any|undefined=undefined;
+    // if(lastSrchCriteria.where)
+    //   {
+    //     this.lastSearchCriteria=lastSrchCriteria.where;
+    //     where=this.lastSearchCriteria; 
+    //   }
+
+    //   if(lastSrchCriteria.first) {first= lastSrchCriteria.first;
+    //     this.pageSize=lastSrchCriteria.first;
+    //   };
+    //  if(lastSrchCriteria.after) after=lastSrchCriteria.after;
+    //  if(lastSrchCriteria.last)last=lastSrchCriteria.last;
+    //  if(lastSrchCriteria.before) before=lastSrchCriteria.before;
+    //  if(lastSrchCriteria.order) order=lastSrchCriteria.order;
+     if(lastSrchCriteria.pageIndex) 
+      {
+        this.pageIndex=lastSrchCriteria.pageIndex;
+        this.endCursor=lastSrchCriteria.after;
+        this.startCursor=lastSrchCriteria.before;
+        this.hasNextPage=lastSrchCriteria.hasNextPage;
+        this.hasPreviousPage= lastSrchCriteria.hasPreviousPage;
+        //this.paginator.pageIndex= lastSrchCriteria.pageIndex;
+      }
+      else
+      {
+        lastSrchCriteria.pageIndex=0;
+        lastSrchCriteria.length=0;
+      }
+
+      this.onPageEvent({pageIndex:lastSrchCriteria.pageIndex,pageSize:this.pageSize,length:lastSrchCriteria.length})
+
+      // if(this.pageIndex==0)
+      // {
+        
+      //    this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:0});
+      // }
+      // else
+      // {
+      //  // this.pageIndex=lastSrchCriteria.pageIndex;
+       
+      //   this.onPageEvent({pageIndex:lastSrchCriteria.pageIndex,pageSize:this.pageSize,length:lastSrchCriteria.length})
+
+      // }
+    //this.searchTC(where,order,first,after,last,before,this.pageIndex);
+    // this.tcDS.SearchTariffCleaning(this.lastSearchCriteria).subscribe(data => {
+    //   this.tcList = data;
+    //   this.endCursor = this.tcDS.pageInfo?.endCursor;
+    //   this.startCursor = this.tcDS.pageInfo?.startCursor;
+    //   this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
+    //   this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
+    // });
 
     this.cCategoryDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
       if(this.cCategoryDS.totalCount>0)
@@ -386,8 +397,27 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
+  searchTC(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
+    previousPageIndex?:number)
+  {
+    
+    this.tcDS.SearchTariffCleaning(where,order, first, after, last, before).subscribe(data => {
+      this.tcList = data;
+      let after=this.endCursor;
+      let before = this.startCursor;
+      this.storeSearchCriteria(where,order,first,after ,last,before,pageIndex,previousPageIndex,
+        this.tcDS.totalCount,this.hasNextPage,this.hasPreviousPage);
+      this.endCursor = this.tcDS.pageInfo?.endCursor;
+      this.startCursor = this.tcDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
+      this.paginator.pageIndex=this.pageIndex;
+      
+    });
+  }
+  
   onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
+    const { pageIndex, pageSize,previousPageIndex } = event;
     let first = pageSize;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
@@ -411,18 +441,47 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
         last = pageSize;
         before = this.startCursor;
       }
+      else if (pageIndex==this.pageIndex)
+      {
+        last = pageSize;
+        let s
+        after = this.endCursor;
+        //this.paginator.pageIndex=this.pageIndex;
+        
+      }
     }
 
+    //this.paginator.pageIndex=1;
     this.pageIndex = pageIndex;
     this.pageSize = pageSize;
+    this.searchTC(this.lastSearchCriteria,order,first,after,last,before,this.pageIndex,previousPageIndex,);
+    // this.tcDS.SearchTariffCleaning(this.lastSearchCriteria,order, first, after, last, before).subscribe(data => {
+    //   this.tcList = data;
+    //   this.endCursor = this.tcDS.pageInfo?.endCursor;
+    //   this.startCursor = this.tcDS.pageInfo?.startCursor;
+    //   this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
+    //   this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
+    //   this.storeSearchCriteria(this.lastSearchCriteria,order,first,after,last,before);
+    // });
+  }
 
-    this.tcDS.SearchTariffCleaning(this.lastSearchCriteria,order, first, after, last, before).subscribe(data => {
-      this.tcList = data;
-      this.endCursor = this.tcDS.pageInfo?.endCursor;
-      this.startCursor = this.tcDS.pageInfo?.startCursor;
-      this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
-    });
+  storeSearchCriteria(where :any, order:any, first:any, after:any, last:any,before:any, pageIndex:number,
+    previousPageIndex?:number,length?:number,hasNextPage?:boolean, hasPreviousPage?:boolean)
+  {
+    const sCriteria: any = {};
+    sCriteria.where = where;
+    sCriteria.order = order;
+    sCriteria.first = first;
+    sCriteria.after = after;
+    sCriteria.last = last;
+    sCriteria.before = before;
+    sCriteria.pageIndex= pageIndex;
+    sCriteria.previousPageIndex=previousPageIndex;
+    sCriteria.length = length;
+    sCriteria.hasNextPage=hasNextPage;
+    sCriteria.hasPreviousPage=hasPreviousPage;
+    
+    this.searchCriteriaService.setCriteria(sCriteria);
   }
 
   search() {
@@ -465,27 +524,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.searchForm!.value['un_no']) {
         where.un_no = { contains: this.searchForm!.value['un_no'] };
     }
-    // if (this.searchForm!.value['so_status']) {
-    //   where.status_cv = { contains: this.searchForm!.value['so_status'] };
-    // }
-
-    // if (this.searchForm!.value['tank_no'] || this.searchForm!.value['eta_dt']) {
-    //   const sotSome: any = {};
-
-    //   if (this.searchForm!.value['tank_no']) {
-    //     sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
-    //   }
-
-    //   if (this.searchForm!.value['eta_dt']) {
-    //     sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt']), lte: Utility.convertDate(this.searchForm!.value['eta_dt']) };
-    //   }
-    //   where.storing_order_tank = { some: sotSome };
-    // }
-
-    // if (this.searchForm!.value['customer_code']) {
-    //   where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-    // }
-
+    
     // // TODO :: search criteria
     this.subs.sink = this.tcDS.SearchTariffCleaning(where).subscribe(data => {
       this.tcList = data;

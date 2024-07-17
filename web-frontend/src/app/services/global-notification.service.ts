@@ -16,6 +16,7 @@ const NEW_MESSAGES_SUBSCRIPTION = gql`
 @Injectable({
     providedIn: 'root',
   })
+  
   export class GraphqlNotificationService {
     newMessageReceived = new EventEmitter<any>();
   
