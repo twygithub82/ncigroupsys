@@ -155,11 +155,13 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
         public async Task<int> UpdateStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
-            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config)
         {
             //id updateSO dont have guid i need to call insert command
             //for soTanks, if have guid and delete_dt > 1 need to call update (soft delete)
             //return null;
+            bool isSendNotification = false;
+
             try
             {
                 //if updateSO have guid then i need call update command
@@ -196,6 +198,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         newTank.create_by = user;
                         newTank.status_cv = SOTankStatus.WAITING;
                         context.storing_order_tank.Add(newTank);
+                        isSendNotification = true;
                         continue;
                     }
 
@@ -220,6 +223,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.WAITING;
                         rollbackSOTGuids.Add(tnk.guid);
+                        isSendNotification = true;
                         continue;
                     }
 
@@ -229,6 +233,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.CANCELED;
                         //context.storing_order_tank.Update(newTank);
+                        isSendNotification = true;
                         continue;
                     }
 
@@ -280,6 +285,14 @@ namespace IDMS.StoringOrder.GqlTypes
                 soDomain.update_dt = currentDateTime;
                 var res = await context.SaveChangesAsync();
 
+                if (isSendNotification)
+                {
+                    string evtId = EventId.NEW_SOT;
+                    string evtName = EventName.NEW_SOT;
+                    GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+                }
+
+
                 if (rollbackSOTGuids.Any())
                     VoidInGateEIR(rollbackSOTGuids.ToArray(), user, currentDateTime, context);
 
@@ -296,7 +309,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
         public async Task<int> CancelStoringOrder(List<StoringOrderRequest> so, [Service] ITopicEventSender sender,
-          AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+          AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config)
         {
             try
             {
@@ -352,8 +365,9 @@ namespace IDMS.StoringOrder.GqlTypes
 
                 var res = await context.SaveChangesAsync();
                 //TODO
-                //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
-                //await topicEventSender.SendAsync(updateCourseTopic, course);
+                string evtId = EventId.NEW_SOT;
+                string evtName = EventName.NEW_SOT;
+                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
                 return res;
             }
             catch (Exception ex)
@@ -365,7 +379,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
         public async Task<int> DeleteStoringOrder(string[] soGuids, [Service] ITopicEventSender sender,
-        AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+        AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config)
         {
 
             try
@@ -396,8 +410,9 @@ namespace IDMS.StoringOrder.GqlTypes
 
                 var res = await context.SaveChangesAsync();
                 //TODO
-                //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
-                //await topicEventSender.SendAsync(updateCourseTopic, course);
+                string evtId = EventId.NEW_SOT;
+                string evtName = EventName.NEW_SOT;
+                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
                 return res;
             }
             catch (Exception ex)

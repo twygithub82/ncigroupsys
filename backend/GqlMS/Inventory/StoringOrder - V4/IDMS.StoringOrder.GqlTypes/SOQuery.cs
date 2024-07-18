@@ -46,8 +46,6 @@ namespace IDMS.StoringOrder.GqlTypes
             }
         }
 
-
-
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering(typeof(SOTFilter))]
