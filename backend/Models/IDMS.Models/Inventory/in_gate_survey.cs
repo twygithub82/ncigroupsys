@@ -63,7 +63,6 @@ namespace IDMS.Models.Inventory
         public int? buffer_plate { get; set; }
         public float? residue { get; set; }
         public string? comments { get; set; }
-
         public InGateWithTank? in_gate { get; set; }
     }
 }

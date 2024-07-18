@@ -1,4 +1,6 @@
-﻿namespace IDMS.InGateSurvey.Model.Request
+﻿using IDMS.Models.Inventory;
+
+namespace IDMS.InGateSurvey.Model.Request
 {
     public class InGateSurveyRequest
     {
