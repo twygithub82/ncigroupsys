@@ -37,6 +37,9 @@ namespace IDMS.InGateSurvey.GqlTypes
                 context.Add(ingateSurvey);
 
                 retval = await context.SaveChangesAsync();
+
+
+                //yet to survey --> pending
             }
             catch(Exception ex)
             {
