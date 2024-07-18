@@ -121,7 +121,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="surveyForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="surveyForm!" #formDirective="ngForm">
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -201,7 +201,7 @@
                       <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 m-b-5">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.MANUFACTURER_DOM}}</mat-label>
-                          <mat-select formControlName="manufacturer_dom_cv">
+                          <mat-select formControlName="manufacturer_cv">
                             @for (codeValue of manufacturerCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                             }
@@ -211,7 +211,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.DATE}}</mat-label>
-                          <input matInput formControlName="manufacturer_dom_dt"
+                          <input matInput formControlName="dom_dt"
                             [matDatepicker]="manufacturer_dom_picker" [max]="maxManuDOMDt">
                           <mat-datepicker-toggle matSuffix [for]="manufacturer_dom_picker"></mat-datepicker-toggle>
                           <mat-datepicker #manufacturer_dom_picker [startAt]="maxManuDOMDt"></mat-datepicker>
@@ -248,7 +248,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.MAX_GROSS_WEIGHT}}</mat-label>
-                          <mat-select formControlName="max_gross_weight_cv">
+                          <mat-select formControlName="max_weight_cv">
                             @for (codeValue of maxGrossWeightCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                             }
@@ -258,7 +258,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.TANK_HEIGHT}}</mat-label>
-                          <mat-select formControlName="tank_height_cv">
+                          <mat-select formControlName="height_cv">
                             @for (codeValue of tankHeightCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                             }
@@ -273,6 +273,14 @@
                             <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                             }
                           </mat-select>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.OTHER_COMMENTS}}</mat-label>
+                          <textarea matInput formControlName="comments"></textarea>
                         </mat-form-field>
                       </div>
                     </div>
@@ -343,7 +351,7 @@
                           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.CLASS}}</mat-label>
-                              <input matInput formControlName="test_class_cv" required>
+                              <input matInput formControlName="test_class_cv">
                               @if (surveyForm?.get('test_class_cv')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.CLASS}} {{translatedLangText.SO_REQUIRED}}
@@ -461,8 +469,8 @@
                   }
                   @if (!(igDS.loading$ | async)) {
                   <mat-horizontal-stepper [linear]="isLinear" #stepper>
-                    <mat-step [stepControl]="bottomFormGroup!">
-                      <form [formGroup]="bottomFormGroup!">
+                    <mat-step [stepControl]="getBottomFormGroup()">
+                      <form [formGroup]="getBottomFormGroup()">
                         <ng-template matStepLabel>{{translatedLangText.BOTTOM_DIS_COMP}}</ng-template>
                         <div class="row">
                           <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
@@ -538,20 +546,20 @@
                         </div>
                         <div class="row">
                           <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-                            <mat-checkbox formControlName="data_scs_transportplate" class="m-r-5" color="primary">
+                            <mat-checkbox formControlName="data_csc_transportplate" class="m-r-5" color="primary">
                               {{translatedLangText.DATA_SCS_TRANSPORT_PLATE}}
                             </mat-checkbox>
                           </div>
                         </div>
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 align-right">
-                            <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2" [disabled]="!bottomFormGroup!.valid"><mat-icon>chevron_right</mat-icon></button>
+                            <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2" [disabled]="!getBottomFormGroup()!.valid"><mat-icon>chevron_right</mat-icon></button>
                           </div>
                         </div>
                       </form>
                     </mat-step>
-                    <mat-step [stepControl]="topFormGroup!">
-                      <form [formGroup]="topFormGroup!">
+                    <mat-step [stepControl]="getTopFormGroup()">
+                      <form [formGroup]="getTopFormGroup()">
                         <ng-template matStepLabel>{{translatedLangText.TOP_DIS_COMP}}</ng-template>
                         <div class="row">
                           <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
@@ -618,7 +626,7 @@
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.AIRLINE_VALVE_CONNECTIONS}}</mat-label>
                               <mat-select formControlName="airline_valve_conn_cv">
-                                @for (codeValue of airlineCvList; track codeValue) {
+                                @for (codeValue of airlineConnCvList; track codeValue) {
                                 <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                 }
                               </mat-select>
@@ -640,13 +648,13 @@
                             <button mat-raised-button matStepperPrevious type="button" color="" class="msr-2"><mat-icon>chevron_left</mat-icon></button>
                           </div>
                           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                            <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2" [disabled]="!topFormGroup!.valid"><mat-icon>chevron_right</mat-icon></button>
+                            <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2" [disabled]="!getTopFormGroup()!.valid"><mat-icon>chevron_right</mat-icon></button>
                           </div>
                         </div>
                       </form>
                     </mat-step>
-                    <mat-step [stepControl]="manlidFormGroup!">
-                      <form [formGroup]="manlidFormGroup!">
+                    <mat-step [stepControl]="getManlidFormGroup()">
+                      <form [formGroup]="getManlidFormGroup()">
                         <ng-template matStepLabel>{{translatedLangText.MANLID_COMPARTMENT}}</ng-template>
                         <div class="row">
                           <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
@@ -757,6 +765,12 @@
                         <div class="row">
                           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                             <button mat-raised-button matStepperPrevious type="button" color="" class="msr-2"><mat-icon>chevron_left</mat-icon></button>
+                          </div>
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                            <button mat-raised-button matStepperNext color="primary" class="msr-2" [disabled]="!getManlidFormGroup()!.valid" (click)="onFormSubmit()">
+                              <mat-icon>save</mat-icon>
+                              {{translatedLangText.SAVE_AND_SUBMIT}}
+                            </button>
                           </div>
                         </div>
                       </form>

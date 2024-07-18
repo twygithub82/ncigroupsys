@@ -406,7 +406,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       if (result) {
         if (result.index >= 0) {
           const data = [...this.sotList.data];
-          let actions = Array.isArray(data[index].actions) ? [...data[index].actions] : [];
+          let actions = Array.isArray(data[index].actions!) ? [...data[index].actions!] : [];
           if (!actions.includes('new')) {
             actions = [...new Set([...actions, 'edit'])];
           }
@@ -445,8 +445,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
-            actions: Array.isArray(data[index].actions)
-              ? [...new Set([...data[index].actions, 'delete'])]
+            actions: Array.isArray(data[index].actions!)
+              ? [...new Set([...data[index].actions!, 'delete'])]
               : ['delete']
           };
           data[result.index] = updatedItem;
@@ -488,8 +488,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
             data[index] = {
               ...data[index],
               ...newItem,
-              actions: Array.isArray(data[index].actions)
-                ? [...new Set([...data[index].actions, 'cancel'])]
+              actions: Array.isArray(data[index].actions!)
+                ? [...new Set([...data[index].actions!, 'cancel'])]
                 : ['cancel']
             };
           }
@@ -533,8 +533,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
             data[index] = {
               ...data[index],
               ...newItem,
-              actions: Array.isArray(data[index].actions)
-                ? [...new Set([...data[index].actions, 'rollback'])]
+              actions: Array.isArray(data[index].actions!)
+                ? [...new Set([...data[index].actions!, 'rollback'])]
                 : ['rollback']
             };
           }
@@ -561,8 +561,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         data[index] = {
           ...data[index],
           ...newItem,
-          actions: Array.isArray(data[index].actions)
-            ? data[index].actions.filter(action => action !== actionToBeRemove)
+          actions: Array.isArray(data[index].actions!)
+            ? data[index].actions!.filter(action => action !== actionToBeRemove)
             : []
         };
       }
@@ -585,15 +585,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       );
   }
 
-  applyFilter() {
-    this.sotList.filterPredicate = (data: StoringOrderTankItem, filter: string) => {
-      // Return true if delete_dt is null (row will be shown), otherwise false
-      return data.delete_dt === null;
-    };
-    this.sotList.filter = 'apply'; // Trigger the filter with a non-empty string
-    console.log(this.sotList.data)
-  }
-
   // context menu
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
     this.preventDefault(event);
@@ -612,7 +603,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   onSOFormSubmit() {
-    console.log(this.soForm!.value['customer_company_guid']);
     this.soForm!.get('sotList')?.setErrors(null);
     if (this.soForm?.valid) {
       if (!this.sotList.data.length) {
@@ -748,8 +738,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   getBadgeClass(action: string): string {
     switch (action) {
-      case 'edit':
+      case 'new':
         return 'badge-solid-green';
+      case 'edit':
+        return 'badge-solid-cyan';
       case 'rollback':
         return 'badge-solid-blue';
       case 'cancel':

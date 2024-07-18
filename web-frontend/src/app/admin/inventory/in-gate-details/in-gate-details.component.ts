@@ -395,6 +395,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if (this.inGateForm?.valid) {
       console.log('Valid inGateForm', this.inGateForm?.value);
       this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.value['haulier'];
+      this.storingOrderTankItem!.job_no = this.inGateForm.value['haulier'];
+      this.storingOrderTankItem!.purpose_storage = this.inGateForm.value['haulier'];
       let so = new StoringOrderGO(this.storingOrderTankItem!.storing_order);
       let sot = new StoringOrderTankGO(this.storingOrderTankItem);
       sot.storing_order = so;
@@ -411,7 +413,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       ig.haulier = this.inGateForm.value['haulier'];
       console.log(ig);
       this.igDS.addInGate(ig).subscribe(result => {
-        console.log(result)
         this.handleSaveSuccess(result?.data?.addInGate);
       });
     } else {
