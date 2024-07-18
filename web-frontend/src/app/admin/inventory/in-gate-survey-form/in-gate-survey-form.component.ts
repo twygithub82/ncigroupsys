@@ -42,6 +42,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
+import { TankDS, TankItem } from 'app/data-sources/tank';
+import { MatStepperModule } from '@angular/material/stepper';
 
 @Component({
   selector: 'app-in-gate',
@@ -76,6 +78,7 @@ import { MatCardModule } from '@angular/material/card';
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+    MatStepperModule,
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -131,7 +134,49 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     NEXT_TEST: "COMMON-FORM.NEXT-TEST",
     TEST_TYPE: "COMMON-FORM.TEST-TYPE",
     DATE: "COMMON-FORM.DATE",
-    CLASS: "COMMON-FORM.CLASS"
+    CLASS: "COMMON-FORM.CLASS",
+    IN_GATE_DETAILS: "COMMON-FORM.IN-GATE-DETAILS",
+    IN_GATE_REMARKS: "COMMON-FORM.IN-GATE-REMARKS",
+    HAULIER: 'COMMON-FORM.HAULIER',
+    VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
+    DRIVER_NAME: 'COMMON-FORM.DRIVER-NAME',
+    LAST_UPDATE_BY: 'COMMON-FORM.LAST-UPDATE-BY',
+    LAST_UPDATE_ON: 'COMMON-FORM.LAST-UPDATE-ON',
+    TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
+    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
+    MANUFACTURER_DOM: 'COMMON-FORM.MANUFACTURER-AND-DOM',
+    CLADDING: 'COMMON-FORM.CLADDING',
+    CAPACITY: 'COMMON-FORM.CAPACITY',
+    TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
+    MAX_GROSS_WEIGHT: 'COMMON-FORM.MAX-GROSS-WEIGHT',
+    TANK_HEIGHT: 'COMMON-FORM.TANK-HEIGHT',
+    WALKWAY: 'COMMON-FORM.WALKWAY',
+    BOTTOM_DISCHARGE_TYPE: 'COMMON-FORM.BOTTOM-DISCHARGE-TYPE',
+    COMPARTMENT_TYPE: 'COMMON-FORM.COMPARTMENT-TYPE',
+    BACK: 'COMMON-FORM.BACK',
+    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
+    BOTTOM_DIS_COMP: 'COMMON-FORM.BOTTOM-DIS-COMP',
+    FOOT_VALVE: 'COMMON-FORM.FOOT-VALVE',
+    BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
+    THERMOMETER: 'COMMON-FORM.THERMOMETER',
+    LADDER: 'COMMON-FORM.LADDER',
+    DATA_SCS_TRANSPORT_PLATE: 'COMMON-FORM.DATA-SCS-TRANSPORT-PLATE',
+    TOP_DIS_COMP: 'COMMON-FORM.TOP-DIS-COMP',
+    TOP_DIS_VALVE: 'COMMON-FORM.TOP-DIS-VALVE',
+    AIRLINE_VALVE: 'COMMON-FORM.AIRLINE-VALVE',
+    AIRLINE_VALVE_CONNECTIONS: 'COMMON-FORM.AIRLINE-VALVE-CONNECTIONS',
+    MANLID_COMPARTMENT: 'COMMON-FORM.MANLID-COMPARTMENT',
+    MANLID_COVER: 'COMMON-FORM.MANLID-COVER',
+    MANLID_SEAL: 'COMMON-FORM.MANLID-SEAL',
+    PV: 'COMMON-FORM.PV',
+    SAFETY_HANDRAIL: 'COMMON-FORM.SAFETY-HANDRAIL',
+    BUFFER_PLATE: 'COMMON-FORM.BUFFER-PLATE',
+    RESIDUE: 'COMMON-FORM.RESIDUE',
+    DIPSTICK: 'COMMON-FORM.DIPSTICK',
+    SPECIFICATION: 'COMMON-FORM.SPECIFICATION',
+    DIAMITER: 'COMMON-FORM.DIAMITER',
+    PIECES: 'COMMON-FORM.PIECES',
+    VOLUME: 'COMMON-FORM.VOLUME'
   }
 
   in_gate_guid: string | null | undefined;
@@ -143,14 +188,41 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   cvDS: CodeValuesDS;
+  tDS: TankDS;
 
   inGateList: InGateItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   cleanStatusCvList: CodeValuesItem[] = [];
   testTypeCvList: CodeValuesItem[] = [];
+  manufacturerCvList: CodeValuesItem[] = [];
+  claddingCvList: CodeValuesItem[] = [];
+  maxGrossWeightCvList: CodeValuesItem[] = [];
+  tankHeightCvList: CodeValuesItem[] = [];
+  walkwayCvList: CodeValuesItem[] = [];
+  airlineCvList: CodeValuesItem[] = [];
+  disCompCvList: CodeValuesItem[] = [];
+  disValveCvList: CodeValuesItem[] = [];
+  disValveSpecCvList: CodeValuesItem[] = [];
+  disTypeCvList: CodeValuesItem[] = [];
+  footValveCvList: CodeValuesItem[] = [];
+  manlidCoverCvList: CodeValuesItem[] = [];
+  manlidSealCvList: CodeValuesItem[] = [];
+  pvSpecCvList: CodeValuesItem[] = [];
+  pvTypeCvList: CodeValuesItem[] = [];
+  thermometerCvList: CodeValuesItem[] = [];
+
+  unit_typeList: TankItem[] = []
 
   dateOfInspection: Date = new Date();
   startDateTest: Date = new Date();
+  maxManuDOMDt: Date = new Date();
+
+  // Stepper
+  isLinear = false;
+  bottomFormGroup?: UntypedFormGroup;
+  topFormGroup?: UntypedFormGroup;
+  manlidFormGroup?: UntypedFormGroup;
+  commentFormGroup?: UntypedFormGroup;
 
   constructor(
     public httpClient: HttpClient,
@@ -168,6 +240,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
+    this.tDS = new TankDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -177,38 +250,107 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initSearchForm();
-    this.initializeFilterCustomerCompany();
     this.loadData();
   }
 
   initSearchForm() {
     this.surveyForm = this.fb.group({
       test_type_cv: [''],
-      // customer_code: this.customerCodeControl,
-      // last_cargo: this.lastCargoControl,
+      test_class_cv: [''],
       test_dt: [''],
-      // test_class_cv: ['']
-      //eta_dt: [''],
+      unit_type_guid: [''],
+      manufacturer_dom_cv: [''],
+      manufacturer_dom_dt: [''],
+      cladding_cv: [''],
+      capacity: [''],
+      tare_weight: [''],
+      max_gross_weight_cv: [''],
+      tank_height_cv: [''],
+      walkway_cv: [''],
+      // bottom_discharge_type_cv: [''],
+      // compartment_type_cv: [''],
+      vehicle_no: [''],
+      driver_name: [''],
+      haulier: [''],
+      in_gate_remarks: ['']
     });
-  }
 
-  public loadData() {
+    this.bottomFormGroup = this.fb.group({
+      btm_dis_comp_cv: [''],
+      btm_dis_valve_cv: [''],
+      btm_dis_valve_spec_cv: [''],
+      foot_valve_cv: [''],
+      thermometer: [''],
+      thermometer_cv: [''],
+      ladder: [''],
+      data_scs_transportplate: [''],
+    });
+
+    this.topFormGroup = this.fb.group({
+      top_dis_comp_cv: [''],
+      top_dis_valve_cv: [''],
+      top_dis_valve_spec_cv: [''],
+      airline_valve_cv: [''],
+      airline_valve_pcs: [''],
+      airline_valve_dim: [''],
+      airline_valve_conn_cv: [''],
+      airline_valve_conn_spec_cv: [''],
+    });
+
+    this.manlidFormGroup = this.fb.group({
+      manlid_comp_cv: [''],
+      manlid_cover_cv: [''],
+      manlid_cover_pcs: [''],
+      manlid_cover_pts: [''],
+      manlid_seal_cv: [''],
+      pv_type_cv: [''],
+      pv_type_pcs: [''],
+      pv_spec_cv: [''],
+      pv_spec_pcs: [''],
+      safety_handrail: [''],
+      buffer_plate: [''],
+      residue: [''],
+      dipstick: [''],
+    });
+
+    this.commentFormGroup = this.fb.group({
+      comments: [''],
+    });
+
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
     if (this.in_gate_guid) {
       // EDIT
       this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
-          // this.populateSOForm(this.storingOrderItem);
+          this.populateInGateForm(this.in_gate);
         }
       });
     } else {
     }
+  }
 
+  public loadData() {
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'cleanStatusCv', codeValType: 'CLEAN_STATUS' },
       //{ alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'manufacturerCv', codeValType: 'MANUFACTURER' },
+      { alias: 'claddingCv', codeValType: 'CLADDING' },
+      { alias: 'maxGrossWeightCv', codeValType: 'MAX_WEIGHT' },
+      { alias: 'tankHeightCv', codeValType: 'TANK_HEIGHT' },
+      { alias: 'walkwayCv', codeValType: 'WALKWAY' },
+      { alias: 'airlineCv', codeValType: 'AIRLINE_VALVE' },
+      { alias: 'disCompCv', codeValType: 'DIS_COMP' },
+      { alias: 'disValveCv', codeValType: 'DIS_VALVE' },
+      { alias: 'disValveSpecCv', codeValType: 'DIS_VALVE_SPEC' },
+      { alias: 'disTypeCv', codeValType: 'DISCHARGE_TYPE' },
+      { alias: 'footValveCv', codeValType: 'FOOT_VALVE' },
+      { alias: 'manlidCoverCv', codeValType: 'MANLID_COVER' },
+      { alias: 'manlidSealCv', codeValType: 'MANLID_SEAL' },
+      { alias: 'pvSpecCv', codeValType: 'PV_SPEC' },
+      { alias: 'pvTypeCv', codeValType: 'PV_TYPE' },
+      { alias: 'thermometerCv', codeValType: 'THERMOMETER' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -220,7 +362,70 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     // this.cvDS.connectAlias('testTypeCv').subscribe(data => {
     //   this.testTypeCvList = addDefaultSelectOption(data, "--Select--");;
     // });
+    this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
+      this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('claddingCv').subscribe(data => {
+      this.claddingCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('maxGrossWeightCv').subscribe(data => {
+      this.maxGrossWeightCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('tankHeightCv').subscribe(data => {
+      this.tankHeightCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('walkwayCv').subscribe(data => {
+      this.walkwayCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('airlineCv').subscribe(data => {
+      this.airlineCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('disCompCv').subscribe(data => {
+      this.disCompCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('disValveCv').subscribe(data => {
+      this.disValveCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('disValveSpecCv').subscribe(data => {
+      this.disValveSpecCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('disTypeCv').subscribe(data => {
+      this.disTypeCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('footValveCv').subscribe(data => {
+      this.footValveCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('manlidCoverCv').subscribe(data => {
+      this.manlidCoverCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('manlidSealCv').subscribe(data => {
+      this.manlidSealCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('pvSpecCv').subscribe(data => {
+      this.pvSpecCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('pvTypeCv').subscribe(data => {
+      this.pvTypeCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.cvDS.connectAlias('thermometerCv').subscribe(data => {
+      this.thermometerCvList = addDefaultSelectOption(data, "--Select--");;
+    });
+    this.subs.sink = this.tDS.loadItems().subscribe(data => {
+      this.unit_typeList = data
+    });
   }
+
+  populateInGateForm(ig: InGateItem): void {
+    this.surveyForm!.patchValue({
+      guid: ig.guid,
+      unit_type_guid: ig?.tank?.unit_type_guid,
+      vehicle_no: ig.vehicle_no,
+      driver_name: ig.driver_name,
+      haulier: ig.haulier,
+      in_gate_remarks: ig.remarks,
+    });
+  }
+
   showNotification(
     colorName: string,
     text: string,
@@ -306,9 +511,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return '';
   }
 
-  initializeFilterCustomerCompany() {
-  }
-
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -319,7 +521,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return Utility.convertEpochToDateTimeStr(input);
   }
 
-  displayDate(): string {
-    return Utility.convertDateToStr(this.dateOfInspection);
+  displayDate(input: Date): string {
+    return Utility.convertDateToStr(input);
   }
 }

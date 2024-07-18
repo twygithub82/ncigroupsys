@@ -605,6 +605,11 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.contextMenu.openMenu();
     }
   }
+  
+  onEnterKey(event: Event) {
+    event.preventDefault();
+    // Add any additional logic if needed
+  }
 
   onSOFormSubmit() {
     console.log(this.soForm!.value['customer_company_guid']);

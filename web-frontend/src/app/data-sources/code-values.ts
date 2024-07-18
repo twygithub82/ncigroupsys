@@ -38,7 +38,7 @@ export interface CodeValuesResult {
 
 export function getCodeValuesByTypeQueries(aliases: string[]): DocumentNode {
   const queries = aliases.map(alias => `
-    ${alias}: queryCodeValuesByType(codeValuesType: $${alias}Type, order: { code_val: ASC }) {
+    ${alias}: queryCodeValuesByType(codeValuesType: $${alias}Type, order: { sequence: ASC }) {
       child_code
       code_val_type
       code_val
