@@ -14,6 +14,7 @@ namespace IDMS.StoringOrder.Model.Request
         public string code_val_type { get; set; }
         public string? code_val { get; set; }
         public string? child_code { get; set; }
+        public int? sequence { get; set; }  
 
     }
 }
