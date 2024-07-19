@@ -10,7 +10,7 @@ import { TARIFF_CLEANING_FRAGMENT, TariffCleaningItem } from './tariff-cleaning'
 import { BaseDataSource } from './base-ds';
 import { InGateItem } from './in-gate';
 
-export class StoringOrderTankGO {
+export class StoringOrderTank {
   public guid?: string;
   public so_guid?: string | null;
   public unit_type_guid?: string;
@@ -29,7 +29,6 @@ export class StoringOrderTankGO {
   public etr_dt?: number | Date;
   public status_cv?: string;
   public tank_status_cv?: string;
-  public storing_order?: StoringOrderItem
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -55,7 +54,6 @@ export class StoringOrderTankGO {
     this.etr_dt = item.etr_dt || undefined;
     this.status_cv = item.status_cv || '';
     this.tank_status_cv = item.tank_status_cv || '';
-    this.storing_order = item.storing_order || undefined;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -64,10 +62,19 @@ export class StoringOrderTankGO {
   }
 }
 
+export class StoringOrderTankGO extends StoringOrderTank {
+  public storing_order?: StoringOrderItem
+
+  constructor(item: Partial<StoringOrderTankGO> = {}) {
+    super(item)
+    this.storing_order = item.storing_order || undefined;
+  }
+}
+
 export class StoringOrderTankItem extends StoringOrderTankGO {
   public tariff_cleaning?: TariffCleaningItem;
   public in_gate?: InGateItem;
-  public actions: string[] = [];
+  public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
     super(item); // Call the constructor of the parent class

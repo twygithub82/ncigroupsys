@@ -173,7 +173,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     this.loadData();
     this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
       (message) => {
-        alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
+       // alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
 
       },
       (error) => console.error(error),

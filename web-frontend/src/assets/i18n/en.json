@@ -335,7 +335,8 @@
     "SPECIFICATION": "Specification",
     "DIAMITER": "Diameter",
     "PIECES": "Pieces",
-    "VOLUME": "Volume"
+    "VOLUME": "Volume",
+    "OTHER-COMMENTS": "Other Comment(s)"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

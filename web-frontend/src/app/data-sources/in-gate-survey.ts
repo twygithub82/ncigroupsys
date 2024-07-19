@@ -8,66 +8,78 @@ import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
 import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 import { AnyObject } from 'chart.js/dist/types/basic';
+import { InGateItem } from './in-gate';
 
-export class InGate {
+export class InGateSurveyGO {
   public guid?: string = '';
-  public driver_name?: string;
-  public eir_dt?: number;
-  public eir_no?: string;
-  public lolo_cv?: string;
-  public preinspection_cv?: string;
-  public so_tank_guid?: string;
-  public vehicle_no?: string;
-  public yard_cv?: string;
-  public remarks?: string;
-  public haulier?: string;
+  public in_gate_guid?: string = '';
+  public periodic_test_guid?: string;
+  public capacity?: number;
+  public tare_weight?: number;
+  public take_in_reference?: string;
+  public dom_dt?: number | Date;
+  public inspection_dt?: number;
+  public last_release_dt?: number;
+  public manufacturer_cv?: string;
+  public cladding_cv?: string;
+  public max_weight_cv?: string;
+  public height_cv?: string;
+  public walkway_cv?: string;
+  public tank_comp_cv?: string;
+  public last_test_cv?: string;
+  public take_in_status_cv?: string;
+  public btm_dis_comp_cv?: string;
+  public btm_dis_valve_cv?: string;
+  public btm_dis_valve_spec_cv?: string;
+  public top_dis_comp_cv?: string;
+  public top_dis_valve_cv?: string;
+  public top_dis_valve_spec_cv?: string;
+  public manlid_comp_cv?: string;
+  public foot_valve_cv?: string;
+  public thermometer?: number;
+  public thermometer_cv?: string;
+  public ladder?: boolean;
+  public data_csc_transportplate?: boolean;
+  public airline_valve_pcs?: number;
+  public airline_valve_dim?: number;
+  public airline_valve_cv?: string;
+  public airline_valve_conn_cv?: string;
+  public airline_valve_conn_spec_cv?: string;
+  public manlid_cover_cv?: string;
+  public manlid_cover_pcs?: number;
+  public manlid_cover_pts?: number;
+  public manlid_seal_cv?: string;
+  public pv_type_cv?: string;
+  public pv_type_pcs?: number;
+  public pv_spec_cv?: string;
+  public pv_spec_pcs?: number;
+  public safety_handrail?: boolean;
+  public buffer_plate?: number;
+  public residue?: number;
+  public dipstick?: boolean;
+  public comments?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<InGate> = {}) {
-    this.guid = item.guid || '';
-    this.driver_name = item.driver_name;
-    this.eir_dt = item.eir_dt;
-    this.eir_no = item.eir_no;
-    this.lolo_cv = item.lolo_cv;
-    this.preinspection_cv = item.preinspection_cv;
-    this.so_tank_guid = item.so_tank_guid;
-    this.vehicle_no = item.vehicle_no;
-    this.yard_cv = item.yard_cv;
-    this.remarks = item.remarks;
-    this.haulier = item.haulier;
-    this.create_dt = item.create_dt;
-    this.create_by = item.create_by;
-    this.update_dt = item.update_dt;
-    this.update_by = item.update_by;
-    this.delete_dt = item.delete_dt;
+  constructor(item: Partial<InGateSurveyGO> = {}) {
+    Object.assign(this, item);
   }
 }
 
-export class InGateGO extends InGate {
-  public tank?: StoringOrderTankGO;
+export class InGateSurveyItem extends InGateSurveyGO {
+  public in_gate?: InGateItem;
 
-  constructor(item: Partial<InGateGO> = {}) {
-    super(item)
-    this.tank = item.tank;
-  }
-}
-
-export class InGateItem extends InGateGO {
-  public override tank?: StoringOrderTankItem;
-  // public cleaning_method?: CleaningMethodItem;
-
-  constructor(item: Partial<InGateItem> = {}) {
+  constructor(item: Partial<InGateSurveyItem> = {}) {
     super(item);
-    this.tank = item.tank;
+    this.in_gate = item.in_gate;
   }
 }
 
 export interface InGateResult {
-  items: InGateItem[];
+  items: InGateSurveyItem[];
   totalCount: number;
 }
 
@@ -253,19 +265,19 @@ export const GET_IN_GATE_BY_ID = gql`
   }
 `;
 
-export const ADD_IN_GATE = gql`
-  mutation AddInGate($inGate: InGateWithTankInput!) {
-    addInGate(inGate: $inGate)
+export const ADD_IN_GATE_SURVEY = gql`
+  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankInput!) {
+    addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: { in_gate: $inGate })
   }
 `;
 
-export class InGateDS extends BaseDataSource<InGateItem> {
+export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
   public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }
 
-  loadItems(where?: any, order?: any): Observable<InGateItem[]> {
+  loadItems(where?: any, order?: any): Observable<InGateSurveyItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
@@ -276,7 +288,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
         map((result) => result.data),
         catchError((error: ApolloError) => {
           console.error('GraphQL Error:', error);
-          return of([] as InGateItem[]); // Return an empty array on error
+          return of([] as InGateSurveyItem[]); // Return an empty array on error
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
@@ -288,62 +300,63 @@ export class InGateDS extends BaseDataSource<InGateItem> {
       );
   }
 
-  getInGateByID(id: string): Observable<InGateItem[]> {
-    this.loadingSubject.next(true);
-    let where: any = { guid: { eq: id } }
-    return this.apollo
-      .query<any>({
-        query: GET_IN_GATE_BY_ID,
-        variables: { where }
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of([] as InGateItem[]); // Return an empty array on error
-        }),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const retResult = result.inGates || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(retResult.nodes);
-          this.totalCount = retResult.totalCount;
-          return retResult.nodes;
-        })
-      );
-  }
+  // getInGateByID(id: string): Observable<InGateSurveyItem[]> {
+  //   this.loadingSubject.next(true);
+  //   let where: any = { guid: { eq: id } }
+  //   return this.apollo
+  //     .query<any>({
+  //       query: GET_IN_GATE_BY_ID,
+  //       variables: { where }
+  //     })
+  //     .pipe(
+  //       map((result) => result.data),
+  //       catchError((error: ApolloError) => {
+  //         console.error('GraphQL Error:', error);
+  //         return of([] as InGateSurveyItem[]); // Return an empty array on error
+  //       }),
+  //       finalize(() => this.loadingSubject.next(false)),
+  //       map((result) => {
+  //         const retResult = result.inGates || { nodes: [], totalCount: 0 };
+  //         this.dataSubject.next(retResult.nodes);
+  //         this.totalCount = retResult.totalCount;
+  //         return retResult.nodes;
+  //       })
+  //     );
+  // }
 
-  addInGate(inGate: any): Observable<any> {
+  addInGateSurvey(inGateSurvey: any, inGate: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: ADD_IN_GATE,
+      mutation: ADD_IN_GATE_SURVEY,
       variables: {
+        inGateSurvey,
         inGate
       }
     });
   }
 
-  getInGateCountForYetToSurvey(): Observable<number> {
-    this.loadingSubject.next(true);
-    let where: any = { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
-    return this.apollo
-      .query<any>({
-        query: GET_IN_GATE_YET_TO_SURVEY_COUNT,
-        variables: { where },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const retResult = result.inGates || { nodes: [], totalCount: 0 };
+  // getInGateCountForYetToSurvey(): Observable<number> {
+  //   this.loadingSubject.next(true);
+  //   let where: any = { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
+  //   return this.apollo
+  //     .query<any>({
+  //       query: GET_IN_GATE_YET_TO_SURVEY_COUNT,
+  //       variables: { where },
+  //       fetchPolicy: 'no-cache' // Ensure fresh data
+  //     })
+  //     .pipe(
+  //       map((result) => result.data),
+  //       catchError((error: ApolloError) => {
+  //         console.error('GraphQL Error:', error);
+  //         return of(0); // Return an empty array on error
+  //       }),
+  //       finalize(() => this.loadingSubject.next(false)),
+  //       map((result) => {
+  //         const retResult = result.inGates || { nodes: [], totalCount: 0 };
         
-          return retResult.totalCount;
-        })
-      );
-  }
+  //         return retResult.totalCount;
+  //       })
+  //     );
+  // }
 }
 
 

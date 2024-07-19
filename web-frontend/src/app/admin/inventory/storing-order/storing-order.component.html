@@ -245,7 +245,7 @@
             </div>
             }
             <!-- Loading spinner -->
-            @if (soDS.soLoading$ | async) {
+            @if ((soDS.soLoading$ | async)) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
