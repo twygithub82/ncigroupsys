@@ -473,27 +473,27 @@
                       <form [formGroup]="getBottomFormGroup()">
                         <ng-template matStepLabel>{{translatedLangText.BOTTOM_DIS_COMP}}</ng-template>
                         <div class="row">
-                          <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
-                            <mat-form-field class="example-full-width">
-                              <mat-label>{{translatedLangText.BOTTOM_DIS_COMP}}</mat-label>
-                              <mat-select formControlName="btm_dis_comp_cv">
-                                @for (codeValue of disCompCvList; track codeValue) {
-                                <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                }
-                              </mat-select>
-                            </mat-form-field>
+                          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                            <mat-label>{{translatedLangText.BOTTOM_DIS_COMP}}:</mat-label>
+                            <mat-radio-group formControlName="btm_dis_comp_cv">
+                              @for (codeValue of disCompCvList; track codeValue) {
+                              <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                {{codeValue.description}}
+                              </mat-radio-button>
+                              }
+                            </mat-radio-group>
                           </div>
                         </div>
                         <div class="row">
-                          <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
-                            <mat-form-field class="example-full-width">
-                              <mat-label>{{translatedLangText.FOOT_VALVE}}</mat-label>
-                              <mat-select formControlName="foot_valve_cv">
-                                @for (codeValue of footValveCvList; track codeValue) {
-                                <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                }
-                              </mat-select>
-                            </mat-form-field>
+                          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                            <mat-label>{{translatedLangText.FOOT_VALVE}}:</mat-label>
+                            <mat-radio-group formControlName="foot_valve_cv">
+                              @for (codeValue of footValveCvList; track codeValue) {
+                              <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                {{codeValue.description}}
+                              </mat-radio-button>
+                              }
+                            </mat-radio-group>
                           </div>
                         </div>
                         <div class="row">
@@ -562,7 +562,7 @@
                       <form [formGroup]="getTopFormGroup()">
                         <ng-template matStepLabel>{{translatedLangText.TOP_DIS_COMP}}</ng-template>
                         <div class="row">
-                          <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                          <!-- <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.TOP_DIS_COMP}}</mat-label>
                               <mat-select formControlName="top_dis_comp_cv">
@@ -571,6 +571,16 @@
                                 }
                               </mat-select>
                             </mat-form-field>
+                          </div> -->
+                          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                            <mat-label>{{translatedLangText.TOP_DIS_COMP}}:</mat-label>
+                            <mat-radio-group formControlName="top_dis_comp_cv">
+                              @for (codeValue of disCompCvList; track codeValue) {
+                              <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                {{codeValue.description}}
+                              </mat-radio-button>
+                              }
+                            </mat-radio-group>
                           </div>
                         </div>
                         <div class="row">
@@ -657,7 +667,7 @@
                       <form [formGroup]="getManlidFormGroup()">
                         <ng-template matStepLabel>{{translatedLangText.MANLID_COMPARTMENT}}</ng-template>
                         <div class="row">
-                          <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                          <!-- <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.MANLID_COMPARTMENT}}</mat-label>
                               <mat-select formControlName="manlid_comp_cv">
@@ -666,6 +676,16 @@
                                 }
                               </mat-select>
                             </mat-form-field>
+                          </div> -->
+                          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                            <mat-label>{{translatedLangText.MANLID_COMPARTMENT}}:</mat-label>
+                            <mat-radio-group formControlName="manlid_comp_cv">
+                              @for (codeValue of disCompCvList; track codeValue) {
+                              <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                {{codeValue.description}}
+                              </mat-radio-button>
+                              }
+                            </mat-radio-group>
                           </div>
                         </div>
                         <div class="row">

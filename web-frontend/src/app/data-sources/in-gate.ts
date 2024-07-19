@@ -9,7 +9,7 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 import { AnyObject } from 'chart.js/dist/types/basic';
 
-export class InGateGO {
+export class InGate {
   public guid?: string = '';
   public driver_name?: string;
   public eir_dt?: number;
@@ -20,7 +20,6 @@ export class InGateGO {
   public vehicle_no?: string;
   public yard_cv?: string;
   public remarks?: string;
-  public tank?: StoringOrderTankGO;
   public haulier?: string;
   public create_dt?: number;
   public create_by?: string;
@@ -28,7 +27,7 @@ export class InGateGO {
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<InGateGO> = {}) {
+  constructor(item: Partial<InGate> = {}) {
     this.guid = item.guid || '';
     this.driver_name = item.driver_name;
     this.eir_dt = item.eir_dt;
@@ -39,13 +38,21 @@ export class InGateGO {
     this.vehicle_no = item.vehicle_no;
     this.yard_cv = item.yard_cv;
     this.remarks = item.remarks;
-    this.tank = item.tank;
     this.haulier = item.haulier;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+  }
+}
+
+export class InGateGO extends InGate {
+  public tank?: StoringOrderTankGO;
+
+  constructor(item: Partial<InGateGO> = {}) {
+    super(item)
+    this.tank = item.tank;
   }
 }
 

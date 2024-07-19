@@ -45,6 +45,7 @@ import { MatCardModule } from '@angular/material/card';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { MatStepperModule } from '@angular/material/stepper';
 import { InGateSurveyDS, InGateSurveyGO } from 'app/data-sources/in-gate-survey';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-in-gate',
@@ -80,6 +81,7 @@ import { InGateSurveyDS, InGateSurveyGO } from 'app/data-sources/in-gate-survey'
     MatDividerModule,
     MatCardModule,
     MatStepperModule,
+    MatRadioModule,
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -445,7 +447,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.airlineConnCvList = addDefaultSelectOption(data, "--Select--");;
     });
     this.cvDS.connectAlias('disCompCv').subscribe(data => {
-      this.disCompCvList = addDefaultSelectOption(data, "--Select--");;
+      this.disCompCvList = addDefaultSelectOption(data, "--NA--");;
     });
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
       this.disValveCvList = addDefaultSelectOption(data, "--Select--");;
@@ -457,7 +459,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.disTypeCvList = addDefaultSelectOption(data, "--Select--");;
     });
     this.cvDS.connectAlias('footValveCv').subscribe(data => {
-      this.footValveCvList = addDefaultSelectOption(data, "--Select--");;
+      this.footValveCvList = addDefaultSelectOption(data, "--NA--");;
     });
     this.cvDS.connectAlias('manlidCoverCv').subscribe(data => {
       this.manlidCoverCvList = addDefaultSelectOption(data, "--Select--");;
@@ -584,21 +586,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.buffer_plate = this.surveyForm.value['buffer_plate'];
       igs.residue = this.surveyForm.value['residue'];
       igs.dipstick = this.surveyForm.value['dipstick'];
-      // let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
-      // so.customer_company_guid = this.soForm.value['customer_company_guid'];
-      // so.haulier = this.soForm.value['haulier'];
-      // so.so_notes = this.soForm.value['so_notes'];
-
-      // const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankItem>) => {
-      //   // Ensure action is an array and take the last action only
-      //   const actions = Array.isArray(item!.actions) ? item!.actions : [];
-      //   const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
-
-      //   return new StoringOrderTankUpdateSO({
-      //     ...item,
-      //     action: latestAction // Set the latest action as the single action
-      //   });
-      // });
       console.log('igs Value', igs);
       console.log('ig Value', ig);
       if (igs.guid) {
