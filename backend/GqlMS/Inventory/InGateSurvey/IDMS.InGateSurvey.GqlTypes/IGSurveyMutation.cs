@@ -39,13 +39,14 @@ namespace IDMS.InGateSurvey.GqlTypes
                 ingateSurvey.create_dt = currentDateTime;
                 context.in_gate_survey.Add(ingateSurvey);
 
-                var ingate = context.in_gate.Where(i => i.guid == inGateWithTankRequest.InGateWithTank.guid).FirstOrDefault();
+                var igWithTank = inGateWithTankRequest.InGateWithTank;
+                var ingate = context.in_gate.Where(i => i.guid == igWithTank.guid).FirstOrDefault();
                 if (ingate != null) 
                 {
-                    ingate.remarks = inGateWithTankRequest.InGateWithTank.remarks;
-                    ingate.vehicle_no = inGateWithTankRequest.InGateWithTank.vehicle_no;
-                    ingate.driver_name = inGateWithTankRequest.InGateWithTank.driver_name;
-                    ingate.haulier = inGateWithTankRequest.InGateWithTank.haulier;
+                    ingate.remarks = igWithTank.remarks;
+                    ingate.vehicle_no = igWithTank.vehicle_no;
+                    ingate.driver_name = igWithTank.driver_name;
+                    ingate.haulier = igWithTank.haulier;
                     //yet to survey --> pending
                     ingate.eir_status_cv = EirStatus.PENDING;
                     ingate.update_by = user;

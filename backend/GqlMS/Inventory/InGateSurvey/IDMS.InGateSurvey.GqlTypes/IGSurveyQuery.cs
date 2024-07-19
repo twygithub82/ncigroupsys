@@ -19,11 +19,11 @@ namespace IDMS.InGateSurvey.GqlTypes
     [ExtendObjectType(typeof(Query))]
     public class IGSurveyQuery
     {
-        [UsePaging(IncludeTotalCount =true,DefaultPageSize =10)]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public  IQueryable<in_gate_survey> QueryInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<in_gate_survey> QueryInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             IQueryable<in_gate_survey> query = null;
             try
@@ -31,9 +31,9 @@ namespace IDMS.InGateSurvey.GqlTypes
 
                 //GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.in_gate_survey.Where(i => i.delete_dt == null || i.delete_dt == 0)
-                                                .Include(i=>i.in_gate);
+                                                .Include(i => i.in_gate);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
