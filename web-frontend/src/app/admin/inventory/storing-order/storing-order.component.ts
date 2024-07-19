@@ -84,8 +84,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     'customer_code',
     'no_of_tanks',
     'status',
-    'accept_status',
     'waiting_status',
+    'accept_status',
     'cancel_status',
     'actions'
   ];

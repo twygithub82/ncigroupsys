@@ -39,11 +39,13 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { MatStepperModule } from '@angular/material/stepper';
+import { InGateSurveyDS, InGateSurveyGO } from 'app/data-sources/in-gate-survey';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-in-gate',
@@ -79,6 +81,7 @@ import { MatStepperModule } from '@angular/material/stepper';
     MatDividerModule,
     MatCardModule,
     MatStepperModule,
+    MatRadioModule,
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -176,7 +179,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     SPECIFICATION: 'COMMON-FORM.SPECIFICATION',
     DIAMITER: 'COMMON-FORM.DIAMITER',
     PIECES: 'COMMON-FORM.PIECES',
-    VOLUME: 'COMMON-FORM.VOLUME'
+    VOLUME: 'COMMON-FORM.VOLUME',
+    OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS'
   }
 
   in_gate_guid: string | null | undefined;
@@ -187,6 +191,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
+  igsDS: InGateSurveyDS;
   cvDS: CodeValuesDS;
   tDS: TankDS;
 
@@ -200,6 +205,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   tankHeightCvList: CodeValuesItem[] = [];
   walkwayCvList: CodeValuesItem[] = [];
   airlineCvList: CodeValuesItem[] = [];
+  airlineConnCvList: CodeValuesItem[] = [];
   disCompCvList: CodeValuesItem[] = [];
   disValveCvList: CodeValuesItem[] = [];
   disValveSpecCvList: CodeValuesItem[] = [];
@@ -219,10 +225,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   // Stepper
   isLinear = false;
-  bottomFormGroup?: UntypedFormGroup;
-  topFormGroup?: UntypedFormGroup;
-  manlidFormGroup?: UntypedFormGroup;
-  commentFormGroup?: UntypedFormGroup;
+  // bottomFormGroup?: UntypedFormGroup;
+  // topFormGroup?: UntypedFormGroup;
+  // manlidFormGroup?: UntypedFormGroup;
+  // commentFormGroup?: UntypedFormGroup;
 
   constructor(
     public httpClient: HttpClient,
@@ -239,6 +245,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
+    this.igsDS = new InGateSurveyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
   }
@@ -259,63 +266,102 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       test_class_cv: [''],
       test_dt: [''],
       unit_type_guid: [''],
-      manufacturer_dom_cv: [''],
-      manufacturer_dom_dt: [''],
+      manufacturer_cv: [''],
+      dom_dt: [''],
       cladding_cv: [''],
       capacity: [''],
       tare_weight: [''],
-      max_gross_weight_cv: [''],
-      tank_height_cv: [''],
+      max_weight_cv: [''],
+      height_cv: [''],
       walkway_cv: [''],
       // bottom_discharge_type_cv: [''],
       // compartment_type_cv: [''],
       vehicle_no: [''],
       driver_name: [''],
       haulier: [''],
-      in_gate_remarks: ['']
-    });
-
-    this.bottomFormGroup = this.fb.group({
-      btm_dis_comp_cv: [''],
-      btm_dis_valve_cv: [''],
-      btm_dis_valve_spec_cv: [''],
-      foot_valve_cv: [''],
-      thermometer: [''],
-      thermometer_cv: [''],
-      ladder: [''],
-      data_scs_transportplate: [''],
-    });
-
-    this.topFormGroup = this.fb.group({
-      top_dis_comp_cv: [''],
-      top_dis_valve_cv: [''],
-      top_dis_valve_spec_cv: [''],
-      airline_valve_cv: [''],
-      airline_valve_pcs: [''],
-      airline_valve_dim: [''],
-      airline_valve_conn_cv: [''],
-      airline_valve_conn_spec_cv: [''],
-    });
-
-    this.manlidFormGroup = this.fb.group({
-      manlid_comp_cv: [''],
-      manlid_cover_cv: [''],
-      manlid_cover_pcs: [''],
-      manlid_cover_pts: [''],
-      manlid_seal_cv: [''],
-      pv_type_cv: [''],
-      pv_type_pcs: [''],
-      pv_spec_cv: [''],
-      pv_spec_pcs: [''],
-      safety_handrail: [''],
-      buffer_plate: [''],
-      residue: [''],
-      dipstick: [''],
-    });
-
-    this.commentFormGroup = this.fb.group({
+      in_gate_remarks: [''],
       comments: [''],
+      bottomFormGroup: this.fb.group({
+        btm_dis_comp_cv: [''],
+        btm_dis_valve_cv: [''],
+        btm_dis_valve_spec_cv: [''],
+        foot_valve_cv: [''],
+        thermometer: [''],
+        thermometer_cv: [''],
+        ladder: [''],
+        data_csc_transportplate: [''],
+      }),
+      topFormGroup: this.fb.group({
+        top_dis_comp_cv: [''],
+        top_dis_valve_cv: [''],
+        top_dis_valve_spec_cv: [''],
+        airline_valve_cv: [''],
+        airline_valve_pcs: [''],
+        airline_valve_dim: [''],
+        airline_valve_conn_cv: [''],
+        airline_valve_conn_spec_cv: [''],
+      }),
+      manlidFormGroup: this.fb.group({
+        manlid_comp_cv: [''],
+        manlid_cover_cv: [''],
+        manlid_cover_pcs: [''],
+        manlid_cover_pts: [''],
+        manlid_seal_cv: [''],
+        pv_type_cv: [''],
+        pv_type_pcs: [''],
+        pv_spec_cv: [''],
+        pv_spec_pcs: [''],
+        safety_handrail: [''],
+        buffer_plate: [''],
+        residue: [''],
+        dipstick: [''],
+      }),
+      commentFormGroup: this.fb.group({
+        comments: [''],
+      })
     });
+
+    // this.bottomFormGroup = this.fb.group({
+    //   btm_dis_comp_cv: [''],
+    //   btm_dis_valve_cv: [''],
+    //   btm_dis_valve_spec_cv: [''],
+    //   foot_valve_cv: [''],
+    //   thermometer: [''],
+    //   thermometer_cv: [''],
+    //   ladder: [''],
+    //   data_csc_transportplate: [''],
+    // });
+
+    // this.topFormGroup = this.fb.group({
+    //   top_dis_comp_cv: [''],
+    //   top_dis_valve_cv: [''],
+    //   top_dis_valve_spec_cv: [''],
+    //   airline_valve_cv: [''],
+    //   airline_valve_pcs: [''],
+    //   airline_valve_dim: [''],
+    //   airline_valve_conn_cv: [''],
+    //   airline_valve_conn_spec_cv: [''],
+    // });
+
+    // this.manlidFormGroup = this.fb.group({
+    //   manlid_comp_cv: [''],
+    //   manlid_cover_cv: [''],
+    //   manlid_cover_pcs: [''],
+    //   manlid_cover_pts: [''],
+    //   manlid_seal_cv: [''],
+    //   pv_type_cv: [''],
+    //   pv_type_pcs: [''],
+    //   pv_spec_cv: [''],
+    //   pv_spec_pcs: [''],
+    //   safety_handrail: [''],
+    //   buffer_plate: [''],
+    //   residue: [''],
+    //   dipstick: [''],
+    // });
+
+    // this.commentFormGroup = this.fb.group({
+    //   comments: [''],
+    // });
 
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
     if (this.in_gate_guid) {
@@ -330,6 +376,22 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
+  getBottomFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('bottomFormGroup') as UntypedFormGroup;
+  }
+
+  getTopFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('topFormGroup') as UntypedFormGroup;
+  }
+
+  getManlidFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('manlidFormGroup') as UntypedFormGroup;
+  }
+
+  getCommentFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('commentFormGroup') as UntypedFormGroup;
+  }
+
   public loadData() {
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -341,6 +403,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       { alias: 'tankHeightCv', codeValType: 'TANK_HEIGHT' },
       { alias: 'walkwayCv', codeValType: 'WALKWAY' },
       { alias: 'airlineCv', codeValType: 'AIRLINE_VALVE' },
+      { alias: 'airlineConnCv', codeValType: 'AIRLINE_VALVE_CONN' },
       { alias: 'disCompCv', codeValType: 'DIS_COMP' },
       { alias: 'disValveCv', codeValType: 'DIS_VALVE' },
       { alias: 'disValveSpecCv', codeValType: 'DIS_VALVE_SPEC' },
@@ -380,8 +443,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('airlineCv').subscribe(data => {
       this.airlineCvList = addDefaultSelectOption(data, "--Select--");;
     });
+    this.cvDS.connectAlias('airlineConnCv').subscribe(data => {
+      this.airlineConnCvList = addDefaultSelectOption(data, "--Select--");;
+    });
     this.cvDS.connectAlias('disCompCv').subscribe(data => {
-      this.disCompCvList = addDefaultSelectOption(data, "--Select--");;
+      this.disCompCvList = addDefaultSelectOption(data, "--NA--");;
     });
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
       this.disValveCvList = addDefaultSelectOption(data, "--Select--");;
@@ -393,7 +459,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.disTypeCvList = addDefaultSelectOption(data, "--Select--");;
     });
     this.cvDS.connectAlias('footValveCv').subscribe(data => {
-      this.footValveCvList = addDefaultSelectOption(data, "--Select--");;
+      this.footValveCvList = addDefaultSelectOption(data, "--NA--");;
     });
     this.cvDS.connectAlias('manlidCoverCv').subscribe(data => {
       this.manlidCoverCvList = addDefaultSelectOption(data, "--Select--");;
@@ -458,8 +524,92 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     // TableExportUtil.exportToExcel(exportData, 'excel');
   }
 
-  onSOFormSubmit() {
+  onFormSubmit() {
+    if (this.surveyForm?.valid) {
+      let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
+      sot.unit_type_guid = this.surveyForm.value['unit_type_guid'];
 
+      let ig: InGateItem = new InGateItem(this.in_gate!);
+      ig.vehicle_no = this.surveyForm.value['vehicle_no'];
+      ig.driver_name = this.surveyForm.value['driver_name'];
+      ig.haulier = this.surveyForm.value['haulier'];
+      ig.remarks = this.surveyForm.value['in_gate_remarks'];
+      ig.tank = sot;
+
+      let igs: InGateSurveyGO = new InGateSurveyGO();
+      igs.in_gate_guid = this.in_gate?.guid;
+      igs.periodic_test_guid = this.surveyForm.value['periodic_test_guid'] || '';
+      //igs.test_type_cv = this.surveyForm.value['test_type_cv'];
+      //igs.test_class_cv = this.surveyForm.value['test_class_cv'];
+      //igs.test_dt = this.surveyForm.value['test_dt'];
+      igs.manufacturer_cv = this.surveyForm.value['manufacturer_cv'];
+      igs.dom_dt = Utility.convertDate(this.surveyForm.value['dom_dt']);
+      igs.cladding_cv = this.surveyForm.value['cladding_cv'];
+      igs.capacity = this.surveyForm.value['capacity'];
+      igs.tare_weight = this.surveyForm.value['tare_weight'];
+      igs.max_weight_cv = this.surveyForm.value['max_weight_cv'];
+      igs.height_cv = this.surveyForm.value['height_cv'];
+      igs.walkway_cv = this.surveyForm.value['walkway_cv'];
+      igs.comments = this.surveyForm.value['comments'];
+
+      const bottomFormGroup = this.surveyForm.get('bottomFormGroup') as UntypedFormGroup;
+      igs.btm_dis_comp_cv = bottomFormGroup.value['btm_dis_comp_cv'];
+      igs.btm_dis_valve_cv = bottomFormGroup.value['btm_dis_valve_cv'];
+      igs.btm_dis_valve_spec_cv = bottomFormGroup.value['btm_dis_valve_spec_cv'];
+      igs.foot_valve_cv = bottomFormGroup.value['foot_valve_cv'];
+      igs.thermometer = bottomFormGroup.value['thermometer'];
+      igs.thermometer_cv = bottomFormGroup.value['thermometer_cv'];
+      igs.ladder = bottomFormGroup.value['ladder'];
+      igs.data_csc_transportplate = bottomFormGroup.value['data_csc_transportplate'];
+
+      const topFormGroup = this.surveyForm.get('topFormGroup') as UntypedFormGroup;
+      igs.top_dis_comp_cv = topFormGroup.value['top_dis_comp_cv'];
+      igs.top_dis_valve_cv = topFormGroup.value['top_dis_valve_cv'];
+      igs.top_dis_valve_spec_cv = topFormGroup.value['top_dis_valve_spec_cv'];
+      igs.airline_valve_cv = topFormGroup.value['airline_valve_cv'];
+      igs.airline_valve_pcs = topFormGroup.value['airline_valve_pcs'];
+      igs.airline_valve_dim = topFormGroup.value['airline_valve_dim'];
+      igs.airline_valve_conn_cv = topFormGroup.value['airline_valve_conn_cv'];
+      igs.airline_valve_conn_spec_cv = topFormGroup.value['airline_valve_conn_spec_cv'];
+
+      const manlidFormGroup = this.surveyForm.get('manlidFormGroup') as UntypedFormGroup;
+      igs.manlid_comp_cv = manlidFormGroup.value['manlid_comp_cv'];
+      igs.manlid_cover_cv = manlidFormGroup.value['manlid_cover_cv'];
+      igs.manlid_cover_pcs = manlidFormGroup.value['manlid_cover_pcs'];
+      igs.manlid_cover_pts = manlidFormGroup.value['manlid_cover_pts'];
+      igs.manlid_seal_cv = manlidFormGroup.value['manlid_seal_cv'];
+      igs.pv_type_cv = manlidFormGroup.value['pv_type_cv'];
+      igs.pv_type_pcs = manlidFormGroup.value['pv_type_pcs'];
+      igs.pv_spec_cv = manlidFormGroup.value['pv_spec_cv'];
+      igs.pv_spec_pcs = manlidFormGroup.value['pv_spec_pcs'];
+      igs.safety_handrail = manlidFormGroup.value['safety_handrail'];
+      igs.buffer_plate = this.surveyForm.value['buffer_plate'];
+      igs.residue = this.surveyForm.value['residue'];
+      igs.dipstick = this.surveyForm.value['dipstick'];
+      console.log('igs Value', igs);
+      console.log('ig Value', ig);
+      if (igs.guid) {
+        // this.igsDS.addInGateSurvey(igs).subscribe(result => {
+        //   console.log(result)
+        //   this.handleSaveSuccess(result?.data?.updateStoringOrder);
+        // });
+      } else {
+        this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.addStoringOrder);
+        });
+      }
+    } else {
+      console.log('Invalid soForm', this.surveyForm?.value);
+    }
+  }
+
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/inventory/ig-gate-survey']);
+    }
   }
 
   // context menu

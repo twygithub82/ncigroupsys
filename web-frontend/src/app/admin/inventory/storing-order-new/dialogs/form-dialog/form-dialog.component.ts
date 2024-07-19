@@ -297,7 +297,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return !this.sotDS.canRollbackStatus(this.storingOrderTank) && !this.storingOrderTank.actions.includes('cancel') && !this.storingOrderTank.actions.includes('rollback');
+    return !this.sotDS.canRollbackStatus(this.storingOrderTank) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback');
   }
 
   updateValidators(validOptions: any[]) {
