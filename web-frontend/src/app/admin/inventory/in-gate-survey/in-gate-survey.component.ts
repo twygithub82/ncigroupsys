@@ -17,7 +17,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -129,6 +129,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
+  lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -293,9 +294,51 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
 
     // TODO :: should order by accepted dt, where to find?
-    const order = { create_dt: "DESC" };
-    this.subs.sink = this.igDS.loadItems(this.lastSearchCriteria, order).subscribe(data => {
+    this.subs.sink = this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
       this.inGateList = data;
+      this.endCursor = this.igDS.pageInfo?.endCursor;
+      this.startCursor = this.igDS.pageInfo?.startCursor;
+      this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
+    });
+  }
+
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first = pageSize;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursor;
+      }
+    }
+
+    this.pageIndex = pageIndex;
+    this.pageSize = pageSize;
+
+    this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
+      this.inGateList = data;
+      this.endCursor = this.igDS.pageInfo?.endCursor;
+      this.startCursor = this.igDS.pageInfo?.startCursor;
+      this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
     });
   }
 

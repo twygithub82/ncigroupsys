@@ -104,9 +104,15 @@ export const IN_GATE_FRAGMENT = gql`
 `;
 
 export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
-  query queryInGateForSurvey($where: InGateWithTankFilterInput, $order: [InGateWithTankSortInput!]) {
-    inGates: queryInGates(where: $where, order: $order) {
+  query queryInGateForSurvey($where: InGateWithTankFilterInput, $order: [InGateWithTankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    inGates: queryInGates(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
       nodes {
         create_by
         create_dt
@@ -265,12 +271,12 @@ export class InGateDS extends BaseDataSource<InGateItem> {
     super();
   }
 
-  loadItems(where?: any, order?: any): Observable<InGateItem[]> {
+  loadItems(where?: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<InGateItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: SEARCH_IN_GATE_FOR_SURVEY_QUERY,
-        variables: { where, order }
+        variables: { where, order, first, after, last, before }
       })
       .pipe(
         map((result) => result.data),
@@ -283,6 +289,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
           const retResult = result.inGates || { nodes: [], totalCount: 0 };
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
+          this.pageInfo = retResult.pageInfo;
           return retResult.nodes;
         })
       );

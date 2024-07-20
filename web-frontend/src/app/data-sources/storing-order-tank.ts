@@ -107,8 +107,8 @@ const GET_STORING_ORDER_TANKS_COUNT = gql`
 `;
 
 const GET_STORING_ORDER_TANKS = gql`
-  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
-    sotList: queryStoringOrderTank(where: $where) {
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         job_no
         guid
@@ -129,6 +129,12 @@ const GET_STORING_ORDER_TANKS = gql`
             alias
           }
         }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
       }
       totalCount
     }
@@ -286,13 +292,13 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchStoringOrderTanks(where: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanks(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS,
-        variables: { where, first, after, last, before },
+        variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -303,6 +309,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
           return sotList.nodes;
         })
       );

@@ -26,7 +26,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 export interface DialogData {
   action?: string;
   item: StoringOrderTankItem;
-  langText?: any;
+  translatedLangText?: any;
   populateData?: any;
   index: number;
   sotExistedList?: StoringOrderTankItem[]
@@ -129,9 +129,9 @@ export class FormDialogComponent {
       purpose_repair_cv: [{ value: this.storingOrderTank.purpose_repair_cv, disabled: !this.canEdit() }],
       clean_status_cv: [{ value: this.storingOrderTank.clean_status_cv, disabled: !this.canEdit() }],
       certificate_cv: [{ value: this.storingOrderTank.certificate_cv, disabled: !this.canEdit() }],
-      required_temp: [{ value: this.storingOrderTank.required_temp, disabled: !this.storingOrderTank.purpose_steam || !this.canEdit() }],
+      required_temp: [{ value: this.storingOrderTank.required_temp, disabled: !this.storingOrderTank.purpose_steam || !this.canEdit() }, [Validators.min(0)]],
       etr_dt: [{ value: Utility.convertDate(this.storingOrderTank.etr_dt), disabled: !this.canEdit() }],
-      remarks: [{ value: this.storingOrderTank.tariff_cleaning?.remarks, disabled: true }],
+      remarks: [{ value: this.storingOrderTank?.remarks, disabled: !this.canEdit() }],
       open_on_gate: [{ value: this.storingOrderTank.tariff_cleaning?.open_on_gate_cv, disabled: true }],
       flash_point: [this.storingOrderTank.tariff_cleaning?.flash_point]
     });
@@ -160,7 +160,8 @@ export class FormDialogComponent {
           clean_status_cv: this.storingOrderTankForm.value['clean_status_cv'],
           certificate_cv: this.storingOrderTankForm.value['certificate_cv'],
           required_temp: this.storingOrderTankForm.value['required_temp'],
-          etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt'])
+          etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt']),
+          remarks: this.storingOrderTankForm.value['remarks']
         }
         const returnDialog: DialogData = {
           item: sot,
@@ -248,11 +249,26 @@ export class FormDialogComponent {
   handleValueChange(value: any) {
     this.valueChangesDisabled = true;
     if (value && value.guid) {
-      this.storingOrderTankForm.get('remarks')!.setValue(value.remarks);
       this.storingOrderTankForm.get('flash_point')!.setValue(value.flash_point);
       this.storingOrderTankForm.get('open_on_gate')!.setValue(value.open_on_gate_cv);
+
+      const requiredTempControl = this.storingOrderTankForm.get('required_temp');
+      const purposeSteamControl = this.storingOrderTankForm.get('purpose_steam');
+      if (value.flash_point <= 0) {
+        requiredTempControl!.reset();
+        purposeSteamControl!.reset();
+        purposeSteamControl!.disable();
+        requiredTempControl!.disable();
+      } else {
+        purposeSteamControl!.enable();
+        requiredTempControl!.enable();
+        requiredTempControl!.setValidators([
+          Validators.max(value.flash_point - 1),
+          Validators.min(0)
+        ]);
+      }
+      requiredTempControl!.updateValueAndValidity();
     } else {
-      this.storingOrderTankForm.get('remarks')!.reset();
       this.storingOrderTankForm.get('flash_point')!.reset();
       this.storingOrderTankForm.get('open_on_gate')!.reset();
     }
