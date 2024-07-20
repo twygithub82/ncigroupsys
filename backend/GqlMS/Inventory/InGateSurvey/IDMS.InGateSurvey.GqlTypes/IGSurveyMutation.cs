@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using CommonUtil.Core.Service;
 using HotChocolate.Authorization;
+using IDMS.InGateSurvey.Model;
 using IDMS.InGateSurvey.Model.Request;
+using IDMS.Models;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +18,8 @@ namespace IDMS.InGateSurvey.GqlTypes
     {
         //[Authorize]
         public async Task<int> AddInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service]IMapper mapper, InGateSurveyRequest inGateSurveyRequest)
+            [Service] IHttpContextAccessor httpContextAccessor, [Service]IMapper mapper,
+            InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
         {
             int retval = 0;
 
@@ -34,12 +37,37 @@ namespace IDMS.InGateSurvey.GqlTypes
                 ingateSurvey.guid = Util.GenerateGUID();
                 ingateSurvey.create_by = user;
                 ingateSurvey.create_dt = currentDateTime;
-                context.Add(ingateSurvey);
+                context.in_gate_survey.Add(ingateSurvey);
 
+                var igWithTank = inGateWithTankRequest.InGateWithTank;
+                var ingate = context.in_gate.Where(i => i.guid == igWithTank.guid).FirstOrDefault();
+                if (ingate != null) 
+                {
+                    ingate.remarks = igWithTank.remarks;
+                    ingate.vehicle_no = igWithTank.vehicle_no;
+                    ingate.driver_name = igWithTank.driver_name;
+                    ingate.haulier = igWithTank.haulier;
+                    //yet to survey --> pending
+                    ingate.eir_status_cv = EirStatus.PENDING;
+                    ingate.update_by = user;
+                    ingate.update_dt = currentDateTime;
+                }
+
+                var tnk = inGateWithTankRequest.InGateWithTank.tank;
+                var sot = context.storing_order_tank.Where(s=>s.guid == tnk.guid).FirstOrDefault();
+                if (sot != null) 
+                {
+                    sot.unit_type_guid = tnk.unit_type_guid;
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;
+                }
+       
                 retval = await context.SaveChangesAsync();
+                //TODO
+                string evtId = EventId.NEW_INGATE;
+                string evtName = EventName.NEW_INGATE;
+                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
 
-
-                //yet to survey --> pending
             }
             catch(Exception ex)
             {
