@@ -44,7 +44,10 @@ namespace IDMS.InGate.GqlTypes
                     yard_cv = InGate.yard_cv,
 
                 };
-
+                if(string.IsNullOrEmpty(InGate.so_tank_guid))
+                {
+                    throw new GraphQLException(new Error("Tank guid is empty", "404"));
+                }
 
                 var so_tank = context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefault();
 
@@ -132,6 +135,11 @@ namespace IDMS.InGate.GqlTypes
                     InGate.update_dt = epochNow;
 
                     var so_tank = context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefault();
+
+                    if (string.IsNullOrEmpty(InGate.so_tank_guid))
+                    {
+                        throw new GraphQLException(new Error("Tank guid is empty", "404"));
+                    }
 
                     if (so_tank == null)
                     {

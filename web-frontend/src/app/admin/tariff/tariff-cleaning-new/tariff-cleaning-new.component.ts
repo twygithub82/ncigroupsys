@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild,HostListener } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl,AbstractControl,Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -268,7 +268,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       ban_type:this.banTypeControl,
       open_gate:this.openGateControl,
       flash_point:[''],
-      un_no:[''],
+      un_no: ['', [Validators.required, this.onlyNumbersDashValidator]],
       nature:this.natureCvList,
       in_gate_alert:[''],
       depot_note:['']
@@ -295,7 +295,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
      
       open_gate:{ value: tc.open_on_gate_cv, disabled: false },
       flash_point:tc.flash_point,
-      un_no:tc.un_no,
+      un_no:[tc.un_no, [Validators.required, this.onlyNumbersDashValidator]],
       nature:{ value: tc.nature_cv, disabled: false },
       in_gate_alert:tc.in_gate_alert,
       depot_note:tc.depot_note
@@ -304,29 +304,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   public loadData() {
-    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-    //   if (this.soDS.totalCount > 0) {
-    //     this.soList = data;
-    //   }
-    // });
-
-    // this.tcDS.loadItemsWithCategoryMethod({}).subscribe(data=>{
-    //   if(this.tcDS.totalCount>0)
-    //   {
-    //     this.tcList=data;
-    //   }
-
-    // });
-    // this.lastSearchCriteria=this.tcDS.addDeleteDtCriteria({});
-    // this.tcDS.SearchTariffCleaning(this.lastSearchCriteria).subscribe(data => {
-    //   this.tcList = data;
-    //   this.endCursor = this.tcDS.pageInfo?.endCursor;
-    //   this.startCursor = this.tcDS.pageInfo?.startCursor;
-    //   this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
-    //   this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
-    // });
-
-    
     this.cCategoryDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
       if(this.cCategoryDS.totalCount>0)
       {
@@ -415,51 +392,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
    // event.stopPropagation(); // Stops event propagation
   }
   
-  // editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
-  //   this.preventDefault(event);  // Prevents the form submission
-  //   //this.id = row.id;
-  //   let tempDirection: Direction;
-  //   if (localStorage.getItem('isRtl') === 'true') {
-  //     tempDirection = 'rtl';
-  //   } else {
-  //     tempDirection = 'ltr';
-  //   }
-  //   // const dialogRef = this.dialog.open(FormDialogComponent, {
-  //   //   data: {
-  //   //     item: row,
-  //   //     action: 'edit',
-  //   //     langText: this.langText,
-  //   //     populateData: {
-  //   //       unit_typeList: this.unit_typeList,
-  //   //       repairCv: this.repairCv,
-  //   //       clean_statusCv: this.clean_statusCv,
-  //   //       yesnoCv: this.yesnoCv
-  //   //     },
-  //   //     index: index,
-  //   //     sotExistedList: this.sotList.data
-  //   //   },
-  //   //   direction: tempDirection
-  //   // });
-  //   // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-  //   //   if (result) {
-  //   //     if (result.index >= 0) {
-  //   //       const data = [...this.sotList.data];
-  //   //       let actions = Array.isArray(data[index].actions) ? [...data[index].actions] : [];
-  //   //       if (!actions.includes('new')) {
-  //   //         actions = [...new Set([...actions, 'edit'])];
-  //   //       }
-  //   //       const updatedItem = new StoringOrderTankItem({
-  //   //         ...result.item,
-  //   //         actions: actions
-  //   //       });
-  //   //       data[result.index] = updatedItem;
-  //   //       this.updateData(data);
-  //   //     } else {
-  //   //       this.updateData([...this.sotList.data, result.item]);
-  //   //     }
-  //   //   }
-  //   // });
-  // }
+ 
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -557,6 +490,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         this.router.navigate(['/admin/tariff/tariff-cleaning']);
       });
     }
+  }
+
+  onlyNumbersDashValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const regex = /^[0-9-]*$/;
+    if (control.value && !regex.test(control.value)) {
+      return { 'invalidCharacter': true };
+    }
+    return null;
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
