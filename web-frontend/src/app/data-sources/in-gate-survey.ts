@@ -65,7 +65,58 @@ export class InGateSurveyGO {
   public delete_dt?: number;
 
   constructor(item: Partial<InGateSurveyGO> = {}) {
-    Object.assign(this, item);
+    this.guid = item.guid ?? '';
+    this.in_gate_guid = item.in_gate_guid ?? '';
+    this.periodic_test_guid = item.periodic_test_guid;
+    this.capacity = item.capacity;
+    this.tare_weight = item.tare_weight;
+    this.take_in_reference = item.take_in_reference;
+    this.dom_dt = item.dom_dt;
+    this.inspection_dt = item.inspection_dt;
+    this.last_release_dt = item.last_release_dt;
+    this.manufacturer_cv = item.manufacturer_cv;
+    this.cladding_cv = item.cladding_cv;
+    this.max_weight_cv = item.max_weight_cv;
+    this.height_cv = item.height_cv;
+    this.walkway_cv = item.walkway_cv;
+    this.tank_comp_cv = item.tank_comp_cv;
+    this.last_test_cv = item.last_test_cv;
+    this.take_in_status_cv = item.take_in_status_cv;
+    this.btm_dis_comp_cv = item.btm_dis_comp_cv;
+    this.btm_dis_valve_cv = item.btm_dis_valve_cv;
+    this.btm_dis_valve_spec_cv = item.btm_dis_valve_spec_cv;
+    this.top_dis_comp_cv = item.top_dis_comp_cv;
+    this.top_dis_valve_cv = item.top_dis_valve_cv;
+    this.top_dis_valve_spec_cv = item.top_dis_valve_spec_cv;
+    this.manlid_comp_cv = item.manlid_comp_cv;
+    this.foot_valve_cv = item.foot_valve_cv;
+    this.thermometer = item.thermometer;
+    this.thermometer_cv = item.thermometer_cv;
+    this.ladder = item.ladder;
+    this.data_csc_transportplate = item.data_csc_transportplate;
+    this.airline_valve_pcs = item.airline_valve_pcs;
+    this.airline_valve_dim = item.airline_valve_dim;
+    this.airline_valve_cv = item.airline_valve_cv;
+    this.airline_valve_conn_cv = item.airline_valve_conn_cv;
+    this.airline_valve_conn_spec_cv = item.airline_valve_conn_spec_cv;
+    this.manlid_cover_cv = item.manlid_cover_cv;
+    this.manlid_cover_pcs = item.manlid_cover_pcs;
+    this.manlid_cover_pts = item.manlid_cover_pts;
+    this.manlid_seal_cv = item.manlid_seal_cv;
+    this.pv_type_cv = item.pv_type_cv;
+    this.pv_type_pcs = item.pv_type_pcs;
+    this.pv_spec_cv = item.pv_spec_cv;
+    this.pv_spec_pcs = item.pv_spec_pcs;
+    this.safety_handrail = item.safety_handrail;
+    this.buffer_plate = item.buffer_plate;
+    this.residue = item.residue;
+    this.dipstick = item.dipstick;
+    this.comments = item.comments;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
   }
 }
 

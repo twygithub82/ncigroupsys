@@ -238,14 +238,14 @@
               </table>
             </div>
             <!-- No result -->
-            @if (!(soDS.soLoading$ | async) && !soList.length) {
+            @if (!(soDS.loadingSubject | async) && !soList.length) {
             <mat-divider></mat-divider>
             <div class="no-results m-l-20 pt-3" [style.display]="soList.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if ((soDS.soLoading$ | async)) {
+            @if ((soDS.loadingSubject | async)) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>

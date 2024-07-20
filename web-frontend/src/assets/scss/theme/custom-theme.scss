@@ -1,0 +1,214 @@
+@import "_theme-color-variables";
+
+.theme-gold-purple {
+  .navbar {
+    background-color: transparent;
+    .header-icon .feather {
+      color: $theme-gold-purple-nav-anchor;
+    }
+  }
+  .navbar-right .user_profile span {
+    color: $theme-gold-purple-nav-anchor !important;
+  }
+  .navbar.active {
+    background-color: $theme-gold-purple !important;
+    .nav {
+      > li {
+        > a {
+          color: $theme-gold-purple-nav-anchor;
+        }
+      }
+    }
+    .collapse-menu-icon .mat-icon {
+      color: $theme-gold-purple-nav-anchor;
+    }
+    .nav-notification-icons .mat-icon {
+      color: $theme-gold-purple-nav-anchor;
+    }
+  }
+
+  .navbar-brand {
+    color: $theme-gold-purple-navbar-brand;
+
+    &:hover {
+      color: $theme-gold-purple-navbar-brand_hover;
+    }
+
+    &:active {
+      color: $theme-gold-purple-navbar-brand_active;
+    }
+
+    &:focus {
+      color: $theme-gold-purple-navbar-brand_focus;
+    }
+  }
+
+  .nav {
+    > li {
+      > a {
+        &:hover {
+          background-color: $theme-gold-purple-nav-anchor_hover;
+          text-decoration: none;
+        }
+
+        &:focus {
+          background-color: $theme-gold-purple-nav-anchor_focus;
+          text-decoration: none;
+        }
+      }
+    }
+
+    .open {
+      > a {
+        background-color: $theme-gold-purple-nav-anchor_opened;
+
+        &:hover {
+          background-color: $theme-gold-purple-nav-anchor_opened_hover;
+        }
+
+        &:focus {
+          background-color: $theme-gold-purple-nav-anchor_opened_focus;
+        }
+      }
+    }
+  }
+
+  .bars {
+    color: $theme-gold-purple-bar;
+  }
+
+  .sidebar {
+    .menu {
+      .list {
+        li {
+          &.active {
+            background-color: $theme-gold-purple-menu-list-active;
+          }
+          a {
+            -moz-transition: all 0.3s;
+            -o-transition: all 0.3s;
+            -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+            i,
+            span {
+              -moz-transition: all 0.3s;
+              -o-transition: all 0.3s;
+              -webkit-transition: all 0.3s;
+              transition: all 0.3s;
+            }
+          }
+        }
+
+        .ml-menu {
+          background-color: $theme-gold-purple-menu-list-submenu;
+        }
+      }
+    }
+
+    .legal {
+      background-color: $theme-gold-purple-legal-bg;
+
+      .copyright {
+        a {
+          color: $theme-gold-purple !important;
+        }
+      }
+    }
+  }
+
+  .breadcrumb li a {
+    color: $theme-gold-purple-active-color !important;
+  }
+  .page-item.active .page-link {
+    background-color: $theme-gold-purple-active-color;
+    border-color: $theme-gold-purple-active-color;
+    border-radius: 50%;
+    margin: 5px;
+    box-shadow: 0 4px 5px 0 #d4d8da, 0 1px 10px 0 #d4d8da,
+      0 2px 4px -1px #d4d8da;
+    padding: 0px 12px;
+    min-width: 30px;
+    line-height: 30px;
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+
+  .btn-primary {
+    background-color: $theme-gold-purple-active-color !important;
+    color: #fff !important;
+    border-color: $theme-gold-purple-active-color !important;
+    &:hover {
+      background-color: $theme-gold-purple-active-color !important;
+      color: #fff !important;
+    }
+    &:active {
+      background-color: $theme-gold-purple-active-color !important;
+      color: #fff !important;
+    }
+    &:focus {
+      background-color: $theme-gold-purple-active-color !important;
+      color: #fff !important;
+    }
+    &:disabled {
+      background-color: $theme-gold-purple-active-color !important;
+      color: #fff !important;
+    }
+  }
+  .btn-outline-primary {
+    background: 0 0 !important;
+    color: $theme-gold-purple-bar !important;
+    border: 1px solid $theme-gold-purple-active-color !important;
+    &:hover {
+      background: $theme-gold-purple-active-color !important;
+      color: #fff !important;
+      border: 1px solid $theme-gold-purple !important;
+    }
+  }
+  .timelineLabelColor strong {
+    color: $theme-gold-purple-active-color !important;
+  }
+  .top-sidebar {
+    .horizontal-menu {
+      li {
+        &.active {
+          > a {
+            color: $theme-gold-purple-active-color;
+          }
+        }
+        a {
+          -moz-transition: all 0.3s;
+          -o-transition: all 0.3s;
+          -webkit-transition: all 0.3s;
+          transition: all 0.3s;
+          &:hover {
+            color: $theme-gold-purple-active-color;
+          }
+        }
+      }
+    }
+  }
+  .demo-choose-skin li.actived:after {
+    color: #000;
+  }
+
+  .nav-tabs > li > a:before {
+    border-bottom: 2px solid $theme-gold-purple-active-color;
+  }
+  .search-box input#search {
+    color: gray;
+    background: #edecec;
+  }
+  .settingSidebar ul.choose-theme li.active div::after {
+    color: #000;
+  }
+}
+/*Logo Header Background Color*/
+.logo-gold-purple {
+  .navbar-header {
+    background-color: $theme-gold-purple;
+
+    .logo-name {
+      color: #000;
+    }
+  }
+}

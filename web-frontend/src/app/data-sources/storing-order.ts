@@ -1,7 +1,7 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, delay, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { CustomerCompanyItem } from './customer-company';
 import { StoringOrderTankItem } from './storing-order-tank';
@@ -214,11 +214,7 @@ export const CANCEL_STORING_ORDER = gql`
 `;
 
 export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
-  private soItemsSubject = new BehaviorSubject<StoringOrderItem[]>([]);
-  private soLoadingSubject = new BehaviorSubject<boolean>(false);
-  public soLoading$ = this.soLoadingSubject.asObservable();
   public totalCount = 0;
-  public pageInfo?: PageInfo;
   constructor(private apollo: Apollo) {
     super();
   }
@@ -234,10 +230,10 @@ export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
       .pipe(
         map((result) => result.data),
         catchError(() => of({ soList: { nodes: [], totalCount: 0 } })),
-        finalize(() => this.soLoadingSubject.next(false)),
+        finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const soList = result.soList || { nodes: [], totalCount: 0 };
-          this.soItemsSubject.next(soList.nodes);
+          this.dataSubject.next(soList.nodes);
           this.totalCount = soList.totalCount;
           this.pageInfo = soList.pageInfo;
           return soList.nodes;
@@ -246,7 +242,7 @@ export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
   }
 
   getStoringOrderByID(id: string): Observable<StoringOrderItem[]> {
-    this.soLoadingSubject.next(true);
+    this.loadingSubject.next(true);
     let where = this.addDeleteDtCriteria({ guid: { eq: id } });
     return this.apollo
       .query<any>({
@@ -258,14 +254,14 @@ export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
       .pipe(
         map((result) => result.data),
         catchError(() => of({ soList: [] })),
-        finalize(() => this.soLoadingSubject.next(false)),
+        finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           // const soList = result.soList;
           // this.soItemsSubject.next(soList);
           // this.totalCount = soList.length;
           // return soList;
           const soList = result.soList || { nodes: [], totalCount: 0 };
-          this.soItemsSubject.next(soList.nodes);
+          this.dataSubject.next(soList.nodes);
           this.totalCount = soList.totalCount;
           return soList.nodes;
         })

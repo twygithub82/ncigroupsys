@@ -130,3 +130,26 @@ $theme-orange-nav-anchor-opened_focus: rgba(0, 0, 0, 0);
 $theme-orange-menu-list-active: rgba(0, 0, 0, 0);
 $theme-orange-menu-list-toggled: rgba(0, 0, 0, 0);
 $theme-orange-menu-list-submenu: rgba(0, 0, 0, 0);
+
+// Define gold and purple colors
+$gold: #FFD700;
+$purple: #800080;
+
+// Theme Gold and Purple
+$theme-gold-purple: $gold;
+$theme-gold-purple-legal-bg: lighten($gold, 30%);
+$theme-gold-purple-bar: darken($gold, 10%);
+$theme-gold-purple-navbar-brand: darken($gold, 20%);
+$theme-gold-purple-navbar-brand_active: lighten($gold, 10%);
+$theme-gold-purple-navbar-brand_hover: lighten($gold, 10%);
+$theme-gold-purple-navbar-brand_focus: lighten($gold, 10%);
+$theme-gold-purple-nav-anchor: $purple;
+$theme-gold-purple-nav-anchor_hover: lighten($gold, 15%);
+$theme-gold-purple-nav-anchor_focus: lighten($gold, 10%);
+$theme-gold-purple-nav-anchor-opened: darken($gold, 10%);
+$theme-gold-purple-nav-anchor-opened_hover: lighten($gold, 10%);
+$theme-gold-purple-nav-anchor-opened_focus: lighten($gold, 5%);
+$theme-gold-purple-menu-list-active: darken($gold, 20%);
+$theme-gold-purple-menu-list-toggled: lighten($gold, 15%);
+$theme-gold-purple-menu-list-submenu: lighten($gold, 20%);
+$theme-gold-purple-active-color: darken($gold, 15%);

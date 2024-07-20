@@ -160,7 +160,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION'
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
+    EXCEEDED: 'COMMON-FORM.EXCEEDED',
+    MUST_MORE_THAN_ZERO: 'COMMON-FORM.MUST-MORE-THAN-ZERO'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -350,7 +352,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       data: {
         item: row ? row : addSot,
         action: 'new',
-        langText: this.langText,
+        translatedLangText: this.translatedLangText,
         populateData: {
           unit_typeList: this.unit_typeList,
           repairCv: this.repairCv,
@@ -390,7 +392,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       data: {
         item: row,
         action: 'edit',
-        langText: this.langText,
+        translatedLangText: this.translatedLangText,
         populateData: {
           unit_typeList: this.unit_typeList,
           repairCv: this.repairCv,

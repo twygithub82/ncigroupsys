@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule,Validators ,AbstractControl } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -45,6 +45,7 @@ import {CleaningMethodDS,CleaningMethodItem} from 'app/data-sources/cleaning-met
 import { sequence } from '@angular/animations';
 import {SearchCriteriaService} from 'app/services/search-criteria.service';
 
+
 @Component({
   selector: 'app-tariff-cleaning',
   standalone: true,
@@ -80,6 +81,9 @@ import {SearchCriteriaService} from 'app/services/search-criteria.service';
   ]
  
 })
+
+
+
 export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
    //'select',
@@ -175,6 +179,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  private regex: RegExp = new RegExp(/^[0-9-]*$/);
 
   constructor(
     public httpClient: HttpClient,
@@ -211,6 +216,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.loadData();
     this.initSearchForm();
   }
+
+ 
+
   initSearchForm() {
     this.searchForm = this.fb.group({
       cargo_name: [''],
@@ -220,7 +228,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       hazard_level:this.hazardLevelControl,
       ban_type:this.banTypeControl,
       flash_point:[''],
-      un_no:['']
+      un_no: ['']
     });
   }
   cancelItem(row: StoringOrderItem) {
