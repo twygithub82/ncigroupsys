@@ -101,6 +101,18 @@
         "TARIFF-CLEANING-EDIT":"Edit Tariff Cleaning"
       }
     },
+    "PACKAGE":{
+      "TEXT" :"Package",
+      "LIST":{
+        "PACKAGE-CLEANING":"Cleaning",
+        "PACKAGE-LABOUR":"Labour Cost",
+        "PACKAGE-DEPOT":"Depot Cost",
+        "PACKAGE-REPAIR":"Repair",
+        "PACKAGE-BUFFER":"Buffer Cleaning",
+        "PACKAGE-CLEANING-NEW":"New PACKAGE Cleaning",
+        "PACKAGE-CLEANING-EDIT":"Edit PACKAGE Cleaning"
+      }
+    },
     "CLEANING-MANAGEMENT": {
       "TEXT": "Cleaning Management",
       "LIST": {
@@ -339,7 +351,10 @@
     "OTHER-COMMENTS": "Other Comment(s)",
     "EXCEEDED": "Exceeded",
     "MUST-MORE-THAN-ZERO": "Must be more than 0",
-    "BRAND": "Brand"
+    "BRAND": "Brand",
+    "PACKAGE-MIN-COST" : "Min Cost",
+    "PACKAGE-MAX-COST" : "Max Cost",
+    "PACKAGE-DETAIL":"Detail"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

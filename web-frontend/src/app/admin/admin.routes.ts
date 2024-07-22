@@ -17,7 +17,7 @@ import {TariffRepairComponent} from "./tariff/tariff-repair/tariff-repair.compon
 import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-cleaning-new.component';
 import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey.component';
 import { InGateSurveyFormComponent } from './inventory/in-gate-survey-form/in-gate-survey-form.component';
-
+import {PackageCleaningComponent} from "./package/package-cleaning/package-cleaning.component"
 export const ADMIN_ROUTE: Routes = [
   {
     path: "cleaning-steps",
@@ -95,6 +95,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "tariff/tariff-buffer",
     component: TariffBufferComponent,
+  },
+  {
+    path: "package/package-cleaning",
+    component: PackageCleaningComponent,
   }
 ];
 

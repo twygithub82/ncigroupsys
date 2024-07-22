@@ -91,6 +91,28 @@ export const ROUTES: RouteInfo[] = [
   },
   {
     path: "admin/cleaning-management",
+    title: "MENUITEMS.PACKAGE.TEXT",
+    iconType: "material",
+    icon: "opacity",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/package/package-cleaning",
+        title: "MENUITEMS.TARIFF.LIST.TARIFF-CLEANING",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      }]
+  },
+  {
+    path: "admin/cleaning-management",
     title: "MENUITEMS.CLEANING-MANAGEMENT.TEXT",
     iconType: "material",
     icon: "opacity",
