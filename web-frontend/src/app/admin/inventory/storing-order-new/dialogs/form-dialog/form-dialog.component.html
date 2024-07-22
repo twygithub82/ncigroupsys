@@ -16,7 +16,7 @@
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.UNIT_TYPE | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.UNIT_TYPE}}</mat-label>
                 <mat-select formControlName="unit_type_guid" required>
                   @for (option of data.populateData.unit_typeList; track option) {
                   <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
@@ -24,29 +24,29 @@
                 </mat-select>
                 @if (storingOrderTankForm.get('unit_type_guid')?.hasError('required')) {
                 <mat-error>
-                  {{data.langText.UNIT_TYPE | translate}} {{data.langText.SO_REQUIRED | translate}}
+                  {{data.translatedLangText.UNIT_TYPE}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
                 }
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.TANK_NO | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.TANK_NO}}</mat-label>
                 <!-- <input matInput formControlName="tank_no" required> -->
                 <input matInput formControlName="tank_no" placeholder="EX: ABCD 123456-7" mask="AAAA 000000-0" [showMaskTyped]="true" required/>
                 @if (storingOrderTankForm.get('tank_no')?.hasError('required')) {
                 <mat-error>
-                  {{data.langText.TANK_NO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                  {{data.translatedLangText.TANK_NO}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
                 }
                 @if (storingOrderTankForm.get('tank_no')?.hasError('invalidCheckDigit')) {
                 <mat-error>
-                  {{data.langText.TANK_NO | translate}}: {{data.langText.INVALID | translate}}
+                  {{data.translatedLangText.TANK_NO}}: {{data.translatedLangText.INVALID}}
                 </mat-error>
                 }
                 @if (storingOrderTankForm.get('tank_no')?.hasError('existed')) {
                 <mat-error>
-                  {{data.langText.TANK_NO | translate}}: {{data.langText.EXISTED | translate}}
+                  {{data.translatedLangText.TANK_NO}}: {{data.translatedLangText.EXISTED}}
                 </mat-error>
                 }
               </mat-form-field>
@@ -56,10 +56,10 @@
             <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-1">
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex">
-                  <small class="m-b-0 font-bold">{{data.langText.PURPOSE | translate}}</small>
+                  <small class="m-b-0 font-bold">{{data.translatedLangText.PURPOSE}}</small>
                   @if (storingOrderTankForm.get('purpose')?.hasError('required')) {
                   <mat-error class="ps-2 font-12">
-                    {{data.langText.SELECT_ATLEAST_ONE | translate}}
+                    {{data.translatedLangText.SELECT_ATLEAST_ONE}}
                   </mat-error>
                   }
                 </div>
@@ -67,29 +67,39 @@
               <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                   <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
-                    {{data.langText.STORAGE | translate}}
+                    {{data.translatedLangText.STORAGE}}
                   </mat-checkbox>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                   <mat-checkbox formControlName="purpose_cleaning" class="m-r-5" color="primary">
-                    {{data.langText.CLEANING | translate}}
+                    {{data.translatedLangText.CLEANING}}
                   </mat-checkbox>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                   <mat-checkbox formControlName="purpose_steam" class="m-r-5" color="primary">
-                    {{data.langText.STEAM | translate}}
+                    {{data.translatedLangText.STEAM}}
                   </mat-checkbox>
                 </div>
               </div>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.REQUIRED_TEMP | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.REQUIRED_TEMP}}</mat-label>
                 <input matInput formControlName="required_temp" type="number">
                 <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
                 @if (storingOrderTankForm.get('required_temp')?.hasError('required')) {
                 <mat-error>
-                  {{data.langText.REQUIRED_TEMP | translate}} {{data.langText.SO_REQUIRED | translate}}
+                  {{data.translatedLangText.REQUIRED_TEMP}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+                @if (storingOrderTankForm.get('required_temp')?.hasError('max')) {
+                <mat-error>
+                  {{data.translatedLangText.EXCEEDED}} {{data.translatedLangText.FLASH_POINT}}
+                </mat-error>
+                }
+                @if (storingOrderTankForm.get('required_temp')?.hasError('min')) {
+                <mat-error>
+                  {{data.translatedLangText.MUST_MORE_THAN_ZERO}}
                 </mat-error>
                 }
               </mat-form-field>
@@ -98,7 +108,7 @@
           <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.CLEAN_STATUS | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.CLEAN_STATUS}}</mat-label>
                 <mat-select formControlName="clean_status_cv">
                   @for (codeValue of data.populateData.clean_statusCv; track codeValue) {
                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
@@ -108,7 +118,7 @@
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.CERTIFICATE | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.CERTIFICATE}}</mat-label>
                 <mat-select formControlName="certificate_cv">
                   @for (codeValue of data.populateData.yesnoCv; track codeValue) {
                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
@@ -118,7 +128,7 @@
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.REPAIR | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
                 <mat-select formControlName="purpose_repair_cv">
                   @for (codeValue of data.populateData.repairCv; track codeValue) {
                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
@@ -130,18 +140,18 @@
           <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.JOB_NO | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
                 <input matInput formControlName="job_no" required>
                 @if (storingOrderTankForm.get('job_no')?.hasError('required')) {
                 <mat-error>
-                  {{data.langText.JOB_NO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                  {{data.translatedLangText.JOB_NO}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
                 }
               </mat-form-field>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.ETA_DATE | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.ETA_DATE}}</mat-label>
                 <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker" [min]="startDateETA">
                 <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
                 <mat-datepicker #eta_picker [startAt]="startDateETA"></mat-datepicker>
@@ -149,7 +159,7 @@
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.ETR_DATE | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.ETR_DATE}}</mat-label>
                 <input matInput formControlName="etr_dt" [matDatepicker]="etr_picker" [min]="startDateETR">
                 <mat-datepicker-toggle matSuffix [for]="etr_picker"></mat-datepicker-toggle>
                 <mat-datepicker #etr_picker [startAt]="startDateETR"></mat-datepicker>
@@ -161,7 +171,15 @@
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.LAST_CARGO | translate}}</mat-label>
+                <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+                <input matInput formControlName="remarks">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.LAST_CARGO}}</mat-label>
                 <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
                   formControlName="last_cargo" required>
                 <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
@@ -173,28 +191,20 @@
                 </mat-autocomplete>
                 @if (lastCargoControl.get('last_cargo')?.hasError('required')) {
                 <mat-error>
-                  {{data.langText.LAST_CARGO | translate}} {{data.langText.SO_REQUIRED | translate}}
+                  {{data.translatedLangText.LAST_CARGO}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
                 }
                 @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
                 <mat-error>
-                  {{data.langText.INVALID_SELECTION | translate}}
+                  {{data.translatedLangText.INVALID_SELECTION}}
                 </mat-error>
                 }
-              </mat-form-field>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
-                <input matInput formControlName="remarks">
               </mat-form-field>
             </div>
           </div>
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-10">
-              <label class="font-bold">{{data.langText.OPEN_ON_GATE | translate}}:</label>
+              <label class="font-bold">{{data.translatedLangText.OPEN_ON_GATE}}:</label>
               <mat-radio-group formControlName="open_on_gate">
                 @for (codeValue of data.populateData.yesnoCv; track codeValue) {
                 <mat-radio-button [value]="codeValue.code_val" color="primary">
@@ -204,7 +214,7 @@
               </mat-radio-group>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3 p-t-20 p-l-20">
-              <h6>{{data.langText.FLASH_POINT | translate}}: {{ storingOrderTankForm.get('flash_point')?.value }}&deg;C
+              <h6>{{data.translatedLangText.FLASH_POINT}}: {{ storingOrderTankForm.get('flash_point')?.value }}&deg;C
               </h6>
             </div>
           </div>
@@ -212,9 +222,9 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-          <button mat-flat-button color="primary" (click)="submit()">{{data.langText.UPDATE | translate}}</button>
+          <button mat-flat-button color="primary" (click)="submit()">{{data.translatedLangText.UPDATE}}</button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.langText.CANCEL | translate}}</button>
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
   </div>

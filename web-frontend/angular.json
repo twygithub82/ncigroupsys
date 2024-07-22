@@ -51,6 +51,7 @@
               "src/web.config"
             ],
             "styles": [
+              "src/assets/scss/theme/custom-theme.scss",
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/@swimlane/ngx-datatable/index.css",

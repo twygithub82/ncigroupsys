@@ -180,7 +180,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     DIAMITER: 'COMMON-FORM.DIAMITER',
     PIECES: 'COMMON-FORM.PIECES',
     VOLUME: 'COMMON-FORM.VOLUME',
-    OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS'
+    OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS',
+    BRAND: 'COMMON-FORM.BRAND'
   }
 
   in_gate_guid: string | null | undefined;
@@ -208,6 +209,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   airlineConnCvList: CodeValuesItem[] = [];
   disCompCvList: CodeValuesItem[] = [];
   disValveCvList: CodeValuesItem[] = [];
+  brandCvList: CodeValuesItem[] = [];
   disValveSpecCvList: CodeValuesItem[] = [];
   disTypeCvList: CodeValuesItem[] = [];
   footValveCvList: CodeValuesItem[] = [];
@@ -286,6 +288,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         btm_dis_valve_cv: [''],
         btm_dis_valve_spec_cv: [''],
         foot_valve_cv: [''],
+        btm_brand_cv: [''],
         thermometer: [''],
         thermometer_cv: [''],
         ladder: [''],
@@ -295,6 +298,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         top_dis_comp_cv: [''],
         top_dis_valve_cv: [''],
         top_dis_valve_spec_cv: [''],
+        top_brand_cv: [''],
         airline_valve_cv: [''],
         airline_valve_pcs: [''],
         airline_valve_dim: [''],
@@ -420,61 +424,64 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.purposeOptionCvList = data;
     });
     this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
-      this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");;
+      this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
     });
     // this.cvDS.connectAlias('testTypeCv').subscribe(data => {
-    //   this.testTypeCvList = addDefaultSelectOption(data, "--Select--");;
+    //   this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
     // });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
-      this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");;
+      this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('claddingCv').subscribe(data => {
-      this.claddingCvList = addDefaultSelectOption(data, "--Select--");;
+      this.claddingCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('maxGrossWeightCv').subscribe(data => {
-      this.maxGrossWeightCvList = addDefaultSelectOption(data, "--Select--");;
+      this.maxGrossWeightCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('tankHeightCv').subscribe(data => {
-      this.tankHeightCvList = addDefaultSelectOption(data, "--Select--");;
+      this.tankHeightCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('walkwayCv').subscribe(data => {
-      this.walkwayCvList = addDefaultSelectOption(data, "--Select--");;
+      this.walkwayCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('airlineCv').subscribe(data => {
-      this.airlineCvList = addDefaultSelectOption(data, "--Select--");;
+      this.airlineCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('airlineConnCv').subscribe(data => {
-      this.airlineConnCvList = addDefaultSelectOption(data, "--Select--");;
+      this.airlineConnCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('disCompCv').subscribe(data => {
-      this.disCompCvList = addDefaultSelectOption(data, "--NA--");;
+      this.disCompCvList = data;
     });
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
-      this.disValveCvList = addDefaultSelectOption(data, "--Select--");;
+      this.disValveCvList = data;
+    });
+    this.cvDS.connectAlias('brandCv').subscribe(data => {
+      this.brandCvList = data;
     });
     this.cvDS.connectAlias('disValveSpecCv').subscribe(data => {
-      this.disValveSpecCvList = addDefaultSelectOption(data, "--Select--");;
+      this.disValveSpecCvList = data;
     });
     this.cvDS.connectAlias('disTypeCv').subscribe(data => {
-      this.disTypeCvList = addDefaultSelectOption(data, "--Select--");;
+      this.disTypeCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('footValveCv').subscribe(data => {
-      this.footValveCvList = addDefaultSelectOption(data, "--NA--");;
+      this.footValveCvList = data;
     });
     this.cvDS.connectAlias('manlidCoverCv').subscribe(data => {
-      this.manlidCoverCvList = addDefaultSelectOption(data, "--Select--");;
+      this.manlidCoverCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('manlidSealCv').subscribe(data => {
-      this.manlidSealCvList = addDefaultSelectOption(data, "--Select--");;
+      this.manlidSealCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('pvSpecCv').subscribe(data => {
-      this.pvSpecCvList = addDefaultSelectOption(data, "--Select--");;
+      this.pvSpecCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('pvTypeCv').subscribe(data => {
-      this.pvTypeCvList = addDefaultSelectOption(data, "--Select--");;
+      this.pvTypeCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.cvDS.connectAlias('thermometerCv').subscribe(data => {
-      this.thermometerCvList = addDefaultSelectOption(data, "--Select--");;
+      this.thermometerCvList = addDefaultSelectOption(data, "--Select--");
     });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data

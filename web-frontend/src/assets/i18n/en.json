@@ -187,7 +187,7 @@
     "CLEAN-STATUS": "Clean Status",
     "CERTIFICATE": "Certificate",
     "REQUIRED-TEMP": "Required Temp.",
-    "FLASH-POINT": "Flast Point",
+    "FLASH-POINT": "Flash Point",
     "JOB-NO": "Job No.",
     "ETA-DATE": "ETA Date",
     "REMARKS": "Remarks",
@@ -336,7 +336,10 @@
     "DIAMITER": "Diameter",
     "PIECES": "Pieces",
     "VOLUME": "Volume",
-    "OTHER-COMMENTS": "Other Comment(s)"
+    "OTHER-COMMENTS": "Other Comment(s)",
+    "EXCEEDED": "Exceeded",
+    "MUST-MORE-THAN-ZERO": "Must be more than 0",
+    "BRAND": "Brand"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

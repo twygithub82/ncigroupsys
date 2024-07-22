@@ -18,13 +18,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (soDS.soLoading$ | async) {
+              @if (soDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(soDS.soLoading$ | async)) {
+              @if (!(soDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">

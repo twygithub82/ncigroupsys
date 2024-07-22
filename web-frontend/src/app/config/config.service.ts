@@ -25,4 +25,12 @@ export class ConfigService {
       },
     };
   }
+
+  getConfig(): InConfiguration {
+    return this.configData;
+  }
+
+  setTheme(themeColor: string) {
+    this.configData.layout.theme_color = themeColor;
+  }
 }
