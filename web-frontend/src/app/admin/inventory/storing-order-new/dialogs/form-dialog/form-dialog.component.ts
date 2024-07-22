@@ -80,10 +80,10 @@ export class FormDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    
+
   ) {
     // Set the defaults
-    
+
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.action = data.action!;
@@ -210,14 +210,28 @@ export class FormDialogComponent {
         this.storingOrderTankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
       } else {
         // Clear custom error if the value is valid
-        if (this.action !== 'edit') {
-          const found = this.sotExistedList?.filter(sot => sot.tank_no === Utility.formatContainerNumber(value));
-          if (found?.length) {
+        const formattedTankNo = Utility.formatContainerNumber(value);
+        this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe(data => {
+          if (data.length > 0) {
             this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
           } else {
-            this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+            if (this.action !== 'edit') {
+              const found = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
+              if (found?.length) {
+                this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+              } else {
+                this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+              }
+            } else if (this.action === 'edit' && formattedTankNo !== this.storingOrderTank.tank_no) {
+              const found = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
+              if (found?.length) {
+                this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+              } else {
+                this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+              }
+            }
           }
-        }
+        });
       }
     });
 
