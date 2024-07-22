@@ -1,5 +1,6 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate.Data;
+using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
@@ -18,12 +19,12 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
     public class CleanningMethod_MutationType
     {
 
-      
+
 
         #region Cleaning Methods
-        public async Task<int> AddCleaningMethod(ApplicationParameterDBContext context, 
-            [Service] IConfiguration config, 
-            [Service] IHttpContextAccessor httpContextAccessor, 
+        public async Task<int> AddCleaningMethod(ApplicationParameterDBContext context,
+            [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor,
             cleaning_method NewCleanMethod)
         {
             int retval = 0;
@@ -37,20 +38,20 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
                 newCleanMthd.name = NewCleanMethod.name;
                 newCleanMthd.create_by = uid;
                 newCleanMthd.create_dt = GqlUtils.GetNowEpochInSec();
-               // var context = _contextFactory.CreateDbContext();
+                // var context = _contextFactory.CreateDbContext();
                 context.cleaning_method.Add(newCleanMthd);
-              retval=context.SaveChanges();
+                retval = context.SaveChanges();
             }
             catch { throw; }
 
-            
+
             return retval;
         }
 
-       
-        public async Task<int> UpdateCleaningMethod(ApplicationParameterDBContext context, 
-            [Service] IConfiguration config, 
-            [Service] IHttpContextAccessor httpContextAccessor, 
+
+        public async Task<int> UpdateCleaningMethod(ApplicationParameterDBContext context,
+            [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor,
             cleaning_method UpdateCleanMethod)
         {
             int retval = 0;
@@ -59,9 +60,9 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var guid = UpdateCleanMethod.guid;
-               // var context = _contextFactory.CreateDbContext();
+                // var context = _contextFactory.CreateDbContext();
                 var dbCleanMethod = context.cleaning_method.Find(guid);
-                if(dbCleanMethod == null)
+                if (dbCleanMethod == null)
                 {
                     throw new GraphQLException(new Error("The Cleaning Procedure not found", "500"));
                 }
@@ -69,9 +70,9 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
                 dbCleanMethod.name = UpdateCleanMethod.name;
                 dbCleanMethod.update_by = uid;
                 dbCleanMethod.update_dt = GqlUtils.GetNowEpochInSec();
-               
+
                 retval = context.SaveChanges();
-             
+
             }
             catch (Exception ex)
             {
@@ -82,8 +83,8 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
         }
 
         public async Task<int> DeleteCleaningMethod(ApplicationParameterDBContext context,
-            [Service] IConfiguration config, 
-            [Service] IHttpContextAccessor httpContextAccessor, 
+            [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor,
             string[] DeleteCleanMethod_guids)
         {
             int retval = 0;
@@ -91,18 +92,18 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-              //  var context = _contextFactory.CreateDbContext();
+                //  var context = _contextFactory.CreateDbContext();
                 var delCleanMethods = context.cleaning_method.Where(s => DeleteCleanMethod_guids.Contains(s.guid) && s.delete_dt == null);
-              
 
-                foreach(var delCleanMethod in delCleanMethods)
+
+                foreach (var delCleanMethod in delCleanMethods)
                 {
                     delCleanMethod.delete_dt = GqlUtils.GetNowEpochInSec();
                     delCleanMethod.update_by = uid;
                     delCleanMethod.update_dt = GqlUtils.GetNowEpochInSec();
                 }
-                retval=context.SaveChanges();
-                
+                retval = context.SaveChanges();
+
             }
             catch (Exception ex)
             {
@@ -116,8 +117,8 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
 
 
         #region Cleaning Category
-        public async Task<int> AddCleaningCategory(ApplicationParameterDBContext context, 
-            [Service] IConfiguration config,[Service] IHttpContextAccessor httpContextAccessor, cleaning_category NewCleanCategory)
+        public async Task<int> AddCleaningCategory(ApplicationParameterDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, cleaning_category NewCleanCategory)
         {
             int retval = 0;
             try
@@ -135,16 +136,16 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
                 //var context = _contextFactory.CreateDbContext();
 
                 var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null);
-                foreach(var customerCompany in customerCompanies)
+                foreach (var customerCompany in customerCompanies)
                 {
                     var customerCom_CleanCat = new customer_company_cleaning_category();
                     customerCom_CleanCat.guid = Util.GenerateGUID();
                     customerCom_CleanCat.adjusted_price = newCleanCategory.cost;
-                    customerCom_CleanCat.initial_price= newCleanCategory.cost;
-                    customerCom_CleanCat.customer_company_guid=customerCompany.guid;
+                    customerCom_CleanCat.initial_price = newCleanCategory.cost;
+                    customerCom_CleanCat.customer_company_guid = customerCompany.guid;
                     customerCom_CleanCat.cleaning_category_guid = newCleanCategory.guid;
-                    customerCom_CleanCat.create_by= uid;
-                    customerCom_CleanCat.create_dt= GqlUtils.GetNowEpochInSec();
+                    customerCom_CleanCat.create_by = uid;
+                    customerCom_CleanCat.create_dt = GqlUtils.GetNowEpochInSec();
                     context.customer_company_cleaning_category.Add(customerCom_CleanCat);
                 }
                 context.cleaning_category.Add(newCleanCategory);
@@ -157,9 +158,9 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
         }
 
 
-        public async Task<int> UpdateCleaningCategory( ApplicationParameterDBContext context, 
-            [Service] IConfiguration config, 
-            [Service] IHttpContextAccessor httpContextAccessor, 
+        public async Task<int> UpdateCleaningCategory(ApplicationParameterDBContext context,
+            [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor,
             cleaning_category UpdateCleanCategory)
         {
             int retval = 0;
@@ -168,7 +169,7 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var guid = UpdateCleanCategory.guid;
-               // var context = _contextFactory.CreateDbContext();
+                // var context = _contextFactory.CreateDbContext();
                 var dbCleanCategory = context.cleaning_category.Find(guid);
                 if (dbCleanCategory == null)
                 {
@@ -176,7 +177,7 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
                 }
                 dbCleanCategory.description = UpdateCleanCategory.description;
                 dbCleanCategory.name = UpdateCleanCategory.name;
-                dbCleanCategory.cost= UpdateCleanCategory.cost;
+                dbCleanCategory.cost = UpdateCleanCategory.cost;
                 dbCleanCategory.update_by = uid;
                 dbCleanCategory.update_dt = GqlUtils.GetNowEpochInSec();
 
@@ -191,8 +192,8 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteCleaningCategory(ApplicationParameterDBContext context, 
-            [Service] IConfiguration config, 
+        public async Task<int> DeleteCleaningCategory(ApplicationParameterDBContext context,
+            [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteCleanCategory_guids)
         {
             int retval = 0;
@@ -219,6 +220,54 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
             }
             return retval;
         }
+
+        public async Task<int> SyncUpCustomerCompaniesWithCleaningCategories(ApplicationParameterDBContext context,
+            [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                
+                var queryCats = context.cleaning_category.Where(c => c.delete_dt == null || c.delete_dt == 0).ToArray();
+                var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                //var customerCompCategories = context.customer_company_cleaning_category.Where(d => d.delete_dt == null || d.delete_dt == 0);
+                foreach (var cat in queryCats)
+                {
+                    foreach (var cc in customerCompanies)
+                    {
+                        var category_guid = cat.guid;
+                        var customerComp_guid = cc.guid;
+
+                        var category_custComp = context.customer_company_cleaning_category.Where(c => c.customer_company_guid == customerComp_guid && c.cleaning_category_guid == category_guid).FirstOrDefault();
+                        if (category_custComp == null)
+                        {
+                            var customerCom_CleanCat = new customer_company_cleaning_category();
+                            customerCom_CleanCat.guid = Util.GenerateGUID();
+                            customerCom_CleanCat.adjusted_price = cat.cost;
+                            customerCom_CleanCat.initial_price = cat.cost;
+                            customerCom_CleanCat.customer_company_guid = cc.guid;
+                            customerCom_CleanCat.cleaning_category_guid = cat.guid;
+                            customerCom_CleanCat.create_by = uid;
+                            customerCom_CleanCat.create_dt = GqlUtils.GetNowEpochInSec();
+                            context.customer_company_cleaning_category.Add(customerCom_CleanCat);
+                        }
+                    }
+
+
+                }
+                retval = context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+
+        }
+    
 
         #endregion Cleaning Category
     }

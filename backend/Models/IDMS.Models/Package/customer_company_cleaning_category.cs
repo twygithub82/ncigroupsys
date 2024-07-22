@@ -3,6 +3,7 @@ using IDMS.Models.Parameter;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,9 +15,11 @@ namespace IDMS.Models.Package
         [Key]
         public string? guid { get; set; }
 
+
+        [ForeignKey("customer_company")]
         public string? customer_company_guid { get; set; }
 
-       
+        [ForeignKey("cleaning_category")]
         public string? cleaning_category_guid { get; set; }
 
        
