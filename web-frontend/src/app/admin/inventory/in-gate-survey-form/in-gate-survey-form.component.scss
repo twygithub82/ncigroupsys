@@ -37,26 +37,24 @@
 
 .image-previews {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust minmax as needed */
     gap: 10px;
     margin-top: 20px;
-}
-
-.image-preview {
-    width: 100%;
-    /* Take full width of grid column */
-    padding-top: 100%;
-    /* Ratio to keep square shape */
+  }
+  
+  .image-preview {
+    width: 100%;  /* Take full width of grid column */
+    padding-top: 100%; /* Ratio to keep square shape */
     position: relative;
-}
-
-.image-preview img {
+  }
+  
+  .preview-img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     border: 1px solid #ddd;
     border-radius: 4px;
-}
+  }

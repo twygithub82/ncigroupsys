@@ -645,6 +645,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.buffer_plate = this.surveyForm.value['buffer_plate'];
       igs.residue = this.surveyForm.value['residue'];
       igs.dipstick = this.surveyForm.value['dipstick'];
+      //igs.left_coor = this.getHighlightedCoordinates(this.highlightedCellsLeft);
+      //igs.rear_coor = this.getHighlightedCoordinates(this.highlightedCellsRear);
+      //igs.right_coor = this.getHighlightedCoordinates(this.highlightedCellsRight);
+      //igs.top_coor = this.getHighlightedCoordinates(this.highlightedCellsTop);
+      //igs.front_coor = this.getHighlightedCoordinates(this.highlightedCellsFront);
+      //igs.bottom_coor = this.getHighlightedCoordinates(this.highlightedCellsBottom);
       console.log('igs Value', igs);
       console.log('ig Value', ig);
       if (igs.guid) {
@@ -778,9 +784,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     const coordinates: any[] = [];
     for (let i = 0; i < highlightedCells.length; i++) {
       if (highlightedCells[i]) {
-        // const x = i % this.gridSize;
-        // const y = Math.floor(i / this.gridSize);
-        // coordinates.push({ x, y });
+        const x = i % this.colSize;
+        const y = Math.floor(i / this.colSize);
+        coordinates.push({ x, y });
       }
     }
     return coordinates;
