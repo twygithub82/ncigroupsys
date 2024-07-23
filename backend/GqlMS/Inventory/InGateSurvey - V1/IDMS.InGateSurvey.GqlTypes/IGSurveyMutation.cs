@@ -175,5 +175,23 @@ namespace IDMS.InGateSurvey.GqlTypes
             }
             return retval;
         }
+
+        public async Task<long> UploadImage(string eirNo, string filename, IFile file, CancellationToken cancellationToken)
+        {
+            await using var stream = file.OpenReadStream();
+
+            var dir = $"D:/nginx-1.26.1/html/{eirNo}";
+            if(!Directory.Exists(dir))    
+                Directory.CreateDirectory(dir);
+
+            var len = stream.Length;
+            var streamWriter = new FileStream(
+              $"{dir}/{filename}.jpg",
+              FileMode.OpenOrCreate
+            );
+
+            await stream.CopyToAsync(streamWriter, cancellationToken);
+            return len;
+        }
     }
 }
