@@ -456,7 +456,7 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
 `
 
 export const ADD_IN_GATE_SURVEY = gql`
-  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankInput!) {
+  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: in_gate_survey_InGateWithTankInput) {
     addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: { in_gate: $inGate })
   }
 `;

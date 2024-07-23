@@ -40,7 +40,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
+import { InGateDS, InGateGO, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { MatStepperModule } from '@angular/material/stepper';
@@ -290,23 +290,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.highlightedCellsTop = Array(this.rowSize * this.colSize).fill(false);
     this.highlightedCellsFront = Array(this.rowSize * this.colSize).fill(false);
     this.highlightedCellsBottom = Array(this.rowSize * this.colSize).fill(false);
-    this.initSearchForm();
+    this.initForm();
     this.loadData();
   }
 
-  initializeFilter() {
-    this.surveyForm!.get('test_type_cv')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          this.getNextTest();
-        }
-      })
-    ).subscribe();
-  }
-
-  initSearchForm() {
+  initForm() {
     this.surveyForm = this.fb.group({
       test_type_cv: [''],
       test_class_cv: [''],
@@ -559,7 +547,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
       sot.unit_type_guid = this.surveyForm.value['unit_type_guid'];
 
-      let ig: InGateItem = new InGateItem(this.in_gate!);
+      let ig: InGateGO = new InGateGO(this.in_gate!);
       ig.vehicle_no = this.surveyForm.value['vehicle_no'];
       ig.driver_name = this.surveyForm.value['driver_name'];
       ig.haulier = this.surveyForm.value['haulier'];
@@ -633,7 +621,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       } else {
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)
-          this.handleSaveSuccess(result?.data?.addStoringOrder);
+          this.handleSaveSuccess(result?.data?.addInGateSurvey);
         });
       }
     } else {
