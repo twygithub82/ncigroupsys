@@ -50,7 +50,7 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
 import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
 import {ExampleDataSource} from 'app/advance-table/advance-table.component';
 import { AdvanceTableService } from 'app/advance-table/advance-table.service';
-import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-company-category';
+import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 @Component({
   selector: 'app-package-cleaning',
   standalone: true,
@@ -97,14 +97,14 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
     'select',
-    'img',
-    'fName',
-    'lName',
-    'email',
-    'gender',
-    'bDate',
-    'mobile',
-    'actions',
+    // 'img',
+     'fName',
+    // 'lName',
+    // 'email',
+    // 'gender',
+    // 'bDate',
+    // 'mobile',
+    // 'actions',
   ];
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING'
@@ -136,6 +136,7 @@ implements OnInit {
   clnCatDS:CleaningCategoryDS;
   custCompClnCat :CustomerCompanyCleaningCategoryDS;
 
+  custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList?: CustomerCompanyItem[];
   cleaning_categoryList?: CleaningCategoryItem[];
 
@@ -417,7 +418,7 @@ implements OnInit {
         where.adjusted_price ={ngte:maxCost}
       }
     this.subs.sink = this.custCompClnCat.search(where).subscribe(data => {
-      
+       this.custCompClnCatItems=data;
     });
 
    

@@ -44,7 +44,8 @@ namespace IDMS.InGate.GqlTypes
                     .Include(s => s.tank.storing_order)
                     .Include(s => s.tank.storing_order.customer_company)
                     .Include(s => s.tank.tariff_cleaning.cleaning_method)
-                    .Include(s => s.tank.tariff_cleaning.cleaning_category);
+                    .Include(s => s.tank.tariff_cleaning.cleaning_category)
+                    .Include(s=>s.in_gate_survey) ;
                   // .Include(s=>s.tank.tariff_cleaning.cleaning_method);
                 foreach(var q in query)
                 {

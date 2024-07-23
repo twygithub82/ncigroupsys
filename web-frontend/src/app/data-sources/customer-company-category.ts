@@ -6,7 +6,8 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
-
+import {CleaningCategoryItem } from 'app/data-sources/cleaning-category'
+import {CustomerCompanyItem} from 'app/data-sources/customer-company'
 export class CustomerCompanyCleaningCategoryGO {
     public guid?: string;
     public customer_company_guid?: string;
@@ -35,8 +36,12 @@ export class CustomerCompanyCleaningCategoryGO {
 }
 
 export class CustomerCompanyCleaningCategoryItem extends CustomerCompanyCleaningCategoryGO {
+    public cleaning_category? : CleaningCategoryItem
+    public customer_company? :CustomerCompanyItem
     constructor(item: Partial<CustomerCompanyCleaningCategoryItem> = {}) {
         super(item);
+        this.cleaning_category= item.cleaning_category;
+        this.customer_company=item.customer_company;
     }
 }
 
@@ -55,6 +60,44 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
         initial_price
         adjusted_price
         remarks
+        cleaning_category {
+            cost
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            name
+            sequence
+            update_by
+            update_dt
+        }
+        customer_company {
+            address_line1
+            address_line2
+            agreement_due_dt
+            alias
+            city
+            code
+            country
+            create_by
+            create_dt
+            currency_cv
+            delete_dt
+            description
+            effective_dt
+            email
+            fax
+            guid
+            name
+            phone
+            postal
+            tariff_depot_guid
+            type_cv
+            update_by
+            update_dt
+            website
+        }
       }
     totalCount
     }
