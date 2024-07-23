@@ -1,0 +1,266 @@
+<section class="content">
+    <div class="content-block">
+      <div class="block-header">
+        <!-- breadcrumb -->
+        <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 " >
+          <div class="card">
+          <div class="header">
+            <h2>
+              {{langText.PACKAGE_DETAIL| translate}}
+            </h2>
+          </div>
+          <div class="body">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <form class="ms-0" [formGroup]="pcForm!"  #formDirective="ngForm">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{langText.CUSTOMER_CODE | translate}}</mat-label>
+                        <mat-select [formControl]="customerCodeControl" formControlName="customer_code" multiple>
+                            <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
+                             
+                                {{ ccDS.displayName(cc) }}
+                             
+                            </mat-option>
+                          </mat-select>
+                       
+                      </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{langText.CARGO_CATEGORY | translate}}</mat-label>
+                        <mat-select [formControl]="categoryControl" formControlName="cleaning_category" multiple>
+                            @for (cn of cleaning_categoryList; track cn) {
+                                <mat-option [value]="cn.guid">
+                                  {{cn.description}}
+                                </mat-option>
+                                }
+                          </mat-select>
+                       
+                      </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 mb-1">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{langText.PACKAGE_MIN_COST | translate}}</mat-label>
+                        <input matInput formControlName="min_cost" type="number">
+                       
+                      </mat-form-field>
+                </div>
+                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 mb-1">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{langText.PACKAGE_MAX_COST | translate}}</mat-label>
+                        <input matInput formControlName="max_cost" type="number">
+                       
+                      </mat-form-field>
+                </div>
+                <div  class="col-xl-1 col-lg-1 col-md-1 col-sm-1 mb-1">
+                <button mat-mini-fab color="primary" (click)="search()">
+                    <mat-icon>search</mat-icon>
+                  </button>
+                </div>
+            </div>
+            </form>
+          </div>
+          </div>
+        </div>
+        </div>
+       
+      </div>
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="materialTableHeader">
+              <div class="left">
+                <!-- <ul class="header-buttons-left ms-0">
+                  <li class="tbl-title">
+                    <h2>{{pageTitle | translate}}</h2>
+                  </li>
+                  <li class="tbl-search-box">
+                    <label for="search-input"><i class="material-icons search-icon">search</i></label>
+                    <input placeholder="Search" type="text" #filter class="browser-default search-field"
+                      aria-label="Search box">
+                  </li>
+                </ul> -->
+              </div>
+              <div class="right">
+                <ul class="tbl-export-btn">
+                  <!-- <li class="tbl-header-btn">
+                    <div class="m-l-10" matTooltip="ADD">
+                      <button mat-mini-fab color="primary"
+                        [routerLink]="['/admin/cleaning-procedures/cleaning-procedures-new']">
+                        <mat-icon class="col-white">add</mat-icon>
+                      </button>
+                    </div>
+                  </li> -->
+                  <li class="tbl-header-btn">
+                    <div class="m-l-10" matTooltip="REFRESH">
+                      <button mat-mini-fab color="primary" (click)="refresh()">
+                        <mat-icon class="col-white">refresh</mat-icon>
+                      </button>
+                    </div>
+                  </li>
+                  <li class="tbl-header-btn">
+                    <div class="m-l-10" [hidden]=!selection.hasValue() matTooltip="DELETE">
+                      <button mat-mini-fab color="warn" (click)="removeSelectedRows()">
+                        <mat-icon class="col-white">delete
+                        </mat-icon>
+                      </button>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="export-button m-l-10" matTooltip="XLSX">
+                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()" />
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="body overflow-auto">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="custCompClnCatItems" matSort class="mat-cell advance-table">
+                  <!-- Checkbox Column -->
+                  <ng-container matColumnDef="select">
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+                      <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+                      <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-cell>
+                  </ng-container>
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+                    <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="img">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef>{{PROCEDURE_NAME | translate}}</mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"><span
+                        class="mobile-label">{{PROCEDURE_NAME | translate}}:</span>
+                      <img [src]="row.img" />
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="fName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{PROCEDURE_DESCRIPTION | translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{PROCEDURE_DESCRIPTION | translate}}:</span>{{row.fName}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="lName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{PROCEDURE_STEP_DURATION | translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{PROCEDURE_STEP_DURATION | translate}}:</span>{{row.lName}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="email">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{PROCEDURE_CLEAN_CATEGORY | translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{PROCEDURE_CLEAN_CATEGORY | translate}}:</span> {{row.email}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="gender">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{CLEANING_GROUP_NAME | translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{CLEANING_GROUP_NAME | translate}}:</span> {{row.email}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="bDate">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{CLEANING_BAY | translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{CLEANING_BAY | translate}}:</span> {{row.bDate | date: 'MM/dd/yyyy' }}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="mobile">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{CLEANING_LAST_UPDATED_DT | translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{CLEANING_LAST_UPDATED_DT | translate}}:</span> {{row.mobile}}</mat-cell>
+                  </ng-container>
+                  <!-- actions -->
+                  <ng-container matColumnDef="actions">
+                    <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
+                    <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
+                      <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
+                        class="tbl-action-btn">
+                        <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+                      </button>
+                      <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
+                        class="tbl-action-btn">
+                        <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+                      </button>
+                    </mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                    [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+              <!-- Loading spinner -->
+              @if (exampleDatabase?.isTblLoading) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              <!-- context menu start -->
+              <div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
+                [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu">
+              </div>
+              <mat-menu #contextMenu="matMenu">
+                <ng-template matMenuContent let-item="item">
+                  <button mat-menu-item (click)="addNew()">
+                    <mat-icon>add_box</mat-icon>
+                    <span>Add Record</span>
+                  </button>
+                  <button mat-menu-item (click)="editCall(item)">
+                    <mat-icon>create</mat-icon>
+                    <span>Edit Record</span>
+                  </button>
+                  <button mat-menu-item (click)="deleteItem(item)">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete Record</span>
+                  </button>
+                  <button mat-menu-item (click)="refresh()">
+                    <mat-icon>refresh</mat-icon>
+                    <span>Refresh Record</span>
+                  </button>
+                  <button mat-menu-item disabled>
+                    <mat-icon>no_encryption</mat-icon>
+                    <span>Disable</span>
+                  </button>
+                  <button mat-menu-item [matMenuTriggerFor]="nestedmenu">
+                    <mat-icon>list_alt</mat-icon>
+                    <span> Nested Menu</span>
+                  </button>
+                </ng-template>
+              </mat-menu>
+              <mat-menu #nestedmenu="matMenu">
+                <button mat-menu-item>
+                  <mat-icon>mail_outline</mat-icon>
+                  <span>Item 1</span>
+                </button>
+                <button mat-menu-item>
+                  <mat-icon>call</mat-icon>
+                  <span>Item 2</span>
+                </button>
+                <button mat-menu-item>
+                  <mat-icon>chat</mat-icon>
+                  <span>Item 3</span>
+                </button>
+              </mat-menu>
+              <!-- context menu end -->
+             
+              <mat-paginator #paginator  [pageIndex]="0" [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]">
+              </mat-paginator>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

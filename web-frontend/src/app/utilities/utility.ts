@@ -33,17 +33,17 @@ export class Utility {
 
     // Check if the input is a Moment.js object and convert to epoch time
     if (moment.isMoment(date)) {
-      return date.valueOf() / 1000; // valueOf() returns milliseconds, convert to seconds
+      return Math.floor(date.valueOf() / 1000); // valueOf() returns milliseconds, convert to seconds
     }
 
     // Check if the input is a JavaScript Date object and convert to epoch time in seconds
     if (date instanceof Date) {
-      return date.getTime() / 1000; // getTime() returns milliseconds, convert to seconds
+      return Math.floor(date.getTime() / 1000); // getTime() returns milliseconds, convert to seconds
     }
 
     // If the input is a string that can be parsed as a date
     if (typeof date === 'string' && !isNaN(Date.parse(date))) {
-      return new Date(date).getTime() / 1000;
+      return Math.floor(new Date(date).getTime() / 1000);
     }
 
     // If the input is a number, handle it as epoch time
@@ -66,20 +66,26 @@ export class Utility {
     return undefined;
   }
 
-  static convertEpochToDateStr(date: number | undefined): string | undefined {
+  static convertEpochToDateStr(date: number | undefined, format: string = 'DD/MM/YYYY'): string | undefined {
     // If the input is a number, handle it as epoch time
     if (typeof date === 'number' && !isNaN(date)) {
+      let dateObj: Date;
+
       // Check if the number is more likely to be in seconds or milliseconds
       if (date.toString().length === 10) {
         // If it's in seconds, convert to milliseconds
-        return this.convertDateToStr(new Date(date * 1000));
+        dateObj = new Date(date * 1000);
       } else if (date.toString().length === 13) {
-        // If it's in milliseconds, just return the Date object
-        return this.convertDateToStr(new Date(date));
+        // If it's in milliseconds, just use the Date object
+        dateObj = new Date(date);
       } else {
         console.error('Invalid epoch time format:', date);
         return undefined;
       }
+
+      // Format the date using the provided format or default to MM/YYYY
+      const formattedDate = moment(dateObj).format(format);
+      return formattedDate;
     }
     return undefined;
   }
@@ -217,8 +223,17 @@ export class Utility {
     const ownerCode = containerNumber.slice(0, 4);
     const serialNumber = containerNumber.slice(4, 10);
     const checkDigit = containerNumber.slice(10);
-  
+
     // Combine the parts into the final format
     return `${ownerCode} ${serialNumber}-${checkDigit}`;
+  }
+
+  static addYearsToEpoch(epochTime: number, yearCount: number): number {
+    // Convert yearCount to milliseconds
+    const millisecondsPerYear = 365.25 * 24 * 60 * 60; // Approximate, accounting for leap years
+    const millisecondsToAdd = yearCount * millisecondsPerYear;
+
+    // Add the milliseconds to the epoch time
+    return epochTime + millisecondsToAdd;
   }
 }

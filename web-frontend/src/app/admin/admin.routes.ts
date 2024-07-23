@@ -7,17 +7,18 @@ import { StoringOrderComponent } from './inventory/storing-order/storing-order.c
 import { StoringOrderNewComponent } from './inventory/storing-order-new/storing-order-new.component';
 import { InGateComponent } from './inventory/in-gate/in-gate.component';
 import { InGateDetailsComponent } from './inventory/in-gate-details/in-gate-details.component';
-import {CleaningCategoryComponent} from './parameter/cleaning-category/cleaning-category.component';
+import { CleaningCategoryComponent } from './parameter/cleaning-category/cleaning-category.component';
 import { CleaningMethodsComponent } from './parameter/cleaning-methods/cleaning-methods.component';
-import {TariffCleaningComponent} from "./tariff/tariff-cleaning/tariff-cleaning.component";
-import {TariffLabourComponent} from "./tariff/tariff-labour/tariff-labour.component";
-import {TariffDepotComponent} from "./tariff/tariff-depot/tariff-depot.component";
-import {TariffBufferComponent} from "./tariff/tariff-buffer/tariff-buffer.component";
-import {TariffRepairComponent} from "./tariff/tariff-repair/tariff-repair.component";
+import { TariffCleaningComponent } from "./tariff/tariff-cleaning/tariff-cleaning.component";
+import { TariffLabourComponent } from "./tariff/tariff-labour/tariff-labour.component";
+import { TariffDepotComponent } from "./tariff/tariff-depot/tariff-depot.component";
+import { TariffBufferComponent } from "./tariff/tariff-buffer/tariff-buffer.component";
+import { TariffRepairComponent } from "./tariff/tariff-repair/tariff-repair.component";
 import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-cleaning-new.component';
 import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey.component';
 import { InGateSurveyFormComponent } from './inventory/in-gate-survey-form/in-gate-survey-form.component';
-
+import { BookingComponent } from './inventory/booking/booking.component';
+import {PackageCleaningComponent} from "./package/package-cleaning/package-cleaning.component"
 export const ADMIN_ROUTE: Routes = [
   {
     path: "cleaning-steps",
@@ -60,6 +61,10 @@ export const ADMIN_ROUTE: Routes = [
     component: InGateSurveyFormComponent,
   },
   {
+    path: "inventory/booking",
+    component: BookingComponent,
+  },
+  {
     path: "parameter/cleaning-category",
     component: CleaningCategoryComponent,
   },
@@ -83,7 +88,6 @@ export const ADMIN_ROUTE: Routes = [
     path: "tariff/tariff-labour",
     component: TariffLabourComponent,
   },
-
   {
     path: "tariff/tariff-depot",
     component: TariffDepotComponent,
@@ -95,6 +99,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "tariff/tariff-buffer",
     component: TariffBufferComponent,
+  },
+  {
+    path: "package/package-cleaning",
+    component: PackageCleaningComponent,
   }
 ];
 

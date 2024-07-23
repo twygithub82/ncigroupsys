@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -40,12 +40,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
+import { InGateDS, InGateGO, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { MatStepperModule } from '@angular/material/stepper';
 import { InGateSurveyDS, InGateSurveyGO } from 'app/data-sources/in-gate-survey';
 import { MatRadioModule } from '@angular/material/radio';
+import { Moment } from 'moment';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-in-gate',
@@ -81,7 +83,7 @@ import { MatRadioModule } from '@angular/material/radio';
     MatDividerModule,
     MatCardModule,
     MatStepperModule,
-    MatRadioModule,
+    MatRadioModule
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -181,7 +183,19 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     PIECES: 'COMMON-FORM.PIECES',
     VOLUME: 'COMMON-FORM.VOLUME',
     OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS',
-    BRAND: 'COMMON-FORM.BRAND'
+    BRAND: 'COMMON-FORM.BRAND',
+    BOTTOM: 'COMMON-FORM.BOTTOM',
+    TOP: 'COMMON-FORM.TOP',
+    MANLID: 'COMMON-FORM.MANLID',
+    FRAME_TYPE: 'COMMON-FORM.FRAME-TYPE',
+    LEFT_SIDE: 'COMMON-FORM.LEFT-SIDE',
+    REAR_SIDE: 'COMMON-FORM.REAR-SIDE',
+    RIGHT_SIDE: 'COMMON-FORM.RIGHT-SIDE',
+    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
+    FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
+    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
+    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
   }
 
   in_gate_guid: string | null | undefined;
@@ -200,6 +214,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   purposeOptionCvList: CodeValuesItem[] = [];
   cleanStatusCvList: CodeValuesItem[] = [];
   testTypeCvList: CodeValuesItem[] = [];
+  testClassCvList: CodeValuesItem[] = [];
   manufacturerCvList: CodeValuesItem[] = [];
   claddingCvList: CodeValuesItem[] = [];
   maxGrossWeightCvList: CodeValuesItem[] = [];
@@ -227,10 +242,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   // Stepper
   isLinear = false;
-  // bottomFormGroup?: UntypedFormGroup;
-  // topFormGroup?: UntypedFormGroup;
-  // manlidFormGroup?: UntypedFormGroup;
-  // commentFormGroup?: UntypedFormGroup;
+
+  rowSize = 5;
+  colSize = 7;
+  cells: number[] = [];
+  highlightedCellsLeft: boolean[] = [];
+  highlightedCellsRear: boolean[] = [];
+  highlightedCellsRight: boolean[] = [];
+  highlightedCellsTop: boolean[] = [];
+  highlightedCellsFront: boolean[] = [];
+  highlightedCellsBottom: boolean[] = [];
+  isDrawing = false;
+  toggleState = true; // State to track whether to highlight or unhighlight
+  currentImageIndex: number | null = null;
+  imagePreviews: (string | ArrayBuffer)[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -258,11 +283,18 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initSearchForm();
+    this.cells = Array(this.rowSize * this.colSize).fill(0);
+    this.highlightedCellsLeft = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsRear = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsRight = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsTop = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsFront = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsBottom = Array(this.rowSize * this.colSize).fill(false);
+    this.initForm();
     this.loadData();
   }
 
-  initSearchForm() {
+  initForm() {
     this.surveyForm = this.fb.group({
       test_type_cv: [''],
       test_class_cv: [''],
@@ -276,13 +308,23 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       max_weight_cv: [''],
       height_cv: [''],
       walkway_cv: [''],
-      // bottom_discharge_type_cv: [''],
-      // compartment_type_cv: [''],
+      tank_comp_cv: [''],
       vehicle_no: [''],
       driver_name: [''],
       haulier: [''],
       in_gate_remarks: [''],
       comments: [''],
+      frameFormGroup: this.fb.group({
+        left_side: [''],
+        rear_side: [''],
+        right_side: [''],
+        top_side: [''],
+        front_side: [''],
+        bottom_side: [''],
+      }),
+      damageImageFormGroup: this.fb.group({
+        left_side: [''],
+      }),
       bottomFormGroup: this.fb.group({
         btm_dis_comp_cv: [''],
         btm_dis_valve_cv: [''],
@@ -325,48 +367,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       })
     });
 
-    // this.bottomFormGroup = this.fb.group({
-    //   btm_dis_comp_cv: [''],
-    //   btm_dis_valve_cv: [''],
-    //   btm_dis_valve_spec_cv: [''],
-    //   foot_valve_cv: [''],
-    //   thermometer: [''],
-    //   thermometer_cv: [''],
-    //   ladder: [''],
-    //   data_csc_transportplate: [''],
-    // });
-
-    // this.topFormGroup = this.fb.group({
-    //   top_dis_comp_cv: [''],
-    //   top_dis_valve_cv: [''],
-    //   top_dis_valve_spec_cv: [''],
-    //   airline_valve_cv: [''],
-    //   airline_valve_pcs: [''],
-    //   airline_valve_dim: [''],
-    //   airline_valve_conn_cv: [''],
-    //   airline_valve_conn_spec_cv: [''],
-    // });
-
-    // this.manlidFormGroup = this.fb.group({
-    //   manlid_comp_cv: [''],
-    //   manlid_cover_cv: [''],
-    //   manlid_cover_pcs: [''],
-    //   manlid_cover_pts: [''],
-    //   manlid_seal_cv: [''],
-    //   pv_type_cv: [''],
-    //   pv_type_pcs: [''],
-    //   pv_spec_cv: [''],
-    //   pv_spec_pcs: [''],
-    //   safety_handrail: [''],
-    //   buffer_plate: [''],
-    //   residue: [''],
-    //   dipstick: [''],
-    // });
-
-    // this.commentFormGroup = this.fb.group({
-    //   comments: [''],
-    // });
-
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
     if (this.in_gate_guid) {
       // EDIT
@@ -376,8 +376,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           this.populateInGateForm(this.in_gate);
         }
       });
-    } else {
     }
+  }
+
+  getFrameFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('frameFormGroup') as UntypedFormGroup;
+  }
+
+  getDamageImageFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('damageImageFormGroup') as UntypedFormGroup;
   }
 
   getBottomFormGroup(): UntypedFormGroup {
@@ -400,7 +407,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'cleanStatusCv', codeValType: 'CLEAN_STATUS' },
-      //{ alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
       { alias: 'manufacturerCv', codeValType: 'MANUFACTURER' },
       { alias: 'claddingCv', codeValType: 'CLADDING' },
       { alias: 'maxGrossWeightCv', codeValType: 'MAX_WEIGHT' },
@@ -426,9 +434,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
       this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
     });
-    // this.cvDS.connectAlias('testTypeCv').subscribe(data => {
-    //   this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
-    // });
+    this.cvDS.connectAlias('testTypeCv').subscribe(data => {
+      this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
+    });
+    this.cvDS.connectAlias('testClassCv').subscribe(data => {
+      this.testClassCvList = addDefaultSelectOption(data, "--Select--");
+    });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
       this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");
     });
@@ -536,7 +547,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
       sot.unit_type_guid = this.surveyForm.value['unit_type_guid'];
 
-      let ig: InGateItem = new InGateItem(this.in_gate!);
+      let ig: InGateGO = new InGateGO(this.in_gate!);
       ig.vehicle_no = this.surveyForm.value['vehicle_no'];
       ig.driver_name = this.surveyForm.value['driver_name'];
       ig.haulier = this.surveyForm.value['haulier'];
@@ -546,9 +557,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       let igs: InGateSurveyGO = new InGateSurveyGO();
       igs.in_gate_guid = this.in_gate?.guid;
       igs.periodic_test_guid = this.surveyForm.value['periodic_test_guid'] || '';
-      //igs.test_type_cv = this.surveyForm.value['test_type_cv'];
-      //igs.test_class_cv = this.surveyForm.value['test_class_cv'];
-      //igs.test_dt = this.surveyForm.value['test_dt'];
+      // igs.test_type_cv = this.surveyForm.value['test_type_cv'];
+      // igs.test_class_cv = this.surveyForm.value['test_class_cv'];
+      // igs.test_dt = this.surveyForm.value['test_dt'];
       igs.manufacturer_cv = this.surveyForm.value['manufacturer_cv'];
       igs.dom_dt = Utility.convertDate(this.surveyForm.value['dom_dt']);
       igs.cladding_cv = this.surveyForm.value['cladding_cv'];
@@ -557,6 +568,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.max_weight_cv = this.surveyForm.value['max_weight_cv'];
       igs.height_cv = this.surveyForm.value['height_cv'];
       igs.walkway_cv = this.surveyForm.value['walkway_cv'];
+      igs.tank_comp_cv = this.surveyForm.value['tank_comp_cv'];
       igs.comments = this.surveyForm.value['comments'];
 
       const bottomFormGroup = this.surveyForm.get('bottomFormGroup') as UntypedFormGroup;
@@ -593,6 +605,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.buffer_plate = this.surveyForm.value['buffer_plate'];
       igs.residue = this.surveyForm.value['residue'];
       igs.dipstick = this.surveyForm.value['dipstick'];
+      //igs.left_coor = this.getHighlightedCoordinates(this.highlightedCellsLeft);
+      //igs.rear_coor = this.getHighlightedCoordinates(this.highlightedCellsRear);
+      //igs.right_coor = this.getHighlightedCoordinates(this.highlightedCellsRight);
+      //igs.top_coor = this.getHighlightedCoordinates(this.highlightedCellsTop);
+      //igs.front_coor = this.getHighlightedCoordinates(this.highlightedCellsFront);
+      //igs.bottom_coor = this.getHighlightedCoordinates(this.highlightedCellsBottom);
       console.log('igs Value', igs);
       console.log('ig Value', ig);
       if (igs.guid) {
@@ -603,7 +621,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       } else {
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)
-          this.handleSaveSuccess(result?.data?.addStoringOrder);
+          this.handleSaveSuccess(result?.data?.addInGateSurvey);
         });
       }
     } else {
@@ -680,5 +698,123 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   displayDate(input: Date): string {
     return Utility.convertDateToStr(input);
+  }
+
+  startDrawing(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
+    this.isDrawing = true;
+    event.preventDefault(); // Prevent default dragging behavior
+    const target = this.getEventTarget(event) as HTMLElement;
+    const dataIndex = target?.getAttribute('data-index');
+    if (dataIndex !== null) {
+      const cellIndex = +dataIndex;
+      this.toggleState = !highlightedCells[cellIndex]; // Set initial toggle state based on cell's current state
+      this.highlightCell(highlightedCells, event);
+    }
+  }
+
+  draw(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
+    if (this.isDrawing) {
+      this.highlightCell(highlightedCells, event);
+    }
+  }
+
+  stopDrawing(): void {
+    this.isDrawing = false;
+  }
+
+  highlightCell(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
+    const target = this.getEventTarget(event) as HTMLElement;
+    const dataIndex = target?.getAttribute('data-index');
+    if (dataIndex !== null) {
+      const cellIndex = +dataIndex;
+      highlightedCells[cellIndex] = this.toggleState;
+    }
+  }
+
+  getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
+    if (event instanceof MouseEvent) {
+      return event.target;
+    } else if (event instanceof TouchEvent) {
+      return document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
+    }
+    return null;
+  }
+
+  getHighlightedCoordinates(highlightedCells: boolean[]): { x: number, y: number }[] {
+    const coordinates: any[] = [];
+    for (let i = 0; i < highlightedCells.length; i++) {
+      if (highlightedCells[i]) {
+        const x = i % this.colSize;
+        const y = Math.floor(i / this.colSize);
+        coordinates.push({ x, y });
+      }
+    }
+    return coordinates;
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.imagePreviews = []; // Clear previous previews
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreviews.push(reader.result as string | ArrayBuffer);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  chosenYearHandler(normalizedYear: Moment) {
+    const ctrlValue = this.surveyForm!.get('test_dt')!.value ? moment(this.surveyForm!.get('test_dt')!.value) : moment();
+    ctrlValue.year(normalizedYear.year()).date(1);
+    this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
+  }
+
+  chosenMonthHandler(normalizedMonth: Moment, datepicker: any) {
+    const ctrlValue = this.surveyForm!.get('test_dt')!.value ? moment(this.surveyForm!.get('test_dt')!.value) : moment();
+    ctrlValue.month(normalizedMonth.month()).year(normalizedMonth.year()).date(1);
+    this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
+    this.getNextTest();
+    datepicker.close();
+  }
+
+  getLastTest(): string | undefined {
+    if (this.surveyForm!.get('test_type_cv')!.value && this.surveyForm!.get('test_class_cv')!.value && this.surveyForm!.get('test_dt')!.value) {
+      const test_type = this.surveyForm!.get('test_type_cv')!.value;
+      const test_class = this.surveyForm!.get('test_class_cv')!.value;
+      const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+    }
+    return "";
+  }
+
+  getNextTest(): string | undefined {
+    if (this.surveyForm!.get('test_type_cv')!.value && this.surveyForm!.get('test_dt')!.value) {
+      const test_type = this.surveyForm!.get('test_type_cv')!.value;
+      const match = test_type.match(/^[0-9]*\.?[0-9]+/);
+      const yearCount = parseFloat(match[0]);
+      const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
+      const resultDt = Utility.addYearsToEpoch(testDt, yearCount);
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    }
+    return "";
+  }
+
+  getTestTypeDescription(codeValType: string): string | undefined {
+    let cv = this.testTypeCvList.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
+  }
+
+  getTestClassDescription(codeValType: string): string | undefined {
+    let cv = this.testClassCvList.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
   }
 }

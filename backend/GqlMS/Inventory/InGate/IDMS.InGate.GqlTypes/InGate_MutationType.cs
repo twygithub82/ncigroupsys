@@ -200,16 +200,25 @@ namespace IDMS.InGate.GqlTypes
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var query = context.in_gate.Where(i => i.guid == $"{InGate_guid}");
-                if (query.Any())
+                var query = context.in_gate.Where(i => i.guid == $"{InGate_guid}").FirstOrDefault();
+                var querySurvey = context.in_gate_survey.Where(s=>s.in_gate_guid == $"{InGate_guid}").FirstOrDefault();
+                if (query!=null)
                 {
                     long epochNow = GqlUtils.GetNowEpochInSec();
-                    var delInGate = query.FirstOrDefault();
+                    var delInGate = query;
                     delInGate.delete_dt = epochNow;
                     delInGate.update_by = uid;
                     delInGate.update_dt = epochNow;
 
-                    retval = context.SaveChanges(true);
+                    if(querySurvey!=null)
+                    {
+                        epochNow = GqlUtils.GetNowEpochInSec();
+                        var delInGateSurvey = querySurvey;
+                        delInGateSurvey.delete_dt = epochNow;
+                        delInGateSurvey.update_by = uid;
+                        delInGateSurvey.update_dt = epochNow;
+                    }
+                   retval = context.SaveChanges(true);
                 }
 
                 //long epochNow = GqlUtils.GetNowEpochInSec();

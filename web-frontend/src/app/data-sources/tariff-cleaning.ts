@@ -233,7 +233,7 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD = gql`
 `;
 
 export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
-  query queryTariffCleaning($where: tariff_cleaningFilterInput, $order:[tariff_cleaningSortInput!] $first: Int, $after: String, $last: Int, $before: String ) {
+  query queryTariffCleaning($where: tariff_cleaningFilterInput, $order:[tariff_cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     lastCargo: queryTariffCleaning(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
          alias

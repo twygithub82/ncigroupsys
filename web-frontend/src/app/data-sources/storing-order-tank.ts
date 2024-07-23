@@ -107,8 +107,8 @@ const GET_STORING_ORDER_TANKS_COUNT = gql`
 `;
 
 const GET_STORING_ORDER_TANKS = gql`
-  query getStoringOrderTanks($where: storing_order_tankFilterInput, $first: Int, $after: String, $last: Int, $before: String) {
-    sotList: queryStoringOrderTank(where: $where, first: $first, after: $after, last: $last, before: $before) {
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         job_no
         guid
@@ -251,14 +251,14 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
   }
 `;
 
-const CHECK_STORING_ORDER_TANK_STATUS_BY_TANK_NO = gql`
-  ${TARIFF_CLEANING_FRAGMENT}
+const CHECK_ANY_ACTIVE_SOT = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
       nodes {
         guid
         so_guid
         status_cv
+        tank_status_cv
         tank_no
       }
       totalCount
@@ -384,13 +384,18 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       and: [
         { tank_no: { eq: tank_no } },
         {
-          or: [{ status_cv: { neq: "CANCELED" } }, { tank_status_cv: { eq: "RO_GENERATED" } }]
+          or: [
+            { status_cv: { in: ["WAITING", "PREBOOK"] } },
+            {
+              and: [{ status_cv: { eq: "ACCEPTED" } }, { tank_status_cv: { neq: "RO_GENERATED" } }]
+            }
+          ]
         }
       ]
     }
     return this.apollo
       .query<any>({
-        query: CHECK_STORING_ORDER_TANK_STATUS_BY_TANK_NO,
+        query: CHECK_ANY_ACTIVE_SOT,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
