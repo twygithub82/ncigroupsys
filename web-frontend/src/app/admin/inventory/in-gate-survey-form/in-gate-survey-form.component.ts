@@ -46,6 +46,8 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
 import { MatStepperModule } from '@angular/material/stepper';
 import { InGateSurveyDS, InGateSurveyGO } from 'app/data-sources/in-gate-survey';
 import { MatRadioModule } from '@angular/material/radio';
+import { Moment } from 'moment';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-in-gate',
@@ -81,7 +83,7 @@ import { MatRadioModule } from '@angular/material/radio';
     MatDividerModule,
     MatCardModule,
     MatStepperModule,
-    MatRadioModule,
+    MatRadioModule
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -192,7 +194,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
     FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
     BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
-    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS'
+    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
   }
 
   in_gate_guid: string | null | undefined;
@@ -291,6 +294,18 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.loadData();
   }
 
+  initializeFilter() {
+    this.surveyForm!.get('test_type_cv')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          this.getNextTest();
+        }
+      })
+    ).subscribe();
+  }
+
   initSearchForm() {
     this.surveyForm = this.fb.group({
       test_type_cv: [''],
@@ -305,8 +320,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       max_weight_cv: [''],
       height_cv: [''],
       walkway_cv: [''],
-      // bottom_discharge_type_cv: [''],
-      // compartment_type_cv: [''],
+      tank_comp_cv: [''],
       vehicle_no: [''],
       driver_name: [''],
       haulier: [''],
@@ -365,48 +379,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       })
     });
 
-    // this.bottomFormGroup = this.fb.group({
-    //   btm_dis_comp_cv: [''],
-    //   btm_dis_valve_cv: [''],
-    //   btm_dis_valve_spec_cv: [''],
-    //   foot_valve_cv: [''],
-    //   thermometer: [''],
-    //   thermometer_cv: [''],
-    //   ladder: [''],
-    //   data_csc_transportplate: [''],
-    // });
-
-    // this.topFormGroup = this.fb.group({
-    //   top_dis_comp_cv: [''],
-    //   top_dis_valve_cv: [''],
-    //   top_dis_valve_spec_cv: [''],
-    //   airline_valve_cv: [''],
-    //   airline_valve_pcs: [''],
-    //   airline_valve_dim: [''],
-    //   airline_valve_conn_cv: [''],
-    //   airline_valve_conn_spec_cv: [''],
-    // });
-
-    // this.manlidFormGroup = this.fb.group({
-    //   manlid_comp_cv: [''],
-    //   manlid_cover_cv: [''],
-    //   manlid_cover_pcs: [''],
-    //   manlid_cover_pts: [''],
-    //   manlid_seal_cv: [''],
-    //   pv_type_cv: [''],
-    //   pv_type_pcs: [''],
-    //   pv_spec_cv: [''],
-    //   pv_spec_pcs: [''],
-    //   safety_handrail: [''],
-    //   buffer_plate: [''],
-    //   residue: [''],
-    //   dipstick: [''],
-    // });
-
-    // this.commentFormGroup = this.fb.group({
-    //   comments: [''],
-    // });
-
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
     if (this.in_gate_guid) {
       // EDIT
@@ -416,7 +388,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           this.populateInGateForm(this.in_gate);
         }
       });
-    } else {
     }
   }
 
@@ -598,9 +569,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       let igs: InGateSurveyGO = new InGateSurveyGO();
       igs.in_gate_guid = this.in_gate?.guid;
       igs.periodic_test_guid = this.surveyForm.value['periodic_test_guid'] || '';
-      //igs.test_type_cv = this.surveyForm.value['test_type_cv'];
-      //igs.test_class_cv = this.surveyForm.value['test_class_cv'];
-      //igs.test_dt = this.surveyForm.value['test_dt'];
+      // igs.test_type_cv = this.surveyForm.value['test_type_cv'];
+      // igs.test_class_cv = this.surveyForm.value['test_class_cv'];
+      // igs.test_dt = this.surveyForm.value['test_dt'];
       igs.manufacturer_cv = this.surveyForm.value['manufacturer_cv'];
       igs.dom_dt = Utility.convertDate(this.surveyForm.value['dom_dt']);
       igs.cladding_cv = this.surveyForm.value['cladding_cv'];
@@ -609,6 +580,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.max_weight_cv = this.surveyForm.value['max_weight_cv'];
       igs.height_cv = this.surveyForm.value['height_cv'];
       igs.walkway_cv = this.surveyForm.value['walkway_cv'];
+      igs.tank_comp_cv = this.surveyForm.value['tank_comp_cv'];
       igs.comments = this.surveyForm.value['comments'];
 
       const bottomFormGroup = this.surveyForm.get('bottomFormGroup') as UntypedFormGroup;
@@ -804,5 +776,57 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         reader.readAsDataURL(file);
       });
     }
+  }
+
+  chosenYearHandler(normalizedYear: Moment) {
+    const ctrlValue = this.surveyForm!.get('test_dt')!.value ? moment(this.surveyForm!.get('test_dt')!.value) : moment();
+    ctrlValue.year(normalizedYear.year()).date(1);
+    this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
+  }
+
+  chosenMonthHandler(normalizedMonth: Moment, datepicker: any) {
+    const ctrlValue = this.surveyForm!.get('test_dt')!.value ? moment(this.surveyForm!.get('test_dt')!.value) : moment();
+    ctrlValue.month(normalizedMonth.month()).year(normalizedMonth.year()).date(1);
+    this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
+    this.getNextTest();
+    datepicker.close();
+  }
+
+  getLastTest(): string | undefined {
+    if (this.surveyForm!.get('test_type_cv')!.value && this.surveyForm!.get('test_class_cv')!.value && this.surveyForm!.get('test_dt')!.value) {
+      const test_type = this.surveyForm!.get('test_type_cv')!.value;
+      const test_class = this.surveyForm!.get('test_class_cv')!.value;
+      const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+    }
+    return "";
+  }
+
+  getNextTest(): string | undefined {
+    if (this.surveyForm!.get('test_type_cv')!.value && this.surveyForm!.get('test_dt')!.value) {
+      const test_type = this.surveyForm!.get('test_type_cv')!.value;
+      const match = test_type.match(/^[0-9]*\.?[0-9]+/);
+      const yearCount = parseFloat(match[0]);
+      const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
+      const resultDt = Utility.addYearsToEpoch(testDt, yearCount);
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    }
+    return "";
+  }
+
+  getTestTypeDescription(codeValType: string): string | undefined {
+    let cv = this.testTypeCvList.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
+  }
+
+  getTestClassDescription(codeValType: string): string | undefined {
+    let cv = this.testClassCvList.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
   }
 }
