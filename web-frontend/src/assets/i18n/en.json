@@ -136,7 +136,8 @@
         "IN-GATE": "In Gate",
         "IN-GATE-DETAILS": "In Gate Details",
         "IN-GATE-SURVEY": "In Gate Survey",
-        "IN-GATE-SURVEY-FORM": "In Gate Survey Form"
+        "IN-GATE-SURVEY-FORM": "In Gate Survey Form",
+        "BOOKING": "Booking"
       }
     }
   },
@@ -352,6 +353,17 @@
     "EXCEEDED": "Exceeded",
     "MUST-MORE-THAN-ZERO": "Must be more than 0",
     "BRAND": "Brand",
+    "BOTTOM": "Bottom",
+    "TOP": "Top",
+    "MANLID": "Manlid",
+    "FRAME-TYPE": "Frame Type",
+    "LEFT-SIDE": "Left Side",
+    "REAR-SIDE": "Rear Side",
+    "RIGHT-SIDE": "Right Side",
+    "TOP-SIDE": "Top Side",
+    "FRONT-SIDE": "Front Side",
+    "BOTTOM-SIDE": "Bottom Side",
+    "DAMAGE-PHOTOS": "Damage Photos",
     "PACKAGE-MIN-COST" : "Min Cost",
     "PACKAGE-MAX-COST" : "Max Cost",
     "PACKAGE-DETAIL":"Detail"

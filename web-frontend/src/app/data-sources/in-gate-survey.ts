@@ -316,6 +316,147 @@ export const GET_IN_GATE_BY_ID = gql`
   }
 `;
 
+export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
+  query queryInGateSurveyByID($where: in_gate_surveyFilterInput){
+    queryInGateSurvey(
+      where: $where
+    ) {
+      totalCount
+      nodes {
+        airline_valve_conn_cv
+        airline_valve_conn_spec_cv
+        airline_valve_cv
+        airline_valve_dim
+        airline_valve_pcs
+        btm_dis_comp_cv
+        btm_dis_valve_cv
+        btm_dis_valve_spec_cv
+        buffer_plate
+        capacity
+        cladding_cv
+        comments
+        create_by
+        create_dt
+        data_csc_transportplate
+        delete_dt
+        dipstick
+        dom_dt
+        foot_valve_cv
+        guid
+        height_cv
+        in_gate_guid
+        inspection_dt
+        ladder
+        last_release_dt
+        last_test_cv
+        manlid_comp_cv
+        manlid_cover_cv
+        manlid_cover_pcs
+        manlid_cover_pts
+        manlid_seal_cv
+        manufacturer_cv
+        max_weight_cv
+        periodic_test_guid
+        pv_spec_cv
+        pv_spec_pcs
+        pv_type_cv
+        pv_type_pcs
+        residue
+        safety_handrail
+        take_in_reference
+        take_in_status_cv
+        tank_comp_cv
+        tare_weight
+        thermometer
+        thermometer_cv
+        top_dis_comp_cv
+        top_dis_valve_cv
+        top_dis_valve_spec_cv
+        update_by
+        update_dt
+        walkway_cv
+        in_gate {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          eir_dt
+          eir_no
+          eir_status_cv
+          guid
+          haulier
+          lolo_cv
+          preinspection_cv
+          remarks
+          so_tank_guid
+          update_by
+          update_dt
+          vehicle_no
+          yard_cv
+          tank {
+            certificate_cv
+            clean_status_cv
+            create_by
+            create_dt
+            delete_dt
+            estimate_cv
+            eta_dt
+            etr_dt
+            guid
+            job_no
+            last_cargo_guid
+            purpose_cleaning
+            purpose_repair_cv
+            purpose_steam
+            purpose_storage
+            remarks
+            required_temp
+            so_guid
+            status_cv
+            tank_no
+            tank_status_cv
+            unit_type_guid
+            update_by
+            update_dt
+            storing_order {
+              haulier
+              so_no
+              customer_company {
+                code
+                name
+              }
+            }
+            tariff_cleaning {
+              alias
+              ban_type_cv
+              cargo
+              class_cv
+              cleaning_category_guid
+              cleaning_method_guid
+              create_by
+              create_dt
+              delete_dt
+              depot_note
+              description
+              flash_point
+              guid
+              hazard_level_cv
+              in_gate_alert
+              msds_guid
+              nature_cv
+              open_on_gate_cv
+              remarks
+              un_no
+              update_by
+              update_dt
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 export const ADD_IN_GATE_SURVEY = gql`
   mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankInput!) {
     addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: { in_gate: $inGate })

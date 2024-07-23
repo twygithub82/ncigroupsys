@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -181,7 +181,18 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     PIECES: 'COMMON-FORM.PIECES',
     VOLUME: 'COMMON-FORM.VOLUME',
     OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS',
-    BRAND: 'COMMON-FORM.BRAND'
+    BRAND: 'COMMON-FORM.BRAND',
+    BOTTOM: 'COMMON-FORM.BOTTOM',
+    TOP: 'COMMON-FORM.TOP',
+    MANLID: 'COMMON-FORM.MANLID',
+    FRAME_TYPE: 'COMMON-FORM.FRAME-TYPE',
+    LEFT_SIDE: 'COMMON-FORM.LEFT-SIDE',
+    REAR_SIDE: 'COMMON-FORM.REAR-SIDE',
+    RIGHT_SIDE: 'COMMON-FORM.RIGHT-SIDE',
+    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
+    FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
+    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
+    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS'
   }
 
   in_gate_guid: string | null | undefined;
@@ -200,6 +211,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   purposeOptionCvList: CodeValuesItem[] = [];
   cleanStatusCvList: CodeValuesItem[] = [];
   testTypeCvList: CodeValuesItem[] = [];
+  testClassCvList: CodeValuesItem[] = [];
   manufacturerCvList: CodeValuesItem[] = [];
   claddingCvList: CodeValuesItem[] = [];
   maxGrossWeightCvList: CodeValuesItem[] = [];
@@ -227,10 +239,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   // Stepper
   isLinear = false;
-  // bottomFormGroup?: UntypedFormGroup;
-  // topFormGroup?: UntypedFormGroup;
-  // manlidFormGroup?: UntypedFormGroup;
-  // commentFormGroup?: UntypedFormGroup;
+
+  rowSize = 5;
+  colSize = 7;
+  cells: number[] = [];
+  highlightedCellsLeft: boolean[] = [];
+  highlightedCellsRear: boolean[] = [];
+  highlightedCellsRight: boolean[] = [];
+  highlightedCellsTop: boolean[] = [];
+  highlightedCellsFront: boolean[] = [];
+  highlightedCellsBottom: boolean[] = [];
+  isDrawing = false;
+  toggleState = true; // State to track whether to highlight or unhighlight
+  currentImageIndex: number | null = null;
+  imagePreviews: (string | ArrayBuffer)[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -258,6 +280,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.cells = Array(this.rowSize * this.colSize).fill(0);
+    this.highlightedCellsLeft = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsRear = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsRight = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsTop = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsFront = Array(this.rowSize * this.colSize).fill(false);
+    this.highlightedCellsBottom = Array(this.rowSize * this.colSize).fill(false);
     this.initSearchForm();
     this.loadData();
   }
@@ -283,6 +312,17 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       haulier: [''],
       in_gate_remarks: [''],
       comments: [''],
+      frameFormGroup: this.fb.group({
+        left_side: [''],
+        rear_side: [''],
+        right_side: [''],
+        top_side: [''],
+        front_side: [''],
+        bottom_side: [''],
+      }),
+      damageImageFormGroup: this.fb.group({
+        left_side: [''],
+      }),
       bottomFormGroup: this.fb.group({
         btm_dis_comp_cv: [''],
         btm_dis_valve_cv: [''],
@@ -380,6 +420,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
+  getFrameFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('frameFormGroup') as UntypedFormGroup;
+  }
+
+  getDamageImageFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('damageImageFormGroup') as UntypedFormGroup;
+  }
+
   getBottomFormGroup(): UntypedFormGroup {
     return this.surveyForm!.get('bottomFormGroup') as UntypedFormGroup;
   }
@@ -400,7 +448,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'cleanStatusCv', codeValType: 'CLEAN_STATUS' },
-      //{ alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
+      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
       { alias: 'manufacturerCv', codeValType: 'MANUFACTURER' },
       { alias: 'claddingCv', codeValType: 'CLADDING' },
       { alias: 'maxGrossWeightCv', codeValType: 'MAX_WEIGHT' },
@@ -426,9 +475,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
       this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
     });
-    // this.cvDS.connectAlias('testTypeCv').subscribe(data => {
-    //   this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
-    // });
+    this.cvDS.connectAlias('testTypeCv').subscribe(data => {
+      this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
+    });
+    this.cvDS.connectAlias('testClassCv').subscribe(data => {
+      this.testClassCvList = addDefaultSelectOption(data, "--Select--");
+    });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
       this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");
     });
@@ -593,6 +645,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.buffer_plate = this.surveyForm.value['buffer_plate'];
       igs.residue = this.surveyForm.value['residue'];
       igs.dipstick = this.surveyForm.value['dipstick'];
+      //igs.left_coor = this.getHighlightedCoordinates(this.highlightedCellsLeft);
+      //igs.rear_coor = this.getHighlightedCoordinates(this.highlightedCellsRear);
+      //igs.right_coor = this.getHighlightedCoordinates(this.highlightedCellsRight);
+      //igs.top_coor = this.getHighlightedCoordinates(this.highlightedCellsTop);
+      //igs.front_coor = this.getHighlightedCoordinates(this.highlightedCellsFront);
+      //igs.bottom_coor = this.getHighlightedCoordinates(this.highlightedCellsBottom);
       console.log('igs Value', igs);
       console.log('ig Value', ig);
       if (igs.guid) {
@@ -680,5 +738,71 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   displayDate(input: Date): string {
     return Utility.convertDateToStr(input);
+  }
+
+  startDrawing(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
+    this.isDrawing = true;
+    event.preventDefault(); // Prevent default dragging behavior
+    const target = this.getEventTarget(event) as HTMLElement;
+    const dataIndex = target?.getAttribute('data-index');
+    if (dataIndex !== null) {
+      const cellIndex = +dataIndex;
+      this.toggleState = !highlightedCells[cellIndex]; // Set initial toggle state based on cell's current state
+      this.highlightCell(highlightedCells, event);
+    }
+  }
+
+  draw(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
+    if (this.isDrawing) {
+      this.highlightCell(highlightedCells, event);
+    }
+  }
+
+  stopDrawing(): void {
+    this.isDrawing = false;
+  }
+
+  highlightCell(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
+    const target = this.getEventTarget(event) as HTMLElement;
+    const dataIndex = target?.getAttribute('data-index');
+    if (dataIndex !== null) {
+      const cellIndex = +dataIndex;
+      highlightedCells[cellIndex] = this.toggleState;
+    }
+  }
+
+  getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
+    if (event instanceof MouseEvent) {
+      return event.target;
+    } else if (event instanceof TouchEvent) {
+      return document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
+    }
+    return null;
+  }
+
+  getHighlightedCoordinates(highlightedCells: boolean[]): { x: number, y: number }[] {
+    const coordinates: any[] = [];
+    for (let i = 0; i < highlightedCells.length; i++) {
+      if (highlightedCells[i]) {
+        const x = i % this.colSize;
+        const y = Math.floor(i / this.colSize);
+        coordinates.push({ x, y });
+      }
+    }
+    return coordinates;
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.imagePreviews = []; // Clear previous previews
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreviews.push(reader.result as string | ArrayBuffer);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
   }
 }

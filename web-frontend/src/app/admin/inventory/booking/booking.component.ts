@@ -40,13 +40,12 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 
 @Component({
-  selector: 'app-in-gate',
+  selector: 'app-booking',
   standalone: true,
-  templateUrl: './in-gate-survey.component.html',
-  styleUrl: './in-gate-survey.component.scss',
+  templateUrl: './booking.component.html',
+  styleUrl: './booking.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -76,18 +75,16 @@ import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
     MatDividerModule,
   ]
 })
-export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
     'customer_code',
-    'eir_no',
-    'eir_dt',
+    'job_no',
     'last_cargo',
-    'purpose',
-    'tank_status_cv',
+    'so_no',
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -112,24 +109,23 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
-    EIR_NO: "COMMON-FORM.EIR-NO",
-    EIR_DATE: "COMMON-FORM.EIR-DATE"
+    EIR_NO: "COMMON-FORM.EIR-NO"
   }
 
+  customerCodeControl = new UntypedFormControl();
   searchForm?: UntypedFormGroup;
+  searchField: string = "";
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
-  igDS: InGateDS;
-  cvDS: CodeValuesDS;
 
-  inGateList: InGateItem[] = [];
-  purposeOptionCvList: CodeValuesItem[] = [];
+  sotList: StoringOrderTankItem[] = [];
+  customer_companyList?: CustomerCompanyItem[];
 
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { create_dt: "DESC" };
+  lastOrderBy: any = { so_no: "DESC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -147,8 +143,6 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     this.translateLangText();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.igDS = new InGateDS(this.apollo);
-    this.cvDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -164,27 +158,31 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
   initSearchForm() {
     this.searchForm = this.fb.group({
-      so_no: [''],
-      // customer_code: this.customerCodeControl,
-      // last_cargo: this.lastCargoControl,
-      eir_status: [''],
-      eir_no: [''],
       tank_no: [''],
-      job_no: [''],
+      customer_code: this.customerCodeControl,
+      eir_dt: [''],
+      booking_dt: [''],
+      yard: [''],
+      eir_no: [''],
+      booking_ref: [''],
       purpose: [''],
+      surveyor: [''],
+      booking_type: [''],
+      current_status: [''],
       //eta_dt: [''],
     });
   }
 
+  refresh() {
+    this.loadData();
+  }
+
   public loadData() {
-    const queries = [
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-    ];
-    this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
-    });
-    this.search();
+    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
+    //   if (this.soDS.totalCount > 0) {
+    //     this.soList = data;
+    //   }
+    // });
   }
   showNotification(
     colorName: string,
@@ -231,51 +229,29 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   search() {
-    const where: any = {};
-
-    if (this.searchForm!.value['eir_no']) {
-      where.eir_no = { contains: this.searchForm!.value['eir_no'] };
+    if (this.searchField) {
+      const searchField = this.searchField;
+      const where: any = {
+        and: [
+          { status_cv: { eq: "WAITING" } },
+          {
+            or: [
+              { storing_order: { so_no: { contains: searchField } } },
+              { tank_no: { contains: searchField } }, { job_no: { contains: searchField } }
+            ]
+          }
+        ]
+      };
+      this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+      // Execute the search
+      this.subs.sink = this.sotDS.searchStoringOrderTanks(where).subscribe(data => {
+        this.sotList = data;
+        this.endCursor = this.sotDS.pageInfo?.endCursor;
+        this.startCursor = this.sotDS.pageInfo?.startCursor;
+        this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+      });
     }
-
-    if (this.searchForm!.value['eir_status']) {
-      where.eir_status = { contains: this.searchForm!.value['eir_status'] };
-    }
-
-    if (this.searchForm!.value['eir_dt']) {
-      where.eir_dt = { contains: this.searchForm!.value['eir_status'] };
-    }
-
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no']) {
-      const sotSearch: any = {};
-
-      // if (this.searchForm!.value['last_cargo']) {
-      //   where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-      // }
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSearch.tank_no = { contains: this.searchForm!.value['tank_no'] };
-      }
-
-      if (this.searchForm!.value['job_no']) {
-        sotSearch.job_no = { contains: this.searchForm!.value['job_no'] };
-      }
-
-      // if (this.searchForm!.value['customer_code']) {
-      //   where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-      // }
-      where.tank = sotSearch;
-    }
-
-    this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
-
-    // TODO :: should order by accepted dt, where to find?
-    this.subs.sink = this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
-      this.inGateList = data;
-      this.endCursor = this.igDS.pageInfo?.endCursor;
-      this.startCursor = this.igDS.pageInfo?.startCursor;
-      this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
-    });
   }
 
   onPageEvent(event: PageEvent) {
@@ -308,12 +284,12 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     this.pageIndex = pageIndex;
     this.pageSize = pageSize;
 
-    this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
-      this.inGateList = data;
-      this.endCursor = this.igDS.pageInfo?.endCursor;
-      this.startCursor = this.igDS.pageInfo?.startCursor;
-      this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
+    this.sotDS.searchStoringOrderTanks(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
+      this.sotList = data;
+      this.endCursor = this.sotDS.pageInfo?.endCursor;
+      this.startCursor = this.sotDS.pageInfo?.startCursor;
+      this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
     });
   }
 
@@ -321,32 +297,22 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  displayTankPurpose(sot: StoringOrderTankItem) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
-  }
-
-  getPurposeOptionDescription(codeValType: string): string | undefined {
-    let cv = this.purposeOptionCvList.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
-  }
-
   initializeFilterCustomerCompany() {
+    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
   }
 
   translateLangText() {
