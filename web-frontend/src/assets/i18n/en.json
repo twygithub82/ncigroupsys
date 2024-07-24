@@ -366,7 +366,11 @@
     "DAMAGE-PHOTOS": "Damage Photos",
     "PACKAGE-MIN-COST" : "Min Cost",
     "PACKAGE-MAX-COST" : "Max Cost",
-    "PACKAGE-DETAIL":"Detail"
+    "PACKAGE-DETAIL":"Detail",
+    "BOOKING-DATE":"Booking Date",
+    "BOOKING-REFERENCE":"Booking Reference",
+    "BOOKING-TYPE":"Booking Type",
+    "SURVEYOR":"Surveyor"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

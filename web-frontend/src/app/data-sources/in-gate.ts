@@ -133,6 +133,9 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
         update_dt
         vehicle_no
         yard_cv
+        in_gate_survey {
+          guid
+        }
         tank {
           certificate_cv
           clean_status_cv

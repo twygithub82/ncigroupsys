@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -323,7 +323,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         bottom_side: [''],
       }),
       damageImageFormGroup: this.fb.group({
-        left_side: [''],
       }),
       bottomFormGroup: this.fb.group({
         btm_dis_comp_cv: [''],
@@ -361,9 +360,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         buffer_plate: [''],
         residue: [''],
         dipstick: [''],
-      }),
-      commentFormGroup: this.fb.group({
-        comments: [''],
       })
     });
 
@@ -507,6 +503,65 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       driver_name: ig.driver_name,
       haulier: ig.haulier,
       in_gate_remarks: ig.remarks,
+      //test_type_cv: ig?.test_type_cv,
+      //test_class_cv: ig.test_class_cv,
+      //test_dt: ig.test_dt,
+      manufacturer_cv: ig.in_gate_survey?.manufacturer_cv,
+      dom_dt: ig.in_gate_survey?.dom_dt,
+      cladding_cv: ig.in_gate_survey?.cladding_cv,
+      capacity: ig.in_gate_survey?.capacity,
+      tare_weight: ig.in_gate_survey?.tare_weight,
+      max_weight_cv: ig.in_gate_survey?.max_weight_cv,
+      height_cv: ig.in_gate_survey?.height_cv,
+      walkway_cv: ig.in_gate_survey?.walkway_cv,
+      tank_comp_cv: ig.in_gate_survey?.tank_comp_cv,
+      comments: ig.in_gate_survey?.comments,
+      frameFormGroup: {
+        //left_side: ig.in_gate_survey?.left_side
+        //rear_side: ig.in_gate_survey?.rear_side
+        //right_side: ig.in_gate_survey?.right_side
+        //top_side: ig.in_gate_survey?.top_side
+        //front_side: ig.in_gate_survey?.front_side
+        //bottom_side: ig.in_gate_survey?.bottom_side
+      },
+      damageImageFormGroup: {
+      },
+      bottomFormGroup: {
+        btm_dis_comp_cv: ig.in_gate_survey?.btm_dis_comp_cv,
+        btm_dis_valve_cv: ig.in_gate_survey?.btm_dis_valve_cv,
+        btm_dis_valve_spec_cv: ig.in_gate_survey?.btm_dis_valve_spec_cv,
+        foot_valve_cv: ig.in_gate_survey?.foot_valve_cv,
+        //btm_brand_cv: ig.in_gate_survey?.btm_brand_cv,
+        thermometer: ig.in_gate_survey?.thermometer,
+        thermometer_cv: ig.in_gate_survey?.thermometer_cv,
+        ladder: ig.in_gate_survey?.ladder,
+        data_csc_transportplate: ig.in_gate_survey?.data_csc_transportplate
+      },
+      topFormGroup: {
+        top_dis_comp_cv: ig.in_gate_survey?.top_dis_comp_cv,
+        top_dis_valve_cv: ig.in_gate_survey?.top_dis_valve_cv,
+        top_dis_valve_spec_cv: ig.in_gate_survey?.top_dis_valve_spec_cv,
+        //top_brand_cv: ig.in_gate_survey?.top_brand_cv,
+        airline_valve_cv: ig.in_gate_survey?.airline_valve_cv,
+        airline_valve_pcs: ig.in_gate_survey?.airline_valve_pcs,
+        airline_valve_dim: ig.in_gate_survey?.airline_valve_dim,
+        airline_valve_conn_cv: ig.in_gate_survey?.airline_valve_conn_cv,
+        airline_valve_conn_spec_cv: ig.in_gate_survey?.airline_valve_conn_spec_cv,
+      },
+      manlidFormGroup: {
+        manlid_comp_cv: ig.in_gate_survey?.manlid_comp_cv,
+        manlid_cover_cv: ig.in_gate_survey?.manlid_cover_cv,
+        manlid_cover_pcs: ig.in_gate_survey?.manlid_cover_pcs,
+        manlid_cover_pts: ig.in_gate_survey?.manlid_cover_pts,
+        pv_type_cv: ig.in_gate_survey?.pv_type_cv,
+        pv_type_pcs: ig.in_gate_survey?.pv_type_pcs,
+        pv_spec_cv: ig.in_gate_survey?.pv_spec_cv,
+        pv_spec_pcs: ig.in_gate_survey?.pv_spec_pcs,
+        safety_handrail: ig.in_gate_survey?.safety_handrail,
+        buffer_plate: ig.in_gate_survey?.buffer_plate,
+        residue: ig.in_gate_survey?.residue,
+        dipstick: ig.in_gate_survey?.dipstick,
+      }
     });
   }
 
@@ -555,6 +610,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       ig.tank = sot;
 
       let igs: InGateSurveyGO = new InGateSurveyGO();
+      igs.guid = this.in_gate?.in_gate_survey?.guid;
       igs.in_gate_guid = this.in_gate?.guid;
       igs.periodic_test_guid = this.surveyForm.value['periodic_test_guid'] || '';
       // igs.test_type_cv = this.surveyForm.value['test_type_cv'];
@@ -626,6 +682,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       }
     } else {
       console.log('Invalid soForm', this.surveyForm?.value);
+      this.markFormGroupTouched(this.surveyForm);
+    }
+  }
+
+  markFormGroupTouched(formGroup: UntypedFormGroup | undefined): void {
+    if (formGroup) {
+      Object.keys(formGroup.controls).forEach((key) => {
+        const control = formGroup.get(key);
+        if (control instanceof UntypedFormGroup) {
+          this.markFormGroupTouched(control);
+        } else {
+          control!.markAsTouched();
+        }
+      });
     }
   }
 

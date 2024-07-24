@@ -84,7 +84,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     'eir_dt',
     'last_cargo',
     'purpose',
-    'tank_status_cv',
+    'eir_status_cv'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY'

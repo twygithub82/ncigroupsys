@@ -461,6 +461,12 @@ export const ADD_IN_GATE_SURVEY = gql`
   }
 `;
 
+export const UPDATE_IN_GATE_SURVEY = gql`
+  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!) {
+    updateInGateSurvey(inGateSurveyRequest: $inGateSurvey)
+  }
+`;
+
 export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
   public totalCount = 0;
   constructor(private apollo: Apollo) {
@@ -521,6 +527,15 @@ export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
       variables: {
         inGateSurvey,
         inGate
+      }
+    });
+  }
+
+  updateInGateSurvey(inGateSurvey: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_IN_GATE_SURVEY,
+      variables: {
+        inGateSurvey
       }
     });
   }

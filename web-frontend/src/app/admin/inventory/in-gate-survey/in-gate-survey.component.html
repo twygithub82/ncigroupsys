@@ -165,6 +165,14 @@
                     <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{row.eir_dt}}
                   </mat-cell>
                 </ng-container>
+                <ng-container matColumnDef="eir_status_cv">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.STATUS}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{row.eir_status_cv}}
+                  </mat-cell>
+                </ng-container>
                 <ng-container matColumnDef="last_cargo">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
                     {{translatedLangText.LAST_CARGO}}

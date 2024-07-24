@@ -71,23 +71,39 @@
                     </mat-form-field> -->
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.STATUS}}</mat-label>
-                      <mat-select formControlName="so_status">
-                        @for (codeValue of soStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field> -->
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
+                      <mat-date-range-input [rangePicker]="eir_picker">
+                        <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
+                        <input matEndDate placeholder="End date" formControlName="eir_dt_end">
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
+                      <mat-date-range-picker #eir_picker></mat-date-range-picker>
+                    </mat-form-field>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.SO_NO}}</mat-label>
-                      <input matInput formControlName="so_no">
+                      <mat-label>{{translatedLangText.BOOKING_DATE}}</mat-label>
+                      <mat-date-range-input [rangePicker]="booking_picker">
+                        <input matStartDate placeholder="Start date" formControlName="booking_dt_start">
+                        <input matEndDate placeholder="End date" formControlName="booking_dt_end">
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle matSuffix [for]="booking_picker"></mat-datepicker-toggle>
+                      <mat-date-range-picker #booking_picker></mat-date-range-picker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.YARD}}</mat-label>
+                      <mat-select formControlName="yard_cv">
+                        @for (codeValue of yardCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
@@ -97,7 +113,15 @@
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.BOOKING_REFERENCE}}</mat-label>
+                      <input matInput formControlName="booking_ref">
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
                       <mat-select multiple formControlName="purpose">
                         @for (codeValue of purposeOptionCvList; track codeValue) {
@@ -106,15 +130,43 @@
                         </mat-option>
                         }
                       </mat-select>
-                    </mat-form-field> -->
+                    </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.ETA_DATE}}</mat-label>
-                      <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
-                      <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #eta_picker></mat-datepicker>
-                    </mat-form-field> -->
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.SURVEYOR}}</mat-label>
+                      <mat-select formControlName="yard_cv">
+                        @for (codeValue of yardCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.BOOKING_TYPE}}</mat-label>
+                      <mat-select formControlName="booking_type_cv">
+                        @for (codeValue of bookingTypeCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.CURRENT_STATUS}}</mat-label>
+                      <mat-select formControlName="booking_status_cv">
+                        @for (codeValue of bookingStatusCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
                     <button mat-mini-fab color="primary" (click)="search()">

@@ -117,9 +117,12 @@
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ETA_DATE}}</mat-label>
-                      <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
+                      <mat-date-range-input [rangePicker]="eta_picker">
+                        <input matStartDate placeholder="Start date" formControlName="eta_dt_start">
+                        <input matEndDate placeholder="End date" formControlName="eta_dt_end">
+                      </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #eta_picker></mat-datepicker>
+                      <mat-date-range-picker #eta_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">

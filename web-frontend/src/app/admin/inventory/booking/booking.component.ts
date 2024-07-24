@@ -109,7 +109,14 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
-    EIR_NO: "COMMON-FORM.EIR-NO"
+    EIR_NO: "COMMON-FORM.EIR-NO",
+    EIR_DATE: "COMMON-FORM.EIR-DATE",
+    BOOKING_DATE: "COMMON-FORM.BOOKING-DATE",
+    YARD: "COMMON-FORM.YARD",
+    BOOKING_REFERENCE: "COMMON-FORM.BOOKING-REFERENCE",
+    SURVEYOR: "COMMON-FORM.SURVEYOR",
+    BOOKING_TYPE: "COMMON-FORM.BOOKING-TYPE",
+    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS"
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -118,9 +125,14 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
+  cvDS: CodeValuesDS;
 
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
+  yardCvList: CodeValuesItem[] = [];
+  purposeOptionCvList: CodeValuesItem[] = [];
+  bookingTypeCvList: CodeValuesItem[] = [];
+  bookingStatusCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -143,6 +155,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.translateLangText();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -160,15 +173,17 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.searchForm = this.fb.group({
       tank_no: [''],
       customer_code: this.customerCodeControl,
-      eir_dt: [''],
-      booking_dt: [''],
-      yard: [''],
+      eir_dt_start: [''],
+      eir_dt_end: [''],
+      booking_dt_start: [''],
+      booking_dt_end: [''],
+      yard_cv: [''],
       eir_no: [''],
       booking_ref: [''],
       purpose: [''],
-      surveyor: [''],
-      booking_type: [''],
-      current_status: [''],
+      surveyor_cv: [''],
+      booking_type_cv: [''],
+      booking_status_cv: [''],
       //eta_dt: [''],
     });
   }
@@ -178,11 +193,25 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   public loadData() {
-    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-    //   if (this.soDS.totalCount > 0) {
-    //     this.soList = data;
-    //   }
-    // });
+    const queries = [
+      { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
+      { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' }
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      this.yardCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+      this.purposeOptionCvList = data;
+    });
+    this.cvDS.connectAlias('bookingTypeCv').subscribe(data => {
+      this.bookingTypeCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('bookingStatusCv').subscribe(data => {
+      this.bookingStatusCvList = addDefaultSelectOption(data, 'All');
+    });
   }
   showNotification(
     colorName: string,
