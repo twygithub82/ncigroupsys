@@ -20,7 +20,7 @@ export type ChartOptions = {
   title: ApexTitleSubtitle;
 };
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { NgClass } from '@angular/common';
+import { NgClass, CommonModule  } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -36,6 +36,7 @@ import { Apollo } from 'apollo-angular';
 import {GraphqlNotificationService} from '../../services/global-notification.service'
 import { InGateDS} from 'app/data-sources/in-gate';
 import {StoringOrderTankDS} from 'app/data-sources/storing-order-tank'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
     selector: 'app-dashboard1',
     templateUrl: './dashboard1.component.html',
@@ -57,7 +58,9 @@ import {StoringOrderTankDS} from 'app/data-sources/storing-order-tank'
         MatCheckboxModule,
         CdkDragPlaceholder,
         MatTooltipModule,
+        MatProgressSpinnerModule,
         NgClass,
+        CommonModule,
     ],
 })
 

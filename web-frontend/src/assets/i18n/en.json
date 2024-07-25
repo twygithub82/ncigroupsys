@@ -183,6 +183,7 @@
     "EDIT": "Edit",
     "HEADER": "Header",
     "CUSTOMER-CODE": "Customer Code",
+    "COMPANY-NAME": "Company Name",
     "CUSTOMER-NAME": "Customer Name",
     "SO-NO": "SO No.",
     "NO-OF-TANKS": "No. of Tanks",
@@ -366,7 +367,8 @@
     "DAMAGE-PHOTOS": "Damage Photos",
     "PACKAGE-MIN-COST" : "Min Cost",
     "PACKAGE-MAX-COST" : "Max Cost",
-    "PACKAGE-DETAIL":"Detail"
+    "PACKAGE-DETAIL":"Detail",
+     "PACKAGE-CLEANING-ADJUST-COST":"Adjusted Cost"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

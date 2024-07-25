@@ -50,9 +50,21 @@ export interface CustomerCompanyCleaningCategoryResult {
     totalCount: number;
 }
 
+export const UPDATE_PACKAGE_CLEANINGS = gql`
+  mutation updatePackageCleans($guids: [String!]!,$remarks:String!,$adjusted_price:Float!) {
+    updatePackageCleans(updatePackageClean_guids: $guids,remarks:$remarks,adjusted_price:$adjusted_price)
+  }
+`;
 export const GET_COMPANY_CATEGORY_QUERY = gql`
   query  queryPackageCleaning($where: customer_company_cleaning_category_with_customer_companyFilterInput, $order: [customer_company_cleaning_category_with_customer_companySortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     companycategoryList:  queryPackageCleaning(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+       totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
       nodes {
         guid
         customer_company_guid
@@ -109,8 +121,11 @@ export class CustomerCompanyCleaningCategoryDS extends BaseDataSource<CustomerCo
     constructor(private apollo: Apollo) {
         super();
     }
-    search(where?: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<CustomerCompanyCleaningCategoryItem[]> {
+    search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<CustomerCompanyCleaningCategoryItem[]> {
         this.loadingSubject.next(true);
+        if(!last) 
+            if(!first)
+                first=10;
         return this.apollo
             .query<any>({
                 query: GET_COMPANY_CATEGORY_QUERY,
@@ -127,10 +142,27 @@ export class CustomerCompanyCleaningCategoryDS extends BaseDataSource<CustomerCo
                 map((result) => {
                     const list = result.companycategoryList || { nodes: [], totalCount: 0 };
                     this.dataSubject.next(list.nodes);
+                    this.pageInfo = list.pageInfo;
                     this.totalCount = list.totalCount;
                     return list.nodes;
                 })
             );
     }
+
+    updatePackageCleanings(guids: string[],remarks:string, adjusted_price:number): Observable<any> {
+        return this.apollo.mutate({
+          mutation: UPDATE_PACKAGE_CLEANINGS,
+          variables: {
+            guids,
+            remarks,
+            adjusted_price
+          }
+        }).pipe(
+          catchError((error: ApolloError) => {
+            console.error('GraphQL Error:', error);
+            return of(0); // Return an empty array on error
+          }),
+        );
+      }
 
 }

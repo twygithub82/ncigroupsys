@@ -105,10 +105,9 @@
                     </div>
                   </li>
                   <li class="tbl-header-btn">
-                    <div class="m-l-10" [hidden]=!selection.hasValue() matTooltip="DELETE">
-                      <button mat-mini-fab color="warn" (click)="removeSelectedRows()">
-                        <mat-icon class="col-white">delete
-                        </mat-icon>
+                    <div class="m-l-10" [hidden]=!selection.hasValue() matTooltip="ADJUST">
+                      <button mat-mini-fab color="primary" (click)="adjustCost()">
+                        <app-feather-icons [icon]="'edit'" [class]="'col-white tbl-fav-edit'"></app-feather-icons>
                       </button>
                     </div>
                   </li>
@@ -150,24 +149,24 @@
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="fName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{PROCEDURE_DESCRIPTION | translate}}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.langText.CUSTOMER_CODE| translate}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{PROCEDURE_DESCRIPTION | translate}}:</span>{{row.fName}}</mat-cell>
+                      <span class="mobile-label">{{this.langText.CUSTOMER_CODE | translate}}:</span>{{row.customer_company.code}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="lName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{PROCEDURE_STEP_DURATION | translate}}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.langText.CUSTOMER_COMPANY_NAME| translate}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{PROCEDURE_STEP_DURATION | translate}}:</span>{{row.lName}}</mat-cell>
+                      <span class="mobile-label">{{this.langText.CUSTOMER_COMPANY_NAME | translate}}:</span>{{row.customer_company.name}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="email">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{PROCEDURE_CLEAN_CATEGORY | translate}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{PROCEDURE_CLEAN_CATEGORY | translate}}:</span> {{row.email}}</mat-cell>
+                      <span class="mobile-label">{{PROCEDURE_CLEAN_CATEGORY | translate}}:</span> {{row.cleaning_category.name}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="gender">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{CLEANING_GROUP_NAME | translate}}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.langText.PACKAGE_CLEANING_ADJUSTED_COST| translate}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{CLEANING_GROUP_NAME | translate}}:</span> {{row.email}}</mat-cell>
+                      <span class="mobile-label">{{this.langText.PACKAGE_CLEANING_ADJUSTED_COST | translate}}:</span> {{row.adjusted_price}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="bDate">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{CLEANING_BAY | translate}}</mat-header-cell>
@@ -255,8 +254,8 @@
               </mat-menu>
               <!-- context menu end -->
              
-              <mat-paginator #paginator  [pageIndex]="0" [pageSize]="10"
-                [pageSizeOptions]="[5, 10, 25, 100]">
+              <mat-paginator #paginator [length]="custCompClnCatDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
               </mat-paginator>
             </div>
           </div>

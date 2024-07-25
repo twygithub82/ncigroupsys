@@ -18,7 +18,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -40,17 +40,21 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { MatRadioModule } from '@angular/material/radio';
 import { Apollo } from 'apollo-angular';
 import { MatDividerModule } from '@angular/material/divider';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Observable, Subscription } from 'rxjs';
-import { TankDS, TankItem } from 'app/data-sources/tank';
-import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
-import { ComponentUtil } from 'app/utilities/component-util';
+//import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+//import { Observable, Subscription } from 'rxjs';
+//import { TankDS, TankItem } from 'app/data-sources/tank';
+//import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
+//import { ComponentUtil } from 'app/utilities/component-util';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
+//import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
 import {ExampleDataSource} from 'app/advance-table/advance-table.component';
 import { AdvanceTableService } from 'app/advance-table/advance-table.service';
 import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
+import {SearchCriteriaService} from 'app/services/search-criteria.service';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ComponentUtil } from 'app/utilities/component-util';
+
 @Component({
   selector: 'app-package-cleaning',
   standalone: true,
@@ -99,9 +103,9 @@ implements OnInit {
     'select',
     // 'img',
      'fName',
-    // 'lName',
-    // 'email',
-    // 'gender',
+     'lName',
+     'email',
+     'gender',
     // 'bDate',
     // 'mobile',
     // 'actions',
@@ -134,15 +138,26 @@ implements OnInit {
 
   ccDS: CustomerCompanyDS;
   clnCatDS:CleaningCategoryDS;
-  custCompClnCat :CustomerCompanyCleaningCategoryDS;
+  custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
 
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList?: CustomerCompanyItem[];
   cleaning_categoryList?: CleaningCategoryItem[];
 
+  pageIndex = 0;
+  pageSize = 10;
+  lastSearchCriteria: any;
+  lastOrderBy: any = { customer_company:{code: "ASC" }, cleaning_category: { sequence: "ASC" }};
+  endCursor: string | undefined = undefined;
+  startCursor: string | undefined = undefined;
+  hasNextPage = false;
+  hasPreviousPage = false;
+  
+
    exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
-  selection = new SelectionModel<AdvanceTable>(true, []);
+  selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
+  
   id?: number;
   advanceTable?: AdvanceTable;
   pcForm?: UntypedFormGroup;
@@ -153,6 +168,7 @@ implements OnInit {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -225,7 +241,10 @@ implements OnInit {
     CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL'
+    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    
+
 
   }
   
@@ -235,13 +254,16 @@ implements OnInit {
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
    // public advanceTableService: AdvanceTableService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private searchCriteriaService: SearchCriteriaService,
+    private translate: TranslateService
+
   ) {
     super();
     this.initTcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    this.custCompClnCat=new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -301,43 +323,72 @@ implements OnInit {
     //   }
     // });
   }
-  editCall(row: AdvanceTable) {
-    this.id = row.id;
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
+
+  adjustCost()
+  {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: row,
-    //     action: 'edit',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // When using an edit things are little different, firstly we find record inside DataService by id
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // Then you update that record using data from dialogData (values you enetered)
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value[foundIndex] =
-    //         this.advanceTableService.getDialogData();
-    //       // And lastly refresh table
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'black',
-    //         'Edit Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
+    const dialogRef = this.dialog.open(FormDialogComponent,{
+      width: '600px',
+      data: {
+        action: 'new',
+        langText: this.langText,
+        selectedItems:this.selection.selected
+      }
+        
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         if (result) {
+          if(result.selectedValue>0)
+          {
+            this.handleSaveSuccess(result.selectedValue);
+            this.search();
+          }
+      }
+      });
   }
+  editCall(row: CustomerCompanyCleaningCategoryItem) {
+   // this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    rows.push(row);
+    const dialogRef = this.dialog.open(FormDialogComponent,{
+      width: '600px',
+      data: {
+        action: 'new',
+        langText: this.langText,
+        selectedItems:rows
+      }
+        
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         if (result) {
+          if(result.selectedValue>0)
+            {
+              this.handleSaveSuccess(result.selectedValue);
+              this.search();
+            }
+      }
+      });
+   
+  }
+
+  
   deleteItem(row: AdvanceTable) {
     // this.id = row.id;
     // let tempDirection: Direction;
@@ -375,8 +426,8 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-   // const numRows = this.dataSource.renderedData.length;
-    return true; //numSelected === numRows;
+    const numRows = this.custCompClnCatItems.length;
+    return numSelected === numRows;
   }
 
   isSelected(option: any): boolean {
@@ -385,25 +436,36 @@ implements OnInit {
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    // this.isAllSelected()
-    //   ? this.selection.clear()
-    //   : this.dataSource.renderedData.forEach((row) =>
-    //       this.selection.select(row)
-    //     );
+     this.isAllSelected()
+       ? this.selection.clear()
+       : this.custCompClnCatItems.forEach((row) =>
+           this.selection.select(row)
+         );
   }
+
+
+
   search()
   {
     const where: any = {};
 
     if (this.customerCodeControl.value) {
-      const customerCodes :CustomerCompanyItem[] = this.customerCodeControl.value;
-      var guids = customerCodes.map(cc=>cc.guid);
-      where.customer_company_guid = { in: guids };
+      if(this.customerCodeControl.value.length>0)
+        {
+         
+        
+          const customerCodes :CustomerCompanyItem[] = this.customerCodeControl.value;
+          var guids = customerCodes.map(cc=>cc.guid);
+          where.customer_company_guid = { in: guids };
+        }
     }
 
     if (this.categoryControl.value) {
-      const guids = this.categoryControl.value;
-      where.cleaning_category_guid = { in: guids };
+      if(this.categoryControl.value.length>0)
+      {
+        const guids = this.categoryControl.value;
+        where.cleaning_category_guid = { in: guids };
+      }
     }
 
     if (this.pcForm!.value["min_cost"])
@@ -417,15 +479,94 @@ implements OnInit {
         const maxCost :number = Number(this.pcForm!.value["max_cost"]);
         where.adjusted_price ={ngte:maxCost}
       }
-    this.subs.sink = this.custCompClnCat.search(where).subscribe(data => {
+      this.lastSearchCriteria=where;
+    this.subs.sink = this.custCompClnCatDS.search(where,this.lastOrderBy).subscribe(data => {
        this.custCompClnCatItems=data;
+       this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
+       this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;
+       this.hasNextPage = this.custCompClnCatDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.custCompClnCatDS.pageInfo?.hasPreviousPage ?? false;
+       this.pageIndex=0;
+       this.paginator.pageIndex=0;
+       this.selection.clear();
     });
-
-   
-   
-   
-
   }
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.langText.SAVE_SUCCESS;
+      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+        successMsg = res;
+        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        
+      });
+    }
+  }
+
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize,previousPageIndex } = event;
+    let first : number| undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+    let order:any|undefined=this.lastOrderBy;
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursor;
+      }
+    }
+
+      this.searchData(this.lastSearchCriteria,order,first,after,last,before,pageIndex,previousPageIndex);
+    //}
+  }
+
+   searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
+    previousPageIndex?:number)
+    {
+      this.subs.sink = this.custCompClnCatDS.search(where,order,first,after,last,before).subscribe(data => {
+        this.custCompClnCatItems=data;
+        this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
+        this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;
+        this.hasNextPage = this.custCompClnCatDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.custCompClnCatDS.pageInfo?.hasPreviousPage ?? false;
+        this.pageIndex=pageIndex;
+        this.paginator.pageIndex=this.pageIndex;
+        this.selection.clear();
+     });
+    }
+  
+  storeSearchCriteria(where :any, order:any, first:any, after:any, last:any,before:any, pageIndex:number,
+    previousPageIndex?:number,length?:number,hasNextPage?:boolean, hasPreviousPage?:boolean)
+  {
+    const sCriteria: any = {};
+    sCriteria.where = where;
+    sCriteria.order = order;
+    sCriteria.first = first;
+    sCriteria.after = after;
+    sCriteria.last = last;
+    sCriteria.before = before;
+    sCriteria.pageIndex= pageIndex;
+    sCriteria.previousPageIndex=previousPageIndex;
+    sCriteria.length = length;
+    sCriteria.hasNextPage=hasNextPage;
+    sCriteria.hasPreviousPage=hasPreviousPage;
+    
+    this.searchCriteriaService.setCriteria(sCriteria);
+  }
+
   removeSelectedRows() {
     // const totalSelect = this.selection.selected.length;
     // this.selection.selected.forEach((item) => {

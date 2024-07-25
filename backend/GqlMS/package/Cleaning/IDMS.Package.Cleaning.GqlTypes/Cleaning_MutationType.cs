@@ -19,7 +19,7 @@ namespace IDMS.Models.Package.Cleaning.GqlTypes
 {
     public class PackageCleanning_MutationType
     {
-       
+
         //public async Task<int> AddPackageCleaning([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, 
         //    [Service] IHttpContextAccessor httpContextAccessor, pack NewTariffClean)
         //{
@@ -54,16 +54,48 @@ namespace IDMS.Models.Package.Cleaning.GqlTypes
         //        newTariffClean.create_by = uid;
         //        newTariffClean.create_dt = GqlUtils.GetNowEpochInSec();
         //        context.tariff_cleaning.Add(newTariffClean);
-               
+
         //      retval=context.SaveChanges();
         //    }
         //    catch { throw; }
 
-            
+
         //    return retval;
         //}
 
-       
+        public async Task<int> UpdatePackageCleans([Service] ApplicationPackageDBContext context, [Service] IConfiguration config,
+             [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageClean_guids , string remarks, double adjusted_price)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                
+                var dbPackageCleans = context.customer_company_cleaning_category.Where(cc=>UpdatePackageClean_guids.Contains(cc.guid)).ToList();
+                if (dbPackageCleans == null)
+                {
+                    throw new GraphQLException(new Error("The Package Cleaning not found", "500"));
+                }
+                foreach (var cc in dbPackageCleans)
+                {
+                    cc.adjusted_price = adjusted_price;
+
+                    cc.remarks = remarks;
+                    cc.update_by = uid;
+                    cc.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
         public async Task<int> UpdatePackageClean([Service] ApplicationPackageDBContext context, [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, customer_company_cleaning_category_with_customer_company UpdatePackageClean)
         {
