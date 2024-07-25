@@ -194,7 +194,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       tank_no: [''],
       job_no: [''],
       purpose: [''],
-      eta_dt: [''],
+      eta_dt_start: [''],
+      eta_dt_end: [''],
     });
   }
 
@@ -342,7 +343,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       where.status_cv = { contains: this.searchForm!.value['so_status'] };
     }
 
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || this.searchForm!.value['eta_dt']) {
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end'])) {
       const sotSome: any = {};
 
       if (this.searchForm!.value['last_cargo']) {
@@ -357,8 +358,8 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
       }
 
-      if (this.searchForm!.value['eta_dt']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt']), lte: Utility.convertDate(this.searchForm!.value['eta_dt']) };
+      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
+        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
       }
       where.storing_order_tank = { some: sotSome };
     }

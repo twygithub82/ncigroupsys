@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -40,12 +40,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
+import { InGateDS, InGateGO, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { MatStepperModule } from '@angular/material/stepper';
 import { InGateSurveyDS, InGateSurveyGO } from 'app/data-sources/in-gate-survey';
 import { MatRadioModule } from '@angular/material/radio';
+import { Moment } from 'moment';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-in-gate',
@@ -81,7 +83,7 @@ import { MatRadioModule } from '@angular/material/radio';
     MatDividerModule,
     MatCardModule,
     MatStepperModule,
-    MatRadioModule,
+    MatRadioModule
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -192,7 +194,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
     FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
     BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
-    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS'
+    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
   }
 
   in_gate_guid: string | null | undefined;
@@ -287,11 +290,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.highlightedCellsTop = Array(this.rowSize * this.colSize).fill(false);
     this.highlightedCellsFront = Array(this.rowSize * this.colSize).fill(false);
     this.highlightedCellsBottom = Array(this.rowSize * this.colSize).fill(false);
-    this.initSearchForm();
+    this.initForm();
     this.loadData();
   }
 
-  initSearchForm() {
+  initForm() {
     this.surveyForm = this.fb.group({
       test_type_cv: [''],
       test_class_cv: [''],
@@ -305,8 +308,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       max_weight_cv: [''],
       height_cv: [''],
       walkway_cv: [''],
-      // bottom_discharge_type_cv: [''],
-      // compartment_type_cv: [''],
+      tank_comp_cv: [''],
       vehicle_no: [''],
       driver_name: [''],
       haulier: [''],
@@ -321,7 +323,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         bottom_side: [''],
       }),
       damageImageFormGroup: this.fb.group({
-        left_side: [''],
       }),
       bottomFormGroup: this.fb.group({
         btm_dis_comp_cv: [''],
@@ -359,53 +360,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         buffer_plate: [''],
         residue: [''],
         dipstick: [''],
-      }),
-      commentFormGroup: this.fb.group({
-        comments: [''],
       })
     });
-
-    // this.bottomFormGroup = this.fb.group({
-    //   btm_dis_comp_cv: [''],
-    //   btm_dis_valve_cv: [''],
-    //   btm_dis_valve_spec_cv: [''],
-    //   foot_valve_cv: [''],
-    //   thermometer: [''],
-    //   thermometer_cv: [''],
-    //   ladder: [''],
-    //   data_csc_transportplate: [''],
-    // });
-
-    // this.topFormGroup = this.fb.group({
-    //   top_dis_comp_cv: [''],
-    //   top_dis_valve_cv: [''],
-    //   top_dis_valve_spec_cv: [''],
-    //   airline_valve_cv: [''],
-    //   airline_valve_pcs: [''],
-    //   airline_valve_dim: [''],
-    //   airline_valve_conn_cv: [''],
-    //   airline_valve_conn_spec_cv: [''],
-    // });
-
-    // this.manlidFormGroup = this.fb.group({
-    //   manlid_comp_cv: [''],
-    //   manlid_cover_cv: [''],
-    //   manlid_cover_pcs: [''],
-    //   manlid_cover_pts: [''],
-    //   manlid_seal_cv: [''],
-    //   pv_type_cv: [''],
-    //   pv_type_pcs: [''],
-    //   pv_spec_cv: [''],
-    //   pv_spec_pcs: [''],
-    //   safety_handrail: [''],
-    //   buffer_plate: [''],
-    //   residue: [''],
-    //   dipstick: [''],
-    // });
-
-    // this.commentFormGroup = this.fb.group({
-    //   comments: [''],
-    // });
 
     this.in_gate_guid = this.route.snapshot.paramMap.get('id');
     if (this.in_gate_guid) {
@@ -416,7 +372,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           this.populateInGateForm(this.in_gate);
         }
       });
-    } else {
     }
   }
 
@@ -548,6 +503,65 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       driver_name: ig.driver_name,
       haulier: ig.haulier,
       in_gate_remarks: ig.remarks,
+      //test_type_cv: ig?.test_type_cv,
+      //test_class_cv: ig.test_class_cv,
+      //test_dt: ig.test_dt,
+      manufacturer_cv: ig.in_gate_survey?.manufacturer_cv,
+      dom_dt: ig.in_gate_survey?.dom_dt,
+      cladding_cv: ig.in_gate_survey?.cladding_cv,
+      capacity: ig.in_gate_survey?.capacity,
+      tare_weight: ig.in_gate_survey?.tare_weight,
+      max_weight_cv: ig.in_gate_survey?.max_weight_cv,
+      height_cv: ig.in_gate_survey?.height_cv,
+      walkway_cv: ig.in_gate_survey?.walkway_cv,
+      tank_comp_cv: ig.in_gate_survey?.tank_comp_cv,
+      comments: ig.in_gate_survey?.comments,
+      frameFormGroup: {
+        //left_side: ig.in_gate_survey?.left_side
+        //rear_side: ig.in_gate_survey?.rear_side
+        //right_side: ig.in_gate_survey?.right_side
+        //top_side: ig.in_gate_survey?.top_side
+        //front_side: ig.in_gate_survey?.front_side
+        //bottom_side: ig.in_gate_survey?.bottom_side
+      },
+      damageImageFormGroup: {
+      },
+      bottomFormGroup: {
+        btm_dis_comp_cv: ig.in_gate_survey?.btm_dis_comp_cv,
+        btm_dis_valve_cv: ig.in_gate_survey?.btm_dis_valve_cv,
+        btm_dis_valve_spec_cv: ig.in_gate_survey?.btm_dis_valve_spec_cv,
+        foot_valve_cv: ig.in_gate_survey?.foot_valve_cv,
+        //btm_brand_cv: ig.in_gate_survey?.btm_brand_cv,
+        thermometer: ig.in_gate_survey?.thermometer,
+        thermometer_cv: ig.in_gate_survey?.thermometer_cv,
+        ladder: ig.in_gate_survey?.ladder,
+        data_csc_transportplate: ig.in_gate_survey?.data_csc_transportplate
+      },
+      topFormGroup: {
+        top_dis_comp_cv: ig.in_gate_survey?.top_dis_comp_cv,
+        top_dis_valve_cv: ig.in_gate_survey?.top_dis_valve_cv,
+        top_dis_valve_spec_cv: ig.in_gate_survey?.top_dis_valve_spec_cv,
+        //top_brand_cv: ig.in_gate_survey?.top_brand_cv,
+        airline_valve_cv: ig.in_gate_survey?.airline_valve_cv,
+        airline_valve_pcs: ig.in_gate_survey?.airline_valve_pcs,
+        airline_valve_dim: ig.in_gate_survey?.airline_valve_dim,
+        airline_valve_conn_cv: ig.in_gate_survey?.airline_valve_conn_cv,
+        airline_valve_conn_spec_cv: ig.in_gate_survey?.airline_valve_conn_spec_cv,
+      },
+      manlidFormGroup: {
+        manlid_comp_cv: ig.in_gate_survey?.manlid_comp_cv,
+        manlid_cover_cv: ig.in_gate_survey?.manlid_cover_cv,
+        manlid_cover_pcs: ig.in_gate_survey?.manlid_cover_pcs,
+        manlid_cover_pts: ig.in_gate_survey?.manlid_cover_pts,
+        pv_type_cv: ig.in_gate_survey?.pv_type_cv,
+        pv_type_pcs: ig.in_gate_survey?.pv_type_pcs,
+        pv_spec_cv: ig.in_gate_survey?.pv_spec_cv,
+        pv_spec_pcs: ig.in_gate_survey?.pv_spec_pcs,
+        safety_handrail: ig.in_gate_survey?.safety_handrail,
+        buffer_plate: ig.in_gate_survey?.buffer_plate,
+        residue: ig.in_gate_survey?.residue,
+        dipstick: ig.in_gate_survey?.dipstick,
+      }
     });
   }
 
@@ -588,7 +602,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
       sot.unit_type_guid = this.surveyForm.value['unit_type_guid'];
 
-      let ig: InGateItem = new InGateItem(this.in_gate!);
+      let ig: InGateGO = new InGateGO(this.in_gate!);
       ig.vehicle_no = this.surveyForm.value['vehicle_no'];
       ig.driver_name = this.surveyForm.value['driver_name'];
       ig.haulier = this.surveyForm.value['haulier'];
@@ -596,11 +610,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       ig.tank = sot;
 
       let igs: InGateSurveyGO = new InGateSurveyGO();
+      igs.guid = this.in_gate?.in_gate_survey?.guid;
       igs.in_gate_guid = this.in_gate?.guid;
       igs.periodic_test_guid = this.surveyForm.value['periodic_test_guid'] || '';
-      //igs.test_type_cv = this.surveyForm.value['test_type_cv'];
-      //igs.test_class_cv = this.surveyForm.value['test_class_cv'];
-      //igs.test_dt = this.surveyForm.value['test_dt'];
+      // igs.test_type_cv = this.surveyForm.value['test_type_cv'];
+      // igs.test_class_cv = this.surveyForm.value['test_class_cv'];
+      // igs.test_dt = this.surveyForm.value['test_dt'];
       igs.manufacturer_cv = this.surveyForm.value['manufacturer_cv'];
       igs.dom_dt = Utility.convertDate(this.surveyForm.value['dom_dt']);
       igs.cladding_cv = this.surveyForm.value['cladding_cv'];
@@ -609,6 +624,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.max_weight_cv = this.surveyForm.value['max_weight_cv'];
       igs.height_cv = this.surveyForm.value['height_cv'];
       igs.walkway_cv = this.surveyForm.value['walkway_cv'];
+      igs.tank_comp_cv = this.surveyForm.value['tank_comp_cv'];
       igs.comments = this.surveyForm.value['comments'];
 
       const bottomFormGroup = this.surveyForm.get('bottomFormGroup') as UntypedFormGroup;
@@ -661,11 +677,25 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       } else {
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)
-          this.handleSaveSuccess(result?.data?.addStoringOrder);
+          this.handleSaveSuccess(result?.data?.addInGateSurvey);
         });
       }
     } else {
       console.log('Invalid soForm', this.surveyForm?.value);
+      this.markFormGroupTouched(this.surveyForm);
+    }
+  }
+
+  markFormGroupTouched(formGroup: UntypedFormGroup | undefined): void {
+    if (formGroup) {
+      Object.keys(formGroup.controls).forEach((key) => {
+        const control = formGroup.get(key);
+        if (control instanceof UntypedFormGroup) {
+          this.markFormGroupTouched(control);
+        } else {
+          control!.markAsTouched();
+        }
+      });
     }
   }
 
@@ -804,5 +834,57 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         reader.readAsDataURL(file);
       });
     }
+  }
+
+  chosenYearHandler(normalizedYear: Moment) {
+    const ctrlValue = this.surveyForm!.get('test_dt')!.value ? moment(this.surveyForm!.get('test_dt')!.value) : moment();
+    ctrlValue.year(normalizedYear.year()).date(1);
+    this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
+  }
+
+  chosenMonthHandler(normalizedMonth: Moment, datepicker: any) {
+    const ctrlValue = this.surveyForm!.get('test_dt')!.value ? moment(this.surveyForm!.get('test_dt')!.value) : moment();
+    ctrlValue.month(normalizedMonth.month()).year(normalizedMonth.year()).date(1);
+    this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
+    this.getNextTest();
+    datepicker.close();
+  }
+
+  getLastTest(): string | undefined {
+    if (this.surveyForm!.get('test_type_cv')!.value && this.surveyForm!.get('test_class_cv')!.value && this.surveyForm!.get('test_dt')!.value) {
+      const test_type = this.surveyForm!.get('test_type_cv')!.value;
+      const test_class = this.surveyForm!.get('test_class_cv')!.value;
+      const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+    }
+    return "";
+  }
+
+  getNextTest(): string | undefined {
+    if (this.surveyForm!.get('test_type_cv')!.value && this.surveyForm!.get('test_dt')!.value) {
+      const test_type = this.surveyForm!.get('test_type_cv')!.value;
+      const match = test_type.match(/^[0-9]*\.?[0-9]+/);
+      const yearCount = parseFloat(match[0]);
+      const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
+      const resultDt = Utility.addYearsToEpoch(testDt, yearCount);
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    }
+    return "";
+  }
+
+  getTestTypeDescription(codeValType: string): string | undefined {
+    let cv = this.testTypeCvList.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
+  }
+
+  getTestClassDescription(codeValType: string): string | undefined {
+    let cv = this.testClassCvList.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
   }
 }

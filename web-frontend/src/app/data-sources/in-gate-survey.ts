@@ -318,9 +318,7 @@ export const GET_IN_GATE_BY_ID = gql`
 
 export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
   query queryInGateSurveyByID($where: in_gate_surveyFilterInput){
-    queryInGateSurvey(
-      where: $where
-    ) {
+    inGatesSurvey: queryInGateSurvey(where: $where) {
       totalCount
       nodes {
         airline_valve_conn_cv
@@ -458,8 +456,14 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
 `
 
 export const ADD_IN_GATE_SURVEY = gql`
-  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankInput!) {
+  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: in_gate_survey_InGateWithTankInput) {
     addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: { in_gate: $inGate })
+  }
+`;
+
+export const UPDATE_IN_GATE_SURVEY = gql`
+  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!) {
+    updateInGateSurvey(inGateSurveyRequest: $inGateSurvey)
   }
 `;
 
@@ -492,29 +496,30 @@ export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
       );
   }
 
-  // getInGateByID(id: string): Observable<InGateSurveyItem[]> {
-  //   this.loadingSubject.next(true);
-  //   let where: any = { guid: { eq: id } }
-  //   return this.apollo
-  //     .query<any>({
-  //       query: GET_IN_GATE_BY_ID,
-  //       variables: { where }
-  //     })
-  //     .pipe(
-  //       map((result) => result.data),
-  //       catchError((error: ApolloError) => {
-  //         console.error('GraphQL Error:', error);
-  //         return of([] as InGateSurveyItem[]); // Return an empty array on error
-  //       }),
-  //       finalize(() => this.loadingSubject.next(false)),
-  //       map((result) => {
-  //         const retResult = result.inGates || { nodes: [], totalCount: 0 };
-  //         this.dataSubject.next(retResult.nodes);
-  //         this.totalCount = retResult.totalCount;
-  //         return retResult.nodes;
-  //       })
-  //     );
-  // }
+  getInGateSurveyByID(id: string): Observable<InGateSurveyItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = { in_gate: { guid: { eq: id } } }
+    return this.apollo
+      .query<any>({
+        query: QUERY_IN_GATE_SURVEY_BY_ID,
+        variables: { where }
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateSurveyItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          debugger
+          const retResult = result.inGatesSurvey || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          return retResult.nodes;
+        })
+      );
+  }
 
   addInGateSurvey(inGateSurvey: any, inGate: any): Observable<any> {
     return this.apollo.mutate({
@@ -522,6 +527,15 @@ export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
       variables: {
         inGateSurvey,
         inGate
+      }
+    });
+  }
+
+  updateInGateSurvey(inGateSurvey: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_IN_GATE_SURVEY,
+      variables: {
+        inGateSurvey
       }
     });
   }
@@ -544,7 +558,7 @@ export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
   //       finalize(() => this.loadingSubject.next(false)),
   //       map((result) => {
   //         const retResult = result.inGates || { nodes: [], totalCount: 0 };
-        
+
   //         return retResult.totalCount;
   //       })
   //     );

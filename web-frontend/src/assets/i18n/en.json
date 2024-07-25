@@ -368,6 +368,11 @@
     "PACKAGE-MIN-COST" : "Min Cost",
     "PACKAGE-MAX-COST" : "Max Cost",
     "PACKAGE-DETAIL":"Detail",
+    "BOOKING-DATE":"Booking Date",
+    "BOOKING-REFERENCE":"Booking Reference",
+    "BOOKING-TYPE":"Booking Type",
+    "SURVEYOR":"Surveyor"
+    "PACKAGE-DETAIL":"Detail",
      "PACKAGE-CLEANING-ADJUST-COST":"Adjusted Cost"
   },
   "CLEAN-PROCEDURES": {

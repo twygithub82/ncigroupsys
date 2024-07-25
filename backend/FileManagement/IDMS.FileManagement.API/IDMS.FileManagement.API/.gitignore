@@ -1,0 +1,5 @@
+# Dependency directories
+.vs/
+bin/
+obj/
+appsettings.Development.json

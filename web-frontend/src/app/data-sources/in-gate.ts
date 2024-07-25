@@ -8,6 +8,7 @@ import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
 import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 import { AnyObject } from 'chart.js/dist/types/basic';
+import { InGateSurveyItem } from './in-gate-survey';
 
 export class InGate {
   public guid?: string = '';
@@ -58,11 +59,12 @@ export class InGateGO extends InGate {
 
 export class InGateItem extends InGateGO {
   public override tank?: StoringOrderTankItem;
-  // public cleaning_method?: CleaningMethodItem;
+  public in_gate_survey?: InGateSurveyItem;
 
   constructor(item: Partial<InGateItem> = {}) {
     super(item);
     this.tank = item.tank;
+    this.in_gate_survey = item.in_gate_survey;
   }
 }
 
@@ -131,6 +133,9 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
         update_dt
         vehicle_no
         yard_cv
+        in_gate_survey {
+          guid
+        }
         tank {
           certificate_cv
           clean_status_cv
@@ -254,6 +259,60 @@ export const GET_IN_GATE_BY_ID = gql`
             }
           }
         }
+        in_gate_survey {
+          airline_valve_conn_cv
+          airline_valve_conn_spec_cv
+          airline_valve_cv
+          airline_valve_dim
+          airline_valve_pcs
+          btm_dis_comp_cv
+          btm_dis_valve_cv
+          btm_dis_valve_spec_cv
+          buffer_plate
+          capacity
+          cladding_cv
+          comments
+          create_by
+          create_dt
+          data_csc_transportplate
+          delete_dt
+          dipstick
+          dom_dt
+          foot_valve_cv
+          guid
+          height_cv
+          in_gate_guid
+          inspection_dt
+          ladder
+          last_release_dt
+          last_test_cv
+          manlid_comp_cv
+          manlid_cover_cv
+          manlid_cover_pcs
+          manlid_cover_pts
+          manlid_seal_cv
+          manufacturer_cv
+          max_weight_cv
+          periodic_test_guid
+          pv_spec_cv
+          pv_spec_pcs
+          pv_type_cv
+          pv_type_pcs
+          residue
+          safety_handrail
+          take_in_reference
+          take_in_status_cv
+          tank_comp_cv
+          tare_weight
+          thermometer
+          thermometer_cv
+          top_dis_comp_cv
+          top_dis_valve_cv
+          top_dis_valve_spec_cv
+          update_by
+          update_dt
+          walkway_cv
+        }
       }
     }
   }
@@ -346,7 +405,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const retResult = result.inGates || { nodes: [], totalCount: 0 };
-        
+
           return retResult.totalCount;
         })
       );

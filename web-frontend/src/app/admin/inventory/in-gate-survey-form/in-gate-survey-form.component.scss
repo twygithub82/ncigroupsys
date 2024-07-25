@@ -37,18 +37,21 @@
 
 .image-previews {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust minmax as needed */
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    /* Adjust minmax as needed */
     gap: 10px;
     margin-top: 20px;
-  }
-  
-  .image-preview {
-    width: 100%;  /* Take full width of grid column */
-    padding-top: 100%; /* Ratio to keep square shape */
+}
+
+.image-preview {
+    width: 100%;
+    /* Take full width of grid column */
+    padding-top: 100%;
+    /* Ratio to keep square shape */
     position: relative;
-  }
-  
-  .preview-img {
+}
+
+.preview-img {
     position: absolute;
     top: 0;
     left: 0;
@@ -57,4 +60,14 @@
     object-fit: contain;
     border: 1px solid #ddd;
     border-radius: 4px;
-  }
+}
+
+.example-month-picker .mat-calendar {
+    width: 300px;
+    /* Adjust width as needed */
+}
+
+.example-month-picker .mat-calendar-period-button {
+    pointer-events: none;
+    /* Disable year selection */
+}
