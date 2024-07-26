@@ -335,8 +335,11 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       );
   }
 
-  SearchTariffCleaning(where?: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
+  SearchTariffCleaning(where?: any, order?: any, first?: number , after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
+    if(!last) 
+      if(!first)
+          first=10;
     return this.apollo
       .query<any>({
         query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION,

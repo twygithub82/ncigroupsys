@@ -371,8 +371,7 @@
     "BOOKING-DATE":"Booking Date",
     "BOOKING-REFERENCE":"Booking Reference",
     "BOOKING-TYPE":"Booking Type",
-    "SURVEYOR":"Surveyor"
-    "PACKAGE-DETAIL":"Detail",
+    "SURVEYOR":"Surveyor",
      "PACKAGE-CLEANING-ADJUST-COST":"Adjusted Cost"
   },
   "CLEAN-PROCEDURES": {

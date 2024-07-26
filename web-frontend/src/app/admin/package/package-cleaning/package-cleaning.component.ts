@@ -149,6 +149,7 @@ implements OnInit {
   lastSearchCriteria: any;
   lastOrderBy: any = { customer_company:{code: "ASC" }, cleaning_category: { sequence: "ASC" }};
   endCursor: string | undefined = undefined;
+  previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
@@ -381,7 +382,8 @@ implements OnInit {
           if(result.selectedValue>0)
             {
               this.handleSaveSuccess(result.selectedValue);
-              this.search();
+              //this.search();
+              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
             }
       }
       });
@@ -482,6 +484,7 @@ implements OnInit {
       this.lastSearchCriteria=where;
     this.subs.sink = this.custCompClnCatDS.search(where,this.lastOrderBy).subscribe(data => {
        this.custCompClnCatItems=data;
+       this.previous_endCursor=undefined;
        this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
        this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;
        this.hasNextPage = this.custCompClnCatDS.pageInfo?.hasNextPage ?? false;
@@ -527,6 +530,16 @@ implements OnInit {
         last = pageSize;
         before = this.startCursor;
       }
+      else if (pageIndex==this.pageIndex)
+      {
+        
+          first = pageSize;
+          after = this.previous_endCursor;
+     
+          
+          //this.paginator.pageIndex=this.pageIndex;
+          
+      }
     }
 
       this.searchData(this.lastSearchCriteria,order,first,after,last,before,pageIndex,previousPageIndex);
@@ -536,6 +549,7 @@ implements OnInit {
    searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
     previousPageIndex?:number)
     {
+      this.previous_endCursor=this.endCursor;
       this.subs.sink = this.custCompClnCatDS.search(where,order,first,after,last,before).subscribe(data => {
         this.custCompClnCatItems=data;
         this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
