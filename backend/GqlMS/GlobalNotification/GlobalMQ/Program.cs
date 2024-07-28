@@ -1,6 +1,14 @@
 using GlobalMQ.GqlTypes;
+using IDMS.Models.DB;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContextPool<ApplicationNotificationDBContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+ new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
+
+);
 
 // Add services to the container.
 
@@ -12,12 +20,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddGraphQLServer()
-// .AddAuthorization()
+      .RegisterDbContext<ApplicationNotificationDBContext>(DbContextKind.Synchronized)
+.AddMutationType<MutationType>()
 .AddQueryType<QueryType>()
 .AddSubscriptionType<SubscriptionType>()
-.AddInMemorySubscriptions();
+.AddInMemorySubscriptions()
+.AddFiltering()
+.AddProjections()
+.AddSorting();
 
 
 var app = builder.Build();

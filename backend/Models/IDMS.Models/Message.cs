@@ -14,5 +14,7 @@ namespace IDMS.Models
         public long event_dt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         public long count { get; set; } = 0;
+
+     
     }
 }
