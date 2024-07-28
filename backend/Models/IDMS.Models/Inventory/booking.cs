@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotChocolate;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,21 +18,20 @@ namespace IDMS.Models.Inventory
         [ForeignKey("storing_order_tank")]
         public string? sot_guid { get; set; }
         public string? surveyor_guid { get; set; }
-        public string? report_guid { get; set; }
+        //public string? report_guid { get; set; }
         public string? reference { get; set; }
-        public string? mime_cv { get; set; }
+        //public string? mime_cv { get; set; }
         public string? book_type_cv { get; set; }
         public string? status_cv { get; set; }
         public long? booking_dt { get; set; }
-        public long? clean_dt { get; set; }
-        public long? repair_complete_dt { get; set; }
-
+        public long? action_dt { get; set; }
+        //public long? repair_complete_dt { get; set; }
         public storing_order_tank? storing_order_tank { get; set; }
     }
 
-    public class BookingWithTanks : booking
-    {
-        public storing_order_tank? storing_order_tank { get; set; }
-    }
+    //public class BookingWithTanks : booking
+    //{
+    //    public storing_order_tank? storing_order_tank { get; set; }
+    //}
 
 }

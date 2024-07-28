@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Booking.Application", "IDMS.StoringOrder\IDMS.Booking.Application.csproj", "{C67EC3EC-8883-4497-8C78-402786F8AF0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Booking.Application", "IDMS.Booking.Application\IDMS.Booking.Application.csproj", "{C67EC3EC-8883-4497-8C78-402786F8AF0A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Booking.GqlTypes", "IDMS.StoringOrder.GqlTypes\IDMS.Booking.GqlTypes.csproj", "{ACC6F5F8-AE7A-4556-9686-13B0C26A95AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Booking.GqlTypes", "IDMS.Booking.GqlTypes\IDMS.Booking.GqlTypes.csproj", "{ACC6F5F8-AE7A-4556-9686-13B0C26A95AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Booking.Model", "IDMS.StoringOrder.Model\IDMS.Booking.Model.csproj", "{26740B81-8B32-43CA-88C5-79322FCEAF24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Booking.Model", "IDMS.Booking.Model\IDMS.Booking.Model.csproj", "{26740B81-8B32-43CA-88C5-79322FCEAF24}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Models", "..\..\..\Models\IDMS.Models\IDMS.Models.csproj", "{5495D0B7-A036-49F3-8CD3-3DCEC84FE53B}"
 EndProject

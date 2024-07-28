@@ -48,7 +48,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
-        [UseFiltering(typeof(SOTFilter))]
+        [UseFiltering]
         [UseSorting]
         public IQueryable<storing_order_tank> QueryStoringOrderTank(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
@@ -56,7 +56,14 @@ namespace IDMS.StoringOrder.GqlTypes
             {
                 return context.storing_order_tank.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(so => so.storing_order)
-                    .Include(tf => tf.tariff_cleaning);
+                    .Include(tf => tf.tariff_cleaning)
+                    .Include(bk => bk.booking);
+                //return context.storing_order_tank
+                //    .Where(d => (d.delete_dt == null || d.delete_dt == 0) &&
+                //                (d.tariff_cleaning.delete_dt == null || d.tariff_cleaning.delete_dt == 0))
+                //    .Include(so => so.storing_order)
+                //    .Include(tf => tf.tariff_cleaning)
+                //    .Include(bk => bk.booking);
             }
             catch (Exception ex)
             {

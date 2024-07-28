@@ -22,16 +22,12 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<in_gate_survey> in_gate_survey { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
 
-        public DbSet<IDMS.Models.Parameter.CleaningMethodWithTariff> cleaning_method { get; set; }
+        public DbSet<CleaningMethodWithTariff> cleaning_method { get; set; }
 
-        public DbSet<IDMS.Models.Parameter.CleaningCategoryWithTariff> cleaning_category { get; set; }
-        //public DbSet<cleaning_method> cleaning_method { get; set; }
-        //public DbSet<cleaning_category> cleaning_category { get; set; }
+        public DbSet<CleaningCategoryWithTariff> cleaning_category { get; set; }
 
-        //public DbSet<CleaningCategoryWithTariff> cleaning_category_with_tank { get; set; }
 
-        public DbSet<BookingWithTanks> booking { get; set; }
-
+        public DbSet<booking> booking { get; set; }
         public DbSet<tank> tank { get; set; }
         public DbSet<code_values> code_values { get; set; }
         public DbSet<surveyor> surveyor { get; set; }
