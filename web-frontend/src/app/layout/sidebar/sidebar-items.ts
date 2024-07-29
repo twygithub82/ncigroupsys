@@ -234,6 +234,17 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+      },
+      {
+        path: "admin/inventory/booking-new",
+        title: "MENUITEMS.INVENTORY.LIST.BOOKING-NEW",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
       }
     ]
   },
