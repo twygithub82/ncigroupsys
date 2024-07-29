@@ -1,4 +1,5 @@
-﻿using IDMS.Models.Master;
+﻿using HotChocolate;
+using IDMS.Models.Master;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;

@@ -59,9 +59,7 @@ namespace IDMS.Models.Inventory
         public storing_order? storing_order { get; set; }
 
         public tariff_cleaning? tariff_cleaning { get; set; }
-
-        [GraphQLName("booking")]
-        public BookingWithTanks? booking { get; set; }
+        public IEnumerable<booking>? booking { get; set; }
 
     }
 }

@@ -8,7 +8,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAczbJMk9j60WbPFV2uQjcNQAAAAACAAAAAAAQZgAAAAEAACAAAAA11Rd5Qg4beq5KezUKqkI5YKDokVAHDXvL5/voI6NUAgAAAAAOgAAAAAIAACAAAACacCckaTpiCE51e7RZDLQlTTDfy9QOx6HVDGCedck9hIAAAABsww5IePYFjZ611LVyyRzPpoBByQmepJgPIhwURX48PyAUfsU4T5OYkle2JZMkKUf5i4BKXbMlY/6wtZoZdOuhdL4KewaHHT9CzW1nfINSJpUih8zgmJY8ES8IPe+H4jDHNp/H2KPVxNXCvl2/4poQHa63HiYJERUr053gdmPWcUAAAACNSxg17dyRMYAptOfhJGA4yWZwutF25iqtEZO63VpXRCPqhjhIiUlKCyXMRGyXVu+zs0UijVZrJkPeZhxBZJUi</EncryptedPassword>
     <_PublishTargetUrl>ftps://waws-prod-hk1-015.ftp.azurewebsites.windows.net/site/wwwroot</_PublishTargetUrl>
-    <History>True|2024-07-20T11:29:56.6607722Z||;False|2024-07-20T19:29:06.5576500+08:00||;True|2024-07-18T20:19:54.0305793+08:00||;False|2024-07-18T20:19:23.1429841+08:00||;False|2024-07-18T20:18:59.7175354+08:00||;True|2024-07-18T09:15:26.1175626+08:00||;False|2024-07-18T09:14:20.9772596+08:00||;</History>
+    <History>True|2024-07-28T07:32:22.8637016Z||;False|2024-07-28T15:31:46.3753186+08:00||;True|2024-07-28T15:06:07.9272327+08:00||;True|2024-07-28T00:02:12.7099911+08:00||;False|2024-07-28T00:01:32.1176010+08:00||;True|2024-07-27T23:02:57.4318798+08:00||;False|2024-07-27T23:02:22.9466541+08:00||;True|2024-07-27T16:22:47.3670014+08:00||;True|2024-07-20T19:29:56.6607722+08:00||;False|2024-07-20T19:29:06.5576500+08:00||;True|2024-07-18T20:19:54.0305793+08:00||;False|2024-07-18T20:19:23.1429841+08:00||;False|2024-07-18T20:18:59.7175354+08:00||;True|2024-07-18T09:15:26.1175626+08:00||;False|2024-07-18T09:14:20.9772596+08:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
   <ItemGroup>
@@ -106,37 +106,37 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/29/2024 05:25:40</publishTime>
     </File>
     <File Include="IDMS.Models.dll">
-      <publishTime>07/20/2024 19:28:54</publishTime>
+      <publishTime>07/28/2024 00:01:20</publishTime>
     </File>
     <File Include="IDMS.Models.pdb">
-      <publishTime>07/20/2024 19:28:54</publishTime>
+      <publishTime>07/28/2024 00:01:20</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.deps.json">
-      <publishTime>07/20/2024 19:29:44</publishTime>
+      <publishTime>07/28/2024 15:32:13</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.dll">
-      <publishTime>07/18/2024 20:19:44</publishTime>
+      <publishTime>07/28/2024 15:32:13</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.exe">
-      <publishTime>07/20/2024 19:29:44</publishTime>
+      <publishTime>07/28/2024 15:32:13</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.pdb">
-      <publishTime>07/20/2024 19:29:44</publishTime>
+      <publishTime>07/28/2024 15:32:13</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.runtimeconfig.json">
-      <publishTime>07/16/2024 16:54:01</publishTime>
+      <publishTime>07/27/2024 16:22:30</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.GqlTypes.dll">
-      <publishTime>07/20/2024 19:28:55</publishTime>
+      <publishTime>07/28/2024 15:31:37</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.GqlTypes.pdb">
-      <publishTime>07/20/2024 19:28:55</publishTime>
+      <publishTime>07/28/2024 15:31:37</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Model.dll">
-      <publishTime>07/20/2024 19:28:54</publishTime>
+      <publishTime>07/28/2024 00:01:20</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Model.pdb">
-      <publishTime>07/20/2024 19:28:54</publishTime>
+      <publishTime>07/28/2024 00:01:20</publishTime>
     </File>
     <File Include="Microsoft.AspNetCore.Authentication.JwtBearer.dll">
       <publishTime>05/20/2024 12:26:12</publishTime>
@@ -196,7 +196,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/19/2022 00:16:44</publishTime>
     </File>
     <File Include="web.config">
-      <publishTime>07/20/2024 19:29:44</publishTime>
+      <publishTime>07/28/2024 15:32:13</publishTime>
     </File>
     <File Include="Yarp.ReverseProxy.dll">
       <publishTime>11/17/2023 18:52:50</publishTime>
