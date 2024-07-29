@@ -349,12 +349,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     const searchField = this.searchField;
     const where: any = {
       and: [
-        {
-          and: [
-            { status_cv: { neq: "ACCEPTED" } },
-            { tank_status_cv: { neq: "RO_GENERATED" } }
-          ]
-        },
+        { status_cv: { eq: "ACCEPTED" } },
+        { tank_status_cv: { neq: "RO_GENERATED" } },
         { in_gate: { delete_dt: { eq: null } } }
       ]
     };
@@ -428,7 +424,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       })
     ).subscribe();
   }
-  
+
   addBookingDetails(event: Event, row?: StoringOrderTankItem[]) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
