@@ -37,11 +37,12 @@ namespace GlobalMQ.GqlTypes
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                DateTime endTargetTime = DateTime.Today.AddHours(12).AddMinutes(59).AddSeconds(59);
+                DateTime endTargetTime = DateTime.Today.AddHours(23).AddMinutes(59).AddSeconds(59);
                 DateTime startTargetTime = DateTime.Today.AddMonths(-1);
-                long enddt = new DateTimeOffset(endTargetTime, TimeSpan.Zero).ToUnixTimeSeconds();
-                long startdt = new DateTimeOffset(startTargetTime, TimeSpan.Zero).ToUnixTimeSeconds();
                 
+                long enddt = ((DateTimeOffset)endTargetTime).ToUnixTimeSeconds();
+                long startdt = ((DateTimeOffset)startTargetTime).ToUnixTimeSeconds();
+
                 query = context.notification.Where(i => (i.delete_dt == null || i.delete_dt == 0) && (i.date >= startdt && i.date <= enddt)).OrderByDescending(i => i.date); ;
 
 

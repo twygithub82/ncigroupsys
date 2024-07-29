@@ -69,6 +69,7 @@ export class Dashboard1Component implements OnInit {
   public barChartOptions!: Partial<ChartOptions>;
   public earningOptions!: Partial<ChartOptions>;
   public performanceRateChartOptions!: Partial<ChartOptions>;
+  graphqlNotificationService?: GraphqlNotificationService
   messageSubscription?: Subscription;
   in_gate_yet_to_survey?:number =0;
   sot_waiting?:number =0;
@@ -77,9 +78,9 @@ export class Dashboard1Component implements OnInit {
   constructor(
     private apollo: Apollo,
     
-    private graphqlNotificationService: GraphqlNotificationService
+   // private graphqlNotificationService: GraphqlNotificationService
   ) {
-
+    this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
     this.igDS= new InGateDS(this.apollo);
     this.sotDS=new StoringOrderTankDS(this.apollo);
     //constructor
@@ -111,7 +112,7 @@ export class Dashboard1Component implements OnInit {
   
   private messageSubscribe(){
 
-    this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
+    this.messageSubscription = this.graphqlNotificationService?.newMessageReceived.subscribe(
       (message) => {
         //alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
         if(message.messageReceived.event_id=="2000" || message.messageReceived.event_id=="2010")

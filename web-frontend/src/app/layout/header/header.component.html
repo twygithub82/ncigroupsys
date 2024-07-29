@@ -99,8 +99,9 @@
         <li>
           <button mat-icon-button [matMenuTriggerFor]="notificationMenu" class="nav-notification-icons">
             <app-feather-icons [icon]="'bell'" [class]="'header-icon'"></app-feather-icons>
+            <span class="badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
           </button>
-          <mat-menu #notificationMenu="matMenu" class="nfc-menu">
+          <mat-menu #notificationMenu="matMenu" class="nfc-menu" (close)="resetCounter()">
             <div class="nfc-header">
               <h5 class="mb-0">Notitications</h5>
               <a class="nfc-mark-as-read">Mark all as read</a>
@@ -111,13 +112,13 @@
                   <div class="menu">
                     <div>
                       @for (notification of notifications; track notification) {
-                      <button mat-menu-item onClick="return false;" [ngClass]="[notification.status]">
+                      <button mat-menu-item (click)="clickNotificationItem(notification)" [ngClass]="[notification.status]">
                         <span class="table-img msg-user ">
                           <i class="material-icons-two-tone nfc-type-icon"
                             [ngClass]="[notification.color]">{{notification.icon}}</i>
                         </span>
                         <span class="menu-info">
-                          <span class="menu-title">{{notification.message}}</span>
+                          <span class="menu-title">{{notification.message}} : {{notification.module}}</span>
                           <span class="menu-desc mt-2">
                             <i class="material-icons">access_time</i> {{notification.time}}
                           </span>

@@ -16,7 +16,7 @@
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST }}</mat-label>
+                    <mat-label>{{translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST | translate}}</mat-label>
                     <input matInput formControlName="adjusted_cost" type="number">
                    
                   </mat-form-field>
@@ -39,12 +39,12 @@
                     <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
                       
                       <ng-container matColumnDef="fName">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE| translate}}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE | translate}}</mat-header-cell>
                         <mat-cell *matCellDef="let row" >
                           <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE | translate}}:</span>{{row.customer_company.code}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="lName">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME| translate}}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME | translate}}</mat-header-cell>
                         <mat-cell *matCellDef="let row" >
                           <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME | translate}}:</span>{{row.customer_company.name}}</mat-cell>
                       </ng-container>

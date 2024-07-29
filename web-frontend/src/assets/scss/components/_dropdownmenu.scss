@@ -270,8 +270,12 @@
             brightness(105%) contrast(117%);
         }
         &.nfc-red {
-          filter: invert(24%) sepia(94%) saturate(7102%) hue-rotate(356deg)
+          filter: invert(24%) sepia(90%) saturate(7102%) hue-rotate(356deg)
             brightness(103%) contrast(100%);
+        }
+        &.nfc-black {
+          filter: invert(24%) sepia(94%) saturate(7102%) hue-rotate(356deg)
+          brightness(0%) contrast(100%);
         }
       }
       .msg-unread {

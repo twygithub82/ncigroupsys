@@ -75,6 +75,14 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationPackageDBContext>();
+    // Perform a simple query to initialize the connection
+    //dbContext.Database.CanConnect();
+    dbContext.Database.OpenConnection();
+    //dbContext.Database.CloseConnection();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

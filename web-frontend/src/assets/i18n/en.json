@@ -155,7 +155,6 @@
   },
   
   "COMMON-FORM": {
-
     "TARIFF-CLEANING":"Cleaning",
     "CATEGORY-DESCRIPTION":"Category Description",
     "CATEGORY-NAME":"Category Name",
@@ -372,7 +371,7 @@
     "BOOKING-REFERENCE":"Booking Reference",
     "BOOKING-TYPE":"Booking Type",
     "SURVEYOR":"Surveyor",
-     "PACKAGE-CLEANING-ADJUST-COST":"Adjusted Cost"
+    "PACKAGE-CLEANING-ADJUST-COST":"Adjusted Cost"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

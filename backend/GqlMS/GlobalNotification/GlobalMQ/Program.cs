@@ -35,6 +35,15 @@ builder.Services.AddGraphQLServer()
 
 var app = builder.Build();
 
+// Initialize the database connection
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationNotificationDBContext>();
+    // Perform a simple query to initialize the connection
+    //dbContext.Database.CanConnect();
+    dbContext.Database.OpenConnection();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

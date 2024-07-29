@@ -456,7 +456,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       else if (pageIndex==this.pageIndex)
       {
         last = pageSize;
-        let s
         after = this.endCursor;
         //this.paginator.pageIndex=this.pageIndex;
         
