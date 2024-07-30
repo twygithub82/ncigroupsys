@@ -97,11 +97,11 @@
         </li>
         <!-- #START# Notifications-->
         <li>
-          <button mat-icon-button [matMenuTriggerFor]="notificationMenu" class="nav-notification-icons">
+          <button mat-icon-button [matMenuTriggerFor]="notificationMenu" class="nav-notification-icons" (click)="resetTheItemTime()">
             <app-feather-icons [icon]="'bell'" [class]="'header-icon'"></app-feather-icons>
             <span class="badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
           </button>
-          <mat-menu #notificationMenu="matMenu" class="nfc-menu" (close)="resetCounter()">
+          <mat-menu #notificationMenu="matMenu" class="nfc-menu" (close)="resetCounter()" >
             <div class="nfc-header">
               <h5 class="mb-0">Notitications</h5>
               <a class="nfc-mark-as-read">Mark all as read</a>

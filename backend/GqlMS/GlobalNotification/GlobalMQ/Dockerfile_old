@@ -12,7 +12,6 @@ WORKDIR /src
 COPY ["GlobalMQ.csproj", "."]
 RUN dotnet restore "./GlobalMQ.csproj"
 COPY . .
-COPY ["./ReleaseDll/.","."]
 WORKDIR "/src/."
 RUN dotnet build "./GlobalMQ.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

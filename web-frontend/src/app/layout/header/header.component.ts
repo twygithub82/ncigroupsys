@@ -24,6 +24,7 @@ import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition
 
 interface Notifications {
   message: string;
+  notification_date:number;
   time: string;
   icon: string;
   color: string;
@@ -231,9 +232,10 @@ export class HeaderComponent
           icon : this.getNotificationIcon(item.id!),
           // icon :"mail",
           status: 'msg-read',
-          time: '',
+          time: this.getTimeAgo(item.date!),
           module:item.module_cv!,
           id:item.id!,
+          notification_date:item.date!
         }
         this.notifications.push(notifyCls);
        });
@@ -257,9 +259,10 @@ export class HeaderComponent
             icon : this.getNotificationIcon(notify.id),
             // icon :"mail",
             status: 'msg-read',
-            time: '',
+            time: this.getTimeAgo(notify.date),
             module:notify.module_cv,
             id:notify.id,
+            notification_date:notify.date
           }
           this.notifications.unshift(notifyCls);
           this.notificationCount += 1;
@@ -348,5 +351,35 @@ export class HeaderComponent
         break;
     }
     return defaultColor;
+  }
+
+  resetTheItemTime()
+  {
+    this.notifications.forEach(item=>{
+
+      item.time = this.getTimeAgo(item.notification_date);
+    });
+  }
+
+  getTimeAgo(unixTime: number): string {
+    const dateTime = new Date(unixTime * 1000); // Convert Unix time to JavaScript Date object
+    const now = new Date(); // Get current time
+
+    const timeDifference = now.getTime() - dateTime.getTime(); // Difference in milliseconds
+
+    const seconds = Math.floor(timeDifference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days >= 1) {
+      return dateTime.toLocaleString();
+    } else if (hours >= 1) {
+      return `${hours} hours ago`;
+    } else if (minutes >= 1) {
+      return `${minutes} minutes ago`;
+    } else {
+      return `${seconds} seconds ago`;
+    }
   }
 }
