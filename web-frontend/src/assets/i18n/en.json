@@ -2,13 +2,13 @@
   "SOFTWARE-NAME": {
     "TEXT": "IDMS"
   },
-  "HEADER":{
+  "HEADER": {
     "SEARCH": {
       "TEXT": "Search.."
     }
   },
   "MENUITEMS": {
-    "USER":{
+    "USER": {
       "POST": "Manager"
     },
     "MAIN": {
@@ -89,35 +89,35 @@
     "ADMIN": {
       "TEXT": "Admin"
     },
-    "TARIFF":{
-      "TEXT" :"Tariff",
-      "LIST":{
-        "TARIFF-CLEANING":"Cleaning",
-        "TARIFF-LABOUR":"Labour Cost",
-        "TARIFF-DEPOT":"Depot Cost",
-        "TARIFF-REPAIR":"Repair",
-        "TARIFF-BUFFER":"Buffer Cleaning",
-        "TARIFF-CLEANING-NEW":"New Tariff Cleaning",
-        "TARIFF-CLEANING-EDIT":"Edit Tariff Cleaning"
+    "TARIFF": {
+      "TEXT": "Tariff",
+      "LIST": {
+        "TARIFF-CLEANING": "Cleaning",
+        "TARIFF-LABOUR": "Labour Cost",
+        "TARIFF-DEPOT": "Depot Cost",
+        "TARIFF-REPAIR": "Repair",
+        "TARIFF-BUFFER": "Buffer Cleaning",
+        "TARIFF-CLEANING-NEW": "New Tariff Cleaning",
+        "TARIFF-CLEANING-EDIT": "Edit Tariff Cleaning"
       }
     },
-    "PACKAGE":{
-      "TEXT" :"Package",
-      "LIST":{
-        "PACKAGE-CLEANING":"Cleaning",
-        "PACKAGE-LABOUR":"Labour Cost",
-        "PACKAGE-DEPOT":"Depot Cost",
-        "PACKAGE-REPAIR":"Repair",
-        "PACKAGE-BUFFER":"Buffer Cleaning",
-        "PACKAGE-CLEANING-NEW":"New PACKAGE Cleaning",
-        "PACKAGE-CLEANING-EDIT":"Edit PACKAGE Cleaning"
+    "PACKAGE": {
+      "TEXT": "Package",
+      "LIST": {
+        "PACKAGE-CLEANING": "Cleaning",
+        "PACKAGE-LABOUR": "Labour Cost",
+        "PACKAGE-DEPOT": "Depot Cost",
+        "PACKAGE-REPAIR": "Repair",
+        "PACKAGE-BUFFER": "Buffer Cleaning",
+        "PACKAGE-CLEANING-NEW": "New PACKAGE Cleaning",
+        "PACKAGE-CLEANING-EDIT": "Edit PACKAGE Cleaning"
       }
     },
     "CLEANING-MANAGEMENT": {
       "TEXT": "Cleaning Management",
       "LIST": {
-        "CLEAN-METHODS":"Cleaning Methods",
-        "CLEAN-CATEGORY":"Cleaning Category",
+        "CLEAN-METHODS": "Cleaning Methods",
+        "CLEAN-CATEGORY": "Cleaning Category",
         "CLEAN-STEPS": "Cleaning Steps",
         "CLEAN-PROCEDURES": "Cleaning Procedures",
         "CLEAN-PROCEDURES-NEW": "New Cleaning Procedures",
@@ -137,7 +137,8 @@
         "IN-GATE-DETAILS": "In Gate Details",
         "IN-GATE-SURVEY": "In Gate Survey",
         "IN-GATE-SURVEY-FORM": "In Gate Survey Form",
-        "BOOKING": "Booking"
+        "BOOKING": "Booking",
+        "BOOKING-NEW": "New Booking"
       }
     }
   },
@@ -153,11 +154,10 @@
     "FORGOTPASSWORD": "Forgot password?",
     "LOGIN": "Login"
   },
-  
   "COMMON-FORM": {
-    "TARIFF-CLEANING":"Cleaning",
-    "CATEGORY-DESCRIPTION":"Category Description",
-    "CATEGORY-NAME":"Category Name",
+    "TARIFF-CLEANING": "Cleaning",
+    "CATEGORY-DESCRIPTION": "Category Description",
+    "CATEGORY-NAME": "Category Name",
     "CLEAN-PROCEDURES": "Cleaning Procedures",
     "CLEAN-GROUPS": "Cleaning Groups",
     "PROCEDURE-DETAILS": "Procedure Details",
@@ -240,18 +240,18 @@
     "CLEANING-CONDITIONS": "Cleaning Conditions",
     "ROLLBACK-STATUS": "Rollback Status",
     "BULK": "Bulk",
-    "CARGO-NAME":"Cargo Name",
-    "CARGO-ALIAS":"Alias Name",
-    "CARGO-DESCRIPTION":"Cargo Description",
-    "CARGO-UN-NO":"UN No",
-    "CARGO-CLASS":"Class No",
-    "CARGO-CLASS-SELECT":"Cargo Class",
-    "CARGO-FLASH-POINT":"Flash Point",
-    "CARGO-COST":"Cost",
-    "CARGO-CATEGORY":"Category",
-    "CARGO-METHOD":"Method",
-    "CARGO-HAZARD-LEVEL":"Hazard Level",
-    "CARGO-BAN-TYPE":"Ban Type",
+    "CARGO-NAME": "Cargo Name",
+    "CARGO-ALIAS": "Alias Name",
+    "CARGO-DESCRIPTION": "Cargo Description",
+    "CARGO-UN-NO": "UN No",
+    "CARGO-CLASS": "Class No",
+    "CARGO-CLASS-SELECT": "Cargo Class",
+    "CARGO-FLASH-POINT": "Flash Point",
+    "CARGO-COST": "Cost",
+    "CARGO-CATEGORY": "Category",
+    "CARGO-METHOD": "Method",
+    "CARGO-HAZARD-LEVEL": "Hazard Level",
+    "CARGO-BAN-TYPE": "Ban Type",
     "CARGO-DETAILS": "Cargo Details",
     "CARGO-NATURE": "Cargo Nature",
     "CLEANING-CATEGORY": "Cleaning Category",
@@ -259,8 +259,8 @@
     "IN-GATE-ALERT": "In-Gate Alert",
     "MSDS": "MSDS",
     "CARGO-OTHER-DETAILS": "Other Details",
-    "CARGO-ALERT":"In-Gate Alert",
-    "CARGO-NOTE":"Depot Note",
+    "CARGO-ALERT": "In-Gate Alert",
+    "CARGO-NOTE": "Depot Note",
     "CARGO": "Cargo",
     "CONFIRM": "Confirm",
     "UNDO": "Undo",
@@ -293,27 +293,27 @@
     "DATE": "Date",
     "CLASS": "Class",
     "DETAILS": "Details",
-    "CARGO-CLASS-1":"1",
-    "CARGO-CLASS-1-4":"1.4",
-    "CARGO-CLASS-1-5":"1.5",
-    "CARGO-CLASS-1-6":"1.6",
-    "CARGO-CLASS-2-1":"2.1",
-    "CARGO-CLASS-2-2":"2.2",
-    "CARGO-CLASS-2-3":"2.3",
-    "CARGO-CLASS-3":"3",
-    "CARGO-CLASS-4-1":"4.1",
-    "CARGO-CLASS-4-2":"4.2",
-    "CARGO-CLASS-4-3":"4.3",
-    "CARGO-CLASS-5-1":"5.1",
-    "CARGO-CLASS-5-2":"5.2",
-    "CARGO-CLASS-6-1":"6.1",
-    "CARGO-CLASS-6-2":"6.2",
-    "CARGO-CLASS-7-1":"7",
-    "CARGO-CLASS-7-2":"7",
-    "CARGO-CLASS-7-3":"7",
-    "CARGO-CLASS-8":"8",
-    "CARGO-CLASS-9-1":"9",
-    "CARGO-CLASS-9-2":"9",
+    "CARGO-CLASS-1": "1",
+    "CARGO-CLASS-1-4": "1.4",
+    "CARGO-CLASS-1-5": "1.5",
+    "CARGO-CLASS-1-6": "1.6",
+    "CARGO-CLASS-2-1": "2.1",
+    "CARGO-CLASS-2-2": "2.2",
+    "CARGO-CLASS-2-3": "2.3",
+    "CARGO-CLASS-3": "3",
+    "CARGO-CLASS-4-1": "4.1",
+    "CARGO-CLASS-4-2": "4.2",
+    "CARGO-CLASS-4-3": "4.3",
+    "CARGO-CLASS-5-1": "5.1",
+    "CARGO-CLASS-5-2": "5.2",
+    "CARGO-CLASS-6-1": "6.1",
+    "CARGO-CLASS-6-2": "6.2",
+    "CARGO-CLASS-7-1": "7",
+    "CARGO-CLASS-7-2": "7",
+    "CARGO-CLASS-7-3": "7",
+    "CARGO-CLASS-8": "8",
+    "CARGO-CLASS-9-1": "9",
+    "CARGO-CLASS-9-2": "9",
     "IN-GATE-DETAILS": "In-Gate Details",
     "IN-GATE-REMARKS": "In-Gate Remarks",
     "LAST-UPDATE-BY": "Last Update By",
@@ -364,14 +364,17 @@
     "FRONT-SIDE": "Front Side",
     "BOTTOM-SIDE": "Bottom Side",
     "DAMAGE-PHOTOS": "Damage Photos",
-    "PACKAGE-MIN-COST" : "Min Cost",
-    "PACKAGE-MAX-COST" : "Max Cost",
-    "PACKAGE-DETAIL":"Detail",
-    "BOOKING-DATE":"Booking Date",
-    "BOOKING-REFERENCE":"Booking Reference",
-    "BOOKING-TYPE":"Booking Type",
-    "SURVEYOR":"Surveyor",
-    "PACKAGE-CLEANING-ADJUST-COST":"Adjusted Cost"
+    "PACKAGE-MIN-COST": "Min Cost",
+    "PACKAGE-MAX-COST": "Max Cost",
+    "PACKAGE-DETAIL": "Detail",
+    "BOOKING-DATE": "Booking Date",
+    "BOOKING-REFERENCE": "Booking Reference",
+    "BOOKING-TYPE": "Booking Type",
+    "SURVEYOR": "Surveyor",
+    "PACKAGE-CLEANING-ADJUST-COST":"Adjusted Cost",
+    "ADD-NEW-BOOKING": "Add New Booking",
+    "BOOKINGS": "Bookings",
+    "SELECT-ALL": "Select All"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

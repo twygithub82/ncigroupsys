@@ -40,12 +40,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { MatCardModule } from '@angular/material/card';
+import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
 @Component({
-  selector: 'app-booking',
+  selector: 'app-booking-new',
   standalone: true,
-  templateUrl: './booking.component.html',
-  styleUrl: './booking.component.scss',
+  templateUrl: './booking-new.component.html',
+  styleUrl: './booking-new.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -73,24 +75,32 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatCardModule,
   ]
 })
-export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
+    'select',
     'tank_no',
     'customer_code',
-    'job_no',
-    'last_cargo',
-    'so_no',
+    'eir_no',
+    'eir_dt',
+    'capacity',
+    'tare_weight',
+    'tank_status',
+    'yard',
+    'actions',
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING-NEW'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.INVENTORY.LIST.BOOKING'
   ]
 
   translatedLangText: any = {};
   langText = {
+    NEW: 'COMMON-FORM.NEW',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
@@ -116,7 +126,13 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     BOOKING_REFERENCE: "COMMON-FORM.BOOKING-REFERENCE",
     SURVEYOR: "COMMON-FORM.SURVEYOR",
     BOOKING_TYPE: "COMMON-FORM.BOOKING-TYPE",
-    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS"
+    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
+    CUSTOMER: "COMMON-FORM.CUSTOMER",
+    CAPACITY: "COMMON-FORM.CAPACITY",
+    TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
+    ADD_NEW_BOOKING: "COMMON-FORM.ADD-NEW-BOOKING",
+    BOOKINGS: "COMMON-FORM.BOOKINGS",
+    SELECT_ALL: "COMMON-FORM.SELECT-ALL"
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -128,16 +144,18 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
   cvDS: CodeValuesDS;
 
   sotList: StoringOrderTankItem[] = [];
+  sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
+  selectedItemsPerPage: { [key: number]: Set<string> } = {};
   customer_companyList?: CustomerCompanyItem[];
   yardCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   bookingTypeCvList: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
 
+  lastSearchCriteria: any;
+  lastOrderBy: any = {};
   pageIndex = 0;
   pageSize = 10;
-  lastSearchCriteria: any;
-  lastOrderBy: any = { so_no: "DESC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -227,6 +245,76 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     });
   }
 
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    // const numSelected = this.sotSelection.selected.length;
+    // const numRows = this.sotDS.totalCount;
+    // console.log(numSelected);
+    // console.log(numRows);
+    // return numSelected === numRows;
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const numSelected = selectedItems.size;
+    const numRows = this.sotList.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    // this.isAllSelected()
+    //   ? this.sotSelection.clear()
+    //   : this.sotList.forEach((row) =>
+    //     this.sotSelection.select(row)
+    //   );
+    if (this.isAllSelected()) {
+      this.clearPageSelection();
+    } else {
+      this.selectAllOnPage();
+    }
+  }
+
+  /** Clear selection on the current page */
+  clearPageSelection() {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.sotList.forEach(row => {
+      this.sotSelection.deselect(row);
+      selectedItems.delete(row.guid!);
+    });
+    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  /** Select all items on the current page */
+  selectAllOnPage() {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.sotList.forEach(row => {
+      this.sotSelection.select(row);
+      selectedItems.add(row.guid!);
+    });
+    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  /** Handle row selection */
+  toggleRow(row: StoringOrderTankItem) {
+    this.sotSelection.toggle(row);
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    if (this.sotSelection.isSelected(row)) {
+      selectedItems.add(row.guid!);
+    } else {
+      selectedItems.delete(row.guid!);
+    }
+    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  /** Update selection for the current page */
+  updatePageSelection() {
+    this.sotSelection.clear();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.sotList.forEach(row => {
+      if (selectedItems.has(row.guid!)) {
+        this.sotSelection.select(row);
+      }
+    });
+  }
+
   // export table data in excel file
   exportExcel() {
     // key name with space add in brackets
@@ -258,34 +346,28 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   search() {
-    if (this.searchField) {
-      const searchField = this.searchField;
-      const where: any = {
-        and: [
-          { status_cv: { eq: "WAITING" } },
-          {
-            or: [
-              { storing_order: { so_no: { contains: searchField } } },
-              { tank_no: { contains: searchField } }, { job_no: { contains: searchField } }
-            ]
-          }
-        ]
-      };
-      this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-      // Execute the search
-      this.subs.sink = this.sotDS.searchStoringOrderTanks(where).subscribe(data => {
-        this.sotList = data;
-        this.endCursor = this.sotDS.pageInfo?.endCursor;
-        this.startCursor = this.sotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
-      });
-    }
+    const searchField = this.searchField;
+    const where: any = {
+      and: [
+        { status_cv: { eq: "ACCEPTED" } },
+        { tank_status_cv: { neq: "RO_GENERATED" } },
+        { in_gate: { delete_dt: { eq: null } } }
+      ]
+    };
+    this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+    // Execute the search
+    this.subs.sink = this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
+      this.sotList = data;
+      this.endCursor = this.sotDS.pageInfo?.endCursor;
+      this.startCursor = this.sotDS.pageInfo?.startCursor;
+      this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+    });
   }
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
-    let first = pageSize;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
@@ -312,8 +394,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
     this.pageIndex = pageIndex;
     this.pageSize = pageSize;
-
-    this.sotDS.searchStoringOrderTanks(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
+    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
       this.sotList = data;
       this.endCursor = this.sotDS.pageInfo?.endCursor;
       this.startCursor = this.sotDS.pageInfo?.startCursor;
@@ -342,6 +423,43 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
         });
       })
     ).subscribe();
+  }
+
+  addBookingDetails(event: Event, row?: StoringOrderTankItem[]) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const addSot = row ?? [new StoringOrderTankItem()];
+    //addSot.so_guid = addSot.so_guid ?? this.so_guid;
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      data: {
+        item: row ? row : addSot,
+        action: 'new',
+        translatedLangText: this.translatedLangText,
+        populateData: {
+        },
+        index: -1,
+        sotExistedList: this.sotList
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const data = [...this.sotList];
+        const newItem = new StoringOrderTankItem({
+          ...result.item,
+          actions: ['new']
+        });
+      }
+    });
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
   }
 
   translateLangText() {

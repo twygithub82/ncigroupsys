@@ -19,6 +19,7 @@ import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey
 import { InGateSurveyFormComponent } from './inventory/in-gate-survey-form/in-gate-survey-form.component';
 import { BookingComponent } from './inventory/booking/booking.component';
 import {PackageCleaningComponent} from "./package/package-cleaning/package-cleaning.component"
+import { BookingNewComponent } from './inventory/booking-new/booking-new.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "cleaning-steps",
@@ -63,6 +64,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "inventory/booking",
     component: BookingComponent,
+  },
+  {
+    path: "inventory/booking-new",
+    component: BookingNewComponent,
   },
   {
     path: "parameter/cleaning-category",
