@@ -132,7 +132,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
     ADD_NEW_BOOKING: "COMMON-FORM.ADD-NEW-BOOKING",
     BOOKINGS: "COMMON-FORM.BOOKINGS",
-    SELECT_ALL: "COMMON-FORM.SELECT-ALL"
+    SELECT_ALL: "COMMON-FORM.SELECT-ALL",
+    ACTION_DATE: "COMMON-FORM.ACTION-DATE",
+    BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
+    SAVE_AND_SUBMIT: "COMMON-FORM.SAVE-AND-SUBMIT",
+    SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
+    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -150,6 +155,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   yardCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   bookingTypeCvList: CodeValuesItem[] = [];
+  bookingTypeCvListNewBooking: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
 
   lastSearchCriteria: any;
@@ -225,6 +231,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       this.purposeOptionCvList = data;
     });
     this.cvDS.connectAlias('bookingTypeCv').subscribe(data => {
+      this.bookingTypeCvListNewBooking = data;
       this.bookingTypeCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('bookingStatusCv').subscribe(data => {
@@ -355,14 +362,21 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       ]
     };
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    // Execute the search
-    this.subs.sink = this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.sotList = data;
-      this.endCursor = this.sotDS.pageInfo?.endCursor;
-      this.startCursor = this.sotDS.pageInfo?.startCursor;
-      this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
-    });
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize);
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.sotList = data;
+        this.endCursor = this.sotDS.pageInfo?.endCursor;
+        this.startCursor = this.sotDS.pageInfo?.startCursor;
+        this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+      });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
   }
 
   onPageEvent(event: PageEvent) {
@@ -392,15 +406,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       }
     }
 
-    this.pageIndex = pageIndex;
-    this.pageSize = pageSize;
-    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
-      this.sotList = data;
-      this.endCursor = this.sotDS.pageInfo?.endCursor;
-      this.startCursor = this.sotDS.pageInfo?.startCursor;
-      this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
-    });
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -425,35 +431,30 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     ).subscribe();
   }
 
-  addBookingDetails(event: Event, row?: StoringOrderTankItem[]) {
+  addBookingDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
+    const selectedItems = this.sotSelection.selected;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const addSot = row ?? [new StoringOrderTankItem()];
-    //addSot.so_guid = addSot.so_guid ?? this.so_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
-        item: row ? row : addSot,
+        item: selectedItems,
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-        },
-        index: -1,
-        sotExistedList: this.sotList
+          bookingTypeCvList: this.bookingTypeCvListNewBooking
+        }
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const data = [...this.sotList];
-        const newItem = new StoringOrderTankItem({
-          ...result.item,
-          actions: ['new']
-        });
+      if (result && result.savedSuccess) {
+        ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+        this.performSearch(this.pageSize, 0, this.pageSize);
       }
     });
   }

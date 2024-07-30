@@ -231,14 +231,16 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   search() {
-    const where: any = {};
+    const where: any = {
+      eir_status_cv: { eq: "YET_TO_SURVEY" }
+    };
 
     if (this.searchForm!.value['eir_no']) {
       where.eir_no = { contains: this.searchForm!.value['eir_no'] };
     }
 
     if (this.searchForm!.value['eir_status']) {
-      where.eir_status = { contains: this.searchForm!.value['eir_status'] };
+      //where.eir_status_cv = { contains: this.searchForm!.value['eir_status'] };
     }
 
     if (this.searchForm!.value['eir_dt']) {

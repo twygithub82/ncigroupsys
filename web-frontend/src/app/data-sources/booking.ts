@@ -296,22 +296,13 @@ export const CANCEL_STORING_ORDER_TANK = gql`
   }
 `;
 
-export const ROLLBACK_STORING_ORDER_TANK = gql`
-  mutation RollbackStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
-    rollbackStoringOrderTank(sot: $sot)
+export const ADD_BOOKING = gql`
+  mutation AddBooking($booking: BookingRequestInput!) {
+    addBooking(booking: $booking)
   }
 `;
 
-export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
-  filterChange = new BehaviorSubject('');
-  get filter(): string {
-    return this.filterChange.value;
-  }
-  set filter(filter: string) {
-    this.filterChange.next(filter);
-  }
-  filteredData: StoringOrderTankItem[] = [];
-  renderedData: StoringOrderTankItem[] = [];
+export class BookingDS extends BaseDataSource<BookingItem> {
   public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
@@ -339,126 +330,6 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  reloadStoringOrderTanks(where: any): Observable<StoringOrderTankItem[]> {
-    this.loadingSubject.next(true);
-
-    return this.apollo
-      .query<any>({
-        query: RELOAD_STORING_ORDER_TANKS,
-        variables: { where },
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(sotList.nodes);
-          this.totalCount = sotList.totalCount;
-          return sotList.nodes;
-        })
-      );
-  }
-
-  getStoringOrderTankByID(id: string): Observable<StoringOrderTankItem[]> {
-    this.loadingSubject.next(true);
-    let where: any = { guid: { eq: id } }
-    return this.apollo
-      .query<any>({
-        query: GET_STORING_ORDER_TANK_BY_ID,
-        variables: { where },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ soList: [] })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(sotList.nodes);
-          this.totalCount = sotList.totalCount;
-          return sotList.nodes;
-        })
-      );
-  }
-
-  getWaitingStoringOrderTankCount(): Observable<number> {
-    this.loadingSubject.next(true);
-    let where: any = { status_cv: { eq: "WAITING" } }
-    return this.apollo
-      .query<any>({
-        query: GET_STORING_ORDER_TANKS_COUNT,
-        variables: { where },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ soList: [] })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          return sotList.totalCount;
-        })
-      );
-  }
-
-  searchStoringOrderTanksForBooking(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
-    this.loadingSubject.next(true);
-    return this.apollo
-      .query<any>({
-        query: GET_STORING_ORDER_TANKS_FOR_BOOKING,
-        variables: { where, order, first, after, last, before },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(sotList.nodes);
-          this.totalCount = sotList.totalCount;
-          this.pageInfo = sotList.pageInfo;
-          console.log(this.pageInfo);
-          return sotList.nodes;
-        })
-      );
-  }
-
-  isTankNoAvailableToAdd(tank_no: string): Observable<StoringOrderTankItem[]> {
-    this.loadingSubject.next(true);
-    let where: any = {
-      and: [
-        { tank_no: { eq: tank_no } },
-        {
-          or: [
-            { status_cv: { in: ["WAITING", "PREBOOK"] } },
-            {
-              and: [{ status_cv: { eq: "ACCEPTED" } }, { tank_status_cv: { neq: "RO_GENERATED" } }]
-            }
-          ]
-        }
-      ]
-    }
-    return this.apollo
-      .query<any>({
-        query: CHECK_ANY_ACTIVE_SOT,
-        variables: { where },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ soList: [] })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(sotList.nodes);
-          this.totalCount = sotList.totalCount;
-          return sotList.nodes;
-        })
-      );
-  }
-
   cancelStoringOrderTank(sot: any): Observable<any> {
     return this.apollo.mutate({
       mutation: CANCEL_STORING_ORDER_TANK,
@@ -468,11 +339,11 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     });
   }
 
-  rollbackStoringOrderTank(sot: any): Observable<any> {
+  addBooking(booking: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: ROLLBACK_STORING_ORDER_TANK,
+      mutation: ADD_BOOKING,
       variables: {
-        sot
+        booking
       }
     });
   }
