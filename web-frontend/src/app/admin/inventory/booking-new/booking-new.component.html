@@ -133,7 +133,7 @@
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.BOOKING_TYPE}}</mat-label>
-                      <mat-select formControlName="booking_type_cv">
+                      <mat-select formControlName="book_type_cv">
                         @for (codeValue of bookingTypeCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
@@ -155,7 +155,8 @@
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
-                    <button mat-mini-fab class="mt-1" color="primary" (click)="search()" [matTooltip]="translatedLangText.SEARCH">
+                    <button mat-mini-fab class="mt-1" color="primary" (click)="search()"
+                      [matTooltip]="translatedLangText.SEARCH">
                       <mat-icon>search</mat-icon>
                     </button>
                     <button mat-mini-fab color="primary" class="ms-1" (click)="addBookingDetails($event)"
@@ -211,22 +212,39 @@
                 <mat-divider></mat-divider>
                 <h5 class="mb-1 pt-1">{{translatedLangText.BOOKINGS}}</h5>
                 @if ((row.booking?.length ?? 0) > 0) {
-                @for(bookingRow of row.booking; track bookingRow){
                 <div class="row">
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-0">
-                    <span class="font-bold">{{translatedLangText.BOOKING_DATE}}:</span> {{bookingRow.booking_dt}}
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    <span class="font-bold">{{translatedLangText.BOOKING_DATE}}</span>
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
-                    <span class="font-bold">{{translatedLangText.ACTION_DATE}}:</span> {{bookingRow?.action_dt}}
+                    <span class="font-bold">{{translatedLangText.ACTION_DATE}}</span>
                   </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-0">
-                    <span class="font-bold">{{translatedLangText.BOOKING_TYPE}}:</span> {{bookingRow?.booking_type_cv}}
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
+                    <span class="font-bold">{{translatedLangText.BOOKING_TYPE}}</span>
                   </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-0">
-                    <span class="font-bold">{{translatedLangText.REFERENCE}}:</span> {{bookingRow?.reference}}
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
+                    <span class="font-bold">{{translatedLangText.REFERENCE}}</span>
                   </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-0">
-                    <span class="font-bold">{{translatedLangText.SURVEYOR}}:</span> {{bookingRow?.surveyor_guid}}
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    <span class="font-bold">{{translatedLangText.SURVEYOR}}</span>
+                  </div>
+                </div>
+                @for(bookingRow of row.booking; track bookingRow){
+                <div class="row">
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    {{displayDate(bookingRow.booking_dt)}}
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    {{displayDate(bookingRow?.action_dt)}}
+                  </div>
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
+                    {{bookingRow?.book_type_cv}}
+                  </div>
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
+                    {{bookingRow?.reference}}
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    {{bookingRow?.surveyor_guid}}
                   </div>
                 </div>
                 }

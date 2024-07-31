@@ -106,16 +106,29 @@
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
-            <mat-select formControlName="booking_type_cv" required>
+            <mat-select formControlName="book_type_cv" required>
               @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">
                 {{codeValue.description}}
               </mat-option>
               }
             </mat-select>
-            @if (bookingForm.get('booking_type_cv')?.hasError('required')) {
+            @if (bookingForm.get('book_type_cv')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.ACTION_DATE}}</mat-label>
+            <input matInput formControlName="action_dt" [matDatepicker]="action_dt_picker" [min]="startDateToday" required>
+            <mat-datepicker-toggle matSuffix [for]="action_dt_picker"></mat-datepicker-toggle>
+            <mat-datepicker #action_dt_picker [startAt]="startDateToday"></mat-datepicker>
+            @if (bookingForm.get('action_dt')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.ACTION_DATE}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
             }
           </mat-form-field>
@@ -134,14 +147,6 @@
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.ACTION_DATE}}</mat-label>
-            <input matInput formControlName="action_dt" [matDatepicker]="action_dt_picker" [min]="startDateToday">
-            <mat-datepicker-toggle matSuffix [for]="action_dt_picker"></mat-datepicker-toggle>
-            <mat-datepicker #action_dt_picker [startAt]="startDateToday"></mat-datepicker>
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.SURVEYOR}}</mat-label>
             <mat-select formControlName="surveyor_guid">
@@ -155,8 +160,8 @@
         </div>
         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>{{data.translatedLangText.BOOKING_REFERENCE}}</mat-label>
-            <input matInput formControlName="booking_ref">
+            <mat-label>{{data.translatedLangText.REFERENCE}}</mat-label>
+            <input matInput formControlName="reference">
           </mat-form-field>
         </div>
       </div>

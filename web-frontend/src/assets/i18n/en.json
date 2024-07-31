@@ -383,7 +383,8 @@
     "BOOKINGS": "Bookings",
     "SELECT-ALL": "Select All",
     "ACTION-DATE": "Action Date",
-    "BOOKING-DETAILS": "Booking Details"
+    "BOOKING-DETAILS": "Booking Details",
+    "REFERENCE": "Reference"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

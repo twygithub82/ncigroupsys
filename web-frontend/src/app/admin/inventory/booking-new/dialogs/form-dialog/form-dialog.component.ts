@@ -114,8 +114,8 @@ export class FormDialogComponent {
     // this.startDateETA = this.storingOrderTank.eta_dt ? (Utility.convertDate(this.storingOrderTank.eta_dt) as Date) : this.startDateETA;
     // this.startDateETR = this.storingOrderTank.etr_dt ? (Utility.convertDate(this.storingOrderTank.etr_dt) as Date) : this.startDateETR;
     return this.fb.group({
-      booking_ref: [''],
-      booking_type_cv: [''],
+      reference: [''],
+      book_type_cv: [''],
       booking_dt: [''],
       action_dt: [''],
       surveyor_guid: ['']
@@ -127,13 +127,14 @@ export class FormDialogComponent {
       const selectedIds = this.storingOrderTank.map(item => item.guid);
       var booking: any = {
         sot_guid: selectedIds,
-        booking_type_cv: this.bookingForm.value['booking_type_cv'],
+        book_type_cv: this.bookingForm.value['book_type_cv'],
         booking_dt: Utility.convertDate(this.bookingForm.value['booking_dt']),
         action_dt: Utility.convertDate(this.bookingForm.value['action_dt']),
         reference: this.bookingForm.value['reference'],
-        surveyor_guid: this.bookingForm.value['surveyor_guid'],
+        surveyor_guid: this.bookingForm.value['surveyor_guid'] || "surveyor_guid_222",
       }
       console.log('valid');
+      console.log(booking);
       this.bkDS.addBooking(booking).subscribe(result => {
         const returnDialog: any = {
           savedSuccess: (result?.data?.addBooking ?? 0) > 0

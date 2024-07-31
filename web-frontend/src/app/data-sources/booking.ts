@@ -14,7 +14,7 @@ import { StoringOrderTankItem } from './storing-order-tank';
 export class BookingGO {
   public guid?: string;
   public action_dt?: number | null;
-  public booking_type_cv?: string;
+  public book_type_cv?: string;
   public booking_dt?: number | null;
   public reference?: string;
   public sot_guid?: string;
@@ -29,7 +29,7 @@ export class BookingGO {
   constructor(item: Partial<BookingGO> = {}) {
     this.guid = item.guid;
     this.action_dt = item.action_dt;
-    this.booking_type_cv = item.booking_type_cv;
+    this.book_type_cv = item.book_type_cv;
     this.booking_dt = item.booking_dt;
     this.reference = item.reference;
     this.sot_guid = item.sot_guid;
