@@ -28,6 +28,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
 
 
         public DbSet<booking> booking { get; set; }
+        public DbSet<release_order> release_order { get; set; } 
         public DbSet<tank> tank { get; set; }
         public DbSet<code_values> code_values { get; set; }
         public DbSet<surveyor> surveyor { get; set; }
