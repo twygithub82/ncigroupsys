@@ -22,12 +22,20 @@ import {PackageCleaningComponent} from "./package/package-cleaning/package-clean
 import { BookingNewComponent } from './inventory/booking-new/booking-new.component';
 export const ADMIN_ROUTE: Routes = [
   {
-    path: "cleaning-steps",
+    path: "cleaning-setps",
     component: CleaningStepsComponent,
   },
   {
     path: "cleaning-procedures",
     component: CleaningProceduresComponent,
+  },
+  {
+    path: "parameter/cleaning-category",
+    component: CleaningCategoryComponent,
+  },
+  {
+    path: "parameter/cleaning-methods",
+    component: CleaningMethodsComponent,
   },
   {
     path: "cleaning-procedures/cleaning-procedures-new",

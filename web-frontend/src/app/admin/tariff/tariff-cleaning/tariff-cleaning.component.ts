@@ -365,6 +365,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.banTypeCvList = data;
     });
   }
+
+  
   showNotification(
     colorName: string,
     text: string,

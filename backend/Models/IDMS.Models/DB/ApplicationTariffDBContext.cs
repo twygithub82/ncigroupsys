@@ -62,5 +62,7 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
 
         public DbSet<IDMS.Models.Inventory.storing_order_tank> storing_order_tank { get; set; }
 
+        public DbSet<IDMS.Models.Tariff.tariff_depot> tariff_depot { get; set; }
+
     }
 }

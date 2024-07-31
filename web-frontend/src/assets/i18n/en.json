@@ -101,6 +101,13 @@
         "TARIFF-CLEANING-EDIT": "Edit Tariff Cleaning"
       }
     },
+    "PARAMETER": {
+      "TEXT": "Parameter",
+      "LIST": {
+        "CLEANING-CATEGORY": "Category",
+        "CLEANING-METHODS": "Methods"
+      }
+    },
     "PACKAGE": {
       "TEXT": "Package",
       "LIST": {

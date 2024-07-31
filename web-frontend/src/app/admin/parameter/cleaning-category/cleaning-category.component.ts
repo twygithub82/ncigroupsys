@@ -85,7 +85,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   displayedColumns = [
      'category_name',
      'category_description',
-   // 'tank_no',
+     'category_cost',
     //'last_cargo',
    // 'so_no',
     //'customer_code'
@@ -120,10 +120,12 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     SEARCH: "COMMON-FORM.SEARCH",
     CATEGORY_NAME:"COMMON-FORM.CATEGORY-NAME",
     CATEGORY_DESCRIPTION:"COMMON-FORM.CATEGORY-DESCRIPTION",
-    CATEGORY_COST:"COMMON-FORM.CATEGORY-COST",
+    CATEGORY_COST:"COMMON-FORM.CARGO-COST",
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
+    MIN_COST:'COMMON-FORM.PACKAGE-MIN-COST',
+    MAX_COST:'COMMON-FORM.PACKAGE-MAX-COST',
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -150,7 +152,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private graphqlNotificationService: GraphqlNotificationService
+   // private graphqlNotificationService: GraphqlNotificationService
   ) {
     super();
     this.translateLangText();
@@ -171,13 +173,13 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.loadData();
-    this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
-      (message) => {
-       // alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
+    // this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
+    //   (message) => {
+    //    // alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
 
-      },
-      (error) => console.error(error),
-    );
+    //   },
+    //   (error) => console.error(error),
+    // );
   }
   refresh() {
     this.loadData();
@@ -185,14 +187,11 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   initSearchForm() {
     this.searchForm = this.fb.group({
-      so_no: [''],
-      customer_code: this.customerCodeControl,
-      last_cargo: this.lastCargoControl,
-      so_status: [''],
-      tank_no: [''],
-      job_no: [''],
-      purpose: [''],
-      eta_dt: [''],
+      name: [''],
+      description: [''],
+      min_cost: [''],
+      max_cost: [''],
+    
     });
   }
 

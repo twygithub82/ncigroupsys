@@ -23,12 +23,12 @@
                         <mat-icon class="col-white">refresh</mat-icon>
                       </button>
                     </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
+                    <!-- <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
                       <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
                         [disabled]="canCancelSelectedRows()">
                         <mat-icon class="col-white">cancel</mat-icon>
                       </button>
-                    </div>
+                    </div> -->
                     <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                       <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                         (click)="$event.stopPropagation()" />
@@ -39,52 +39,37 @@
                   <div class="row">
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.SO_NO | translate}}</mat-label>
-                        <input matInput formControlName="so_no">
+                        <mat-label>{{langText.CATEGORY_NAME | translate}}</mat-label>
+                        <input matInput formControlName="name">
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.CUSTOMER_CODE | translate}}</mat-label>
-                        <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
-                          [matAutocomplete]="customerCode">
-                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                          @for (cc of customer_companyList; track cc) {
-                          <mat-option [value]="cc">
-                            {{ccDS.displayName(cc)}}
-                          </mat-option>
-                          }
-                        </mat-autocomplete>
+                        <mat-label>{{langText.CATEGORY_DESCRIPTION | translate}}</mat-label>
+                        <input matInput formControlName="description" >
+                       
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.LAST_CARGO | translate}}</mat-label>
-                        <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
-                          formControlName="last_cargo">
-                        <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
-                          @for (tc of last_cargoList; track tc) {
-                          <mat-option [value]="tc">
-                            {{tc.cargo}}
-                          </mat-option>
-                          }
-                        </mat-autocomplete>
+                        <mat-label>{{langText.MIN_COST | translate}}</mat-label>
+                        <input matInput formControlName="min_cost" type="number">
+                       
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.STATUS | translate}}</mat-label>
-                        <mat-select formControlName="so_status">
-                          @for (codeValue of soStatusCvList; track codeValue) {
-                          <mat-option [value]="codeValue.code_val">
-                            {{codeValue.description}}
-                          </mat-option>
-                          }
-                        </mat-select>
+                        <mat-label>{{langText.MAX_COST | translate}}</mat-label>
+                        <input matInput formControlName="max_cost" type="number">
                       </mat-form-field>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                      <button mat-mini-fab color="primary" (click)="search()">
+                        <mat-icon>search</mat-icon>
+                      </button>
                     </div>
                   </div>
-                  <div class="row">
+                  <!-- <div class="row">
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{langText.TANK_NO | translate}}</mat-label>
@@ -122,11 +107,11 @@
                         <mat-icon>search</mat-icon>
                       </button>
                     </div>
-                  </div>
+                  </div> -->
                 </form>
               </mat-expansion-panel>
             </mat-accordion>
-            <div class="materialTableHeader">
+            <!-- <div class="materialTableHeader">
               <div class="left">
                 <ul class="header-buttons-left ms-0">
                   <li class="tbl-title">
@@ -146,7 +131,7 @@
               </div>
               <div class="right">
               </div>
-            </div>
+            </div> -->
             <div class="body overflow-auto">
               <div class="responsive_table">
                 <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table">
@@ -160,7 +145,7 @@
                       {{langText.CATEGORY_NAME| translate}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row" class="">
-                      <span class="mobile-label">{{langText.TANK_NO | translate}}:</span>{{row.tank_no}}
+                      <span class="mobile-label">{{langText.CATEGORY_NAME | translate}}:</span>{{row.category_name}}
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="category_description">
@@ -168,23 +153,15 @@
                       {{langText.CATEGORY_DESCRIPTION | translate}}
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{langText.LAST_CARGO | translate}}:</span>{{row.tariff_cleaning?.cargo}}
+                      <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.category_description}}
                     </mat-cell>
                   </ng-container>
-                  <ng-container matColumnDef="customer_code">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                      {{langText.CUSTOMER_CODE | translate}}
+                  <ng-container matColumnDef="category_cost">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      {{langText.CATEGORY_COST | translate}}
                     </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row" class="">
-                      <span class="mobile-label">{{langText.CUSTOMER_CODE | translate}}:</span>{{ccDS.displayName(row.storing_order?.customer_company)}}
-                    </mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="so_no">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                      {{langText.SO_NO | translate}}
-                    </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row" class="">
-                      <span class="mobile-label">{{langText.SO_NO | translate}}:</span>{{row.storing_order?.so_no}}
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.cost}}
                     </mat-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
