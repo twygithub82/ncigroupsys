@@ -381,7 +381,9 @@
     "PACKAGE-CLEANING-ADJUST-COST":"Adjusted Cost",
     "ADD-NEW-BOOKING": "Add New Booking",
     "BOOKINGS": "Bookings",
-    "SELECT-ALL": "Select All"
+    "SELECT-ALL": "Select All",
+    "ACTION-DATE": "Action Date",
+    "BOOKING-DETAILS": "Booking Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

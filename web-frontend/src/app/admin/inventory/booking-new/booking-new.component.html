@@ -158,11 +158,11 @@
                     <button mat-mini-fab class="mt-1" color="primary" (click)="search()" [matTooltip]="translatedLangText.SEARCH">
                       <mat-icon>search</mat-icon>
                     </button>
-                    <button mat-mini-fab color="primary" class="ms-1" (click)="search()"
+                    <button mat-mini-fab color="primary" class="ms-1" (click)="addBookingDetails($event)"
                       [matTooltip]="translatedLangText.ADD_NEW_BOOKING" [disabled]="!sotSelection.hasValue()">
                       <mat-icon>add</mat-icon>
                     </button>
-                    <mat-checkbox class="card-checkbox" (change)="masterToggle()"
+                    <mat-checkbox class="card-checkbox ms-1" (change)="masterToggle()"
                       [checked]="sotSelection.hasValue() && isAllSelected()"
                       [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
                       {{translatedLangText.SELECT_ALL}}
@@ -239,7 +239,6 @@
               </mat-card-actions>
             </mat-card>
             }
-
             <!-- No result -->
             @if (!(sotDS.loading$ | async) && !sotList.length) {
             <mat-divider></mat-divider>
