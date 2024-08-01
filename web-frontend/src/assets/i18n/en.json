@@ -145,7 +145,8 @@
         "IN-GATE-SURVEY": "In Gate Survey",
         "IN-GATE-SURVEY-FORM": "In Gate Survey Form",
         "BOOKING": "Booking",
-        "BOOKING-NEW": "New Booking"
+        "BOOKING-NEW": "New Booking",
+        "SCHEDULING-NEW": "New Scheduling"
       }
     }
   },
@@ -381,12 +382,14 @@
     "PACKAGE-CLEANING-ADJUST-COST":"Adjusted Cost",
     "ADD-NEW-BOOKING": "Add New Booking",
     "BOOKINGS": "Bookings",
+    "SCHEDULINGS": "Schedulings",
     "SELECT-ALL": "Select All",
     "ACTION-DATE": "Action Date",
     "BOOKING-DETAILS": "Booking Details",
     "REFERENCE": "Reference",
     "CLEAN-DATE": "Clean Date",
-    "REPAIR-COMPLETION-DATE": "Repair Completion Date"
+    "REPAIR-COMPLETION-DATE": "Repair Completion Date",
+    "SCHEDULING-DETAILS": "Scheduling Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

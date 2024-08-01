@@ -174,6 +174,7 @@ const GET_STORING_ORDER_TANKS_FOR_BOOKING = gql`
         update_by
         update_dt
         storing_order {
+          customer_company_guid
           customer_company {
             code
             name
