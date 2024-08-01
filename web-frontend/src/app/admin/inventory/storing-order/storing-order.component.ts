@@ -136,6 +136,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   soList: StoringOrderItem[] = [];
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
+  selectedItemsPerPage: { [key: number]: Set<string> } = {};
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
 
@@ -210,18 +211,62 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.soSelection.selected.length;
-    const numRows = this.soDS.totalCount;
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const numSelected = selectedItems.size;
+    const numRows = this.soList.length;
     return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected()
-      ? this.soSelection.clear()
-      : this.soList.forEach((row) =>
-        this.soSelection.select(row)
-      );
+    if (this.isAllSelected()) {
+      this.clearPageSelection();
+    } else {
+      this.selectAllOnPage();
+    }
+  }
+
+  /** Clear selection on the current page */
+  clearPageSelection() {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.soList.forEach(row => {
+      this.soSelection.deselect(row);
+      selectedItems.delete(row.guid!);
+    });
+    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  /** Select all items on the current page */
+  selectAllOnPage() {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.soList.forEach(row => {
+      this.soSelection.select(row);
+      selectedItems.add(row.guid!);
+    });
+    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  /** Handle row selection */
+  toggleRow(row: StoringOrderItem) {
+    this.soSelection.toggle(row);
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    if (this.soSelection.isSelected(row)) {
+      selectedItems.add(row.guid!);
+    } else {
+      selectedItems.delete(row.guid!);
+    }
+    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  /** Update selection for the current page */
+  updatePageSelection() {
+    this.soSelection.clear();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.soList.forEach(row => {
+      if (selectedItems.has(row.guid!)) {
+        this.soSelection.select(row);
+      }
+    });
   }
 
   canCancelSelectedRows(): boolean {
