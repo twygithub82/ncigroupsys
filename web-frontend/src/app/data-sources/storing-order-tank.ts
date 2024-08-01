@@ -468,7 +468,6 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
           this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
           this.pageInfo = sotList.pageInfo;
-          console.log(this.pageInfo);
           return sotList.nodes;
         })
       );

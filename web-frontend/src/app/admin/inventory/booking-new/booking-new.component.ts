@@ -124,6 +124,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     BOOKING_DATE: "COMMON-FORM.BOOKING-DATE",
     YARD: "COMMON-FORM.YARD",
     BOOKING_REFERENCE: "COMMON-FORM.BOOKING-REFERENCE",
+    REFERENCE: "COMMON-FORM.REFERENCE",
     SURVEYOR: "COMMON-FORM.SURVEYOR",
     BOOKING_TYPE: "COMMON-FORM.BOOKING-TYPE",
     CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
@@ -206,7 +207,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       booking_ref: [''],
       purpose: [''],
       surveyor_cv: [''],
-      booking_type_cv: [''],
+      book_type_cv: [''],
       booking_status_cv: [''],
       //eta_dt: [''],
     });
@@ -467,5 +468,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  displayDate(input: number | null | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input as number);
   }
 }
