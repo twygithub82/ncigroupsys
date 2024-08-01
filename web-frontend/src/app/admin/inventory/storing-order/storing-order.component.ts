@@ -347,7 +347,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       const sotSome: any = {};
 
       if (this.searchForm!.value['last_cargo']) {
-        where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+        where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
       }
 
       if (this.searchForm!.value['tank_no']) {

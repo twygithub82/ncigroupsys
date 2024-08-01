@@ -384,7 +384,9 @@
     "SELECT-ALL": "Select All",
     "ACTION-DATE": "Action Date",
     "BOOKING-DETAILS": "Booking Details",
-    "REFERENCE": "Reference"
+    "REFERENCE": "Reference",
+    "CLEAN-DATE": "Clean Date",
+    "REPAIR-COMPLETION-DATE": "Repair Completion Date"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

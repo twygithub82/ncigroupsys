@@ -52,45 +52,53 @@ export class BookingItem extends BookingGO {
   }
 }
 
-const GET_STORING_ORDER_TANKS_COUNT = gql`
-  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
-    sotList: queryStoringOrderTank(where: $where) {
+const GET_BOOKING = gql`
+  query getBooking($where: bookingFilterInput, $order: [bookingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    bookingList: queryBooking(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
-    }
-  }
-`;
-
-const GET_STORING_ORDER_TANKS = gql`
-  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-      nodes {
-        job_no
-        guid
-        tank_no
-        so_guid
-        tariff_cleaning {
-          guid
-          open_on_gate_cv
-          cargo
-        }
-        storing_order {
-          so_no
-          so_notes
-          customer_company {
-            code
-            guid
-            name
-            alias
-          }
-        }
-      }
       pageInfo {
         endCursor
         hasNextPage
         hasPreviousPage
         startCursor
       }
-      totalCount
+      nodes {
+        action_dt
+        book_type_cv
+        booking_dt
+        create_by
+        create_dt
+        delete_dt
+        guid
+        reference
+        sot_guid
+        status_cv
+        surveyor_guid
+        update_by
+        update_dt
+        storing_order_tank {
+          tank_no
+          tank_status_cv
+          tariff_cleaning {
+            cargo
+          }
+          storing_order {
+            customer_company {
+              code
+              name
+            }
+          }
+          in_gate {
+            eir_dt
+            eir_no
+            yard_cv
+          }
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          purpose_cleaning
+        }
+      }
     }
   }
 `;
@@ -307,12 +315,12 @@ export class BookingDS extends BaseDataSource<BookingItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchStoringOrderTanks(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchBooking(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<BookingItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANKS,
+        query: GET_BOOKING,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -321,16 +329,16 @@ export class BookingDS extends BaseDataSource<BookingItem> {
         catchError(() => of({ items: [], totalCount: 0 })),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(sotList.nodes);
-          this.totalCount = sotList.totalCount;
-          this.pageInfo = sotList.pageInfo;
-          return sotList.nodes;
+          const bookingList = result.bookingList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(bookingList.nodes);
+          this.totalCount = bookingList.totalCount;
+          this.pageInfo = bookingList.pageInfo;
+          return bookingList.nodes;
         })
       );
   }
 
-  cancelStoringOrderTank(sot: any): Observable<any> {
+  cancelBooking(sot: any): Observable<any> {
     return this.apollo.mutate({
       mutation: CANCEL_STORING_ORDER_TANK,
       variables: {
