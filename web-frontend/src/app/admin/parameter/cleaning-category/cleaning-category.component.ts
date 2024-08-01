@@ -17,7 +17,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatPaginatorModule, MatPaginator,PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -33,7 +33,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoringOrderDS, StoringOrderItem,StoringOrderGO } from 'app/data-sources/storing-order';
-
+import {CleaningCategoryDS} from 'app/data-sources/cleaning-category';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -41,10 +41,13 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
+//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component'
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import {GraphqlNotificationService} from '../../../services/global-notification.service'
 import { Subscription } from 'rxjs';
+import {CleaningCategoryItem} from 'app/data-sources/cleaning-category'
+import { sequence } from '@angular/animations';
+import { FormDialogComponent } from './form-dialog/form-dialog.component'
 //import {messageReceived}  from '../../../data-sources/message-received';
 
 @Component({
@@ -86,13 +89,14 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
      'category_name',
      'category_description',
      'category_cost',
+     'update_date'
     //'last_cargo',
    // 'so_no',
     //'customer_code'
     
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
+  pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-CATEGORY'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -126,6 +130,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     EXPORT: 'COMMON-FORM.EXPORT',
     MIN_COST:'COMMON-FORM.PACKAGE-MIN-COST',
     MAX_COST:'COMMON-FORM.PACKAGE-MAX-COST',
+    LAST_UPDATED:'COMMON-FORM.LAST-UPDATED',
+    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -138,12 +144,22 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   last_cargoList?: TariffCleaningItem[];
   soStatusCvList: CodeValuesItem[] = [];
 
+  catList:CleaningCategoryItem[]=[];
   soList: StoringOrderItem[] = [];
-  sotDS: StoringOrderTankDS;
-  ccDS: CustomerCompanyDS;
-  soDS: StoringOrderDS;
+  // sotDS: StoringOrderTankDS;
+  // ccDS: CustomerCompanyDS;
+  // soDS: StoringOrderDS;
+  catDS :CleaningCategoryDS;
 
-  sotList: StoringOrderTankItem[] = [];
+  pageIndex = 0;
+  pageSize = 10;
+  lastSearchCriteria: any;
+  lastOrderBy: any = { sequence: "ASC" };
+  endCursor: string | undefined = undefined;
+  previous_endCursor: string | undefined = undefined;
+  startCursor: string | undefined = undefined;
+  hasNextPage = false;
+  hasPreviousPage = false;
   
   constructor(
     public httpClient: HttpClient,
@@ -157,9 +173,10 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.soDS = new StoringOrderDS(this.apollo);
-    this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.ccDS = new CustomerCompanyDS(this.apollo);
+    // this.soDS = new StoringOrderDS(this.apollo);
+    // this.sotDS = new StoringOrderTankDS(this.apollo);
+    // this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.catDS = new CleaningCategoryDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -195,45 +212,57 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
+  displayLastUpdated(r: CleaningCategoryItem) {
+    var updatedt= r.update_dt;
+    if(updatedt===null)
+    {
+      updatedt= r.create_dt;
+    }
+    const date = new Date(updatedt! * 1000);
+    return date.toDateString();
+
+  }
   
   canCancelSelectedRows(): boolean {
-    return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
-      const index: number = this.soList.findIndex((d) => d === item);
-      return this.soDS.canCancel(this.soList[index]);
-    });
+    return false;
+    // return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
+    //   const index: number = this.soList.findIndex((d) => d === item);
+    //   return this.soDS.canCancel(this.soList[index]);
+    // });
   }
   cancelSelectedRows(row: StoringOrderItem[]) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        item: [...row],
-        langText: this.langText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        // const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-        // this.soDS.cancelStoringOrder(so).subscribe(result => {
-        //   if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-        //     let successMsg = this.langText.CANCELED_SUCCESS;
-        //     this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-        //       successMsg = res;
-        //       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        //       this.loadData();
-        //     });
-        //   }
-        // });
-      }
-    });
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    //   data: {
+    //     item: [...row],
+    //     langText: this.langText
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result?.action === 'confirmed') {
+    //     // const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
+    //     // this.soDS.cancelStoringOrder(so).subscribe(result => {
+    //     //   if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
+    //     //     let successMsg = this.langText.CANCELED_SUCCESS;
+    //     //     this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
+    //     //       successMsg = res;
+    //     //       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    //     //       this.loadData();
+    //     //     });
+    //     //   }
+    //     // });
+    //   }
+    // });
   }
 
   public loadData() {
+    this.search();
     // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
     //   if (this.soDS.totalCount > 0) {
     //     this.soList = data;
@@ -287,42 +316,167 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   search() {
     const where: any = {};
 
-    if (this.searchForm!.value['so_no']) {
-      where.so_no = { contains: this.searchForm!.value['so_no'] };
+    var order = this.lastOrderBy;
+
+    
+
+    if (this.searchForm!.value['name']) {
+      where.name = { contains: this.searchForm!.value['name'] };
     }
 
-    if (this.searchForm!.value['so_status']) {
-      where.status_cv = { contains: this.searchForm!.value['so_status'] };
+    if (this.searchForm!.value['description']) {
+      where.description = { contains: this.searchForm!.value['description'] };
     }
 
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['eta_dt']) {
-      const sotSome: any = {};
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
-      }
-
-      if (this.searchForm!.value['eta_dt']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt']), lte: Utility.convertDate(this.searchForm!.value['eta_dt']) };
-      }
-      where.storing_order_tank = { some: sotSome };
+    if(this.searchForm!.value['min_cost']){
+      where.cost ={gte: Number(this.searchForm!.value['min_cost'])}
     }
 
-    if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+    if(this.searchForm!.value['max_cost']){
+      where.cost ={ngt: Number(this.searchForm!.value['max_cost'])}
     }
 
     // TODO :: search criteria
-    this.subs.sink = this.soDS.searchStoringOrder(where).subscribe(data => {
-      this.soList = data;
+    this.subs.sink = this.catDS.loadItems(where,order).subscribe(data => {
+      this.catList = data;
     });
   }
+  
+  searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
+    previousPageIndex?:number)
+    {
+      this.previous_endCursor=this.endCursor;
+      this.subs.sink = this.catDS.search(where,order,first,after,last,before).subscribe(data => {
+        this.catList=data;
+        this.endCursor = this.catDS.pageInfo?.endCursor;
+        this.startCursor = this.catDS.pageInfo?.startCursor;
+        this.hasNextPage = this.catDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.catDS.pageInfo?.hasPreviousPage ?? false;
+        this.pageIndex=pageIndex;
+        this.paginator.pageIndex=this.pageIndex;
+        
+     });
+    }
+
+    onPageEvent(event: PageEvent) {
+      const { pageIndex, pageSize,previousPageIndex } = event;
+      let first : number| undefined = undefined;
+      let after: string | undefined = undefined;
+      let last: number | undefined = undefined;
+      let before: string | undefined = undefined;
+      let order:any|undefined=this.lastOrderBy;
+      // Check if the page size has changed
+      if (this.pageSize !== pageSize) {
+        // Reset pagination if page size has changed
+        this.pageIndex = 0;
+        first = pageSize;
+        after = undefined;
+        last = undefined;
+        before = undefined;
+      } else {
+        if (pageIndex > this.pageIndex && this.hasNextPage) {
+          // Navigate forward
+          first = pageSize;
+          after = this.endCursor;
+        } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+          // Navigate backward
+          last = pageSize;
+          before = this.startCursor;
+        }
+        else if (pageIndex==this.pageIndex)
+        {
+          
+            first = pageSize;
+            after = this.previous_endCursor;
+       
+            
+            //this.paginator.pageIndex=this.pageIndex;
+            
+        }
+      }
+  
+        this.searchData(this.lastSearchCriteria,order,first,after,last,before,pageIndex,previousPageIndex);
+      //}
+    }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
   initializeFilterCustomerCompany() {
+  }
+
+  addCall() {
+    // this.preventDefault(event);  // Prevents the form submission
+     let tempDirection: Direction;
+     if (localStorage.getItem('isRtl') === 'true') {
+       tempDirection = 'rtl';
+     } else {
+       tempDirection = 'ltr';
+     }
+      var row =new CleaningCategoryItem();
+    //  rows.push(row);
+     const dialogRef = this.dialog.open(FormDialogComponent,{
+       width: '600px',
+       data: {
+         action: 'new',
+         langText: this.langText,
+         selectedItem:row
+       }
+         
+     });
+ 
+     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result>0) {
+               this.handleSaveSuccess(result);
+               //this.search();
+               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+        
+          }
+       });
+    
+   }
+  editCall(row: CleaningCategoryItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+     let tempDirection: Direction;
+     if (localStorage.getItem('isRtl') === 'true') {
+       tempDirection = 'rtl';
+     } else {
+       tempDirection = 'ltr';
+     }
+    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    //  rows.push(row);
+     const dialogRef = this.dialog.open(FormDialogComponent,{
+       width: '600px',
+       data: {
+         action: 'new',
+         langText: this.langText,
+         selectedItem:row
+       }
+         
+     });
+ 
+     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result>0) {
+           
+               this.handleSaveSuccess(result);
+               //this.search();
+               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+             
+       }
+       });
+    
+   }
+
+   handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.langText.SAVE_SUCCESS;
+      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+        successMsg = res;
+        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        
+      });
+    }
   }
 
   translateLangText() {
