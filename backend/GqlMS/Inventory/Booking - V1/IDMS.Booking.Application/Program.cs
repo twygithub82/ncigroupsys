@@ -60,6 +60,7 @@ namespace IDMS.Booking.Application
                             //.RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Synchronized)
                             .AddQueryType<Query>()
                             .AddTypeExtension<BookingQuery>()
+                            .AddTypeExtension<SchedulingQuery>()
                             .AddTypeExtension<ReleaseOrderQuery>()
                             .AddSubscriptionType<BookingSubscription>()
                             .AddMutationType<BookingMutation>()
