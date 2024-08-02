@@ -33,6 +33,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 if (soTanks is null || soTanks.Count <= 0)
                     throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "INVALID_OPERATION"));
 
+                IList<storing_order_tank> newTankList = new List<storing_order_tank>();
                 foreach (var tnk in soTanks)
                 {
                     storing_order_tank newTank = mapper.Map<StoringOrderTankRequest, storing_order_tank>(tnk);
@@ -41,11 +42,18 @@ namespace IDMS.StoringOrder.GqlTypes
                     newTank.create_dt = currentDateTime;
                     newTank.create_by = user;
                     newTank.status_cv = SOTankStatus.WAITING;
-                    context.storing_order_tank.Add(newTank);
+                    newTank.preinspect_job_no = tnk.job_no;
+                    newTank.liftoff_job_no = tnk.job_no;
+                    newTank.lifton_job_no = tnk.job_no;
+                    newTank.takein_job_no = tnk.job_no;
+                    newTank.release_job_no = tnk.job_no;
+                    //context.storing_order_tank.Add(newTank);
+                    newTankList.Add(newTank);   
                 }
 
                 // Add StoringOrder to DbContext and save changes
                 context.storing_order.Add(soDomain);
+                context.storing_order_tank.AddRange(newTankList);
                 var res = await context.SaveChangesAsync();
 
                 //TODO

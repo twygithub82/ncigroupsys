@@ -20,6 +20,12 @@ namespace IDMS.StoringOrder.Model.Request
         public string? tank_no { get; set; }
         public string? job_no { get; set; }
 
+        public string? preinspect_job_no { get; set; }
+        public string? liftoff_job_no { get; set; }
+        public string? lifton_job_no { get; set; }
+        public string? takein_job_no { get; set; }
+        public string? release_job_no { get; set; }
+
         public bool? purpose_storage { get; set; } = false;
         public bool? purpose_steam { get; set; } = false;
         public bool? purpose_cleaning { get; set; } = false;
