@@ -5,26 +5,25 @@ using HotChocolate.Types;
 using Microsoft.AspNetCore.Http;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.Models;
 
 namespace IDMS.Booking.GqlTypes
 {
     [ExtendObjectType(typeof(Query))]
-    public class ReleaseOrderQuery
+    public class SchedulingQuery
     {
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<release_order> QueryReleaseOrder([Service] ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<scheduling> QueryScheduling([Service] ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
-                var roDetails = context.release_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
-                    .Include(d => d.scheduling.Where(s => s.delete_dt == null || s.delete_dt == 0))
-                    .Include(d => d.customer_company);
+                var schedulingDetails = context.scheduling.Where(d => d.delete_dt == null || d.delete_dt == 0)
+                    .Include(b => b.storing_order_tank)
+                    .Include(b => b.release_order);
 
-                return roDetails;
+                return schedulingDetails;
             }
             catch (Exception ex)
             {

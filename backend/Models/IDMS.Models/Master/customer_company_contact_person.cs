@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ namespace IDMS.Models.Master
     {
         [Key]
         public string? guid { get; set; }
+
+        [ForeignKey("customer_company")]
         public string? customer_guid { get; set; }
         public string? name { get; set; }
         public string? title_cv { get; set; }

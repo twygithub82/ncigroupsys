@@ -22,7 +22,14 @@ namespace IDMS.Booking.Application
 
             string connectionString = builder.Configuration.GetConnectionString("default");
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
-            builder.Services.AddDbContextPool<ApplicationInventoryDBContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+            builder.Services.AddDbContextPool<ApplicationInventoryDBContext>(o =>
+            {
+                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+                o.EnableSensitiveDataLogging(false);
+            });
+     
+
+            
 
 
             //var mappingConfig = new MapperConfiguration(cfg =>
@@ -53,8 +60,10 @@ namespace IDMS.Booking.Application
                             //.RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Synchronized)
                             .AddQueryType<Query>()
                             .AddTypeExtension<BookingQuery>()
+                            .AddTypeExtension<ReleaseOrderQuery>()
                             .AddSubscriptionType<BookingSubscription>()
                             .AddMutationType<BookingMutation>()
+                            .AddTypeExtension<ReleaseOrderMutation>()
                             .AddFiltering()
                             .AddSorting()
                             .AddProjections()

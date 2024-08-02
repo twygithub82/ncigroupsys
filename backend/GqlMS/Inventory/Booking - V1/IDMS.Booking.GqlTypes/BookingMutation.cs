@@ -9,6 +9,8 @@ using IDMS.Booking.Model.Request;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using IDMS.Booking.Model;
+using IDMS.Models.Shared;
+using HotChocolate.Types;
 
 namespace IDMS.Booking.GqlTypes
 {
@@ -23,6 +25,7 @@ namespace IDMS.Booking.GqlTypes
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
+                IList<booking> bookings = new List<booking>();  
                 foreach (var guid in booking.sot_guid)
                 {
                     var newBooking = new booking();
@@ -38,8 +41,9 @@ namespace IDMS.Booking.GqlTypes
                     newBooking.booking_dt = booking.booking_dt;
                     newBooking.action_dt = booking.action_dt;
 
-                    context.booking.Add(newBooking);
+                    bookings.Add(newBooking);
                 }
+                context.booking.AddRange(bookings);
                 var res = await context.SaveChangesAsync();
 
                 //TODO
@@ -129,6 +133,28 @@ namespace IDMS.Booking.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
+
+        //public async Task<int> updateSurveyor(surveyor surveyor, [Service] IHttpContextAccessor httpContextAccessor,
+        // [Service] ApplicationInventoryDBContext context)
+        //{
+
+        //    try
+        //    {
+        //        var res = 0;
+        //        string user = "admin";
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
+
+        //        var svr = new surveyor() { guid = "1", name ="Edmund" };
+        //        svr.name = surveyor.name;
+        //        context.Update<surveyor>(svr);
+        //        context.SaveChanges();
+        //        return res;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+        //    }
+        //}
 
     }
 }

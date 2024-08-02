@@ -2,16 +2,20 @@
 using CommonUtil.Core.Service;
 using HotChocolate;
 using HotChocolate.Subscriptions;
+using HotChocolate.Types;
 using IDMS.Booking.Model.Request;
 using IDMS.Models;
+using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
+using static IDMS.Booking.Model.StatusConstant;
 
 namespace IDMS.Booking.GqlTypes
 {
+    [ExtendObjectType(typeof(BookingMutation))]
     public class ReleaseOrderMutation
     {
-        public async Task<int> AddReleaseOrder(ReleaseOrderRequest releaseOrder, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<int> AddReleaseOrder(ReleaseOrderRequest releaseOrder, List<SchedulingRequest> schedulings, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender)
         {
             try
@@ -20,23 +24,44 @@ namespace IDMS.Booking.GqlTypes
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                //foreach (var guid in booking.sot_guid)
-                //{
-                    var newRO = new release_order();
-                    newRO.guid = Util.GenerateGUID();
-                    newRO.create_by = user;
-                    newRO.create_dt = currentDateTime;
+                var newRO = new release_order();
+                newRO.guid = Util.GenerateGUID();
+                newRO.create_by = user;
+                newRO.create_dt = currentDateTime;
 
-                    //newRO.sot_guid = guid;
-                    newRO.ro_no = releaseOrder.ro_no;
-                    newRO.ro_notes = releaseOrder.ro_notes;
-                    newRO.status_cv = releaseOrder.status_cv;
-                    //newRO.status_cv = StatusConstant.BookingStatus.NEW;
-                    newRO.remarks = releaseOrder.remarks;
-                    newRO.release_dt = releaseOrder.release_dt;
+                newRO.ro_no = releaseOrder.ro_no;
+                newRO.ro_notes = releaseOrder.ro_notes;
+                newRO.haulier = releaseOrder.haulier;
+                newRO.remarks = releaseOrder.remarks;
+                newRO.status_cv = ROStatus.PENDING;
+                newRO.customer_company_guid = releaseOrder.customer_company_guid;
+                newRO.ro_generated = false;
+                newRO.booking_dt = releaseOrder.booking_dt;
+                newRO.release_dt = releaseOrder.release_dt;
 
-                    context.release_order.Add(newRO);
-                //}
+                IList<scheduling> schedulingsList = new List<scheduling>();
+                string[] sotGuids = schedulings.Select(s => s.storing_order_tank.guid).ToArray();
+                List<storing_order_tank> sotLists = context.storing_order_tank.Where(s => sotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
+
+                foreach (var sch in schedulings)
+                {
+                    var newScheduling = new scheduling();
+                    newScheduling.guid = Util.GenerateGUID();
+                    newScheduling.create_by = user;
+                    newScheduling.create_dt = currentDateTime;
+
+                    newScheduling.sot_guid = sch.storing_order_tank.guid;
+                    newScheduling.release_order_guid = newRO.guid;
+                    newScheduling.status_cv = ROStatus.PENDING;
+                    newScheduling.reference = sch.reference;
+                    schedulingsList.Add(newScheduling);
+
+                    storing_order_tank? sot = sotLists.Find(s => s.guid == sch.storing_order_tank.guid);
+                    sot.release_job_no = sch.storing_order_tank.release_job_no;
+                }
+                context.release_order.Add(newRO);
+                context.scheduling.AddRange(schedulingsList);
+
                 var res = await context.SaveChangesAsync();
 
                 //TODO

@@ -12,7 +12,6 @@ namespace IDMS.Booking.Model.Request
         public string? status_cv { get; set; }
         public long booking_dt { get; set; }
         public long? action_dt { get; set; }
-        //public long? clean_dt { get; set; }
-        //public long? repair_complete_dt { get; set; }
+
     }
 }

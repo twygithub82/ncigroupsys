@@ -14,5 +14,14 @@ namespace IDMS.Booking.Model
             public const string DELETED = "DELETED";
             public const string NEW = "NEW";
         }
+
+        public static class ROStatus
+        {
+            public const string CANCELED = "CANCELED";
+            public const string DELETED = "DELETED";
+            public const string PENDING = "PENDING";
+            public const string PROCESSING = "PROCESSING";
+            public const string COMPLETED = "COMPLETED";
+        }
     }
 }
