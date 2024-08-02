@@ -52,8 +52,8 @@ namespace IDMS.StoringOrder.GqlTypes
                 }
 
                 // Add StoringOrder to DbContext and save changes
-                context.storing_order.Add(soDomain);
-                context.storing_order_tank.AddRange(newTankList);
+                await context.storing_order.AddAsync(soDomain);
+                await context.storing_order_tank.AddRangeAsync(newTankList);
                 var res = await context.SaveChangesAsync();
 
                 //TODO
@@ -165,17 +165,13 @@ namespace IDMS.StoringOrder.GqlTypes
         public async Task<int> UpdateStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
             AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config)
         {
-            //id updateSO dont have guid i need to call insert command
-            //for soTanks, if have guid and delete_dt > 1 need to call update (soft delete)
-            //return null;
             bool isSendNotification = false;
 
             try
             {
                 //if updateSO have guid then i need call update command
                 storing_order soDomain = await context.storing_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
-                                        .Include(s => s.storing_order_tank)
-                                        .FirstOrDefaultAsync(s => s.guid == so.guid);
+                                        .Include(s => s.storing_order_tank).FirstOrDefaultAsync(s => s.guid == so.guid);
                 if (soDomain == null)
                 {
                     throw new GraphQLException(new Error("Storing Order not found.", "NOT_FOUND"));
@@ -205,7 +201,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         newTank.create_dt = currentDateTime;
                         newTank.create_by = user;
                         newTank.status_cv = SOTankStatus.WAITING;
-                        context.storing_order_tank.Add(newTank);
+                        await context.storing_order_tank.AddAsync(newTank);
                         isSendNotification = true;
                         continue;
                     }
@@ -244,24 +240,6 @@ namespace IDMS.StoringOrder.GqlTypes
                         isSendNotification = true;
                         continue;
                     }
-
-                    ////var updatedTank = RemoveNullProperties(tnk);
-                    //mapper.Map(tnk, existingTank);
-                    //if (tnk.delete_dt > 0)
-                    //{
-                    //    existingTank.delete_dt = currentDateTime;
-                    //    existingTank.update_dt = currentDateTime;
-                    //    existingTank.update_by = user;
-                    //}
-                    //else
-                    //{
-                    //    //For Update
-                    //    //existingTank = updatedTank;
-                    //    existingTank.update_dt = currentDateTime;
-                    //    existingTank.update_by = user;
-                    //    //existingTank.clean_status = tnk.clean_status;
-                    //    //existingTank.certificate = tnk.certificate;
-                    //}
                 }
 
                 int tnkAlreadyAcceptedCount = 0;
