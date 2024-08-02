@@ -14,7 +14,7 @@
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
                 <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CATEGORY_NAME | translate}}</mat-label>
                     <input matInput formControlName="name" type="text" required>
@@ -30,15 +30,26 @@
                         }
                   </mat-form-field>
             </div>
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.CATEGORY_DESCRIPTION | translate }}</mat-label>
                   <input matInput formControlName="description" type="text">
                  
                 </mat-form-field>
             </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
+              <mat-form-field class="example-full-width" required>
+                  <mat-label>{{translatedLangText.CATEGORY_COST | translate}}</mat-label>
+                  <input matInput formControlName="adjusted_cost" type="number" required>
+                  @if (pcForm?.get('adjusted_cost')?.hasError('required')) {
+                    <mat-error>
+                      {{langText.CATEGORY_COST | translate}} {{langText.CARGO_REQUIRED | translate}}
+                    </mat-error>
+                    }
+                </mat-form-field>
           </div>
-          <div class="row">
+          </div>
+          <!-- <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width" required>
                   <mat-label>{{translatedLangText.CATEGORY_COST | translate}}</mat-label>
@@ -50,14 +61,14 @@
                     }
                 </mat-form-field>
           </div>
-          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
             <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.REMARKS }}</mat-label>
                 <input matInput formControlName="remarks" type="text">
                
               </mat-form-field>
-          </div>
-          </div>
+          </div> 
+          </div> -->
           <!-- <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <div class="card">

@@ -100,7 +100,14 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
 
     foreach (var service in graphqlServiceSettings)
     {
-        server.AddRemoteSchema(service.Key.ToLower());
+        try
+        {
+            server.AddRemoteSchema(service.Key.ToLower());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
         
     }
    

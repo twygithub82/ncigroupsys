@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>D:\personal\project\DMS\code\ncigroupsys\backend\GqlMS\Tariff\Depot\IDMS.Tariff.Depot\Properties\PublishProfiles\tlx-idms-tariff-depot - Zip Deploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\personal\project\DMS\code\ncigroupsys\backend\GqlMS\package\Depot\IDMS.Package.Depot\Properties\PublishProfiles\tlx-idms-package-depot - Zip Deploy.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>

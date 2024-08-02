@@ -1,4 +1,5 @@
 ﻿using HotChocolate.Data;
+using IDMS.Models.DB;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Shared;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
@@ -7,26 +8,25 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 
-namespace IDMS.Models.Tariff.Depot.GqlTypes
+namespace IDMS.Models.Package.Depot.GqlTypes
 {
-    public class TariffDepot_QueryType
+    public class PackageDepot_QueryType
     {
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public  IQueryable<tariff_depot?> QueryTariffDepot([Service] ApplicationTariffDBContext context,
+        public  IQueryable<package_depot?> QueryPackageDepot([Service] ApplicationPackageDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
-            IQueryable<tariff_depot> query = null;
+            IQueryable<package_depot> query = null;
             try
             {
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                query = context.tariff_depot.Where(i => i.delete_dt == null || i.delete_dt == 0)
-                        .Include(t=>t.tanks);
+                query = context.package_depot.Where(i => i.delete_dt == null || i.delete_dt == 0).Include(c => c.customer_company);//.Include(td=>td.depot);
             }
             catch
             {

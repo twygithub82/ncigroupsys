@@ -1,4 +1,6 @@
-﻿using System;
+﻿using IDMS.Models.Inventory;
+using IDMS.Models.Shared;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -23,11 +25,11 @@ namespace IDMS.Models.Tariff
 
         public double? storage_cost { get; set; }
 
-        public double? gate_charges { get; set; }
+        //public double? gate_charges { get; set; }
 
-        public int? free_storage_days {  get; set; }
+        public int? free_storage {  get; set; }
 
-        public string? unit_type_cv { get; set; }
+        public IEnumerable<tank>? tanks { get; set; }
 
     }
 }
