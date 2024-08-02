@@ -21,10 +21,16 @@ namespace IDMS.Models.Inventory
 
         [ForeignKey("tariff_cleaning")]
         public string? last_cargo_guid { get; set; }
+        public string? last_test_guid { get; set; }
         public string? tank_no { get; set; }
         public string? job_no { get; set; }
 
+        public string? preinspect_job_no { get; set; }
+        public string? liftoff_job_no { get; set; }
+        public string? lifton_job_no { get; set; }
+        public string? takein_job_no { get; set; }
         public string? release_job_no { get; set; } 
+
 
         public long? eta_dt { get; set; }
         public bool? purpose_steam { get; set; }
