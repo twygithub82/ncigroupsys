@@ -46,10 +46,10 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 
 @Component({
-  selector: 'app-booking-new',
+  selector: 'app-scheduling-new',
   standalone: true,
-  templateUrl: './booking-new.component.html',
-  styleUrl: './booking-new.component.scss',
+  templateUrl: './scheduling-new.component.html',
+  styleUrl: './scheduling-new.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -80,7 +80,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
     MatCardModule,
   ]
 })
-export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'tank_no',
@@ -94,7 +94,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     'actions',
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING-NEW'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.SCHEDULING-NEW'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -134,6 +134,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
     ADD_NEW_BOOKING: "COMMON-FORM.ADD-NEW-BOOKING",
     BOOKINGS: "COMMON-FORM.BOOKINGS",
+    SCHEDULINGS: "COMMON-FORM.SCHEDULINGS",
     SELECT_ALL: "COMMON-FORM.SELECT-ALL",
     ACTION_DATE: "COMMON-FORM.ACTION-DATE",
     BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
@@ -142,6 +143,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
     REPAIR_COMPLETION_DATE: 'COMMON-FORM.REPAIR-COMPLETION-DATE',
+    SCHEDULING_DETAILS: 'COMMON-FORM.SCHEDULING-DETAILS',
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -165,6 +167,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   bookingTypeCvListNewBooking: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+
+  selectedCompany?: string = "";
 
   lastSearchCriteria: any;
   lastOrderBy: any = {};
@@ -253,83 +257,143 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
   }
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
-  }
 
   /** Whether the number of selected elements matches the total number of rows. */
+  // isAllSelected() {
+  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+  //   const numSelected = selectedItems.size;
+  //   const numRows = this.sotList.length;
+  //   return numSelected === numRows;
+  // }
+
   isAllSelected() {
-    // const numSelected = this.sotSelection.selected.length;
-    // const numRows = this.sotDS.totalCount;
-    // console.log(numSelected);
-    // console.log(numRows);
-    // return numSelected === numRows;
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+    const selectableRows = this.sotList.filter(row => !this.checkDisable(row));
     const numSelected = selectedItems.size;
-    const numRows = this.sotList.length;
+    const numRows = selectableRows.length;
     return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
+  // masterToggle() {
+  //   if (this.isAllSelected()) {
+  //     this.clearPageSelection();
+  //   } else {
+  //     this.selectAllOnPage();
+  //   }
+  // }
+
   masterToggle() {
-    // this.isAllSelected()
-    //   ? this.sotSelection.clear()
-    //   : this.sotList.forEach((row) =>
-    //     this.sotSelection.select(row)
-    //   );
+    const selectableRows = this.sotList.filter(row => !this.checkDisable(row));
+
     if (this.isAllSelected()) {
       this.clearPageSelection();
     } else {
-      this.selectAllOnPage();
+      if (selectableRows.length > 0) {
+        // Set selectedCompany based on the first selectable row
+        this.selectedCompany = selectableRows[0].storing_order?.customer_company_guid;
+        this.selectAllOnPage(selectableRows);
+      }
     }
   }
 
   /** Clear selection on the current page */
+  // clearPageSelection() {
+  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+  //   this.sotList.forEach(row => {
+  //     this.sotSelection.deselect(row);
+  //     selectedItems.delete(row.guid!);
+  //   });
+  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  // }
+
   clearPageSelection() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+
     this.sotList.forEach(row => {
       this.sotSelection.deselect(row);
       selectedItems.delete(row.guid!);
     });
+
+    // If the current page is cleared, also clear the selectedCompany
+    if (selectedItems.size === 0) {
+      this.selectedCompany = undefined;
+    }
+
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Select all items on the current page */
-  selectAllOnPage() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      this.sotSelection.select(row);
-      selectedItems.add(row.guid!);
+  // selectAllOnPage() {
+  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+  //   this.sotList.forEach(row => {
+  //     this.sotSelection.select(row);
+  //     selectedItems.add(row.guid!);
+  //   });
+  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  // }
+
+  selectAllOnPage(selectableRows: StoringOrderTankItem[]) {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+
+    selectableRows.forEach(row => {
+      // Only select rows that match the selectedCompany
+      if (this.selectedCompany === row.storing_order?.customer_company_guid) {
+        this.sotSelection.select(row);
+        selectedItems.add(row.guid!);
+      }
     });
+
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Handle row selection */
+  // toggleRow(row: StoringOrderTankItem) {
+  //   this.sotSelection.toggle(row);
+  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+  //   if (this.sotSelection.isSelected(row)) {
+  //     this.selectedCompany = row.storing_order?.customer_company_guid;
+  //     selectedItems.add(row.guid!);
+  //   } else {
+  //     selectedItems.delete(row.guid!);
+  //   }
+  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  // }
+
   toggleRow(row: StoringOrderTankItem) {
-    this.sotSelection.toggle(row);
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+
+    // Check if the row is already selected
     if (this.sotSelection.isSelected(row)) {
-      selectedItems.add(row.guid!);
-    } else {
+      // Deselect the row
+      this.sotSelection.deselect(row);
       selectedItems.delete(row.guid!);
+
+      // If the deselected row was the last selected row, clear the selectedCompany
+      if (selectedItems.size === 0) {
+        this.selectedCompany = undefined;
+      }
+    } else {
+      // If the row is not selected, check if it should be selected based on the company
+      if (!this.selectedCompany || this.selectedCompany === row.storing_order?.customer_company_guid) {
+        this.sotSelection.select(row);
+        this.selectedCompany = row.storing_order?.customer_company_guid;
+        selectedItems.add(row.guid!);
+      }
     }
+
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  checkDisable(row: StoringOrderTankItem): boolean {
+    // Disable if a company is selected and the row's company does not match the selectedCompany
+    return !!this.selectedCompany && this.selectedCompany !== row.storing_order?.customer_company_guid;
   }
 
   /** Update selection for the current page */
   updatePageSelection() {
     this.sotSelection.clear();
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
     this.sotList.forEach(row => {
       if (selectedItems.has(row.guid!)) {
         this.sotSelection.select(row);
@@ -375,11 +439,29 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         { in_gate: { delete_dt: { eq: null } } }
       ]
     };
+
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['last_cargo'] || this.searchForm!.value['customer_code']) {
+      if (this.searchForm!.value['tank_no']) {
+        where.tank_no = { contains: this.searchForm!.value['tank_no'] };
+      }
+      if (this.searchForm!.value['last_cargo']) {
+        where.last_cargo_guid = { contains: this.searchForm!.value['last_cargo'].guid };
+      }
+
+      if (this.searchForm!.value['customer_code']) {
+        const soSearch: any = {};
+        soSearch.customer_company_guid = { contains: this.searchForm!.value['customer_code'].guid };
+        where.storing_order = soSearch;
+      }
+    }
+
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+      this.updatePageSelection();
+    });
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
@@ -387,6 +469,13 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+
+        // Execute the callback if provided
+        if (callback) {
+          callback();
+        } else {
+          this.updatePageSelection();
+        }
       });
 
     this.pageSize = pageSize;
@@ -420,7 +509,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before);
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+      this.updatePageSelection();
+    });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
