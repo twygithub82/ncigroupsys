@@ -58,6 +58,8 @@ namespace IDMS.Booking.GqlTypes
 
                     storing_order_tank? sot = sotLists.Find(s => s.guid == sch.storing_order_tank.guid);
                     sot.release_job_no = sch.storing_order_tank.release_job_no;
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;
                 }
                 context.release_order.Add(newRO);
                 context.scheduling.AddRange(schedulingsList);
