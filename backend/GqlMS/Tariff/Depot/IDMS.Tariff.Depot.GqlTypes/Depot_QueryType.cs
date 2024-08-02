@@ -1,5 +1,6 @@
 ﻿using HotChocolate.Data;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
+using IDMS.Models.Shared;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ namespace IDMS.Models.Tariff.Depot.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public  IQueryable<tariff_depot?> QueryTariffCleaningDepot([Service] ApplicationTariffDBContext context,
+        public  IQueryable<tariff_depot?> QueryTariffDepot([Service] ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -24,7 +25,8 @@ namespace IDMS.Models.Tariff.Depot.GqlTypes
             {
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                query = context.tariff_depot.Where(i => i.delete_dt == null || i.delete_dt == 0);
+                query = context.tariff_depot.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                        .Include(t=>t.tanks);
             }
             catch
             {

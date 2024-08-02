@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -42,6 +42,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { MatCardModule } from '@angular/material/card';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 
 @Component({
   selector: 'app-booking-new',
@@ -94,8 +96,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING-NEW'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.INVENTORY.LIST.BOOKING'
+    'MENUITEMS.HOME.TEXT'
   ]
 
   translatedLangText: any = {};
@@ -139,25 +140,31 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     SAVE_AND_SUBMIT: "COMMON-FORM.SAVE-AND-SUBMIT",
     SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
+    REPAIR_COMPLETION_DATE: 'COMMON-FORM.REPAIR-COMPLETION-DATE',
   }
 
   customerCodeControl = new UntypedFormControl();
+  lastCargoControl = new UntypedFormControl();
   searchForm?: UntypedFormGroup;
   searchField: string = "";
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
+  tcDS: TariffCleaningDS;
 
   sotList: StoringOrderTankItem[] = [];
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   customer_companyList?: CustomerCompanyItem[];
+  last_cargoList?: TariffCleaningItem[];
   yardCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   bookingTypeCvList: CodeValuesItem[] = [];
   bookingTypeCvListNewBooking: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
+  tankStatusCvList: CodeValuesItem[] = [];
 
   lastSearchCriteria: any;
   lastOrderBy: any = {};
@@ -181,6 +188,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
+    this.tcDS = new TariffCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -198,18 +206,20 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.searchForm = this.fb.group({
       tank_no: [''],
       customer_code: this.customerCodeControl,
+      last_cargo: this.lastCargoControl,
+      clean_dt_start: [''],
+      clean_dt_end: [''],
+      capacity: [''],
+      book_type_cv: [''],
+      eir_no: [''],
+      job_no: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
-      booking_dt_start: [''],
-      booking_dt_end: [''],
-      yard_cv: [''],
-      eir_no: [''],
-      booking_ref: [''],
-      purpose: [''],
-      surveyor_cv: [''],
-      book_type_cv: [''],
-      booking_status_cv: [''],
-      //eta_dt: [''],
+      repair_dt_start: [''],
+      repair_dt_end: [''],
+      tare_weight: [''],
+      tank_status_cv: [''],
+      yard_cv: ['']
     });
   }
 
@@ -222,7 +232,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
-      { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' }
+      { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -237,6 +248,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     });
     this.cvDS.connectAlias('bookingStatusCv').subscribe(data => {
       this.bookingStatusCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
   }
   showNotification(
@@ -354,7 +368,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   search() {
-    const searchField = this.searchField;
     const where: any = {
       and: [
         { status_cv: { eq: "ACCEPTED" } },
@@ -427,6 +440,24 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
+          this.updateValidators(this.customerCodeControl, this.customer_companyList);
+        });
+      })
+    ).subscribe();
+
+    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.cargo;
+        }
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+          this.last_cargoList = data
+          this.updateValidators(this.lastCargoControl, this.last_cargoList);
         });
       })
     ).subscribe();
@@ -468,6 +499,17 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  displayLastCargoFn(tc: TariffCleaningItem): string {
+    return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
+    untypedFormControl.setValidators([
+      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 
   displayDate(input: number | null | undefined): string | undefined {

@@ -148,7 +148,7 @@
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? soSelection.toggle(row) : null"
+                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
                       [checked]="soSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>

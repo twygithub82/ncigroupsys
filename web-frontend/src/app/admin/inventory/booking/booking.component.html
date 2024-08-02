@@ -13,7 +13,7 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                  <!-- <div class="m-l-" [matTooltip]="translatedLangText.ADD">
                     <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/booking/new']">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
@@ -26,7 +26,7 @@
                   <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
-                  </div>
+                  </div> -->
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -52,7 +52,7 @@
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
                         formControlName="last_cargo">
@@ -68,7 +68,7 @@
                         {{translatedLangText.INVALID_SELECTION}}
                       </mat-error>
                       }
-                    </mat-form-field> -->
+                    </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
@@ -179,7 +179,7 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table">
+              <table mat-table [dataSource]="bookingList" matSort class="mat-cell advance-table">
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
                   <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -187,42 +187,66 @@
                 </ng-container>
                 <ng-container matColumnDef="tank_no">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.TANK_NO | translate}}
+                    {{translatedLangText.TANK_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.TANK_NO | translate}}:</span>{{row.tank_no}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="job_no">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.JOB_NO | translate}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.JOB_NO | translate}}:</span>{{row.job_no}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="last_cargo">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
-                    {{langText.LAST_CARGO | translate}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{langText.LAST_CARGO | translate}}:</span>{{row.tariff_cleaning?.cargo}}
+                    <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_code">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.CUSTOMER_CODE | translate}}
+                    {{translatedLangText.CUSTOMER_CODE}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.CUSTOMER_CODE | translate}}:</span>{{ccDS.displayName(row.storing_order?.customer_company)}}
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="so_no">
+                <ng-container matColumnDef="eir_no">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.SO_NO | translate}}
+                    {{translatedLangText.EIR_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.SO_NO | translate}}:</span>{{row.storing_order?.so_no}}
+                    <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.storing_order_tank?.in_gate?.eir_no}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="eir_dt">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.EIR_DATE}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.storing_order_tank?.in_gate?.eir_dt)}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="last_cargo">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{translatedLangText.LAST_CARGO}}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cargo}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="purpose">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{translatedLangText.PURPOSE}}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <span class="mobile-label">{{translatedLangText.PURPOSE}}:</span>{{displayTankPurpose(row.storing_order_tank)}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="tank_status_cv">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{translatedLangText.STATUS}}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{row.storing_order_tank?.tank_status_cv}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="yard_cv">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{translatedLangText.YARD}}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <span class="mobile-label">{{translatedLangText.YARD}}:</span>{{row.storing_order_tank?.in_gate?.yard_cv}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -232,20 +256,20 @@
               </table>
             </div>
             <!-- No result -->
-            @if (!(sotDS.loading$ | async) && !sotList.length) {
+            @if (!(bkDS.loading$ | async) && !bookingList.length) {
             <mat-divider></mat-divider>
             <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+              <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if (sotDS.loading$ | async) {
+            @if (bkDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
+            <mat-paginator #paginator [length]="bkDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
               [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
             </mat-paginator>
           </div>

@@ -1,0 +1,286 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="langText.NEW"></app-breadcrumb>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <mat-accordion>
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                </mat-panel-title>
+                <mat-panel-description>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+                <div class="row">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+                      <input matInput formControlName="tank_no">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
+                      <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                        [matAutocomplete]="customerCode">
+                      <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                        @for (cc of customer_companyList; track cc) {
+                        <mat-option [value]="cc">
+                          {{ccDS.displayName(cc)}}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                      @if (customerCodeControl.hasError('invalidAutocompleteSelection')) {
+                      <mat-error>
+                        {{translatedLangText.INVALID_SELECTION}}
+                      </mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
+                      <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
+                        formControlName="last_cargo">
+                      <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
+                        @for (tc of last_cargoList; track tc) {
+                        <mat-option [value]="tc">
+                          {{tc.cargo}}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                      @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
+                      <mat-error>
+                        {{translatedLangText.INVALID_SELECTION}}
+                      </mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.CLEAN_DATE}}</mat-label>
+                      <mat-date-range-input [rangePicker]="clean_dt_picker">
+                        <input matStartDate placeholder="Start date" formControlName="clean_dt_start">
+                        <input matEndDate placeholder="End date" formControlName="clean_dt_end">
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle matSuffix [for]="clean_dt_picker"></mat-datepicker-toggle>
+                      <mat-date-range-picker #clean_dt_picker></mat-date-range-picker>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
+                      <input matInput formControlName="capacity">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.BOOKING_TYPE}}</mat-label>
+                      <mat-select formControlName="book_type_cv">
+                        @for (codeValue of bookingTypeCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
+                      <input matInput formControlName="eir_no">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
+                      <input matInput formControlName="job_no">
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
+                      <mat-date-range-input [rangePicker]="eir_picker">
+                        <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
+                        <input matEndDate placeholder="End date" formControlName="eir_dt_end">
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
+                      <mat-date-range-picker #eir_picker></mat-date-range-picker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.REPAIR_COMPLETION_DATE}}</mat-label>
+                      <mat-date-range-input [rangePicker]="repair_dt_picker">
+                        <input matStartDate placeholder="Start date" formControlName="repair_dt_start">
+                        <input matEndDate placeholder="End date" formControlName="repair_dt_end">
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle matSuffix [for]="repair_dt_picker"></mat-datepicker-toggle>
+                      <mat-date-range-picker #repair_dt_picker></mat-date-range-picker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
+                      <input matInput formControlName="tare_weight">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.CURRENT_STATUS}}</mat-label>
+                      <mat-select formControlName="tank_status_cv">
+                        @for (codeValue of tankStatusCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.YARD}}</mat-label>
+                      <mat-select formControlName="yard_cv">
+                        @for (codeValue of yardCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
+                    <button mat-mini-fab class="mt-1" color="primary" (click)="search()"
+                      [matTooltip]="translatedLangText.SEARCH">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                    <button mat-mini-fab color="primary" class="ms-1" (click)="addBookingDetails($event)"
+                      [matTooltip]="translatedLangText.ADD_NEW_BOOKING" [disabled]="!sotSelection.hasValue()">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                    <mat-checkbox class="card-checkbox ms-1" (change)="masterToggle()"
+                      [checked]="sotSelection.hasValue() && isAllSelected()"
+                      [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
+                      {{translatedLangText.SELECT_ALL}}
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </form>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <div class="body overflow-auto">
+            @for(row of sotList; track row){
+            <mat-card class="card-content p-0 m-b-10" matRipple>
+              <mat-card-header class="pt-2 pe-2 pb-0" (click)="toggleRow(row)">
+                <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
+                  class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkDisable(row)">
+                </mat-checkbox>
+                <mat-card-title class="pt-1">{{row.tank_no}}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="row" (click)="toggleRow(row)">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
+                    <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span> {{
+                    ccDS.displayName(row.storing_order?.customer_company)}}
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1">
+                    <span class="font-bold">{{translatedLangText.EIR_NO}}:</span> {{row.in_gate?.eir_no}}
+                  </div>
+                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                    <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span> {{row.in_gate?.eir_dt}}
+                  </div>
+                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                    <span class="font-bold">{{translatedLangText.CAPACITY}}:</span> {{
+                    row.in_gate?.in_gate_survey?.capacity}}
+                  </div>
+                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                    <span class="font-bold">{{translatedLangText.TARE_WEIGHT}}:</span> {{
+                    row.in_gate?.in_gate_survey?.tare_weight}}
+                  </div>
+                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                    <span class="font-bold">{{translatedLangText.STATUS}}:</span> {{row.tank_status_cv}}
+                  </div>
+                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+                    <span class="font-bold">{{translatedLangText.YARD}}:</span> {{row.in_gate?.yard_cv}}
+                  </div>
+                </div>
+                <mat-divider></mat-divider>
+                <h5 class="mb-1 pt-1">{{translatedLangText.SCHEDULINGS}}</h5>
+                @if ((row.booking?.length ?? 0) > 0) {
+                <div class="row">
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    <span class="font-bold">{{translatedLangText.BOOKING_DATE}}</span>
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    <span class="font-bold">{{translatedLangText.ACTION_DATE}}</span>
+                  </div>
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
+                    <span class="font-bold">{{translatedLangText.BOOKING_TYPE}}</span>
+                  </div>
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
+                    <span class="font-bold">{{translatedLangText.REFERENCE}}</span>
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    <span class="font-bold">{{translatedLangText.SURVEYOR}}</span>
+                  </div>
+                </div>
+                @for(bookingRow of row.booking; track bookingRow){
+                <div class="row">
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    {{displayDate(bookingRow.booking_dt)}}
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    {{displayDate(bookingRow?.action_dt)}}
+                  </div>
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
+                    {{bookingRow?.book_type_cv}}
+                  </div>
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
+                    {{bookingRow?.reference}}
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
+                    {{bookingRow?.surveyor_guid}}
+                  </div>
+                </div>
+                }
+                }
+                @else {
+                {{langText.NO_RESULT | translate}}
+                }
+              </mat-card-content>
+              <mat-card-actions>
+              </mat-card-actions>
+            </mat-card>
+            }
+            <!-- No result -->
+            @if (!(sotDS.loading$ | async) && !sotList.length) {
+            <mat-divider></mat-divider>
+            <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
+              <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+            </div>
+            }
+            <!-- Loading spinner -->
+            @if (sotDS.loading$ | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
+            </div>
+            }
+            <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+              [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

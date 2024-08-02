@@ -14,7 +14,7 @@
                   </mat-panel-title>
                   <mat-panel-description>
                     <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                      <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/storing-order/new']">
+                      <button mat-mini-fab color="primary" (click)="addCall()" (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">add</mat-icon>
                       </button>
                     </div>
@@ -134,7 +134,7 @@
             </div> -->
             <div class="body overflow-auto">
               <div class="responsive_table">
-                <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table">
+                <table mat-table [dataSource]="catList" matSort class="mat-cell advance-table">
                   <!-- ID Column -->
                   <ng-container matColumnDef="id">
                     <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -145,7 +145,7 @@
                       {{langText.CATEGORY_NAME| translate}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row" class="">
-                      <span class="mobile-label">{{langText.CATEGORY_NAME | translate}}:</span>{{row.category_name}}
+                      <span class="mobile-label">{{langText.CATEGORY_NAME | translate}}:</span>{{row.name}}
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="category_description">
@@ -153,7 +153,7 @@
                       {{langText.CATEGORY_DESCRIPTION | translate}}
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.category_description}}
+                      <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.description}}
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="category_cost">
@@ -164,28 +164,39 @@
                       <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.cost}}
                     </mat-cell>
                   </ng-container>
+                  <ng-container matColumnDef="update_date">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      {{langText.LAST_UPDATED | translate}}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{langText.LAST_UPDATED | translate}}:</span>{{displayLastUpdated(row)}}
+                    </mat-cell>
+                  </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                  <mat-row *matRowDef="let row; columns: displayedColumns;"
-                    [routerLink]="['/admin/in-gate/details', row.guid]" [style.cursor]="'pointer'" matRipple>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                    [style.cursor]="'pointer'" matRipple>
                   </mat-row>
+                  <!-- <mat-row *matRowDef="let row; columns: displayedColumns;"
+                    [routerLink]="['/admin/in-gate/details', row.guid]" [style.cursor]="'pointer'" matRipple>
+                  </mat-row> -->
                 </table>
               </div>
               <!-- No result -->
-              @if (!(sotDS.loading$ | async) && !sotList.length) {
+              @if (!(catDS.loading$ | async) && !catList.length) {
               <mat-divider></mat-divider>
-              <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
+              <div class="no-results m-l-20 pt-3" [style.display]="catList.length === 0 ? '' : 'none'">
                 <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
               </div>
               }
               <!-- Loading spinner -->
-              @if (sotDS.loading$ | async) {
+              @if (catDS.loading$ | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
-                [pageSizeOptions]="[5, 10, 25, 100]">
+              <mat-paginator #paginator [length]="catDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
               </mat-paginator>
             </div>
           </div>
