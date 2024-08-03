@@ -6,7 +6,7 @@ namespace IDMS.InGateSurvey.Model.Request
     {
         public string? guid { get; set; }
         public string in_gate_guid { get; set; }
-        public string periodic_test_guid { get; set; }
+        public string? periodic_test_guid { get; set; }
         public int? capacity { get; set; }
         public int? tare_weight { get; set; }
         public string? take_in_reference { get; set; }
@@ -24,9 +24,11 @@ namespace IDMS.InGateSurvey.Model.Request
         public string? btm_dis_comp_cv { get; set; }
         public string? btm_dis_valve_cv { get; set; }
         public string? btm_dis_valve_spec_cv { get; set; }
+        public string? btm_valve_brand_cv { get; set; }
         public string? top_dis_comp_cv { get; set; }
         public string? top_dis_valve_cv { get; set; }
         public string? top_dis_valve_spec_cv { get; set; }
+        public string? top_valve_brand_cv { get; set; }
         public string? manlid_comp_cv { get; set; }
         public string? foot_valve_cv { get; set; }
         public int? thermometer { get; set; }
