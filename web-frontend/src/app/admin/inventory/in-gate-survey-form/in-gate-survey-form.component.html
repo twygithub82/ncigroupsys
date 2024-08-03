@@ -324,7 +324,7 @@
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.COMPARTMENT_TYPE}}</mat-label>
                           <mat-select formControlName="tank_comp_cv" required>
-                            @for (codeValue of walkwayCvList; track codeValue) {
+                            @for (codeValue of tankCompTypeCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                             }
                           </mat-select>
@@ -766,8 +766,8 @@
                             <mat-label>{{translatedLangText.BRAND}}:</mat-label>
                           </div>
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                            <mat-radio-group formControlName="btm_brand_cv" required>
-                              @for (codeValue of footValveCvList; track codeValue) {
+                            <mat-radio-group formControlName="btm_valve_brand_cv" required>
+                              @for (codeValue of valveBrandCvList; track codeValue) {
                               <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                 {{codeValue.description}}
                               </mat-radio-button>
@@ -786,7 +786,7 @@
                               </mat-select>
                               @if (getBottomFormGroup().get('btm_dis_valve_cv')?.hasError('required')) {
                               <mat-error>
-                                {{translatedLangText.BRAND}} {{translatedLangText.SO_REQUIRED}}
+                                {{translatedLangText.BOTTOM_DIS_VALVE}} {{translatedLangText.SO_REQUIRED}}
                               </mat-error>
                               }
                             </mat-form-field>
@@ -912,8 +912,8 @@
                             <mat-label>{{translatedLangText.BRAND}}:</mat-label>
                           </div>
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                            <mat-radio-group formControlName="top_brand_cv" required>
-                              @for (codeValue of footValveCvList; track codeValue) {
+                            <mat-radio-group formControlName="top_valve_brand_cv" required>
+                              @for (codeValue of valveBrandCvList; track codeValue) {
                               <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                 {{codeValue.description}}
                               </mat-radio-button>

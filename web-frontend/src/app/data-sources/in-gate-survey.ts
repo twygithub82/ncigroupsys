@@ -31,9 +31,11 @@ export class InGateSurveyGO {
   public btm_dis_comp_cv?: string;
   public btm_dis_valve_cv?: string;
   public btm_dis_valve_spec_cv?: string;
+  public btm_valve_brand_cv?: string;
   public top_dis_comp_cv?: string;
   public top_dis_valve_cv?: string;
   public top_dis_valve_spec_cv?: string;
+  public top_valve_brand_cv?: string;
   public manlid_comp_cv?: string;
   public foot_valve_cv?: string;
   public thermometer?: number;
@@ -85,9 +87,11 @@ export class InGateSurveyGO {
     this.btm_dis_comp_cv = item.btm_dis_comp_cv;
     this.btm_dis_valve_cv = item.btm_dis_valve_cv;
     this.btm_dis_valve_spec_cv = item.btm_dis_valve_spec_cv;
+    this.btm_valve_brand_cv = item.btm_valve_brand_cv;
     this.top_dis_comp_cv = item.top_dis_comp_cv;
     this.top_dis_valve_cv = item.top_dis_valve_cv;
     this.top_dis_valve_spec_cv = item.top_dis_valve_spec_cv;
+    this.top_valve_brand_cv = item.top_valve_brand_cv;
     this.manlid_comp_cv = item.manlid_comp_cv;
     this.foot_valve_cv = item.foot_valve_cv;
     this.thermometer = item.thermometer;
@@ -456,7 +460,7 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
 `
 
 export const ADD_IN_GATE_SURVEY = gql`
-  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: in_gate_survey_InGateWithTankInput) {
+  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankInput) {
     addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: { in_gate: $inGate })
   }
 `;

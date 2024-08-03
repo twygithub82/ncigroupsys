@@ -389,7 +389,11 @@
     "REFERENCE": "Reference",
     "CLEAN-DATE": "Clean Date",
     "REPAIR-COMPLETION-DATE": "Repair Completion Date",
-    "SCHEDULING-DETAILS": "Scheduling Details"
+    "SCHEDULING-DETAILS": "Scheduling Details",
+    "RELEASE-DATE": "Release Date",
+    "RO-NOTES": "RO Notes",
+    "BOOKED": "Booked",
+    "SCHEDULED": "Scheduled"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

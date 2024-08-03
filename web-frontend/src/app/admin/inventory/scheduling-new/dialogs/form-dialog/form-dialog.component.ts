@@ -1,6 +1,6 @@
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
 import { Component, Inject, OnInit } from '@angular/core';
-import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule, UntypedFormArray } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
@@ -25,6 +25,9 @@ import { MatTableModule } from '@angular/material/table';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { MatDividerModule } from '@angular/material/divider';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
+import { MatCardModule } from '@angular/material/card';
+import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
+import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
 
 
 export interface DialogData {
@@ -63,6 +66,7 @@ export interface DialogData {
     NgxMaskDirective,
     MatTableModule,
     MatDividerModule,
+    MatCardModule,
   ],
 })
 export class FormDialogComponent {
@@ -78,15 +82,14 @@ export class FormDialogComponent {
   ];
   action: string;
   dialogTitle: string;
-  bookingForm: UntypedFormGroup;
+  schedulingForm: UntypedFormGroup;
   storingOrderTank: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
   startDateToday = new Date();
   valueChangesDisabled: boolean = false;
 
   ccDS: CustomerCompanyDS;
-  bkDS: BookingDS;
-  lastCargoControl: UntypedFormControl;;
+  roDS: ReleaseOrderDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -96,48 +99,72 @@ export class FormDialogComponent {
   ) {
     // Set the defaults
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.bkDS = new BookingDS(this.apollo);
+    this.roDS = new ReleaseOrderDS(this.apollo);
     this.action = data.action!;
-    this.dialogTitle = 'New Booking';
+    this.dialogTitle = 'New Scheduling';
     if (this.action === 'edit') {
       //this.dialogTitle = 'Edit ' + data.item.tank_no;
       this.storingOrderTank = data.item;
     } else {
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
-    this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
-    this.bookingForm = this.createStorigOrderTankForm();
+    this.schedulingForm = this.createForm();
     this.initializeValueChange();
   }
 
-  createStorigOrderTankForm(): UntypedFormGroup {
-    // this.startDateETA = this.storingOrderTank.eta_dt ? (Utility.convertDate(this.storingOrderTank.eta_dt) as Date) : this.startDateETA;
-    // this.startDateETR = this.storingOrderTank.etr_dt ? (Utility.convertDate(this.storingOrderTank.etr_dt) as Date) : this.startDateETR;
+  createForm(): UntypedFormGroup {
+    const customerCompanyGuid = this.storingOrderTank[0].storing_order?.customer_company_guid
     return this.fb.group({
-      reference: [''],
-      book_type_cv: [{ value: 'RELEASE_ORDER', disabled: true }],
       booking_dt: [''],
-      action_dt: [''],
-      surveyor_guid: ['']
+      customer_company_guid: [customerCompanyGuid],
+      haulier: [''],
+      release_dt: [''],
+      ro_notes: [''],
+      scheduling: this.fb.array(this.storingOrderTank.map((tank: any) => this.createTankGroup(tank)))
     });
   }
 
+  createTankGroup(tank: any): UntypedFormGroup {
+    return this.fb.group({
+      sot_guid: [tank.guid],
+      tank_no: [tank.tank_no],
+      customer_company: [this.ccDS.displayName(tank.storing_order?.customer_company)],
+      eir_no: [tank.in_gate?.eir_no],
+      eir_dt: [tank.in_gate?.eir_dt],
+      capacity: [tank.in_gate?.in_gate_survey?.capacity],
+      tare_weight: [tank.in_gate?.in_gate_survey?.tare_weight],
+      tank_status_cv: [tank.tank_status_cv],
+      yard_cv: [tank.in_gate?.yard_cv],
+      reference: [''],
+      release_job_no: [''],
+      booked: [this.checkBooking(tank.booking)],
+    });
+  }
+
+  getSchedulingArray(): UntypedFormArray {
+    return this.schedulingForm.get('scheduling') as UntypedFormArray;
+  }
+
   submit() {
-    if (this.bookingForm?.valid) {
-      const selectedIds = this.storingOrderTank.map(item => item.guid);
-      var booking: any = {
-        sot_guid: selectedIds,
-        book_type_cv: this.bookingForm.value['book_type_cv'],
-        booking_dt: Utility.convertDate(this.bookingForm.value['booking_dt']),
-        action_dt: Utility.convertDate(this.bookingForm.value['action_dt']),
-        reference: this.bookingForm.value['reference'],
-        surveyor_guid: this.bookingForm.value['surveyor_guid'] || "surveyor_guid_222",
-      }
-      console.log('valid');
-      console.log(booking);
-      this.bkDS.addBooking(booking).subscribe(result => {
+    if (this.schedulingForm?.valid) {
+      let ro = new ReleaseOrderItem();
+      ro.booking_dt = Utility.convertDate(this.schedulingForm.value['booking_dt']) as number;
+      ro.release_dt = Utility.convertDate(this.schedulingForm.value['release_dt']) as number;
+      ro.customer_company_guid = this.schedulingForm.value['customer_company_guid'];
+      ro.haulier = this.schedulingForm.value['haulier'];
+      ro.ro_notes = this.schedulingForm.value['ro_notes'];
+      let schedulings: SchedulingItem[] = [];
+      const schedulingsForm = this.schedulingForm.value['scheduling']
+      schedulingsForm.forEach((s: any) => {
+        schedulings.push(new SchedulingItem({reference: s.reference, sot_guid: s.sot_guid, sot: new StoringOrderTankGO({guid: s.sot_guid, release_job_no: s.release_job_no})}))
+      });
+
+      console.log(ro);
+      console.log(schedulings);
+
+      this.roDS.addReleaseOrder(ro, schedulings).subscribe(result => {
         const returnDialog: any = {
-          savedSuccess: (result?.data?.addBooking ?? 0) > 0
+          savedSuccess: (result?.data?.addReleaseOrder ?? 0) > 0
         }
         this.dialogRef.close(returnDialog);
       });
@@ -166,7 +193,7 @@ export class FormDialogComponent {
   }
 
   findInvalidControls() {
-    const controls = this.bookingForm.controls;
+    const controls = this.schedulingForm.controls;
     for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);
@@ -178,14 +205,21 @@ export class FormDialogComponent {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
-  canEdit(): boolean {
-    return true;
+  checkBooking2(bookings: BookingItem[] | undefined): boolean {
+    if (!bookings) return false;
+    return bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED");
   }
 
-  updateValidators(validOptions: any[]) {
-    this.lastCargoControl.setValidators([
-      Validators.required,
-      AutocompleteSelectionValidator(validOptions)
-    ]);
+  checkBooking(bookings: BookingItem[] | undefined): string {
+    if (!bookings) return "";
+    if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
+      return "ro_booked";
+    if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
+      return "ro_booked";
+    return "";
+  }
+
+  canEdit(): boolean {
+    return true;
   }
 }

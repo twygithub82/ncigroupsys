@@ -17,3 +17,7 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
+export const testTypeMapping: any = {
+  "5_HYDRO": "2.5_AIR",
+  "2.5_AIR": "5_HYDRO"
+}

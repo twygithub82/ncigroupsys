@@ -269,11 +269,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    // const numSelected = this.sotSelection.selected.length;
-    // const numRows = this.sotDS.totalCount;
-    // console.log(numSelected);
-    // console.log(numRows);
-    // return numSelected === numRows;
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     const numSelected = selectedItems.size;
     const numRows = this.sotList.length;
@@ -282,11 +277,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    // this.isAllSelected()
-    //   ? this.sotSelection.clear()
-    //   : this.sotList.forEach((row) =>
-    //     this.sotSelection.select(row)
-    //   );
     if (this.isAllSelected()) {
       this.clearPageSelection();
     } else {
