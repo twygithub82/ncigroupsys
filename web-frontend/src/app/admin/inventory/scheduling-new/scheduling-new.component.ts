@@ -588,7 +588,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       }
     });
   }
-//PTYW 485732-6
+  
   checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
     if (!schedulings || !schedulings.length) return false;
     if (schedulings.some(schedule => schedule.status_cv !== "CANCELED"))

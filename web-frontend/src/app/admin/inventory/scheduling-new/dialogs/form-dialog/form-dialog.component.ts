@@ -138,6 +138,7 @@ export class FormDialogComponent {
       reference: [''],
       release_job_no: [''],
       booked: [this.checkBooking(tank.booking)],
+      scheduled: [this.checkScheduling(tank.scheduling)],
     });
   }
 
@@ -205,18 +206,18 @@ export class FormDialogComponent {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
-  checkBooking2(bookings: BookingItem[] | undefined): boolean {
-    if (!bookings) return false;
-    return bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED");
+  checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
+    if (!schedulings || !schedulings.length) return false;
+    if (schedulings.some(schedule => schedule.status_cv !== "CANCELED"))
+      return true;
+    return false;
   }
 
-  checkBooking(bookings: BookingItem[] | undefined): string {
-    if (!bookings) return "";
+  checkBooking(bookings: BookingItem[] | undefined): boolean {
+    if (!bookings || !bookings.length) return false;
     if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
-      return "ro_booked";
-    if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
-      return "ro_booked";
-    return "";
+      return true;
+    return false;
   }
 
   canEdit(): boolean {
