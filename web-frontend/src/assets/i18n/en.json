@@ -188,6 +188,7 @@
     "STATUS": "Status",
     "NEW": "New",
     "EDIT": "Edit",
+    "VIEW": "View",
     "HEADER": "Header",
     "CUSTOMER-CODE": "Customer Code",
     "COMPANY-NAME": "Company Name",
@@ -389,7 +390,14 @@
     "REFERENCE": "Reference",
     "CLEAN-DATE": "Clean Date",
     "REPAIR-COMPLETION-DATE": "Repair Completion Date",
-    "SCHEDULING-DETAILS": "Scheduling Details"
+    "SCHEDULING-DETAILS": "Scheduling Details",
+    "DEPOT-PROFILE":"Depot Profile",
+    "PROFILE-NAME":"Profile Name",
+    "PREINSPECTION-COST":"Pre-inspection Cost",
+    "LOLO-COST":"LOLO Cost per Lift",
+    "STORAGE-COST":"Storage Cost",
+    "FREE-STORAGE":"Free Storage Days"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

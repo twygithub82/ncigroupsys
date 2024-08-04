@@ -48,6 +48,7 @@ import { Subscription } from 'rxjs';
 import {CleaningCategoryItem} from 'app/data-sources/cleaning-category'
 import { sequence } from '@angular/animations';
 import { FormDialogComponent } from './form-dialog/form-dialog.component'
+import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 //import {messageReceived}  from '../../../data-sources/message-received';
 
 @Component({
@@ -219,7 +220,15 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       updatedt= r.create_dt;
     }
     const date = new Date(updatedt! * 1000);
-    return date.toDateString();
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();   
+
+   // Replace the '/' with '-' to get the required format
+ 
+
+    return `${day}/${month}/${year}`;
 
   }
   
@@ -455,6 +464,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
        }
          
      });
+
+     
  
      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
           if (result>0) {
@@ -467,6 +478,9 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
        });
     
    }
+
+
+ 
 
    handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {

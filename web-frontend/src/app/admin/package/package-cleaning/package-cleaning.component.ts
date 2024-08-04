@@ -62,38 +62,31 @@ import { ComponentUtil } from 'app/utilities/component-util';
   styleUrl: './package-cleaning.component.scss',
   imports: [
     BreadcrumbComponent,
-    MatButtonModule,
-    MatSidenavModule,
     MatTooltipModule,
+    MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
-    MatTabsModule,
-    MatTabGroup,
-    MatTabHeader,
-    MatTabBody,
-    MatInputModule,
-    MatCheckboxModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatDatepickerModule,
-    MatAutocompleteModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgScrollbar,
-    NgClass,
-    DatePipe,
-    MatNativeDateModule,
-    TranslateModule,
-    CommonModule,
-    MatLabel,
     MatTableModule,
-    MatPaginatorModule,
+    MatSortModule,
+    NgClass,
+    MatCheckboxModule,
     FeatherIconsComponent,
+    MatRippleModule,
     MatProgressSpinnerModule,
-    RouterLink,
-    MatRadioModule,
-    MatDividerModule,
     MatMenuModule,
+    MatPaginatorModule,
+    DatePipe,
+    RouterLink,
+    TranslateModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatAutocompleteModule,
+    MatDividerModule,
   ]
 
 })
@@ -141,7 +134,7 @@ implements OnInit {
   custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
 
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
-  customer_companyList?: CustomerCompanyItem[];
+  customer_companyList1?: CustomerCompanyItem[];
   cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
@@ -479,7 +472,7 @@ implements OnInit {
         where.adjusted_price ={ngte:maxCost}
       }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.custCompClnCatDS.search(where,this.lastOrderBy).subscribe(data => {
+    this.subs.sink = this.custCompClnCatDS.search(where,this.lastOrderBy,this.pageSize).subscribe(data => {
        this.custCompClnCatItems=data;
        this.previous_endCursor=undefined;
        this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
@@ -513,6 +506,7 @@ implements OnInit {
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
+      this.pageSize=pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
@@ -599,7 +593,7 @@ implements OnInit {
   public loadData() {
 
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-      this.customer_companyList = data
+     // this.customer_companyList1 = data
     });
 
     this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
