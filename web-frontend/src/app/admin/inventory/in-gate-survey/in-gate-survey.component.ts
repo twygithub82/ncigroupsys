@@ -79,7 +79,7 @@ import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
-    'customer_code',
+    'customer',
     'eir_no',
     'eir_dt',
     'last_cargo',
@@ -96,6 +96,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',

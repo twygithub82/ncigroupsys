@@ -382,15 +382,6 @@ export const ROLLBACK_STORING_ORDER_TANK = gql`
 
 export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
-  get filter(): string {
-    return this.filterChange.value;
-  }
-  set filter(filter: string) {
-    this.filterChange.next(filter);
-  }
-  filteredData: StoringOrderTankItem[] = [];
-  renderedData: StoringOrderTankItem[] = [];
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }

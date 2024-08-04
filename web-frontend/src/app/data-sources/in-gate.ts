@@ -325,7 +325,6 @@ export const ADD_IN_GATE = gql`
 `;
 
 export class InGateDS extends BaseDataSource<InGateItem> {
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }

@@ -146,7 +146,8 @@
         "IN-GATE-SURVEY-FORM": "In Gate Survey Form",
         "BOOKING": "Booking",
         "BOOKING-NEW": "New Booking",
-        "SCHEDULING-NEW": "New Scheduling"
+        "SCHEDULING-NEW": "New Scheduling",
+        "RELEASE-ORDER": "Release Order"
       }
     }
   },
@@ -394,15 +395,9 @@
     "RELEASE-DATE": "Release Date",
     "RO-NOTES": "RO Notes",
     "BOOKED": "Booked",
-    "SCHEDULED": "Scheduled"
-    "SCHEDULING-DETAILS": "Scheduling Details",
-    "DEPOT-PROFILE":"Depot Profile",
-    "PROFILE-NAME":"Profile Name",
-    "PREINSPECTION-COST":"Pre-inspection Cost",
-    "LOLO-COST":"LOLO Cost per Lift",
-    "STORAGE-COST":"Storage Cost",
-    "FREE-STORAGE":"Free Storage Days"
-    
+    "SCHEDULED": "Scheduled",
+    "RO-NO": "RO No.",
+    "RO-DATE": "RO Date"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -311,7 +311,6 @@ export const ADD_BOOKING = gql`
 `;
 
 export class BookingDS extends BaseDataSource<BookingItem> {
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }

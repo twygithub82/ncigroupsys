@@ -5,7 +5,8 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
-import {CLEANING_METHOD_FRAGMENT} from './fragments';
+import { CLEANING_METHOD_FRAGMENT } from './fragments';
+import { BaseDataSource } from './base-ds';
 
 export const GET_CLEANING_METHOD_QUERY = gql`
   query queryCleaningMethod($where:cleaning_methodFilterInput , $order:[cleaning_methodSortInput!]) 
@@ -49,16 +50,11 @@ export class CleaningMethodItem {
     }
 }
 
-export class CleaningMethodDS extends DataSource<CleaningMethodItem> {
+export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
     private itemsSubjects = new BehaviorSubject<CleaningMethodItem[]>([]);
-    private loadingSubject = new BehaviorSubject<boolean>(false);
-    public loading$ = this.loadingSubject.asObservable();
-    public totalCount = 0;
     constructor(private apollo: Apollo) {
         super();
     }
-
-    
 
     loadItems(where?: any, order?: any): Observable<CleaningMethodItem[]> {
         this.loadingSubject.next(true);
@@ -81,14 +77,5 @@ export class CleaningMethodDS extends DataSource<CleaningMethodItem> {
                     return rst.nodes;
                 })
             );
-    }
-
-    connect(): Observable<CleaningMethodItem[]> {
-        return this.itemsSubjects.asObservable();
-    }
-
-    disconnect(): void {
-        this.itemsSubjects.complete();
-        this.loadingSubject.complete();
     }
 }

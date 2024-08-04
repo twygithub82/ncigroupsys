@@ -21,6 +21,8 @@ import { BookingComponent } from './inventory/booking/booking.component';
 import {PackageCleaningComponent} from "./package/package-cleaning/package-cleaning.component"
 import { BookingNewComponent } from './inventory/booking-new/booking-new.component';
 import { SchedulingNewComponent } from './inventory/scheduling-new/scheduling-new.component';
+import { ReleaseOrderComponent } from './inventory/release-order/release-order.component';
+import { ReleaseOrderDetailsComponent } from './inventory/release-order-details/release-order-details.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "cleaning-setps",
@@ -81,6 +83,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "inventory/scheduling-new",
     component: SchedulingNewComponent,
+  },
+  {
+    path: "inventory/release-order",
+    component: ReleaseOrderComponent,
+  },
+  {
+    path: "inventory/release-order/edit/:id",
+    component: ReleaseOrderDetailsComponent,
   },
   {
     path: "parameter/cleaning-category",

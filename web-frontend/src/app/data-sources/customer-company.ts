@@ -83,7 +83,6 @@ export const GET_COMPANY_QUERY = gql`
 `;
 
 export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
-    public totalCount = 0;
     constructor(private apollo: Apollo) {
         super();
     }

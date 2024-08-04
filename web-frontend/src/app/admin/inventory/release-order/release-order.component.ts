@@ -32,24 +32,23 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { MatCardModule } from '@angular/material/card';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
 
 @Component({
-  selector: 'app-booking-new',
+  selector: 'app-release-order',
   standalone: true,
-  templateUrl: './booking-new.component.html',
-  styleUrl: './booking-new.component.scss',
+  templateUrl: './release-order.component.html',
+  styleUrl: './release-order.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -77,33 +76,32 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatCardModule,
   ]
 })
-export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
-    'tank_no',
-    'customer',
-    'eir_no',
-    'eir_dt',
-    'capacity',
-    'tare_weight',
-    'tank_status',
-    'yard',
-    'actions',
+    'ro_no',
+    'customer_code',
+    'ro_dt',
+    'status',
+    'no_of_tanks',
+    // 'waiting_status',
+    // 'accept_status',
+    // 'cancel_status',
+    'actions'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING-NEW'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
 
   translatedLangText: any = {};
   langText = {
-    NEW: 'COMMON-FORM.NEW',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',
@@ -119,57 +117,46 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
-    SEARCH: "COMMON-FORM.SEARCH",
-    EIR_NO: "COMMON-FORM.EIR-NO",
-    EIR_DATE: "COMMON-FORM.EIR-DATE",
-    BOOKING_DATE: "COMMON-FORM.BOOKING-DATE",
-    YARD: "COMMON-FORM.YARD",
-    BOOKING_REFERENCE: "COMMON-FORM.BOOKING-REFERENCE",
-    REFERENCE: "COMMON-FORM.REFERENCE",
-    SURVEYOR: "COMMON-FORM.SURVEYOR",
-    BOOKING_TYPE: "COMMON-FORM.BOOKING-TYPE",
-    CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
-    CUSTOMER: "COMMON-FORM.CUSTOMER",
-    CAPACITY: "COMMON-FORM.CAPACITY",
-    TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
-    ADD_NEW_BOOKING: "COMMON-FORM.ADD-NEW-BOOKING",
-    BOOKINGS: "COMMON-FORM.BOOKINGS",
-    SELECT_ALL: "COMMON-FORM.SELECT-ALL",
-    ACTION_DATE: "COMMON-FORM.ACTION-DATE",
-    BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
-    SAVE_AND_SUBMIT: "COMMON-FORM.SAVE-AND-SUBMIT",
-    SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
-    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
-    REPAIR_COMPLETION_DATE: 'COMMON-FORM.REPAIR-COMPLETION-DATE',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
+    ACCEPTED: 'COMMON-FORM.ACCEPTED',
+    WAITING: 'COMMON-FORM.WAITING',
+    CANCELED: 'COMMON-FORM.CANCELED',
+    TANKS: 'COMMON-FORM.TANKS',
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    RO_NO: 'COMMON-FORM.RO-NO',
+    RO_DATE: 'COMMON-FORM.RO-DATE',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
+    EIR_NO: 'COMMON-FORM.EIR-NO'
   }
+
+  searchForm?: UntypedFormGroup;
+
+  cvDS: CodeValuesDS;
+  soDS: StoringOrderDS;
+  ccDS: CustomerCompanyDS;
+  tcDS: TariffCleaningDS;
+  roDS: ReleaseOrderDS;
+
+  roList: ReleaseOrderItem[] = [];
+  roSelection = new SelectionModel<ReleaseOrderItem>(true, []);
+  selectedItemsPerPage: { [key: number]: Set<string> } = {};
+  soStatusCvList: CodeValuesItem[] = [];
+  purposeOptionCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-  searchForm?: UntypedFormGroup;
-  searchField: string = "";
-
-  sotDS: StoringOrderTankDS;
-  ccDS: CustomerCompanyDS;
-  cvDS: CodeValuesDS;
-  tcDS: TariffCleaningDS;
-
-  sotList: StoringOrderTankItem[] = [];
-  sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
-  selectedItemsPerPage: { [key: number]: Set<string> } = {};
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
-  yardCvList: CodeValuesItem[] = [];
-  purposeOptionCvList: CodeValuesItem[] = [];
-  bookingTypeCvList: CodeValuesItem[] = [];
-  bookingTypeCvListNewBooking: CodeValuesItem[] = [];
-  bookingStatusCvList: CodeValuesItem[] = [];
-  tankStatusCvList: CodeValuesItem[] = [];
 
-  lastSearchCriteria: any;
-  lastOrderBy: any = {};
   pageIndex = 0;
   pageSize = 10;
+  lastSearchCriteria: any;
+  lastOrderBy: any = { ro_no: "DESC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -185,10 +172,13 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   ) {
     super();
     this.translateLangText();
-    this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.initSearchForm();
+    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.soDS = new StoringOrderDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
+    this.roDS = new ReleaseOrderDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -197,9 +187,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initSearchForm();
-    this.initializeValueChanges();
+    this.initializeFilterCustomerCompany();
     this.loadData();
+  }
+
+  refresh() {
+    this.refreshTable();
   }
 
   initSearchForm() {
@@ -207,71 +200,30 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tank_no: [''],
       customer_code: this.customerCodeControl,
       last_cargo: this.lastCargoControl,
-      clean_dt_start: [''],
-      clean_dt_end: [''],
-      capacity: [''],
-      book_type_cv: [''],
+      ro_no: [''],
       eir_no: [''],
       job_no: [''],
-      eir_dt_start: [''],
-      eir_dt_end: [''],
-      repair_dt_start: [''],
-      repair_dt_end: [''],
-      tare_weight: [''],
-      tank_status_cv: [''],
-      yard_cv: ['']
+      purpose: [''],
+      etr_dt_start: [''],
+      etr_dt_end: [''],
+      ro_status: [''],
     });
   }
 
-  refresh() {
-    this.loadData();
+  cancelItem(row: StoringOrderItem) {
+    // this.id = row.id;
+    this.cancelSelectedRows([row])
   }
 
-  public loadData() {
-    const queries = [
-      { alias: 'yardCv', codeValType: 'YARD' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
-      { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
-    ];
-    this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('yardCv').subscribe(data => {
-      this.yardCvList = addDefaultSelectOption(data, 'All');
-    });
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
-    });
-    this.cvDS.connectAlias('bookingTypeCv').subscribe(data => {
-      this.bookingTypeCvListNewBooking = data;
-      this.bookingTypeCvList = addDefaultSelectOption(data, 'All');
-    });
-    this.cvDS.connectAlias('bookingStatusCv').subscribe(data => {
-      this.bookingStatusCvList = addDefaultSelectOption(data, 'All');
-    });
-    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
-    });
-  }
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
+  private refreshTable() {
+    this.paginator._changePageSize(this.paginator.pageSize);
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     const numSelected = selectedItems.size;
-    const numRows = this.sotList.length;
+    const numRows = this.roList.length;
     return numSelected === numRows;
   }
 
@@ -287,8 +239,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   /** Clear selection on the current page */
   clearPageSelection() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      this.sotSelection.deselect(row);
+    this.roList.forEach(row => {
+      this.roSelection.deselect(row);
       selectedItems.delete(row.guid!);
     });
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
@@ -297,18 +249,18 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   /** Select all items on the current page */
   selectAllOnPage() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      this.sotSelection.select(row);
+    this.roList.forEach(row => {
+      this.roSelection.select(row);
       selectedItems.add(row.guid!);
     });
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Handle row selection */
-  toggleRow(row: StoringOrderTankItem) {
-    this.sotSelection.toggle(row);
+  toggleRow(row: StoringOrderItem) {
+    this.roSelection.toggle(row);
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    if (this.sotSelection.isSelected(row)) {
+    if (this.roSelection.isSelected(row)) {
       selectedItems.add(row.guid!);
     } else {
       selectedItems.delete(row.guid!);
@@ -318,12 +270,102 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   /** Update selection for the current page */
   updatePageSelection() {
-    this.sotSelection.clear();
+    this.roSelection.clear();
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
+    this.roList.forEach(row => {
       if (selectedItems.has(row.guid!)) {
-        this.sotSelection.select(row);
+        this.roSelection.select(row);
       }
+    });
+  }
+
+  canCancelSelectedRows(): boolean {
+    return !this.roSelection.hasValue() || !this.roSelection.selected.every((item) => {
+      const index: number = this.roList.findIndex((d) => d === item);
+      return this.soDS.canCancel(this.roList[index]);
+    });
+  }
+
+  cancelSelectedRows(row: StoringOrderItem[]) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      data: {
+        item: [...row],
+        langText: this.langText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
+        this.soDS.cancelStoringOrder(so).subscribe(result => {
+          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
+            let successMsg = this.langText.CANCELED_SUCCESS;
+            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
+              successMsg = res;
+              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+              this.refreshTable();
+            });
+          }
+        });
+      }
+    });
+  }
+
+  public loadData() {
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+
+    const queries = [
+      { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' }
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('soStatusCv').subscribe(data => {
+      this.soStatusCvList = data;
+      this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+    });
+    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+      this.purposeOptionCvList = data;
+    });
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.roDS.searchReleaseOrder(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.roList = data;
+        this.endCursor = this.roDS.pageInfo?.endCursor;
+        this.startCursor = this.roDS.pageInfo?.startCursor;
+        this.hasNextPage = this.roDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.roDS.pageInfo?.hasPreviousPage ?? false;
+
+        // Execute the callback if provided
+        if (callback) {
+          callback();
+        } else {
+          this.updatePageSelection();
+        }
+      });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
+  }
+
+  showNotification(
+    colorName: string,
+    text: string,
+    placementFrom: MatSnackBarVerticalPosition,
+    placementAlign: MatSnackBarHorizontalPosition
+  ) {
+    this.snackBar.open(text, '', {
+      duration: 2000,
+      verticalPosition: placementFrom,
+      horizontalPosition: placementAlign,
+      panelClass: colorName,
     });
   }
 
@@ -358,34 +400,51 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   search() {
-    const where: any = {
-      and: [
-        { status_cv: { eq: "ACCEPTED" } },
-        { tank_status_cv: { neq: "RO_GENERATED" } },
-        { in_gate: { delete_dt: { eq: null } } }
-      ]
-    };
-    this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize);
-  }
+    const where: any = {};
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-      .subscribe(data => {
-        this.sotList = data;
-        this.endCursor = this.sotDS.pageInfo?.endCursor;
-        this.startCursor = this.sotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
-      });
+    if (this.searchForm!.value['so_no']) {
+      where.so_no = { contains: this.searchForm!.value['so_no'] };
+    }
 
-    this.pageSize = pageSize;
-    this.pageIndex = pageIndex;
+    if (this.searchForm!.value['so_status']) {
+      where.status_cv = { contains: this.searchForm!.value['so_status'] };
+    }
+
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end'])) {
+      const sotSome: any = {};
+
+      if (this.searchForm!.value['last_cargo']) {
+        where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
+      }
+
+      if (this.searchForm!.value['tank_no']) {
+        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
+      }
+
+      if (this.searchForm!.value['job_no']) {
+        sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
+      }
+
+      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
+        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
+      }
+      where.storing_order_tank = { some: sotSome };
+    }
+
+    if (this.searchForm!.value['customer_code']) {
+      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+    }
+
+    this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
+    // TODO :: search criteria
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+      this.updatePageSelection();
+    });
   }
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
+    let first = pageSize;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
@@ -410,14 +469,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before);
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+      this.updatePageSelection();
+    });
   }
 
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-  }
-
-  initializeValueChanges() {
+  initializeFilterCustomerCompany() {
     this.searchForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -430,7 +487,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
-          this.updateValidators(this.customerCodeControl, this.customer_companyList);
         });
       })
     ).subscribe();
@@ -447,42 +503,10 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
-          this.updateValidators(this.lastCargoControl, this.last_cargoList);
+          this.updateValidators(this.last_cargoList);
         });
       })
     ).subscribe();
-  }
-
-  addBookingDetails(event: Event) {
-    this.preventDefault(event);  // Prevents the form submission
-    const selectedItems = this.sotSelection.selected;
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      data: {
-        item: selectedItems,
-        action: 'new',
-        translatedLangText: this.translatedLangText,
-        populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking
-        }
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result && result.savedSuccess) {
-        ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
-        this.performSearch(this.pageSize, 0, this.pageSize);
-      }
-    });
-  }
-
-  preventDefault(event: Event) {
-    event.preventDefault(); // Prevents the form submission
   }
 
   translateLangText() {
@@ -491,18 +515,23 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    //return this.ccDS.displayName(cc);
+  }
+
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
-  updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
-    untypedFormControl.setValidators([
+  displayDate(input: number | null | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input as number);
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.lastCargoControl.setValidators([
       Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
-  }
-
-  displayDate(input: number | null | undefined): string | undefined {
-    return Utility.convertEpochToDateStr(input as number);
   }
 }

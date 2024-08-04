@@ -45,7 +45,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { BookingItem } from 'app/data-sources/booking';
-import { SchedulingItem } from 'app/data-sources/scheduling';
+import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -106,6 +106,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     NEW: 'COMMON-FORM.NEW',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',
@@ -131,7 +132,6 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     SURVEYOR: "COMMON-FORM.SURVEYOR",
     BOOKING_TYPE: "COMMON-FORM.BOOKING-TYPE",
     CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
-    CUSTOMER: "COMMON-FORM.CUSTOMER",
     CAPACITY: "COMMON-FORM.CAPACITY",
     TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
     ADD_NEW_BOOKING: "COMMON-FORM.ADD-NEW-BOOKING",
@@ -162,6 +162,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  schedulingDS: SchedulingDS;
 
   sotList: StoringOrderTankItem[] = [];
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
@@ -200,6 +201,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
+    this.schedulingDS = new SchedulingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -588,7 +590,15 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       }
     });
   }
-  
+
+  checkSchedulings(): boolean {
+    if (!this.sotSelection.hasValue()) return true;
+
+    return this.sotSelection.selected.some(selection =>
+      selection.scheduling?.some(schedulingItem => schedulingItem.status_cv !== 'CANCELED')
+    );
+  }
+
   checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
     if (!schedulings || !schedulings.length) return false;
     if (schedulings.some(schedule => schedule.status_cv !== "CANCELED"))
@@ -603,8 +613,17 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     return false;
   }
 
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
   }
 
   translateLangText() {

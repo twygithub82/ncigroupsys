@@ -308,7 +308,6 @@ export const ADD_BOOKING = gql`
 `;
 
 export class SchedulingDS extends BaseDataSource<SchedulingItem> {
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }
@@ -357,8 +356,14 @@ export class SchedulingDS extends BaseDataSource<SchedulingItem> {
     return sot && !sot.status_cv;
   }
 
-  canCancel(sot: StoringOrderTankItem): boolean {
-    return sot && sot.status_cv === 'WAITING';
+  canCancel(schedule: SchedulingItem | undefined): boolean {
+    if (!schedule) return false;
+    return schedule && schedule.status_cv === 'PENDING';
+  }
+
+  canCancels(schedule: SchedulingItem[] | undefined): boolean {
+    if (!schedule) return false;
+    return schedule.some(item => item.status_cv === 'PENDING');
   }
 
   canRollbackStatus(sot: StoringOrderTankItem): boolean {

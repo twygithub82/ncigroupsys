@@ -306,7 +306,6 @@ export const UPDATE_TARIFF_CLEANING = gql`
 
 
 export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }

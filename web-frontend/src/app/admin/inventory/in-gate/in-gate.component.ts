@@ -89,11 +89,11 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     'MENUITEMS.HOME.TEXT'
   ]
 
+  translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
-    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     SO_DATE: 'COMMON-FORM.SO-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
@@ -135,6 +135,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     private translate: TranslateService
   ) {
     super();
+    this.translateLangText();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
   }
@@ -273,5 +274,11 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   }
 
   initializeFilterCustomerCompany() {
+  }
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
   }
 }

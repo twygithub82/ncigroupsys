@@ -472,7 +472,6 @@ export const UPDATE_IN_GATE_SURVEY = gql`
 `;
 
 export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }
