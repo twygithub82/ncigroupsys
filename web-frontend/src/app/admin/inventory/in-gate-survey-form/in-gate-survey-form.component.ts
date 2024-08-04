@@ -48,6 +48,7 @@ import { InGateSurveyDS, InGateSurveyGO } from 'app/data-sources/in-gate-survey'
 import { MatRadioModule } from '@angular/material/radio';
 import { Moment } from 'moment';
 import * as moment from 'moment';
+import { testTypeMapping } from 'environments/environment.development';
 
 @Component({
   selector: 'app-in-gate',
@@ -224,7 +225,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   airlineConnCvList: CodeValuesItem[] = [];
   disCompCvList: CodeValuesItem[] = [];
   disValveCvList: CodeValuesItem[] = [];
-  brandCvList: CodeValuesItem[] = [];
   disValveSpecCvList: CodeValuesItem[] = [];
   disTypeCvList: CodeValuesItem[] = [];
   footValveCvList: CodeValuesItem[] = [];
@@ -233,6 +233,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   pvSpecCvList: CodeValuesItem[] = [];
   pvTypeCvList: CodeValuesItem[] = [];
   thermometerCvList: CodeValuesItem[] = [];
+  tankCompTypeCvList: CodeValuesItem[] = [];
+  valveBrandCvList: CodeValuesItem[] = [];
 
   unit_typeList: TankItem[] = []
 
@@ -329,7 +331,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         btm_dis_valve_cv: [''],
         btm_dis_valve_spec_cv: [''],
         foot_valve_cv: [''],
-        btm_brand_cv: [''],
+        btm_valve_brand_cv: [''],
         thermometer: [''],
         thermometer_cv: [''],
         ladder: [''],
@@ -339,7 +341,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         top_dis_comp_cv: [''],
         top_dis_valve_cv: [''],
         top_dis_valve_spec_cv: [''],
-        top_brand_cv: [''],
+        top_valve_brand_cv: [''],
         airline_valve_cv: [''],
         airline_valve_pcs: [''],
         airline_valve_dim: [''],
@@ -422,6 +424,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       { alias: 'pvSpecCv', codeValType: 'PV_SPEC' },
       { alias: 'pvTypeCv', codeValType: 'PV_TYPE' },
       { alias: 'thermometerCv', codeValType: 'THERMOMETER' },
+      { alias: 'tankCompTypeCv', codeValType: 'TANK_COMP_TYPE' },
+      { alias: 'valveBrandCv', codeValType: 'VALVE_BRAND' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -463,9 +467,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
       this.disValveCvList = data;
     });
-    this.cvDS.connectAlias('brandCv').subscribe(data => {
-      this.brandCvList = data;
-    });
     this.cvDS.connectAlias('disValveSpecCv').subscribe(data => {
       this.disValveSpecCvList = data;
     });
@@ -489,6 +490,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.cvDS.connectAlias('thermometerCv').subscribe(data => {
       this.thermometerCvList = addDefaultSelectOption(data, "--Select--");
+    });
+    this.cvDS.connectAlias('tankCompTypeCv').subscribe(data => {
+      this.tankCompTypeCvList = addDefaultSelectOption(data, "--Select--");
+    });
+    this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
+      this.valveBrandCvList = data;
     });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
@@ -632,6 +639,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.btm_dis_valve_cv = bottomFormGroup.value['btm_dis_valve_cv'];
       igs.btm_dis_valve_spec_cv = bottomFormGroup.value['btm_dis_valve_spec_cv'];
       igs.foot_valve_cv = bottomFormGroup.value['foot_valve_cv'];
+      igs.btm_valve_brand_cv = bottomFormGroup.value['btm_valve_brand_cv'];
       igs.thermometer = bottomFormGroup.value['thermometer'];
       igs.thermometer_cv = bottomFormGroup.value['thermometer_cv'];
       igs.ladder = bottomFormGroup.value['ladder'];
@@ -641,6 +649,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.top_dis_comp_cv = topFormGroup.value['top_dis_comp_cv'];
       igs.top_dis_valve_cv = topFormGroup.value['top_dis_valve_cv'];
       igs.top_dis_valve_spec_cv = topFormGroup.value['top_dis_valve_spec_cv'];
+      igs.top_valve_brand_cv = bottomFormGroup.value['top_valve_brand_cv'];
       igs.airline_valve_cv = topFormGroup.value['airline_valve_cv'];
       igs.airline_valve_pcs = topFormGroup.value['airline_valve_pcs'];
       igs.airline_valve_dim = topFormGroup.value['airline_valve_dim'];
@@ -703,7 +712,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/inventory/ig-gate-survey']);
+      this.router.navigate(['/admin/inventory/in-gate-survey']);
     }
   }
 
@@ -872,8 +881,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return "";
   }
 
-  getTestTypeDescription(codeValType: string): string | undefined {
-    let cv = this.testTypeCvList.filter(cv => cv.code_val === codeValType);
+  getTestTypeDescription(codeVal: string): string | undefined {
+    const mappedVal = testTypeMapping[codeVal];
+    let cv = this.testTypeCvList.filter(cv => cv.code_val === mappedVal);
     if (cv.length) {
       return cv[0].description;
     }

@@ -10,6 +10,7 @@ import { TARIFF_CLEANING_FRAGMENT, TariffCleaningItem } from './tariff-cleaning'
 import { BaseDataSource } from './base-ds';
 import { InGateItem } from './in-gate';
 import { BookingItem } from './booking';
+import { SchedulingItem } from './scheduling';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -18,6 +19,11 @@ export class StoringOrderTank {
   public tank_no?: string;
   public last_cargo_guid?: string;
   public job_no?: string;
+  public preinspect_job_no?: string;
+  public liftoff_job_no?: string;
+  public lifton_job_no?: string;
+  public takein_job_no?: string;
+  public release_job_no?: string;
   public eta_dt?: number | Date;
   public purpose_storage: boolean = false;
   public purpose_steam: boolean = false;
@@ -43,6 +49,11 @@ export class StoringOrderTank {
     this.tank_no = item.tank_no || '';
     this.last_cargo_guid = item.last_cargo_guid || '';
     this.job_no = item.job_no || '';
+    this.preinspect_job_no = item.preinspect_job_no || '';
+    this.liftoff_job_no = item.liftoff_job_no || '';
+    this.lifton_job_no = item.lifton_job_no || '';
+    this.takein_job_no = item.takein_job_no || '';
+    this.release_job_no = item.release_job_no || '';
     this.eta_dt = item.eta_dt || undefined;
     this.purpose_storage = item.purpose_storage !== undefined ? !!item.purpose_storage : false;
     this.purpose_steam = item.purpose_steam !== undefined ? !!item.purpose_steam : false;
@@ -76,6 +87,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public tariff_cleaning?: TariffCleaningItem;
   public in_gate?: InGateItem;
   public booking?: BookingItem[];
+  public scheduling?: SchedulingItem[];
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -83,6 +95,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.tariff_cleaning = item.tariff_cleaning;
     this.in_gate = item.in_gate;
     this.booking = item.booking;
+    this.scheduling = item.scheduling;
     this.actions = item.actions || [];
   }
 }
@@ -203,6 +216,21 @@ const GET_STORING_ORDER_TANKS_FOR_BOOKING = gql`
           update_by
           update_dt
           action_dt
+        }
+        scheduling {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          reference
+          release_order_guid
+          sot_guid
+          status_cv
+          update_by
+          update_dt
+          release_order {
+            status_cv
+          }
         }
       }
       pageInfo {

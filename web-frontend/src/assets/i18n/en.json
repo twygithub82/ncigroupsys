@@ -391,6 +391,11 @@
     "CLEAN-DATE": "Clean Date",
     "REPAIR-COMPLETION-DATE": "Repair Completion Date",
     "SCHEDULING-DETAILS": "Scheduling Details",
+    "RELEASE-DATE": "Release Date",
+    "RO-NOTES": "RO Notes",
+    "BOOKED": "Booked",
+    "SCHEDULED": "Scheduled"
+    "SCHEDULING-DETAILS": "Scheduling Details",
     "DEPOT-PROFILE":"Depot Profile",
     "PROFILE-NAME":"Profile Name",
     "PREINSPECTION-COST":"Pre-inspection Cost",
