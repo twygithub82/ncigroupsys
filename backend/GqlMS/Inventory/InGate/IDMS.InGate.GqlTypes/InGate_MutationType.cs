@@ -22,6 +22,7 @@ namespace IDMS.InGate.GqlTypes
             try
             {
                 string so_guid = "";
+                //GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in");
                 //long epochNow = GqlUtils.GetNowEpochInSec();
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
@@ -71,12 +72,14 @@ namespace IDMS.InGate.GqlTypes
 
                 if (InGate.tank != null)
                 {
+                    string tankStatusGuid =$"{config["CodeValuesSetting:TankStatusGuid"]}";
                     if (so_tank.status_cv != "WAITING")
                     {
                         throw new GraphQLException(new Error("Tank status is not waiting", "404"));
                     }
                     so_tank.job_no = InGate.tank.job_no;
                     so_tank.status_cv = "ACCEPTED";
+                    so_tank.tank_status_cv = GqlUtils.GetCodeValue(context, tankStatusGuid);
                     //   so_tank.purpose_cleaning = InGate.tank.purpose_cleaning;
                     //   so_tank.purpose_steam= InGate.tank.purpose_steam;
                     so_tank.purpose_storage = InGate.tank.purpose_storage;
@@ -111,6 +114,7 @@ namespace IDMS.InGate.GqlTypes
                    .Include(s => s.tank.tariff_cleaning.cleaning_method)
                    .Include(s => s.tank.tariff_cleaning.cleaning_category).Count();
                     GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
+                    GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in");
                 }
             }
             catch

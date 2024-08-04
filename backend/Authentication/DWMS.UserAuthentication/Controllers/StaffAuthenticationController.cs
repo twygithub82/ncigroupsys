@@ -150,8 +150,15 @@ namespace DWMS.User.Authentication.API.Controllers
 
                 if (!await _roleManager.RoleExistsAsync(role))
                 {
-                    return StatusCode(StatusCodes.Status403Forbidden,
+                   var ctRoleRes= await this.CreateRole(role);
+
+                    if(ctRoleRes==-1)
+                    {
+                        return StatusCode(StatusCodes.Status403Forbidden,
                        new Response { Status = "Error", Message = new string[] { "This role doesn't  exists!" } });
+                    }
+                    //_roleManager.
+                    
                 }
 
                 
@@ -180,6 +187,26 @@ namespace DWMS.User.Authentication.API.Controllers
 
             return Unauthorized();
 
+        }
+
+        private async Task<int> CreateRole(string roleName)
+        {
+            int retval = 0;
+           // if (!_roleManager.RoleExistsAsync(roleName))
+            {
+                var role = new IdentityRole(roleName);
+                var result = await _roleManager.CreateAsync(role);
+                if (result.Succeeded)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+
+            //return retval;
         }
 
 
