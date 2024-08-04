@@ -240,7 +240,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          {{row.purpose_repair_cv}}
+                          {{getRepairDescription(row.purpose_repair_cv)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="status_cv">
@@ -252,7 +252,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
-                          <span [matTooltip]="row.remarks ? ('Remarks: ' + row.remarks) : ''">{{row.status_cv}}</span>
+                          <span [matTooltip]="row.remarks ? ('Remarks: ' + row.remarks) : ''">{{getSoStatusDescription(row.status_cv)}}</span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="certificate_cv">

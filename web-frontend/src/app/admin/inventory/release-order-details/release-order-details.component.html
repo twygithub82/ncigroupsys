@@ -2,8 +2,7 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="this.ro_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
-        [active_item]="this.ro_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="langText.EDIT"></app-breadcrumb>
     </div>
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -12,8 +11,8 @@
             <div class="header">
               <h2>
                 {{translatedLangText.HEADER}}
-                @if (this.ro_guid) {
-                ({{roForm?.get('ro_no')?.value}})
+                @if (releaseOrderItem.ro_no) {
+                ({{releaseOrderItem.ro_no}})
                 }
               </h2>
             </div>
@@ -26,39 +25,36 @@
               }
               @if (!(soDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <input type="text" matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
-                      formControlName="customer_code" required>
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                      @for (cc of ccDS.connect() | async; track cc) {
-                      <mat-option [value]="cc">
-                        {{ccDS.displayName(cc)}}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                    @if (roForm?.get('customer_code')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.CUSTOMER}} {{translatedLangText.SO_REQUIRED}}
-                    </mat-error>
-                    }
-                  </mat-form-field>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                  <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
+                  {{ccDS.displayName(releaseOrderItem.customer_company)}}
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.SO_NOTES}}</mat-label>
-                    <input matInput formControlName="so_notes" required>
-                    @if (roForm?.get('so_notes')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.SO_NOTES}} {{translatedLangText.SO_REQUIRED}}
-                    </mat-error>
-                    }
-                  </mat-form-field>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3">
+                  <span class="font-bold">{{translatedLangText.STATUS}}:</span> {{releaseOrderItem.status_cv}}
                 </div>
               </div>
               <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.RELEASE_ORDER_DATE}}</mat-label>
+                    <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker"
+                      [min]="startDateRO">
+                    <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
+                    <mat-datepicker #release_dt_picker [startAt]="startDateRO"></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.RO_NOTES}}</mat-label>
+                    <input matInput formControlName="ro_notes" required>
+                    @if (roForm?.get('ro_notes')?.hasError('required')) {
+                    <mat-error>
+                      {{translatedLangText.RO_NOTES}} {{translatedLangText.SO_REQUIRED}}
+                    </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                     <input matInput formControlName="haulier">
@@ -68,21 +64,22 @@
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
-                    <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table table-hover">
+                    <table mat-table [dataSource]="schedulingList" matSort class="mat-cell advance-table table-hover">
                       <!-- Checkbox Column -->
                       <ng-container matColumnDef="select">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <mat-checkbox (change)="$event ? masterToggle() : null"
-                            [checked]="sotSelection.hasValue() && isAllSelected()"
-                            [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                            [checked]="schedulingSelection.hasValue() && isAllSelected()"
+                            [indeterminate]="schedulingSelection.hasValue() && !isAllSelected()"
+                            [ngClass]="'tbl-checkbox'">
                           </mat-checkbox>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <mat-checkbox (click)="$event.stopPropagation()"
-                            (change)="$event ? sotSelection.toggle(row) : null" [checked]="sotSelection.isSelected(row)"
-                            [ngClass]="'tbl-checkbox'">
+                            (change)="$event ? schedulingSelection.toggle(row) : null"
+                            [checked]="schedulingSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                           </mat-checkbox>
                         </mat-cell>
                       </ng-container>
@@ -101,8 +98,9 @@
                           <span class="mobile-label">
                             {{translatedLangText.TANK_NO}}:
                           </span>
-                          {{row.tank_no}}
-                          <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.actions)) + ' ms-1'">{{ getLastAction(row.actions) | uppercase }}</div>
+                          {{row.storing_order_tank?.tank_no}}
+                          <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.actions)) + ' ms-1'">{{
+                            getLastAction(row.actions) | uppercase }}</div>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="tank_no_validity">
@@ -138,9 +136,9 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="truncate-text">
+                          <span class="truncate-text" [matTooltip]="row.storing_order_tank.tariff_cleaning?.cargo">
                             <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>
-                            {{row.tariff_cleaning?.cargo}}
+                            {{row.storing_order_tank.tariff_cleaning?.cargo}}
                           </span>
                         </mat-cell>
                       </ng-container>
@@ -153,7 +151,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>
-                          {{row.job_no}}
+                          {{row.storing_order_tank.release_job_no}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="purpose_storage">
@@ -165,14 +163,13 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.STORAGE}}:</span>
-                          @if (row.purpose_storage) {
+                          @if (row.storing_order_tank.purpose_storage) {
                           <div>
                             <span class="badge badge-solid-green">
                               <mat-icon>done</mat-icon>
                             </span>
                           </div>
-                          }
-                          @if (!row.purpose_storage) {
+                        } @else {
                           <div>
                             <span class="badge badge-solid-purple">
                               <mat-icon>clear</mat-icon>
@@ -190,14 +187,13 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.CLEANING}}:</span>
-                          @if (row.purpose_cleaning) {
+                          @if (row.storing_order_tank.purpose_cleaning) {
                           <div>
                             <span class="badge badge-solid-green">
                               <mat-icon>done</mat-icon>
                             </span>
                           </div>
-                          }
-                          @if (!row.purpose_cleaning) {
+                          } @else {
                           <div>
                             <span class="badge badge-solid-purple">
                               <mat-icon>clear</mat-icon>
@@ -215,14 +211,13 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.STEAM}}:</span>
-                          @if (row.purpose_steam) {
+                          @if (row.storing_order_tank.purpose_steam) {
                           <div>
                             <span class="badge badge-solid-green">
                               <mat-icon>done</mat-icon>
                             </span>
                           </div>
-                          }
-                          @if (!row.purpose_steam) {
+                          } @else {
                           <div>
                             <span class="badge badge-solid-purple">
                               <mat-icon>clear</mat-icon>
@@ -240,7 +235,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          {{row.purpose_repair_cv}}
+                          {{getRepairDescription(row.storing_order_tank.purpose_repair_cv)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="status_cv">
@@ -264,7 +259,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.CERTIFICATE}}:</span>
-                          {{row.certificate_cv}}
+                          {{getYesNoDescription(row.storing_order_tank.certificate_cv)}}
                         </mat-cell>
                       </ng-container>
                       <!-- actions -->
@@ -289,27 +284,28 @@
                             <mat-icon>more_vert</mat-icon>
                           </button>
                           <mat-menu #menu="matMenu">
-                            @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
+                            @if (!row.actions?.includes('cancel') && schedulingDS.canCancel(row)) {
                             <button mat-menu-item (click)="cancelItem($event, row)">
                               <mat-icon>cancel</mat-icon>
-                              <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                              <span>{{schedulingSelection.hasValue() ? translatedLangText.BULK + " " :
                                 ""}}{{translatedLangText.CANCEL}}</span>
                             </button>
                             }
-                            @if (!row.actions.includes('rollback') && sotDS.canRollbackStatus(row)) {
+                            @if (!row.actions?.includes('rollback') &&
+                            sotDS.canRollbackStatus(row)) {
                             <button mat-menu-item (click)="rollbackItem($event, row)">
                               <mat-icon>undo</mat-icon>
-                              <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                              <span>{{schedulingSelection.hasValue() ? translatedLangText.BULK + " " :
                                 ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
                             </button>
                             }
-                            @if (row.actions.includes('cancel')) {
+                            @if (row.actions?.includes('cancel')) {
                             <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
                               <mat-icon>undo</mat-icon>
                               <span>{{translatedLangText.UNDO}} {{translatedLangText.CANCEL}}</span>
                             </button>
                             }
-                            @if (row.actions.includes('rollback')) {
+                            @if (row.actions?.includes('rollback')) {
                             <button mat-menu-item (click)="undoAction($event, row, 'rollback')">
                               <mat-icon>undo</mat-icon>
                               <span>{{translatedLangText.UNDO}} {{translatedLangText.ROLLBACK_STATUS}}</span>
@@ -325,9 +321,9 @@
                       </mat-row>
                     </table>
                   </div>
-                  @if (!sotList.data.length) {
+                  @if (!schedulingList.data.length) {
                   <mat-divider></mat-divider>
-                  <div class="no-results m-l-20 pt-3" [style.display]="sotList.data.length === 0 ? '' : 'none'">
+                  <div class="no-results m-l-20 pt-3" [style.display]="schedulingList.data.length === 0 ? '' : 'none'">
                     <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                   </div>
                   }
@@ -348,14 +344,15 @@
               }
               <div class="row m-t-10">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                  <button mat-flat-button type="button" aria-label="Back to previous page" (click)="$event.preventDefault();"
-                    [routerLink]="['/admin/inventory/release-order']">
+                  <button mat-flat-button type="button" aria-label="Back to previous page"
+                    (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/release-order']">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (soDS.canAdd(storingOrderItem)) {
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'" (click)="addOrderDetails($event)">
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addOrderDetails($event)">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ORDER_DETAILS}}
                   </button>
                   }

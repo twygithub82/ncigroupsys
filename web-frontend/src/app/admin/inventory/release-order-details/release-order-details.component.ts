@@ -48,6 +48,7 @@ import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
+import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 
 @Component({
   selector: 'app-release-order-details',
@@ -101,8 +102,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'certificate_cv',
     'actions'
   ];
-  pageTitleNew = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-NEW'
-  pageTitleEdit = 'MENUITEMS.INVENTORY.LIST.STORING-ORDER-EDIT'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
@@ -112,6 +112,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.HEADER',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
@@ -162,7 +163,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     UNDO: 'COMMON-FORM.UNDO',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
-    MUST_MORE_THAN_ZERO: 'COMMON-FORM.MUST-MORE-THAN-ZERO'
+    MUST_MORE_THAN_ZERO: 'COMMON-FORM.MUST-MORE-THAN-ZERO',
+    RO_NOTES: 'COMMON-FORM.RO-NOTES',
+    RELEASE_ORDER_DATE: 'COMMON-FORM.RELEASE-ORDER-DATE'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -174,13 +177,14 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   releaseOrderItem: ReleaseOrderItem = new ReleaseOrderItem();
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  sotList = new MatTableDataSource<StoringOrderTankItem>();
-  sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
+  schedulingList = new MatTableDataSource<SchedulingItem>();
+  schedulingSelection = new SelectionModel<SchedulingItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
   unit_typeList: TankItem[] = []
   clean_statusCv: CodeValuesItem[] = []
   repairCv: CodeValuesItem[] = []
   yesnoCv: CodeValuesItem[] = []
+  tankStatusCvList: CodeValuesItem[] = []
 
   customerCodeControl = new UntypedFormControl();
 
@@ -190,6 +194,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
   roDS: ReleaseOrderDS;
+  schedulingDS: SchedulingDS;
+  
+  startDateRO = new Date();
 
   constructor(
     public httpClient: HttpClient,
@@ -210,6 +217,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.roDS = new ReleaseOrderDS(this.apollo);
+    this.schedulingDS = new SchedulingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -225,32 +233,15 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   initSOForm() {
     this.roForm = this.fb.group({
       guid: [''],
-      customer_company_guid: [''],
-      customer_code: this.customerCodeControl,
-      so_no: [''],
-      so_notes: [''],
+      release_dt: [''],
+      ro_no: [''],
+      ro_notes: [''],
       haulier: [''],
       sotList: ['']
     });
   }
 
   initializeFilter() {
-    this.roForm!.get('customer_code')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.code;
-          this.roForm!.get('customer_company_guid')!.setValue(value.guid);
-        }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-        });
-      })
-    ).subscribe();
   }
 
   public loadData() {
@@ -260,8 +251,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.subs.sink = this.roDS.getReleaseOrderByID(this.ro_guid).subscribe(data => {
         if (this.roDS.totalCount > 0) {
           this.releaseOrderItem = data[0];
-          // this.storingOrderItem = data[0];
-          // this.populateSOForm(this.storingOrderItem);
+          console.log(this.releaseOrderItem);
+          this.populateROForm(this.releaseOrderItem);
         }
       });
     } else {
@@ -272,7 +263,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const queries = [
       { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
       { alias: 'repairCv', codeValType: 'REPAIR_OPTION' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' }
+      { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
@@ -287,6 +279,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCv = data;
+    });
+    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvList = data;
     });
   }
 
@@ -303,24 +298,24 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  populateSOForm(so: StoringOrderItem): void {
+  populateROForm(ro: ReleaseOrderItem): void {
     this.roForm!.patchValue({
-      guid: so.guid,
-      customer_code: so.customer_company,
-      customer_company_guid: so.customer_company_guid,
-      so_no: so.so_no,
-      so_notes: so.so_notes,
-      haulier: so.haulier
+      guid: ro.guid,
+      release_dt: Utility.convertDate(ro.release_dt),
+      ro_no: ro.ro_no,
+      ro_notes: ro.ro_notes,
+      haulier: ro.haulier
     });
-    if (so.storing_order_tank) {
-      this.populateSOT(so.storing_order_tank);
+    if (ro.scheduling && ro.scheduling.length) {
+      this.populateSOT(ro.scheduling);
     }
   }
 
-  populateSOT(sot: StoringOrderTankItem[]) {
-    if (sot?.length) {
-      const sotList: StoringOrderTankItem[] = sot.map((item: Partial<StoringOrderTankItem> | undefined) => new StoringOrderTankItem(item));
-      this.updateData(sotList);
+  populateSOT(scheduling: SchedulingItem[]) {
+    if (scheduling?.length) {
+      const list: SchedulingItem[] = scheduling.map((item: Partial<SchedulingItem> | undefined) => new SchedulingItem(item));
+      console.log(list);
+      this.updateData(list);
     }
   }
 
@@ -364,13 +359,13 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
           yesnoCv: this.yesnoCv
         },
         index: -1,
-        sotExistedList: this.sotList.data
+        sotExistedList: this.schedulingList.data
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const data = [...this.sotList.data];
+        const data = [...this.schedulingList.data];
         const newItem = new StoringOrderTankItem({
           ...result.item,
           actions: ['new']
@@ -385,173 +380,174 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
-    this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      data: {
-        item: row,
-        action: 'edit',
-        translatedLangText: this.translatedLangText,
-        populateData: {
-          unit_typeList: this.unit_typeList,
-          repairCv: this.repairCv,
-          clean_statusCv: this.clean_statusCv,
-          yesnoCv: this.yesnoCv
-        },
-        index: index,
-        sotExistedList: this.sotList.data
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        if (result.index >= 0) {
-          const data = [...this.sotList.data];
-          let actions = Array.isArray(data[index].actions!) ? [...data[index].actions!] : [];
-          if (!actions.includes('new')) {
-            actions = [...new Set([...actions, 'edit'])];
-          }
-          const updatedItem = new StoringOrderTankItem({
-            ...result.item,
-            actions: actions
-          });
-          data[result.index] = updatedItem;
-          this.updateData(data);
-        } else {
-          this.updateData([...this.sotList.data, result.item]);
-        }
-      }
-    });
+    // this.preventDefault(event);  // Prevents the form submission
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(FormDialogComponent, {
+    //   data: {
+    //     item: row,
+    //     action: 'edit',
+    //     translatedLangText: this.translatedLangText,
+    //     populateData: {
+    //       unit_typeList: this.unit_typeList,
+    //       repairCv: this.repairCv,
+    //       clean_statusCv: this.clean_statusCv,
+    //       yesnoCv: this.yesnoCv
+    //     },
+    //     index: index,
+    //     sotExistedList: this.schedulingList.data
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result) {
+    //     if (result.index >= 0) {
+    //       const data = [...this.schedulingList.data];
+    //       let actions = Array.isArray(data[index].actions!) ? [...data[index].actions!] : [];
+    //       if (!actions.includes('new')) {
+    //         actions = [...new Set([...actions, 'edit'])];
+    //       }
+    //       const updatedItem = new SchedulingItem({
+    //         ...result.item,
+    //         actions: actions
+    //       });
+    //       data[result.index] = updatedItem;
+    //       this.updateData(data);
+    //     } else {
+    //       this.updateData([...this.schedulingList.data, result.item]);
+    //     }
+    //   }
+    // });
   }
 
   cancelSelectedRows(row: StoringOrderTankItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        action: "cancel",
-        item: [...row],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const data = [...this.sotList.data];
-        result.item.forEach((newItem: StoringOrderTankItem) => {
-          // Find the index of the item in data with the same id
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+    // //this.preventDefault(event);  // Prevents the form submission
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    //   data: {
+    //     action: "cancel",
+    //     item: [...row],
+    //     translatedLangText: this.translatedLangText
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result?.action === 'confirmed') {
+    //     const data = [...this.schedulingList.data];
+    //     result.item.forEach((newItem: StoringOrderTankItem) => {
+    //       // Find the index of the item in data with the same id
+    //       const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
-          // If the item is found, update the properties
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'cancel'])]
-                : ['cancel']
-            };
-          }
-        });
-        this.updateData(data);
-        // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
-        // this.sotDS.cancelStoringOrderTank(sot).subscribe(result => {
-        //   if ((result?.data?.cancelStoringOrderTank ?? 0) > 0) {
-        //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-        //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        //     this.reloadSOT();
-        //   }
-        // });
-      }
-    });
+    //       // If the item is found, update the properties
+    //       if (index !== -1) {
+    //         data[index] = {
+    //           ...data[index],
+    //           ...newItem,
+    //           actions: Array.isArray(data[index].actions!)
+    //             ? [...new Set([...data[index].actions!, 'cancel'])]
+    //             : ['cancel']
+    //         };
+    //       }
+    //     });
+    //     this.updateData(data);
+    //     // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
+    //     // this.sotDS.cancelStoringOrderTank(sot).subscribe(result => {
+    //     //   if ((result?.data?.cancelStoringOrderTank ?? 0) > 0) {
+    //     //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+    //     //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    //     //     this.reloadSOT();
+    //     //   }
+    //     // });
+    //   }
+    // });
   }
 
   rollbackSelectedRows(row: StoringOrderTankItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        action: "rollback",
-        item: [...row],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const data = [...this.sotList.data];
-        result.item.forEach((newItem: StoringOrderTankItem) => {
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+    // //this.preventDefault(event);  // Prevents the form submission
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    //   data: {
+    //     action: "rollback",
+    //     item: [...row],
+    //     translatedLangText: this.translatedLangText
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result?.action === 'confirmed') {
+    //     const data = [...this.schedulingList.data];
+    //     result.item.forEach((newItem: StoringOrderTankItem) => {
+    //       const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'rollback'])]
-                : ['rollback']
-            };
-          }
-        });
-        this.updateData(data);
-        // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
-        // this.sotDS.rollbackStoringOrderTank(sot).subscribe(result => {
-        //   if ((result?.data?.rollbackStoringOrderTank ?? 0) > 0) {
-        //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-        //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        //     this.reloadSOT();
-        //   }
-        // });
-      }
-    });
+    //       if (index !== -1) {
+    //         data[index] = {
+    //           ...data[index],
+    //           ...newItem,
+    //           actions: Array.isArray(data[index].actions!)
+    //             ? [...new Set([...data[index].actions!, 'rollback'])]
+    //             : ['rollback']
+    //         };
+    //       }
+    //     });
+    //     this.updateData(data);
+    //     // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
+    //     // this.sotDS.rollbackStoringOrderTank(sot).subscribe(result => {
+    //     //   if ((result?.data?.rollbackStoringOrderTank ?? 0) > 0) {
+    //     //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+    //     //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    //     //     this.reloadSOT();
+    //     //   }
+    //     // });
+    //   }
+    // });
   }
 
   undoTempAction(row: StoringOrderTankItem[], actionToBeRemove: string) {
-    const data = [...this.sotList.data];
-    row.forEach((newItem: StoringOrderTankItem) => {
-      const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+    // const data = [...this.schedulingList.data];
+    // row.forEach((newItem: StoringOrderTankItem) => {
+    //   const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
-      if (index !== -1) {
-        data[index] = {
-          ...data[index],
-          ...newItem,
-          actions: Array.isArray(data[index].actions!)
-            ? data[index].actions!.filter(action => action !== actionToBeRemove)
-            : []
-        };
-      }
-    });
-    this.updateData(data);
+    //   if (index !== -1) {
+    //     data[index] = {
+    //       ...data[index],
+    //       ...newItem,
+    //       actions: Array.isArray(data[index].actions!)
+    //         ? data[index].actions!.filter(action => action !== actionToBeRemove)
+    //         : []
+    //     };
+    //   }
+    // });
+    // this.updateData(data);
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.sotSelection.selected.length;
-    const numRows = this.storingOrderItem.storing_order_tank?.length;
-    return numSelected === numRows;
+    // const numSelected = this.sotSelection.selected.length;
+    // const numRows = this.storingOrderItem.storing_order_tank?.length;
+    // return numSelected === numRows;
+    return false;
   }
 
   masterToggle() {
-    this.isAllSelected()
-      ? this.sotSelection.clear()
-      : this.sotList.data?.forEach((row) =>
-        this.sotSelection.select(row)
-      );
+    // this.isAllSelected()
+    //   ? this.sotSelection.clear()
+    //   : this.schedulingList.data?.forEach((scheduling) =>
+    //     this.sotSelection.select(scheduling)
+    //   );
   }
 
   // context menu
@@ -574,7 +570,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   onSOFormSubmit() {
     this.roForm!.get('sotList')?.setErrors(null);
     if (this.roForm?.valid) {
-      if (!this.sotList.data.length) {
+      if (!this.schedulingList.data.length) {
         this.roForm.get('sotList')?.setErrors({ required: true });
       } else {
         let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
@@ -582,7 +578,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
         so.haulier = this.roForm.value['haulier'];
         so.so_notes = this.roForm.value['so_notes'];
 
-        const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankItem>) => {
+        const sot: StoringOrderTankGO[] = this.schedulingList.data.map((item: Partial<StoringOrderTankItem>) => {
           // Ensure action is an array and take the last action only
           const actions = Array.isArray(item!.actions) ? item!.actions : [];
           const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
@@ -611,37 +607,37 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  updateData(newData: StoringOrderTankItem[]): void {
-    this.sotList.data = [...newData];
-    this.sotSelection.clear();
+  updateData(newData: SchedulingItem[]): void {
+    this.schedulingList.data = [...newData];
+    this.schedulingSelection.clear();
   }
 
   cancelItem(event: Event, row: StoringOrderTankItem) {
     // this.id = row.id;
-    if (this.sotSelection.hasValue()) {
-      this.cancelSelectedRows(this.sotSelection.selected)
-    } else {
-      this.cancelSelectedRows([row])
-    }
+    // if (this.sotSelection.hasValue()) {
+    //   this.cancelSelectedRows(this.sotSelection.selected)
+    // } else {
+    //   this.cancelSelectedRows([row])
+    // }
   }
 
   rollbackItem(event: Event, row: StoringOrderTankItem) {
     // this.id = row.id;
-    if (this.sotSelection.hasValue()) {
-      this.rollbackSelectedRows(this.sotSelection.selected)
-    } else {
-      this.rollbackSelectedRows([row])
-    }
+    // if (this.sotSelection.hasValue()) {
+    //   this.rollbackSelectedRows(this.sotSelection.selected)
+    // } else {
+    //   this.rollbackSelectedRows([row])
+    // }
   }
 
   undoAction(event: Event, row: StoringOrderTankItem, action: string) {
     // this.id = row.id;
-    this.stopPropagation(event);
-    if (this.sotSelection.hasValue()) {
-      this.undoTempAction(this.sotSelection.selected, action)
-    } else {
-      this.undoTempAction([row], action)
-    }
+    // this.stopPropagation(event);
+    // if (this.sotSelection.hasValue()) {
+    //   this.undoTempAction(this.sotSelection.selected, action)
+    // } else {
+    //   this.undoTempAction([row], action)
+    // }
   }
 
   handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
@@ -698,6 +694,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getLastAction(actions: string[]): string {
+    if (!actions?.length) return "";
     return actions[actions.length - 1];
   }
 
@@ -714,5 +711,21 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       default:
         return '';
     }
+  }
+
+  getRepairDescription(codeValType: string): string | undefined {
+    let cv = this.repairCv.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
+  }
+
+  getYesNoDescription(codeValType: string): string | undefined {
+    let cv = this.yesnoCv.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
   }
 }

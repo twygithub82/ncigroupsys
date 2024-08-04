@@ -147,7 +147,8 @@
         "BOOKING": "Booking",
         "BOOKING-NEW": "New Booking",
         "SCHEDULING-NEW": "New Scheduling",
-        "RELEASE-ORDER": "Release Order"
+        "RELEASE-ORDER": "Release Order",
+        "RELEASE-ORDER-EDIT": "Edit Release Order"
       }
     }
   },
@@ -396,6 +397,9 @@
     "RO-NOTES": "RO Notes",
     "BOOKED": "Booked",
     "SCHEDULED": "Scheduled",
+    "RO-NO": "RO No.",
+    "RO-DATE": "RO Date",
+    "RELEASE-ORDER-DATE": "Release Order Date",
     "DEPOT-PROFILE":"Depot Profile",
     "PROFILE-NAME":"Profile Name",
     "PREINSPECTION-COST":"Pre-inspection Cost",

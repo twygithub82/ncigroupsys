@@ -180,6 +180,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   clean_statusCv: CodeValuesItem[] = []
   repairCv: CodeValuesItem[] = []
   yesnoCv: CodeValuesItem[] = []
+  soTankStatusCvList: CodeValuesItem[] = []
 
   customerCodeControl = new UntypedFormControl();
 
@@ -268,7 +269,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     const queries = [
       { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
       { alias: 'repairCv', codeValType: 'REPAIR_OPTION' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' }
+      { alias: 'yesnoCv', codeValType: 'YES_NO' },
+      { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
@@ -283,6 +285,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCv = data;
+    });
+    this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
+      this.soTankStatusCvList = data;
     });
   }
 
@@ -751,5 +756,21 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       default:
         return '';
     }
+  }
+
+  getRepairDescription(codeValType: string): string | undefined {
+    let cv = this.repairCv.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
+  }
+
+  getSoStatusDescription(codeValType: string): string | undefined {
+    let cv = this.soTankStatusCvList.filter(cv => cv.code_val === codeValType);
+    if (cv.length) {
+      return cv[0].description;
+    }
+    return '';
   }
 }

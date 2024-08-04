@@ -120,6 +120,41 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
         scheduling {
           guid
           status_cv
+          storing_order_tank {
+            certificate_cv
+            clean_status_cv
+            create_by
+            create_dt
+            delete_dt
+            estimate_cv
+            eta_dt
+            etr_dt
+            guid
+            job_no
+            last_cargo_guid
+            last_test_guid
+            liftoff_job_no
+            lifton_job_no
+            preinspect_job_no
+            purpose_cleaning
+            purpose_repair_cv
+            purpose_steam
+            purpose_storage
+            release_job_no
+            remarks
+            required_temp
+            so_guid
+            status_cv
+            takein_job_no
+            tank_no
+            tank_status_cv
+            unit_type_guid
+            update_by
+            update_dt
+            tariff_cleaning {
+              cargo
+            }
+          }
         }
       }
       pageInfo {
