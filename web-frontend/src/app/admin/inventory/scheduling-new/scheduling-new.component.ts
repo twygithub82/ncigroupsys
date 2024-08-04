@@ -646,4 +646,12 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   displayDate(input: number | null | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input as number);
   }
+
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  }
+
+  getYardDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
+  }
 }

@@ -143,6 +143,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
   purposeOptionCvList: CodeValuesItem[] = [];
   bookingTypeCvList: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
+  tankStatusCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -210,7 +211,8 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
-      { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' }
+      { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -224,6 +226,9 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     });
     this.cvDS.connectAlias('bookingStatusCv').subscribe(data => {
       this.bookingStatusCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
   }
   showNotification(
@@ -444,11 +449,15 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   getPurposeOptionDescription(codeValType: string): string | undefined {
-    let cv = this.purposeOptionCvList.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  getTankStatusDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  }
+
+  getYardDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
   translateLangText() {

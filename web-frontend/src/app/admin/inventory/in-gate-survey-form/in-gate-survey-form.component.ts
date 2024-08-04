@@ -750,19 +750,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-    let cv = this.purposeOptionCvList.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
   }
 
   getCleanStatusDescription(codeValType: string | undefined): string | undefined {
-    let cv = this.cleanStatusCvList.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(codeValType, this.cleanStatusCvList);
   }
 
   translateLangText() {
@@ -883,18 +875,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   getTestTypeDescription(codeVal: string): string | undefined {
     const mappedVal = testTypeMapping[codeVal];
-    let cv = this.testTypeCvList.filter(cv => cv.code_val === mappedVal);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(mappedVal, this.testTypeCvList);
   }
 
   getTestClassDescription(codeValType: string): string | undefined {
-    let cv = this.testClassCvList.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
   }
 }

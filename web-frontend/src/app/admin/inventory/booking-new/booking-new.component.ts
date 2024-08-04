@@ -502,6 +502,10 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     ]);
   }
 
+  getTankStatusDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  }
+
   displayDate(input: number | null | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input as number);
   }

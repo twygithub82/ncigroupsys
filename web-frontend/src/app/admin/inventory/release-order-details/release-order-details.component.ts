@@ -714,18 +714,10 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getRepairDescription(codeValType: string): string | undefined {
-    let cv = this.repairCv.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(codeValType, this.repairCv);
   }
 
   getYesNoDescription(codeValType: string): string | undefined {
-    let cv = this.yesnoCv.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(codeValType, this.yesnoCv);
   }
 }

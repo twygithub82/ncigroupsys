@@ -207,7 +207,7 @@
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{row.status_cv}}</mat-cell>
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{getSchedulingStatusDescription(row.status_cv)}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="accept_status">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>

@@ -264,7 +264,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.CERTIFICATE}}:</span>
-                          {{row.certificate_cv}}
+                          {{getYesNoDescription(row.certificate_cv)}}
                         </mat-cell>
                       </ng-container>
                       <!-- actions -->

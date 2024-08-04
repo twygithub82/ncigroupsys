@@ -758,19 +758,15 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     }
   }
 
+  getYesNoDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.yesnoCv);
+  }
+
   getRepairDescription(codeValType: string): string | undefined {
-    let cv = this.repairCv.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(codeValType, this.repairCv);
   }
 
   getSoStatusDescription(codeValType: string): string | undefined {
-    let cv = this.soTankStatusCvList.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(codeValType, this.soTankStatusCvList);
   }
 }
