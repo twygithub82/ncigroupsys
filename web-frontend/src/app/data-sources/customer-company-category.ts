@@ -6,48 +6,48 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
-import {CleaningCategoryItem } from 'app/data-sources/cleaning-category'
-import {CustomerCompanyItem} from 'app/data-sources/customer-company'
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category'
+import { CustomerCompanyItem } from 'app/data-sources/customer-company'
 export class CustomerCompanyCleaningCategoryGO {
-    public guid?: string;
-    public customer_company_guid?: string;
-    public cleaning_category_guid?: string;
-    public initial_price?: number;
-    public adjusted_price?: number;
-    public remarks?: string;
-    public create_dt?: number;
-    public create_by?: string;
-    public update_dt?: number;
-    public update_by?: string;
-    public delete_dt?: number;
+  public guid?: string;
+  public customer_company_guid?: string;
+  public cleaning_category_guid?: string;
+  public initial_price?: number;
+  public adjusted_price?: number;
+  public remarks?: string;
+  public create_dt?: number;
+  public create_by?: string;
+  public update_dt?: number;
+  public update_by?: string;
+  public delete_dt?: number;
 
-    constructor(item: Partial<CustomerCompanyCleaningCategoryGO> = {}) {
-        this.guid = item.guid;
-        this.customer_company_guid = item.customer_company_guid;
-        this.cleaning_category_guid = item.cleaning_category_guid;
-        this.initial_price = item.initial_price;
-        this.adjusted_price = item.adjusted_price;
-        this.create_dt = item.create_dt;
-        this.create_by = item.create_by;
-        this.update_dt = item.update_dt;
-        this.update_by = item.update_by;
-        this.delete_dt = item.delete_dt;
-    }
+  constructor(item: Partial<CustomerCompanyCleaningCategoryGO> = {}) {
+    this.guid = item.guid;
+    this.customer_company_guid = item.customer_company_guid;
+    this.cleaning_category_guid = item.cleaning_category_guid;
+    this.initial_price = item.initial_price;
+    this.adjusted_price = item.adjusted_price;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+  }
 }
 
 export class CustomerCompanyCleaningCategoryItem extends CustomerCompanyCleaningCategoryGO {
-    public cleaning_category? : CleaningCategoryItem
-    public customer_company? :CustomerCompanyItem
-    constructor(item: Partial<CustomerCompanyCleaningCategoryItem> = {}) {
-        super(item);
-        this.cleaning_category= item.cleaning_category;
-        this.customer_company=item.customer_company;
-    }
+  public cleaning_category?: CleaningCategoryItem
+  public customer_company?: CustomerCompanyItem
+  constructor(item: Partial<CustomerCompanyCleaningCategoryItem> = {}) {
+    super(item);
+    this.cleaning_category = item.cleaning_category;
+    this.customer_company = item.customer_company;
+  }
 }
 
 export interface CustomerCompanyCleaningCategoryResult {
-    items: CustomerCompanyCleaningCategoryItem[];
-    totalCount: number;
+  items: CustomerCompanyCleaningCategoryItem[];
+  totalCount: number;
 }
 
 export const UPDATE_PACKAGE_CLEANINGS = gql`
@@ -117,52 +117,51 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
 `;
 
 export class CustomerCompanyCleaningCategoryDS extends BaseDataSource<CustomerCompanyCleaningCategoryItem> {
-    public totalCount = 0;
-    constructor(private apollo: Apollo) {
-        super();
-    }
-    search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<CustomerCompanyCleaningCategoryItem[]> {
-        this.loadingSubject.next(true);
-        if(!last) 
-            if(!first)
-                first=10;
-        return this.apollo
-            .query<any>({
-                query: GET_COMPANY_CATEGORY_QUERY,
-                variables: { where, order, first, after, last, before },
-                fetchPolicy: 'no-cache' // Ensure fresh data
-            })
-            .pipe(
-                map((result) => result.data),
-                catchError((error: ApolloError) => {
-                    console.error('GraphQL Error:', error);
-                    return of([] as CustomerCompanyCleaningCategoryItem[]); // Return an empty array on error
-                }),
-                finalize(() => this.loadingSubject.next(false)),
-                map((result) => {
-                    const list = result.companycategoryList || { nodes: [], totalCount: 0 };
-                    this.dataSubject.next(list.nodes);
-                    this.pageInfo = list.pageInfo;
-                    this.totalCount = list.totalCount;
-                    return list.nodes;
-                })
-            );
-    }
+  constructor(private apollo: Apollo) {
+    super();
+  }
+  search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<CustomerCompanyCleaningCategoryItem[]> {
+    this.loadingSubject.next(true);
+    if (!last)
+      if (!first)
+        first = 10;
+    return this.apollo
+      .query<any>({
+        query: GET_COMPANY_CATEGORY_QUERY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CustomerCompanyCleaningCategoryItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const list = result.companycategoryList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(list.nodes);
+          this.pageInfo = list.pageInfo;
+          this.totalCount = list.totalCount;
+          return list.nodes;
+        })
+      );
+  }
 
-    updatePackageCleanings(guids: string[],remarks:string, adjusted_price:number): Observable<any> {
-        return this.apollo.mutate({
-          mutation: UPDATE_PACKAGE_CLEANINGS,
-          variables: {
-            guids,
-            remarks,
-            adjusted_price
-          }
-        }).pipe(
-          catchError((error: ApolloError) => {
-            console.error('GraphQL Error:', error);
-            return of(0); // Return an empty array on error
-          }),
-        );
+  updatePackageCleanings(guids: string[], remarks: string, adjusted_price: number): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_PACKAGE_CLEANINGS,
+      variables: {
+        guids,
+        remarks,
+        adjusted_price
       }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
 }

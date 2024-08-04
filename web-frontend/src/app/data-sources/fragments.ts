@@ -13,7 +13,6 @@ export const CLEANING_METHOD_FRAGMENT = gql`
   }
 `;
 
-
 export const CLEANING_CATEGORY_FRAGMENT = gql`
   fragment CleaningCategoryFragment on storing_order_CleaningCategoryWithTariff {
         cost

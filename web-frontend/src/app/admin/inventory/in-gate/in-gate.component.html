@@ -11,7 +11,7 @@
             <div class="left">
               <ul class="header-buttons-left ms-0">
                 <li class="tbl-title">
-                  <h2>{{langText.SO_NO | translate}}/{{langText.TANK_NO | translate}}/{{langText.JOB_NO | translate}}
+                  <h2>{{translatedLangText.SO_NO}}/{{translatedLangText.TANK_NO}}/{{translatedLangText.JOB_NO}}
                   </h2>
                 </li>
                 <li class="tbl-search-box">
@@ -38,42 +38,42 @@
                 </ng-container>
                 <ng-container matColumnDef="tank_no">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.TANK_NO | translate}}
+                    {{translatedLangText.TANK_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.TANK_NO | translate}}:</span>{{row.tank_no}}
+                    <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.tank_no}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="job_no">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.JOB_NO | translate}}
+                    {{translatedLangText.JOB_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.JOB_NO | translate}}:</span>{{row.job_no}}
+                    <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>{{row.job_no}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_cargo">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
-                    {{langText.LAST_CARGO | translate}}
+                    {{translatedLangText.LAST_CARGO}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{langText.LAST_CARGO | translate}}:</span>{{row.tariff_cleaning?.cargo}}
+                    <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.tariff_cleaning?.cargo}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_code">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.CUSTOMER_CODE | translate}}
+                    {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.CUSTOMER_CODE | translate}}:</span>{{ccDS.displayName(row.storing_order?.customer_company)}}
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order?.customer_company)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="so_no">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.SO_NO | translate}}
+                    {{translatedLangText.SO_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.SO_NO | translate}}:</span>{{row.storing_order?.so_no}}
+                    <span class="mobile-label">{{translatedLangText.SO_NO}}:</span>{{row.storing_order?.so_no}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -86,7 +86,7 @@
             @if (!(sotDS.loading$ | async) && !sotList.length) {
             <mat-divider></mat-divider>
             <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+              <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
             <!-- Loading spinner -->

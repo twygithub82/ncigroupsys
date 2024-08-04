@@ -809,3 +809,7 @@ $breakpoints: (
 @include generate-width("tbl-col-width-per-9_5", 9.5);
 @include generate-width("tbl-col-width-per-10_5", 10.5);
 @include generate-width("tbl-col-width-per-11_5", 11.5);
+
+.empty-card-actions {
+  min-height: 0 !important;
+}

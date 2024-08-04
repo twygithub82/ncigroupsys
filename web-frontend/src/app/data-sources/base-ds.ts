@@ -6,6 +6,7 @@ export abstract class BaseDataSource<T> extends DataSource<T> {
     public dataSubject = new BehaviorSubject<T[]>([]);
     public loadingSubject = new BehaviorSubject<boolean>(false);
     public pageInfo?: PageInfo;
+    public totalCount = 0;
 
     public loading$ = this.loadingSubject.asObservable();
 

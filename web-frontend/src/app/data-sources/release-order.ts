@@ -56,23 +56,32 @@ export class ReleaseOrderItem extends ReleaseOrderGO {
 }
 
 export const GET_RELEASE_ORDERS = gql`
-  query queryReleaseOrder($where: storing_orderFilterInput, $order: [storing_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    soList: queryStoringOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+  query QueryReleaseOrder($where: release_orderFilterInput, $order: [release_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    roList: queryReleaseOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-        guid
-        so_no
+        booking_dt
+        create_by
+        create_dt
         customer_company_guid
+        delete_dt
+        guid
+        haulier
+        release_dt
+        remarks
+        ro_generated
+        ro_no
+        ro_notes
+        status_cv
+        update_by
+        update_dt
         customer_company {
           code
           name
         }
-        storing_order_tank {
+        scheduling {
           guid
-          tank_no
-          tank_status_cv
           status_cv
         }
-        status_cv
       }
       pageInfo {
         endCursor
@@ -85,61 +94,39 @@ export const GET_RELEASE_ORDERS = gql`
   }
 `;
 
-export const SEARCH_RELEASE_ORDER_BY_ID = gql`
-  query queryStoringOrder($where: storing_orderFilterInput) {
-    soList: queryStoringOrder(where: $where) {
+export const GET_RELEASE_ORDER_BY_ID = gql`
+  query QueryReleaseOrder($where: release_orderFilterInput) {
+    roList: queryReleaseOrder(where: $where) {
       nodes {
-        guid
-        haulier
-        so_no
-        so_notes
-        customer_company_guid
-        remarks
-        status_cv
+        booking_dt
         create_by
         create_dt
+        customer_company_guid
         delete_dt
+        guid
+        haulier
+        release_dt
+        remarks
+        ro_generated
+        ro_no
+        ro_notes
+        status_cv
         update_by
         update_dt
         customer_company {
-          guid
           code
           name
         }
-        storing_order_tank {
-          certificate_cv
-          clean_status_cv
-          create_by
-          create_dt
-          delete_dt
-          estimate_cv
-          eta_dt
-          etr_dt
+        scheduling {
           guid
-          job_no
-          last_cargo_guid
-          purpose_cleaning
-          purpose_repair_cv
-          purpose_steam
-          purpose_storage
-          remarks
-          required_temp
-          so_guid
           status_cv
-          tank_no
-          tank_status_cv
-          unit_type_guid
-          update_by
-          update_dt
-          tariff_cleaning {
-            guid
-            cargo
-            flash_point
-            remarks
-            open_on_gate_cv
-          }
         }
-        status_cv
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
       }
       totalCount
     }
@@ -215,12 +202,11 @@ export const CANCEL_STORING_ORDER = gql`
 `;
 
 export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }
 
-  searchStoringOrder(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<ReleaseOrderItem[]> {
+  searchReleaseOrder(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<ReleaseOrderItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
@@ -230,41 +216,37 @@ export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ soList: { nodes: [], totalCount: 0 } })),
+        catchError(() => of({ roList: { nodes: [], totalCount: 0 } })),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const soList = result.soList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(soList.nodes);
-          this.totalCount = soList.totalCount;
-          this.pageInfo = soList.pageInfo;
-          return soList.nodes;
+          const roList = result.roList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(roList.nodes);
+          this.totalCount = roList.totalCount;
+          this.pageInfo = roList.pageInfo;
+          return roList.nodes;
         })
       );
   }
 
-  getStoringOrderByID(id: string): Observable<ReleaseOrderItem[]> {
+  getReleaseOrderByID(id: string): Observable<ReleaseOrderItem[]> {
     this.loadingSubject.next(true);
     let where = this.addDeleteDtCriteria({ guid: { eq: id } });
     return this.apollo
       .query<any>({
         //query: GET_STORING_ORDER_BY_ID,
-        query: SEARCH_RELEASE_ORDER_BY_ID,
+        query: GET_RELEASE_ORDER_BY_ID,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ soList: [] })),
+        catchError(() => of({ roList: [] })),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          // const soList = result.soList;
-          // this.soItemsSubject.next(soList);
-          // this.totalCount = soList.length;
-          // return soList;
-          const soList = result.soList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(soList.nodes);
-          this.totalCount = soList.totalCount;
-          return soList.nodes;
+          const roList = result.roList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(roList.nodes);
+          this.totalCount = roList.totalCount;
+          return roList.nodes;
         })
       );
   }
@@ -296,5 +278,9 @@ export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
         so
       }
     });
+  }
+
+  canCancel(ro: any): boolean {
+    return ro && ro.status_cv === 'PENDING';
   }
 }

@@ -43,13 +43,13 @@ export class TariffDepotGO {
 }
 
 export class TariffDepotItem extends TariffDepotGO {
-  public tanks?: TankItem[]=[];
-  
+  public tanks?: TankItem[] = [];
+
 
   constructor(item: Partial<TariffDepotItem> = {}) {
     super(item);
     this.tanks = item.tanks;
-    
+
   }
 }
 
@@ -173,18 +173,15 @@ export const ADD_TARIFF_DEPOT = gql`
 
 
 export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }
-
   
-
-  SearchTariffDepot(where?: any, order?: any, first?: number , after?: string, last?: number, before?: string): Observable<TariffDepotItem[]> {
+  SearchTariffDepot(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffDepotItem[]> {
     this.loadingSubject.next(true);
-    if(!last) 
-      if(!first)
-          first=10;
+    if (!last)
+      if (!first)
+        first = 10;
     return this.apollo
       .query<any>({
         query: GET_TARIFF_DEPOT_QUERY_WITH_TANK,
@@ -208,7 +205,7 @@ export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
       );
   }
 
- 
+
 
   addNewTariffDepot(td: any): Observable<any> {
     return this.apollo.mutate({
@@ -219,19 +216,19 @@ export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
     });
   }
 
- 
 
-//   updateTariffCleaning(tc: any): Observable<any> {
-//     return this.apollo.mutate({
-//       mutation: UPDATE_TARIFF_CLEANING,
-//       variables: {
-//         tc
-//       }
-//     }).pipe(
-//       catchError((error: ApolloError) => {
-//         console.error('GraphQL Error:', error);
-//         return of(0); // Return an empty array on error
-//       }),
-//     );
-//   }
+
+  //   updateTariffCleaning(tc: any): Observable<any> {
+  //     return this.apollo.mutate({
+  //       mutation: UPDATE_TARIFF_CLEANING,
+  //       variables: {
+  //         tc
+  //       }
+  //     }).pipe(
+  //       catchError((error: ApolloError) => {
+  //         console.error('GraphQL Error:', error);
+  //         return of(0); // Return an empty array on error
+  //       }),
+  //     );
+  //   }
 }

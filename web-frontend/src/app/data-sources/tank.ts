@@ -43,7 +43,6 @@ export const GET_TANK = gql`
 `;
 
 export class TankDS extends BaseDataSource<TankItem> {
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }

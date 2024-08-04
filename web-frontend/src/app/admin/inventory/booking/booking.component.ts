@@ -81,7 +81,7 @@ import { BookingDS, BookingItem } from 'app/data-sources/booking';
 export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
-    'customer_code',
+    'customer',
     'eir_no',
     'eir_dt',
     'last_cargo',
@@ -99,7 +99,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
-    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',

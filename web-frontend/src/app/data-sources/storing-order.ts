@@ -214,7 +214,6 @@ export const CANCEL_STORING_ORDER = gql`
 `;
 
 export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
-  public totalCount = 0;
   constructor(private apollo: Apollo) {
     super();
   }

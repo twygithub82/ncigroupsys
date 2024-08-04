@@ -146,7 +146,8 @@
         "IN-GATE-SURVEY-FORM": "In Gate Survey Form",
         "BOOKING": "Booking",
         "BOOKING-NEW": "New Booking",
-        "SCHEDULING-NEW": "New Scheduling"
+        "SCHEDULING-NEW": "New Scheduling",
+        "RELEASE-ORDER": "Release Order"
       }
     }
   },

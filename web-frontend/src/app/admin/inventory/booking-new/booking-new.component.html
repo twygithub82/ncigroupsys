@@ -25,7 +25,7 @@
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
+                      <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                       <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
                         [matAutocomplete]="customerCode">
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
@@ -257,7 +257,7 @@
                 {{langText.NO_RESULT | translate}}
                 }
               </mat-card-content>
-              <mat-card-actions>
+              <mat-card-actions [ngClass]="'empty-card-actions'">
               </mat-card-actions>
             </mat-card>
             }
