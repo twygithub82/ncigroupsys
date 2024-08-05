@@ -229,10 +229,10 @@
                     row.in_gate?.in_gate_survey?.tare_weight}}
                   </div>
                   <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.STATUS}}:</span> {{row.tank_status_cv}}
+                    <span class="font-bold">{{translatedLangText.STATUS}}:</span> {{getTankStatusDescription(row.tank_status_cv)}}
                   </div>
                   <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.YARD}}:</span> {{row.in_gate?.yard_cv}}
+                    <span class="font-bold">{{translatedLangText.YARD}}:</span> {{getYardDescription(row.in_gate?.yard_cv)}}
                   </div>
                 </div>
                 <!-- <mat-divider></mat-divider>

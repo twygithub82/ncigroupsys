@@ -157,7 +157,7 @@ export class FormDialogComponent {
       let schedulings: SchedulingItem[] = [];
       const schedulingsForm = this.schedulingForm.value['scheduling']
       schedulingsForm.forEach((s: any) => {
-        schedulings.push(new SchedulingItem({reference: s.reference, sot_guid: s.sot_guid, sot: new StoringOrderTankGO({guid: s.sot_guid, release_job_no: s.release_job_no})}))
+        schedulings.push(new SchedulingItem({reference: s.reference, sot_guid: s.sot_guid, storing_order_tank: new StoringOrderTankGO({guid: s.sot_guid, release_job_no: s.release_job_no})}))
       });
 
       console.log(ro);

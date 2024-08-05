@@ -39,12 +39,12 @@ export class SchedulingGO {
 }
 
 export class SchedulingItem extends SchedulingGO {
-  public sot?: StoringOrderTankItem
+  public storing_order_tank?: StoringOrderTankItem
   public release_order?: ReleaseOrderItem
 
   constructor(item: Partial<SchedulingItem> = {}) {
     super(item)
-    this.sot = item.sot || undefined;
+    this.storing_order_tank = item.storing_order_tank || undefined;
     this.release_order = item.release_order || undefined;
   }
 }

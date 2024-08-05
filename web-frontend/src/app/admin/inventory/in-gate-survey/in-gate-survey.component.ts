@@ -342,11 +342,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   getPurposeOptionDescription(codeValType: string): string | undefined {
-    let cv = this.purposeOptionCvList.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
-      return cv[0].description;
-    }
-    return '';
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
   }
 
   initializeFilterCustomerCompany() {

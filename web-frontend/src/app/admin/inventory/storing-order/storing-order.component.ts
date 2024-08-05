@@ -475,7 +475,6 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-    //return this.ccDS.displayName(cc);
   }
 
   initializeFilterCustomerCompany() {
@@ -528,5 +527,9 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  getSoStatusDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.soStatusCvList);
   }
 }
