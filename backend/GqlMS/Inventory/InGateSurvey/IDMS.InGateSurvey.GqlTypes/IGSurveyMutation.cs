@@ -18,7 +18,7 @@ namespace IDMS.InGateSurvey.GqlTypes
     {
         //[Authorize]
         public async Task<int> AddInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service]IMapper mapper,
+            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
             InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
         {
             int retval = 0;
@@ -27,8 +27,8 @@ namespace IDMS.InGateSurvey.GqlTypes
             {
                 //string so_guid = "";
                 //long epochNow = GqlUtils.GetNowEpochInSec();
-                //var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
-                string user = "admin";
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 in_gate_survey ingateSurvey = new();
@@ -41,7 +41,7 @@ namespace IDMS.InGateSurvey.GqlTypes
 
                 var igWithTank = inGateWithTankRequest.InGateWithTank;
                 var ingate = context.in_gate.Where(i => i.guid == igWithTank.guid).FirstOrDefault();
-                if (ingate != null) 
+                if (ingate != null)
                 {
                     ingate.remarks = igWithTank.remarks;
                     ingate.vehicle_no = igWithTank.vehicle_no;
@@ -54,14 +54,14 @@ namespace IDMS.InGateSurvey.GqlTypes
                 }
 
                 var tnk = inGateWithTankRequest.InGateWithTank.tank;
-                var sot = context.storing_order_tank.Where(s=>s.guid == tnk.guid).FirstOrDefault();
-                if (sot != null) 
+                var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
+                if (sot != null)
                 {
                     sot.unit_type_guid = tnk.unit_type_guid;
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
                 }
-       
+
                 retval = await context.SaveChangesAsync();
                 //TODO
                 string evtId = EventId.NEW_INGATE;
@@ -69,7 +69,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
@@ -78,7 +78,7 @@ namespace IDMS.InGateSurvey.GqlTypes
 
         //[Authorize]
         public async Task<int> UpdateInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper ,
+            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
             InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
         {
             int retval = 0;
@@ -92,8 +92,8 @@ namespace IDMS.InGateSurvey.GqlTypes
                 if (ingateSurvey.in_gate_guid == null)
                     throw new GraphQLException(new Error("Ingate guid cant be null.", "Error"));
 
-                //var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
-                string user = "admin";
+                var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
+                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
                 mapper.Map(inGateSurveyRequest, ingateSurvey);
 
@@ -139,7 +139,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                 string evtName = EventName.NEW_INGATE;
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
@@ -153,8 +153,8 @@ namespace IDMS.InGateSurvey.GqlTypes
             try
             {
 
-                //var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                string user = "admin";
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var query = context.in_gate_survey.Where(i => i.guid == $"{IGSurvey_guid}");
@@ -169,7 +169,38 @@ namespace IDMS.InGateSurvey.GqlTypes
                     retval = await context.SaveChangesAsync(true);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+
+        public async Task<int> PublishIngateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, in_gate IGSurvey_guid)
+        {
+            int retval = 0;
+            try
+            {
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                //string user = "admin";
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var query = context.in_gate_survey.Where(i => i.guid == $"{IGSurvey_guid}");
+                if (query.Any())
+                {
+                    var delInGateSurvey = query.FirstOrDefault();
+
+                    delInGateSurvey.delete_dt = currentDateTime;
+                    delInGateSurvey.update_by = user;
+                    delInGateSurvey.update_dt = currentDateTime;
+
+                    retval = await context.SaveChangesAsync(true);
+                }
+            }
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }

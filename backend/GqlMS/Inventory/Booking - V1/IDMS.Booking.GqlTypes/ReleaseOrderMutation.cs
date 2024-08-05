@@ -20,7 +20,7 @@ namespace IDMS.Booking.GqlTypes
         {
             try
             {
-                //var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
+                //var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
@@ -40,7 +40,7 @@ namespace IDMS.Booking.GqlTypes
                 newRO.release_dt = releaseOrder.release_dt;
 
                 IList<scheduling> schedulingsList = new List<scheduling>();
-                string[] sotGuids = schedulings.Select(s => s.storing_order_tank.guid).ToArray();
+                string[] sotGuids = schedulings.Select(s => s.sot_guid).ToArray();
                 List<storing_order_tank> sotLists = context.storing_order_tank.Where(s => sotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
 
                 foreach (var sch in schedulings)
@@ -50,13 +50,13 @@ namespace IDMS.Booking.GqlTypes
                     newScheduling.create_by = user;
                     newScheduling.create_dt = currentDateTime;
 
-                    newScheduling.sot_guid = sch.storing_order_tank.guid;
+                    newScheduling.sot_guid = sch.sot_guid;
                     newScheduling.release_order_guid = newRO.guid;
                     newScheduling.status_cv = ROStatus.PENDING;
                     newScheduling.reference = sch.reference;
                     schedulingsList.Add(newScheduling);
 
-                    storing_order_tank? sot = sotLists.Find(s => s.guid == sch.storing_order_tank.guid);
+                    storing_order_tank? sot = sotLists.Find(s => s.guid == sch.sot_guid);
                     sot.release_job_no = sch.storing_order_tank.release_job_no;
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
@@ -76,7 +76,7 @@ namespace IDMS.Booking.GqlTypes
             }
         }
 
-        public async Task<int> UpdateReleaseOrder(List<ReleaseOrderRequest> roList, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<int> UpdateReleaseOrder(ReleaseOrderRequest releaseOrders, List<SchedulingRequest> schedulings, [Service] IHttpContextAccessor httpContextAccessor,
          [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender)
         {
             try
@@ -86,30 +86,31 @@ namespace IDMS.Booking.GqlTypes
                 string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                if (roList.Any())
-                {
-                    string[] roGuids = roList.Select(b => b.guid).ToArray();
-                    var existingROList = context.release_order.Where(s => roGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0));
+                //if (releaseOrders != null)
+                //{
+                //    string[] roGuids = releaseOrders.Select(b => b.guid).ToArray();
+                //    var existingROList = context.release_order.Where(s => roGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0));
 
-                    foreach (var ro in roList)
-                    {
-                        // Find the corresponding existing child entity or add a new one if necessary
-                        var releaseOrder = existingROList.Where(b => b.guid == ro.guid).FirstOrDefault();
-                        if (releaseOrder != null)
-                        {
-                            releaseOrder.update_by = user;
-                            releaseOrder.update_dt = currentDateTime;
+                //    foreach (var ro in releaseOrders)
+                //    {
+                //        // Find the corresponding existing child entity or add a new one if necessary
+                //        var releaseOrder = existingROList.Where(b => b.guid == ro.guid).FirstOrDefault();
+                //        if (releaseOrder != null)
+                //        {
+                //            releaseOrder.update_by = user;
+                //            releaseOrder.update_dt = currentDateTime;
 
-                            //bk.surveyor_guid = ro.surveyor_guid;
-                            releaseOrder.remarks = ro.remarks;
-                            releaseOrder.ro_notes = ro.ro_notes;
-                            releaseOrder.status_cv = ro.status_cv;
-                            releaseOrder.release_dt = ro.release_dt;
-                            //releaseOrder.action_dt = ro.action_dt;
-                        }
-                    }
-                    res = await context.SaveChangesAsync();
-                }
+                //            //bk.surveyor_guid = ro.surveyor_guid;
+                //            releaseOrder.remarks = ro.remarks;
+                //            releaseOrder.ro_notes = ro.ro_notes;
+                //            releaseOrder.status_cv = ro.status_cv;
+                //            releaseOrder.release_dt = ro.release_dt;
+                //            //releaseOrder.action_dt = ro.action_dt;
+                //        }
+                //    }
+                //    res = await context.SaveChangesAsync();
+                //}
+
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
