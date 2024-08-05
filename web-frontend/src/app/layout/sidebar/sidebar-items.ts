@@ -143,7 +143,19 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-      }]
+      },
+      {
+        path: "admin/package/package-depot",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      }
+    ]
   },
   {
     path: "admin/cleaning-management",

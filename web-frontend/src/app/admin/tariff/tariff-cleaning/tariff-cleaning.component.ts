@@ -100,7 +100,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.TARIFF.TEXT'
   ]
 
   translatedLangText: any = {};

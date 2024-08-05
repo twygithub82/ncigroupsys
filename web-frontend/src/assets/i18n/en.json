@@ -401,7 +401,8 @@
     "PREINSPECTION-COST":"Pre-inspection Cost",
     "LOLO-COST":"LOLO Cost per Lift",
     "STORAGE-COST":"Storage Cost",
-    "FREE-STORAGE":"Free Storage Days"
+    "FREE-STORAGE":"Free Storage Days",
+    "ASSIGNED":"has been assigned to others"
     
   },
   "CLEAN-PROCEDURES": {
