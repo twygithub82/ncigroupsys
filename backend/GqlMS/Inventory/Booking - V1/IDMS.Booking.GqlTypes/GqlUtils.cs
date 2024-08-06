@@ -7,25 +7,28 @@ namespace IDMS.Booking.GqlTypes
 {
     internal class GqlUtils
     {
-        public static bool IsAuthorize([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        public static string IsAuthorize([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
-            bool result = false;
+            string uid = "";
             try
             {
-                var authUser = httpContextAccessor.HttpContext.User;
-                var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value; //authUser.FindFirstValue(ClaimTypes.GroupSid);
+                var isCheckAuthorization = Convert.ToBoolean(config["JWT:CheckAuthorization"]);
+                if (!isCheckAuthorization) return "anonymous user";
 
-                //var c = authUser.FindFirst(ClaimTypes.GroupSid).Value;
+                var authUser = httpContextAccessor.HttpContext.User;
+                var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value;
+                uid = authUser.FindFirst(ClaimTypes.Name)?.Value;
                 if (primarygroupSid != "s1")
                 {
                     throw new GraphQLException(new Error("Unauthorized", "401"));
                 }
+
             }
             catch
             {
                 throw;
             }
-            return result;
+            return uid;
         }
     }
 }

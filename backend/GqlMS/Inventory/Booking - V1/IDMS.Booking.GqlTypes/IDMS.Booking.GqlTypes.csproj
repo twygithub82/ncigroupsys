@@ -8,6 +8,7 @@
 
   <ItemGroup>
 	  <PackageReference Include="AutoMapper" Version="13.0.1" />
+	  <PackageReference Include="HotChocolate.Authorization" Version="13.9.5" />
     <PackageReference Include="HotChocolate.Types" Version="13.9.5" />
 	<PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.5" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />

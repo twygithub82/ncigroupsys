@@ -1,5 +1,6 @@
 ﻿using IDMS.Models;
 using IDMS.Models.Inventory;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 
 namespace IDMS.Booking.Model.Request
@@ -12,5 +13,8 @@ namespace IDMS.Booking.Model.Request
         public string? release_order_guid { get; set; }
         public string? status_cv { get; set; }
         public string? reference { get; set; }
+
+        [NotMapped]
+        public string? action { get; set; }
     }
 }
