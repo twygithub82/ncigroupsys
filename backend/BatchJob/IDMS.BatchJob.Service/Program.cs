@@ -5,26 +5,45 @@ using Newtonsoft.Json.Linq;
 using System.Configuration;
 using System.Data.Common;
 using System.Globalization;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace IDMS.BatchJob.Service
 {
     internal class Program
     {
+        static string filePath = "./Config/app_config.json";
+
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Start Batch Job....");
-            await Start();
+            var input = args.Any() ? args[0] : "";
+            Console.WriteLine($"Start Batch Job.... input: {input}");
+
+            if (string.IsNullOrEmpty(input))
+                await Start();
+            else
+            {
+                if (ValidateDate(args[0]))
+                    await Start(args[0]);
+                else
+                    Console.WriteLine("Invalid Input -- {yyyy-MM-dd}");
+            }
+               
 
             // Access the configuration values
             Console.WriteLine("Done.");
         }
 
+        private static bool ValidateDate(string dateStr)
+        {
+            DateTime date;
+            return DateTime.TryParseExact(dateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+        }
 
         private static async Task Start()
         {
             // Specify the path to your JSON configuration file
-            string filePath = "./Config/app_config.json";
+          
             try
             {
                 using StreamReader streamReader = File.OpenText(filePath);
@@ -33,11 +52,11 @@ namespace IDMS.BatchJob.Service
                 // Deserialize the JSON string into an object
                 //var configuration = JToken.Parse("");
                 string dbConnection = $"{configuration?.SelectToken("ConnectionStrings.DefaultConnection")?.ToString()}";
-                string mode = $"{configuration?.SelectToken("Setting.Mode")?.ToString().ToLower()}";
-                string dateInput = $"{configuration?.SelectToken("Setting.InputDate")?.ToString()}";
+                //string mode = $"{configuration?.SelectToken("Setting.Mode")?.ToString().ToLower()}";
+                //string dateInput = $"{configuration?.SelectToken("Setting.InputDate")?.ToString()}";
 
-                await CheckSchedulingDescrepancy(dbConnection, "auto".Equals(mode) ? "" : dateInput);
-                await CheckBookingDescrepancy(dbConnection, "auto".Equals(mode) ? "" : dateInput);
+                await CheckSchedulingDescrepancy(dbConnection);
+                await CheckBookingDescrepancy(dbConnection);
 
             }
             catch (Exception ex)
@@ -47,7 +66,33 @@ namespace IDMS.BatchJob.Service
             }
         }
 
-        private static async Task<List<JToken>> CheckSchedulingDescrepancy(string dbConnection, string date = "")
+        private static async Task Start(string dateInput)
+        {
+            // Specify the path to your JSON configuration file
+            //string filePath = "./Config/app_config.json";
+            try
+            {
+                using StreamReader streamReader = File.OpenText(filePath);
+                var configuration = JToken.Parse(streamReader.ReadToEnd());
+
+                // Deserialize the JSON string into an object
+                //var configuration = JToken.Parse("");
+                string dbConnection = $"{configuration?.SelectToken("ConnectionStrings.DefaultConnection")?.ToString()}";
+                //string mode = $"{configuration?.SelectToken("Setting.Mode")?.ToString().ToLower()}";
+                //string dateInput = $"{configuration?.SelectToken("Setting.InputDate")?.ToString()}";
+
+                await CheckSchedulingDescrepancy(configuration, dbConnection,  dateInput);
+                await CheckBookingDescrepancy(configuration, dbConnection, dateInput);
+
+            }
+            catch (Exception ex)
+            {
+                string errMsg = ex.Message;
+                throw (ex);
+            }
+        }
+
+        private static async Task<List<JToken>> CheckSchedulingDescrepancy(JToken config, string dbConnection, string date = "")
         {
             MySqlConnection? conn = new MySqlConnection(dbConnection);
             await conn.OpenAsync();
@@ -59,8 +104,8 @@ namespace IDMS.BatchJob.Service
             string sql = $"SELECT sot_guid FROM booking WHERE book_type_cv = '{BOOKTYPE}' " +
                 $"AND status_cv <> '{STATUS}' " +
                 "AND (delete_dt is null or delete_dt = 0)  " +
-                $"AND create_dt >= UNIX_TIMESTAMP({dateInput}) " +
-                $"AND create_dt < UNIX_TIMESTAMP({dateInput} + INTERVAL 1 DAY) " +
+                $"AND create_dt <= UNIX_TIMESTAMP({dateInput}) " +
+                //$"AND create_dt < UNIX_TIMESTAMP({dateInput} + INTERVAL 1 DAY) " +
                 "AND sot_guid NOT IN " +
                 "(SELECT sc.sot_guid FROM scheduling sc WHERE (sc.delete_dt is null or sc.delete_dt = 0) " +
                 //"AND sc.create_dt >= UNIX_TIMESTAMP(CURDATE()) " +
@@ -93,7 +138,7 @@ namespace IDMS.BatchJob.Service
             return result;
         }
 
-        private static async Task<List<JToken>> CheckBookingDescrepancy(string dbConnection, string date = "")
+        private static async Task<List<JToken>> CheckBookingDescrepancy(JToken config, string dbConnection, string date = "")
         {
             MySqlConnection? conn = new MySqlConnection(dbConnection);
             await conn.OpenAsync();
@@ -103,8 +148,8 @@ namespace IDMS.BatchJob.Service
             string dateInput = string.IsNullOrEmpty(date) ? "CURDATE()" : $"'{date}'";
 
             string sql = "SELECT sc.sot_guid FROM scheduling sc WHERE (sc.delete_dt is null or sc.delete_dt = 0) " +
-                $"AND sc.create_dt >= UNIX_TIMESTAMP({dateInput}) " +
-                $"AND sc.create_dt < UNIX_TIMESTAMP({dateInput} + INTERVAL 1 DAY) " +
+                $"AND sc.create_dt <= UNIX_TIMESTAMP({dateInput}) " +
+                //$"AND sc.create_dt < UNIX_TIMESTAMP({dateInput} + INTERVAL 1 DAY) " +
                 "AND sc.sot_guid NOT IN " +
                 $"(SELECT bk.sot_guid FROM booking bk WHERE bk.book_type_cv = '{BOOKTYPE}' " +
                 $"AND bk.status_cv <> '{STATUS}' " +
@@ -133,6 +178,8 @@ namespace IDMS.BatchJob.Service
             if (result.Any())
             {
                 //TODO :: there is descrepancy, send alert notification
+                string url = config.SelectToken("Setting.notificationUrl").ToString();
+                Utils.AddAndTriggerStaffNotification(url, 3, "in-gate", "new in-gate was check-in");
             }
 
             return result;
