@@ -300,6 +300,12 @@ export class HeaderComponent
       case "in-gate-survey":
         defaultLink="admin/inventory/in-gate-survey";
         break;
+      case "cross-check-booking":
+        defaultLink="admin/inventory/booking-new";
+        break;
+      case "cross-check-scheduling":
+        defaultLink="admin/inventory/scheduling-new";
+        break;
     }
     if(defaultLink!="") 
       this.router.navigate([defaultLink]);
@@ -325,6 +331,12 @@ export class HeaderComponent
       case 5:
         defaultIcon="error_outline";
         break;
+        case 6:
+          defaultIcon="publish";
+          break;
+        case 7:
+          defaultIcon="update";
+          break;
     }
     return defaultIcon;
   }
@@ -348,6 +360,12 @@ export class HeaderComponent
         break;
       case 5:
         defaultColor="nfc-red";
+        break;
+      case 6:
+        defaultColor="nfc-orange";
+        break;
+      case 7:
+        defaultColor="nfc-green";
         break;
     }
     return defaultColor;

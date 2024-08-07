@@ -95,7 +95,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
-    'select',
+    //'select',
     // 'img',
      'fName',
      'lName',
@@ -134,23 +134,23 @@ implements OnInit {
 
   ccDS: CustomerCompanyDS;
   clnCatDS:CleaningCategoryDS;
-  custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
+  custCompDS :CustomerCompanyDS;
 
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
-  customer_companyList1?: CustomerCompanyItem[];
+  customer_companyList: CustomerCompanyItem[]=[];
   cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company:{code: "ASC" }, cleaning_category: { sequence: "ASC" }};
+  lastOrderBy: any = { code: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
   
-
+  searchField: string = "";
    exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
   selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
@@ -240,6 +240,8 @@ implements OnInit {
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    EMAIL:'COMMON-FORM.EMAIL',
+    PHONE:'COMMON-FORM.PHONE',
      }
   
   constructor(
@@ -254,10 +256,10 @@ implements OnInit {
 
   ) {
     super();
-    this.initTcForm();
+    this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.custCompDS=new CustomerCompanyDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -270,13 +272,11 @@ implements OnInit {
     this.translateLangText();
   }
 
-  initTcForm() {
+  initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
-      customer_code: this.customerCodeControl,
-      cleaning_category:this.categoryControl,
-      min_cost:[''],
-      max_cost:['']
+      customer_code: this.customerCodeControl
+     
     });
   }
 
@@ -307,34 +307,7 @@ implements OnInit {
     event.preventDefault(); // Prevents the form submission
   }
 
-  adjustCost()
-  {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent,{
-      width: '600px',
-      data: {
-        action: 'new',
-        langText: this.langText,
-        selectedItems:this.selection.selected
-      }
-        
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          if(result.selectedValue>0)
-          {
-            this.handleSaveSuccess(result.selectedValue);
-            this.search();
-          }
-      }
-      });
-  }
+  
   editCall(row: CustomerCompanyCleaningCategoryItem) {
    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -370,35 +343,7 @@ implements OnInit {
 
   
   deleteItem(row: AdvanceTable) {
-    // this.id = row.id;
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(DeleteDialogComponent, {
-    //   data: row,
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // for delete we use splice in order to remove single object from DataService
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'snackbar-danger',
-    //         'Delete Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
+   
   }
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
@@ -436,37 +381,37 @@ implements OnInit {
         
           const customerCodes :CustomerCompanyItem[] = this.customerCodeControl.value;
           var guids = customerCodes.map(cc=>cc.guid);
-          where.customer_company_guid = { in: guids };
+          where.guid = { in: guids };
         }
     }
 
-    if (this.categoryControl.value) {
-      if(this.categoryControl.value.length>0)
-      {
-        const guids = this.categoryControl.value;
-        where.cleaning_category_guid = { in: guids };
-      }
-    }
+    // if (this.categoryControl.value) {
+    //   if(this.categoryControl.value.length>0)
+    //   {
+    //     const guids = this.categoryControl.value;
+    //     where.cleaning_category_guid = { in: guids };
+    //   }
+    // }
 
-    if (this.pcForm!.value["min_cost"])
-    {
-      const minCost :number = Number(this.pcForm!.value["min_cost"]);
-      where.adjusted_price ={gte:minCost}
-    }
+    // if (this.pcForm!.value["min_cost"])
+    // {
+    //   const minCost :number = Number(this.pcForm!.value["min_cost"]);
+    //   where.adjusted_price ={gte:minCost}
+    // }
 
-    if (this.pcForm!.value["max_cost"])
-      {
-        const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-        where.adjusted_price ={ngte:maxCost}
-      }
+    // if (this.pcForm!.value["max_cost"])
+    //   {
+    //     const maxCost :number = Number(this.pcForm!.value["max_cost"]);
+    //     where.adjusted_price ={ngte:maxCost}
+    //   }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.custCompClnCatDS.search(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.custCompClnCatItems=data;
+    this.subs.sink = this.custCompDS.search(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.customer_companyList=data;
        this.previous_endCursor=undefined;
-       this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
-       this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;
-       this.hasNextPage = this.custCompClnCatDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.custCompClnCatDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.custCompDS.pageInfo?.endCursor;
+       this.startCursor = this.custCompDS.pageInfo?.startCursor;
+       this.hasNextPage = this.custCompDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.custCompDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -500,7 +445,8 @@ implements OnInit {
       last = undefined;
       before = undefined;
     } else {
-      if (pageIndex > this.pageIndex && this.hasNextPage) {
+      //if (pageIndex > this.pageIndex && this.hasNextPage) {
+        if (pageIndex > this.pageIndex ) {
         // Navigate forward
         first = pageSize;
         after = this.endCursor;
@@ -529,12 +475,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.custCompClnCatDS.search(where,order,first,after,last,before).subscribe(data => {
-        this.custCompClnCatItems=data;
-        this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
-        this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;
-        this.hasNextPage = this.custCompClnCatDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.custCompClnCatDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.custCompDS.search(where,order,first,after,last,before).subscribe(data => {
+        this.customer_companyList=data;
+        this.endCursor = this.custCompDS.pageInfo?.endCursor;
+        this.startCursor = this.custCompDS.pageInfo?.startCursor;
+        this.hasNextPage = this.custCompDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.custCompDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
@@ -584,13 +530,13 @@ implements OnInit {
      // this.customer_companyList1 = data
     });
 
-    this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-      if(this.clnCatDS.totalCount>0)
-      {
-        this.cleaning_categoryList=data;
-      }
+    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
+    //   if(this.clnCatDS.totalCount>0)
+    //   {
+    //     this.cleaning_categoryList=data;
+    //   }
 
-    });
+    // });
 
   
   }

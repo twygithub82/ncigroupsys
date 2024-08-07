@@ -407,7 +407,9 @@
     "STORAGE-COST":"Storage Cost",
     "FREE-STORAGE":"Free Storage Days",
     "ASSIGNED":"has been assigned to others",
-    "ADD-TANK":"Add Tank"
+    "ADD-TANK":"Add Tank",
+    "EMAIL":"Email",
+    "PHONE":"Phone"
     
   },
   "CLEAN-PROCEDURES": {
