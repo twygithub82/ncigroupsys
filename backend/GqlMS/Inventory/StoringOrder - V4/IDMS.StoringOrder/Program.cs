@@ -4,11 +4,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using IDMS.StoringOrder.GqlTypes.Repo;
 using HotChocolate.Data;
 using AutoMapper;
 using IDMS.StoringOrder.Model.Request;
 using IDMS.Models.Inventory;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.StoringOrder.GqlTypes.Repo;
 
 namespace IDMS.StoringOrder.Application
 {
@@ -28,9 +29,21 @@ namespace IDMS.StoringOrder.Application
 
             string connectionString = builder.Configuration.GetConnectionString("default");
             //builder.Services.AddPooledDbContextFactory<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
-            
-            builder.Services.AddDbContext<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
 
+            builder.Services.AddPooledDbContextFactory<ApplicationInventoryDBContext>(o =>
+            {
+                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+                o.EnableSensitiveDataLogging(false);
+            });
+              
+
+            //builder.Services.AddDbContext<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+
+            //builder.Services.AddDbContextPool<ApplicationInventoryDBContext>(o =>
+            //{
+            //    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+            //    o.EnableSensitiveDataLogging(false);
+            //});
 
             var mappingConfig = new MapperConfiguration(cfg =>
             {
@@ -54,24 +67,10 @@ namespace IDMS.StoringOrder.Application
                     });
             });
 
-
-            //builder.Services.AddDbContext<ApplicationDbContext>(
-            //        options => options.UseSqlServer("YOUR_CONNECTION_STRING"));
-
-            //builder.Services.AddScoped<SORepository>();
-
-            // Add services to the container.
-            //builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            //builder.Services.AddEndpointsApiExplorer();
-            //builder.Services.AddSwaggerGen();
-            //builder.Services.AddScoped<IServiceProvider, ServiceProvider>();
-            //builder.Services.AddTransient<iDatabase, MySQLWrapper>();
-
-
             builder.Services.AddGraphQLServer()
                             .InitializeOnStartup()
-                            .RegisterDbContext<AppDbContext>(DbContextKind.Synchronized)
+                            .RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Pooled)
+                            //.RegisterDbContext<AppDbContext>(DbContextKind.Synchronized)
                             //.RegisterDbContext<RODbContext>(DbContextKind.Synchronized)
                             //.RegisterDbContext<BookDbContext>(DbContextKind.Synchronized)
                             .AddQueryType<Query>()

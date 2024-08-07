@@ -1,6 +1,7 @@
 ﻿using HotChocolate;
 using HotChocolate.Types;
 using IDMS.Models.Inventory;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.StoringOrder.GqlTypes.Repo;
 using IDMS.StoringOrder.Model.CustomSorter;
 //using IDMS.StoringOrder.Model.Domain.StoringOrder;
@@ -16,7 +17,8 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting(typeof(SOSorter))]
-        public IQueryable<storing_order> QueryStoringOrder(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<storing_order> QueryStoringOrder([Service] IHttpContextAccessor httpContextAccessor,
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -31,7 +33,8 @@ namespace IDMS.StoringOrder.GqlTypes
         }
 
         [UseProjection]
-        public IQueryable<storing_order> QueryStoringOrderById(string id, AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<storing_order> QueryStoringOrderById(string id, [Service] IHttpContextAccessor httpContextAccessor,
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -50,7 +53,8 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<storing_order_tank> QueryStoringOrderTank(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<storing_order_tank> QueryStoringOrderTank([Service] IHttpContextAccessor httpContextAccessor,
+            ApplicationInventoryDBContext context)
         {
             try
             {

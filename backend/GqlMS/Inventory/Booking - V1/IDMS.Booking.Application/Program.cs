@@ -22,7 +22,7 @@ namespace IDMS.Booking.Application
 
             string connectionString = builder.Configuration.GetConnectionString("default");
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
-            builder.Services.AddDbContextPool<ApplicationInventoryDBContext>(o =>
+            builder.Services.AddPooledDbContextFactory<ApplicationInventoryDBContext>(o =>
             {
                 o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
                 o.EnableSensitiveDataLogging(false);
@@ -57,7 +57,7 @@ namespace IDMS.Booking.Application
 
             builder.Services.AddGraphQLServer()
                             .InitializeOnStartup()
-                            //.RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Synchronized)
+                             .RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Pooled)
                             .AddQueryType<Query>()
                             .AddTypeExtension<BookingQuery>()
                             .AddTypeExtension<SchedulingQuery>()

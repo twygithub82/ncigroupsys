@@ -3,6 +3,7 @@ using CommonUtil.Core.Service;
 using HotChocolate;
 using HotChocolate.Subscriptions;
 using HotChocolate.Types;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Shared;
 using IDMS.StoringOrder.GqlTypes.Repo;
 using IDMS.StoringOrder.Model;
@@ -20,7 +21,8 @@ namespace IDMS.StoringOrder.GqlTypes
     public class SOTMutation
     {
         public async Task<int> CancelStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
-            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+            [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, 
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -34,7 +36,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
         public async Task<int> RollbackStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
-          AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+          [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, ApplicationInventoryDBContext context)
         {
             try
             {
@@ -46,7 +48,7 @@ namespace IDMS.StoringOrder.GqlTypes
             }
         }
 
-        private async Task<int> StoringOrderTankChanges(AppDbContext context, List<StoringOrderTankRequest> sot, bool forCancel)
+        private async Task<int> StoringOrderTankChanges(ApplicationInventoryDBContext context, List<StoringOrderTankRequest> sot, bool forCancel)
         {
             int res = 0;
             string user = "admin";
@@ -108,7 +110,7 @@ namespace IDMS.StoringOrder.GqlTypes
             return res;
         }
 
-        private async void VoidInGateEIR(string[] sotGuids, string user, long currentDateTime,  AppDbContext context)
+        private async void VoidInGateEIR(string[] sotGuids, string user, long currentDateTime, ApplicationInventoryDBContext context)
         {
             var InGates = context.in_gate.Where(i => sotGuids.Contains(i.so_tank_guid) && (i.delete_dt == null || i.delete_dt == 0));
             foreach (var ig in InGates)

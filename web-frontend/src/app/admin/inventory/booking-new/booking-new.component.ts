@@ -46,6 +46,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { SchedulingItem } from 'app/data-sources/scheduling';
 import { BookingItem } from 'app/data-sources/booking';
+import { InGateDS } from 'app/data-sources/in-gate';
 
 @Component({
   selector: 'app-booking-new',
@@ -157,6 +158,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
+  igDS: InGateDS;
 
   sotList: StoringOrderTankItem[] = [];
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
@@ -193,6 +195,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -366,7 +369,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       and: [
         { status_cv: { eq: "ACCEPTED" } },
         { tank_status_cv: { neq: "RO_GENERATED" } },
-        { in_gate: { delete_dt: { eq: null } } }
+        { in_gate: { some: { delete_dt: { eq: null } } } }
       ]
     };
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);

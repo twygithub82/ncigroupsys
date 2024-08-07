@@ -466,8 +466,8 @@ export const ADD_IN_GATE_SURVEY = gql`
 `;
 
 export const UPDATE_IN_GATE_SURVEY = gql`
-  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!) {
-    updateInGateSurvey(inGateSurveyRequest: $inGateSurvey)
+  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankInput) {
+    updateInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: { in_gate: $inGate })
   }
 `;
 
@@ -534,11 +534,12 @@ export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
     });
   }
 
-  updateInGateSurvey(inGateSurvey: any): Observable<any> {
+  updateInGateSurvey(inGateSurvey: any, inGate: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_IN_GATE_SURVEY,
       variables: {
-        inGateSurvey
+        inGateSurvey,
+        inGate
       }
     });
   }

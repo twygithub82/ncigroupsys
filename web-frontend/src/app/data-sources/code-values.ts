@@ -85,7 +85,7 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
     }, {} as any);
       
     const dynamicQuery: DocumentNode = getCodeValuesByTypeQueries(aliases);
-
+    
     this.apollo
       .query<any>({
         query: dynamicQuery,

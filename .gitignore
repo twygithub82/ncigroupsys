@@ -15,3 +15,7 @@ backend/GqlMS/Inventory/Booking - V1/IDMS.Booking.Application/IDMS.Booking.Appli
 backend/GqlMS/Inventory/Booking - V1/IDMS.Booking.Application/IDMS.Booking.Application.csproj.user
 AzureTLX.txt
 /backend/BatchJob/IDMS.BatchJob.Service/Config/app_config.json
+backend/GqlMS/Inventory/InGate/IDMS.InGate/Properties/PublishProfiles/tlx-idms-inventory-ingate - Zip Deploy.pubxml.user
+backend/GqlMS/Inventory/InGate/IDMS.InGate/Properties/PublishProfiles/tlx-idms-inventory-ingate - Zip Deploy.pubxml.user
+backend/GqlMS/Inventory/StoringOrder - V4/IDMS.StoringOrder/Properties/PublishProfiles/tlx-idms-app - FTP.pubxml.user
+backend/GqlMS/Inventory/StoringOrder - V4/IDMS.StoringOrder/Properties/PublishProfiles/tlx-idms-app - FTP.pubxml.user

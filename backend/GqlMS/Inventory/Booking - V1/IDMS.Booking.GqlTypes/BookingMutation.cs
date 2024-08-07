@@ -18,7 +18,7 @@ namespace IDMS.Booking.GqlTypes
     public class BookingMutation
     {
         public async Task<int> AddBooking(BookingRequest booking, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
+            ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace IDMS.Booking.GqlTypes
         }
 
         public async Task<int> UpdateBooking(List<BookingRequest> bookingList, [Service] IHttpContextAccessor httpContextAccessor,
-         [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)//[Service] IMapper mapper)
+         ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)//[Service] IMapper mapper)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace IDMS.Booking.GqlTypes
         }
 
         public async Task<int> DeleteBooking(List<string> bkGuids, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config) //[Service] IMapper mapper)
+            ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config) //[Service] IMapper mapper)
         {
 
             try

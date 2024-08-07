@@ -55,8 +55,8 @@ namespace IDMS.BatchJob.Service
                 //string mode = $"{configuration?.SelectToken("Setting.Mode")?.ToString().ToLower()}";
                 //string dateInput = $"{configuration?.SelectToken("Setting.InputDate")?.ToString()}";
 
-                await CheckSchedulingDescrepancy(dbConnection);
-                await CheckBookingDescrepancy(dbConnection);
+                await CheckSchedulingDescrepancy(configuration, dbConnection);
+                await CheckBookingDescrepancy(configuration, dbConnection);
 
             }
             catch (Exception ex)
@@ -129,10 +129,11 @@ namespace IDMS.BatchJob.Service
                 }
             }
 
-
-            if (result.Any()) 
+            string url = config.SelectToken("Setting.notificationUrl").ToString();
+            foreach (var row in result)
             {
-                //TODO :: there is descrepancy, send alert notification
+                string notification_uid = $"cc-scheduling-{row?.SelectToken("sot_guid")?.ToString()}";
+                Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", "missing scheduling", notification_uid);
             }
 
             return result;
@@ -174,14 +175,14 @@ namespace IDMS.BatchJob.Service
                     }
                 }
             }
-
-            if (result.Any())
+            //TODO :: there is descrepancy, send alert notification
+            string url = config.SelectToken("Setting.notificationUrl").ToString();
+            foreach (var row in result) 
             {
-                //TODO :: there is descrepancy, send alert notification
-                string url = config.SelectToken("Setting.notificationUrl").ToString();
-                Utils.AddAndTriggerStaffNotification(url, 3, "in-gate", "new in-gate was check-in");
+                string notification_uid = $"cc-booking-{row?.SelectToken("sot_guid")?.ToString()}";
+                Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", "missing booking", notification_uid);
             }
-
+  
             return result;
         }
     }
