@@ -172,6 +172,7 @@ namespace IDMS.InGate.GqlTypes
                         so_tank.status_cv = "ACCEPTED";
                         //so_tank.purpose_cleaning = InGate.tank.purpose_cleaning;
                         //  so_tank.purpose_steam = InGate.tank.purpose_steam;
+                        so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
                         so_tank.purpose_storage = InGate.tank.purpose_storage;
                         so_tank.update_by = uid;
                         so_tank.update_dt = GqlUtils.GetNowEpochInSec();
