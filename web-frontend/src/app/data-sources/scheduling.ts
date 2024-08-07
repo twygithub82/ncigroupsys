@@ -49,6 +49,15 @@ export class SchedulingItem extends SchedulingGO {
   }
 }
 
+export class SchedulingUpdateItem extends SchedulingItem {
+  public action?: string
+
+  constructor(item: Partial<SchedulingUpdateItem> = {}) {
+    super(item)
+    this.action = item.action || undefined;
+  }
+}
+
 const GET_BOOKING = gql`
   query getBooking($where: bookingFilterInput, $order: [bookingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     bookingList: queryBooking(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {

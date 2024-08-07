@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -46,6 +46,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatRadioModule } from '@angular/material/radio';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -159,6 +160,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     EIR_FORM: 'COMMON-FORM.EIR-FORM',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     RESET: 'COMMON-FORM.RESET',
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION'
   }
 
   inGateForm?: UntypedFormGroup;
@@ -291,8 +293,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   populateInGateForm(sot: StoringOrderTankItem): void {
     this.inGateForm!.patchValue({
       haulier: sot.storing_order?.haulier,
-      vehicle_no: '',
-      driver_name: '',
+      vehicle_no: sot.in_gate?.vehicle_no,
+      driver_name: sot.in_gate?.driver_name,
       eir_dt: sot.in_gate?.create_dt ? Utility.convertDate(sot.in_gate?.create_dt) : new Date(),
       job_no: sot.job_no,
       remarks: sot.in_gate?.remarks,
@@ -379,9 +381,11 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
           searchCriteria = value;
         } else {
           searchCriteria = value.cargo;
+          this.inGateForm!.get('last_cargo_guid')!.setValue(value.guid);
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
+          this.updateValidators(this.last_cargoList);
         });
       })
     ).subscribe();
@@ -391,8 +395,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if (this.inGateForm?.valid) {
       console.log('Valid inGateForm', this.inGateForm?.value);
       this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.value['haulier'];
-      this.storingOrderTankItem!.job_no = this.inGateForm.value['haulier'];
-      this.storingOrderTankItem!.purpose_storage = this.inGateForm.value['haulier'];
+      this.storingOrderTankItem!.job_no = this.inGateForm.value['job_no'];
+      this.storingOrderTankItem!.purpose_storage = this.inGateForm.value['purpose_storage'];
+      this.storingOrderTankItem!.last_cargo_guid = this.inGateForm.value['last_cargo_guid']
       let so = new StoringOrderGO(this.storingOrderTankItem!.storing_order);
       let sot = new StoringOrderTankGO(this.storingOrderTankItem);
       sot.storing_order = so;
@@ -449,8 +454,15 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     event.preventDefault(); // Prevents the form submission
     this.inGateForm!.patchValue({
       haulier: this.storingOrderTankItem!.storing_order?.haulier,
-      vehicle_no: '',
-      driver_name: ''
+      vehicle_no: this.storingOrderTankItem!.in_gate?.vehicle_no || '',
+      driver_name: this.storingOrderTankItem!.in_gate?.driver_name || ''
     });
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.lastCargoControl.setValidators([
+      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 }

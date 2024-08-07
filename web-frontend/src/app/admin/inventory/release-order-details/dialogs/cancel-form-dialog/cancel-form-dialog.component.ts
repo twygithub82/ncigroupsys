@@ -21,10 +21,11 @@ import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatDividerModule } from '@angular/material/divider';
+import { SchedulingItem } from 'app/data-sources/scheduling';
 
 export interface DialogData {
   action?: string;
-  item: StoringOrderTankItem[];
+  item: SchedulingItem[];
   langText?: any;
   translatedLangText?: any;
   index: number;
@@ -53,8 +54,8 @@ export interface DialogData {
 export class CancelFormDialogComponent {
   index: number;
   dialogTitle?: string;
-  storingOrderTank: StoringOrderTankItem[];
-  storingOrderTankForm: UntypedFormGroup;
+  scheduling: SchedulingItem[];
+  schedulingForm: UntypedFormGroup;
   startDate = new Date();
 
   lastCargoControl = new UntypedFormControl();
@@ -64,38 +65,37 @@ export class CancelFormDialogComponent {
     private fb: UntypedFormBuilder
   ) {
     // Set the defaults
-    this.storingOrderTank = data.item;
-    this.storingOrderTankForm = this.createStorigOrderForm();
+    this.scheduling = data.item;
+    this.schedulingForm = this.createSchedulingForm();
     this.index = data.index;
   }
-  createStorigOrderForm(): UntypedFormGroup {
+  createSchedulingForm(): UntypedFormGroup {
     return this.fb.group({
-      storingOrderTank: this.fb.array(this.storingOrderTank.map(sot => this.createTankGroup(sot))),
-      remarks: ['', Validators.required]
+      scheduling: this.fb.array(this.scheduling.map(scheduling => this.createTankGroup(scheduling)))
     });
   }
-  createTankGroup(sot: any): UntypedFormGroup {
+  createTankGroup(scheduling: any): UntypedFormGroup {
     return this.fb.group({
-      tank_no: [sot.tank_no],
-      status_cv: [sot.status_cv],
+      tank_no: [scheduling.storing_order_tank?.tank_no],
+      status_cv: [scheduling.status_cv],
     });
   }
   onNoClick(): void {
     this.dialogRef.close();
   }
   confirm(): void {
-    if (this.storingOrderTankForm.valid) {
-      let remarks = this.storingOrderTankForm.value['remarks']
-      this.storingOrderTank.forEach(row => row.remarks = remarks);
+    if (this.schedulingForm.valid) {
+      let remarks = this.schedulingForm.value['remarks']
+      //this.scheduling.forEach(row => row.remarks = remarks);
       const returnDialog: DialogData = {
         action: 'confirmed',
-        item: this.storingOrderTank,
+        item: this.scheduling,
         index: this.index
       }
       this.dialogRef.close(returnDialog);
     }
   }
-  getStoringOrderTanksArray(): UntypedFormArray {
-    return this.storingOrderTankForm.get('storingOrderTank') as UntypedFormArray;
+  getSchedulingArray(): UntypedFormArray {
+    return this.schedulingForm.get('scheduling') as UntypedFormArray;
   }
 }

@@ -296,6 +296,16 @@
                                     </mat-option>
                                     }
                                   </mat-autocomplete>
+                                  @if (lastCargoControl.get('last_cargo')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.LAST_CARGO}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                  @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
+                                  <mat-error>
+                                    {{translatedLangText.INVALID_SELECTION}}
+                                  </mat-error>
+                                  }
                                 </mat-form-field>
                               </div>
                             </div>

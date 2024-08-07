@@ -204,34 +204,49 @@ export class FormDialogComponent {
 
     this.storingOrderTankForm?.get('tank_no')?.valueChanges.subscribe(value => {
       // Custom validation logic for tank_no
-      const isValid = Utility.verifyIsoContainerCheckDigit(value);
-      if (!isValid) {
-        // Set custom error if the value is invalid
-        this.storingOrderTankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
-      } else {
-        // Clear custom error if the value is valid
-        const formattedTankNo = Utility.formatContainerNumber(value);
-        this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe(data => {
-          if (data.length > 0) {
-            this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
-          } else {
-            if (this.action !== 'edit') {
-              const found = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
-              if (found?.length) {
-                this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+      if (value) {
+        const uppercaseValue = value.toUpperCase();
+        this.storingOrderTankForm.get('tank_no')?.setValue(uppercaseValue, { emitEvent: false });
+        const isValid = Utility.verifyIsoContainerCheckDigit(uppercaseValue);
+        if (!isValid) {
+          // Set custom error if the value is invalid
+          this.storingOrderTankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
+        } else {
+          // Clear custom error if the value is valid
+          const formattedTankNo = Utility.formatContainerNumber(uppercaseValue);
+          this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe(data => {
+            if (data.length > 0) {
+              const hasWaiting = data.some(item => item.status_cv === 'WAITING');
+              if (hasWaiting) {
+                const hasPrebook = data.some(item => item.status_cv === 'PREBOOK');
+                if (hasPrebook) {
+                  this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+                } else {
+                  // this.storingOrderTankForm.get('tank_no')?.setErrors({ prebook_warning: true });
+                  // See how to do prebook warning
+                }
               } else {
-                this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+                // Wont be here, if here means PREBOOK didnt change to WAITING while the tank has been out
               }
-            } else if (this.action === 'edit' && formattedTankNo !== this.storingOrderTank.tank_no) {
-              const found = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
-              if (found?.length) {
-                this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
-              } else {
-                this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+            } else {
+              if (this.action !== 'edit') {
+                const found = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
+                if (found?.length) {
+                  this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+                } else {
+                  this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+                }
+              } else if (this.action === 'edit' && formattedTankNo !== this.storingOrderTank.tank_no) {
+                const found = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
+                if (found?.length) {
+                  this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+                } else {
+                  this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+                }
               }
             }
-          }
-        });
+          });
+        }
       }
     });
 

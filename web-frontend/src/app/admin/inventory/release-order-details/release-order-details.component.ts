@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl, UntypedFormArray } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -47,8 +47,10 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
-import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
+import { ReleaseOrderDS, ReleaseOrderItem, ReleaseOrderUpdateItem } from 'app/data-sources/release-order';
+import { SchedulingDS, SchedulingItem, SchedulingUpdateItem } from 'app/data-sources/scheduling';
+import { MatCardModule } from '@angular/material/card';
+import { BookingItem } from 'app/data-sources/booking';
 
 @Component({
   selector: 'app-release-order-details',
@@ -85,6 +87,7 @@ import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
+    MatCardModule,
   ]
 })
 export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -165,7 +168,15 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
     MUST_MORE_THAN_ZERO: 'COMMON-FORM.MUST-MORE-THAN-ZERO',
     RO_NOTES: 'COMMON-FORM.RO-NOTES',
-    RELEASE_ORDER_DATE: 'COMMON-FORM.RELEASE-ORDER-DATE'
+    RELEASE_ORDER_DATE: 'COMMON-FORM.RELEASE-ORDER-DATE',
+    ADD_TANK: 'COMMON-FORM.ADD-TANK',
+    REFERENCE: 'COMMON-FORM.REFERENCE',
+    EIR_NO: "COMMON-FORM.EIR-NO",
+    EIR_DATE: "COMMON-FORM.EIR-DATE",
+    CAPACITY: "COMMON-FORM.CAPACITY",
+    TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
+    YARD: "COMMON-FORM.YARD",
+    ADD: "COMMON-FORM.ADD",
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -175,16 +186,14 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   roForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
-  releaseOrderItem: ReleaseOrderItem = new ReleaseOrderItem();
-  storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  schedulingList = new MatTableDataSource<SchedulingItem>();
-  schedulingSelection = new SelectionModel<SchedulingItem>(true, []);
+  releaseOrderItem: ReleaseOrderUpdateItem = new ReleaseOrderUpdateItem();
+  //schedulingList = new MatTableDataSource<SchedulingUpdateItem>();
+  schedulingList: SchedulingUpdateItem[] = [];
+  schedulingSelection = new SelectionModel<SchedulingUpdateItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
-  unit_typeList: TankItem[] = []
-  clean_statusCv: CodeValuesItem[] = []
-  repairCv: CodeValuesItem[] = []
-  yesnoCv: CodeValuesItem[] = []
-  tankStatusCvList: CodeValuesItem[] = []
+  soStatusCvList: CodeValuesItem[] = []
+  yardCvList: CodeValuesItem[] = [];
+  tankStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
 
@@ -195,7 +204,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tDS: TankDS;
   roDS: ReleaseOrderDS;
   schedulingDS: SchedulingDS;
-  
+
   startDateRO = new Date();
 
   constructor(
@@ -237,8 +246,30 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       ro_no: [''],
       ro_notes: [''],
       haulier: [''],
-      sotList: ['']
+      scheduling: this.fb.array([])
     });
+  }
+
+  createTankGroup(tank: any): UntypedFormGroup {
+    return this.fb.group({
+      sot_guid: [tank.guid],
+      tank_no: [tank.tank_no],
+      customer_company: [this.ccDS.displayName(tank.storing_order?.customer_company)],
+      eir_no: [tank.in_gate?.eir_no],
+      eir_dt: [tank.in_gate?.eir_dt],
+      capacity: [tank.in_gate?.in_gate_survey?.capacity],
+      tare_weight: [tank.in_gate?.in_gate_survey?.tare_weight],
+      tank_status_cv: [tank.tank_status_cv],
+      yard_cv: [tank.in_gate?.yard_cv],
+      reference: [''],
+      release_job_no: [''],
+      booked: [this.checkBooking(tank.booking)],
+      scheduled: [this.checkScheduling(tank.scheduling)],
+    });
+  }
+
+  getSchedulingArray(): UntypedFormArray {
+    return this.roForm?.get('scheduling') as UntypedFormArray;
   }
 
   initializeFilter() {
@@ -251,7 +282,6 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.subs.sink = this.roDS.getReleaseOrderByID(this.ro_guid).subscribe(data => {
         if (this.roDS.totalCount > 0) {
           this.releaseOrderItem = data[0];
-          console.log(this.releaseOrderItem);
           this.populateROForm(this.releaseOrderItem);
         }
       });
@@ -261,27 +291,20 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       });
     }
     const queries = [
-      { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
-      { alias: 'repairCv', codeValType: 'REPAIR_OPTION' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
+      { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'soStatusCv', codeValType: 'SO_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.subs.sink = this.tDS.loadItems().subscribe(data => {
-      this.unit_typeList = data
-    });
 
-    this.cvDS.connectAlias('repairCv').subscribe(data => {
-      this.repairCv = addDefaultSelectOption(data, "No Repair");
-    });
-    this.cvDS.connectAlias('clean_statusCv').subscribe(data => {
-      this.clean_statusCv = addDefaultSelectOption(data, "Unknown");;
-    });
-    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
-      this.yesnoCv = data;
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      this.yardCvList = data;
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
+    });
+    this.cvDS.connectAlias('soStatusCv').subscribe(data => {
+      this.soStatusCvList = data;
     });
   }
 
@@ -291,14 +314,14 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       const where: any = { ro_guid: { eq: this.ro_guid } };
       this.subs.sink = this.sotDS.reloadStoringOrderTanks(where).subscribe(data => {
         if (data.length > 0) {
-          this.storingOrderItem.storing_order_tank = data;
-          this.populateSOT(data);
+          //this.storingOrderItem.storing_order_tank = data;
+          //this.populateSOT(data);
         }
       });
     }
   }
 
-  populateROForm(ro: ReleaseOrderItem): void {
+  populateROForm(ro: ReleaseOrderUpdateItem): void {
     this.roForm!.patchValue({
       guid: ro.guid,
       release_dt: Utility.convertDate(ro.release_dt),
@@ -311,12 +334,30 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  populateSOT(scheduling: SchedulingItem[]) {
-    if (scheduling?.length) {
-      const list: SchedulingItem[] = scheduling.map((item: Partial<SchedulingItem> | undefined) => new SchedulingItem(item));
-      console.log(list);
-      this.updateData(list);
-    }
+  populateSOT(scheduling: SchedulingUpdateItem[]) {
+    const schedulingFormArray = this.roForm!.get('scheduling') as UntypedFormArray;
+    schedulingFormArray.clear();  // Clear existing items
+
+    scheduling.forEach(item => {
+      schedulingFormArray.push(this.createSchedulingFormGroup(item));
+    });
+  }
+
+  createSchedulingFormGroup(item: SchedulingUpdateItem): UntypedFormGroup {
+    return this.fb.group({
+      guid: [item.guid],
+      reference: [item.reference],
+      release_order_guid: [item.release_order_guid],
+      sot_guid: [item.sot_guid],
+      tank_no: [item.storing_order_tank?.tank_no],
+      release_job_no: [item.storing_order_tank?.release_job_no],
+      action: [item.action],
+    });
+  }
+
+  updateData(newData: SchedulingItem[]): void {
+    this.schedulingList = [...newData];
+    this.schedulingSelection.clear();
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -345,27 +386,24 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const addSot = row ?? new StoringOrderTankItem();
-    addSot.so_guid = addSot.so_guid ?? this.ro_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
-        item: row ? row : addSot,
+        item: row,
         action: 'new',
         translatedLangText: this.translatedLangText,
+        customer_company_guid: this.releaseOrderItem.customer_company_guid,
         populateData: {
-          unit_typeList: this.unit_typeList,
-          repairCv: this.repairCv,
-          clean_statusCv: this.clean_statusCv,
-          yesnoCv: this.yesnoCv
+          tankStatusCvList: this.tankStatusCvList,
+          yardCvList: this.yardCvList,
         },
         index: -1,
-        sotExistedList: this.schedulingList.data
+        sotExistedList: this.schedulingList
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const data = [...this.schedulingList.data];
+        const data = [...this.schedulingList];
         const newItem = new StoringOrderTankItem({
           ...result.item,
           actions: ['new']
@@ -424,51 +462,41 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     // });
   }
 
-  cancelSelectedRows(row: StoringOrderTankItem[]) {
-    // //this.preventDefault(event);  // Prevents the form submission
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     action: "cancel",
-    //     item: [...row],
-    //     translatedLangText: this.translatedLangText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const data = [...this.schedulingList.data];
-    //     result.item.forEach((newItem: StoringOrderTankItem) => {
-    //       // Find the index of the item in data with the same id
-    //       const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+  cancelSelectedRows(row: SchedulingItem[]) {
+    //this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      data: {
+        action: "cancel",
+        item: [...row],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const data = [...this.schedulingList];
+        result.item.forEach((newItem: SchedulingItem) => {
+          // Find the index of the item in data with the same id
+          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
-    //       // If the item is found, update the properties
-    //       if (index !== -1) {
-    //         data[index] = {
-    //           ...data[index],
-    //           ...newItem,
-    //           actions: Array.isArray(data[index].actions!)
-    //             ? [...new Set([...data[index].actions!, 'cancel'])]
-    //             : ['cancel']
-    //         };
-    //       }
-    //     });
-    //     this.updateData(data);
-    //     // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
-    //     // this.sotDS.cancelStoringOrderTank(sot).subscribe(result => {
-    //     //   if ((result?.data?.cancelStoringOrderTank ?? 0) > 0) {
-    //     //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-    //     //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-    //     //     this.reloadSOT();
-    //     //   }
-    //     // });
-    //   }
-    // });
+          // If the item is found, update the properties
+          if (index !== -1) {
+            data[index] = {
+              ...data[index],
+              ...newItem,
+              action: 'cancel'
+            };
+          }
+        });
+        this.updateData(data);
+      }
+    });
   }
 
   rollbackSelectedRows(row: StoringOrderTankItem[]) {
@@ -561,7 +589,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.contextMenu.openMenu();
     }
   }
-  
+
   onEnterKey(event: Event) {
     event.preventDefault();
     // Add any additional logic if needed
@@ -570,55 +598,49 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   onSOFormSubmit() {
     this.roForm!.get('sotList')?.setErrors(null);
     if (this.roForm?.valid) {
-      if (!this.schedulingList.data.length) {
-        this.roForm.get('sotList')?.setErrors({ required: true });
-      } else {
-        let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
-        so.customer_company_guid = this.roForm.value['customer_company_guid'];
-        so.haulier = this.roForm.value['haulier'];
-        so.so_notes = this.roForm.value['so_notes'];
+      // if (!this.schedulingList.length) {
+      //   this.roForm.get('sotList')?.setErrors({ required: true });
+      // } else {
+      //   let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
+      //   so.customer_company_guid = this.roForm.value['customer_company_guid'];
+      //   so.haulier = this.roForm.value['haulier'];
+      //   so.so_notes = this.roForm.value['so_notes'];
 
-        const sot: StoringOrderTankGO[] = this.schedulingList.data.map((item: Partial<StoringOrderTankItem>) => {
-          // Ensure action is an array and take the last action only
-          const actions = Array.isArray(item!.actions) ? item!.actions : [];
-          const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
+      //   const sot: StoringOrderTankGO[] = this.schedulingList.map((item: Partial<StoringOrderTankItem>) => {
+      //     // Ensure action is an array and take the last action only
+      //     const actions = Array.isArray(item!.actions) ? item!.actions : [];
+      //     const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
 
-          return new StoringOrderTankUpdateSO({
-            ...item,
-            action: latestAction // Set the latest action as the single action
-          });
-        });
-        console.log('so Value', so);
-        console.log('sot Value', sot);
-        if (so.guid) {
-          this.soDS.updateStoringOrder(so, sot).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.updateStoringOrder);
-          });
-        } else {
-          this.soDS.addStoringOrder(so, sot).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.addStoringOrder);
-          });
-        }
-      }
+      //     return new StoringOrderTankUpdateSO({
+      //       ...item,
+      //       action: latestAction // Set the latest action as the single action
+      //     });
+      //   });
+      //   console.log('so Value', so);
+      //   console.log('sot Value', sot);
+      //   if (so.guid) {
+      //     this.soDS.updateStoringOrder(so, sot).subscribe(result => {
+      //       console.log(result)
+      //       this.handleSaveSuccess(result?.data?.updateStoringOrder);
+      //     });
+      //   } else {
+      //     this.soDS.addStoringOrder(so, sot).subscribe(result => {
+      //       console.log(result)
+      //       this.handleSaveSuccess(result?.data?.addStoringOrder);
+      //     });
+      //   }
+      // }
     } else {
       console.log('Invalid soForm', this.roForm?.value);
     }
   }
 
-  updateData(newData: SchedulingItem[]): void {
-    this.schedulingList.data = [...newData];
-    this.schedulingSelection.clear();
-  }
-
   cancelItem(event: Event, row: StoringOrderTankItem) {
-    // this.id = row.id;
-    // if (this.sotSelection.hasValue()) {
-    //   this.cancelSelectedRows(this.sotSelection.selected)
-    // } else {
-    //   this.cancelSelectedRows([row])
-    // }
+    if (this.schedulingSelection.hasValue()) {
+      this.cancelSelectedRows(this.schedulingSelection.selected)
+    } else {
+      this.cancelSelectedRows([row])
+    }
   }
 
   rollbackItem(event: Event, row: StoringOrderTankItem) {
@@ -693,11 +715,6 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 
-  getLastAction(actions: string[]): string {
-    if (!actions?.length) return "";
-    return actions[actions.length - 1];
-  }
-
   getBadgeClass(action: string): string {
     switch (action) {
       case 'new':
@@ -713,11 +730,29 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  getRepairDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.repairCv);
+  checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
+    if (!schedulings || !schedulings.length) return false;
+    if (schedulings.some(schedule => schedule.status_cv !== "CANCELED"))
+      return true;
+    return false;
   }
 
-  getYesNoDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.yesnoCv);
+  checkBooking(bookings: BookingItem[] | undefined): boolean {
+    if (!bookings || !bookings.length) return false;
+    if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
+      return true;
+    return false;
+  }
+
+  // getRepairDescription(codeValType: string): string | undefined {
+  //   return this.cvDS.getCodeDescription(codeValType, this.repairCv);
+  // }
+
+  // getYesNoDescription(codeValType: string): string | undefined {
+  //   return this.cvDS.getCodeDescription(codeValType, this.yesnoCv);
+  // }
+
+  getSoStatusDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.soStatusCvList);
   }
 }

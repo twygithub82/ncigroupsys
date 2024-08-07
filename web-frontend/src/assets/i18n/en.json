@@ -406,7 +406,8 @@
     "LOLO-COST":"LOLO Cost per Lift",
     "STORAGE-COST":"Storage Cost",
     "FREE-STORAGE":"Free Storage Days",
-    "ASSIGNED":"has been assigned to others"
+    "ASSIGNED":"has been assigned to others",
+    "ADD-TANK":"Add Tank"
     
   },
   "CLEAN-PROCEDURES": {

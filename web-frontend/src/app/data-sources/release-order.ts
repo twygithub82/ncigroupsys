@@ -7,7 +7,7 @@ import { CustomerCompanyItem } from './customer-company';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
-import { SchedulingItem } from './scheduling';
+import { SchedulingItem, SchedulingUpdateItem } from './scheduling';
 
 export class ReleaseOrderGO {
   public guid?: string;
@@ -51,6 +51,15 @@ export class ReleaseOrderItem extends ReleaseOrderGO {
   constructor(item: Partial<ReleaseOrderItem> = {}) {
     super(item);
     this.customer_company = item.customer_company;
+    this.scheduling = item.scheduling;
+  }
+}
+
+export class ReleaseOrderUpdateItem extends ReleaseOrderItem {
+  public override scheduling?: SchedulingUpdateItem[];
+
+  constructor(item: Partial<ReleaseOrderItem> = {}) {
+    super(item);
     this.scheduling = item.scheduling;
   }
 }
@@ -120,6 +129,7 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
         scheduling {
           guid
           status_cv
+          reference
           storing_order_tank {
             certificate_cv
             clean_status_cv
