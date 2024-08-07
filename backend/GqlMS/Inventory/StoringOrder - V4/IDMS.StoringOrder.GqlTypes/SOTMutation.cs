@@ -22,7 +22,7 @@ namespace IDMS.StoringOrder.GqlTypes
     {
         public async Task<int> CancelStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
             [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, 
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
         public async Task<int> RollbackStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
-          [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] ApplicationInventoryDBContext context)
+          [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, ApplicationInventoryDBContext context)
         {
             try
             {

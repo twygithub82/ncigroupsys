@@ -18,7 +18,7 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseFiltering]
         [UseSorting(typeof(SOSorter))]
         public IQueryable<storing_order> QueryStoringOrder([Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
         [UseProjection]
         public IQueryable<storing_order> QueryStoringOrderById(string id, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseFiltering]
         [UseSorting]
         public IQueryable<storing_order_tank> QueryStoringOrderTank([Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             try
             {

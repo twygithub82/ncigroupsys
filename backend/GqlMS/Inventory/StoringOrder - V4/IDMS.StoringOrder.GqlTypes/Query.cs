@@ -17,7 +17,7 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseFiltering]
         [UseSorting]
         public IQueryable<customer_company> QueryCustomerCompany([Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseFiltering]
         [UseSorting]
         public IQueryable<customer_company_contact_person> QueryContactPerson([Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<tank> QueryTank([Service] IHttpContextAccessor httpContextAccessor, [Service] ApplicationInventoryDBContext context)
+        public IQueryable<tank> QueryTank([Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseFiltering]
         [UseSorting]
         public IQueryable<code_values> QueryCodeValuesByType(CodeValuesRequest codeValuesType, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseFiltering]
         [UseSorting]
         public IQueryable<code_values> QueryCodeValues([Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             try
             {

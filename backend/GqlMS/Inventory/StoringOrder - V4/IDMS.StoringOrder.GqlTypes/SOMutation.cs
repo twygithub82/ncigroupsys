@@ -18,7 +18,7 @@ namespace IDMS.StoringOrder.GqlTypes
     {
         public async Task<int> AddStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
             [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
         public async Task<int> UpdateStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
             [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
-            [Service] ApplicationInventoryDBContext context)
+            ApplicationInventoryDBContext context)
         {
             bool isSendNotification = false;
 
@@ -206,7 +206,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
         public async Task<int> CancelStoringOrder(List<StoringOrderRequest> so, [Service] ITopicEventSender sender,
           [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
-          [Service] ApplicationInventoryDBContext context)
+          ApplicationInventoryDBContext context)
         {
             try
             {
@@ -277,7 +277,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
         public async Task<int> DeleteStoringOrder(string[] soGuids, [Service] ITopicEventSender sender,
         [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
-        [Service] ApplicationInventoryDBContext context)
+        ApplicationInventoryDBContext context)
         {
 
             try
