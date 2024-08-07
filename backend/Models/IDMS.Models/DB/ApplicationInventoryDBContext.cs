@@ -43,8 +43,6 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
 
             modelBuilder.Entity<InGateWithTank>()
                 .Ignore(e => e.haulier);
-
-      
         }
     }
 }

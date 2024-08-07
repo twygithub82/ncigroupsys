@@ -10,13 +10,15 @@ using IDMS.StoringOrder.Model;
 using HotChocolate.Utilities;
 using Microsoft.Extensions.Configuration;
 using IDMS.Models;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
     public class SOMutation
     {
         public async Task<int> AddStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
-            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config)
+            [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
+            [Service] ApplicationInventoryDBContext context)
         {
             try
             {
@@ -69,101 +71,9 @@ namespace IDMS.StoringOrder.GqlTypes
             }
         }
 
-        //public async Task<int> UpdateStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
-        //    AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
-        //{
-        //    //id updateSO dont have guid i need to call insert command
-        //    //for soTanks, if have guid and delete_dt > 1 need to call update (soft delete)
-        //    //return null;
-        //    try
-        //    {
-        //        //if updateSO have guid then i need call update command
-        //        storing_order? soDomain = await context.storing_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
-        //                                .Include(s => s.storing_order_tank)
-        //                                .FirstOrDefaultAsync(s => s.guid == so.guid);
-        //        if (soDomain == null)
-        //        {
-        //            throw new GraphQLException(new Error("Storing Order not found.", "NOT_FOUND"));
-        //        }
-
-        //        string user = "admin";
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-
-
-        //        // Update child entities (StoringOrderTanks)
-        //        foreach (var tnk in soTanks)
-        //        {
-        //            // Find the corresponding existing child entity or add a new one if necessary
-        //            var existingTank = soDomain.storing_order_tank.FirstOrDefault(t => t.guid == tnk.guid && (t.delete_dt == null || t.delete_dt == 0));
-
-        //            if (existingTank == null)
-        //            {
-        //                //For Insert
-        //                // If the child entity does not exist, add a new one
-        //                storing_order_tank newTank = mapper.Map<StoringOrderTankRequest, storing_order_tank>(tnk);
-        //                newTank.guid = Util.GenerateGUID(); // Ensure the foreign key is set
-        //                newTank.create_dt = currentDateTime;
-        //                newTank.create_by = user;
-        //                context.storing_order_tank.Add(newTank);
-        //                continue;
-        //            }
-
-        //            //var updatedTank = RemoveNullProperties(tnk);
-        //            mapper.Map(tnk, existingTank);
-        //            if (tnk.delete_dt > 0)
-        //            {
-        //                existingTank.delete_dt = currentDateTime;
-        //                existingTank.update_dt = currentDateTime;
-        //                existingTank.update_by = user;
-        //            }
-        //            else
-        //            {
-        //                //For Update
-        //                //existingTank = updatedTank;
-        //                existingTank.update_dt = currentDateTime;
-        //                existingTank.update_by = user;
-        //                //existingTank.clean_status = tnk.clean_status;
-        //                //existingTank.certificate = tnk.certificate;
-        //            }
-        //        }
-
-
-        //        if (so.delete_dt > 0)
-        //        {
-        //            soDomain.delete_dt = currentDateTime;
-        //            soDomain.update_dt = currentDateTime;
-        //            soDomain.update_by = user;
-        //        }
-        //        else
-        //        {
-        //            //soDomain.status_cv = so.status_cv;
-        //            soDomain.customer_company_guid = so.customer_company_guid;
-        //            soDomain.haulier = so.haulier;
-        //            //soDomain.so_no = so.so_no;
-        //            soDomain.so_notes = so.so_notes;
-        //            soDomain.update_dt = currentDateTime;
-        //            soDomain.update_by = user;
-        //        }
-
-        //        //soDomain.storing_order_tank = storingOrderTanks;
-        //        // context.storing_order.Update(soDomain);
-        //        var res = await context.SaveChangesAsync();
-
-        //        //TODO
-        //        //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
-        //        //await topicEventSender.SendAsync(updateCourseTopic, course);
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-        //    }
-        //}
-
-
-
         public async Task<int> UpdateStoringOrder(StoringOrderRequest so, List<StoringOrderTankRequest> soTanks,
-            AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config)
+            [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
+            [Service] ApplicationInventoryDBContext context)
         {
             bool isSendNotification = false;
 
@@ -295,7 +205,8 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
         public async Task<int> CancelStoringOrder(List<StoringOrderRequest> so, [Service] ITopicEventSender sender,
-          AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config)
+          [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
+          [Service] ApplicationInventoryDBContext context)
         {
             try
             {
@@ -365,7 +276,8 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
         public async Task<int> DeleteStoringOrder(string[] soGuids, [Service] ITopicEventSender sender,
-        AppDbContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config)
+        [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
+        [Service] ApplicationInventoryDBContext context)
         {
 
             try
@@ -471,7 +383,7 @@ namespace IDMS.StoringOrder.GqlTypes
         //    return res;
         //}
 
-        private async void VoidInGateEIR(string[] sotGuids, string user, long currentDateTime, AppDbContext context)
+        private async void VoidInGateEIR(string[] sotGuids, string user, long currentDateTime, ApplicationInventoryDBContext context)
         {
             var InGates = context.in_gate.Where(i => sotGuids.Contains(i.so_tank_guid) && (i.delete_dt == null || i.delete_dt == 0));
             foreach (var ig in InGates)

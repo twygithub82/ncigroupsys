@@ -4,11 +4,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using IDMS.StoringOrder.GqlTypes.Repo;
 using HotChocolate.Data;
 using AutoMapper;
 using IDMS.StoringOrder.Model.Request;
 using IDMS.Models.Inventory;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 
 namespace IDMS.StoringOrder.Application
 {
@@ -29,8 +29,13 @@ namespace IDMS.StoringOrder.Application
             string connectionString = builder.Configuration.GetConnectionString("default");
             //builder.Services.AddPooledDbContextFactory<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             
-            builder.Services.AddDbContext<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+            //builder.Services.AddDbContext<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
 
+            builder.Services.AddDbContextPool<ApplicationInventoryDBContext>(o =>
+            {
+                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+                o.EnableSensitiveDataLogging(false);
+            });
 
             var mappingConfig = new MapperConfiguration(cfg =>
             {
@@ -71,7 +76,7 @@ namespace IDMS.StoringOrder.Application
 
             builder.Services.AddGraphQLServer()
                             .InitializeOnStartup()
-                            .RegisterDbContext<AppDbContext>(DbContextKind.Synchronized)
+                            //.RegisterDbContext<AppDbContext>(DbContextKind.Synchronized)
                             //.RegisterDbContext<RODbContext>(DbContextKind.Synchronized)
                             //.RegisterDbContext<BookDbContext>(DbContextKind.Synchronized)
                             .AddQueryType<Query>()

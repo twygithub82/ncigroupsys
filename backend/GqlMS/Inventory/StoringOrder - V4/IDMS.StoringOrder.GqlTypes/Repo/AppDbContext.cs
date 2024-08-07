@@ -53,16 +53,16 @@ namespace IDMS.StoringOrder.GqlTypes.Repo
                 .HasForeignKey(x => x.customer_guid);
             });
 
-            modelBuilder.Entity<storing_order_tank>(e =>
-            {
-                //e.HasKey(t => t.guid);
-                //e.Ignore(e => e.in_gate);
+            //modelBuilder.Entity<storing_order_tank>(e =>
+            //{
+            //    //e.HasKey(t => t.guid);
+            //    //e.Ignore(e => e.in_gate);
 
-                e.HasOne(t => t.in_gate).WithOne(t => t.tank).HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
-                e.HasOne(st => st.storing_order).WithMany(st => st.storing_order_tank)       // Navigation property in StoringOrderTank
-                .HasForeignKey(st => st.so_guid);
+            //    e.HasOne(t => t.in_gate).WithOne(t => t.tank).HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
+            //    e.HasOne(st => st.storing_order).WithMany(st => st.storing_order_tank)       // Navigation property in StoringOrderTank
+            //    .HasForeignKey(st => st.so_guid);
 
-            });
+            //});
 
             modelBuilder.Entity<tariff_cleaning>(e =>
             {

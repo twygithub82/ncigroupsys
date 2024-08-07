@@ -45,11 +45,11 @@ namespace IDMS.Models.Inventory
         public long? etr_dt { get; set; }
         public string? status_cv { get; set; }
         public string? tank_status_cv { get; set; }
-
-        [GraphQLName("in_gate")]
-        public InGateWithTank? in_gate { get; set; }
         public storing_order? storing_order { get; set; }
         public tariff_cleaning? tariff_cleaning { get; set; }
+
+        [GraphQLName("in_gate")]
+        public IEnumerable<InGateWithTank>? in_gate { get; set; }
         public IEnumerable<booking>? booking { get; set; }
         public IEnumerable<scheduling>? scheduling { get; set; }    
 

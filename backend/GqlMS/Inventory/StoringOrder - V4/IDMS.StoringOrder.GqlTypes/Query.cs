@@ -1,16 +1,12 @@
 ﻿using HotChocolate;
-using IDMS.StoringOrder.GqlTypes.Repo;
 using HotChocolate.Types;
 using Microsoft.AspNetCore.Http;
-using AutoMapper;
-using HotChocolate.Resolvers;
 using IDMS.Models.Master;
 using IDMS.Models.Shared;
 using IDMS.StoringOrder.Model.Request;
-using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
-using IDMS.Models.Tariff;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
@@ -20,7 +16,8 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<customer_company> QueryCustomerCompany(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<customer_company> QueryCustomerCompany([Service] IHttpContextAccessor httpContextAccessor,
+            [Service] ApplicationInventoryDBContext context)
         {
             try
             {
@@ -36,7 +33,8 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<customer_company_contact_person> QueryContactPerson(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<customer_company_contact_person> QueryContactPerson([Service] IHttpContextAccessor httpContextAccessor,
+            [Service] ApplicationInventoryDBContext context)
         {
             try
             {
@@ -52,7 +50,7 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<tank> QueryTank(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<tank> QueryTank([Service] IHttpContextAccessor httpContextAccessor, [Service] ApplicationInventoryDBContext context)
         {
             try
             {
@@ -67,12 +65,13 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<code_values> QueryCodeValuesByType(CodeValuesRequest codeValuesType, AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<code_values> QueryCodeValuesByType(CodeValuesRequest codeValuesType, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] ApplicationInventoryDBContext context)
         {
             try
             {
-                var retCodeValues = context.code_values.Where(c => c.code_val_type.Equals(codeValuesType.code_val_type) &
-                                                              (c.delete_dt == null || c.delete_dt == 0 ));
+                var retCodeValues = context.code_values.Where(c => c.code_val_type.Equals(codeValuesType.code_val_type) &&
+                                                              (c.delete_dt == null || c.delete_dt == 0));
                 if (retCodeValues.Count() <= 0)
                 {
                     throw new GraphQLException(new Error("Code values type not found.", "NOT_FOUND"));
@@ -90,11 +89,15 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<code_values> QueryCodeValues(AppDbContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<code_values> QueryCodeValues([Service] IHttpContextAccessor httpContextAccessor,
+            [Service] ApplicationInventoryDBContext context)
         {
             try
             {
-                return context.code_values.Where(c=>c.delete_dt == null | c.delete_dt == 0);
+                var result = context.code_values.Where(c => c.delete_dt == null || c.delete_dt == 0);
+                return result;
+
+                //return context.code_values.Where(c => c.delete_dt == null || c.delete_dt == 0);
                 //return context.code_values.Select(c => new CodeValuesRequest()
                 //{
                 //    Guid = c.guid,
