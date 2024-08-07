@@ -27,7 +27,7 @@ namespace IDMS.Models.Inventory
         public string? remarks { get; set; }
         //public storing_order_tank? tank { get; set; } = null;
 
-        public in_gate_survey? in_gate_survey { get; set; }
+        public in_gate_survey in_gate_survey { get; set; }
     }
 
     public class InGateWithTank : in_gate
