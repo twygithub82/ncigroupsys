@@ -1,5 +1,4 @@
 using IDMS.InGate.Class;
-
 using IDMS.InGate.GqlTypes;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

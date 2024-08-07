@@ -1,0 +1,11 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=127.0.0.1;Database=idms;Uid=root;Pwd=P@ssw0rd;"
+    //"DefaultConnection": "Server=127.0.0.1;Database=idms;Uid=root;Pwd=P@ssw0rd;"
+  },
+  "Setting": {
+    "notificationUrl": "https://tlx-idms-global-notification.azurewebsites.net/graphql/"
+    //"InputDate": "2024-08-01" //yyyy-MM-dd
+  },
+  "AllowedHosts": "*"
+}

@@ -11,21 +11,21 @@ using Microsoft.AspNetCore.Http;
 using IDMS.Booking.Model;
 using IDMS.Models.Shared;
 using HotChocolate.Types;
+using Microsoft.Extensions.Configuration;
 
 namespace IDMS.Booking.GqlTypes
 {
     public class BookingMutation
     {
         public async Task<int> AddBooking(BookingRequest booking, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender)
+            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
             try
             {
-                //var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
-                string user = "admin";
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                IList<booking> bookings = new List<booking>();  
+                IList<booking> bookings = new List<booking>();
                 foreach (var guid in booking.sot_guid)
                 {
                     var newBooking = new booking();
@@ -57,13 +57,13 @@ namespace IDMS.Booking.GqlTypes
         }
 
         public async Task<int> UpdateBooking(List<BookingRequest> bookingList, [Service] IHttpContextAccessor httpContextAccessor,
-         [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+         [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)//[Service] IMapper mapper)
         {
             try
             {
-                //var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var res = 0;
-                string user = "admin";
+                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (bookingList.Any())
@@ -101,13 +101,13 @@ namespace IDMS.Booking.GqlTypes
         }
 
         public async Task<int> DeleteBooking(List<string> bkGuids, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper)
+            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config) //[Service] IMapper mapper)
         {
 
             try
             {
                 var res = 0;
-                string user = "admin";
+                string user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var bookings = context.booking.Where(b => bkGuids.Contains(b.guid) && b.delete_dt == null);

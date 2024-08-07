@@ -8,6 +8,7 @@ using IDMS.Models;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using static IDMS.Booking.Model.StatusConstant;
 
 namespace IDMS.Booking.GqlTypes
@@ -16,12 +17,12 @@ namespace IDMS.Booking.GqlTypes
     public class ReleaseOrderMutation
     {
         public async Task<int> AddReleaseOrder(ReleaseOrderRequest releaseOrder, List<SchedulingRequest> schedulings, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender)
+            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
             try
             {
-                //var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
-                string user = "admin";
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var newRO = new release_order();
@@ -40,7 +41,7 @@ namespace IDMS.Booking.GqlTypes
                 newRO.release_dt = releaseOrder.release_dt;
 
                 IList<scheduling> schedulingsList = new List<scheduling>();
-                string[] sotGuids = schedulings.Select(s => s.storing_order_tank.guid).ToArray();
+                string[] sotGuids = schedulings.Select(s => s.sot_guid).ToArray();
                 List<storing_order_tank> sotLists = context.storing_order_tank.Where(s => sotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
 
                 foreach (var sch in schedulings)
@@ -50,13 +51,13 @@ namespace IDMS.Booking.GqlTypes
                     newScheduling.create_by = user;
                     newScheduling.create_dt = currentDateTime;
 
-                    newScheduling.sot_guid = sch.storing_order_tank.guid;
+                    newScheduling.sot_guid = sch.sot_guid;
                     newScheduling.release_order_guid = newRO.guid;
                     newScheduling.status_cv = ROStatus.PENDING;
                     newScheduling.reference = sch.reference;
                     schedulingsList.Add(newScheduling);
 
-                    storing_order_tank? sot = sotLists.Find(s => s.guid == sch.storing_order_tank.guid);
+                    storing_order_tank? sot = sotLists.Find(s => s.guid == sch.sot_guid);
                     sot.release_job_no = sch.storing_order_tank.release_job_no;
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
@@ -76,40 +77,96 @@ namespace IDMS.Booking.GqlTypes
             }
         }
 
-        public async Task<int> UpdateReleaseOrder(List<ReleaseOrderRequest> roList, [Service] IHttpContextAccessor httpContextAccessor,
-         [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender)
+        public async Task<int> UpdateReleaseOrder(ReleaseOrderRequest releaseOrders, List<SchedulingRequest> schedulings, [Service] IHttpContextAccessor httpContextAccessor,
+         [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
             try
             {
-                //var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
+                if (releaseOrders == null)
+                {
+                    throw new GraphQLException(new Error("Release Order not found.", "NOT_FOUND"));
+                }
+
+                bool isSendNotification = false;
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var res = 0;
-                string user = "admin";
+                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                if (roList.Any())
+                IList<scheduling> newSchedulingsList = new List<scheduling>();
+                string[] sotGuids = schedulings.Select(s => s.sot_guid).ToArray();
+                string[] schGuids = schedulings.Select(s => s.guid).ToArray();
+                List<storing_order_tank> sotLists = context.storing_order_tank.Where(s => sotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
+                List<scheduling> existingSchList = context.scheduling.Where(s => schGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
+
+                foreach (var sch in schedulings)
                 {
-                    string[] roGuids = roList.Select(b => b.guid).ToArray();
-                    var existingROList = context.release_order.Where(s => roGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0));
+                    if (string.IsNullOrEmpty(sch?.action))
+                        continue;
 
-                    foreach (var ro in roList)
+                    storing_order_tank? sot = sotLists.Find(s => s.guid == sch.sot_guid);
+                    if (TankAction.NEW.EqualsIgnore(sch?.action))
                     {
-                        // Find the corresponding existing child entity or add a new one if necessary
-                        var releaseOrder = existingROList.Where(b => b.guid == ro.guid).FirstOrDefault();
-                        if (releaseOrder != null)
-                        {
-                            releaseOrder.update_by = user;
-                            releaseOrder.update_dt = currentDateTime;
+                        //For Insert
+                        var newScheduling = new scheduling();
+                        newScheduling.guid = Util.GenerateGUID();
+                        newScheduling.create_by = user;
+                        newScheduling.create_dt = currentDateTime;
 
-                            //bk.surveyor_guid = ro.surveyor_guid;
-                            releaseOrder.remarks = ro.remarks;
-                            releaseOrder.ro_notes = ro.ro_notes;
-                            releaseOrder.status_cv = ro.status_cv;
-                            releaseOrder.release_dt = ro.release_dt;
-                            //releaseOrder.action_dt = ro.action_dt;
-                        }
+                        newScheduling.sot_guid = sch.sot_guid;
+                        newScheduling.release_order_guid = releaseOrders.guid;
+                        newScheduling.status_cv = ROStatus.PENDING;
+                        newScheduling.reference = sch.reference;
+                        newSchedulingsList.Add(newScheduling);
+
+                        //storing_order_tank? sot = sotLists.Find(s => s.guid == sch.sot_guid);
+                        sot.release_job_no = sch.storing_order_tank.release_job_no;
+                        sot.update_by = user;
+                        sot.update_dt = currentDateTime;
+                        isSendNotification = true;
+                        continue;
                     }
-                    res = await context.SaveChangesAsync();
+
+                    if (TankAction.EDIT.EqualsIgnore(sch?.action))
+                    {
+                        sot.release_job_no = sch.storing_order_tank.release_job_no;
+                        sot.update_by = user;
+                        sot.update_dt = currentDateTime;
+
+                        var extSch = existingSchList.Find(s => s.guid == sch.guid);
+                        extSch.reference = sch.reference;
+                        extSch.update_by = user;
+                        extSch.update_dt = currentDateTime;
+                        //context.storing_order_tank.Update(newTank);
+                        continue;
+                    }
+
+                    //if (SOTankAction.ROLLBACK.EqualsIgnore(tnk?.action))
+                    //{
+                    //    existingTank.update_by = user;
+                    //    existingTank.update_dt = currentDateTime;
+                    //    existingTank.status_cv = SOTankStatus.WAITING;
+                    //    rollbackSOTGuids.Add(tnk.guid);
+                    //    isSendNotification = true;
+                    //    continue;
+                    //}
+
+                    if (TankAction.CANCEL.EqualsIgnore(sch?.action))
+                    {
+                        var extSch = existingSchList.Find(s => s.guid == sch.guid);
+                        extSch.status_cv = ROStatus.CANCELED;
+                        extSch.update_by = user;
+                        extSch.update_dt = currentDateTime;
+                        extSch.delete_dt = currentDateTime;
+
+                        sot.release_job_no = "";
+                        sot.update_by = user;
+                        sot.update_dt = currentDateTime;
+                        isSendNotification = true;
+                        continue;
+                    }
                 }
+
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;

@@ -227,8 +227,6 @@ namespace IDMS.InGate.GqlTypes
                             id = id,
                             module_cv = module_cv,
                             message = message,
-
-
                         }
                     };
 
@@ -241,8 +239,6 @@ namespace IDMS.InGate.GqlTypes
 
                     // Serialize the payload to JSON
                     var jsonPayload = JsonConvert.SerializeObject(requestPayload);
-
-
 
                     HttpClient _httpClient = new();
                     //string queryStatement = JsonConvert.SerializeObject(query);

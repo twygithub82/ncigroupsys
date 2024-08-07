@@ -29,7 +29,7 @@ namespace IDMS.InGateSurvey.GqlTypes
             try
             {
 
-                //GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.in_gate_survey.Where(i => i.delete_dt == null || i.delete_dt == 0)
                                                 .Include(i => i.in_gate);
             }

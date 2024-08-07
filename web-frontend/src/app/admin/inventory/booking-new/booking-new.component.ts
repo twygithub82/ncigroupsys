@@ -44,6 +44,8 @@ import { MatCardModule } from '@angular/material/card';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { SchedulingItem } from 'app/data-sources/scheduling';
+import { BookingItem } from 'app/data-sources/booking';
 
 @Component({
   selector: 'app-booking-new',
@@ -142,6 +144,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
     REPAIR_COMPLETION_DATE: 'COMMON-FORM.REPAIR-COMPLETION-DATE',
+    BOOKED: 'COMMON-FORM.BOOKED',
+    SCHEDULED: 'COMMON-FORM.SCHEDULED'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -508,5 +512,19 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   displayDate(input: number | null | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input as number);
+  }
+
+  checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
+    if (!schedulings || !schedulings.length) return false;
+    if (schedulings.some(schedule => schedule.status_cv !== "CANCELED"))
+      return true;
+    return false;
+  }
+
+  checkBooking(bookings: BookingItem[] | undefined): boolean {
+    if (!bookings || !bookings.length) return false;
+    if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
+      return true;
+    return false;
   }
 }

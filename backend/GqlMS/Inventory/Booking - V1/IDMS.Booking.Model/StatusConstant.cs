@@ -23,5 +23,13 @@ namespace IDMS.Booking.Model
             public const string PROCESSING = "PROCESSING";
             public const string COMPLETED = "COMPLETED";
         }
+
+        public static class TankAction
+        {
+            public const string NEW = "NEW";
+            public const string EDIT = "EDIT";
+            public const string ROLLBACK = "ROLLBACK";
+            public const string CANCEL = "CANCEL";
+        }
     }
 }

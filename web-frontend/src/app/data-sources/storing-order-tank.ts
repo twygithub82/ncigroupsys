@@ -157,6 +157,41 @@ const GET_STORING_ORDER_TANKS = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANKS_IN_GATE = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        job_no
+        guid
+        tank_no
+        so_guid
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+        }
+        storing_order {
+          so_no
+          so_notes
+          customer_company {
+            code
+            guid
+            name
+            alias
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 const GET_STORING_ORDER_TANKS_FOR_BOOKING = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -391,6 +426,29 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  searchStoringOrderTanksInGate(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_IN_GATE,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>D:\Useful Doc\Personal\Project\ncigroupsys\backend\GqlMS\Inventory\Booking\IDMS.Booking.Application\Properties\PublishProfiles\tlx-idms-booking - Web Deploy1.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\Useful Doc\Personal\Project\ncigroupsys\backend\GqlMS\Inventory\Booking - V1\IDMS.Booking.Application\Properties\PublishProfiles\tlx-idms-booking - Web Deploy2.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>

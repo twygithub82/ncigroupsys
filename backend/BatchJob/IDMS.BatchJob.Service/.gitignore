@@ -14,4 +14,4 @@ backend/GqlMS/Inventory/StoringOrder - V4/IDMS.StoringOrder/Properties/PublishPr
 backend/GqlMS/Inventory/Booking - V1/IDMS.Booking.Application/IDMS.Booking.Application.csproj.user
 backend/GqlMS/Inventory/Booking - V1/IDMS.Booking.Application/IDMS.Booking.Application.csproj.user
 AzureTLX.txt
-/backend/BatchJob/IDMS.BatchJob.Service/Config/app_config.json
+app_config.json

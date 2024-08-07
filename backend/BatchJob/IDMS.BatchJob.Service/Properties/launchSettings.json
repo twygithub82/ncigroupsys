@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "IDMS.BatchJob.Service": {
+      "commandName": "Project"
+    }
+  }
+}
