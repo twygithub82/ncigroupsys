@@ -25,15 +25,15 @@ namespace IDMS.InGate.GqlTypes
         // [Authorize]
         // [UseDbContext(typeof(ApplicationDBContext))]
         // public async Task<List<EntityClass_InGate>> QueryInGates([Service] ApplicationDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor , EntityClass_InGate queryInGate)
-      //  [UseDbContext(typeof(ApplicationDBContext))]
-        [UsePaging(IncludeTotalCount =true,DefaultPageSize =10)]
-       // [UseProjection]
+        //  [UseDbContext(typeof(ApplicationDBContext))]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        // [UseProjection]
         [UseFiltering(typeof(IDMS.Models.Filters.in_gate_filtertype))]
         [UseSorting]
-        public  IQueryable<InGateWithTank> QueryInGates([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<InGateWithTank> QueryInGates([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             IQueryable<InGateWithTank> query = null;
-           // List<EntityClass_InGate> retInGates = new List<EntityClass_InGate>();
+            // List<EntityClass_InGate> retInGates = new List<EntityClass_InGate>();
             try
             {
 
@@ -45,16 +45,16 @@ namespace IDMS.InGate.GqlTypes
                     .Include(s => s.tank.storing_order.customer_company)
                     .Include(s => s.tank.tariff_cleaning.cleaning_method)
                     .Include(s => s.tank.tariff_cleaning.cleaning_category)
-                    .Include(s=>s.in_gate_survey) ;
-                  // .Include(s=>s.tank.tariff_cleaning.cleaning_method);
-                foreach(var q in query)
+                    .Include(s => s.in_gate_survey);
+                // .Include(s=>s.tank.tariff_cleaning.cleaning_method);
+                foreach (var q in query)
                 {
                     if (q.tank != null)
                         if (q.tank.storing_order != null)
                             q.haulier = q.tank.storing_order.haulier;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 throw;
