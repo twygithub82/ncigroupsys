@@ -679,10 +679,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       console.log('igs Value', igs);
       console.log('ig Value', ig);
       if (igs.guid) {
-        // this.igsDS.addInGateSurvey(igs).subscribe(result => {
-        //   console.log(result)
-        //   this.handleSaveSuccess(result?.data?.updateStoringOrder);
-        // });
+        this.igsDS.updateInGateSurvey(igs, ig).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateInGateSurvey);
+        });
       } else {
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)

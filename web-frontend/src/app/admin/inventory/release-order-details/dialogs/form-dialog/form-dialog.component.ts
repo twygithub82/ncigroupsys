@@ -31,6 +31,7 @@ import { SchedulingItem } from 'app/data-sources/scheduling';
 import { BookingItem } from 'app/data-sources/booking';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { CodeValuesDS } from 'app/data-sources/code-values';
+import { InGateDS } from 'app/data-sources/in-gate';
 
 export interface DialogData {
   action?: string;
@@ -90,6 +91,8 @@ export class FormDialogComponent {
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
+  igDS: InGateDS;
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -102,6 +105,7 @@ export class FormDialogComponent {
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo)
     this.action = data.action!;
     this.dialogTitle = 'Add Tank';
     this.performSearch(10, 0);
@@ -233,7 +237,7 @@ export class FormDialogComponent {
       and: [
         { status_cv: { eq: "ACCEPTED" } },
         { tank_status_cv: { neq: "RO_GENERATED" } },
-        { in_gate: { delete_dt: { eq: null } } },
+        { in_gate: { some: { delete_dt: { eq: null } } } },
         { storing_order: { customer_company_guid: { eq: this.data.customer_company_guid } } },
         {
           or: [

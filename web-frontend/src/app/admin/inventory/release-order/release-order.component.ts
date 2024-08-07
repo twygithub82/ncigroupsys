@@ -147,7 +147,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
-  releaseOrderStatusCvList: CodeValuesItem[] = [];
+  roStatusCvList: CodeValuesItem[] = [];
   schedulingStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
@@ -325,7 +325,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'releaseOrderStatusCv', codeValType: 'RO_STATUS' }
+      { alias: 'roStatusCv', codeValType: 'RO_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -335,8 +335,8 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
-    this.cvDS.connectAlias('releaseOrderStatusCv').subscribe(data => {
-      this.releaseOrderStatusCvList = data;
+    this.cvDS.connectAlias('roStatusCv').subscribe(data => {
+      this.roStatusCvList = data;
     });
   }
 
@@ -542,10 +542,10 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   getReleaseOrderStatusDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.releaseOrderStatusCvList);
+    return this.cvDS.getCodeDescription(codeValType, this.roStatusCvList);
   }
 
   getSchedulingStatusDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.releaseOrderStatusCvList);
+    return this.cvDS.getCodeDescription(codeValType, this.roStatusCvList);
   }
 }

@@ -293,17 +293,17 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   populateInGateForm(sot: StoringOrderTankItem): void {
     this.inGateForm!.patchValue({
       haulier: sot.storing_order?.haulier,
-      vehicle_no: sot.in_gate?.vehicle_no,
-      driver_name: sot.in_gate?.driver_name,
-      eir_dt: sot.in_gate?.create_dt ? Utility.convertDate(sot.in_gate?.create_dt) : new Date(),
+      vehicle_no: this.igDS.getInGateItem(sot.in_gate)?.vehicle_no,
+      driver_name: this.igDS.getInGateItem(sot.in_gate)?.driver_name,
+      eir_dt: this.igDS.getInGateItem(sot.in_gate)?.create_dt ? Utility.convertDate(this.igDS.getInGateItem(sot.in_gate)?.create_dt) : new Date(),
       job_no: sot.job_no,
-      remarks: sot.in_gate?.remarks,
+      remarks: this.igDS.getInGateItem(sot.in_gate)?.remarks,
       last_cargo_guid: sot.last_cargo_guid,
       last_cargo: this.lastCargoControl,
       purpose_storage: sot.purpose_storage,
       open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
-      yard_cv: '',
-      preinspection_cv: '',
+      yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv,
+      preinspection_cv: this.igDS.getInGateItem(sot.in_gate)?.preinspection_cv,
       lolo_cv: 'BOTH' // default BOTH
     });
 
@@ -384,8 +384,11 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
           this.inGateForm!.get('last_cargo_guid')!.setValue(value.guid);
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-          this.updateValidators(this.last_cargoList);
+          if (JSON.stringify(data) !== JSON.stringify(this.last_cargoList)) {
+            this.last_cargoList = data;
+            this.updateValidators(this.last_cargoList);
+            this.lastCargoControl.updateValueAndValidity();
+          }
         });
       })
     ).subscribe();
@@ -454,9 +457,23 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     event.preventDefault(); // Prevents the form submission
     this.inGateForm!.patchValue({
       haulier: this.storingOrderTankItem!.storing_order?.haulier,
-      vehicle_no: this.storingOrderTankItem!.in_gate?.vehicle_no || '',
-      driver_name: this.storingOrderTankItem!.in_gate?.driver_name || ''
+      vehicle_no: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.vehicle_no || '',
+      driver_name: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.driver_name || '',
+      eir_dt: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.create_dt ? Utility.convertDate(this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.create_dt) : new Date(),
+      job_no: this.storingOrderTankItem!.job_no,
+      remarks: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.remarks,
+      purpose_storage: this.storingOrderTankItem!.purpose_storage,
+      open_on_gate: this.storingOrderTankItem!.tariff_cleaning?.open_on_gate_cv,
+      yard_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.yard_cv,
+      preinspection_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.preinspection_cv,
+      lolo_cv: 'BOTH' // default BOTH
     });
+    
+    if (this.storingOrderTankItem!.tariff_cleaning) {
+      this.lastCargoControl.setValue(this.storingOrderTankItem!.tariff_cleaning);
+    } else {
+      this.lastCargoControl.reset(); // Reset the control if there's no tariff_cleaning
+    }
   }
 
   updateValidators(validOptions: any[]) {

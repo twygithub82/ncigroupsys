@@ -248,7 +248,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       where.eir_dt = { contains: this.searchForm!.value['eir_status'] };
     }
 
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no']) {
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || this.searchForm!.value['so_no']) {
       const sotSearch: any = {};
 
       // if (this.searchForm!.value['last_cargo']) {
@@ -266,19 +266,38 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       // if (this.searchForm!.value['customer_code']) {
       //   where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
       // }
+
+      if (this.searchForm!.value['so_no']) {
+        const soSearch: any = {};
+        soSearch.so_no = { contains: this.searchForm!.value['so_no'] };
+        sotSearch.storing_order = soSearch;
+      }
       where.tank = sotSearch;
     }
 
     this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    // this.subs.sink = this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
+    //   this.inGateList = data;
+    //   this.endCursor = this.igDS.pageInfo?.endCursor;
+    //   this.startCursor = this.igDS.pageInfo?.startCursor;
+    //   this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
+    //   this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
+    // });
+  }
 
-    // TODO :: should order by accepted dt, where to find?
-    this.subs.sink = this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
-      this.inGateList = data;
-      this.endCursor = this.igDS.pageInfo?.endCursor;
-      this.startCursor = this.igDS.pageInfo?.startCursor;
-      this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
-    });
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.inGateList = data;
+        this.endCursor = this.igDS.pageInfo?.endCursor;
+        this.startCursor = this.igDS.pageInfo?.startCursor;
+        this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
+      });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
   }
 
   onPageEvent(event: PageEvent) {
@@ -308,16 +327,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       }
     }
 
-    this.pageIndex = pageIndex;
-    this.pageSize = pageSize;
-
-    this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
-      this.inGateList = data;
-      this.endCursor = this.igDS.pageInfo?.endCursor;
-      this.startCursor = this.igDS.pageInfo?.startCursor;
-      this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
-    });
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {

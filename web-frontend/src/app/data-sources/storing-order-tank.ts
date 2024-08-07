@@ -85,7 +85,7 @@ export class StoringOrderTankGO extends StoringOrderTank {
 
 export class StoringOrderTankItem extends StoringOrderTankGO {
   public tariff_cleaning?: TariffCleaningItem;
-  public in_gate?: InGateItem;
+  public in_gate?: InGateItem[];
   public booking?: BookingItem[];
   public scheduling?: SchedulingItem[];
   public actions?: string[] = [];

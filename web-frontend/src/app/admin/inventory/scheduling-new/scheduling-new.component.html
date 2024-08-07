@@ -215,24 +215,24 @@
                     ccDS.displayName(row.storing_order?.customer_company)}}
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.EIR_NO}}:</span> {{row.in_gate?.eir_no}}
+                    <span class="font-bold">{{translatedLangText.EIR_NO}}:</span> {{igDS.getInGateItem(row.in_gate)?.eir_no}}
                   </div>
                   <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span> {{row.in_gate?.eir_dt}}
+                    <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span> {{igDS.getInGateItem(row.in_gate)?.eir_dt}}
                   </div>
                   <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.CAPACITY}}:</span> {{
-                    row.in_gate?.in_gate_survey?.capacity}}
+                      igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
                   </div>
                   <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.TARE_WEIGHT}}:</span> {{
-                    row.in_gate?.in_gate_survey?.tare_weight}}
+                      igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
                   </div>
                   <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
                     <span class="font-bold">{{translatedLangText.STATUS}}:</span> {{getTankStatusDescription(row.tank_status_cv)}}
                   </div>
                   <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.YARD}}:</span> {{getYardDescription(row.in_gate?.yard_cv)}}
+                    <span class="font-bold">{{translatedLangText.YARD}}:</span> {{getYardDescription(igDS.getInGateItem(row.in_gate)?.yard_cv)}}
                   </div>
                 </div>
                 <!-- <mat-divider></mat-divider>

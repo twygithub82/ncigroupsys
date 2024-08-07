@@ -46,6 +46,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { BookingItem } from 'app/data-sources/booking';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
+import { InGateDS } from 'app/data-sources/in-gate';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -163,6 +164,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   schedulingDS: SchedulingDS;
+  igDS: InGateDS;
 
   sotList: StoringOrderTankItem[] = [];
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
@@ -179,7 +181,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   selectedCompany?: string = "";
 
   lastSearchCriteria: any;
-  lastOrderBy: any = {};
+  lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
   pageIndex = 0;
   pageSize = 10;
   endCursor: string | undefined = undefined;
@@ -202,6 +204,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -445,7 +448,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       and: [
         { status_cv: { eq: "ACCEPTED" } },
         { tank_status_cv: { neq: "RO_GENERATED" } },
-        { in_gate: { delete_dt: { eq: null } } }
+        { in_gate: { some: { delete_dt: { eq: null } } } }
       ]
     };
 
