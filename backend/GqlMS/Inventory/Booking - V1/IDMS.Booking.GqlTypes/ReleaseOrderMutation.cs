@@ -77,16 +77,11 @@ namespace IDMS.Booking.GqlTypes
             }
         }
 
-        public async Task<int> UpdateReleaseOrder(ReleaseOrderRequest releaseOrders, List<SchedulingRequest> schedulings, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<int> UpdateReleaseOrder(ReleaseOrderRequest releaseOrder, List<SchedulingRequest> schedulings, [Service] IHttpContextAccessor httpContextAccessor,
          [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
             try
             {
-                if (releaseOrders == null)
-                {
-                    throw new GraphQLException(new Error("Release Order not found.", "NOT_FOUND"));
-                }
-
                 bool isSendNotification = false;
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var res = 0;
@@ -114,13 +109,13 @@ namespace IDMS.Booking.GqlTypes
                         newScheduling.create_dt = currentDateTime;
 
                         newScheduling.sot_guid = sch.sot_guid;
-                        newScheduling.release_order_guid = releaseOrders.guid;
+                        newScheduling.release_order_guid = releaseOrder.guid;
                         newScheduling.status_cv = ROStatus.PENDING;
                         newScheduling.reference = sch.reference;
                         newSchedulingsList.Add(newScheduling);
 
                         //storing_order_tank? sot = sotLists.Find(s => s.guid == sch.sot_guid);
-                        sot.release_job_no = sch.storing_order_tank.release_job_no;
+                        sot.release_job_no = sch?.storing_order_tank?.release_job_no;
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
                         isSendNotification = true;
@@ -128,28 +123,17 @@ namespace IDMS.Booking.GqlTypes
                     }
 
                     if (TankAction.EDIT.EqualsIgnore(sch?.action))
-                    {
-                        sot.release_job_no = sch.storing_order_tank.release_job_no;
-                        sot.update_by = user;
-                        sot.update_dt = currentDateTime;
-
+                    {   //For Update
                         var extSch = existingSchList.Find(s => s.guid == sch.guid);
                         extSch.reference = sch.reference;
                         extSch.update_by = user;
                         extSch.update_dt = currentDateTime;
-                        //context.storing_order_tank.Update(newTank);
+
+                        sot.release_job_no = sch.storing_order_tank.release_job_no;
+                        sot.update_by = user;
+                        sot.update_dt = currentDateTime;
                         continue;
                     }
-
-                    //if (SOTankAction.ROLLBACK.EqualsIgnore(tnk?.action))
-                    //{
-                    //    existingTank.update_by = user;
-                    //    existingTank.update_dt = currentDateTime;
-                    //    existingTank.status_cv = SOTankStatus.WAITING;
-                    //    rollbackSOTGuids.Add(tnk.guid);
-                    //    isSendNotification = true;
-                    //    continue;
-                    //}
 
                     if (TankAction.CANCEL.EqualsIgnore(sch?.action))
                     {
@@ -157,18 +141,39 @@ namespace IDMS.Booking.GqlTypes
                         extSch.status_cv = ROStatus.CANCELED;
                         extSch.update_by = user;
                         extSch.update_dt = currentDateTime;
-                        extSch.delete_dt = currentDateTime;
+                        //extSch.delete_dt = currentDateTime;
 
-                        sot.release_job_no = "";
-                        sot.update_by = user;
-                        sot.update_dt = currentDateTime;
+                        //No need to change any info for SOT
+                        //sot.release_job_no = "";
+                        //sot.update_by = user;
+                        //sot.update_dt = currentDateTime;
                         isSendNotification = true;
                         continue;
                     }
                 }
 
+                //Update Release Order details here
+                var existingRO = context.release_order.Find(releaseOrder.guid);
+                if (existingRO != null) 
+                {
+                    existingRO.update_by = user;
+                    existingRO.update_dt = currentDateTime; 
+
+                    existingRO.ro_notes = releaseOrder.ro_notes;
+                    existingRO.haulier = releaseOrder.haulier;
+                    existingRO.remarks = releaseOrder.remarks;
+                    //existingRO.status_cv = ROStatus.PENDING;
+                    //existingRO.customer_company_guid = releaseOrder.customer_company_guid;
+                    //existingRO.ro_generated = false;
+                    existingRO.booking_dt = releaseOrder.booking_dt;
+                    existingRO.release_dt = releaseOrder.release_dt;
+                }
+                else
+                    throw new GraphQLException(new Error("Release Order not found.", "NOT_FOUND"));
+
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                res = await context.SaveChangesAsync();
                 return res;
             }
             catch (Exception ex)

@@ -15,7 +15,7 @@ namespace IDMS.Booking.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<scheduling> QueryScheduling([Service] ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<scheduling> QueryScheduling(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {

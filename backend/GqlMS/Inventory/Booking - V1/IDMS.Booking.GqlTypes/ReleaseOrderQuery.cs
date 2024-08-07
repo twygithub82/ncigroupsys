@@ -16,7 +16,7 @@ namespace IDMS.Booking.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<release_order> QueryReleaseOrder([Service] ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<release_order> QueryReleaseOrder(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {

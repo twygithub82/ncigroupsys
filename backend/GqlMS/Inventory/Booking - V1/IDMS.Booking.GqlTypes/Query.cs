@@ -16,7 +16,7 @@ namespace IDMS.Booking.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<surveyor> QuerySurveyor([Service] ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<surveyor> QuerySurveyor(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
