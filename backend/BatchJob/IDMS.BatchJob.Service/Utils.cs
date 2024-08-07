@@ -10,7 +10,7 @@ namespace IDMS.BatchJob.Service
 {
     internal class Utils
     {
-        public static async Task AddAndTriggerStaffNotification(string notificationUrl, int id, string module_cv, string message)
+        public static async Task AddAndTriggerStaffNotification(string notificationUrl, int id, string module_cv, string message, string notification_uid)
         {
             try
             {
@@ -31,6 +31,7 @@ namespace IDMS.BatchJob.Service
                             id = id,
                             module_cv = module_cv,
                             message = message,
+                            notification_uid = notification_uid
                         }
                     };
 
