@@ -114,7 +114,8 @@ namespace IDMS.InGate.GqlTypes
                    .Include(s => s.tank.tariff_cleaning.cleaning_method)
                    .Include(s => s.tank.tariff_cleaning.cleaning_category).Count();
                     GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
-                    GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in");
+                    string notification_uid = $"in-gate-{newInGate.eir_no}";
+                    GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in", notification_uid);
                 }
             }
             catch

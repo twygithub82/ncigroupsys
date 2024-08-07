@@ -205,7 +205,7 @@ namespace IDMS.InGate.GqlTypes
         }
 
 
-        public static async Task AddAndTriggerStaffNotification([Service] IConfiguration config, int id, string module_cv, string message)
+        public static async Task AddAndTriggerStaffNotification([Service] IConfiguration config, int id, string module_cv, string message,string notification_uid)
         {
             try
             {
@@ -227,6 +227,7 @@ namespace IDMS.InGate.GqlTypes
                             id = id,
                             module_cv = module_cv,
                             message = message,
+                            notification_uid = notification_uid
                         }
                     };
 
