@@ -20,6 +20,6 @@ namespace IDMS.Models.Notification
 
         public string? module_cv { get; set; }
 
-
+        public string? notification_uid {  get; set; }
     }
 }
