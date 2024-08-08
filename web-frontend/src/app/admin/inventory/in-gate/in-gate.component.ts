@@ -220,14 +220,6 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
       };
       this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
       this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
-      // Execute the search
-      // this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(where).subscribe(data => {
-      //   this.sotList = data;
-      //   this.endCursor = this.sotDS.pageInfo?.endCursor;
-      //   this.startCursor = this.sotDS.pageInfo?.startCursor;
-      //   this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-      //   this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
-      // });
     }
   }
 

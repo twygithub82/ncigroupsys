@@ -280,7 +280,6 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   search() {
     const where: any = {
-      //status_cv: { eq: "YET_TO_SURVEY" }
     };
 
     if (this.searchForm!.value['tank_no'] || this.searchForm!.value['last_cargo'] || this.searchForm!.value['customer_code']) {
