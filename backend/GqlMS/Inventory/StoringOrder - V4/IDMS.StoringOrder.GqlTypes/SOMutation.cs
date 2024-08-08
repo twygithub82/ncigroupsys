@@ -43,7 +43,10 @@ namespace IDMS.StoringOrder.GqlTypes
                     newTank.so_guid = soDomain.guid;
                     newTank.create_dt = currentDateTime;
                     newTank.create_by = user;
-                    newTank.status_cv = SOTankStatus.WAITING;
+                    if (SOTankAction.PREORDER.EqualsIgnore(tnk?.action))
+                        newTank.status_cv = SOTankStatus.PREORDER;
+                    else
+                        newTank.status_cv = SOTankStatus.WAITING;
                     newTank.preinspect_job_no = tnk.job_no;
                     newTank.liftoff_job_no = tnk.job_no;
                     newTank.lifton_job_no = tnk.job_no;
