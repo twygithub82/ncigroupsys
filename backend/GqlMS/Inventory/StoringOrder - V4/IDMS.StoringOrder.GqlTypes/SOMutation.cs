@@ -150,6 +150,16 @@ namespace IDMS.StoringOrder.GqlTypes
                         isSendNotification = true;
                         continue;
                     }
+
+                    if (SOTankAction.PREORDER.EqualsIgnore(tnk?.action))
+                    {
+                        existingTank.update_by = user;
+                        existingTank.update_dt = currentDateTime;
+                        existingTank.status_cv = SOTankStatus.PREORDER;
+                        //context.storing_order_tank.Update(newTank);
+                        isSendNotification = true;
+                        continue;
+                    }
                 }
 
                 int tnkAlreadyAcceptedCount = 0;
