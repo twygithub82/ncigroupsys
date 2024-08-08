@@ -170,7 +170,7 @@
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{row.eir_status_cv}}
+                    <span class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{getEirStatusDescription(row.eir_status_cv)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_cargo">
