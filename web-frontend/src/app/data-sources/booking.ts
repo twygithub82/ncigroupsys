@@ -314,7 +314,7 @@ export class BookingDS extends BaseDataSource<BookingItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchBooking(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<BookingItem[]> {
+  searchBooking(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<BookingItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo

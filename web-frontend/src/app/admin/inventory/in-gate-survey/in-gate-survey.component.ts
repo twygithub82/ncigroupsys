@@ -277,17 +277,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
     this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
-    // this.subs.sink = this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
-    //   this.inGateList = data;
-    //   this.endCursor = this.igDS.pageInfo?.endCursor;
-    //   this.startCursor = this.igDS.pageInfo?.startCursor;
-    //   this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-    //   this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
-    // });
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.inGateList = data;
         this.endCursor = this.igDS.pageInfo?.endCursor;
@@ -302,7 +295,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
-    let first = pageSize;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;

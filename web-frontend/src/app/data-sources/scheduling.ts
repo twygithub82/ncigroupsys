@@ -320,7 +320,7 @@ export class SchedulingDS extends BaseDataSource<SchedulingItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchBooking(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<SchedulingItem[]> {
+  searchBooking(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<SchedulingItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo

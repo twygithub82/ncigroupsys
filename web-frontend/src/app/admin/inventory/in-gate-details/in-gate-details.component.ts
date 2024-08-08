@@ -405,6 +405,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       let sot = new StoringOrderTankGO(this.storingOrderTankItem);
       sot.storing_order = so;
       let ig = new InGateGO({
+        guid: this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.guid,
+        eir_no: this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.eir_no,
+        eir_dt: this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.eir_dt,
         so_tank_guid: this.storingOrderTankItem?.guid,
         driver_name: this.inGateForm.value['driver_name'],
         vehicle_no: this.inGateForm.value['vehicle_no'],
@@ -413,12 +416,18 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         yard_cv: this.inGateForm.value['yard_cv'],
         preinspection_cv: this.inGateForm.value['preinspection_cv'],
         lolo_cv: this.inGateForm.value['lolo_cv'],
+        haulier: this.inGateForm.value['haulier']
       })
-      ig.haulier = this.inGateForm.value['haulier'];
       console.log(ig);
-      this.igDS.addInGate(ig).subscribe(result => {
-        this.handleSaveSuccess(result?.data?.addInGate);
-      });
+      if (ig.guid) {
+        this.igDS.updateInGate(ig).subscribe(result => {
+          this.handleSaveSuccess(result?.data?.updateInGate);
+        });
+      } else {
+        this.igDS.addInGate(ig).subscribe(result => {
+          this.handleSaveSuccess(result?.data?.addInGate);
+        });
+      }
     } else {
       console.log('Invalid inGateForm', this.inGateForm?.value);
     }
