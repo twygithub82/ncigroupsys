@@ -268,6 +268,7 @@ export const GET_IN_GATE_BY_ID = gql`
           btm_dis_comp_cv
           btm_dis_valve_cv
           btm_dis_valve_spec_cv
+          btm_valve_brand_cv
           buffer_plate
           capacity
           cladding_cv
@@ -309,6 +310,7 @@ export const GET_IN_GATE_BY_ID = gql`
           top_dis_comp_cv
           top_dis_valve_cv
           top_dis_valve_spec_cv
+          top_valve_brand_cv
           update_by
           update_dt
           walkway_cv
@@ -367,7 +369,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
       .query<any>({
         query: GET_IN_GATE_BY_ID,
         variables: { where },
-        fetchPolicy: 'network-only' // Disable caching for this query
+        fetchPolicy: 'no-cache' // Disable caching for this query
       })
       .pipe(
         // Handle the response and errors
