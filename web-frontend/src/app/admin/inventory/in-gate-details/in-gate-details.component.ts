@@ -238,6 +238,12 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   public loadData() {
+    // this.igDS.getInGateByID('140ca688ba104671b05d137e0d8a285f').subscribe(data=>{
+    //   if(this.igDS.totalCount>0)
+    //   {
+
+    //   }
+    // })
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
