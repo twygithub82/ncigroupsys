@@ -340,7 +340,8 @@ export class InGateDS extends BaseDataSource<InGateItem> {
     return this.apollo
       .query<any>({
         query: SEARCH_IN_GATE_FOR_SURVEY_QUERY,
-        variables: { where, order, first, after, last, before }
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),
