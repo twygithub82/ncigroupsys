@@ -179,7 +179,7 @@ namespace IDMS.InGate.GqlTypes
                         so_guid = so_tank.so_guid;
                     }
 
-                    context.in_gate.Update(InGate);
+                    //context.in_gate.Update(InGate);
 
 
                     if (!string.IsNullOrEmpty(so_guid))
