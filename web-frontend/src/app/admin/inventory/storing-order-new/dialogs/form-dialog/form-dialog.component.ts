@@ -148,17 +148,21 @@ export class FormDialogComponent {
       } else {
         this.storingOrderTankForm.get('purpose')?.setErrors(null);
         let actions = Array.isArray(this.storingOrderTank.actions!) ? [...this.storingOrderTank.actions!] : [];
-        if (this.action === 'new') {
-          if (this.isPreOrder) {
+        if (this.isPreOrder) {
+          if (!actions.includes('preorder')) {
             actions = [...new Set([...actions, 'preorder'])];
-          } else {
-            actions = [...new Set([...actions, 'new'])];
           }
         } else {
-          if (this.isPreOrder) {
-            actions = [...new Set([...actions, 'preorder'])];
+          // remove preorder action
+          actions = actions.filter(action => action !== 'preorder');
+          if (this.action === 'new') {
+            if (!actions.includes('new')) {
+              actions = [...new Set([...actions, 'new'])];
+            }
           } else {
-            actions = [...new Set([...actions, 'edit'])];
+            if (!actions.includes('new')) {
+              actions = [...new Set([...actions, 'edit'])];
+            }
           }
         }
         var sot: StoringOrderTankItem = {
@@ -219,17 +223,16 @@ export class FormDialogComponent {
 
     this.storingOrderTankForm?.get('tank_no')?.valueChanges.subscribe(value => {
       this.isPreOrder = false; // Reset PREORDER flag
-    
       if (value) {
         const uppercaseValue = value.toUpperCase();
         this.storingOrderTankForm.get('tank_no')?.setValue(uppercaseValue, { emitEvent: false });
-    
+
         const isValid = Utility.verifyIsoContainerCheckDigit(uppercaseValue);
         if (!isValid) {
           this.storingOrderTankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
         } else {
           const formattedTankNo = Utility.formatContainerNumber(uppercaseValue);
-    
+
           // Handle new entry or edit
           if (this.action !== 'edit' || (this.action === 'edit' && formattedTankNo !== this.storingOrderTank.tank_no)) {
             const foundInExistedList = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
@@ -237,7 +240,7 @@ export class FormDialogComponent {
               this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
             } else {
               this.storingOrderTankForm.get('tank_no')?.setErrors(null);
-    
+
               this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe(data => {
                 if (data.length > 0) {
                   const hasWaiting = data.some(item => item.status_cv === 'WAITING');
