@@ -1,4 +1,5 @@
 
+
 .table-container {
   max-height: 400px; /* Adjust height as needed */
   overflow: auto;
@@ -12,7 +13,11 @@ table.mat-table {
 .mat-cell, .mat-header-cell {
   padding: 8px;
 }
-
+.auto-height {
+  height: auto;
+  max-height: none; /* Ensures there's no max-height limiting the container */
+  overflow: auto;   /* Ensures scrollbars appear if content exceeds container size */
+}
    mat-tab-group {
      width:50vh;
      //height: 70vh;
@@ -49,3 +54,16 @@ td div img:hover {
   .mat-tab-labels{ 
     flex-wrap: wrap;
    }
+   .card {
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    transition: box-shadow 0.3s ease; /* Smooth transition for hover effect */
+  }
+  
+  /* Optional: Add a hover effect */
+  .card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow on hover */
+  }
+

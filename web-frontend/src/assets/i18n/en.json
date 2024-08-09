@@ -116,8 +116,8 @@
         "PACKAGE-DEPOT": "Depot Cost",
         "PACKAGE-REPAIR": "Repair",
         "PACKAGE-BUFFER": "Buffer Cleaning",
-        "PACKAGE-CLEANING-NEW": "New PACKAGE Cleaning",
-        "PACKAGE-CLEANING-EDIT": "Edit PACKAGE Cleaning"
+        "PACKAGE-CLEANING-NEW": "New Package Cleaning",
+        "PACKAGE-CLEANING-EDIT": "Edit Package Cleaning"
       }
     },
     "CLEANING-MANAGEMENT": {
@@ -195,6 +195,7 @@
     "CUSTOMER-CODE": "Customer Code",
     "COMPANY-NAME": "Company Name",
     "CUSTOMER-NAME": "Customer Name",
+    "CUSTOMER-COMPANY":"Customer Company",
     "SO-NO": "SO No.",
     "NO-OF-TANKS": "No. of Tanks",
     "CONTACT-PERSON": "Contact Person",
@@ -409,7 +410,12 @@
     "ASSIGNED":"has been assigned to others",
     "ADD-TANK":"Add Tank",
     "EMAIL":"Email",
-    "PHONE":"Phone"
+    "PHONE":"Phone",
+    "AGREEMENT-DUE-DATE":"Agreement Due Date",
+    "BILLING-PROFILE":"Billing Profile",
+    "STANDARD-COST":"Standard Cost",
+    "CUSTOMER-COST":"Customer Cost",
+    "STORAGE-CALCULATE-BY":"Storage Calculate By"
     
   },
   "CLEAN-PROCEDURES": {

@@ -21,7 +21,13 @@ namespace IDMS.InGate.GqlTypes
     public class InGate_QueryType
     {
 
-
+        public void Ping([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            if (context != null)
+            {
+                context.in_gate.First();
+            }
+        }
         // [Authorize]
         // [UseDbContext(typeof(ApplicationDBContext))]
         // public async Task<List<EntityClass_InGate>> QueryInGates([Service] ApplicationDBContext context,[Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor , EntityClass_InGate queryInGate)

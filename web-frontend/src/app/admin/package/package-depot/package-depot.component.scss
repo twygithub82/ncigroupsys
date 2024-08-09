@@ -11,3 +11,9 @@
     margin-left: 20px ;
     
   }
+
+  .auto-height {
+    height: auto;
+    max-height: none; /* Ensures there's no max-height limiting the container */
+    overflow: auto;   /* Ensures scrollbars appear if content exceeds container size */
+  }

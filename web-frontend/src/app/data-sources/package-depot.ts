@@ -11,11 +11,16 @@ import { TankItem } from './tank';
 import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
 import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
-export class TariffDepotGO {
+import { CustomerCompanyItem } from './customer-company';
+import { TariffDepotItem } from './tariff-depot';
+
+export class PackageDepotGO {
   public guid?: string;
   public profile_name?: string;
   public description?: string;
   public preinspection_cost?: number;
+  public remarks?: string;
+  public storage_cal_cv?:string;
   public lolo_cost?: number;
   public storage_cost?: number;
   public free_storage?: number;
@@ -24,8 +29,9 @@ export class TariffDepotGO {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+ 
 
-  constructor(item: Partial<TariffDepotGO> = {}) {
+  constructor(item: Partial<PackageDepotGO> = {}) {
     this.guid = item.guid;
     if (!this.guid) this.guid = '';
     this.profile_name = item.profile_name;
@@ -34,22 +40,24 @@ export class TariffDepotGO {
     this.lolo_cost = item.lolo_cost;
     this.storage_cost = item.storage_cost;
     this.free_storage = item.free_storage;
+    this.remarks=item.remarks;
+    this.storage_cal_cv=item.storage_cal_cv;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+   
   }
 }
 
-export class TariffDepotItem extends TariffDepotGO {
-  public tanks?: TankItem[] = [];
-
-
-  constructor(item: Partial<TariffDepotItem> = {}) {
+export class PackageDepotItem extends PackageDepotGO {
+  public tariff_depot?: TariffDepotItem;
+  public customer_company?:CustomerCompanyItem;
+  constructor(item: Partial<PackageDepotItem> = {}) {
     super(item);
-    this.tanks = item.tanks;
-
+    this.tariff_depot = item.tariff_depot;
+    this.customer_company=item.customer_company;
   }
 }
 
@@ -58,94 +66,71 @@ export interface TariffDepotResult {
   totalCount: number;
 }
 
-const QUERY_TARIFF_CLEAN_UN_NO = gql`
-  query queryTariffCleaning($where: tariff_cleaningFilterInput) {
-    lastCargo: queryTariffCleaning(where: $where) {
-    nodes {
-        alias
-        ban_type_cv
-        cargo
-        class_cv
-        cleaning_category_guid
-        cleaning_method_guid
-        create_by
-        create_dt
-        delete_dt
-        depot_note
-        description
-        flash_point
-        guid
-        hazard_level_cv
-        in_gate_alert
-        nature_cv
-        open_on_gate_cv
-        remarks
-        un_no
-        update_by
-        update_dt
-      
-        }
-      totalCount
-    }
-  }
-`;
-
-export const TARIFF_CLEANING_FRAGMENT = gql`
-  fragment TariffCleaningFields on tariff_cleaning {
-    alias
-    ban_type_cv
-    cargo
-    class_cv
-    cleaning_category_guid
-    cleaning_method_guid
-    create_by
-    create_dt
-    delete_dt
-    depot_note
-    description
-    flash_point
-    guid
-    hazard_level_cv
-    in_gate_alert
-    nature_cv
-    open_on_gate_cv
-    remarks
-    un_no
-    update_by
-    update_dt
-  }
-`;
 
 
 
-export const GET_TARIFF_DEPOT_QUERY_WITH_TANK = gql`
-  query queryTariffDepot($where: tariff_depotFilterInput, $order:[tariff_depotSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
-    tariffDepotResult : queryTariffDepot(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
+
+
+
+export const GET_PACKAGE_DEPOT_QUERY = gql`
+  query queryPackageDepot($where: package_depotFilterInput, $order:[package_depotSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    packageDepotResult : queryPackageDepot(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-        create_by
+      create_by
       create_dt
+      customer_company_guid
       delete_dt
-      description
       free_storage
       guid
       lolo_cost
       preinspection_cost
-      profile_name
+      remarks
+      storage_cal_cv
       storage_cost
+      tariff_depot_guid
       update_by
       update_dt
-      tanks {
+      customer_company {
+        address_line1
+        address_line2
+        agreement_due_dt
+        alias
+        city
+        code
+        country
+        create_by
+        create_dt
+        currency_cv
+        delete_dt
+        description
+        effective_dt
+        email
+        fax
+        guid
+        name
+        phone
+        postal
+        tariff_depot_guid
+        type_cv
+        update_by
+        update_dt
+        website
+      }
+      tariff_depot {
         create_by
         create_dt
         delete_dt
         description
+        free_storage
         guid
-        tariff_depot_guid
-        unit_type
+        lolo_cost
+        preinspection_cost
+        profile_name
+        storage_cost
         update_by
         update_dt
       }
-      }
+    }
       pageInfo {
         endCursor
         hasNextPage
@@ -159,9 +144,9 @@ export const GET_TARIFF_DEPOT_QUERY_WITH_TANK = gql`
 `;
 
 
-export const ADD_TARIFF_DEPOT = gql`
-  mutation addTariffDepot($td: tariff_depotInput!) {
-    addTariffDepot(newTariffDepot: $td)
+export const UPDATE_PACKAGE_DEPOT = gql`
+  mutation updatePackageDepot($pd: package_depotInput!) {
+    updatePackageDepot(updatePackageDepot: $pd)
   }
 `;
 
@@ -172,19 +157,19 @@ export const ADD_TARIFF_DEPOT = gql`
 // `;
 
 
-export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
+export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
   constructor(private apollo: Apollo) {
     super();
   }
   
-  SearchTariffDepot(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffDepotItem[]> {
+  SearchPackageDepot(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<PackageDepotItem[]> {
     this.loadingSubject.next(true);
     if (!last)
       if (!first)
         first = 10;
     return this.apollo
       .query<any>({
-        query: GET_TARIFF_DEPOT_QUERY_WITH_TANK,
+        query: GET_PACKAGE_DEPOT_QUERY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -196,39 +181,26 @@ export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const tariffDepotResult = result.tariffDepotResult || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(tariffDepotResult.nodes);
-          this.pageInfo = tariffDepotResult.pageInfo;
-          this.totalCount = tariffDepotResult.totalCount;
-          return tariffDepotResult.nodes;
+          const packageDepotResult = result.packageDepotResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(packageDepotResult.nodes);
+          this.pageInfo = packageDepotResult.pageInfo;
+          this.totalCount = packageDepotResult.totalCount;
+          return packageDepotResult.nodes;
         })
       );
   }
 
 
 
-  addNewTariffDepot(td: any): Observable<any> {
+  updatePackageDepot(pd: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: ADD_TARIFF_DEPOT,
+      mutation: UPDATE_PACKAGE_DEPOT,
       variables: {
-        td
+        pd
       }
     });
   }
 
 
 
-  //   updateTariffCleaning(tc: any): Observable<any> {
-  //     return this.apollo.mutate({
-  //       mutation: UPDATE_TARIFF_CLEANING,
-  //       variables: {
-  //         tc
-  //       }
-  //     }).pipe(
-  //       catchError((error: ApolloError) => {
-  //         console.error('GraphQL Error:', error);
-  //         return of(0); // Return an empty array on error
-  //       }),
-  //     );
-  //   }
 }

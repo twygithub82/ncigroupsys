@@ -93,7 +93,7 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
     foreach (var service in graphqlServiceSettings)
     {
         services.AddHttpClient(service.Key.ToLower(), client => client.BaseAddress = new Uri(service.Value));
-                
+        
     }
 
     var server = services.AddGraphQLServer();
@@ -103,6 +103,7 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
         try
         {
             server.AddRemoteSchema(service.Key.ToLower());
+            
         }
         catch (Exception ex)
         {
@@ -111,5 +112,6 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
         
     }
    
+    
     // Add other services and configurations as needed
 }

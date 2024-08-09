@@ -54,6 +54,7 @@ import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem }
 import {SearchCriteriaService} from 'app/services/search-criteria.service';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { PackageDepotItem } from 'app/data-sources/package-depot';
 
 @Component({
   selector: 'app-package-depot',
@@ -319,28 +320,34 @@ implements OnInit {
     var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent,{
-      width: '600px',
+      
+      width: '700px',
+      height:'auto',
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItems:rows
+        selectedItem:row
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
       }
         
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          if(result.selectedValue>0)
+         //if (result) {
+          if(result>0)
             {
-              this.handleSaveSuccess(result.selectedValue);
+              this.handleSaveSuccess(result);
               //this.search();
-              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+              //this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
             }
-      }
+      //}
       });
    
   }
 
+  
   
   deleteItem(row: AdvanceTable) {
    
