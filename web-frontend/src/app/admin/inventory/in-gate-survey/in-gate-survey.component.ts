@@ -126,6 +126,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
   inGateList: InGateItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
+  eirStatusCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -180,10 +181,14 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   public loadData() {
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
+    });
+    this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
+      this.eirStatusCvList = data;
     });
     this.search();
   }
@@ -233,7 +238,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
   search() {
     const where: any = {
-      eir_status_cv: { eq: "YET_TO_SURVEY" }
+      //eir_status_cv: { eq: "YET_TO_SURVEY" }
     };
 
     if (this.searchForm!.value['eir_no']) {
@@ -277,17 +282,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
     this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
-    // this.subs.sink = this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
-    //   this.inGateList = data;
-    //   this.endCursor = this.igDS.pageInfo?.endCursor;
-    //   this.startCursor = this.igDS.pageInfo?.startCursor;
-    //   this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-    //   this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
-    // });
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.igDS.loadItems(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.igDS.searchInGateForSurvey(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.inGateList = data;
         this.endCursor = this.igDS.pageInfo?.endCursor;
@@ -302,7 +300,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
-    let first = pageSize;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
@@ -353,6 +351,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
   getPurposeOptionDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  getEirStatusDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.eirStatusCvList);
   }
 
   initializeFilterCustomerCompany() {

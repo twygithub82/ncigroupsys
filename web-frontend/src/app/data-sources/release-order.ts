@@ -251,7 +251,7 @@ export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
     super();
   }
 
-  searchReleaseOrder(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<ReleaseOrderItem[]> {
+  searchReleaseOrder(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ReleaseOrderItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({

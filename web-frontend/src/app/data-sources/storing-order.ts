@@ -218,7 +218,7 @@ export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
     super();
   }
 
-  searchStoringOrder(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderItem[]> {
+  searchStoringOrder(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({

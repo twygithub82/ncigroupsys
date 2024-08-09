@@ -514,7 +514,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       //test_class_cv: ig.test_class_cv,
       //test_dt: ig.test_dt,
       manufacturer_cv: ig.in_gate_survey?.manufacturer_cv,
-      dom_dt: ig.in_gate_survey?.dom_dt,
+      dom_dt: Utility.convertDate(ig.in_gate_survey?.dom_dt),
       cladding_cv: ig.in_gate_survey?.cladding_cv,
       capacity: ig.in_gate_survey?.capacity,
       tare_weight: ig.in_gate_survey?.tare_weight,
@@ -538,7 +538,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         btm_dis_valve_cv: ig.in_gate_survey?.btm_dis_valve_cv,
         btm_dis_valve_spec_cv: ig.in_gate_survey?.btm_dis_valve_spec_cv,
         foot_valve_cv: ig.in_gate_survey?.foot_valve_cv,
-        //btm_brand_cv: ig.in_gate_survey?.btm_brand_cv,
+        btm_valve_brand_cv: ig.in_gate_survey?.btm_valve_brand_cv,
         thermometer: ig.in_gate_survey?.thermometer,
         thermometer_cv: ig.in_gate_survey?.thermometer_cv,
         ladder: ig.in_gate_survey?.ladder,
@@ -548,7 +548,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         top_dis_comp_cv: ig.in_gate_survey?.top_dis_comp_cv,
         top_dis_valve_cv: ig.in_gate_survey?.top_dis_valve_cv,
         top_dis_valve_spec_cv: ig.in_gate_survey?.top_dis_valve_spec_cv,
-        //top_brand_cv: ig.in_gate_survey?.top_brand_cv,
+        top_valve_brand_cv: ig.in_gate_survey?.top_valve_brand_cv,
         airline_valve_cv: ig.in_gate_survey?.airline_valve_cv,
         airline_valve_pcs: ig.in_gate_survey?.airline_valve_pcs,
         airline_valve_dim: ig.in_gate_survey?.airline_valve_dim,
@@ -649,7 +649,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.top_dis_comp_cv = topFormGroup.value['top_dis_comp_cv'];
       igs.top_dis_valve_cv = topFormGroup.value['top_dis_valve_cv'];
       igs.top_dis_valve_spec_cv = topFormGroup.value['top_dis_valve_spec_cv'];
-      igs.top_valve_brand_cv = bottomFormGroup.value['top_valve_brand_cv'];
+      igs.top_valve_brand_cv = topFormGroup.value['top_valve_brand_cv'];
       igs.airline_valve_cv = topFormGroup.value['airline_valve_cv'];
       igs.airline_valve_pcs = topFormGroup.value['airline_valve_pcs'];
       igs.airline_valve_dim = topFormGroup.value['airline_valve_dim'];
@@ -667,9 +667,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.pv_spec_cv = manlidFormGroup.value['pv_spec_cv'];
       igs.pv_spec_pcs = manlidFormGroup.value['pv_spec_pcs'];
       igs.safety_handrail = manlidFormGroup.value['safety_handrail'];
-      igs.buffer_plate = this.surveyForm.value['buffer_plate'];
-      igs.residue = this.surveyForm.value['residue'];
-      igs.dipstick = this.surveyForm.value['dipstick'];
+      igs.buffer_plate = manlidFormGroup.value['buffer_plate'];
+      igs.residue = manlidFormGroup.value['residue'];
+      igs.dipstick = manlidFormGroup.value['dipstick'];
       //igs.left_coor = this.getHighlightedCoordinates(this.highlightedCellsLeft);
       //igs.rear_coor = this.getHighlightedCoordinates(this.highlightedCellsRear);
       //igs.right_coor = this.getHighlightedCoordinates(this.highlightedCellsRight);

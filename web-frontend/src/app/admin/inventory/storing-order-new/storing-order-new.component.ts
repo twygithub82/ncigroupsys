@@ -375,7 +375,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         const data = [...this.sotList.data];
         const newItem = new StoringOrderTankItem({
           ...result.item,
-          actions: ['new']
+          //actions: ['new']
         });
 
         // Add the new item to the end of the list
@@ -414,13 +414,13 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       if (result) {
         if (result.index >= 0) {
           const data = [...this.sotList.data];
-          let actions = Array.isArray(data[index].actions!) ? [...data[index].actions!] : [];
-          if (!actions.includes('new')) {
-            actions = [...new Set([...actions, 'edit'])];
-          }
+          // let actions = Array.isArray(data[index].actions!) ? [...data[index].actions!] : [];
+          // if (!actions.includes('new')) {
+          //   actions = [...new Set([...actions, 'edit'])];
+          // }
           const updatedItem = new StoringOrderTankItem({
             ...result.item,
-            actions: actions
+            //actions: actions
           });
           data[result.index] = updatedItem;
           this.updateData(data);
@@ -604,7 +604,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.contextMenu.openMenu();
     }
   }
-  
+
   onEnterKey(event: Event) {
     event.preventDefault();
     // Add any additional logic if needed
@@ -754,6 +754,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         return 'badge-solid-blue';
       case 'cancel':
         return 'badge-solid-orange';
+      case 'preorder':
+        return 'badge-solid-pink';
       default:
         return '';
     }

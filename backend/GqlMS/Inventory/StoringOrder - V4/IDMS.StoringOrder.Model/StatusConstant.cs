@@ -19,6 +19,7 @@ namespace IDMS.StoringOrder.Model
         public const string CANCELED = "CANCELED";
         public const string WAITING = "WAITING";
         public const string ACCEPTED = "ACCEPTED";
+        public const string PREORDER = "PREORDER";
     }
 
     public static class TankMovementStatus
@@ -41,5 +42,6 @@ namespace IDMS.StoringOrder.Model
         public const string EDIT = "EDIT";
         public const string ROLLBACK = "ROLLBACK";
         public const string CANCEL = "CANCEL";
+        public const string PREORDER = "PREORDER";
     }
 }

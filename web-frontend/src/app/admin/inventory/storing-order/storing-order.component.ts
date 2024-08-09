@@ -415,19 +415,29 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
-    // TODO :: search criteria
-    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy).subscribe(data => {
-      this.soList = data;
-      this.endCursor = this.soDS.pageInfo?.endCursor;
-      this.startCursor = this.soDS.pageInfo?.startCursor;
-      this.hasNextPage = this.soDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.soDS.pageInfo?.hasPreviousPage ?? false;
+    this.apollo.client.resetStore().then(() => {
+      this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
     });
+    //this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.soList = data;
+        this.endCursor = this.soDS.pageInfo?.endCursor;
+        this.startCursor = this.soDS.pageInfo?.startCursor;
+        this.hasNextPage = this.soDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.soDS.pageInfo?.hasPreviousPage ?? false;
+      });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
   }
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
-    let first = pageSize;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
@@ -452,16 +462,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       }
     }
 
-    this.pageIndex = pageIndex;
-    this.pageSize = pageSize;
-
-    this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
-      this.soList = data;
-      this.endCursor = this.soDS.pageInfo?.endCursor;
-      this.startCursor = this.soDS.pageInfo?.startCursor;
-      this.hasNextPage = this.soDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.soDS.pageInfo?.hasPreviousPage ?? false;
-    });
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   // mergeCriteria(criteria: any) {

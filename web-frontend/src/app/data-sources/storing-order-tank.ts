@@ -420,7 +420,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchStoringOrderTanks(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanks(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
@@ -443,9 +443,9 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  searchStoringOrderTanksInGate(where: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksInGate(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-
+    
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_IN_GATE,
@@ -502,6 +502,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          console.log(sotList);
           this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
           return sotList.nodes;
@@ -558,7 +559,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         { tank_no: { eq: tank_no } },
         {
           or: [
-            { status_cv: { in: ["WAITING", "PREBOOK"] } },
+            { status_cv: { in: ["WAITING", "PREORDER"] } },
             {
               and: [{ status_cv: { eq: "ACCEPTED" } }, { tank_status_cv: { neq: "RO_GENERATED" } }]
             }

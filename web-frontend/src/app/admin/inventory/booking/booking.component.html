@@ -206,7 +206,7 @@
                     {{translatedLangText.EIR_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.storing_order_tank?.in_gate?.eir_no}}
+                    <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_dt">
@@ -214,7 +214,7 @@
                     {{translatedLangText.EIR_DATE}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.storing_order_tank?.in_gate?.eir_dt)}}
+                    <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_cargo">

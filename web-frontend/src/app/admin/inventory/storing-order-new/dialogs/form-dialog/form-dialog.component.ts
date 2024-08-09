@@ -72,6 +72,8 @@ export class FormDialogComponent {
   startDateETR = new Date();
   valueChangesDisabled: boolean = false;
 
+  isPreOrder = false;
+
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
   lastCargoControl: UntypedFormControl;;
@@ -145,6 +147,24 @@ export class FormDialogComponent {
         this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
       } else {
         this.storingOrderTankForm.get('purpose')?.setErrors(null);
+        let actions = Array.isArray(this.storingOrderTank.actions!) ? [...this.storingOrderTank.actions!] : [];
+        if (this.isPreOrder) {
+          if (!actions.includes('preorder')) {
+            actions = [...new Set([...actions, 'preorder'])];
+          }
+        } else {
+          // remove preorder action
+          actions = actions.filter(action => action !== 'preorder');
+          if (this.action === 'new') {
+            if (!actions.includes('new')) {
+              actions = [...new Set([...actions, 'new'])];
+            }
+          } else {
+            if (!actions.includes('new')) {
+              actions = [...new Set([...actions, 'edit'])];
+            }
+          }
+        }
         var sot: StoringOrderTankItem = {
           ...this.storingOrderTank,
           unit_type_guid: this.storingOrderTankForm.value['unit_type_guid'],
@@ -161,17 +181,16 @@ export class FormDialogComponent {
           certificate_cv: this.storingOrderTankForm.value['certificate_cv'],
           required_temp: this.storingOrderTankForm.value['required_temp'],
           etr_dt: Utility.convertDate(this.storingOrderTankForm.value['etr_dt']),
-          remarks: this.storingOrderTankForm.value['remarks']
+          remarks: this.storingOrderTankForm.value['remarks'],
+          actions
         }
         const returnDialog: DialogData = {
           item: sot,
           index: this.index
         }
-        console.log('valid');
         this.dialogRef.close(returnDialog);
       }
     } else {
-      console.log('invalid');
       this.findInvalidControls();
     }
   }
@@ -203,49 +222,45 @@ export class FormDialogComponent {
     });
 
     this.storingOrderTankForm?.get('tank_no')?.valueChanges.subscribe(value => {
-      // Custom validation logic for tank_no
+      this.isPreOrder = false; // Reset PREORDER flag
       if (value) {
         const uppercaseValue = value.toUpperCase();
         this.storingOrderTankForm.get('tank_no')?.setValue(uppercaseValue, { emitEvent: false });
+
         const isValid = Utility.verifyIsoContainerCheckDigit(uppercaseValue);
         if (!isValid) {
-          // Set custom error if the value is invalid
           this.storingOrderTankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
         } else {
-          // Clear custom error if the value is valid
           const formattedTankNo = Utility.formatContainerNumber(uppercaseValue);
-          this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe(data => {
-            if (data.length > 0) {
-              const hasWaiting = data.some(item => item.status_cv === 'WAITING');
-              if (hasWaiting) {
-                const hasPrebook = data.some(item => item.status_cv === 'PREBOOK');
-                if (hasPrebook) {
-                  this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
-                } else {
-                  // this.storingOrderTankForm.get('tank_no')?.setErrors({ prebook_warning: true });
-                  // See how to do prebook warning
-                }
-              } else {
-                // Wont be here, if here means PREBOOK didnt change to WAITING while the tank has been out
-              }
+
+          // Handle new entry or edit
+          if (this.action !== 'edit' || (this.action === 'edit' && formattedTankNo !== this.storingOrderTank.tank_no)) {
+            const foundInExistedList = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
+            if (foundInExistedList?.length) {
+              this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
             } else {
-              if (this.action !== 'edit') {
-                const found = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
-                if (found?.length) {
-                  this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
-                } else {
-                  this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+              this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+
+              this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe(data => {
+                if (data.length > 0) {
+                  const hasWaiting = data.some(item => item.status_cv === 'WAITING');
+                  if (hasWaiting) {
+                    const hasPreOrder = data.some(item => item.status_cv === 'PREORDER');
+                    if (hasPreOrder) {
+                      this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
+                    } else {
+                      // Set PREORDER warning without blocking submission
+                      this.isPreOrder = true;
+                    }
+                  } else {
+                    // Additional logic if needed when no WAITING status is found
+                  }
                 }
-              } else if (this.action === 'edit' && formattedTankNo !== this.storingOrderTank.tank_no) {
-                const found = this.sotExistedList?.filter(sot => sot.tank_no === formattedTankNo);
-                if (found?.length) {
-                  this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
-                } else {
-                  this.storingOrderTankForm.get('tank_no')?.setErrors(null);
-                }
-              }
+              });
             }
-          });
+          } else {
+            this.storingOrderTankForm.get('tank_no')?.setErrors(null);
+          }
         }
       }
     });
@@ -296,6 +311,15 @@ export class FormDialogComponent {
           Validators.min(0)
         ]);
       }
+
+      const isBooleanConditionMet = purposeSteamControl!.value
+      if (isBooleanConditionMet) {
+        requiredTempControl!.enable();
+      } else {
+        requiredTempControl!.disable();
+        requiredTempControl!.setValue(''); // Clear the value if disabled
+      }
+
       requiredTempControl!.updateValueAndValidity();
     } else {
       this.storingOrderTankForm.get('flash_point')!.reset();

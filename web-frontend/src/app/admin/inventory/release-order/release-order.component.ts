@@ -450,7 +450,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
-    let first = pageSize;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;

@@ -120,7 +120,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { so_no: "DESC" };
+  lastOrderBy: any = { storing_order: { so_no: "DESC" } };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -219,20 +219,27 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
         ]
       };
       this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-      // Execute the search
-      this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(where).subscribe(data => {
+      this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    }
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+    this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
       });
-    }
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
   }
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
-    let first = pageSize;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
@@ -257,16 +264,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
       }
     }
 
-    this.pageIndex = pageIndex;
-    this.pageSize = pageSize;
-
-    this.sotDS.searchStoringOrderTanks(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before).subscribe(data => {
-      this.sotList = data;
-      this.endCursor = this.sotDS.pageInfo?.endCursor;
-      this.startCursor = this.sotDS.pageInfo?.startCursor;
-      this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
-    });
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {

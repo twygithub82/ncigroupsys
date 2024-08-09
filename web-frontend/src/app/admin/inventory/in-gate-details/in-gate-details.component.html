@@ -132,7 +132,7 @@
                                 <span>{{translatedLangText.EIR_NO}}:</span>
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                                <!-- <div class="contact-detail-info">{{ccDS.displayName(storingOrderTankItem?.storing_order?.eir_no)}}</div> -->
+                                <span [class]="'font-bold'">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
                               </div>
                             </div>
                             <div class="row">
@@ -142,7 +142,7 @@
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <div class="contact-detail-info">
                                   <span
-                                    [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv}}</span>
+                                    [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
                                 </div>
                               </div>
                             </div>

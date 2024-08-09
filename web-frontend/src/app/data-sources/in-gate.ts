@@ -50,21 +50,21 @@ export class InGate {
 
 export class InGateGO extends InGate {
   public tank?: StoringOrderTankGO;
+  public in_gate_survey?: InGateSurveyItem;
 
   constructor(item: Partial<InGateGO> = {}) {
     super(item)
     this.tank = item.tank;
+    this.in_gate_survey = item.in_gate_survey ? new InGateSurveyItem(item.in_gate_survey) : undefined;
   }
 }
 
 export class InGateItem extends InGateGO {
   public override tank?: StoringOrderTankItem;
-  public in_gate_survey?: InGateSurveyItem;
 
   constructor(item: Partial<InGateItem> = {}) {
     super(item);
     this.tank = item.tank;
-    this.in_gate_survey = item.in_gate_survey;
   }
 }
 
@@ -268,6 +268,7 @@ export const GET_IN_GATE_BY_ID = gql`
           btm_dis_comp_cv
           btm_dis_valve_cv
           btm_dis_valve_spec_cv
+          btm_valve_brand_cv
           buffer_plate
           capacity
           cladding_cv
@@ -309,6 +310,7 @@ export const GET_IN_GATE_BY_ID = gql`
           top_dis_comp_cv
           top_dis_valve_cv
           top_dis_valve_spec_cv
+          top_valve_brand_cv
           update_by
           update_dt
           walkway_cv
@@ -324,17 +326,24 @@ export const ADD_IN_GATE = gql`
   }
 `;
 
+export const UPDATE_IN_GATE = gql`
+  mutation UpdateInGate($inGate: InGateWithTankInput!) {
+    updateInGate(inGate: $inGate)
+  }
+`;
+
 export class InGateDS extends BaseDataSource<InGateItem> {
   constructor(private apollo: Apollo) {
     super();
   }
 
-  loadItems(where?: any, order?: any, first: number = 10, after?: string, last?: number, before?: string): Observable<InGateItem[]> {
+  searchInGateForSurvey(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<InGateItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: SEARCH_IN_GATE_FOR_SURVEY_QUERY,
-        variables: { where, order, first, after, last, before }
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),
@@ -359,27 +368,48 @@ export class InGateDS extends BaseDataSource<InGateItem> {
     return this.apollo
       .query<any>({
         query: GET_IN_GATE_BY_ID,
-        variables: { where }
+        variables: { where },
+        fetchPolicy: 'no-cache' // Disable caching for this query
       })
       .pipe(
-        map((result) => result.data),
+        // Handle the response and errors
+        map((result) => {
+          const data = result.data;
+          if (!data) {
+            throw new Error('No data returned from query');
+          }
+  
+          // Extract the nodes and totalCount
+          const retResult = data.inGates || { nodes: [], totalCount: 0 };
+  
+          // Update internal state
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          console.log(retResult.nodes);
+  
+          // Return the nodes
+          return retResult.nodes;
+        }),
         catchError((error: ApolloError) => {
           console.error('GraphQL Error:', error);
           return of([] as InGateItem[]); // Return an empty array on error
         }),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const retResult = result.inGates || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(retResult.nodes);
-          this.totalCount = retResult.totalCount;
-          return retResult.nodes;
-        })
+        finalize(() => this.loadingSubject.next(false))
       );
   }
 
   addInGate(inGate: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_IN_GATE,
+      variables: {
+        inGate
+      }
+    });
+  }
+
+  updateInGate(inGate: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_IN_GATE,
       variables: {
         inGate
       }

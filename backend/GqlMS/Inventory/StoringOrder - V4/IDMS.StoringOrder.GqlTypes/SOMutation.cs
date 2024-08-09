@@ -43,7 +43,10 @@ namespace IDMS.StoringOrder.GqlTypes
                     newTank.so_guid = soDomain.guid;
                     newTank.create_dt = currentDateTime;
                     newTank.create_by = user;
-                    newTank.status_cv = SOTankStatus.WAITING;
+                    if (SOTankAction.PREORDER.EqualsIgnore(tnk?.action))
+                        newTank.status_cv = SOTankStatus.PREORDER;
+                    else
+                        newTank.status_cv = SOTankStatus.WAITING;
                     newTank.preinspect_job_no = tnk.job_no;
                     newTank.liftoff_job_no = tnk.job_no;
                     newTank.lifton_job_no = tnk.job_no;
@@ -146,6 +149,16 @@ namespace IDMS.StoringOrder.GqlTypes
                         existingTank.update_by = user;
                         existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.CANCELED;
+                        //context.storing_order_tank.Update(newTank);
+                        isSendNotification = true;
+                        continue;
+                    }
+
+                    if (SOTankAction.PREORDER.EqualsIgnore(tnk?.action))
+                    {
+                        existingTank.update_by = user;
+                        existingTank.update_dt = currentDateTime;
+                        existingTank.status_cv = SOTankStatus.PREORDER;
                         //context.storing_order_tank.Update(newTank);
                         isSendNotification = true;
                         continue;

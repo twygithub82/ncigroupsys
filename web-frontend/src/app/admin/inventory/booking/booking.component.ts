@@ -43,6 +43,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
+import { InGateDS } from 'app/data-sources/in-gate';
 
 @Component({
   selector: 'app-booking',
@@ -134,6 +135,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   bkDS: BookingDS;
+  igDS: InGateDS;
 
   sotList: StoringOrderTankItem[] = [];
   bookingList: BookingItem[] = [];
@@ -148,7 +150,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { storing_order_tank: { in_gate: { eir_no: "DESC" } } };
+  lastOrderBy: any = { storing_order_tank: { storing_order: { so_no: "DESC" } } };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -168,7 +170,8 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
-    this.bkDS = new BookingDS(this.apollo)
+    this.bkDS = new BookingDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -277,7 +280,6 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   search() {
     const where: any = {
-      //status_cv: { eq: "YET_TO_SURVEY" }
     };
 
     if (this.searchForm!.value['tank_no'] || this.searchForm!.value['last_cargo'] || this.searchForm!.value['customer_code']) {
@@ -337,6 +339,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.bkDS.searchBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.bookingList = data;
+        console.log(this.bookingList);
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
@@ -349,7 +352,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
-    let first = pageSize;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
