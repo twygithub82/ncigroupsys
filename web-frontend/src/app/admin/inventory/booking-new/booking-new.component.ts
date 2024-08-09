@@ -275,19 +275,34 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
+  // isAllSelected() {
+  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+  //   const numSelected = selectedItems.size;
+  //   const numRows = this.sotList.length;
+  //   return numSelected === numRows;
+  // }
+
   isAllSelected() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
     const numSelected = selectedItems.size;
     const numRows = this.sotList.length;
     return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
+  // masterToggle() {
+  //   if (this.isAllSelected()) {
+  //     this.clearPageSelection();
+  //   } else {
+  //     this.selectAllOnPage();
+  //   }
+  // }
+
   masterToggle() {
     if (this.isAllSelected()) {
       this.clearPageSelection();
     } else {
-      this.selectAllOnPage();
+      this.selectAllOnPage(this.sotList);
     }
   }
 
@@ -302,31 +317,71 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   /** Select all items on the current page */
-  selectAllOnPage() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      this.sotSelection.select(row);
-      selectedItems.add(row.guid!);
+  // selectAllOnPage() {
+  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+  //   this.sotList.forEach(row => {
+  //     this.sotSelection.select(row);
+  //     selectedItems.add(row.guid!);
+  //   });
+  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  // }
+
+  selectAllOnPage(selectableRows: StoringOrderTankItem[]) {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+
+    selectableRows.forEach(row => {
+      // Only select rows that match the selectedCompany
+        this.sotSelection.select(row);
+        selectedItems.add(row.guid!);
     });
+
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Handle row selection */
+  // toggleRow(row: StoringOrderTankItem) {
+  //   this.sotSelection.toggle(row);
+  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+  //   if (this.sotSelection.isSelected(row)) {
+  //     selectedItems.add(row.guid!);
+  //   } else {
+  //     selectedItems.delete(row.guid!);
+  //   }
+  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  // }
+
   toggleRow(row: StoringOrderTankItem) {
-    this.sotSelection.toggle(row);
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+
+    // Check if the row is already selected
     if (this.sotSelection.isSelected(row)) {
-      selectedItems.add(row.guid!);
-    } else {
+      // Deselect the row
+      this.sotSelection.deselect(row);
       selectedItems.delete(row.guid!);
+    } else {
+      // If the row is not selected, check if it should be selected based on the company
+        this.sotSelection.select(row);
+        selectedItems.add(row.guid!);
     }
+
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Update selection for the current page */
+  // updatePageSelection() {
+  //   this.sotSelection.clear();
+  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+  //   this.sotList.forEach(row => {
+  //     if (selectedItems.has(row.guid!)) {
+  //       this.sotSelection.select(row);
+  //     }
+  //   });
+  // }
+
+  /** Update selection for the current page */
   updatePageSelection() {
     this.sotSelection.clear();
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
     this.sotList.forEach(row => {
       if (selectedItems.has(row.guid!)) {
         this.sotSelection.select(row);
@@ -372,6 +427,27 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         { in_gate: { some: { delete_dt: { eq: null } } } }
       ]
     };
+
+    if (this.searchForm!.value['tank_no']) {
+      where.tank_no = { contains: this.searchForm!.value['tank_no'] };
+    }
+
+    if (this.searchForm!.value['last_cargo']) {
+      where.last_cargo_guid = { contains: this.searchForm!.value['last_cargo'].guid };
+    }
+
+    if (this.searchForm!.value['customer_code']) {
+      const soSearch: any = {};
+      soSearch.customer_company_guid = { contains: this.searchForm!.value['customer_code'].guid };
+      where.storing_order = soSearch;
+    }
+
+    // if (this.searchForm!.value['capacity']) {
+    //   const igsSearch: any = {};
+    //   igsSearch.capacity = { contains: this.searchForm!.value['capacity'] };
+    //   where.in_gate_survey = igsSearch;
+    // }
+
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize);
   }
@@ -475,7 +551,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking
+          bookingTypeCvList: this.bookingTypeCvListNewBooking,
+          yardCvList: this.yardCvList,
+          tankStatusCvList: this.tankStatusCvList
         }
       },
       direction: tempDirection
@@ -509,8 +587,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     ]);
   }
 
-  getTankStatusDescription(codeValType: string): string | undefined {
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  }
+
+  getYardDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
   displayDate(input: number | null | undefined): string | undefined {

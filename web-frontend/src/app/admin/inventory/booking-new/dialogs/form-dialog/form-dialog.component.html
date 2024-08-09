@@ -41,7 +41,7 @@
                 {{data.translatedLangText.EIR_NO}}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">
-                <span class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{row.in_gate?.eir_no}}
+                <span class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_no}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="eir_dt">
@@ -49,7 +49,7 @@
                 {{data.translatedLangText.EIR_DATE}}
               </mat-header-cell>
               <mat-cell *matCellDef="let row">
-                <span class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{row.in_gate?.eir_dt}}
+                <span class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_dt}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="capacity">
@@ -58,7 +58,7 @@
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
                 <span
-                  class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{row.in_gate?.in_gate_survey?.capacity}}
+                  class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="tare_weight">
@@ -67,7 +67,7 @@
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
                 <span
-                  class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{row.in_gate?.in_gate_survey?.tare_weight}}
+                  class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_status">
@@ -75,7 +75,7 @@
                 {{data.translatedLangText.STATUS}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                <span class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{row.tank_status_cv}}
+                <span class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.tank_status_cv)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="yard">
@@ -83,7 +83,7 @@
                 {{data.translatedLangText.YARD}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                <span class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{row.in_gate?.yard_cv}}
+                <span class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(igDS.getInGateItem(row.in_gate)?.yard_cv)}}
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

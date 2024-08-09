@@ -25,6 +25,8 @@ import { MatTableModule } from '@angular/material/table';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { MatDividerModule } from '@angular/material/divider';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { CodeValuesDS } from 'app/data-sources/code-values';
 
 
 export interface DialogData {
@@ -84,8 +86,10 @@ export class FormDialogComponent {
   startDateToday = new Date();
   valueChangesDisabled: boolean = false;
 
+  cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   bkDS: BookingDS;
+  igDS: InGateDS;
   lastCargoControl: UntypedFormControl;;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -95,8 +99,10 @@ export class FormDialogComponent {
 
   ) {
     // Set the defaults
+    this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.bkDS = new BookingDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
     this.action = data.action!;
     this.dialogTitle = 'New Booking';
     if (this.action === 'edit') {
@@ -180,6 +186,14 @@ export class FormDialogComponent {
 
   canEdit(): boolean {
     return true;
+  }
+
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.data.populateData.tankStatusCvList);
+  }
+
+  getYardDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.data.populateData.yardCvList);
   }
 
   updateValidators(validOptions: any[]) {

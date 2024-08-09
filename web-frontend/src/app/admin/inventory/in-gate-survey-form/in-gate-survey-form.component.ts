@@ -856,7 +856,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       const test_type = this.surveyForm!.get('test_type_cv')!.value;
       const test_class = this.surveyForm!.get('test_class_cv')!.value;
       const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+      return this.getLastTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
     return "";
   }
@@ -868,13 +868,21 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       const yearCount = parseFloat(match[0]);
       const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
       const resultDt = Utility.addYearsToEpoch(testDt, yearCount);
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+      return this.getNextTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     }
     return "";
   }
 
-  getTestTypeDescription(codeVal: string): string | undefined {
+  getLastTestTypeDescription(codeVal: string): string | undefined {
+    const a = this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
+    console.log(a)
+    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
+  }
+
+  getNextTestTypeDescription(codeVal: string): string | undefined {
     const mappedVal = testTypeMapping[codeVal];
+    const b =  this.cvDS.getCodeDescription(mappedVal, this.testTypeCvList);
+    console.log(b)
     return this.cvDS.getCodeDescription(mappedVal, this.testTypeCvList);
   }
 

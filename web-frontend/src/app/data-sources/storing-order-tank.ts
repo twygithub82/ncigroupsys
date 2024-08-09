@@ -232,6 +232,7 @@ const GET_STORING_ORDER_TANKS_FOR_BOOKING = gql`
           eir_no
           eir_dt
           delete_dt
+          yard_cv
           in_gate_survey {
             tare_weight
             capacity
