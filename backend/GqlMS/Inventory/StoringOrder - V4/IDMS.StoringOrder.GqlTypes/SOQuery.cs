@@ -61,7 +61,9 @@ namespace IDMS.StoringOrder.GqlTypes
                 return context.storing_order_tank.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(so => so.storing_order)
                     .Include(tf => tf.tariff_cleaning)
-                    .Include(bk => bk.booking);
+                    .Include(d => d.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0))
+                    .Include(bk => bk.booking.Where(b => b.booking_dt == null || b.delete_dt == 0));
+                    
                 //return context.storing_order_tank
                 //    .Where(d => (d.delete_dt == null || d.delete_dt == 0) &&
                 //                (d.tariff_cleaning.delete_dt == null || d.tariff_cleaning.delete_dt == 0))

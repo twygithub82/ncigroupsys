@@ -1,5 +1,4 @@
 ﻿using HotChocolate;
-using IDMS.Booking.GqlTypes.Repo;
 using Microsoft.EntityFrameworkCore;
 using HotChocolate.Types;
 using Microsoft.AspNetCore.Http;

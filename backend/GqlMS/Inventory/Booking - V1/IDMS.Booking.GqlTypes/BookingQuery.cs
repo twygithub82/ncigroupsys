@@ -1,5 +1,4 @@
 ﻿using HotChocolate;
-using IDMS.Booking.GqlTypes.Repo;
 using Microsoft.EntityFrameworkCore;
 using HotChocolate.Types;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +21,8 @@ namespace IDMS.Booking.GqlTypes
                 var bookingDetail = context.booking.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(b => b.storing_order_tank)
                         .ThenInclude(s => s.tariff_cleaning)
+                    .Include(b => b.storing_order_tank)
+                        .ThenInclude(b => b.in_gate)
                     .Include(b => b.storing_order_tank)
                         .ThenInclude(s => s.storing_order)
                             .ThenInclude(c => c.customer_company);

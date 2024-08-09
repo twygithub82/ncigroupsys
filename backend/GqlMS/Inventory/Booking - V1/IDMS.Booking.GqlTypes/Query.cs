@@ -1,5 +1,4 @@
 ﻿using HotChocolate;
-using IDMS.Booking.GqlTypes.Repo;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Shared;
 using Microsoft.AspNetCore.Http;
