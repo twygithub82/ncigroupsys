@@ -255,14 +255,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cMethodDS= new CleaningMethodDS(this.apollo);
 
 
-  this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
-
-    if (value && !value.startsWith(this.prefix) && value!='-') {
-      // Remove existing prefix before adding a new one
-      const newValue = this.prefix + value.replace(this.prefix, '');
-      this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
-    }
-  });
+  
   
    
   }
@@ -290,6 +283,17 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   ngOnInit() {
     //this.initializeFilter();
     this.loadData();
+    this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
+
+      if (value && !value.startsWith(this.prefix) && value!='-') {
+        // Remove existing prefix before adding a new one
+        const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
+        if (numericPart && !isNaN(Number(numericPart))) {
+        const newValue = this.prefix + value.replace(this.prefix, '');
+        this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
+        }
+      }
+    });
   }
 
   populatetcForm(tc: TariffCleaningItem):void {
@@ -369,6 +373,17 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           if (this.tcDS.totalCount > 0) {
             this.tariffCleaningItem = data[0];
             this.populatetcForm(this.tariffCleaningItem);
+            this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
+
+              if (value && !value.startsWith(this.prefix) && value!='-') {
+                // Remove existing prefix before adding a new one
+                const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
+                if (numericPart && !isNaN(Number(numericPart))) {
+                const newValue = this.prefix + value.replace(this.prefix, '');
+                this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
+                }
+              }
+            });
            // this.populateSOForm(this.storingOrderItem);
           }
         });
