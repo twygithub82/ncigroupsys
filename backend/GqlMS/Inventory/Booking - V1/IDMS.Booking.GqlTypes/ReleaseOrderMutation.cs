@@ -17,7 +17,7 @@ namespace IDMS.Booking.GqlTypes
     public class ReleaseOrderMutation
     {
         public async Task<int> AddReleaseOrder(ReleaseOrderRequest releaseOrder, List<SchedulingRequest> schedulings, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
+            ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace IDMS.Booking.GqlTypes
         }
 
         public async Task<int> UpdateReleaseOrder(ReleaseOrderRequest releaseOrder, List<SchedulingRequest> schedulings, [Service] IHttpContextAccessor httpContextAccessor,
-         [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
+         ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
             try
             {
@@ -183,7 +183,7 @@ namespace IDMS.Booking.GqlTypes
         }
 
         public async Task<int> DeleteReleaseOrder(List<string> roGuids, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender)
+            ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender)
         {
 
             try
