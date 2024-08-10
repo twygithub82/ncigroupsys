@@ -99,7 +99,7 @@ import { pack } from 'd3';
 export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
-    //'select',
+    'select',
     // 'img',
      'fName',
      'lName',
@@ -164,7 +164,7 @@ implements OnInit {
   searchField: string = "";
    exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
-  selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
+  selection = new SelectionModel<PackageDepotItem>(true, []);
   
   id?: number;
   advanceTable?: AdvanceTable;
@@ -367,7 +367,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.custCompClnCatItems.length;
+    const numRows = this.packDepotItems.length;
     return numSelected === numRows;
   }
 
@@ -379,7 +379,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.custCompClnCatItems.forEach((row) =>
+       : this.packDepotItems.forEach((row) =>
            this.selection.select(row)
          );
   }
