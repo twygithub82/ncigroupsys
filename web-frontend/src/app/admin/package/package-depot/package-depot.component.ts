@@ -54,7 +54,10 @@ import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem }
 import {SearchCriteriaService} from 'app/services/search-criteria.service';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { PackageDepotItem } from 'app/data-sources/package-depot';
+import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
+import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { pack } from 'd3';
+
 
 @Component({
   selector: 'app-package-depot',
@@ -132,11 +135,18 @@ implements OnInit {
 
   customerCodeControl = new UntypedFormControl();
   categoryControl= new UntypedFormControl();
+  profileNameControl = new UntypedFormControl();
 
+  storageCalCvList : CodeValuesItem[]=[];
+  CodeValuesDS?:CodeValuesDS;
+  packDepotDS : PackageDepotDS;
   ccDS: CustomerCompanyDS;
-  clnCatDS:CleaningCategoryDS;
+  tariffDepotDS:TariffDepotDS;
+ // clnCatDS:CleaningCategoryDS;
   custCompDS :CustomerCompanyDS;
 
+  packDepotItems:PackageDepotItem[]=[];
+ 
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList: CustomerCompanyItem[]=[];
   cleaning_categoryList?: CleaningCategoryItem[];
@@ -144,7 +154,7 @@ implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { code: "ASC" };
+  lastOrderBy: any = { customer_company:{code: "ASC" }};
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -219,30 +229,26 @@ implements OnInit {
     CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
     CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
     CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST :'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
-    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL:'COMMON-FORM.EMAIL',
     PHONE:'COMMON-FORM.PHONE',
+    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
+    VIEW:'COMMON-FORM.VIEW',
+    DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
+    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
+    PREINSPECTION_COST:"COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST:"COMMON-FORM.LOLO-COST",
+    STORAGE_COST:"COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
+    STANDARD_COST:"COMMON-FORM.STANDARD-COST",
+    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
+    STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
+    
      }
   
   constructor(
@@ -259,8 +265,10 @@ implements OnInit {
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.clnCatDS= new CleaningCategoryDS(this.apollo);
+    this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS=new CustomerCompanyDS(this.apollo);
+    this.packDepotDS = new PackageDepotDS(this.apollo);
+    this.CodeValuesDS=new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -276,8 +284,9 @@ implements OnInit {
   initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
-      customer_code: this.customerCodeControl
-     
+      customer_code: this.customerCodeControl,
+      profile_name: this.profileNameControl
+      
     });
   }
 
@@ -388,42 +397,47 @@ implements OnInit {
         
           const customerCodes :CustomerCompanyItem[] = this.customerCodeControl.value;
           var guids = customerCodes.map(cc=>cc.guid);
-          where.guid = { in: guids };
+          where.customer_company_guid = { in: guids };
         }
     }
 
-    // if (this.categoryControl.value) {
-    //   if(this.categoryControl.value.length>0)
-    //   {
-    //     const guids = this.categoryControl.value;
-    //     where.cleaning_category_guid = { in: guids };
-    //   }
-    // }
+    if (this.profileNameControl.value) {
+      if(this.profileNameControl.value.length>0)
+      {
+        const profileNames :TariffDepotItem[] = this.profileNameControl.value;
+        const guids = profileNames.map(cc=>cc.guid);
+        where.tariff_depot_guid = { in: guids };
+      }
+    }
 
-    // if (this.pcForm!.value["min_cost"])
-    // {
-    //   const minCost :number = Number(this.pcForm!.value["min_cost"]);
-    //   where.adjusted_price ={gte:minCost}
-    // }
-
-    // if (this.pcForm!.value["max_cost"])
-    //   {
-    //     const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-    //     where.adjusted_price ={ngte:maxCost}
-    //   }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.custCompDS.search(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.customer_companyList=data;
+    this.subs.sink = this.packDepotDS.SearchPackageDepot(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.packDepotItems=data;
+              // data[0].storage_cal_cv
        this.previous_endCursor=undefined;
-       this.endCursor = this.custCompDS.pageInfo?.endCursor;
-       this.startCursor = this.custCompDS.pageInfo?.startCursor;
-       this.hasNextPage = this.custCompDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.custCompDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.packDepotDS.pageInfo?.endCursor;
+       this.startCursor = this.packDepotDS.pageInfo?.startCursor;
+       this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
     });
   }
+  selectStorageCalculateCV_Description(valCode?:string):string
+  {
+    let valCodeObject: CodeValuesItem = new CodeValuesItem();
+    if(this.storageCalCvList.length>0)
+    {
+      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode)|| new CodeValuesItem();
+      
+      // If no match is found, description will be undefined, so you can handle it accordingly
+      
+    }
+    return valCodeObject.description || '-';
+    
+  }
+
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
@@ -482,12 +496,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.custCompDS.search(where,order,first,after,last,before).subscribe(data => {
-        this.customer_companyList=data;
-        this.endCursor = this.custCompDS.pageInfo?.endCursor;
-        this.startCursor = this.custCompDS.pageInfo?.startCursor;
-        this.hasNextPage = this.custCompDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.custCompDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.packDepotDS.SearchPackageDepot(where,order,first,after,last,before).subscribe(data => {
+        this.packDepotItems=data;
+        this.endCursor = this.packDepotDS.pageInfo?.endCursor;
+        this.startCursor = this.packDepotDS.pageInfo?.startCursor;
+        this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
@@ -535,6 +549,17 @@ implements OnInit {
 
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
      // this.customer_companyList1 = data
+    });
+
+    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
+
+    const queries = [
+      { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+     
+    ];
+    this.CodeValuesDS?.getCodeValuesByType(queries);
+    this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
+      this.storageCalCvList=data;
     });
 
     // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{

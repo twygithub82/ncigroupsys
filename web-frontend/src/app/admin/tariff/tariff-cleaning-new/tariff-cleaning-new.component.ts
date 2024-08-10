@@ -232,7 +232,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
-  
+  prefix = 'UN';
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -252,6 +253,17 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS = new CodeValuesDS(this.apollo);
     this.cCategoryDS= new CleaningCategoryDS(this.apollo);
     this.cMethodDS= new CleaningMethodDS(this.apollo);
+
+
+  this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
+
+    if (value && !value.startsWith(this.prefix) && value!='-') {
+      // Remove existing prefix before adding a new one
+      const newValue = this.prefix + value.replace(this.prefix, '');
+      this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
+    }
+  });
+  
    
   }
 
@@ -493,7 +505,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   onlyNumbersDashValidator(control: AbstractControl): { [key: string]: boolean } | null {
-    const regex = /^[0-9-]*$/;
+    const regex = /^(UN)?[0-9-]*$/;
     if (control.value && !regex.test(control.value)) {
       return { 'invalidCharacter': true };
     }

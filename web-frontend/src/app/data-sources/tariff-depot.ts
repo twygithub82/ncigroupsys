@@ -165,11 +165,11 @@ export const ADD_TARIFF_DEPOT = gql`
   }
 `;
 
-// export const UPDATE_TARIFF_CLEANING = gql`
-//   mutation updateTariffClean($tc: tariff_cleaningInput!) {
-//     updateTariffClean(updateTariffClean: $tc)
-//   }
-// `;
+export const UPDATE_TARIFF_DEPOT = gql`
+  mutation updateTariffDepot($td: tariff_depotInput!) {
+    updateTariffDepot(updateTariffDepot: $td)
+  }
+`;
 
 
 export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
@@ -213,22 +213,30 @@ export class TariffDepotDS extends BaseDataSource<TariffDepotItem> {
       variables: {
         td
       }
-    });
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
   }
 
+  
 
 
-  //   updateTariffCleaning(tc: any): Observable<any> {
-  //     return this.apollo.mutate({
-  //       mutation: UPDATE_TARIFF_CLEANING,
-  //       variables: {
-  //         tc
-  //       }
-  //     }).pipe(
-  //       catchError((error: ApolloError) => {
-  //         console.error('GraphQL Error:', error);
-  //         return of(0); // Return an empty array on error
-  //       }),
-  //     );
-  //   }
+
+
+    updateTariffDepot(td: any): Observable<any> {
+      return this.apollo.mutate({
+        mutation: UPDATE_TARIFF_DEPOT,
+        variables: {
+          td
+        }
+      }).pipe(
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+      );
+    }
 }
