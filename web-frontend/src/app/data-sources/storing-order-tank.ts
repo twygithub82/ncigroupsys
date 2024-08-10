@@ -610,7 +610,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
   canCancel(sot: StoringOrderTankItem): boolean {
-    return sot && (sot.status_cv === 'WAITING' || sot.status_cv === 'PREORDER');
+    if (!sot) return false;
+    const hasNotYetToSurvey = sot.in_gate?.some(gate => gate.eir_status_cv !== 'YET_TO_SURVEY');
+    if (hasNotYetToSurvey) return false;
+    return sot.status_cv === 'WAITING' || sot.status_cv === 'PREORDER';
   }
 
   canRollbackStatus(sot: StoringOrderTankItem): boolean {

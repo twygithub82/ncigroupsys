@@ -15,6 +15,7 @@ export class InGate {
   public driver_name?: string;
   public eir_dt?: number;
   public eir_no?: string;
+  public eir_status_cv?: string;
   public lolo_cv?: string;
   public preinspection_cv?: string;
   public so_tank_guid?: string;
@@ -33,6 +34,7 @@ export class InGate {
     this.driver_name = item.driver_name;
     this.eir_dt = item.eir_dt;
     this.eir_no = item.eir_no;
+    this.eir_status_cv = item.eir_status_cv;
     this.lolo_cv = item.lolo_cv;
     this.preinspection_cv = item.preinspection_cv;
     this.so_tank_guid = item.so_tank_guid;
