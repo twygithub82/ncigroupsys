@@ -243,7 +243,7 @@ export class FormDialogComponent {
 
               this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe(data => {
                 if (data.length > 0) {
-                  const hasWaiting = data.some(item => item.status_cv === 'WAITING');
+                  const hasWaiting = data.some(item => item.status_cv === 'WAITING' || item.status_cv === 'ACCEPTED');
                   if (hasWaiting) {
                     const hasPreOrder = data.some(item => item.status_cv === 'PREORDER');
                     if (hasPreOrder) {
