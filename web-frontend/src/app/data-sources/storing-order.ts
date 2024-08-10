@@ -305,19 +305,19 @@ export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
   }
 
   getAccepetedStatusCount(so: StoringOrderItem): number {
-    return this.getStatusCount(so, 'ACCEPTED');
+    return this.getStatusCount(so, ['ACCEPTED']);
   }
 
   getWaitingStatusCount(so: StoringOrderItem): number {
-    return this.getStatusCount(so, 'WAITING');
+    return this.getStatusCount(so, ['WAITING', 'PREORDER']);
   }
 
   getCanceledStatusCount(so: StoringOrderItem): number {
-    return this.getStatusCount(so, 'CANCELED');
+    return this.getStatusCount(so, ['CANCELED']);
   }
 
-  getStatusCount(so: StoringOrderItem, status: string): number {
-    return so?.storing_order_tank?.filter(item => item.status_cv === status).length ?? 0;
+  getStatusCount(so: StoringOrderItem, status: string[]): number {
+    return so?.storing_order_tank?.filter(item => status.includes(item.status_cv ?? '')).length ?? 0;
   }
 
   canRemove(so: StoringOrderItem): boolean {
