@@ -415,13 +415,12 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
-    this.apollo.client.resetStore().then(() => {
-      this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+      this.updatePageSelection();
     });
-    //this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.subs.sink = this.soDS.searchStoringOrder(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.soList = data;
@@ -429,6 +428,13 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         this.startCursor = this.soDS.pageInfo?.startCursor;
         this.hasNextPage = this.soDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.soDS.pageInfo?.hasPreviousPage ?? false;
+
+        // Execute the callback if provided
+        if (callback) {
+          callback();
+        } else {
+          this.updatePageSelection();
+        }
       });
 
     this.pageSize = pageSize;
@@ -462,7 +468,9 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before);
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+      this.updatePageSelection();
+    });
   }
 
   // mergeCriteria(criteria: any) {

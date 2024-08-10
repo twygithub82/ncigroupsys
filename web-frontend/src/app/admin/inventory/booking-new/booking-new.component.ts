@@ -275,34 +275,19 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
-  // isAllSelected() {
-  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-  //   const numSelected = selectedItems.size;
-  //   const numRows = this.sotList.length;
-  //   return numSelected === numRows;
-  // }
-
   isAllSelected() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     const numSelected = selectedItems.size;
     const numRows = this.sotList.length;
     return numSelected === numRows;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  // masterToggle() {
-  //   if (this.isAllSelected()) {
-  //     this.clearPageSelection();
-  //   } else {
-  //     this.selectAllOnPage();
-  //   }
-  // }
-
   masterToggle() {
     if (this.isAllSelected()) {
       this.clearPageSelection();
     } else {
-      this.selectAllOnPage(this.sotList);
+      this.selectAllOnPage();
     }
   }
 
@@ -317,71 +302,32 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   /** Select all items on the current page */
-  // selectAllOnPage() {
-  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-  //   this.sotList.forEach(row => {
-  //     this.sotSelection.select(row);
-  //     selectedItems.add(row.guid!);
-  //   });
-  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  // }
-
-  selectAllOnPage(selectableRows: StoringOrderTankItem[]) {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
-
-    selectableRows.forEach(row => {
-      // Only select rows that match the selectedCompany
-        this.sotSelection.select(row);
-        selectedItems.add(row.guid!);
+  selectAllOnPage() {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.sotList.forEach(row => {
+      this.sotSelection.select(row);
+      selectedItems.add(row.guid!);
     });
-
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Handle row selection */
-  // toggleRow(row: StoringOrderTankItem) {
-  //   this.sotSelection.toggle(row);
-  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-  //   if (this.sotSelection.isSelected(row)) {
-  //     selectedItems.add(row.guid!);
-  //   } else {
-  //     selectedItems.delete(row.guid!);
-  //   }
-  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  // }
 
   toggleRow(row: StoringOrderTankItem) {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
-
-    // Check if the row is already selected
+    this.sotSelection.toggle(row);
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     if (this.sotSelection.isSelected(row)) {
-      // Deselect the row
-      this.sotSelection.deselect(row);
-      selectedItems.delete(row.guid!);
+      selectedItems.add(row.guid!);
     } else {
-      // If the row is not selected, check if it should be selected based on the company
-        this.sotSelection.select(row);
-        selectedItems.add(row.guid!);
+      selectedItems.delete(row.guid!);
     }
-
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Update selection for the current page */
-  // updatePageSelection() {
-  //   this.sotSelection.clear();
-  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-  //   this.sotList.forEach(row => {
-  //     if (selectedItems.has(row.guid!)) {
-  //       this.sotSelection.select(row);
-  //     }
-  //   });
-  // }
-
-  /** Update selection for the current page */
   updatePageSelection() {
     this.sotSelection.clear();
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     this.sotList.forEach(row => {
       if (selectedItems.has(row.guid!)) {
         this.sotSelection.select(row);
@@ -436,23 +382,53 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       where.last_cargo_guid = { contains: this.searchForm!.value['last_cargo'].guid };
     }
 
+    if (this.searchForm!.value['job_no']) {
+      where.job_no = { contains: this.searchForm!.value['job_no'] };
+    }
+
     if (this.searchForm!.value['customer_code']) {
       const soSearch: any = {};
       soSearch.customer_company_guid = { contains: this.searchForm!.value['customer_code'].guid };
       where.storing_order = soSearch;
     }
 
-    // if (this.searchForm!.value['capacity']) {
-    //   const igsSearch: any = {};
-    //   igsSearch.capacity = { contains: this.searchForm!.value['capacity'] };
-    //   where.in_gate_survey = igsSearch;
-    // }
+    if (this.searchForm!.value['capacity'] || 
+      this.searchForm!.value['eir_no'] || 
+      this.searchForm!.value['eir_dt_start'] || 
+      this.searchForm!.value['eir_dt_end'] || 
+      this.searchForm!.value['tare_weight']) {
+      // In Gate
+      const igSearch: any = {};
+      if (this.searchForm!.value['eir_no']) {
+        igSearch.eir_no = { contains: this.searchForm!.value['eir_no'] }
+      }
+      if (this.searchForm!.value['eir_dt_start'] || this.searchForm!.value['eir_dt_end']) {
+        igSearch.eir_dt = {
+          gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']),
+          lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'])
+        };
+      }
+      if (this.searchForm!.value['capacity'] || this.searchForm!.value['tare_weight']) {
+        // In Gate Survey
+        const igsSearch: any = {};
+        if (this.searchForm!.value['capacity']) {
+          igsSearch.capacity = { eq: this.searchForm!.value['capacity'] };
+        }
+        if (this.searchForm!.value['tare_weight']) {
+          igsSearch.tare_weight = { eq: this.searchForm!.value['tare_weight'] };
+        }
+        igSearch.in_gate_survey = igsSearch;
+      }
+      where.in_gate = { some: igSearch };
+    }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+      this.updatePageSelection();
+    });
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
@@ -460,6 +436,13 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+
+        // Execute the callback if provided
+        if (callback) {
+          callback();
+        } else {
+          this.updatePageSelection();
+        }
       });
 
     this.pageSize = pageSize;
@@ -493,7 +476,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before);
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+      this.updatePageSelection();
+    });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -582,7 +567,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
     untypedFormControl.setValidators([
-      Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
   }
