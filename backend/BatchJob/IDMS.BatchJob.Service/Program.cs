@@ -133,7 +133,7 @@ namespace IDMS.BatchJob.Service
             foreach (var row in result)
             {
                 string notification_uid = $"cc-scheduling-{row?.SelectToken("sot_guid")?.ToString()}";
-                Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", "missing scheduling", notification_uid);
+                await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", "missing scheduling", notification_uid);
             }
 
             return result;
@@ -180,7 +180,7 @@ namespace IDMS.BatchJob.Service
             foreach (var row in result) 
             {
                 string notification_uid = $"cc-booking-{row?.SelectToken("sot_guid")?.ToString()}";
-                Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", "missing booking", notification_uid);
+                await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", "missing booking", notification_uid);
             }
   
             return result;

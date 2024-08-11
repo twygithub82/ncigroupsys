@@ -45,7 +45,7 @@ namespace IDMS.BatchJob.Service
                     // Serialize the payload to JSON
                     var jsonPayload = JsonConvert.SerializeObject(requestPayload);
 
-                    using (var httpClient = new HttpClient()) 
+                    using (var httpClient = new HttpClient())
                     {
                         var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                         var data = await httpClient.PostAsync(httpURL, content);
