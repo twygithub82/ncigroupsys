@@ -459,7 +459,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  getYardDescription(codeValType: string): string | undefined {
+  getYardDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 

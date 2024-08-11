@@ -246,7 +246,7 @@
                     {{translatedLangText.YARD}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.YARD}}:</span>{{getYardDescription(row.storing_order_tank?.in_gate?.yard_cv)}}
+                    <span class="mobile-label">{{translatedLangText.YARD}}:</span>{{getYardDescription(igDS.getInGateItem(row.storing_order_tank?.in_gate)?.yard_cv)}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

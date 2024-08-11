@@ -51,6 +51,7 @@ import { ReleaseOrderDS, ReleaseOrderItem, ReleaseOrderUpdateItem } from 'app/da
 import { SchedulingDS, SchedulingItem, SchedulingUpdateItem } from 'app/data-sources/scheduling';
 import { MatCardModule } from '@angular/material/card';
 import { BookingItem } from 'app/data-sources/booking';
+import { InGateDS } from 'app/data-sources/in-gate';
 
 @Component({
   selector: 'app-release-order-details',
@@ -204,6 +205,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tDS: TankDS;
   roDS: ReleaseOrderDS;
   schedulingDS: SchedulingDS;
+  igDS: InGateDS;
 
   startDateRO = new Date();
 
@@ -227,6 +229,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.tDS = new TankDS(this.apollo);
     this.roDS = new ReleaseOrderDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -255,14 +258,14 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       sot_guid: [tank.guid],
       tank_no: [tank.tank_no],
       customer_company: [this.ccDS.displayName(tank.storing_order?.customer_company)],
-      eir_no: [tank.in_gate?.eir_no],
-      eir_dt: [tank.in_gate?.eir_dt],
-      capacity: [tank.in_gate?.in_gate_survey?.capacity],
-      tare_weight: [tank.in_gate?.in_gate_survey?.tare_weight],
+      eir_no: [this.igDS.getInGateItem(tank.in_gate)?.eir_no],
+      eir_dt: [this.igDS.getInGateItem(tank.in_gate)?.eir_dt],
+      capacity: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.capacity],
+      tare_weight: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.tare_weight],
       tank_status_cv: [tank.tank_status_cv],
-      yard_cv: [tank.in_gate?.yard_cv],
+      yard_cv: [this.igDS.getInGateItem(tank.in_gate)?.yard_cv],
       reference: [''],
-      release_job_no: [''],
+      release_job_no: [tank.release_job_no],
       booked: [this.checkBooking(tank.booking)],
       scheduled: [this.checkScheduling(tank.scheduling)],
     });

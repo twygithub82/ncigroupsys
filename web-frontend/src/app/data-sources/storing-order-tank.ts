@@ -127,6 +127,11 @@ const GET_STORING_ORDER_TANKS = gql`
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
         guid
         tank_no
         so_guid
@@ -162,6 +167,11 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
         guid
         tank_no
         so_guid
@@ -207,6 +217,11 @@ const GET_STORING_ORDER_TANKS_FOR_BOOKING = gql`
         etr_dt
         guid
         job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
         last_cargo_guid
         purpose_cleaning
         purpose_repair_cv
@@ -293,6 +308,11 @@ const RELOAD_STORING_ORDER_TANKS = gql`
         etr_dt
         guid
         job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
         last_cargo_guid
         purpose_cleaning
         purpose_repair_cv
@@ -335,6 +355,11 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
         etr_dt
         guid
         job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
         last_cargo_guid
         purpose_cleaning
         purpose_repair_cv
