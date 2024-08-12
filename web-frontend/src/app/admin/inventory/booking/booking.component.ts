@@ -196,7 +196,7 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
       booking_dt_end: [''],
       yard_cv: [''],
       eir_no: [''],
-      booking_ref: [''],
+      reference: [''],
       purpose: [''],
       surveyor_cv: [''],
       booking_type_cv: [''],
@@ -282,7 +282,14 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
     const where: any = {
     };
 
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['last_cargo'] || this.searchForm!.value['customer_code']) {
+    if (this.searchForm!.value['reference']) {
+      where.reference = { contains: this.searchForm!.value['reference'] };
+    }
+
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['last_cargo'] || this.searchForm!.value['customer_code'] ||
+      this.searchForm!.value['eir_no'] || this.searchForm!.value['eir_dt_start'] || this.searchForm!.value['eir_dt_end']
+    ) {
+      // SOT
       const sotSearch: any = {};
       if (this.searchForm!.value['tank_no']) {
         sotSearch.tank_no = { contains: this.searchForm!.value['tank_no'] };
@@ -296,12 +303,24 @@ export class BookingComponent extends UnsubscribeOnDestroyAdapter implements OnI
         soSearch.customer_company_guid = { contains: this.searchForm!.value['customer_code'].guid };
         sotSearch.storing_order = soSearch;
       }
+
+      // in_gate
+      if (this.searchForm!.value['eir_no'] || this.searchForm!.value['eir_dt_start'] || this.searchForm!.value['eir_dt_end']) {
+        const igSearch: any = { some: {} }
+        if (this.searchForm!.value['eir_no']) {
+          igSearch.some.eir_no = { contains: this.searchForm!.value['eir_no'] }
+        }
+        if (this.searchForm!.value['eir_dt_start'] || this.searchForm!.value['eir_dt_end']) {
+          igSearch.some.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+        }
+      }
+
       where.storing_order_tank = sotSearch;
     }
 
-    // if (this.searchForm!.value['eir_no']) {
-    //   where.eir_no = { contains: this.searchForm!.value['eir_no'] };
-    // }
+    if (this.searchForm!.value['booking_type_cv']) {
+      where.book_type_cv = { contains: this.searchForm!.value['booking_type_cv'] };
+    }
 
     // if (this.searchForm!.value['eir_status']) {
     //   //where.eir_status_cv = { contains: this.searchForm!.value['eir_status'] };

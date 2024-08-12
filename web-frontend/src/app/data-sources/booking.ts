@@ -103,21 +103,6 @@ const GET_BOOKING = gql`
   }
 `;
 
-const CHECK_ANY_ACTIVE_SOT = gql`
-  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
-    sotList: queryStoringOrderTank(where: $where) {
-      nodes {
-        guid
-        so_guid
-        status_cv
-        tank_status_cv
-        tank_no
-      }
-      totalCount
-    }
-  }
-`;
-
 export const CANCEL_STORING_ORDER_TANK = gql`
   mutation CancelStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
     cancelStoringOrderTank(sot: $sot)
