@@ -543,6 +543,8 @@ implements OnInit {
         this.hasPreviousPage = this.tfDepotDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
+        if(!this.hasPreviousPage)
+          this.previous_endCursor=undefined;
         
      });
     }

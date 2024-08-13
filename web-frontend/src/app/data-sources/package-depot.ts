@@ -150,6 +150,15 @@ export const UPDATE_PACKAGE_DEPOT = gql`
   }
 `;
 
+export const UPDATE_PACKAGE_DEPOTS = gql`
+  mutation updatePackageDepots($guids: [String!]!,$free_storage:Int!,$lolo_cost:Float!,
+  $preinspection_cost:Float!,$storage_cost:Float!,$remarks:String!,$storage_cal_cv:String!) {
+    updatePackageDepots(updatePackageDepot_guids: $guids,free_storage:$free_storage,
+    lolo_cost:$lolo_cost,preinspection_cost:$preinspection_cost,storage_cost:$storage_cost,
+    remarks:$remarks,storage_cal_cv:$storage_cal_cv)
+  }
+`;
+
 // export const UPDATE_TARIFF_CLEANING = gql`
 //   mutation updateTariffClean($tc: tariff_cleaningInput!) {
 //     updateTariffClean(updateTariffClean: $tc)
@@ -201,6 +210,21 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     });
   }
 
+  updatePackageDepots(guids: any,free_storage:any,lolo_cost:any,preinspection_cost:any,
+    storage_cost:any,remarks:any,storage_cal_cv:any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_PACKAGE_DEPOTS,
+      variables: {
+        guids,
+        free_storage,
+        lolo_cost,
+        preinspection_cost,
+        storage_cost,
+        remarks,
+        storage_cal_cv
+      }
+    });
+  }
 
 
 }

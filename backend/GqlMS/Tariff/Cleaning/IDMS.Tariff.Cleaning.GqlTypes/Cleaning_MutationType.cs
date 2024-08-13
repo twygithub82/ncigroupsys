@@ -16,7 +16,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace IDMS.Models.Tariff.Cleaning.GqlTypes
 {
-    public class TariffCleanning_MutationType
+    public class TariffCleaning_MutationType
     {
        
         public async Task<int> AddTariffCleaning([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, 

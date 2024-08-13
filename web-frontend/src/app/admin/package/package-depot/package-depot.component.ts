@@ -317,8 +317,40 @@ implements OnInit {
     event.preventDefault(); // Prevents the form submission
   }
 
+  adjustCost()
+  {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent,{
+      width: '700px',
+      height:'800px',
+      data: {
+        action: 'update',
+        langText: this.langText,
+        selectedItems:this.selection.selected
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      }
+        
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         if (result>0) {
+          //if(result.selectedValue>0)
+         // {
+            this.handleSaveSuccess(result);
+            this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+          //}
+      }
+      });
+  }
   
-  editCall(row: CustomerCompanyCleaningCategoryItem) {
+  editCall(row: PackageDepotItem) {
    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -331,11 +363,11 @@ implements OnInit {
     const dialogRef = this.dialog.open(FormDialogComponent,{
       
       width: '700px',
-      height:'auto',
+      height:'800px',
       data: {
-        action: 'new',
+        action: 'update',
         langText: this.langText,
-        selectedItem:row
+        selectedItems:rows
       },
       position: {
         top: '50px'  // Adjust this value to move the dialog down from the top of the screen
@@ -349,7 +381,7 @@ implements OnInit {
             {
               this.handleSaveSuccess(result);
               //this.search();
-              //this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
             }
       //}
       });
@@ -505,6 +537,8 @@ implements OnInit {
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
+        if(!this.hasPreviousPage)
+          this.previous_endCursor=undefined;
      });
     }
   
@@ -528,22 +562,7 @@ implements OnInit {
   }
 
   removeSelectedRows() {
-    // const totalSelect = this.selection.selected.length;
-    // this.selection.selected.forEach((item) => {
-    //   const index: number = this.dataSource.renderedData.findIndex(
-    //     (d) => d === item
-    //   );
-    //   // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
-    //   this.exampleDatabase?.dataChange.value.splice(index, 1);
-    //   this.refreshTable();
-    //   this.selection = new SelectionModel<AdvanceTable>(true, []);
-    // });
-    // this.showNotification(
-    //   'snackbar-danger',
-    //   totalSelect + ' Record Delete Successfully...!!!',
-    //   'bottom',
-    //   'center'
-    // );
+   
   }
   public loadData() {
 
@@ -562,14 +581,7 @@ implements OnInit {
       this.storageCalCvList=data;
     });
 
-    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-    //   if(this.clnCatDS.totalCount>0)
-    //   {
-    //     this.cleaning_categoryList=data;
-    //   }
-
-    // });
-
+   
   
   }
   showNotification(

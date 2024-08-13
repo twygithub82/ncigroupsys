@@ -428,6 +428,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
       this.paginator.pageIndex=this.pageIndex;
       
+      
     });
   }
   

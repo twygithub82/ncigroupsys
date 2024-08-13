@@ -20,7 +20,7 @@ namespace IDMS.Models.Package.Depot.GqlTypes
 {
     public class PackageDepot_MutationType
     {
-       
+
         //public async Task<int> AddPackageDepot([Service] ApplicationPackageDBContext context, [Service] IConfiguration config, 
         //    [Service] IHttpContextAccessor httpContextAccessor, package_depot NewPackageDepot)
         //{
@@ -40,20 +40,57 @@ namespace IDMS.Models.Package.Depot.GqlTypes
         //        newPackageDepot.storage_cost = NewPackageDepot.storage_cost;
         //        newPackageDepot.create_by = uid;
         //        newPackageDepot.create_dt = GqlUtils.GetNowEpochInSec();
-               
+
         //        context.package_depot.Add(newPackageDepot);
 
-               
+
         //        //context.cleaning_category.Add(newCleanCategory);
         //        retval =context.SaveChanges();
         //    }
         //    catch { throw; }
 
-            
+
         //    return retval;
         //}
 
-       
+        public async Task<int> UpdatePackageDepots([Service] ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageDepot_guids, int free_storage, double lolo_cost,
+           double preinspection_cost, double storage_cost,string remarks,string storage_cal_cv)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                var dbPackageDepots = context.package_depot.Where(cc => UpdatePackageDepot_guids.Contains(cc.guid)).ToList();
+                if (dbPackageDepots == null)
+                {
+                    throw new GraphQLException(new Error("The Package Cleaning not found", "500"));
+                }
+                foreach (var dbPackageDepot in dbPackageDepots)
+                {
+                    dbPackageDepot.free_storage = free_storage;
+                    dbPackageDepot.lolo_cost = lolo_cost;
+                    dbPackageDepot.preinspection_cost = preinspection_cost;
+                    dbPackageDepot.remarks = remarks;
+                    dbPackageDepot.storage_cal_cv = storage_cal_cv;
+                    dbPackageDepot.storage_cost = storage_cost;
+                    dbPackageDepot.update_by = uid;
+                    dbPackageDepot.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+
         public async Task<int> UpdatePackageDepot([Service] ApplicationPackageDBContext context, [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, package_depot UpdatePackageDepot)
         {
