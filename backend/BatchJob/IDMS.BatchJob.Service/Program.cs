@@ -99,7 +99,7 @@ namespace IDMS.BatchJob.Service
 
             string BOOKTYPE = "RELEASE_ORDER";
             string STATUS = "CANCELED";
-            string dateInput = string.IsNullOrEmpty(date) ? "CURDATE()" : $"'{date}'";
+            string dateInput = string.IsNullOrEmpty(date) ? "NOW()" : $"'{date}'";
 
             string sql = $"SELECT sot_guid FROM booking WHERE book_type_cv = '{BOOKTYPE}' " +
                 $"AND status_cv <> '{STATUS}' " +
@@ -133,7 +133,7 @@ namespace IDMS.BatchJob.Service
             foreach (var row in result)
             {
                 string notification_uid = $"cc-scheduling-{row?.SelectToken("sot_guid")?.ToString()}";
-                Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", "missing scheduling", notification_uid);
+                await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", "missing scheduling", notification_uid);
             }
 
             return result;
@@ -146,7 +146,7 @@ namespace IDMS.BatchJob.Service
 
             string BOOKTYPE = "RELEASE_ORDER";
             string STATUS = "CANCELED";
-            string dateInput = string.IsNullOrEmpty(date) ? "CURDATE()" : $"'{date}'";
+            string dateInput = string.IsNullOrEmpty(date) ? "NOW()" : $"'{date}'";
 
             string sql = "SELECT sc.sot_guid FROM scheduling sc WHERE (sc.delete_dt is null or sc.delete_dt = 0) " +
                 $"AND sc.create_dt <= UNIX_TIMESTAMP({dateInput}) " +
@@ -180,7 +180,7 @@ namespace IDMS.BatchJob.Service
             foreach (var row in result) 
             {
                 string notification_uid = $"cc-booking-{row?.SelectToken("sot_guid")?.ToString()}";
-                Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", "missing booking", notification_uid);
+                await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", "missing booking", notification_uid);
             }
   
             return result;

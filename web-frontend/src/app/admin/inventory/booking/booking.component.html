@@ -115,7 +115,7 @@
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.BOOKING_REFERENCE}}</mat-label>
-                      <input matInput formControlName="booking_ref">
+                      <input matInput formControlName="reference">
                     </mat-form-field>
                   </div>
                 </div>
@@ -246,7 +246,7 @@
                     {{translatedLangText.YARD}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.YARD}}:</span>{{getYardDescription(row.storing_order_tank?.in_gate?.yard_cv)}}
+                    <span class="mobile-label">{{translatedLangText.YARD}}:</span>{{getYardDescription(igDS.getInGateItem(row.storing_order_tank?.in_gate)?.yard_cv)}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

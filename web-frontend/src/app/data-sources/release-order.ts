@@ -178,56 +178,6 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
   }
 `;
 
-export const GET_STORING_ORDER_BY_ID = gql`
-  query queryStoringOrderById($id: String!) {
-    soList: queryStoringOrderById(id: $id) {
-      guid
-      haulier
-      so_no
-      so_notes
-      customer_company {
-        code
-        name
-        guid
-      }
-      status_cv
-      storing_order_tank {
-        certificate_cv
-        clean_status_cv
-        create_by
-        create_dt
-        delete_dt
-        estimate_cv
-        eta_dt
-        etr_dt
-        guid
-        job_no
-        last_cargo_guid
-        purpose_cleaning
-        purpose_repair_cv
-        purpose_steam
-        purpose_storage
-        remarks
-        required_temp
-        so_guid
-        status_cv
-        tank_no
-        tank_status_cv
-        unit_type_guid
-        update_by
-        update_dt
-        tariff_cleaning {
-          guid
-          cargo
-          flash_point
-          remarks
-          open_on_gate_cv
-        }
-      }
-    }
-  }
-`;
-
 export const ADD_RELEASE_ORDER = gql`
   mutation AddReleaseOrder($ro: ReleaseOrderRequestInput!, $schedulings: [SchedulingRequestInput!]!) {
     addReleaseOrder(releaseOrder: $ro, schedulings: $schedulings)

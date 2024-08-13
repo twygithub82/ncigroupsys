@@ -169,6 +169,11 @@ export const GET_STORING_ORDER_BY_ID = gql`
         etr_dt
         guid
         job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
         last_cargo_guid
         purpose_cleaning
         purpose_repair_cv

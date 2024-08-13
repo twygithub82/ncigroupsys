@@ -120,22 +120,23 @@ export class FormDialogComponent {
   }
 
   submit() {
-    if (this.storingOrderTankForm?.valid) {
-      if (!this.validatePurpose()) {
-        this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
-      } else {
-        this.storingOrderTankForm.get('purpose')?.setErrors(null);
-        var sot: StoringOrderTankItem = {
-          purpose_storage: false,
-          purpose_steam: false,
-          purpose_cleaning: false
+    if (this.sotSelection.hasValue()) {
+      const selectedList = this.sotSelection.selected.map(sot => {
+        const sotItem = new StoringOrderTankItem(sot);
+        
+        // Ensure 'new' is added to actions without duplicates
+        sotItem.actions = sotItem.actions || []; // Initialize actions if it's undefined
+        if (!sotItem.actions.includes('new')) {
+          sotItem.actions.push('new');
         }
-        const returnDialog: DialogData = {
-          item: [sot],
-        }
-        console.log('valid');
-        this.dialogRef.close(returnDialog);
+        
+        return sotItem;
+      });
+      const returnDialog: DialogData = {
+        item: selectedList,
       }
+      console.log('valid');
+      this.dialogRef.close(returnDialog);
     } else {
       console.log('invalid');
       this.findInvalidControls();

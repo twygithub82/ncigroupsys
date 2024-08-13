@@ -28,6 +28,7 @@ import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { MatCardModule } from '@angular/material/card';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
+import { InGateDS } from 'app/data-sources/in-gate';
 
 
 export interface DialogData {
@@ -90,6 +91,7 @@ export class FormDialogComponent {
 
   ccDS: CustomerCompanyDS;
   roDS: ReleaseOrderDS;
+  igDS: InGateDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -100,6 +102,7 @@ export class FormDialogComponent {
     // Set the defaults
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.roDS = new ReleaseOrderDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
     this.action = data.action!;
     this.dialogTitle = 'New Scheduling';
     if (this.action === 'edit') {
@@ -129,14 +132,14 @@ export class FormDialogComponent {
       sot_guid: [tank.guid],
       tank_no: [tank.tank_no],
       customer_company: [this.ccDS.displayName(tank.storing_order?.customer_company)],
-      eir_no: [tank.in_gate?.eir_no],
-      eir_dt: [tank.in_gate?.eir_dt],
-      capacity: [tank.in_gate?.in_gate_survey?.capacity],
-      tare_weight: [tank.in_gate?.in_gate_survey?.tare_weight],
+      eir_no: [this.igDS.getInGateItem(tank.in_gate)?.eir_no],
+      eir_dt: [this.igDS.getInGateItem(tank.in_gate)?.eir_dt],
+      capacity: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.capacity],
+      tare_weight: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.tare_weight],
       tank_status_cv: [tank.tank_status_cv],
-      yard_cv: [tank.in_gate?.yard_cv],
+      yard_cv: [this.igDS.getInGateItem(tank.in_gate)?.yard_cv],
       reference: [''],
-      release_job_no: [''],
+      release_job_no: [tank.release_job_no],
       booked: [this.checkBooking(tank.booking)],
       scheduled: [this.checkScheduling(tank.scheduling)],
     });
