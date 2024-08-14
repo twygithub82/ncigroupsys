@@ -212,6 +212,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   ngOnInit() {
    // this.initializeFilterCustomerCompany();
     this.loadData();
+    
   }
   refresh() {
     this.loadData();
@@ -219,7 +220,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
  
-
+  
   initSearchForm() {
     this.searchForm = this.fb.group({
       cargo_name: [''],

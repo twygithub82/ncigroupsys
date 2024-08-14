@@ -10,21 +10,32 @@
           <div class="card">
             <div class="materialTableHeader">
               <div class="left">
-                <ul class="header-buttons-left ms-0 d-flex align-items-center">
-                  <li class="tbl-title me-3">
-                    <h2 class="mb-0">{{translatedLangText.CUSTOMER_CODE}} :</h2>
+                <ul class="header-buttons-left ms-0">
+                  <li class="tbl-title">
+                    <h2>{{translatedLangText.CUSTOMER_CODE}} :
+                    </h2>
                   </li>
-                  <li class="col-lg-4 col-md-4 col-sm-4 col-xs-4 d-flex align-items-center">
-                    <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
+                  <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 ">
+                  <!-- <li class="tbl-search-box"> -->
+                    <form class="ms-0" [formGroup]="pcForm!"  #formDirective="ngForm">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{langText.CUSTOMER_CODE | translate}}</mat-label>
                         <mat-select [formControl]="customerCodeControl" formControlName="customer_code" multiple>
-                          <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
-                            {{ ccDS.displayName(cc) }}
-                          </mat-option>
-                        </mat-select>
+                            <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
+                             
+                                {{ ccDS.displayName(cc) }}
+                             
+                            </mat-option>
+                          </mat-select>
+                       
                       </mat-form-field>
                     </form>
+                  <!-- </li> -->
+                </div>
+                  <li class="ps-2">
+                    <button mat-mini-fab color="primary" (click)="search()">
+                      <mat-icon>search</mat-icon>
+                    </button>
                   </li>
                 </ul>
               </div>

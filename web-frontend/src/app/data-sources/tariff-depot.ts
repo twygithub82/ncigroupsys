@@ -24,6 +24,8 @@ export class TariffDepotGO {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+  public gate_in_cost?:number;
+  public gate_out_cost?:number;
 
   constructor(item: Partial<TariffDepotGO> = {}) {
     this.guid = item.guid;
@@ -39,6 +41,8 @@ export class TariffDepotGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+    this.gate_in_cost=item.gate_in_cost;
+    this.gate_out_cost=item.gate_out_cost;
   }
 }
 
@@ -130,6 +134,8 @@ export const GET_TARIFF_DEPOT_QUERY_WITH_TANK = gql`
       guid
       lolo_cost
       preinspection_cost
+      gate_in_cost
+      gate_out_cost
       profile_name
       storage_cost
       update_by

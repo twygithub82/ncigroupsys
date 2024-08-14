@@ -29,6 +29,8 @@ export class PackageDepotGO {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+  public gate_in_cost?:number;
+  public gate_out_cost?:number;
  
 
   constructor(item: Partial<PackageDepotGO> = {}) {
@@ -47,6 +49,8 @@ export class PackageDepotGO {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+    this.gate_in_cost=item.gate_in_cost;
+    this.gate_out_cost=item.gate_out_cost;
    
   }
 }
@@ -84,6 +88,8 @@ export const GET_PACKAGE_DEPOT_QUERY = gql`
       guid
       lolo_cost
       preinspection_cost
+      gate_in_cost
+      gate_out_cost
       remarks
       storage_cal_cv
       storage_cost
@@ -125,6 +131,8 @@ export const GET_PACKAGE_DEPOT_QUERY = gql`
         guid
         lolo_cost
         preinspection_cost
+        gate_in_cost
+        gate_out_cost
         profile_name
         storage_cost
         update_by
@@ -152,10 +160,10 @@ export const UPDATE_PACKAGE_DEPOT = gql`
 
 export const UPDATE_PACKAGE_DEPOTS = gql`
   mutation updatePackageDepots($guids: [String!]!,$free_storage:Int!,$lolo_cost:Float!,
-  $preinspection_cost:Float!,$storage_cost:Float!,$remarks:String!,$storage_cal_cv:String!) {
+  $preinspection_cost:Float!,$storage_cost:Float!,$gate_in_cost:Float!,$gate_out_cost:Float!,$remarks:String!,$storage_cal_cv:String!) {
     updatePackageDepots(updatePackageDepot_guids: $guids,free_storage:$free_storage,
-    lolo_cost:$lolo_cost,preinspection_cost:$preinspection_cost,storage_cost:$storage_cost,
-    remarks:$remarks,storage_cal_cv:$storage_cal_cv)
+    lolo_cost:$lolo_cost,preinspection_cost:$preinspection_cost,storage_cost:$storage_cost,gate_in_cost:$gate_in_cost,
+    gate_out_cost:$gate_out_cost,remarks:$remarks,storage_cal_cv:$storage_cal_cv)
   }
 `;
 
@@ -211,7 +219,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
   }
 
   updatePackageDepots(guids: any,free_storage:any,lolo_cost:any,preinspection_cost:any,
-    storage_cost:any,remarks:any,storage_cal_cv:any): Observable<any> {
+    storage_cost:any,gate_in_cost:any, gate_out_cost:any, remarks:any,storage_cal_cv:any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_PACKAGE_DEPOTS,
       variables: {
@@ -220,6 +228,8 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
         lolo_cost,
         preinspection_cost,
         storage_cost,
+        gate_in_cost,
+        gate_out_cost,
         remarks,
         storage_cal_cv
       }
