@@ -8,30 +8,44 @@
     height: auto;
 }
 
-.grid-overlay {
+.grid-overlay,
+.grid-overlay-wide {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    /* Adjust the number of columns */
-    grid-template-rows: repeat(5, 1fr);
-    /* Adjust the number of rows */
     gap: 1px;
 }
 
-.grid-overlay div {
+.grid-overlay {
+    grid-template-columns: repeat(9, 1fr);
+    /* Adjust the number of columns */
+    grid-template-rows: repeat(7, 1fr);
+    /* Adjust the number of rows */
+}
+
+.grid-overlay-wide {
+    grid-template-columns: repeat(11, 1fr);
+    /* Adjust the number of columns */
+    grid-template-rows: repeat(8, 1fr);
+    /* Adjust the number of rows */
+}
+
+.grid-overlay div,
+.grid-overlay-wide div {
     border: 1px solid transparent;
     background-color: rgba(255, 255, 255, 0.3);
 }
 
-.grid-overlay div.highlighted {
+.grid-overlay div.highlighted,
+.grid-overlay-wide div.highlighted {
     background-color: rgba(255, 0, 0, 0.5);
 }
 
-.grid-overlay div.walkway-highlighted {
+.grid-overlay div.walkway-highlighted,
+.grid-overlay-wide div.walkway-highlighted {
     background-color: rgba(255, 251, 0, 0.733);
 }
 

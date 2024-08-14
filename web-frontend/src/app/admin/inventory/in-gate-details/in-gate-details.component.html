@@ -2,7 +2,8 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="pageTitleNew" [items]="breadcrumsMiddleList" [active_item]="langText.DETAILS"></app-breadcrumb>
+      <app-breadcrumb [title]="pageTitleNew" [items]="breadcrumsMiddleList"
+        [active_item]="langText.DETAILS"></app-breadcrumb>
     </div>
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -132,7 +133,8 @@
                                 <span>{{translatedLangText.EIR_NO}}:</span>
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                                <span [class]="'font-bold'">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
+                                <span
+                                  [class]="'font-bold'">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
                               </div>
                             </div>
                             <div class="row">
@@ -142,7 +144,8 @@
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <div class="contact-detail-info">
                                   <span
-                                    [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
+                                    [class]="'font-bold ' + cleanStatusColor(storingOrderTankItem?.clean_status_cv)">{{storingOrderTankItem?.clean_status_cv
+                                    ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
                                 </div>
                               </div>
                             </div>
@@ -367,7 +370,7 @@
               <div class="card">
                 <div class="header">
                   <h2>
-                    {{translatedLangText.CARGO}}
+                    {{translatedLangText.CARGO_DETAILS}}
                   </h2>
                 </div>
                 <div class="body p-1">
@@ -379,117 +382,112 @@
                   }
                   @if (!(sotDS.loading$ | async)) {
                   <mat-card-content>
-                    <mat-tab-group mat-stretch-tabs>
-                      <mat-tab [label]="translatedLangText.CARGO_DETAILS">
-                        <div class="container pt-2">
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.CARGO_NAME}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.DESCRIPTION}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.description ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.ALIAS_NAME}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.alias ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.CARGO_CLASS}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.class_cv ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.CARGO_UN_NO}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.un_no ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.CARGO_FLASH_POINT}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.flash_point ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.CARGO_HAZARD_LEVEL}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.hazard_level_cv ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.CARGO_BAN_TYPE}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.ban_type_cv ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.CARGO_NATURE}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.nature_cv ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.CLEANING_CATEGORY}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.cleaning_category?.name ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.TOTAL_CLEANED}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.IN_GATE_ALERT}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.in_gate_alert ?? "-"}}
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                              {{translatedLangText.MSDS}}:
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                              {{storingOrderTankItem?.tariff_cleaning?.msds_guid ?? "-"}}
-                            </div>
-                          </div>
+                    <div class="container pt-2">
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.CARGO_NAME}}:
                         </div>
-                      </mat-tab>
-                      <mat-tab [label]="translatedLangText.CARGO_NATURE">Cargo Nature</mat-tab>
-                    </mat-tab-group>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.DESCRIPTION}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.description ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.ALIAS_NAME}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.alias ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.CARGO_CLASS}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.class_cv ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.CARGO_UN_NO}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.un_no ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.CARGO_FLASH_POINT}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.flash_point ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.CARGO_HAZARD_LEVEL}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.hazard_level_cv ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.CARGO_BAN_TYPE}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.ban_type_cv ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.CARGO_NATURE}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.nature_cv ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.CLEANING_CATEGORY}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.cleaning_category?.name ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.TOTAL_CLEANED}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.IN_GATE_ALERT}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.in_gate_alert ?? "-"}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
+                          {{translatedLangText.MSDS}}:
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          {{storingOrderTankItem?.tariff_cleaning?.msds_guid ?? "-"}}
+                        </div>
+                      </div>
+                    </div>
                   </mat-card-content>
                   }
                 </div>

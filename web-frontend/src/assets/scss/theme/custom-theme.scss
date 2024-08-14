@@ -3,13 +3,16 @@
 .theme-gold-purple {
   .navbar {
     background-color: transparent;
+
     .header-icon .feather {
-      color: $theme-gold-purple-nav-anchor;
+      color: $theme-gold-purple-navbar-brand;
     }
   }
+
   .navbar-right .user_profile span {
-    color: $theme-gold-purple-nav-anchor !important;
+    color: rgb(0, 0, 0) !important;
   }
+
   .navbar.active {
     background-color: $theme-gold-purple !important;
     .nav {
@@ -60,14 +63,14 @@
 
     .open {
       > a {
-        background-color: $theme-gold-purple-nav-anchor_opened;
+        background-color: $theme-gold-purple-nav-anchor-opened;
 
         &:hover {
-          background-color: $theme-gold-purple-nav-anchor_opened_hover;
+          background-color: $theme-gold-purple-nav-anchor-opened_hover;
         }
 
         &:focus {
-          background-color: $theme-gold-purple-nav-anchor_opened_focus;
+          background-color: $theme-gold-purple-nav-anchor-opened_focus;
         }
       }
     }
@@ -85,15 +88,9 @@
             background-color: $theme-gold-purple-menu-list-active;
           }
           a {
-            -moz-transition: all 0.3s;
-            -o-transition: all 0.3s;
-            -webkit-transition: all 0.3s;
             transition: all 0.3s;
             i,
             span {
-              -moz-transition: all 0.3s;
-              -o-transition: all 0.3s;
-              -webkit-transition: all 0.3s;
               transition: all 0.3s;
             }
           }
@@ -119,6 +116,7 @@
   .breadcrumb li a {
     color: $theme-gold-purple-active-color !important;
   }
+
   .page-item.active .page-link {
     background-color: $theme-gold-purple-active-color;
     border-color: $theme-gold-purple-active-color;
@@ -154,6 +152,7 @@
       color: #fff !important;
     }
   }
+
   .btn-outline-primary {
     background: 0 0 !important;
     color: $theme-gold-purple-bar !important;
@@ -164,9 +163,11 @@
       border: 1px solid $theme-gold-purple !important;
     }
   }
+
   .timelineLabelColor strong {
     color: $theme-gold-purple-active-color !important;
   }
+
   .top-sidebar {
     .horizontal-menu {
       li {
@@ -176,9 +177,6 @@
           }
         }
         a {
-          -moz-transition: all 0.3s;
-          -o-transition: all 0.3s;
-          -webkit-transition: all 0.3s;
           transition: all 0.3s;
           &:hover {
             color: $theme-gold-purple-active-color;
@@ -187,6 +185,7 @@
       }
     }
   }
+
   .demo-choose-skin li.actived:after {
     color: #000;
   }
@@ -194,14 +193,17 @@
   .nav-tabs > li > a:before {
     border-bottom: 2px solid $theme-gold-purple-active-color;
   }
+
   .search-box input#search {
     color: gray;
     background: #edecec;
   }
+
   .settingSidebar ul.choose-theme li.active div::after {
     color: #000;
   }
 }
+
 /*Logo Header Background Color*/
 .logo-gold-purple {
   .navbar-header {

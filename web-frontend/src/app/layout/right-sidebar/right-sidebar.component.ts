@@ -146,7 +146,7 @@ export class RightSidebarComponent
     this.renderer.addClass(this.document.body, 'theme-white');
     const theme = 'light';
     const menuOption = 'menu_light';
-    this.selectedBgColor = 'white';
+    this.selectedBgColor = 'gold-white';
     this.isDarkSidebar = false;
     localStorage.setItem('choose_logoheader', 'logo-white');
     localStorage.setItem('choose_skin', 'theme-white');
