@@ -128,7 +128,7 @@ namespace IDMS.Models.Package.All.GqlTypes
 
         public async Task<int> UpdatePackageDepots([Service] ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageDepot_guids, int free_storage, double lolo_cost,
-           double preinspection_cost, double storage_cost, string remarks, string storage_cal_cv)
+           double preinspection_cost, double storage_cost,double gate_in_cost, double gate_out_cost, string remarks, string storage_cal_cv)
         {
             int retval = 0;
             try
@@ -143,12 +143,14 @@ namespace IDMS.Models.Package.All.GqlTypes
                 }
                 foreach (var dbPackageDepot in dbPackageDepots)
                 {
-                    dbPackageDepot.free_storage = free_storage;
-                    dbPackageDepot.lolo_cost = lolo_cost;
-                    dbPackageDepot.preinspection_cost = preinspection_cost;
-                    dbPackageDepot.remarks = remarks;
-                    dbPackageDepot.storage_cal_cv = storage_cal_cv;
-                    dbPackageDepot.storage_cost = storage_cost;
+                    if(free_storage > -1) dbPackageDepot.free_storage = free_storage;
+                    if (lolo_cost > -1) dbPackageDepot.lolo_cost = lolo_cost;
+                    if (preinspection_cost > -1) dbPackageDepot.preinspection_cost = preinspection_cost;
+                    if (!string.IsNullOrEmpty(remarks)) dbPackageDepot.remarks = remarks;
+                    if (!string.IsNullOrEmpty(storage_cal_cv)) dbPackageDepot.storage_cal_cv = storage_cal_cv;
+                    if (storage_cost > -1) dbPackageDepot.storage_cost = storage_cost;
+                    if (gate_in_cost > -1) dbPackageDepot.gate_in_cost = gate_in_cost;
+                    if (gate_out_cost>-1) dbPackageDepot.gate_out_cost = gate_out_cost;
                     dbPackageDepot.update_by = uid;
                     dbPackageDepot.update_dt = GqlUtils.GetNowEpochInSec();
                 }
@@ -190,6 +192,8 @@ namespace IDMS.Models.Package.All.GqlTypes
                 dbPackageDepot.remarks = UpdatePackageDepot.remarks;
                 dbPackageDepot.storage_cal_cv = UpdatePackageDepot.storage_cal_cv;
                 dbPackageDepot.storage_cost = UpdatePackageDepot.storage_cost;
+                dbPackageDepot.gate_in_cost = UpdatePackageDepot.gate_in_cost;
+                dbPackageDepot.gate_out_cost = UpdatePackageDepot.gate_out_cost;
                 dbPackageDepot.update_by = uid;
                 dbPackageDepot.update_dt = GqlUtils.GetNowEpochInSec();
 

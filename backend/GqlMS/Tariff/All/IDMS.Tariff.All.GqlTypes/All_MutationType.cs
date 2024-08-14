@@ -31,6 +31,8 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffDepot.guid = NewTariffDepot.guid;
                 newTariffDepot.description = NewTariffDepot.description;
                 newTariffDepot.profile_name = NewTariffDepot.profile_name;
+                newTariffDepot.gate_in_cost=NewTariffDepot.gate_in_cost;
+                newTariffDepot.gate_out_cost= NewTariffDepot.gate_out_cost;
                 // newTariffClean.cost = NewTariffClean.cost;
                 newTariffDepot.preinspection_cost = NewTariffDepot.preinspection_cost;
                 newTariffDepot.lolo_cost = NewTariffDepot.lolo_cost;
@@ -68,6 +70,8 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                     pack_depot.lolo_cost = newTariffDepot.lolo_cost;
                     pack_depot.preinspection_cost = newTariffDepot.preinspection_cost;
                     pack_depot.storage_cost = newTariffDepot.storage_cost;
+                    pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
+                    pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
                     pack_depot.create_by = uid;
                     pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
                     context.package_depot.Add(pack_depot);
@@ -104,7 +108,8 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 dbTariffDepot.lolo_cost = UpdateTariffDepot.lolo_cost;
                 dbTariffDepot.storage_cost = UpdateTariffDepot.storage_cost;
                 dbTariffDepot.free_storage = UpdateTariffDepot.free_storage;
-
+                dbTariffDepot.gate_in_cost = UpdateTariffDepot.gate_in_cost;
+                dbTariffDepot.gate_out_cost = UpdateTariffDepot.gate_out_cost;
                 // dbTariffDepot.unit_type_cv = UpdateTariffDepot.unit_type_cv;
                 dbTariffDepot.tanks = UpdateTariffDepot.tanks;
                 dbTariffDepot.update_by = uid;
