@@ -301,7 +301,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       haulier: sot.storing_order?.haulier,
       vehicle_no: this.igDS.getInGateItem(sot.in_gate)?.vehicle_no,
       driver_name: this.igDS.getInGateItem(sot.in_gate)?.driver_name,
-      eir_dt: this.igDS.getInGateItem(sot.in_gate)?.create_dt ? Utility.convertDate(this.igDS.getInGateItem(sot.in_gate)?.create_dt) : new Date(),
+      eir_dt: this.igDS.getInGateItem(sot.in_gate)?.eir_dt ? Utility.convertDate(this.igDS.getInGateItem(sot.in_gate)?.eir_dt) : new Date(),
       job_no: sot.job_no,
       remarks: this.igDS.getInGateItem(sot.in_gate)?.remarks,
       last_cargo_guid: sot.last_cargo_guid,
@@ -403,26 +403,26 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   onInGateFormSubmit() {
     if (this.inGateForm?.valid) {
       console.log('Valid inGateForm', this.inGateForm?.value);
-      this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.value['haulier'];
-      this.storingOrderTankItem!.job_no = this.inGateForm.value['job_no'];
-      this.storingOrderTankItem!.purpose_storage = this.inGateForm.value['purpose_storage'];
-      this.storingOrderTankItem!.last_cargo_guid = this.inGateForm.value['last_cargo_guid']
+      this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.get('haulier')?.value;
+      this.storingOrderTankItem!.job_no = this.inGateForm.get('job_no')?.value;
+      this.storingOrderTankItem!.purpose_storage = this.inGateForm.get('purpose_storage')?.value;
+      this.storingOrderTankItem!.last_cargo_guid = this.inGateForm.get('last_cargo_guid')?.value;
       let so = new StoringOrderGO(this.storingOrderTankItem!.storing_order);
       let sot = new StoringOrderTankGO(this.storingOrderTankItem);
       sot.storing_order = so;
       let ig = new InGateGO({
         guid: this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.guid,
         eir_no: this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.eir_no,
-        eir_dt: this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.eir_dt,
+        eir_dt: Utility.convertDate(this.inGateForm.get('eir_dt')?.value) as number,
         so_tank_guid: this.storingOrderTankItem?.guid,
-        driver_name: this.inGateForm.value['driver_name'],
-        vehicle_no: this.inGateForm.value['vehicle_no'],
-        remarks: this.inGateForm.value['remarks'],
+        driver_name: this.inGateForm.get('driver_name')?.value,
+        vehicle_no: this.inGateForm.get('vehicle_no')?.value,
+        remarks: this.inGateForm.get('remarks')?.value,
         tank: sot,
-        yard_cv: this.inGateForm.value['yard_cv'],
-        preinspection_cv: this.inGateForm.value['preinspection_cv'],
-        lolo_cv: this.inGateForm.value['lolo_cv'],
-        haulier: this.inGateForm.value['haulier']
+        yard_cv: this.inGateForm.get('yard_cv')?.value,
+        preinspection_cv: this.inGateForm.get('preinspection_cv')?.value,
+        lolo_cv: this.inGateForm.get('lolo_cv')?.value,
+        haulier: this.inGateForm.get('haulier')?.value
       })
       console.log(ig);
       if (ig.guid) {
@@ -474,7 +474,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       haulier: this.storingOrderTankItem!.storing_order?.haulier,
       vehicle_no: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.vehicle_no || '',
       driver_name: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.driver_name || '',
-      eir_dt: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.create_dt ? Utility.convertDate(this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.create_dt) : new Date(),
+      eir_dt: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt ? Utility.convertDate(this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt) : new Date(),
       job_no: this.storingOrderTankItem!.job_no,
       remarks: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.remarks,
       purpose_storage: this.storingOrderTankItem!.purpose_storage,
