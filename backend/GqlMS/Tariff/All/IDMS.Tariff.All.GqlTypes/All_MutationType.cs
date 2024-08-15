@@ -448,23 +448,19 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffLabour.create_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_labour.Add(newTariffLabour);
 
-                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
-                //foreach (var customerCompany in customerCompanies)
-                //{
-                //    var pack_depot = new package_bu();
-                //    pack_depot.guid = Util.GenerateGUID();
-                //    pack_depot.tariff_depot_guid = newTariffDepot.guid;
-                //    pack_depot.customer_company_guid = customerCompany.guid;
-                //    pack_depot.free_storage = newTariffDepot.free_storage;
-                //    pack_depot.lolo_cost = newTariffDepot.lolo_cost;
-                //    pack_depot.preinspection_cost = newTariffDepot.preinspection_cost;
-                //    pack_depot.storage_cost = newTariffDepot.storage_cost;
-                //    pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
-                //    pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
-                //    pack_depot.create_by = uid;
-                //    pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
-                //    context.package_depot.Add(pack_depot);
-                //}
+                var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                foreach (var customerCompany in customerCompanies)
+                {
+                    var pack_labour = new package_labour();
+                    pack_labour.guid = Util.GenerateGUID();
+                    pack_labour.tariff_labour_guid = newTariffLabour.guid;
+                    pack_labour.customer_company_guid = customerCompany.guid;
+                    pack_labour.cost = newTariffLabour.cost;
+                    pack_labour.remarks = newTariffLabour.remarks;
+                    pack_labour.create_by = uid;
+                    pack_labour.create_dt = GqlUtils.GetNowEpochInSec();
+                    context.package_labour.Add(pack_labour);
+                }
                 //context.cleaning_category.Add(newCleanCategory);
                 retval = context.SaveChanges();
             }
@@ -651,6 +647,120 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             return retval;
         }
         #endregion Tariff Labour methods
+
+
+        #region Tariff Repair methods
+
+        public async Task<int> AddTariffRepair(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_repair NewTariffRepair)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                NewTariffRepair.guid = (string.IsNullOrEmpty(NewTariffRepair.guid) ? Util.GenerateGUID() : NewTariffRepair.guid);
+                var newTariffRepair = new tariff_repair();
+                newTariffRepair.guid = NewTariffRepair.guid;
+                newTariffRepair.remarks = NewTariffRepair.remarks;
+                newTariffRepair.description = NewTariffRepair.description;
+                newTariffRepair.cost = NewTariffRepair.cost;
+                newTariffRepair.create_by = uid;
+                newTariffRepair.create_dt = GqlUtils.GetNowEpochInSec();
+                context.tariff_repair.Add(newTariffRepair);
+
+                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                //foreach (var customerCompany in customerCompanies)
+                //{
+                //    var pack_depot = new package_bu();
+                //    pack_depot.guid = Util.GenerateGUID();
+                //    pack_depot.tariff_depot_guid = newTariffDepot.guid;
+                //    pack_depot.customer_company_guid = customerCompany.guid;
+                //    pack_depot.free_storage = newTariffDepot.free_storage;
+                //    pack_depot.lolo_cost = newTariffDepot.lolo_cost;
+                //    pack_depot.preinspection_cost = newTariffDepot.preinspection_cost;
+                //    pack_depot.storage_cost = newTariffDepot.storage_cost;
+                //    pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
+                //    pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
+                //    pack_depot.create_by = uid;
+                //    pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
+                //    context.package_depot.Add(pack_depot);
+                //}
+                //context.cleaning_category.Add(newCleanCategory);
+                retval = context.SaveChanges();
+            }
+            catch { throw; }
+
+
+            return retval;
+        }
+
+
+        public async Task<int> UpdateTariffRepair(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_repair UpdateTariffRepair)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdateTariffRepair.guid;
+                var dbTariffRepair = context.tariff_repair.Where(t => t.guid == guid).FirstOrDefault();
+
+                if (dbTariffRepair == null)
+                {
+                    throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
+                }
+
+                dbTariffRepair.remarks = UpdateTariffRepair.remarks;
+                dbTariffRepair.description = UpdateTariffRepair.description;
+                dbTariffRepair.cost = UpdateTariffRepair.cost;
+                dbTariffRepair.update_by = uid;
+                dbTariffRepair.update_dt = GqlUtils.GetNowEpochInSec();
+
+
+
+
+
+
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+        public async Task<int> DeleteTariffRepair(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffRepair_guids)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var delTariffRepairs = context.tariff_repair.Where(s => DeleteTariffRepair_guids.Contains(s.guid) && s.delete_dt == null).ToList();
+
+
+                foreach (var delTariffRepair in delTariffRepairs)
+                {
+                    delTariffRepair.delete_dt = GqlUtils.GetNowEpochInSec();
+                    delTariffRepair.update_by = uid;
+                    delTariffRepair.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+        #endregion Tariff Repair methods
     }
 
 }

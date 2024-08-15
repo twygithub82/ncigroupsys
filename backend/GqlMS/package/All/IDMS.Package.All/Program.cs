@@ -87,11 +87,16 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationPackageDBContext>();
-    // Perform a simple query to initialize the connection
-    //dbContext.Database.CanConnect();
-    dbContext.Database.OpenConnection();
-    //dbContext.Database.CloseConnection();
+    var contextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApplicationPackageDBContext>>();
+
+    // Create a new instance of ApplicationPackageDBContext
+    using (var dbContext = await contextFactory.CreateDbContextAsync())
+    {
+        // Perform a simple query to initialize the connection
+        await dbContext.Database.OpenConnectionAsync();
+        // You can perform other operations here if needed
+        await dbContext.Database.CloseConnectionAsync();
+    }
 }
 
 // Configure the HTTP request pipeline.

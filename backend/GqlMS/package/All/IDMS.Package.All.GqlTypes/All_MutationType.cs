@@ -181,14 +181,14 @@ namespace IDMS.Models.Package.All.GqlTypes
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delTariffCleans = context.package_depot.Where(s => DeletePackageDepot_guids.Contains(s.guid) && s.delete_dt == null);
+                var delPackageDepots = context.package_depot.Where(s => DeletePackageDepot_guids.Contains(s.guid) && s.delete_dt == null);
 
 
-                foreach (var delTariffClean in delTariffCleans)
+                foreach (var delPackageDepot in delPackageDepots)
                 {
-                    delTariffClean.delete_dt = GqlUtils.GetNowEpochInSec();
-                    delTariffClean.update_by = uid;
-                    delTariffClean.update_dt = GqlUtils.GetNowEpochInSec();
+                    delPackageDepot.delete_dt = GqlUtils.GetNowEpochInSec();
+                    delPackageDepot.update_by = uid;
+                    delPackageDepot.update_dt = GqlUtils.GetNowEpochInSec();
                 }
                 retval = context.SaveChanges();
 
@@ -201,6 +201,109 @@ namespace IDMS.Models.Package.All.GqlTypes
             return retval;
         }
         #endregion Package Depot methods
+
+        #region Package Labour methods
+
+        public async Task<int> UpdatePackageLabours(ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageLabour_guids, int cost, string remarks, string storage_cal_cv)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                var dbPackageLabours = context.package_labour.Where(cc => UpdatePackageLabour_guids.Contains(cc.guid)).ToList();
+                if (dbPackageLabours == null)
+                {
+                    throw new GraphQLException(new Error("The Package Cleaning not found", "500"));
+                }
+                foreach (var dbPackageLabour in dbPackageLabours)
+                {
+                    dbPackageLabour.cost = cost;
+                    dbPackageLabour.remarks = remarks;
+                    dbPackageLabour.update_by = uid;
+                    dbPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+
+        public async Task<int> UpdatePackageLabour(ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, package_labour UpdatePackageLabour)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdatePackageLabour.guid;
+                if (string.IsNullOrEmpty(guid))
+                {
+                    throw new GraphQLException(new Error("The package guid  is empty", "500"));
+                }
+                var dbPackageLabour = context.package_labour.Find(guid);
+
+                if (dbPackageLabour == null)
+                {
+                    throw new GraphQLException(new Error("The Package Labour not found", "500"));
+                }
+                // dbPackageDepot.customer_company_guid = UpdatePackageDepot.customer_company_guid;
+                dbPackageLabour.cost = UpdatePackageLabour.cost;
+                dbPackageLabour.remarks = UpdatePackageLabour.remarks;
+               
+                dbPackageLabour.update_by = uid;
+                dbPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
+
+
+
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+        public async Task<int> DeletePackageLabour(ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeletePackageLabour_guids)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var delPackageLabours = context.package_depot.Where(s => DeletePackageLabour_guids.Contains(s.guid) && s.delete_dt == null);
+
+
+                foreach (var delPackageLabour in delPackageLabours)
+                {
+                    delPackageLabour.delete_dt = GqlUtils.GetNowEpochInSec();
+                    delPackageLabour.update_by = uid;
+                    delPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+        #endregion Package Labour methods
     }
 }
 
