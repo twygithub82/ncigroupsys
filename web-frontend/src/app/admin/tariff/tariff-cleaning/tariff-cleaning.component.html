@@ -39,13 +39,13 @@
                   <div class="row">
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.CARGO_NAME | translate}}</mat-label>
+                        <mat-label>{{translatedLangText.CARGO_NAME }}</mat-label>
                         <input matInput formControlName="cargo_name">
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.CARGO_CLASS | translate}}</mat-label>
+                        <mat-label>{{translatedLangText.CARGO_CLASS }}</mat-label>
                         <input matInput formControlName="class_no" [formControl]="classNoControl"
                           [matAutocomplete]="class_no">
                         <mat-autocomplete #class_no="matAutocomplete" [displayWith]="displayCodeValueFn" >
@@ -59,7 +59,7 @@
                     </div>
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.CARGO_METHOD | translate}}</mat-label>
+                        <mat-label>{{translatedLangText.CARGO_METHOD }}</mat-label>
                         <input matInput formControlName="method" [formControl]="methodControl"
                           [matAutocomplete]="method">
                         <mat-autocomplete #method="matAutocomplete" [displayWith]="displayMethodFn" >
@@ -73,7 +73,7 @@
                     </div>
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.CARGO_CATEGORY | translate}}</mat-label>
+                        <mat-label>{{translatedLangText.CARGO_CATEGORY }}</mat-label>
                         <input matInput formControlName="category" [formControl]="categoryControl"
                           [matAutocomplete]="category">
                         <mat-autocomplete #category="matAutocomplete" [displayWith]="displayCategoryFn" >
@@ -95,14 +95,13 @@
                     </div>
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
-                        UN
+                        <mat-label>{{translatedLangText.CARGO_UN_NO }}</mat-label>
                         <input matInput formControlName="un_no">
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{langText.CARGO_BAN_TYPE | translate}}</mat-label>
+                        <mat-label>{{translatedLangText.CARGO_BAN_TYPE}}</mat-label>
                         <input matInput formControlName="ban_type" [formControl]="banTypeControl"
                         [matAutocomplete]="ban_type">
                       <mat-autocomplete #ban_type="matAutocomplete"  [displayWith]="displayCodeValueFn">
@@ -116,7 +115,7 @@
                     </div>
                     <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                         <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>{{langText.CARGO_HAZARD_LEVEL | translate}}</mat-label>
+                            <mat-label>{{translatedLangText.CARGO_HAZARD_LEVEL }}</mat-label>
                             <input matInput formControlName="hazard_level" [formControl]="hazardLevelControl"
                             [matAutocomplete]="hazard_level">
                           <mat-autocomplete #hazard_level="matAutocomplete"  [displayWith]="displayCodeValueFn" >
@@ -147,13 +146,12 @@
                     <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="cargo">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_NAME |
-                      translate}}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_NAME }}</mat-header-cell>
                     <!-- <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">
                       {{langText.CARGO_NAME | translate}}
                     </mat-header-cell> -->
                     <mat-cell mat-cell *matCellDef="let row" >
-                      <span class="mobile-label">{{langText.CUSTOMER_CODE | translate}}:</span>{{row.cargo}}
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE }}:</span>{{row.cargo}}
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="desc">
@@ -173,25 +171,24 @@
                       | translate}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                       [ngClass]="'justify-content-center'">
-                      <span class="mobile-label">{{langText.NO_OF_TANKS | translate}}:</span>
+                      <span class="mobile-label">{{translatedLangText.NO_OF_TANKS }}:</span>
                       {{row.class_cv}}
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="un_no">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_UN_NO |
-                      translate}}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_UN_NO }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.un_no}}</mat-cell>
+                      <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.un_no}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="category">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_CATEGORY |
                       translate}}</mat-header-cell>
                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <div *ngIf="row.cleaning_category_with_tariff !== null && row.cleaning_category_with_tariff !== undefined; else elseBlock">
-                       <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.cleaning_category_with_tariff.name}}
+                       <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.cleaning_category_with_tariff.name}}
                     </div>
                     <ng-template #elseBlock>
-                      <span class="mobile-label">{{langText.STATUS | translate}}:</span> -
+                      <span class="mobile-label">{{translatedLangText.STATUS }}:</span> -
                     </ng-template>
                   </mat-cell>
                   </ng-container>
@@ -200,10 +197,10 @@
                       translate}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <div *ngIf="row.cleaning_method_with_tariff!== null && row.cleaning_method_with_tariff !== undefined; else elseBlock">
-                         <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.cleaning_method_with_tariff.name}}
+                         <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.cleaning_method_with_tariff.name}}
                       </div>
                       <ng-template #elseBlock>
-                        <span class="mobile-label">{{langText.STATUS | translate}}:</span> -
+                        <span class="mobile-label">{{translatedLangText.STATUS }}:</span> -
                       </ng-template>
                     </mat-cell>
                   </ng-container>
@@ -211,17 +208,17 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_FLASH_POINT |
                       translate}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.flash_point}}</mat-cell>
+                      <span class="mobile-label">{{translatedLangText.STATUS }}:</span> {{row.flash_point}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="cost">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_COST |
                       translate}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                         <div *ngIf="row.cleaning_category_with_tariff !== null && row.cleaning_category_with_tariff !== undefined; else elseBlock">
-                           <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.cleaning_category_with_tariff.cost}}
+                           <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{row.cleaning_category_with_tariff.cost}}
                         </div>
                         <ng-template #elseBlock>
-                          <span class="mobile-label">{{langText.STATUS | translate}}:</span> -
+                          <span class="mobile-label">{{translatedLangText.STATUS }}:</span> -
                         </ng-template>
                       </mat-cell>
                     <!-- <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -249,7 +246,7 @@
               @if (!(tcDS.loading$ | async) && !tcList.length) {
               <mat-divider></mat-divider>
               <div class="no-results m-l-20 pt-3" [style.display]="tcList.length === 0 ? '' : 'none'">
-                <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+                <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
               </div>
               }
               <!-- Loading spinner -->

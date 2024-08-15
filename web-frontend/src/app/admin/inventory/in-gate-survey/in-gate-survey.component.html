@@ -204,14 +204,14 @@
               </table>
             </div>
             <!-- No result -->
-            @if (!(sotDS.loading$ | async) && !inGateList.length) {
+            @if (!(igDS.loading$ | async) && !inGateList.length) {
             <mat-divider></mat-divider>
             <div class="no-results m-l-20 pt-3" [style.display]="inGateList.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if (sotDS.loading$ | async) {
+            @if (igDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>

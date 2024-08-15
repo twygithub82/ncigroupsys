@@ -39,7 +39,7 @@ export interface DialogData {
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItem:CustomerCompanyItem;
+   selectedItems:PackageDepotItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -193,10 +193,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
     STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
+    GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
   };
 
   
-  selectedItem: CustomerCompanyItem;
+  selectedItems: PackageDepotItem[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -210,8 +212,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
-    this.selectedItem = data.selectedItem;
-    
+    this.selectedItems = data.selectedItems;
     this.pcForm = this.createPackageCleaning();
     this.packageDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
@@ -223,21 +224,20 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   createPackageCleaning(): UntypedFormGroup {
     return this.fb.group({
-      selectedItem: this.selectedItem,
-      cust_code:this.selectedItem.code,
-      cust_name:this.selectedItem.name,
-      cust_alias:this.selectedItem.alias,
-      cust_agreement_dt:this.displayDateFromEpoch(this.selectedItem.agreement_due_dt),
-      preinspection_cost_cust:[0],
-      lolo_cost_cust:[0],
-      lolo_cost_standard:[0],
+      selectedItems: this.selectedItems,
+      preinspection_cost_cust:[],
+      lolo_cost_cust:[],
+      lolo_cost_standard:['-'],
       storage_cal_cv:this.storageCalControl,
-      storage_cost_cust:[0],
-      storage_cost_standard:[0],
-      free_storage_days:[0],
+      storage_cost_cust:[],
+      storage_cost_standard:['-'],
+      free_storage_days:[],
       remarks:[''],
-      preinspection_cost_standard:[0],
-      
+      preinspection_cost_standard:['-'],
+      gate_in_cost_cust:[''],
+      gate_in_cost_standard:['-'],
+      gate_out_cost_cust:[''],
+      gate_out_cost_standard:['-'],
       
       profile_name:this.profileNameControl,
 
@@ -256,6 +256,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         storage_cost_cust:selectedProfile.storage_cost,
         storage_cost_standard:selectedProfile.tariff_depot?.storage_cost,
         free_storage_days:selectedProfile.free_storage,
+        gate_in_cost:selectedProfile.gate_in_cost,
+        gate_out_cost:selectedProfile.gate_out_cost,
         remarks:selectedProfile.remarks,
         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
       });
@@ -303,7 +305,31 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
       this.storageCalCvList=data;
-    });
+   
+
+    if(this.selectedItems.length==1)
+    {
+      var pckDepotItm = this.selectedItems[0];
+
+      this.pcForm.patchValue({
+        preinspection_cost_cust: pckDepotItm.preinspection_cost,
+        preinspection_cost_standard:pckDepotItm.tariff_depot?.preinspection_cost,
+        lolo_cost_cust:pckDepotItm.lolo_cost,
+        lolo_cost_standard: pckDepotItm.tariff_depot?.lolo_cost,
+        storage_cost_cust:pckDepotItm.storage_cost,
+        storage_cost_standard:pckDepotItm.tariff_depot?.storage_cost,
+        free_storage_days:pckDepotItm.free_storage,
+        gate_in_cost_cust:pckDepotItm.gate_in_cost,
+        gate_out_cost_cust:pckDepotItm.gate_out_cost,
+        gate_in_cost_standard:pckDepotItm.tariff_depot?.gate_in_cost,
+        gate_out_cost_standard:pckDepotItm.tariff_depot?.gate_out_cost,
+        remarks:pckDepotItm.remarks,
+        //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
+      });
+      this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
+
+    }
+  });
 
     
     
@@ -311,12 +337,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   queryDepotCost()
   {
-    const where:any={ customer_company: { guid: { eq: this.selectedItem.guid } } };
+    // const where:any={ customer_company: { guid: { eq: this.selectedItem.guid } } };
     
-    this.packageDepotDS?.SearchPackageDepot(where,{},50).subscribe((data:PackageDepotItem[])=>{
-      this.packageDepotItems=data;
+    // this.packageDepotDS?.SearchPackageDepot(where,{},50).subscribe((data:PackageDepotItem[])=>{
+    //   this.packageDepotItems=data;
 
-    });
+    // });
   }
   
   selectStorageCalculateCV_Description(valCode?:string):CodeValuesItem
@@ -363,53 +389,72 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
 
-    let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
-    // tc.guid='';
-    pdItem.lolo_cost =Number(this.pcForm.value['lolo_cost_cust']);
-    pdItem.preinspection_cost =Number( this.pcForm.value['preinspection_cost_cust']);
-    pdItem.free_storage =Number( this.pcForm.value['free_storage_days']);
-    pdItem.storage_cost =Number( this.pcForm.value['storage_cost_cust']);
-    pdItem.remarks = this.pcForm.value['remarks'];
-    var storageCalValue;
+    let pd_guids:string[] = this.selectedItems
+    .map(cc => cc.guid)
+    .filter((guid): guid is string => guid !== undefined);
+
+    var lolo_cost = -1;
+    if (this.pcForm!.value["lolo_cost_cust"]) lolo_cost=Number(this.pcForm!.value["lolo_cost_cust"]);
+
+    var preinspection_cost =-1;
+    if (this.pcForm!.value["preinspection_cost_cust"]) preinspection_cost= Number(this.pcForm!.value["preinspection_cost_cust"]);
+    var free_storage = -1;
+    if(this.pcForm!.value["free_storage_days"]) free_storage= Number(this.pcForm!.value["free_storage_days"]);
+
+    
+    var storage_cost =-1;
+    if(this.pcForm!.value["storage_cost_cust"]) storage_cost=Number(this.pcForm!.value["storage_cost_cust"]);
+
+    var gate_in_cost=-1;
+    if(this.pcForm!.value["gate_in_cost_cust"]) gate_in_cost=Number(this.pcForm!.value["gate_in_cost_cust"]);
+
+    var gate_out_cost=-1;
+    if(this.pcForm!.value["gate_out_cost_cust"]) gate_out_cost=Number(this.pcForm!.value["gate_out_cost_cust"]);
+
+    var storageCalValue:String="-";
     if(this.storageCalControl.value)
     {
         const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-        storageCalValue = storage_calCv.code_val;
+        storageCalValue = storage_calCv.code_val||"";
     }
-    pdItem.storage_cal_cv = storageCalValue;
-    this.packageDepotDS?.updatePackageDepot(pdItem).subscribe(result=>{
-      if(result.data.updatePackageDepot>0)
+
+    var storage_cal_cv = storageCalValue;
+    var remarks = this.pcForm!.value["remarks"]||"";
+
+      this.packageDepotDS?.updatePackageDepots(pd_guids,free_storage,lolo_cost,preinspection_cost,storage_cost,gate_in_cost, gate_out_cost,remarks,storage_cal_cv).subscribe(result=>{
+      if(result.data.updatePackageDepots>0)
       {
        
                 console.log('valid');
-                this.dialogRef.close(result.data.updatePackageDepot);
+                this.dialogRef.close(result.data.updatePackageDepots);
 
       }
     });
-    
 
-    // let pc_guids:string[] = this.selectedItems
-    // .map(cc => cc.guid)
-    // .filter((guid): guid is string => guid !== undefined);
-
-    // var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
-    // var remarks = this.pcForm!.value["remarks"];
-
-    // this.custCompClnCatDS.updatePackageCleanings(pc_guids,remarks,adjusted_price).subscribe(result => {
-    //   console.log(result)
-    //   if(result.data.updatePackageCleans>0)
+    // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
+    // // tc.guid='';
+    // pdItem.lolo_cost =Number(this.pcForm.value['lolo_cost_cust']);
+    // pdItem.preinspection_cost =Number( this.pcForm.value['preinspection_cost_cust']);
+    // pdItem.free_storage =Number( this.pcForm.value['free_storage_days']);
+    // pdItem.storage_cost =Number( this.pcForm.value['storage_cost_cust']);
+    // pdItem.remarks = this.pcForm.value['remarks'];
+    // var storageCalValue;
+    // if(this.storageCalControl.value)
+    // {
+    //     const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
+    //     storageCalValue = storage_calCv.code_val;
+    // }
+    // pdItem.storage_cal_cv = storageCalValue;
+    // this.packageDepotDS?.updatePackageDepot(pdItem).subscribe(result=>{
+    //   if(result.data.updatePackageDepot>0)
     //   {
-    //       //this.handleSaveSuccess(result?.data?.updateTariffClean);
-    //       const returnDialog: DialogData = {
-    //         selectedValue:result.data.updatePackageCleans,
-    //         selectedItems:[]
-    //       }
-    //       console.log('valid');
-    //       this.dialogRef.close(returnDialog);
+       
+    //             console.log('valid');
+    //             this.dialogRef.close(result.data.updatePackageDepot);
+
     //   }
     // });
-
-   
+    
 
   }
   

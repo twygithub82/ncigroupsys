@@ -209,8 +209,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     LOLO_COST:"COMMON-FORM.LOLO-COST",
     STORAGE_COST:"COMMON-FORM.STORAGE-COST",
     FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED'
-    
+    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
+    GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
+    GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
   };
   unit_type_control = new UntypedFormControl();
   
@@ -262,6 +263,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
       lolo_cost:this.selectedItem.lolo_cost,
       storage_cost:this.selectedItem.storage_cost,
       free_storage:this.selectedItem.free_storage,
+      gate_in_cost:this.selectedItem.gate_in_cost,
+      gate_out_cost:this.selectedItem.gate_out_cost,
       unit_types:this.unit_type_control,
       last_updated:['']
     });
@@ -367,6 +370,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
                   updatedTD.lolo_cost= this.pcForm!.value['lolo_cost'];
                   updatedTD.preinspection_cost= this.pcForm!.value['preinspection_cost'];
                   updatedTD.storage_cost= this.pcForm!.value['storage_cost'];
+                  updatedTD.gate_in_cost= this.pcForm!.value['gate_in_cost'];
+                  updatedTD.gate_out_cost= this.pcForm!.value['gate_out_cost'];
                   updatedTD.tanks = unit_types;
                   this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result=>{
                     this.handleSaveSuccess(result?.data?.updateTariffDepot);

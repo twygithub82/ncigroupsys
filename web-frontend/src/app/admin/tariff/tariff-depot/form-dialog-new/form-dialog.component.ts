@@ -212,8 +212,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     STORAGE_COST:"COMMON-FORM.STORAGE-COST",
     FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
     LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
-    ASSIGNED : 'COMMON-FORM.ASSIGNED'
-    
+    ASSIGNED : 'COMMON-FORM.ASSIGNED',
+    GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
+    GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
   };
   unit_type_control = new UntypedFormControl();
   
@@ -274,6 +275,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       lolo_cost:[''],
       storage_cost:[''],
       free_storage:[''],
+      gate_in_cost:[''],
+      gate_out_cost:[''],
       unit_types:this.unit_type_control,
       last_updated:['']
     });
@@ -395,6 +398,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
             newDepot.free_storage= Number(this.pcForm.value['free_storage']);
             newDepot.description= String(this.pcForm.value['description']);
             newDepot.preinspection_cost= Number(this.pcForm.value['preinspection_cost']);
+            newDepot.gate_in_cost= Number(this.pcForm.value['gate_in_cost']);
+            newDepot.gate_out_cost= Number(this.pcForm.value['gate_out_cost']);
             newDepot.profile_name= String(this.pcForm.value['name']);
             newDepot.storage_cost= Number(this.pcForm.value['storage_cost']);
             newDepot.tanks=unit_types;
@@ -415,85 +420,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     });
 
-    // let cc: CleaningCategoryItem = new CleaningCategoryItem(this.selectedItem);
-    // // tc.guid='';
-    //  cc.name = this.pcForm.value['name'];
-    //  cc.description= this.pcForm.value['description'];
-    //  cc.cost = this.pcForm.value['adjusted_cost'];
-     
-
-    // const where: any = {};
-    // if (this.pcForm!.value['name']) {
-    //   where.name = { contains: this.pcForm!.value['name'] };
-    // }
-
-    // this.catDS.search(where).subscribe(p=>{
-    //    if(p.length==0)
-    //    {
-    //     if (this.selectedItem.guid) {
-
-    //       this.catDS.updateCleaningCategory(cc).subscribe(result => {
-    //         console.log(result)
-    //         this.handleSaveSuccess(result?.data?.updateCleaningCategory);
-    //         });
-  
-    //     }
-    //     else
-    //     {
-    //      this.catDS.addCleaningCategory(cc).subscribe(result => {
-    //       console.log(result)
-    //       this.handleSaveSuccess(result?.data?.addCleaningCategory);
-    //       });
-    //     }
-
-    //    }
-    //    else
-    //    {
-    //       var allowUpdate=true;
-    //       for (let i = 0; i < p.length; i++) {
-    //         if (p[i].guid != this.selectedItem.guid) {
-    //           allowUpdate = false;
-    //           break;  // Exit the loop
-    //         }
-    //       }
-    //       if(allowUpdate)
-    //       {
-
-    //         if (this.selectedItem.guid) {
-
-    //           this.catDS.updateCleaningCategory(cc).subscribe(result => {
-    //             console.log(result)
-    //             this.handleSaveSuccess(result?.data?.updateCleaningCategory);
-    //             });
-      
-    //         }
-    //       }
-    //       else
-    //       {
-    //          this.pcForm?.get('name')?.setErrors({ existed: true });
-    //       }
-    //    }
-    // });
-    // let pc_guids:string[] = this.selectedItems
-    // .map(cc => cc.guid)
-    // .filter((guid): guid is string => guid !== undefined);
-
-    // var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
-    // var remarks = this.pcForm!.value["remarks"];
-
-    // this.custCompClnCatDS.updatePackageCleanings(pc_guids,remarks,adjusted_price).subscribe(result => {
-    //   console.log(result)
-    //   if(result.data.updatePackageCleans>0)
-    //   {
-    //       //this.handleSaveSuccess(result?.data?.updateTariffClean);
-    //       const returnDialog: DialogData = {
-    //         selectedValue:result.data.updatePackageCleans,
-    //         selectedItems:[]
-    //       }
-    //       console.log('valid');
-    //       this.dialogRef.close(returnDialog);
-    //   }
-    // });
+   
 
    
 

@@ -46,20 +46,21 @@
             ],
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
+              "src/favicon.svg",
               "src/assets",
               "src/web.config"
             ],
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/assets/scss/theme/custom-material-theme.scss",
               "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/@swimlane/ngx-datatable/index.css",
               "./node_modules/@swimlane/ngx-datatable/themes/material.css",
               "./node_modules/@swimlane/ngx-datatable/assets/icons.css",
               "src/assets/scss/style.scss",
               "src/assets/scss/theme/all-themes.scss",
-              "src/assets/scss/theme/custom-theme.scss",
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/assets/scss/theme/custom-theme.scss"
             ],
             "scripts": [
               "./node_modules/moment/min/moment.min.js",

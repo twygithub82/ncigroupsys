@@ -406,16 +406,17 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const data = [...this.schedulingList];
-        const newItem = new StoringOrderTankItem({
-          ...result.item,
-          actions: ['new']
-        });
+        console.log(result.item)
+        // const data = [...this.schedulingList];
+        // const newItem = new StoringOrderTankItem({
+        //   ...result.item,
+        //   actions: ['new']
+        // });
 
-        // Add the new item to the end of the list
-        data.push(newItem);
+        // // Add the new item to the end of the list
+        // data.push(newItem);
 
-        this.updateData(data);
+        // this.updateData(data);
       }
     });
   }

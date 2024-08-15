@@ -265,8 +265,15 @@ implements OnInit {
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
+    this.translateLangText();
   }
 
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
+  }
+  
   initTcForm() {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
@@ -483,6 +490,8 @@ implements OnInit {
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
+       if(!this.hasPreviousPage)
+        this.previous_endCursor=undefined;
     });
   }
   handleSaveSuccess(count: any) {

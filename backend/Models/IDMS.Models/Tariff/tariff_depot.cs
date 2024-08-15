@@ -20,6 +20,8 @@ namespace IDMS.Models.Tariff
         public string? description { get; set; }
 
         public double? preinspection_cost { get; set; }
+        public double? gate_in_cost { get; set; }
+        public double? gate_out_cost { get; set; }
 
         public double? lolo_cost { get; set; }
 

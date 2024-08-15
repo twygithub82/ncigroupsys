@@ -29,6 +29,8 @@ namespace IDMS.Models.Package
 
         public double? storage_cost { get; set; }
 
+        public double? gate_in_cost { get; set; }
+        public double? gate_out_cost { get; set; }
         //public double? gate_charges { get; set; }
 
         public int? free_storage { get; set; }

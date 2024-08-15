@@ -88,6 +88,31 @@
                 </div>
             
           </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                 <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.GATE_IN_COST }}</mat-label>
+                    <input matInput formControlName="gate_in_cost" type="number" required >
+                    @if (pcForm.get('gate_in_cost')?.hasError('required')) {
+                      <mat-error>
+                        {{translatedLangText.GATE_IN_COST }} {{translatedLangText.CARGO_REQUIRED }}
+                      </mat-error>
+                      }
+                  </mat-form-field> 
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.GATE_OUT_COST }}</mat-label>
+                    <input matInput formControlName="gate_out_cost" type="number" required >
+                    @if (pcForm.get('gate_out_cost')?.hasError('required')) {
+                      <mat-error>
+                        {{translatedLangText.GATE_OUT_COST }} {{translatedLangText.CARGO_REQUIRED}}
+                      </mat-error>
+                      }
+                  </mat-form-field> 
+                </div>
+            
+          </div>
            <div class="row">
              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <!-- <mat-form-field class="example-full-width"> -->
@@ -104,29 +129,7 @@
                     {{langText.UNIT_TYPE | translate}} {{langText.ASSIGNED | translate}}
                   </mat-error>
                   }
-                <!-- <mat-select>
-                    @for (cn of this.selectedItem.tanks; track cn) {
-                        <mat-option [value]="cn">
-                          {{cn.unit_type}}
-                        </mat-option>
-                        }
-                  </mat-select> -->
-               
-              <!-- </mat-form-field> -->
-                 <!-- <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.UNIT_TYPE | translate}}</mat-label>
-                    <mat-select formControlName="unit_types">
-                      <mat-option *ngFor="let t of this.selectedItem.tanks" [value]="t">
-                        {{ t.unit_type }}
-                      </mat-option>
-                      <div *ngIf="action === 'view'">
-                       <ul>
-                        <li *ngFor="let t of  this.selectedItem.tanks">{{ t.unit_type }}</li>
-                      </ul>
-                     </div> 
-                  </mat-select>
-                  </mat-form-field>  -->
-                </div> 
+              </div> 
                 <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.LAST_UPDATED_DT }}</mat-label>

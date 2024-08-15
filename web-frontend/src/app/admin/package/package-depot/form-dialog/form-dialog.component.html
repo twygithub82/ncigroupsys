@@ -2,7 +2,7 @@
   <div class="modalHeader">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h3>{{this.translatedLangText.PACKAGE_DEPOT}} -{{this.translatedLangText.EDIT}} : {{displayName(this.selectedItem)}}</h3>
+        <h3>{{this.translatedLangText.EDIT}} {{this.translatedLangText.PACKAGE_DEPOT}} </h3>
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -74,7 +74,7 @@
       <div class="row justify-content-center">
         <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
         <div class="card">
-          <div class="materialTableHeader">
+          <!-- <div class="materialTableHeader">
             <div class="left">
               <ul class="header-buttons-left ms-0">
                 <li class="tbl-title">
@@ -83,8 +83,8 @@
                 </li>
               </ul>
             </div>
-          </div>
-          <div class="row">
+          </div> -->
+          <!-- <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
@@ -108,7 +108,7 @@
           </div>
           
           
-          </div>
+          </div> -->
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <div class="row">
@@ -127,14 +127,18 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PREINSPECTION_COST}}</mat-label>
-                        <input matInput formControlName="preinspection_cost_cust" type="number" >
-                      
+                        <input matInput formControlName="preinspection_cost_cust" type="number" [required]="this.selectedItems.length===1">
+                        @if (pcForm.get('preinspection_cost_cust')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.PREINSPECTION_COST }} {{translatedLangText.CARGO_REQUIRED }}
+                          </mat-error>
+                          }
                       </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.PREINSPECTION_COST }}</mat-label>
-                      <input matInput formControlName="preinspection_cost_standard" type="number" readonly="true">
+                      <input matInput formControlName="preinspection_cost_standard" type="text" readonly="true">
                     
                     </mat-form-field>
                 </div>
@@ -149,14 +153,18 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.LOLO_COST}}</mat-label>
-                        <input matInput formControlName="lolo_cost_cust" type="number" >
-                      
+                        <input matInput formControlName="lolo_cost_cust" type="number" [required]="this.selectedItems.length===1" >
+                        @if (pcForm.get('lolo_cost_cust')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.LOLO_COST }} {{translatedLangText.CARGO_REQUIRED | translate}}
+                          </mat-error>
+                          }
                       </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.LOLO_COST }}</mat-label>
-                      <input matInput formControlName="lolo_cost_standard" type="number" readonly="true">
+                      <input matInput formControlName="lolo_cost_standard" type="text" readonly="true">
                     
                     </mat-form-field>
                 </div>
@@ -171,14 +179,70 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.STORAGE_COST}}</mat-label>
-                        <input matInput formControlName="storage_cost_cust" type="number" >
-                      
+                        <input matInput formControlName="storage_cost_cust" type="number" [required]="this.selectedItems.length===1" >
+                        @if (pcForm.get('storage_cost_cust')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.STORAGE_COST }} {{translatedLangText.CARGO_REQUIRED }}
+                          </mat-error>
+                          }
                       </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.STORAGE_COST }}</mat-label>
-                      <input matInput formControlName="storage_cost_standard" type="number" readonly="true">
+                      <input matInput formControlName="storage_cost_standard" type="text" readonly="true">
+                    
+                    </mat-form-field>
+                </div>
+              </div>
+          </div>
+          
+          
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.GATE_IN_COST}}</mat-label>
+                        <input matInput formControlName="gate_in_cost_cust" type="number" [required]="this.selectedItems.length===1">
+                        @if (pcForm.get('gate_in_cost_cust')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.GATE_IN_COST }} {{translatedLangText.CARGO_REQUIRED }}
+                          </mat-error>
+                          }
+                      </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.GATE_IN_COST }}</mat-label>
+                      <input matInput formControlName="gate_in_cost_standard" type="text" readonly="true">
+                    
+                    </mat-form-field>
+                </div>
+              </div>
+          </div>
+          
+          
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.GATE_OUT_COST}}</mat-label>
+                        <input matInput formControlName="gate_out_cost_cust" type="number" [required]="this.selectedItems.length===1" >
+                        @if (pcForm.get('gate_out_cost_cust')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.GATE_OUT_COST }} {{translatedLangText.CARGO_REQUIRED }}
+                          </mat-error>
+                          }
+                      </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.GATE_OUT_COST }}</mat-label>
+                      <input matInput formControlName="gate_out_cost_standard" type="text" readonly="true">
                     
                     </mat-form-field>
                 </div>
@@ -192,7 +256,7 @@
               <mat-form-field class="example-full-width" style="height: 72px;">
                 <mat-label>{{translatedLangText.STORAGE_CALCULATE_BY}}</mat-label>
                 <mat-select [formControl]="storageCalControl" formControlName="storage_cal_cv" >
-                  <mat-option [value]="null">None</mat-option>
+                  <!-- <mat-option [value]="null">None</mat-option> -->
                   <mat-option *ngFor="let cc of this.storageCalCvList" [value]="cc">
                    
                       {{ cc.description }}
@@ -221,6 +285,37 @@
               </mat-form-field>
             </div>
           </div>
+          <div class="row">
+            <div class="materialTableHeader">
+            </div>
+            <div class="body overflow-auto">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
+                  
+                  <ng-container matColumnDef="fName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE }}:</span>{{row.customer_company.code}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="lName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="email">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.PROFILE_NAME }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.PROFILE_NAME }}:</span>{{row.tariff_depot?.profile_name}}</mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" 
+                    [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+            </div>
+          </div>
+
         </div>
         </div>
       </div>

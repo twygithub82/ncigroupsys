@@ -543,6 +543,8 @@ implements OnInit {
         this.hasPreviousPage = this.tfDepotDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
+        if(!this.hasPreviousPage)
+          this.previous_endCursor=undefined;
         
      });
     }
@@ -661,7 +663,7 @@ implements OnInit {
       if (result>0) {
            this.handleSaveSuccess(result);
            //this.search();
-           //this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
     
       }
    });

@@ -375,7 +375,7 @@
     "TOP-SIDE": "Top Side",
     "FRONT-SIDE": "Front Side",
     "BOTTOM-SIDE": "Bottom Side",
-    "DAMAGE-PHOTOS": "Damage Photos",
+    "TANK-PHOTOS": "Tank Photos",
     "PACKAGE-MIN-COST": "Min Cost",
     "PACKAGE-MAX-COST": "Max Cost",
     "PACKAGE-DETAIL": "Detail",
@@ -415,7 +415,9 @@
     "BILLING-PROFILE":"Billing Profile",
     "STANDARD-COST":"Standard Cost",
     "CUSTOMER-COST":"Customer Cost",
-    "STORAGE-CALCULATE-BY":"Storage Calculate By"
+    "STORAGE-CALCULATE-BY":"Storage Calculate By",
+    "GATE-IN-COST":"gate in cost",
+    "GATE-OUT-COST":"gate out cost"
     
   },
   "CLEAN-PROCEDURES": {
