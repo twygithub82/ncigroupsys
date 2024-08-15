@@ -20,50 +20,9 @@ namespace IDMS.Models.Package.All.GqlTypes
     public class PackageAll_MutationType
     {
 
-        //public async Task<int> AddPackageCleaning([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, 
-        //    [Service] IHttpContextAccessor httpContextAccessor, pack NewTariffClean)
-        //{
-        //    int retval = 0;
-        //    try
-        //    {
-        //        var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        NewTariffClean.guid = (string.IsNullOrEmpty(NewTariffClean.guid) ? Util.GenerateGUID() : NewTariffClean.guid);
-        //        var newTariffClean = new tariff_cleaning();
-        //        newTariffClean.guid = NewTariffClean.guid;
-        //        newTariffClean.description = NewTariffClean.description;
-        //        newTariffClean.alias = NewTariffClean.alias;
-        //       // newTariffClean.cost = NewTariffClean.cost;
-        //        newTariffClean.cargo = NewTariffClean.cargo;
-        //        newTariffClean.un_no = NewTariffClean.un_no;
-        //        newTariffClean.cleaning_category_guid = NewTariffClean.cleaning_category_guid;
-        //        newTariffClean.cleaning_method_guid = NewTariffClean.cleaning_method_guid;
-        //        newTariffClean.ban_type_cv = NewTariffClean.ban_type_cv;
-        //        newTariffClean.class_cv = NewTariffClean.class_cv;
-        //        //newTariffClean.class_child_cv = NewTariffClean.class_child_cv;
-        //        //  newTariffClean.cost_type_cv = NewTariffClean.cost_type_cv;
-        //        newTariffClean.depot_note = NewTariffClean.depot_note;
-        //        newTariffClean.flash_point = NewTariffClean.flash_point;
-        //        newTariffClean.hazard_level_cv = NewTariffClean.hazard_level_cv;
-        //        newTariffClean.nature_cv = NewTariffClean.nature_cv;
-        //        newTariffClean.open_on_gate_cv = NewTariffClean.open_on_gate_cv;
-        //     //   newTariffClean.rebate_type_cv = NewTariffClean.rebate_type_cv;
-        //        newTariffClean.alias = NewTariffClean.alias;
-        //        newTariffClean.in_gate_alert = NewTariffClean.in_gate_alert;
-        //        newTariffClean.remarks = NewTariffClean.remarks;
-
-        //        newTariffClean.create_by = uid;
-        //        newTariffClean.create_dt = GqlUtils.GetNowEpochInSec();
-        //        context.tariff_cleaning.Add(newTariffClean);
-
-        //      retval=context.SaveChanges();
-        //    }
-        //    catch { throw; }
-
-
-        //    return retval;
-        //}
-
-        public async Task<int> UpdatePackageCleans([Service] ApplicationPackageDBContext context, [Service] IConfiguration config,
+        #region Package Cleaning methods
+       
+        public async Task<int> UpdatePackageCleans( ApplicationPackageDBContext context, [Service] IConfiguration config,
              [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageClean_guids , string remarks, double adjusted_price)
         {
             int retval = 0;
@@ -96,7 +55,7 @@ namespace IDMS.Models.Package.All.GqlTypes
             return retval;
         }
 
-        public async Task<int> UpdatePackageClean([Service] ApplicationPackageDBContext context, [Service] IConfiguration config, 
+        public async Task<int> UpdatePackageClean(ApplicationPackageDBContext context, [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, customer_company_cleaning_category_with_customer_company UpdatePackageClean)
         {
             int retval = 0;
@@ -126,7 +85,11 @@ namespace IDMS.Models.Package.All.GqlTypes
             return retval;
         }
 
-        public async Task<int> UpdatePackageDepots([Service] ApplicationPackageDBContext context, [Service] IConfiguration config,
+        #endregion Package Cleaning methods
+
+        #region Package Depot methods
+        
+        public async Task<int> UpdatePackageDepots( ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageDepot_guids, int free_storage, double lolo_cost,
            double preinspection_cost, double storage_cost,double gate_in_cost, double gate_out_cost, string remarks, string storage_cal_cv)
         {
@@ -166,7 +129,7 @@ namespace IDMS.Models.Package.All.GqlTypes
         }
 
 
-        public async Task<int> UpdatePackageDepot([Service] ApplicationPackageDBContext context, [Service] IConfiguration config,
+        public async Task<int> UpdatePackageDepot( ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, package_depot UpdatePackageDepot)
         {
             int retval = 0;
@@ -210,7 +173,7 @@ namespace IDMS.Models.Package.All.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeletePackageDepot([Service] ApplicationPackageDBContext context, [Service] IConfiguration config,
+        public async Task<int> DeletePackageDepot( ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeletePackageDepot_guids)
         {
             int retval = 0;
@@ -237,6 +200,7 @@ namespace IDMS.Models.Package.All.GqlTypes
             }
             return retval;
         }
+        #endregion Package Depot methods
     }
 }
 

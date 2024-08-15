@@ -70,7 +70,14 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
 
         public DbSet<IDMS.Models.Tariff.tariff_depot> tariff_depot { get; set; }
 
+        public DbSet<IDMS.Models.Tariff.tariff_buffer> tariff_buffer { get; set; }
+
+        public DbSet<IDMS.Models.Tariff.tariff_labour> tariff_labour { get; set; }
+
+        public DbSet<IDMS.Models.Tariff.tariff_residue> tariff_residue { get; set; }
+
         public DbSet<IDMS.Models.Package.package_depot> package_depot { get; set; }
+        public DbSet<IDMS.Models.Package.package_residue> package_residue { get; set; }
         public DbSet<IDMS.Models.Shared.tank> tank { get; set; }
 
     }

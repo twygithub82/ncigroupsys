@@ -19,7 +19,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 {
     public class TariffCleaning_MutationType
     {
-        public async Task<int> AddTariffDepot([Service] ApplicationTariffDBContext context, [Service] IConfiguration config,
+        #region Tariff Depot methods
+       
+        public async Task<int> AddTariffDepot( ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, tariff_depot NewTariffDepot)
         {
             int retval = 0;
@@ -86,7 +88,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         }
 
 
-        public async Task<int> UpdateTariffDepot([Service] ApplicationTariffDBContext context, [Service] IConfiguration config,
+        public async Task<int> UpdateTariffDepot( ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, tariff_depot UpdateTariffDepot)
         {
             int retval = 0;
@@ -158,7 +160,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteTariffDepot([Service] ApplicationTariffDBContext context, [Service] IConfiguration config,
+        public async Task<int> DeleteTariffDepot( ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffDepot_guids)
         {
             int retval = 0;
@@ -191,8 +193,11 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             }
             return retval;
         }
+        #endregion Tariff Depot methods
 
-        public async Task<int> AddTariffCleaning([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, 
+        #region Tariff Cleaning methods
+
+        public async Task<int> AddTariffCleaning( ApplicationTariffDBContext context, [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, tariff_cleaning NewTariffClean)
         {
             int retval = 0;
@@ -236,7 +241,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         }
 
        
-        public async Task<int> UpdateTariffClean([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, 
+        public async Task<int> UpdateTariffClean( ApplicationTariffDBContext context, [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, tariff_cleaning UpdateTariffClean)
         {
             int retval = 0;
@@ -279,7 +284,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteTariffClean([Service] ApplicationTariffDBContext context, [Service] IConfiguration config, 
+        public async Task<int> DeleteTariffClean( ApplicationTariffDBContext context, [Service] IConfiguration config, 
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffClean_guids)
         {
             int retval = 0;
@@ -306,6 +311,346 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             }
             return retval;
         }
+
+        #endregion Tariff Cleaning methods
+
+
+        #region Tariff Buffer methods
+
+        public async Task<int> AddTariffBuffer( ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_buffer NewTariffBuffer)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                NewTariffBuffer.guid = (string.IsNullOrEmpty(NewTariffBuffer.guid) ? Util.GenerateGUID() : NewTariffBuffer.guid);
+                var newTariffBuffer = new tariff_buffer();
+                newTariffBuffer.guid = NewTariffBuffer.guid;
+                newTariffBuffer.remarks = NewTariffBuffer.remarks;
+                newTariffBuffer.buffer_type = NewTariffBuffer.buffer_type;
+                newTariffBuffer.cost = NewTariffBuffer.cost;
+                newTariffBuffer.create_by = uid;
+                newTariffBuffer.create_dt = GqlUtils.GetNowEpochInSec();
+                context.tariff_buffer.Add(newTariffBuffer);
+
+                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                //foreach (var customerCompany in customerCompanies)
+                //{
+                //    var pack_depot = new package_bu();
+                //    pack_depot.guid = Util.GenerateGUID();
+                //    pack_depot.tariff_depot_guid = newTariffDepot.guid;
+                //    pack_depot.customer_company_guid = customerCompany.guid;
+                //    pack_depot.free_storage = newTariffDepot.free_storage;
+                //    pack_depot.lolo_cost = newTariffDepot.lolo_cost;
+                //    pack_depot.preinspection_cost = newTariffDepot.preinspection_cost;
+                //    pack_depot.storage_cost = newTariffDepot.storage_cost;
+                //    pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
+                //    pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
+                //    pack_depot.create_by = uid;
+                //    pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
+                //    context.package_depot.Add(pack_depot);
+                //}
+                //context.cleaning_category.Add(newCleanCategory);
+                retval = context.SaveChanges();
+            }
+            catch { throw; }
+
+
+            return retval;
+        }
+
+
+        public async Task<int> UpdateTariffBuffer( ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_buffer UpdateTariffBuffer)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdateTariffBuffer.guid;
+                var dbTariffBuffer = context.tariff_buffer.Where(t => t.guid == guid).FirstOrDefault();
+
+                if (dbTariffBuffer == null)
+                {
+                    throw new GraphQLException(new Error("The Tariff Buffer not found", "500"));
+                }
+
+                dbTariffBuffer.remarks = UpdateTariffBuffer.remarks;
+                dbTariffBuffer.buffer_type = UpdateTariffBuffer.buffer_type;
+                dbTariffBuffer.cost = UpdateTariffBuffer.cost;
+                dbTariffBuffer.update_by = uid;
+                dbTariffBuffer.update_dt = GqlUtils.GetNowEpochInSec();
+
+               
+             
+
+
+
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+        public async Task<int> DeleteTariffBuffer( ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffBuffer_guids)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var delTariffBuffers = context.tariff_buffer.Where(s => DeleteTariffBuffer_guids.Contains(s.guid) && s.delete_dt == null).ToList();
+
+
+                foreach (var delTariffBuffer in delTariffBuffers)
+                {
+                    delTariffBuffer.delete_dt = GqlUtils.GetNowEpochInSec();
+                    delTariffBuffer.update_by = uid;
+                    delTariffBuffer.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+        #endregion Tariff Buffer methods
+
+
+        #region Tariff Labour methods
+
+        public async Task<int> AddTariffLabour( ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_labour NewTariffLabour)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                NewTariffLabour.guid = (string.IsNullOrEmpty(NewTariffLabour.guid) ? Util.GenerateGUID() : NewTariffLabour.guid);
+                var newTariffLabour = new tariff_labour();
+                newTariffLabour.guid = NewTariffLabour.guid;
+                newTariffLabour.remarks = NewTariffLabour.remarks;
+                newTariffLabour.description = NewTariffLabour.description;
+                newTariffLabour.cost = NewTariffLabour.cost;
+                newTariffLabour.create_by = uid;
+                newTariffLabour.create_dt = GqlUtils.GetNowEpochInSec();
+                context.tariff_labour.Add(newTariffLabour);
+
+                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                //foreach (var customerCompany in customerCompanies)
+                //{
+                //    var pack_depot = new package_bu();
+                //    pack_depot.guid = Util.GenerateGUID();
+                //    pack_depot.tariff_depot_guid = newTariffDepot.guid;
+                //    pack_depot.customer_company_guid = customerCompany.guid;
+                //    pack_depot.free_storage = newTariffDepot.free_storage;
+                //    pack_depot.lolo_cost = newTariffDepot.lolo_cost;
+                //    pack_depot.preinspection_cost = newTariffDepot.preinspection_cost;
+                //    pack_depot.storage_cost = newTariffDepot.storage_cost;
+                //    pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
+                //    pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
+                //    pack_depot.create_by = uid;
+                //    pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
+                //    context.package_depot.Add(pack_depot);
+                //}
+                //context.cleaning_category.Add(newCleanCategory);
+                retval = context.SaveChanges();
+            }
+            catch { throw; }
+
+
+            return retval;
+        }
+
+
+        public async Task<int> UpdateTariffLabour( ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_labour UpdateTariffLabour)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdateTariffLabour.guid;
+                var dbTariffLabour = context.tariff_labour.Where(t => t.guid == guid).FirstOrDefault();
+
+                if (dbTariffLabour == null)
+                {
+                    throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
+                }
+
+                dbTariffLabour.remarks = UpdateTariffLabour.remarks;
+                dbTariffLabour.description = UpdateTariffLabour.description;
+                dbTariffLabour.cost = UpdateTariffLabour.cost;
+                dbTariffLabour.update_by = uid;
+                dbTariffLabour.update_dt = GqlUtils.GetNowEpochInSec();
+
+
+
+
+
+
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+        public async Task<int> DeleteTariffLabour( ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffLabour_guids)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var delTariffLabours = context.tariff_labour.Where(s => DeleteTariffLabour_guids.Contains(s.guid) && s.delete_dt == null).ToList();
+
+
+                foreach (var delTariffLabour in delTariffLabours)
+                {
+                    delTariffLabour.delete_dt = GqlUtils.GetNowEpochInSec();
+                    delTariffLabour.update_by = uid;
+                    delTariffLabour.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+        #endregion Tariff Labour methods
+
+
+        #region Tariff Residue methods
+
+        public async Task<int> AddTariffResidue(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_residue NewTariffResidue)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                NewTariffResidue.guid = (string.IsNullOrEmpty(NewTariffResidue.guid) ? Util.GenerateGUID() : NewTariffResidue.guid);
+                var newTariffResidue = new tariff_residue();
+                newTariffResidue.guid = NewTariffResidue.guid;
+                newTariffResidue.remarks = NewTariffResidue.remarks;
+                newTariffResidue.description = NewTariffResidue.description;
+                newTariffResidue.cost = NewTariffResidue.cost;
+                newTariffResidue.create_by = uid;
+                newTariffResidue.create_dt = GqlUtils.GetNowEpochInSec();
+                context.tariff_residue.Add(newTariffResidue);
+
+                var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                foreach (var customerCompany in customerCompanies)
+                {
+                    var pack_residue = new package_residue();
+                    pack_residue.guid = Util.GenerateGUID();
+                    pack_residue.remarks = newTariffResidue.remarks;
+                    pack_residue.customer_company_guid = customerCompany.guid;
+                    pack_residue.cost = newTariffResidue.cost;
+                    pack_residue.tariff_residue_guid =newTariffResidue.guid;
+
+                    pack_residue.create_by = uid;
+                    pack_residue.create_dt = GqlUtils.GetNowEpochInSec();
+                    context.package_residue.Add(pack_residue);
+                }
+                retval = context.SaveChanges();
+            }
+            catch { throw; }
+
+
+            return retval;
+        }
+
+
+        public async Task<int> UpdateTariffResidue(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_residue UpdateTariffResidue)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdateTariffResidue.guid;
+                var dbTariffResidue = context.tariff_residue.Where(t => t.guid == guid).FirstOrDefault();
+
+                if (dbTariffResidue == null)
+                {
+                    throw new GraphQLException(new Error("The Tariff Residue not found", "500"));
+                }
+
+                dbTariffResidue.remarks = UpdateTariffResidue.remarks;
+                dbTariffResidue.description = UpdateTariffResidue.description;
+                dbTariffResidue.cost = UpdateTariffResidue.cost;
+                dbTariffResidue.update_by = uid;
+                dbTariffResidue.update_dt = GqlUtils.GetNowEpochInSec();
+
+
+
+
+
+
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+        public async Task<int> DeleteTariffResidue(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffResidue_guids)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var delTariffResidues = context.tariff_residue.Where(s => DeleteTariffResidue_guids.Contains(s.guid) && s.delete_dt == null).ToList();
+
+
+                foreach (var delTariffResidue in delTariffResidues)
+                {
+                    delTariffResidue.delete_dt = GqlUtils.GetNowEpochInSec();
+                    delTariffResidue.update_by = uid;
+                    delTariffResidue.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+        #endregion Tariff Labour methods
     }
 
 }

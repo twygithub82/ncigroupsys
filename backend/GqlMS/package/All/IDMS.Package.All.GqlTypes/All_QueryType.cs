@@ -17,7 +17,7 @@ namespace IDMS.Models.Package.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<package_depot?> QueryPackageDepot([Service] ApplicationPackageDBContext context,
+        public IQueryable<package_depot?> QueryPackageDepot( ApplicationPackageDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -42,7 +42,7 @@ namespace IDMS.Models.Package.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public  IQueryable<customer_company_cleaning_category_with_customer_company ?> QueryPackageCleaning([Service] ApplicationPackageDBContext context,
+        public  IQueryable<customer_company_cleaning_category_with_customer_company ?> QueryPackageCleaning( ApplicationPackageDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
