@@ -16,7 +16,7 @@ namespace IDMS.InGate.GqlTypes
     public class InGate_MutationType
     {
         //[Authorize]
-        public async Task<int> AddInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor
+        public async Task<int> AddInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor
             , InGateWithTank InGate)
         {
             int retval = 0;
@@ -130,7 +130,7 @@ namespace IDMS.InGate.GqlTypes
         }
 
         //[Authorize]
-        public async Task<int> UpdateInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, InGateWithTank InGate)
+        public async Task<int> UpdateInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, InGateWithTank InGate)
         {
             int retval = 0;
             string so_guid = "";
@@ -202,7 +202,7 @@ namespace IDMS.InGate.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteInGate([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<int> DeleteInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
         {
             int retval = 0;
@@ -254,7 +254,7 @@ namespace IDMS.InGate.GqlTypes
         }
 
 
-        private void CheckAndUpdateSOStatus([Service] ApplicationInventoryDBContext context, string guid)
+        private void CheckAndUpdateSOStatus(ApplicationInventoryDBContext context, string guid)
         {
             try
             {
