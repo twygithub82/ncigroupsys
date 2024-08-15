@@ -23,7 +23,7 @@ namespace IDMS.InGateSurvey.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<in_gate_survey> QueryInGateSurvey([Service] ApplicationInventoryDBContext context, 
+        public IQueryable<in_gate_survey> QueryInGateSurvey(ApplicationInventoryDBContext context, 
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             IQueryable<in_gate_survey> query = null;

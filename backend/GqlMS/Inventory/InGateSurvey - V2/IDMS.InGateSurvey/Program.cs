@@ -8,6 +8,8 @@ using System.Text;
 using AutoMapper;
 using IDMS.Models.Inventory;
 using IDMS.InGateSurvey.Model.Request;
+using HotChocolate.Data;
+using IDMS.InGate.GqlTypes;
 
 
 var builder = WebApplication.CreateBuilder(args); builder.Services.AddHttpContextAccessor();
@@ -16,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args); builder.Services.AddHttpContex
 //var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
 //var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration.GetConnectionString("DefaultConnection"));
 
-builder.Services.AddDbContextPool<ApplicationInventoryDBContext>(options =>
+builder.Services.AddPooledDbContextFactory<ApplicationInventoryDBContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("Default"),
  new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
 
@@ -35,9 +37,12 @@ builder.Services.AddSingleton(mapper);
 //);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
-                //.AddAuthorization()
+               .InitializeOnStartup()
+               .RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Pooled)
                .AddQueryType<Query>()
                .AddTypeExtension<IGSurveyQuery>()
+               .AddTypeExtension<InGate_QueryType>()
+               .AddTypeExtension<InGate_MutationType>()
                .AddMutationType<IGSurveyMutation>()
                .AddFiltering()
                .AddProjections()

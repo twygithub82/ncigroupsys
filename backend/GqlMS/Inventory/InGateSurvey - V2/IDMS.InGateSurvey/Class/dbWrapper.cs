@@ -57,9 +57,7 @@ namespace IDMS.InGateSurvey.Class
                 throw;
             }
 
-            return secretkey;
-
-
+            //return secretkey;
         }
     }
 }

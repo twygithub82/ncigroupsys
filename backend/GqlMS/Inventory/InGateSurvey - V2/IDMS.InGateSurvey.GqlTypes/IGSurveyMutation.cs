@@ -17,7 +17,7 @@ namespace IDMS.InGateSurvey.GqlTypes
     public class IGSurveyMutation
     {
         //[Authorize]
-        public async Task<int> AddInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<int> AddInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
             InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
         {
@@ -77,7 +77,7 @@ namespace IDMS.InGateSurvey.GqlTypes
         }
 
         //[Authorize]
-        public async Task<int> UpdateInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<int> UpdateInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
             InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
         {
@@ -146,7 +146,7 @@ namespace IDMS.InGateSurvey.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteInGateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<int> DeleteInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string IGSurvey_guid)
         {
             int retval = 0;
@@ -177,7 +177,7 @@ namespace IDMS.InGateSurvey.GqlTypes
         }
 
 
-        public async Task<int> PublishIngateSurvey([Service] ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<int> PublishIngateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
                 [Service] IHttpContextAccessor httpContextAccessor, in_gate IGSurvey_guid)
         {
             int retval = 0;
