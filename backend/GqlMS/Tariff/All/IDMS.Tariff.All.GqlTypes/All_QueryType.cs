@@ -15,7 +15,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_depot?> QueryTariffDepot([Service] ApplicationTariffDBContext context,
+        public IQueryable<tariff_depot?> QueryTariffDepot( ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -41,7 +41,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public  IQueryable<tariff_cleaning?> QueryTariffCleaning([Service] ApplicationTariffDBContext context,
+        public  IQueryable<tariff_cleaning?> QueryTariffCleaning( ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -63,6 +63,86 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
             return query;
            
+        }
+
+
+        // [Authorize]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<tariff_labour?> QueryTariffLabour( ApplicationTariffDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<tariff_labour> query = null;
+            try
+            {
+
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.tariff_labour.Where(i => i.delete_dt == null || i.delete_dt == 0);
+                     
+            }
+            catch
+            {
+                throw;
+            }
+
+            return query;
+
+        }
+
+
+        // [Authorize]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<tariff_residue?> QueryTariffResidue( ApplicationTariffDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<tariff_residue> query = null;
+            try
+            {
+
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.tariff_residue.Where(i => i.delete_dt == null || i.delete_dt == 0);
+
+            }
+            catch
+            {
+                throw;
+            }
+
+            return query;
+
+        }
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<tariff_buffer?> QueryTariffBuffer(ApplicationTariffDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<tariff_buffer> query = null;
+            try
+            {
+
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.tariff_buffer.Where(i => i.delete_dt == null || i.delete_dt == 0);
+
+            }
+            catch
+            {
+                throw;
+            }
+
+            return query;
+
         }
 
 
@@ -90,7 +170,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         //        if (resultList?.Count() > 0)
         //        {
         //            retval = resultList.ToObject<List<EntityClass_CleaningProcedure>>();
-                   
+
         //        }
 
         //    }
@@ -99,8 +179,8 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         //        throw;
         //    }
 
-         
-            
+
+
         //    return retval;
         //}
 
@@ -112,7 +192,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         //    {
         //        var table = "idms.cleaning_procedure";
         //        GqlUtils.IsAuthorize(config, httpContextAccessor);
-               
+
         //        string sqlStatement =$"select * from {table} where guid ='{queryCleaningProcedure_guid}'";
         //        var resultJtoken = await GqlUtils.QueryData(config, sqlStatement);
         //        var resultList = resultJtoken["result"];

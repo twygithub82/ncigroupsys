@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using HotChocolate.Data;
+using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,15 +16,25 @@ var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
 //var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
 var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration.GetConnectionString("DefaultConnection"));
 
-builder.Services.AddDbContextPool<ApplicationTariffDBContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
- new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//builder.Services.AddPooledDbContextFactory<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
 
-);
+builder.Services.AddPooledDbContextFactory<ApplicationTariffDBContext>(o =>
+{
+    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+    o.EnableSensitiveDataLogging(false);
+});
+
+
+//builder.Services.AddDbContextPool<ApplicationTariffDBContext>(options =>
+//    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+// new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
+
+//);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
-                .RegisterDbContext<ApplicationTariffDBContext>(DbContextKind.Synchronized)
+                .RegisterDbContext<ApplicationTariffDBContext>(DbContextKind.Pooled)
                 .AddAuthorization()
                .AddQueryType<IDMS.Models.Tariff.All.GqlTypes.TariffCleaning_QueryType>()
                .AddMutationType<IDMS.Models.Tariff.All.GqlTypes.TariffCleaning_MutationType>()

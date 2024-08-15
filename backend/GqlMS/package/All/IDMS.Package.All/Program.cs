@@ -16,15 +16,25 @@ var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
 //var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
 var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration.GetConnectionString("DefaultConnection"));
 
-builder.Services.AddDbContextPool<ApplicationPackageDBContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
- new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//builder.Services.AddPooledDbContextFactory<AppDbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
 
-);
+builder.Services.AddPooledDbContextFactory<ApplicationPackageDBContext>(o =>
+{
+    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+    o.EnableSensitiveDataLogging(false);
+});
+
+
+//builder.Services.AddDbContextPool<ApplicationPackageDBContext>(options =>
+//    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+// new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
+
+//);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
-                .RegisterDbContext<ApplicationPackageDBContext>(DbContextKind.Synchronized)
+                .RegisterDbContext<ApplicationPackageDBContext>(DbContextKind.Pooled)
                 .AddAuthorization()
                .AddQueryType<IDMS.Models.Package.All.GqlTypes.PackageAll_QueryType>()
                .AddMutationType<IDMS.Models.Package.All.GqlTypes.PackageAll_MutationType>()
