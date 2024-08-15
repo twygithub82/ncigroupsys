@@ -122,19 +122,6 @@
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.ACTION_DATE}}</mat-label>
-            <input matInput formControlName="action_dt" [matDatepicker]="action_dt_picker" [min]="startDateToday" required>
-            <mat-datepicker-toggle matSuffix [for]="action_dt_picker"></mat-datepicker-toggle>
-            <mat-datepicker #action_dt_picker [startAt]="startDateToday"></mat-datepicker>
-            @if (bookingForm.get('action_dt')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.ACTION_DATE}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.BOOKING_DATE}}</mat-label>
             <input matInput formControlName="booking_dt" [matDatepicker]="booking_dt_picker" [min]="startDateToday" required>
             <mat-datepicker-toggle matSuffix [for]="booking_dt_picker"></mat-datepicker-toggle>

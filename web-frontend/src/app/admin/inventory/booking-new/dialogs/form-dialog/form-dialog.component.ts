@@ -123,7 +123,6 @@ export class FormDialogComponent {
       reference: [''],
       book_type_cv: [''],
       booking_dt: [''],
-      action_dt: [''],
       surveyor_guid: ['']
     });
   }
@@ -135,7 +134,6 @@ export class FormDialogComponent {
         sot_guid: selectedIds,
         book_type_cv: this.bookingForm.value['book_type_cv'],
         booking_dt: Utility.convertDate(this.bookingForm.value['booking_dt']),
-        action_dt: Utility.convertDate(this.bookingForm.value['action_dt']),
         reference: this.bookingForm.value['reference'],
         surveyor_guid: this.bookingForm.value['surveyor_guid'] || "surveyor_guid_222",
       }

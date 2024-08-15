@@ -69,7 +69,6 @@ const GET_BOOKING = gql`
         startCursor
       }
       nodes {
-        action_dt
         book_type_cv
         booking_dt
         create_by

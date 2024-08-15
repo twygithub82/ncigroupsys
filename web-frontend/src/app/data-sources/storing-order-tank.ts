@@ -266,7 +266,6 @@ const GET_STORING_ORDER_TANKS_FOR_BOOKING = gql`
           surveyor_guid
           update_by
           update_dt
-          action_dt
         }
         scheduling {
           create_by
