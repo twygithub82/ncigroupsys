@@ -13,10 +13,13 @@ import { InGateItem } from './in-gate';
 export class InGateSurveyGO {
   public guid?: string = '';
   public in_gate_guid?: string = '';
-  public periodic_test_guid?: string;
   public capacity?: number;
   public tare_weight?: number;
   public take_in_reference?: string;
+  public last_test_cv?: string;
+  public next_test_cv?: string;
+  public test_dt?: number | Date;
+  public test_class_cv?: string;
   public dom_dt?: number | Date;
   public inspection_dt?: number;
   public last_release_dt?: number;
@@ -26,8 +29,6 @@ export class InGateSurveyGO {
   public height_cv?: string;
   public walkway_cv?: string;
   public tank_comp_cv?: string;
-  public last_test_cv?: string;
-  public take_in_status_cv?: string;
   public btm_dis_comp_cv?: string;
   public btm_dis_valve_cv?: string;
   public btm_dis_valve_spec_cv?: string;
@@ -69,10 +70,13 @@ export class InGateSurveyGO {
   constructor(item: Partial<InGateSurveyGO> = {}) {
     this.guid = item.guid ?? '';
     this.in_gate_guid = item.in_gate_guid ?? '';
-    this.periodic_test_guid = item.periodic_test_guid;
     this.capacity = item.capacity;
     this.tare_weight = item.tare_weight;
     this.take_in_reference = item.take_in_reference;
+    this.last_test_cv = item.last_test_cv;
+    this.next_test_cv = item.next_test_cv;
+    this.test_dt = item.test_dt;
+    this.test_class_cv = item.test_class_cv;
     this.dom_dt = item.dom_dt;
     this.inspection_dt = item.inspection_dt;
     this.last_release_dt = item.last_release_dt;
@@ -82,8 +86,6 @@ export class InGateSurveyGO {
     this.height_cv = item.height_cv;
     this.walkway_cv = item.walkway_cv;
     this.tank_comp_cv = item.tank_comp_cv;
-    this.last_test_cv = item.last_test_cv;
-    this.take_in_status_cv = item.take_in_status_cv;
     this.btm_dis_comp_cv = item.btm_dis_comp_cv;
     this.btm_dis_valve_cv = item.btm_dis_valve_cv;
     this.btm_dis_valve_spec_cv = item.btm_dis_valve_spec_cv;
@@ -368,7 +370,6 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
         manlid_seal_cv
         manufacturer_cv
         max_weight_cv
-        periodic_test_guid
         pv_spec_cv
         pv_spec_pcs
         pv_type_cv
@@ -376,7 +377,6 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
         residue
         safety_handrail
         take_in_reference
-        take_in_status_cv
         tank_comp_cv
         tare_weight
         thermometer
@@ -481,7 +481,7 @@ export const ADD_IN_GATE_SURVEY = gql`
 `;
 
 export const UPDATE_IN_GATE_SURVEY = gql`
-  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankInput) {
+  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: in_gate_survey_InGateWithTankInput) {
     updateInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: { in_gate: $inGate })
   }
 `;

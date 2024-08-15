@@ -218,20 +218,21 @@ export const GET_IN_GATE_BY_ID = gql`
           etr_dt
           guid
           job_no
-          preinspect_job_no
+          last_cargo_guid
+          last_test_guid
           liftoff_job_no
           lifton_job_no
-          takein_job_no
-          release_job_no
-          last_cargo_guid
+          preinspect_job_no
           purpose_cleaning
           purpose_repair_cv
           purpose_steam
           purpose_storage
+          release_job_no
           remarks
           required_temp
           so_guid
           status_cv
+          takein_job_no
           tank_no
           tank_status_cv
           unit_type_guid
@@ -265,9 +266,9 @@ export const GET_IN_GATE_BY_ID = gql`
             so_no
             haulier
             customer_company {
+              code
               name
               guid
-              code
             }
           }
         }
@@ -306,7 +307,7 @@ export const GET_IN_GATE_BY_ID = gql`
           manlid_seal_cv
           manufacturer_cv
           max_weight_cv
-          periodic_test_guid
+          next_test_cv
           pv_spec_cv
           pv_spec_pcs
           pv_type_cv
@@ -314,9 +315,10 @@ export const GET_IN_GATE_BY_ID = gql`
           residue
           safety_handrail
           take_in_reference
-          take_in_status_cv
           tank_comp_cv
           tare_weight
+          test_class_cv
+          test_dt
           thermometer
           thermometer_cv
           top_dis_comp_cv

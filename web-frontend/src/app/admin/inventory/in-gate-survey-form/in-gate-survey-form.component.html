@@ -373,7 +373,7 @@
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                 <div class="contact-detail-info font-bold">
-                                  {{getLastTest()}}
+                                  {{lastTest}}
                                 </div>
                               </div>
                             </div>
@@ -385,7 +385,7 @@
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                 <div class="contact-detail-info font-bold">
-                                  {{getNextTest()}}
+                                  {{nextTest}}
                                 </div>
                               </div>
                             </div>
@@ -395,12 +395,12 @@
                           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.TEST_TYPE}}</mat-label>
-                              <mat-select formControlName="test_type_cv" required>
+                              <mat-select formControlName="last_test_cv" required>
                                 @for (codeValue of testTypeCvList; track codeValue) {
                                 <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                 }
                               </mat-select>
-                              @if (surveyForm?.get('test_type_cv')?.hasError('required')) {
+                              @if (surveyForm?.get('last_test_cv')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.TEST_TYPE}} {{translatedLangText.SO_REQUIRED}}
                               </mat-error>
