@@ -65,6 +65,32 @@ namespace IDMS.Models.Package.All.GqlTypes
            
         }
 
+        // [Authorize]
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<package_labour?> QueryPackageLabour(ApplicationPackageDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<package_labour> query = null;
+            try
+            {
+
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.package_labour.Where(i => i.delete_dt == null || i.delete_dt == 0);
+
+            }
+            catch
+            {
+                throw;
+            }
+
+            return query;
+
+        }
+
 
         //public async Task<List<EntityClass_CleaningProcedure>> QueryCleaningProcedures([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,EntityClass_CleaningProcedure queryCleaningProcedure,string orderby="guid",int offset = 0, int limit=10)
         //{
@@ -90,7 +116,7 @@ namespace IDMS.Models.Package.All.GqlTypes
         //        if (resultList?.Count() > 0)
         //        {
         //            retval = resultList.ToObject<List<EntityClass_CleaningProcedure>>();
-                   
+
         //        }
 
         //    }
@@ -99,8 +125,8 @@ namespace IDMS.Models.Package.All.GqlTypes
         //        throw;
         //    }
 
-         
-            
+
+
         //    return retval;
         //}
 
@@ -112,7 +138,7 @@ namespace IDMS.Models.Package.All.GqlTypes
         //    {
         //        var table = "idms.cleaning_procedure";
         //        GqlUtils.IsAuthorize(config, httpContextAccessor);
-               
+
         //        string sqlStatement =$"select * from {table} where guid ='{queryCleaningProcedure_guid}'";
         //        var resultJtoken = await GqlUtils.QueryData(config, sqlStatement);
         //        var resultList = resultJtoken["result"];
