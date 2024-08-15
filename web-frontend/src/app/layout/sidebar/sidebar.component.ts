@@ -13,11 +13,12 @@ import {
 import { ROUTES } from './sidebar-items';
 import { AuthService } from '@core';
 import { RouteInfo } from './sidebar.metadata';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FeatherModule } from 'angular-feather';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { Utility } from 'app/utilities/utility';
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
@@ -40,7 +41,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public innerHeight?: number;
   public bodyTag!: HTMLElement;
 
-  SOFTWARE_NAME = 'SOFTWARE-NAME.TEXT'
+  translatedLangText: any = {};
+  langText = {
+    SOFTWARE_NAME: 'SOFTWARE-NAME.TEXT'
+  }
   
   listMaxHeight?: string;
   listMaxWidth?: string;
@@ -56,7 +60,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     public elementRef: ElementRef,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {
     this.elementRef.nativeElement.closest('body');
     this.routerObj = this.router.events.subscribe((event: any) => {
@@ -65,6 +70,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.renderer.removeClass(this.document.body, 'overlay-open');
       }
     });
+    this.translateLangText();
   }
   @HostListener('window:resize', ['$event'])
   windowResizecall() {
@@ -174,6 +180,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
       if (!res.success) {
         this.router.navigate(['/authentication/signin']);
       }
+    });
+  }
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
     });
   }
 }

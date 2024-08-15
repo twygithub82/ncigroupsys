@@ -94,6 +94,8 @@ namespace IDMS.BatchJob.Service
 
         private static async Task<List<JToken>> CheckSchedulingDescrepancy(JToken config, string dbConnection, string date = "")
         {
+            Console.WriteLine("CheckSchedulingDescrepancy...");
+            
             MySqlConnection? conn = new MySqlConnection(dbConnection);
             await conn.OpenAsync();
 
@@ -132,8 +134,12 @@ namespace IDMS.BatchJob.Service
             string url = config.SelectToken("Setting.notificationUrl").ToString();
             foreach (var row in result)
             {
+
                 string notification_uid = $"cc-scheduling-{row?.SelectToken("sot_guid")?.ToString()}";
+                Console.WriteLine($"Found Descrepancy {notification_uid}, send notification...");
                 await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", "missing scheduling", notification_uid);
+
+
             }
 
             return result;
@@ -180,6 +186,7 @@ namespace IDMS.BatchJob.Service
             foreach (var row in result) 
             {
                 string notification_uid = $"cc-booking-{row?.SelectToken("sot_guid")?.ToString()}";
+                Console.WriteLine($"Found Descrepancy {notification_uid}, send notification...");
                 await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", "missing booking", notification_uid);
             }
   

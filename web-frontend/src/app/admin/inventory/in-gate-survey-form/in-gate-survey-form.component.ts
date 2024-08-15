@@ -195,7 +195,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
     FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
     BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
-    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
+    TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
   }
 
@@ -245,8 +245,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   // Stepper
   isLinear = false;
 
-  rowSize = 5;
-  colSize = 7;
+  rowSize = 7;
+  colSize = 9;
   cells: number[] = [];
   highlightedCellsLeft: boolean[] = [];
   highlightedCellsRear: boolean[] = [];

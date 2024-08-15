@@ -1,1 +1,35 @@
+.nav-item.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    /* Ensure the <li> takes up the height of its parent */
+}
 
+.nav-item.logo img {
+    max-width: 100%;
+    /* Ensure the image does not exceed the width of the <li> */
+    max-height: 100%;
+    /* Ensure the image does not exceed the height of the <li> */
+    width: auto;
+    /* Maintain the aspect ratio of the image */
+    height: auto;
+    /* Maintain the aspect ratio of the image */
+    object-fit: contain;
+    /* Make sure the image fits inside the parent without cropping */
+}
+
+.navbar-nav {
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+    flex-wrap: nowrap; /* Prevent wrapping to the next line */
+}
+
+.nav-item.logo {
+    flex-shrink: 0; /* Prevent the logo from shrinking */
+}
+
+.nav-item.nav-toggle {
+    margin-left: auto; /* Push the toggle button to the right side */
+    flex-shrink: 0; /* Prevent the toggle button from shrinking */
+}

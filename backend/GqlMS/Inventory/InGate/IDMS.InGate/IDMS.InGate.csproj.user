@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>D:\personal\project\DMS\code\ncigroupsys\backend\GqlMS\Inventory\InGate\IDMS.InGate\Properties\PublishProfiles\tlx-idms-inventory-ingate - Zip Deploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\Useful Doc\Personal\Project\ncigroupsys\backend\GqlMS\Inventory\InGate\IDMS.InGate\Properties\PublishProfiles\tlx-idms-inventory-ingate - Zip Deploy.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>

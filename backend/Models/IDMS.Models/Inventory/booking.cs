@@ -24,7 +24,7 @@ namespace IDMS.Models.Inventory
         public string? book_type_cv { get; set; }
         public string? status_cv { get; set; }
         public long? booking_dt { get; set; }
-        public long? action_dt { get; set; }
+        //public long? action_dt { get; set; }
         //public long? repair_complete_dt { get; set; }
         public storing_order_tank? storing_order_tank { get; set; }
     }

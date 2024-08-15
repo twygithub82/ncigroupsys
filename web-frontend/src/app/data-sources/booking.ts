@@ -13,7 +13,6 @@ import { StoringOrderTankItem } from './storing-order-tank';
 
 export class BookingGO {
   public guid?: string;
-  public action_dt?: number | null;
   public book_type_cv?: string;
   public booking_dt?: number | null;
   public reference?: string;
@@ -28,7 +27,6 @@ export class BookingGO {
 
   constructor(item: Partial<BookingGO> = {}) {
     this.guid = item.guid;
-    this.action_dt = item.action_dt;
     this.book_type_cv = item.book_type_cv;
     this.booking_dt = item.booking_dt;
     this.reference = item.reference;
@@ -63,7 +61,6 @@ const GET_BOOKING = gql`
         startCursor
       }
       nodes {
-        action_dt
         book_type_cv
         booking_dt
         create_by

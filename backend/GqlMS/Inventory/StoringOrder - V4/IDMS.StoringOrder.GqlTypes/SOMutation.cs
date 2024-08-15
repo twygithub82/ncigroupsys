@@ -105,7 +105,7 @@ namespace IDMS.StoringOrder.GqlTypes
                     if (string.IsNullOrEmpty(tnk?.action))
                         continue;
 
-                    if (SOTankAction.NEW.EqualsIgnore(tnk?.action))
+                    if (SOTankAction.NEW.EqualsIgnore(tnk?.action) || (SOTankAction.PREORDER.EqualsIgnore(tnk?.action) && string.IsNullOrEmpty(tnk?.guid)))
                     {
                         //For Insert
                         storing_order_tank newTank = mapper.Map<StoringOrderTankRequest, storing_order_tank>(tnk);
@@ -113,31 +113,35 @@ namespace IDMS.StoringOrder.GqlTypes
                         newTank.guid = Util.GenerateGUID(); // Ensure the foreign key is set
                         newTank.create_dt = currentDateTime;
                         newTank.create_by = user;
-                        newTank.status_cv = SOTankStatus.WAITING;
+                        newTank.status_cv = SOTankAction.NEW.EqualsIgnore(tnk?.action) ? SOTankStatus.WAITING : SOTankStatus.PREORDER;
                         await context.storing_order_tank.AddAsync(newTank);
                         isSendNotification = true;
                         continue;
                     }
 
-                    if(string.IsNullOrEmpty(tnk?.guid) || string.IsNullOrEmpty(tnk.last_cargo_guid))
-                        throw new GraphQLException(new Error("Compulsory fields cant be null", "Error"));
+                    if (string.IsNullOrEmpty(tnk?.guid) || string.IsNullOrEmpty(tnk.last_cargo_guid))
+                        throw new GraphQLException(new Error("Compulsory fields sot_guid or last_cargo_guid cant be null", "Error"));
 
                     // Find the corresponding existing child entity or add a new one if necessary
                     var existingTank = soDomain.storing_order_tank.FirstOrDefault(t => t.guid == tnk.guid && (t.delete_dt == null || t.delete_dt == 0));
                     mapper.Map(tnk, existingTank);
 
+                    existingTank.update_by = user;
+                    existingTank.update_dt = currentDateTime;
+
                     if (SOTankAction.EDIT.EqualsIgnore(tnk?.action))
                     {
-                        existingTank.update_by = user;
-                        existingTank.update_dt = currentDateTime;
+                        //existingTank.update_by = user;
+                        //existingTank.update_dt = currentDateTime;
                         //context.storing_order_tank.Update(newTank);
+                        isSendNotification = true;
                         continue;
                     }
 
                     if (SOTankAction.ROLLBACK.EqualsIgnore(tnk?.action))
                     {
-                        existingTank.update_by = user;
-                        existingTank.update_dt = currentDateTime;
+                        //existingTank.update_by = user;
+                        //existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.WAITING;
                         rollbackSOTGuids.Add(tnk.guid);
                         isSendNotification = true;
@@ -146,20 +150,18 @@ namespace IDMS.StoringOrder.GqlTypes
 
                     if (SOTankAction.CANCEL.EqualsIgnore(tnk?.action))
                     {
-                        existingTank.update_by = user;
-                        existingTank.update_dt = currentDateTime;
+                        //existingTank.update_by = user;
+                        //existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.CANCELED;
-                        //context.storing_order_tank.Update(newTank);
                         isSendNotification = true;
                         continue;
                     }
 
                     if (SOTankAction.PREORDER.EqualsIgnore(tnk?.action))
                     {
-                        existingTank.update_by = user;
-                        existingTank.update_dt = currentDateTime;
+                        //existingTank.update_by = user;
+                        //existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.PREORDER;
-                        //context.storing_order_tank.Update(newTank);
                         isSendNotification = true;
                         continue;
                     }

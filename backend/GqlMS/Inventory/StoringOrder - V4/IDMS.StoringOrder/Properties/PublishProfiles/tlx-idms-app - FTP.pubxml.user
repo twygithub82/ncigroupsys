@@ -8,15 +8,15 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAczbJMk9j60WbPFV2uQjcNQAAAAACAAAAAAAQZgAAAAEAACAAAAA11Rd5Qg4beq5KezUKqkI5YKDokVAHDXvL5/voI6NUAgAAAAAOgAAAAAIAACAAAACacCckaTpiCE51e7RZDLQlTTDfy9QOx6HVDGCedck9hIAAAABsww5IePYFjZ611LVyyRzPpoBByQmepJgPIhwURX48PyAUfsU4T5OYkle2JZMkKUf5i4BKXbMlY/6wtZoZdOuhdL4KewaHHT9CzW1nfINSJpUih8zgmJY8ES8IPe+H4jDHNp/H2KPVxNXCvl2/4poQHa63HiYJERUr053gdmPWcUAAAACNSxg17dyRMYAptOfhJGA4yWZwutF25iqtEZO63VpXRCPqhjhIiUlKCyXMRGyXVu+zs0UijVZrJkPeZhxBZJUi</EncryptedPassword>
     <_PublishTargetUrl>ftps://waws-prod-hk1-015.ftp.azurewebsites.windows.net/site/wwwroot</_PublishTargetUrl>
-    <History>True|2024-08-14T12:24:50.4412270Z||;False|2024-08-14T20:23:09.5320043+08:00||;True|2024-08-08T23:55:52.3972660+08:00||;False|2024-08-08T23:55:34.0622226+08:00||;True|2024-08-08T21:25:24.8768885+08:00||;False|2024-08-08T21:25:06.8216464+08:00||;False|2024-08-08T21:24:09.6515121+08:00||;False|2024-08-08T21:23:54.6949967+08:00||;False|2024-08-08T21:23:42.2029136+08:00||;True|2024-08-08T00:07:27.0730154+08:00||;False|2024-08-08T00:06:50.7942549+08:00||;True|2024-08-07T23:23:38.2313205+08:00||;False|2024-08-07T23:23:21.5790321+08:00||;True|2024-08-07T22:48:31.4836796+08:00||;False|2024-08-07T22:48:00.1523797+08:00||;True|2024-08-07T22:28:24.4761226+08:00||;False|2024-08-07T22:27:44.2154843+08:00||;True|2024-08-07T21:11:33.4081356+08:00||;False|2024-08-07T21:10:48.5774221+08:00||;True|2024-08-04T13:17:19.1644033+08:00||;False|2024-08-04T13:16:43.4798814+08:00||;False|2024-08-04T13:15:42.7627585+08:00||;True|2024-08-03T10:12:07.4781386+08:00||;False|2024-08-03T10:11:42.8222702+08:00||;False|2024-08-03T00:39:36.6222893+08:00||;True|2024-07-28T15:32:22.8637016+08:00||;False|2024-07-28T15:31:46.3753186+08:00||;True|2024-07-28T15:06:07.9272327+08:00||;True|2024-07-28T00:02:12.7099911+08:00||;False|2024-07-28T00:01:32.1176010+08:00||;True|2024-07-27T23:02:57.4318798+08:00||;False|2024-07-27T23:02:22.9466541+08:00||;True|2024-07-27T16:22:47.3670014+08:00||;True|2024-07-20T19:29:56.6607722+08:00||;False|2024-07-20T19:29:06.5576500+08:00||;True|2024-07-18T20:19:54.0305793+08:00||;False|2024-07-18T20:19:23.1429841+08:00||;False|2024-07-18T20:18:59.7175354+08:00||;True|2024-07-18T09:15:26.1175626+08:00||;False|2024-07-18T09:14:20.9772596+08:00||;</History>
+    <History>True|2024-08-13T14:30:18.4289901Z||;False|2024-08-13T22:30:00.4944664+08:00||;True|2024-08-08T23:55:52.3972660+08:00||;False|2024-08-08T23:55:34.0622226+08:00||;True|2024-08-08T21:25:24.8768885+08:00||;False|2024-08-08T21:25:06.8216464+08:00||;False|2024-08-08T21:24:09.6515121+08:00||;False|2024-08-08T21:23:54.6949967+08:00||;False|2024-08-08T21:23:42.2029136+08:00||;True|2024-08-08T00:07:27.0730154+08:00||;False|2024-08-08T00:06:50.7942549+08:00||;True|2024-08-07T23:23:38.2313205+08:00||;False|2024-08-07T23:23:21.5790321+08:00||;True|2024-08-07T22:48:31.4836796+08:00||;False|2024-08-07T22:48:00.1523797+08:00||;True|2024-08-07T22:28:24.4761226+08:00||;False|2024-08-07T22:27:44.2154843+08:00||;True|2024-08-07T21:11:33.4081356+08:00||;False|2024-08-07T21:10:48.5774221+08:00||;True|2024-08-04T13:17:19.1644033+08:00||;False|2024-08-04T13:16:43.4798814+08:00||;False|2024-08-04T13:15:42.7627585+08:00||;True|2024-08-03T10:12:07.4781386+08:00||;False|2024-08-03T10:11:42.8222702+08:00||;False|2024-08-03T00:39:36.6222893+08:00||;True|2024-07-28T15:32:22.8637016+08:00||;False|2024-07-28T15:31:46.3753186+08:00||;True|2024-07-28T15:06:07.9272327+08:00||;True|2024-07-28T00:02:12.7099911+08:00||;False|2024-07-28T00:01:32.1176010+08:00||;True|2024-07-27T23:02:57.4318798+08:00||;False|2024-07-27T23:02:22.9466541+08:00||;True|2024-07-27T16:22:47.3670014+08:00||;True|2024-07-20T19:29:56.6607722+08:00||;False|2024-07-20T19:29:06.5576500+08:00||;True|2024-07-18T20:19:54.0305793+08:00||;False|2024-07-18T20:19:23.1429841+08:00||;False|2024-07-18T20:18:59.7175354+08:00||;True|2024-07-18T09:15:26.1175626+08:00||;False|2024-07-18T09:14:20.9772596+08:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
   <ItemGroup>
     <File Include="appsettings.Development.json">
-      <publishTime>07/08/2024 09:16:29</publishTime>
+      <publishTime>08/13/2024 08:58:25</publishTime>
     </File>
     <File Include="appsettings.json">
-      <publishTime>07/16/2024 16:47:49</publishTime>
+      <publishTime>07/16/2024 16:38:59</publishTime>
     </File>
     <File Include="AutoMapper.dll">
       <publishTime>02/08/2024 05:45:30</publishTime>
@@ -25,7 +25,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/10/2024 05:40:24</publishTime>
     </File>
     <File Include="CommonUtil.Core.Service.dll">
-      <publishTime>06/19/2024 21:58:27</publishTime>
+      <publishTime>06/08/2024 22:58:10</publishTime>
     </File>
     <File Include="GreenDonut.dll">
       <publishTime>05/29/2024 05:24:46</publishTime>
@@ -76,7 +76,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/29/2024 05:25:26</publishTime>
     </File>
     <File Include="HotChocolate.Transport.Sockets.dll">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>05/29/2024 05:25:00</publishTime>
     </File>
     <File Include="HotChocolate.Types.CursorPagination.dll">
       <publishTime>05/29/2024 05:25:54</publishTime>
@@ -94,7 +94,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/29/2024 05:25:40</publishTime>
     </File>
     <File Include="HotChocolate.Types.Shared.dll">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>05/29/2024 05:25:00</publishTime>
     </File>
     <File Include="HotChocolate.Utilities.DependencyInjection.dll">
       <publishTime>05/29/2024 05:24:56</publishTime>
@@ -106,37 +106,37 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/29/2024 05:25:40</publishTime>
     </File>
     <File Include="IDMS.Models.dll">
-      <publishTime>08/14/2024 20:21:34</publishTime>
+      <publishTime>08/09/2024 10:14:03</publishTime>
     </File>
     <File Include="IDMS.Models.pdb">
-      <publishTime>08/14/2024 20:21:34</publishTime>
+      <publishTime>08/09/2024 10:14:03</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.deps.json">
-      <publishTime>08/14/2024 20:24:01</publishTime>
+      <publishTime>08/13/2024 22:30:07</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.dll">
-      <publishTime>08/14/2024 20:24:01</publishTime>
+      <publishTime>08/13/2024 22:30:06</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.exe">
-      <publishTime>08/14/2024 20:24:01</publishTime>
+      <publishTime>08/13/2024 22:30:06</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.pdb">
-      <publishTime>08/14/2024 20:24:01</publishTime>
+      <publishTime>08/13/2024 22:30:06</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Application.runtimeconfig.json">
-      <publishTime>08/14/2024 20:21:38</publishTime>
+      <publishTime>08/04/2024 13:17:05</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.GqlTypes.dll">
-      <publishTime>08/14/2024 20:21:36</publishTime>
+      <publishTime>08/13/2024 22:29:49</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.GqlTypes.pdb">
-      <publishTime>08/14/2024 20:21:35</publishTime>
+      <publishTime>08/13/2024 22:29:49</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Model.dll">
-      <publishTime>08/14/2024 20:21:34</publishTime>
+      <publishTime>08/13/2024 22:29:48</publishTime>
     </File>
     <File Include="IDMS.StoringOrder.Model.pdb">
-      <publishTime>08/14/2024 20:21:34</publishTime>
+      <publishTime>08/13/2024 22:29:48</publishTime>
     </File>
     <File Include="Microsoft.AspNetCore.Authentication.JwtBearer.dll">
       <publishTime>05/20/2024 12:26:12</publishTime>
@@ -190,13 +190,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/19/2022 23:21:48</publishTime>
     </File>
     <File Include="System.IdentityModel.Tokens.Jwt.dll">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>11/21/2023 09:10:00</publishTime>
     </File>
     <File Include="System.IO.Hashing.dll">
       <publishTime>10/19/2022 00:16:44</publishTime>
     </File>
     <File Include="web.config">
-      <publishTime>08/14/2024 20:24:02</publishTime>
+      <publishTime>08/13/2024 22:30:07</publishTime>
     </File>
     <File Include="Yarp.ReverseProxy.dll">
       <publishTime>11/17/2023 18:52:50</publishTime>
