@@ -97,6 +97,7 @@
         "TARIFF-DEPOT": "Depot Cost",
         "TARIFF-REPAIR": "Repair",
         "TARIFF-BUFFER": "Buffer Cleaning",
+        "TARIFF-RESIDUE": "Residue Disposal",
         "TARIFF-CLEANING-NEW": "New Tariff Cleaning",
         "TARIFF-CLEANING-EDIT": "Edit Tariff Cleaning"
       }

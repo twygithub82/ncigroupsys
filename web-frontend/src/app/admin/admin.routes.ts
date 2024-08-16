@@ -14,6 +14,7 @@ import { TariffLabourComponent } from "./tariff/tariff-labour/tariff-labour.comp
 import { TariffDepotComponent } from "./tariff/tariff-depot/tariff-depot.component";
 import { TariffBufferComponent } from "./tariff/tariff-buffer/tariff-buffer.component";
 import { TariffRepairComponent } from "./tariff/tariff-repair/tariff-repair.component";
+import { TariffResidueComponent } from './tariff/tariff-residue/tariff-residue.component';
 import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-cleaning-new.component';
 import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey.component';
 import { InGateSurveyFormComponent } from './inventory/in-gate-survey-form/in-gate-survey-form.component';
@@ -124,6 +125,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "tariff/tariff-repair",
     component: TariffRepairComponent,
+  },
+  {
+    path: "tariff/tariff-residue",
+    component: TariffResidueComponent,
   },
   {
     path: "tariff/tariff-buffer",
