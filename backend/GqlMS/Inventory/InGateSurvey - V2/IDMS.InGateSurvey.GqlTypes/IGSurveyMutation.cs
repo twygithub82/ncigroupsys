@@ -85,7 +85,8 @@ namespace IDMS.InGateSurvey.GqlTypes
 
             try
             {
-                in_gate_survey ingateSurvey = context.in_gate_survey.Where(i => i.delete_dt == null || i.delete_dt == 0).FirstOrDefault();
+                in_gate_survey? ingateSurvey = await context.in_gate_survey.Where(i => i.guid == inGateSurveyRequest.guid && 
+                                                                                 (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
                 if (ingateSurvey == null)
                     throw new GraphQLException(new Error("Ingate survey not found.", "NOT_FOUND"));
 

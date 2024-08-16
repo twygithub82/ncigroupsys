@@ -26,7 +26,9 @@ builder.Services.AddPooledDbContextFactory<ApplicationInventoryDBContext>(option
 
 var mappingConfig = new MapperConfiguration(cfg =>
 {
-    cfg.CreateMap<InGateSurveyRequest, in_gate_survey>();
+
+    cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
+        .ForMember(dest => dest.guid, opt => opt.Ignore()); // Ignore the primary key
     //cfg.CreateMap<StoringOrderRequest, storing_order>();
 });
 
