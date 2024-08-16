@@ -82,6 +82,7 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
         public DbSet<IDMS.Models.Package.package_residue> package_residue { get; set; }
         public DbSet<IDMS.Models.Package.package_labour> package_labour { get; set; }
 
+        public DbSet<IDMS.Models.Package.package_repair> package_repair { get; set; }
         public DbSet<IDMS.Models.Shared.tank> tank { get; set; }
 
     }

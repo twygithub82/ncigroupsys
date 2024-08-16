@@ -121,6 +121,17 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       },
+      {
+        path: "admin/tariff/tariff-residue",
+        title: "MENUITEMS.TARIFF.LIST.TARIFF-RESIDUE",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
     ]
   },
   {

@@ -662,30 +662,42 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 var newTariffRepair = new tariff_repair();
                 newTariffRepair.guid = NewTariffRepair.guid;
                 newTariffRepair.remarks = NewTariffRepair.remarks;
-                newTariffRepair.description = NewTariffRepair.description;
-                newTariffRepair.cost = NewTariffRepair.cost;
+                newTariffRepair.cost_type_cv = NewTariffRepair.cost_type_cv;
+                newTariffRepair.dimension = NewTariffRepair.dimension;
+                newTariffRepair.dimension_unit_cv = NewTariffRepair.dimension_unit_cv;
+                newTariffRepair.group_name = NewTariffRepair.group_name;
+                newTariffRepair.subgroup_name_cv = NewTariffRepair.subgroup_name_cv;
+                newTariffRepair.width_diameter_unit_cv = NewTariffRepair.width_diameter_unit_cv;
+                newTariffRepair.width_diameter=NewTariffRepair.width_diameter;
+                newTariffRepair.job_type_cv = NewTariffRepair.job_type_cv;
+                newTariffRepair.labour_hour=NewTariffRepair.labour_hour;
+                newTariffRepair.length=NewTariffRepair.length;
+                newTariffRepair.length_unit_cv = NewTariffRepair.length_unit_cv;
+                newTariffRepair.material_cost=NewTariffRepair.material_cost;
+                newTariffRepair.part_name=NewTariffRepair.part_name;
+                newTariffRepair.rebate_type_cv = NewTariffRepair.rebate_type_cv;
+                newTariffRepair.test_type_cv=NewTariffRepair.test_type_cv ;
+                newTariffRepair.thickness=NewTariffRepair.thickness;
+                newTariffRepair.thickness_unit_cv=NewTariffRepair.thickness_unit_cv ;
                 newTariffRepair.create_by = uid;
                 newTariffRepair.create_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_repair.Add(newTariffRepair);
 
-                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
-                //foreach (var customerCompany in customerCompanies)
-                //{
-                //    var pack_depot = new package_bu();
-                //    pack_depot.guid = Util.GenerateGUID();
-                //    pack_depot.tariff_depot_guid = newTariffDepot.guid;
-                //    pack_depot.customer_company_guid = customerCompany.guid;
-                //    pack_depot.free_storage = newTariffDepot.free_storage;
-                //    pack_depot.lolo_cost = newTariffDepot.lolo_cost;
-                //    pack_depot.preinspection_cost = newTariffDepot.preinspection_cost;
-                //    pack_depot.storage_cost = newTariffDepot.storage_cost;
-                //    pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
-                //    pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
-                //    pack_depot.create_by = uid;
-                //    pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
-                //    context.package_depot.Add(pack_depot);
-                //}
-                //context.cleaning_category.Add(newCleanCategory);
+                var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                foreach (var customerCompany in customerCompanies)
+                {
+                    var pack_repair = new package_repair();
+                    pack_repair.guid = Util.GenerateGUID();
+                    pack_repair.tariff_repair_guid = newTariffRepair.guid;
+                    pack_repair.customer_company_guid = customerCompany.guid;
+                    pack_repair.material_cost = newTariffRepair.material_cost;
+                    pack_repair.labour_hour = newTariffRepair.labour_hour;
+                    pack_repair.remarks= newTariffRepair.remarks;
+                    pack_repair.create_by = uid;
+                    pack_repair.create_dt = GqlUtils.GetNowEpochInSec();
+                    context.package_repair.Add(pack_repair);
+                }
+
                 retval = context.SaveChanges();
             }
             catch { throw; }
@@ -712,8 +724,25 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 }
 
                 dbTariffRepair.remarks = UpdateTariffRepair.remarks;
-                dbTariffRepair.description = UpdateTariffRepair.description;
-                dbTariffRepair.cost = UpdateTariffRepair.cost;
+                dbTariffRepair.cost_type_cv = UpdateTariffRepair.cost_type_cv;
+                dbTariffRepair.dimension = UpdateTariffRepair.dimension;
+                dbTariffRepair.dimension_unit_cv = UpdateTariffRepair.dimension_unit_cv;
+                dbTariffRepair.group_name = UpdateTariffRepair.group_name;
+                dbTariffRepair.subgroup_name_cv = UpdateTariffRepair.subgroup_name_cv;
+                dbTariffRepair.width_diameter_unit_cv = UpdateTariffRepair.width_diameter_unit_cv;
+                dbTariffRepair.width_diameter = UpdateTariffRepair.width_diameter;
+                dbTariffRepair.job_type_cv = UpdateTariffRepair.job_type_cv;
+                dbTariffRepair.labour_hour = UpdateTariffRepair.labour_hour;
+                dbTariffRepair.length = UpdateTariffRepair.length;
+                dbTariffRepair.length_unit_cv = UpdateTariffRepair.length_unit_cv;
+                dbTariffRepair.material_cost = UpdateTariffRepair.material_cost;
+                dbTariffRepair.part_name = UpdateTariffRepair.part_name;
+                dbTariffRepair.rebate_type_cv = UpdateTariffRepair.rebate_type_cv;
+                dbTariffRepair.test_type_cv = UpdateTariffRepair.test_type_cv;
+                dbTariffRepair.thickness = UpdateTariffRepair.thickness;
+                dbTariffRepair.thickness_unit_cv = UpdateTariffRepair.thickness_unit_cv;
+
+                
                 dbTariffRepair.update_by = uid;
                 dbTariffRepair.update_dt = GqlUtils.GetNowEpochInSec();
 
