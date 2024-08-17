@@ -1,0 +1,8 @@
+td div {
+    //display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    justify-content: center;
+    align-items: center;
+    height: 95%;
+    //overflow: hidden;
+  }

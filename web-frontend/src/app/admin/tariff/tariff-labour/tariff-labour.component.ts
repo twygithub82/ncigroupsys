@@ -54,7 +54,6 @@ import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem }
 import { TariffBufferDS,TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour';
 import {SearchCriteriaService} from 'app/services/search-criteria.service';
-import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 
@@ -154,12 +153,13 @@ implements OnInit {
   hasPreviousPage = false;
   
 
-   exampleDatabase?: AdvanceTableService;
+  // exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
   selection = new SelectionModel<TariffBufferItem>(true, []);
   
   id?: number;
-  advanceTable?: AdvanceTable;
+ // advanceTable?: AdvanceTable;
+  dbMasterLabourCost?:TariffLabourItem;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
@@ -245,6 +245,7 @@ implements OnInit {
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     DESCRIPTION : 'COMMON-FORM.DESCRIPTION',
     COST : 'COMMON-FORM.COST',
+    COST_DETAILS : 'COMMON-FORM.COST-DETAILS',
     LAST_UPDATED:"COMMON-FORM.LAST-UPDATED"
      }
   
@@ -289,8 +290,9 @@ implements OnInit {
       // customer_code: this.customerCodeControl,
       // cleaning_category:this.categoryControl,
       description : [''],
-      min_cost:[''],
-      max_cost:['']
+      cost:[''],
+      remarks:[''],
+      lastUpdated: ['']
     });
   }
 
@@ -308,40 +310,19 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: this.advanceTable,
-    //     action: 'add',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // After dialog is closed we're doing frontend updates
-    //     // For add we're just pushing a new row inside DataService
-    //     this.exampleDatabase?.dataChange.value.unshift(
-    //       this.advanceTableService.getDialogData()
-    //     );
-    //     this.refreshTable();
-    //     this.showNotification(
-    //       'snackbar-success',
-    //       'Add Record Successfully...!!!',
-    //       'bottom',
-    //       'center'
-    //     );
-    //   }
-    // });
+   
   }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayLastUpdated(r: TariffLabourItem) {
-    var updatedt= r.update_dt;
+  displayLastUpdated() {
+    if(this.dbMasterLabourCost===null) return '';
+    var updatedt= this.dbMasterLabourCost?.update_dt;
     if(updatedt===null)
     {
-      updatedt= r.create_dt;
+      updatedt= this.dbMasterLabourCost?.create_dt;
     }
     const date = new Date(updatedt! * 1000);
     
@@ -368,55 +349,24 @@ implements OnInit {
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItems:this.selection.selected
+        selectedItem:this.dbMasterLabourCost
       }
         
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          if(result.selectedValue>0)
-          {
-            this.handleSaveSuccess(result.selectedValue);
-            this.search();
-          }
+         if (result>0) {
+          //if(result.selectedValue>0)
+          //{
+            this.handleSaveSuccess(result);
+            this.loadData();
+            
+         // }
       }
       });
   }
 
-  editCall(row: TariffLabourItem) {
-   // this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    var rows :TariffLabourItem[] =[] ;
-    rows.push(row);
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
-      width: '600px',
-      data: {
-        action: 'new',
-        langText: this.langText,
-        selectedItems:rows
-      }
-        
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          if(result.selectedValue>0)
-            {
-              this.handleSaveSuccess(result.selectedValue);
-              //this.search();
-              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-            }
-      }
-      });
-   
-  }
-
+ 
   
   deleteItem(row: AdvanceTable) {
     // this.id = row.id;
@@ -496,7 +446,7 @@ implements OnInit {
         where.cost ={ngte:maxCost}
       }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.tariffLabourDS.SearchTariffBuffer(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+    this.subs.sink = this.tariffLabourDS.SearchTariffLabour(where,this.lastOrderBy,this.pageSize).subscribe(data => {
        this.tariffLabourItems=data;
        this.previous_endCursor=undefined;
        this.endCursor = this.tariffLabourDS.pageInfo?.endCursor;
@@ -567,7 +517,7 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.tariffLabourDS.SearchTariffBuffer(where,order,first,after,last,before).subscribe(data => {
+      this.subs.sink = this.tariffLabourDS.SearchTariffLabour(where,order,first,after,last,before).subscribe(data => {
         this.tariffLabourItems=data;
         this.endCursor = this.tariffLabourDS.pageInfo?.endCursor;
         this.startCursor = this.tariffLabourDS.pageInfo?.startCursor;
@@ -576,6 +526,8 @@ implements OnInit {
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
+        if(!this.hasPreviousPage)
+          this.previous_endCursor=undefined;
      });
     }
   
@@ -617,7 +569,24 @@ implements OnInit {
     // );
   }
   public loadData() {
+    this.dbMasterLabourCost=undefined;
 
+    this.tariffLabourDS.SearchTariffLabour().subscribe(data=>{
+
+       if(this.tariffLabourDS.totalCount>0)
+       {
+        this.dbMasterLabourCost=data[0];
+        
+         this.pcForm!.patchValue({
+          description: this.dbMasterLabourCost.description,
+          cost: this.dbMasterLabourCost.cost,
+          remarks: this.dbMasterLabourCost.remarks,
+          lastUpdated : this.displayLastUpdated()
+
+        });
+
+       }
+    });
     // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
     //  // this.customer_companyList1 = data
     // });

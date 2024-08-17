@@ -335,6 +335,7 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
+    if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent,{
       width: '600px',
       data: {

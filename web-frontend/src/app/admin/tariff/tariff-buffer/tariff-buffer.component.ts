@@ -94,7 +94,7 @@ import { TariffBufferDS,TariffBufferItem } from 'app/data-sources/tariff-buffer'
 export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
-    'select',
+   // 'select',
     // 'img',
      'fName',
      'lName',
@@ -105,7 +105,7 @@ implements OnInit {
     // 'actions',
   ];
 
-  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-LABOUR'
+  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.TARIFF.TEXT'
@@ -243,6 +243,7 @@ implements OnInit {
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     DESCRIPTION : 'COMMON-FORM.BUFFER-TYPE',
+    BUFFER_CLEANING:'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
     COST : 'COMMON-FORM.COST',
     LAST_UPDATED:"COMMON-FORM.LAST-UPDATED"
      }
@@ -300,37 +301,36 @@ implements OnInit {
   refresh() {
     this.loadData();
   }
-  addNew() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
+  addCall() {
+    // this.preventDefault(event);  // Prevents the form submission
+     let tempDirection: Direction;
+     if (localStorage.getItem('isRtl') === 'true') {
+       tempDirection = 'rtl';
+     } else {
+       tempDirection = 'ltr';
+     }
+    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    //  rows.push(row);
+     const dialogRef = this.dialog.open(FormDialogComponent_New,{
+       width: '600px',
+       height:'auto',
+       data: {
+         action: 'new',
+         langText: this.langText,
+         selectedItem:null
+       }
+         
+     });
+
+     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result>0) {
+           this.handleSaveSuccess(result);
+           //this.search();
+          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+    
+      }
+   });
     }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: this.advanceTable,
-    //     action: 'add',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // After dialog is closed we're doing frontend updates
-    //     // For add we're just pushing a new row inside DataService
-    //     this.exampleDatabase?.dataChange.value.unshift(
-    //       this.advanceTableService.getDialogData()
-    //     );
-    //     this.refreshTable();
-    //     this.showNotification(
-    //       'snackbar-success',
-    //       'Add Record Successfully...!!!',
-    //       'bottom',
-    //       'center'
-    //     );
-    //   }
-    // });
-  }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
@@ -391,26 +391,28 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    var rows :TariffBufferItem[] =[] ;
-    rows.push(row);
+  
     const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
       width: '600px',
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItems:rows
+        selectedItem:row
       }
         
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          if(result.selectedValue>0)
-            {
-              this.handleSaveSuccess(result.selectedValue);
+         if (result>0) {
+          //if(result.selectedValue>0)
+            //{
+              this.handleSaveSuccess(result);
               //this.search();
+              if(this.tariffBufferDS.totalCount>0)
+              {
               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-            }
+              }
+            //}
       }
       });
    
@@ -492,7 +494,7 @@ implements OnInit {
     if (this.pcForm!.value["max_cost"])
       {
         const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-        where.cost ={ngte:maxCost}
+        where.cost ={ngt:maxCost}
       }
       this.lastSearchCriteria=where;
     this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where,this.lastOrderBy,this.pageSize).subscribe(data => {
@@ -575,6 +577,8 @@ implements OnInit {
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
+        if(!this.hasPreviousPage)
+          this.previous_endCursor=undefined;
      });
     }
   

@@ -89,7 +89,7 @@ export class TariffLabourDS extends BaseDataSource<TariffLabourItem> {
     super();
   }
   
-  SearchTariffBuffer(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffLabourItem[]> {
+  SearchTariffLabour(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffLabourItem[]> {
     this.loadingSubject.next(true);
     if (!last)
       if (!first)
@@ -118,7 +118,7 @@ export class TariffLabourDS extends BaseDataSource<TariffLabourItem> {
   }
 
 
-  addNewTariffBuffer(td: any): Observable<any> {
+  addNewTariffLabour(td: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_TARIFF_LABOUR,
       variables: {
@@ -132,7 +132,7 @@ export class TariffLabourDS extends BaseDataSource<TariffLabourItem> {
     );
   }
 
-    updateTariffBuffer(td: any): Observable<any> {
+    updateTariffLabour(td: any): Observable<any> {
       return this.apollo.mutate({
         mutation: UPDATE_TARIFF_LABOUR,
         variables: {

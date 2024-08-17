@@ -118,7 +118,7 @@ export class TariffResidueDS extends BaseDataSource<TariffResidueItem> {
   }
 
 
-  addNewTariffBuffer(td: any): Observable<any> {
+  addNewTariffResidue(td: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_TARIFF_RESIDUE,
       variables: {
@@ -132,7 +132,7 @@ export class TariffResidueDS extends BaseDataSource<TariffResidueItem> {
     );
   }
 
-    updateTariffBuffer(td: any): Observable<any> {
+    updateTariffResidue(td: any): Observable<any> {
       return this.apollo.mutate({
         mutation: UPDATE_TARIFF_RESIDUE,
         variables: {

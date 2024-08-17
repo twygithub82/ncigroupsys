@@ -94,11 +94,11 @@ import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-resid
 export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
-    'select',
-    // 'img',
-     'fName',
-     'lName',
-     'email',
+   // 'select',
+    // // 'img',
+      'fName',
+      'lName',
+      'email',
     //  'gender',
     // 'bDate',
     // 'mobile',
@@ -130,7 +130,7 @@ implements OnInit {
 
   customerCodeControl = new UntypedFormControl();
   categoryControl= new UntypedFormControl();
-
+  
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
@@ -290,6 +290,7 @@ implements OnInit {
       description : [''],
       min_cost:[''],
       max_cost:['']
+      
     });
   }
 
@@ -300,6 +301,38 @@ implements OnInit {
   refresh() {
     this.loadData();
   }
+
+   addCall() {
+    // this.preventDefault(event);  // Prevents the form submission
+     let tempDirection: Direction;
+     if (localStorage.getItem('isRtl') === 'true') {
+       tempDirection = 'rtl';
+     } else {
+       tempDirection = 'ltr';
+     }
+    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    //  rows.push(row);
+     const dialogRef = this.dialog.open(FormDialogComponent_New,{
+       width: '600px',
+       height:'auto',
+       data: {
+         action: 'new',
+         langText: this.langText,
+         selectedItem:null
+       }
+         
+     });
+
+     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result>0) {
+           this.handleSaveSuccess(result);
+           //this.search();
+          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+    
+      }
+   });
+    }
+  
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -307,6 +340,8 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
+
+
     // const dialogRef = this.dialog.open(FormDialogComponent, {
     //   data: {
     //     advanceTable: this.advanceTable,
@@ -383,7 +418,7 @@ implements OnInit {
       });
   }
 
-  editCall(row: TariffLabourItem) {
+  editCall(row: TariffResidueItem) {
    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -391,26 +426,27 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    var rows :TariffLabourItem[] =[] ;
-    rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
       width: '600px',
       data: {
-        action: 'new',
+        action: 'edit',
         langText: this.langText,
-        selectedItems:rows
+        selectedItem:row
       }
         
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
          if (result) {
-          if(result.selectedValue>0)
-            {
-              this.handleSaveSuccess(result.selectedValue);
+          //if(result.selectedValue>0)
+            //{
+              this.handleSaveSuccess(result);
               //this.search();
-              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-            }
+              if(this.tariffResidueDS.totalCount>0)
+              {
+                this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+              }
+            //}
       }
       });
    
@@ -575,6 +611,8 @@ implements OnInit {
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
+        if(!this.hasPreviousPage)
+          this.previous_endCursor=undefined;
      });
     }
   

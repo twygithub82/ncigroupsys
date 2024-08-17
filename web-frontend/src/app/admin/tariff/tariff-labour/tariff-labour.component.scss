@@ -1,0 +1,48 @@
+.shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 5px; /* Optional: rounded corners */
+    background-color: #fff; /* Optional: white background */
+}
+
+/* Adjustments for extra small screens */
+@media (max-width: 575.98px) {
+    .card.shadow {
+      margin: 10px;
+      padding: 15px;
+    }
+  
+    .tbl-title {
+      margin: 5px 10px;
+    }
+  }
+  
+  /* Adjustments for small screens */
+  @media (max-width: 767.98px) {
+    .card.shadow {
+      margin: 15px;
+      padding: 20px;
+    }
+  
+    .tbl-title {
+      margin: 8px 15px;
+    }
+  }
+  
+  /* Adjustments for medium screens */
+  @media (max-width: 991.98px) {
+    .card.shadow {
+      margin: 20px;
+      padding: 25px;
+    }
+  
+    .tbl-title {
+      margin: 10px 20px;
+    }
+  }
+  
+  /* General card adjustments */
+  .card.shadow {
+    width: 100%;
+    max-width: 100%;
+  }
