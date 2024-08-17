@@ -29,5 +29,26 @@ namespace IDMS.Booking.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<scheduling_sot> QuerySchedulingSOT(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                var schedulingSOTDetails = context.scheduling_sot.Where(d => d.delete_dt == null || d.delete_dt == 0);
+                //.Include(b => b.storing_order_tank)
+                //.Include(b => b.release_order);
+
+                return schedulingSOTDetails;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
     }
 }

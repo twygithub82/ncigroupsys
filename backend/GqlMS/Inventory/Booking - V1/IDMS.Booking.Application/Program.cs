@@ -57,7 +57,7 @@ namespace IDMS.Booking.Application
 
             builder.Services.AddGraphQLServer()
                             .InitializeOnStartup()
-                             .RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Pooled)
+                            .RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Pooled)
                             .AddQueryType<Query>()
                             .AddTypeExtension<BookingQuery>()
                             .AddTypeExtension<SchedulingQuery>()
@@ -65,6 +65,7 @@ namespace IDMS.Booking.Application
                             .AddSubscriptionType<BookingSubscription>()
                             .AddMutationType<BookingMutation>()
                             .AddTypeExtension<ReleaseOrderMutation>()
+                            .AddTypeExtension<SchedulingMutation>()
                             .AddFiltering()
                             .AddSorting()
                             .AddProjections()
