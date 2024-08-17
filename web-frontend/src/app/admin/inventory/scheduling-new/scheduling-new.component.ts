@@ -151,7 +151,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     RO_NOTES: 'COMMON-FORM.RO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
     BOOKED: 'COMMON-FORM.BOOKED',
-    SCHEDULED: 'COMMON-FORM.SCHEDULED'
+    SCHEDULED: 'COMMON-FORM.SCHEDULED',
+    SCHEDULING_DATE: 'COMMON-FORM.SCHEDULING-DATE'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -566,7 +567,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     ).subscribe();
   }
 
-  addBookingDetails(event: Event) {
+  addSchedulingDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     const selectedItems = this.sotSelection.selected;
     let tempDirection: Direction;
@@ -598,20 +599,21 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     if (!this.sotSelection.hasValue()) return true;
 
     return this.sotSelection.selected.some(selection =>
-      selection.scheduling?.some(schedulingItem => schedulingItem.status_cv !== 'CANCELED')
+      selection.scheduling_sot?.some(schedulingItem => schedulingItem.status_cv !== 'CANCELED')
     );
   }
 
   checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
     if (!schedulings || !schedulings.length) return false;
-    if (schedulings.some(schedule => schedule.status_cv !== "CANCELED"))
+    if (schedulings.some(schedule => schedule.status_cv === "NEW"))
       return true;
     return false;
   }
 
   checkBooking(bookings: BookingItem[] | undefined): boolean {
+
     if (!bookings || !bookings.length) return false;
-    if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
+    if (bookings.some(booking => booking.status_cv === "NEW"))
       return true;
     return false;
   }
@@ -656,5 +658,9 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
   getYardDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
+  }
+
+  getBookTypeDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.bookingTypeCvList);
   }
 }

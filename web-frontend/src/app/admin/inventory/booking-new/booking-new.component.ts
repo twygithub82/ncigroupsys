@@ -173,7 +173,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   tankStatusCvList: CodeValuesItem[] = [];
 
   lastSearchCriteria: any;
-  lastOrderBy: any = {};
+  lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
   pageIndex = 0;
   pageSize = 10;
   endCursor: string | undefined = undefined;
@@ -609,20 +609,24 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
+  getBookTypeDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.bookingTypeCvList);
+  }
+
   displayDate(input: number | null | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input as number);
   }
 
   checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
     if (!schedulings || !schedulings.length) return false;
-    if (schedulings.some(schedule => schedule.status_cv !== "CANCELED"))
+    if (schedulings.some(schedule => schedule.status_cv === "NEW"))
       return true;
     return false;
   }
 
   checkBooking(bookings: BookingItem[] | undefined): boolean {
     if (!bookings || !bookings.length) return false;
-    if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
+    if (bookings.some(booking => booking.status_cv === "NEW"))
       return true;
     return false;
   }

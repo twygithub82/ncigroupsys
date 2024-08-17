@@ -189,7 +189,7 @@
                   @if (checkBooking(row.booking)){
                   <div [ngClass]="'badge badge-solid-green ms-1'">{{translatedLangText.BOOKED}}</div>
                   }
-                  @else if (checkScheduling(row.scheduling)){
+                  @else if (checkScheduling(row.scheduling_sot)){
                   <div [ngClass]="'badge badge-solid-orange ms-1'">{{translatedLangText.SCHEDULED}}</div>
                   }
                 </mat-card-title>
@@ -243,13 +243,13 @@
                     @for(bookingRow of row.booking; track bookingRow){
                     <tr (click)="editBookingDetails(row, bookingRow, $event)">
                       <th scope="row">{{displayDate(bookingRow.booking_dt)}}</th>
-                      <td>{{bookingRow?.book_type_cv}}</td>
+                      <td>{{getBookTypeDescription(bookingRow?.book_type_cv)}}</td>
                       <td>{{bookingRow?.reference}}</td>
                       <td>{{bookingRow?.surveyor_guid}}</td>
                       <td>{{bookingRow?.status_cv}}</td>
                       <td>
-                        <button mat-icon-button color="primary" class="tbl-action-btn p-2">
-                          <mat-icon>edit</mat-icon>
+                        <button mat-icon-button color="warn" class="tbl-action-btn p-2">
+                          <mat-icon>cancel</mat-icon>
                         </button>
                       </td>
                     </tr>

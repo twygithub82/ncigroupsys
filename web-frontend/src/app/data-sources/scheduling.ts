@@ -11,12 +11,13 @@ import { BaseDataSource } from './base-ds';
 import { InGateItem } from './in-gate';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { ReleaseOrderItem } from './release-order';
+import { SchedulingSotItem } from './scheduling-sot';
 
 export class SchedulingGO {
   public guid?: string;
   public reference?: string;
-  public release_order_guid?: string;
-  public sot_guid?: string;
+  public book_type_cv?: string;
+  public scheduling_dt?: number;
   public status_cv?: string;
   public create_dt?: number;
   public create_by?: string;
@@ -27,8 +28,8 @@ export class SchedulingGO {
   constructor(item: Partial<SchedulingGO> = {}) {
     this.guid = item.guid;
     this.reference = item.reference;
-    this.release_order_guid = item.release_order_guid;
-    this.sot_guid = item.sot_guid;
+    this.book_type_cv = item.book_type_cv;
+    this.scheduling_dt = item.scheduling_dt;
     this.status_cv = item.status_cv;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
@@ -39,13 +40,11 @@ export class SchedulingGO {
 }
 
 export class SchedulingItem extends SchedulingGO {
-  public storing_order_tank?: StoringOrderTankItem
-  public release_order?: ReleaseOrderItem
+  public scheduling_sot?: SchedulingSotItem[]
 
   constructor(item: Partial<SchedulingItem> = {}) {
     super(item)
-    this.storing_order_tank = item.storing_order_tank || undefined;
-    this.release_order = item.release_order || undefined;
+    this.scheduling_sot = item.scheduling_sot || undefined;
   }
 }
 
@@ -58,80 +57,21 @@ export class SchedulingUpdateItem extends SchedulingItem {
   }
 }
 
-const GET_BOOKING = gql`
-  query getBooking($where: bookingFilterInput, $order: [bookingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    bookingList: queryBooking(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-      totalCount
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      nodes {
-        book_type_cv
-        booking_dt
-        create_by
-        create_dt
-        delete_dt
-        guid
-        reference
-        sot_guid
-        status_cv
-        surveyor_guid
-        update_by
-        update_dt
-        storing_order_tank {
-          tank_no
-          tank_status_cv
-          tariff_cleaning {
-            cargo
-          }
-          storing_order {
-            customer_company {
-              code
-              name
-            }
-          }
-          in_gate {
-            eir_dt
-            eir_no
-            yard_cv
-          }
-          purpose_repair_cv
-          purpose_steam
-          purpose_storage
-          purpose_cleaning
-        }
-      }
-    }
+// export const GET_SCHEDULING = gql`
+//   query {
+
+//   }
+// `;
+
+export const ADD_SCHEDULING = gql`
+  mutation AddScheduling($scheduling: SchedulingRequestInput!, $scheduling_sots: [SchedulingSOTRequestInput!]!) {
+    addScheduling(scheduling: $scheduling, scheduling_sots: $scheduling_sots)
   }
 `;
 
-const CHECK_ANY_ACTIVE_SOT = gql`
-  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
-    sotList: queryStoringOrderTank(where: $where) {
-      nodes {
-        guid
-        so_guid
-        status_cv
-        tank_status_cv
-        tank_no
-      }
-      totalCount
-    }
-  }
-`;
-
-export const CANCEL_STORING_ORDER_TANK = gql`
-  mutation CancelStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
-    cancelStoringOrderTank(sot: $sot)
-  }
-`;
-
-export const ADD_BOOKING = gql`
-  mutation AddBooking($booking: BookingRequestInput!) {
-    addBooking(booking: $booking)
+export const UPDATE_SCHEDULING = gql`
+  mutation UpdateScheduling($scheduling: SchedulingRequestInput!, $scheduling_sots: [SchedulingSOTRequestInput!]!) {
+    updateScheduling(scheduling: $scheduling, scheduling_sots: $scheduling_sots)
   }
 `;
 
@@ -139,49 +79,47 @@ export class SchedulingDS extends BaseDataSource<SchedulingItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchBooking(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<SchedulingItem[]> {
-    this.loadingSubject.next(true);
+  // searchBooking(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<SchedulingItem[]> {
+  //   this.loadingSubject.next(true);
 
-    return this.apollo
-      .query<any>({
-        query: GET_BOOKING,
-        variables: { where, order, first, after, last, before },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const bookingList = result.bookingList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(bookingList.nodes);
-          this.totalCount = bookingList.totalCount;
-          this.pageInfo = bookingList.pageInfo;
-          return bookingList.nodes;
-        })
-      );
-  }
+  //   return this.apollo
+  //     .query<any>({
+  //       query: GET_SCHEDULING,
+  //       variables: { where, order, first, after, last, before },
+  //       fetchPolicy: 'no-cache' // Ensure fresh data
+  //     })
+  //     .pipe(
+  //       map((result) => result.data),
+  //       catchError(() => of({ items: [], totalCount: 0 })),
+  //       finalize(() => this.loadingSubject.next(false)),
+  //       map((result) => {
+  //         const bookingList = result.bookingList || { nodes: [], totalCount: 0 };
+  //         this.dataSubject.next(bookingList.nodes);
+  //         this.totalCount = bookingList.totalCount;
+  //         this.pageInfo = bookingList.pageInfo;
+  //         return bookingList.nodes;
+  //       })
+  //     );
+  // }
 
-  cancelBooking(sot: any): Observable<any> {
+  addScheduling(scheduling: any, scheduling_sots: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: CANCEL_STORING_ORDER_TANK,
+      mutation: ADD_SCHEDULING,
       variables: {
-        sot
+        scheduling,
+        scheduling_sots
       }
     });
   }
 
-  addBooking(booking: any): Observable<any> {
+  updateScheduling(scheduling: any, scheduling_sots: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: ADD_BOOKING,
+      mutation: UPDATE_SCHEDULING,
       variables: {
-        booking
+        scheduling,
+        scheduling_sots
       }
     });
-  }
-
-  canAddRemove(sot: StoringOrderTankItem): boolean {
-    return sot && !sot.status_cv;
   }
 
   canCancel(schedule: SchedulingItem | undefined): boolean {
@@ -192,9 +130,5 @@ export class SchedulingDS extends BaseDataSource<SchedulingItem> {
   canCancels(schedule: SchedulingItem[] | undefined): boolean {
     if (!schedule) return false;
     return schedule.some(item => item.status_cv === 'PENDING');
-  }
-
-  canRollbackStatus(sot: StoringOrderTankItem): boolean {
-    return sot && sot.status_cv === 'CANCELED' || sot.status_cv === 'ACCEPTED';
   }
 }

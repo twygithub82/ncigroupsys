@@ -29,6 +29,7 @@ import { MatCardModule } from '@angular/material/card';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 
 
 export interface DialogData {
@@ -90,7 +91,7 @@ export class FormDialogComponent {
   valueChangesDisabled: boolean = false;
 
   ccDS: CustomerCompanyDS;
-  roDS: ReleaseOrderDS;
+  schedulingDS: SchedulingDS;
   igDS: InGateDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -101,7 +102,7 @@ export class FormDialogComponent {
   ) {
     // Set the defaults
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.roDS = new ReleaseOrderDS(this.apollo);
+    this.schedulingDS = new SchedulingDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.action = data.action!;
     this.dialogTitle = 'New Scheduling';
@@ -118,12 +119,11 @@ export class FormDialogComponent {
   createForm(): UntypedFormGroup {
     const customerCompanyGuid = this.storingOrderTank[0].storing_order?.customer_company_guid
     return this.fb.group({
-      booking_dt: [''],
+      reference: [''],
       customer_company_guid: [customerCompanyGuid],
-      haulier: [''],
-      release_dt: [''],
-      ro_notes: [''],
-      scheduling: this.fb.array(this.storingOrderTank.map((tank: any) => this.createTankGroup(tank)))
+      book_type_cv: [''],
+      scheduling_dt: [''],
+      schedulingSot: this.fb.array(this.storingOrderTank.map((tank: any) => this.createTankGroup(tank)))
     });
   }
 
@@ -138,40 +138,42 @@ export class FormDialogComponent {
       tare_weight: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.tare_weight],
       tank_status_cv: [tank.tank_status_cv],
       yard_cv: [this.igDS.getInGateItem(tank.in_gate)?.yard_cv],
-      reference: [''],
-      release_job_no: [tank.release_job_no],
       booked: [this.checkBooking(tank.booking)],
       scheduled: [this.checkScheduling(tank.scheduling)],
     });
   }
 
   getSchedulingArray(): UntypedFormArray {
-    return this.schedulingForm.get('scheduling') as UntypedFormArray;
+    return this.schedulingForm.get('schedulingSot') as UntypedFormArray;
   }
 
   submit() {
     if (this.schedulingForm?.valid) {
-      let ro = new ReleaseOrderItem();
-      ro.booking_dt = Utility.convertDate(this.schedulingForm.value['booking_dt']) as number;
-      ro.release_dt = Utility.convertDate(this.schedulingForm.value['release_dt']) as number;
-      ro.customer_company_guid = this.schedulingForm.value['customer_company_guid'];
-      ro.haulier = this.schedulingForm.value['haulier'];
-      ro.ro_notes = this.schedulingForm.value['ro_notes'];
-      let schedulings: SchedulingItem[] = [];
-      const schedulingsForm = this.schedulingForm.value['scheduling']
-      schedulingsForm.forEach((s: any) => {
-        schedulings.push(new SchedulingItem({reference: s.reference, sot_guid: s.sot_guid, storing_order_tank: new StoringOrderTankGO({guid: s.sot_guid, release_job_no: s.release_job_no})}))
+      let scheduling = new SchedulingItem();
+      scheduling.reference = this.schedulingForm.value['reference'];
+      //scheduling.status_cv = this.schedulingForm.value['status_cv'];
+      scheduling.book_type_cv = this.schedulingForm.value['book_type_cv'];
+      scheduling.scheduling_dt = Utility.convertDate(this.schedulingForm.value['scheduling_dt']) as number;
+
+      let schedulingSot: SchedulingSotItem[] = [];
+      const schedulingSotForm = this.schedulingForm.value['schedulingSot']
+      schedulingSotForm.forEach((s: any) => {
+        schedulingSot.push(new SchedulingSotItem({sot_guid: s.sot_guid}))
       });
 
-      console.log(ro);
-      console.log(schedulings);
+      console.log(scheduling);
+      console.log(schedulingSot);
 
-      this.roDS.addReleaseOrder(ro, schedulings).subscribe(result => {
-        const returnDialog: any = {
-          savedSuccess: (result?.data?.addReleaseOrder ?? 0) > 0
-        }
-        this.dialogRef.close(returnDialog);
-      });
+      if (scheduling.guid) {
+
+      } else {
+        this.schedulingDS.addScheduling(scheduling, schedulingSot).subscribe(result => {
+          const returnDialog: any = {
+            savedSuccess: (result?.data?.addScheduling ?? 0) > 0
+          }
+          this.dialogRef.close(returnDialog);
+        });
+      }
     } else {
       console.log('invalid');
       this.findInvalidControls();
