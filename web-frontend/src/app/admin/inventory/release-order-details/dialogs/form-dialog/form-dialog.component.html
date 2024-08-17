@@ -21,7 +21,7 @@
         <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center"
           (click)="toggleRow(row)">
           <mat-card-title [ngClass]="{'pt-1': true}">
-            <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
+            <!-- <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
               class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkScheduling(row.scheduling)">
             </mat-checkbox>
             {{row.tank_no}}
@@ -30,7 +30,7 @@
             }
             @else if (checkBooking(row.booking)){
             <div [ngClass]="'badge badge-solid-orange ms-1'">{{data.translatedLangText.BOOKED}}</div>
-            }
+            } -->
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>

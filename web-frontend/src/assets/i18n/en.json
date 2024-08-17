@@ -422,7 +422,8 @@
     "GATE-OUT-COST":"gate out cost",
     "BUFFER-TYPE":"Buffer Type",
     "COST":"Cost",
-    "COST-DETAILS":"Cost Details"
+    "COST-DETAILS":"Cost Details",
+    "SCHEDULING-DATE": "Scheduling Date"
     
   },
   "CLEAN-PROCEDURES": {

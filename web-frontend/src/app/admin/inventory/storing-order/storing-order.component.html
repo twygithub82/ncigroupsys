@@ -226,7 +226,7 @@
                       <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
                     </button> -->
                     @if (soDS.canCancel(row)) {
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="cancelItem(row)"
+                    <button mat-icon-button color="warn" (click)="$event.stopPropagation()" (click)="cancelItem(row)"
                       [matTooltip]="translatedLangText.CANCEL" class="tbl-action-btn">
                       <mat-icon>cancel</mat-icon>
                     </button>

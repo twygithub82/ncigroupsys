@@ -348,13 +348,13 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   createSchedulingFormGroup(item: SchedulingUpdateItem): UntypedFormGroup {
     return this.fb.group({
-      guid: [item.guid],
-      reference: [item.reference],
-      release_order_guid: [item.release_order_guid],
-      sot_guid: [item.sot_guid],
-      tank_no: [item.storing_order_tank?.tank_no],
-      release_job_no: [item.storing_order_tank?.release_job_no],
-      action: [item.action],
+      // guid: [item.guid],
+      // reference: [item.reference],
+      // release_order_guid: [item.release_order_guid],
+      // sot_guid: [item.sot_guid],
+      // tank_no: [item.storing_order_tank?.tank_no],
+      // release_job_no: [item.storing_order_tank?.release_job_no],
+      // action: [item.action],
     });
   }
 
