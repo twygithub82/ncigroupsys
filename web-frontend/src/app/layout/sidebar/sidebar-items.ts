@@ -304,6 +304,17 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },
       {
+        path: "admin/inventory/scheduling",
+        title: "MENUITEMS.INVENTORY.LIST.SCHEDULING",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
         path: "admin/inventory/scheduling-new",
         title: "MENUITEMS.INVENTORY.LIST.SCHEDULING-NEW",
         iconType: "",
