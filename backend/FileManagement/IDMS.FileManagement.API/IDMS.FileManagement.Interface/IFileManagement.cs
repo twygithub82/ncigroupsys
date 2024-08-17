@@ -5,9 +5,9 @@ namespace IDMS.FileManagement.Interface
 {
     public interface IFileManagement
     {
-        public Task<List<BlobContentInfo>> UploadFiles(List<IFormFile> files, CancellationToken cancellationToken = default);
-        public Task<List<BlobItem>> GetBlobItems(CancellationToken cancellationToken = default);
-        public Task<List<BlobItem>> GetFiles(CancellationToken cancellationToken = default);
-        public Task<string> GetUrl();
+        public Task<List<BlobContentInfo>> UploadFiles(List<IFormFile> files, string fileType, string filenameKey = "", CancellationToken cancellationToken = default);
+        //public Task<List<BlobItem>> GetBlobItems(string containerName, CancellationToken cancellationToken = default);
+        public Task<List<BlobItem>> GetFiles(string containerName, CancellationToken cancellationToken = default);
+        public Task<string> GetFileUrl(string filename, string containerName);
     }
 }
