@@ -37,7 +37,7 @@ namespace IDMS.Booking.GqlTypes
                 newRO.status_cv = ROStatus.PENDING;
                 newRO.customer_company_guid = releaseOrder.customer_company_guid;
                 newRO.ro_generated = false;
-                newRO.booking_dt = releaseOrder.booking_dt;
+                //newRO.booking_dt = releaseOrder.booking_dt;
                 newRO.release_dt = releaseOrder.release_dt;
 
                 IList<scheduling> schedulingsList = new List<scheduling>();
@@ -51,8 +51,8 @@ namespace IDMS.Booking.GqlTypes
                     newScheduling.create_by = user;
                     newScheduling.create_dt = currentDateTime;
 
-                    newScheduling.sot_guid = sch.sot_guid;
-                    newScheduling.release_order_guid = newRO.guid;
+                    //newScheduling.sot_guid = sch.sot_guid;
+                    //newScheduling.release_order_guid = newRO.guid;
                     newScheduling.status_cv = ROStatus.PENDING;
                     newScheduling.reference = sch.reference;
                     schedulingsList.Add(newScheduling);
@@ -108,8 +108,8 @@ namespace IDMS.Booking.GqlTypes
                         newScheduling.create_by = user;
                         newScheduling.create_dt = currentDateTime;
 
-                        newScheduling.sot_guid = sch.sot_guid;
-                        newScheduling.release_order_guid = releaseOrder.guid;
+                        //newScheduling.sot_guid = sch.sot_guid;
+                        //newScheduling.release_order_guid = releaseOrder.guid;
                         newScheduling.status_cv = ROStatus.PENDING;
                         newScheduling.reference = sch.reference;
                         newSchedulingsList.Add(newScheduling);
@@ -165,7 +165,7 @@ namespace IDMS.Booking.GqlTypes
                     //existingRO.status_cv = ROStatus.PENDING;
                     //existingRO.customer_company_guid = releaseOrder.customer_company_guid;
                     //existingRO.ro_generated = false;
-                    existingRO.booking_dt = releaseOrder.booking_dt;
+                    //existingRO.booking_dt = releaseOrder.booking_dt;
                     existingRO.release_dt = releaseOrder.release_dt;
                 }
                 else

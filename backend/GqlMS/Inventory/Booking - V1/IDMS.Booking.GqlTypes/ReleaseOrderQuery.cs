@@ -19,7 +19,7 @@ namespace IDMS.Booking.GqlTypes
             try
             {
                 var roDetails = context.release_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
-                    .Include(d => d.scheduling.Where(s => s.delete_dt == null || s.delete_dt == 0))
+                    //.Include(d => d.scheduling.Where(s => s.delete_dt == null || s.delete_dt == 0))
                     .Include(d => d.customer_company);
 
                 return roDetails;

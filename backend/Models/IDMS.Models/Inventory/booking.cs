@@ -28,10 +28,4 @@ namespace IDMS.Models.Inventory
         //public long? repair_complete_dt { get; set; }
         public storing_order_tank? storing_order_tank { get; set; }
     }
-
-    //public class BookingWithTanks : booking
-    //{
-    //    public storing_order_tank? storing_order_tank { get; set; }
-    //}
-
 }
