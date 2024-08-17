@@ -418,7 +418,9 @@
     "CUSTOMER-COST":"Customer Cost",
     "STORAGE-CALCULATE-BY":"Storage Calculate By",
     "GATE-IN-COST":"gate in cost",
-    "GATE-OUT-COST":"gate out cost"
+    "GATE-OUT-COST":"gate out cost",
+    "BUFFER-TYPE":"Buffer Type",
+    "COST":"Cost"
     
   },
   "CLEAN-PROCEDURES": {

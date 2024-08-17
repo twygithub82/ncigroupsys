@@ -105,12 +105,17 @@ export class Utility {
   }
 
   static formatDateTo12Hour(date: Date): string {
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Months are zero-indexed
+    const year = date.getFullYear();
+  
     const hours = date.getHours();
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
     const formattedHours = hours % 12 || 12; // convert 0 to 12 for midnight
     const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-    return `${formattedHours}:${formattedMinutes} ${ampm}`;
+  
+    return `${month}/${day}/${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
   }
 
   static verifyIsoContainerCheckDigit(containerNumber: string): boolean {

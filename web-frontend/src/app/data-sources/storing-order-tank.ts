@@ -267,21 +267,6 @@ const GET_STORING_ORDER_TANKS_FOR_BOOKING = gql`
           update_by
           update_dt
         }
-        scheduling {
-          create_by
-          create_dt
-          delete_dt
-          guid
-          reference
-          release_order_guid
-          sot_guid
-          status_cv
-          update_by
-          update_dt
-          release_order {
-            status_cv
-          }
-        }
       }
       pageInfo {
         endCursor

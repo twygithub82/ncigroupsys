@@ -103,7 +103,7 @@
     <form class="register-form mt-3" [formGroup]="bookingForm" #formDirective="ngForm">
       <h5>{{data.translatedLangText.BOOKING_DETAILS}}</h5>
       <div class="row">
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
             <mat-select formControlName="book_type_cv" required>
@@ -120,7 +120,7 @@
             }
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.BOOKING_DATE}}</mat-label>
             <input matInput formControlName="booking_dt" [matDatepicker]="booking_dt_picker" [min]="startDateToday" required>
@@ -133,7 +133,7 @@
             }
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.SURVEYOR}}</mat-label>
             <mat-select formControlName="surveyor_guid">

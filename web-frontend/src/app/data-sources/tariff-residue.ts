@@ -11,7 +11,7 @@ import { TankItem } from './tank';
 import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
 import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
-export class TariffLabourItem {
+export class TariffResidueItem {
   public guid?: string;
   
   public description?: string;
@@ -23,7 +23,7 @@ export class TariffLabourItem {
   public update_by?: string;
   public delete_dt?: number;
   
-  constructor(item: Partial<TariffLabourItem> = {}) {
+  constructor(item: Partial<TariffResidueItem> = {}) {
     this.guid = item.guid;
     if (!this.guid) this.guid = '';
     this.description = item.description;
@@ -38,15 +38,15 @@ export class TariffLabourItem {
 }
 
 export interface TariffLabourResult {
-  items: TariffLabourItem[];
+  items: TariffResidueItem[];
   totalCount: number;
 }
 
 
 
-export const GET_TARIFF_LABOUR_QUERY = gql`
-  query queryTariffLabour($where: tariff_labourFilterInput, $order:[tariff_labourSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
-    tariffLabourResult : queryTariffLabour(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
+export const GET_TARIFF_RESIDUE_QUERY = gql`
+  query queryTariffResidue($where: tariff_residueFilterInput, $order:[tariff_residueSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    tariffResidueResult : queryTariffResidue(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
       description
       cost
@@ -71,32 +71,32 @@ export const GET_TARIFF_LABOUR_QUERY = gql`
 `;
 
 
-export const ADD_TARIFF_LABOUR = gql`
-  mutation addTariffLabour($td: tariff_labourInput!) {
-    addTariffLabour(newTariffLabour: $td)
+export const ADD_TARIFF_RESIDUE = gql`
+  mutation addTariffResidue($td: tariff_residueInput!) {
+    addTariffResidue(newTariffResidue: $td)
   }
 `;
 
-export const UPDATE_TARIFF_LABOUR = gql`
-  mutation updateTariffLabour($td: tariff_labourInput!) {
-    updateTariffLabour(updateTariffLabour: $td)
+export const UPDATE_TARIFF_RESIDUE = gql`
+  mutation updateTariffResidue($td: tariff_residueInput!) {
+    updateTariffResidue(updateTariffResidue: $td)
   }
 `;
 
 
-export class TariffLabourDS extends BaseDataSource<TariffLabourItem> {
+export class TariffResidueDS extends BaseDataSource<TariffResidueItem> {
   constructor(private apollo: Apollo) {
     super();
   }
   
-  SearchTariffBuffer(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffLabourItem[]> {
+  SearchTariffResidue(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffResidueItem[]> {
     this.loadingSubject.next(true);
     if (!last)
       if (!first)
         first = 10;
     return this.apollo
       .query<any>({
-        query: GET_TARIFF_LABOUR_QUERY,
+        query: GET_TARIFF_RESIDUE_QUERY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -104,15 +104,15 @@ export class TariffLabourDS extends BaseDataSource<TariffLabourItem> {
         map((result) => result.data),
         catchError((error: ApolloError) => {
           console.error('GraphQL Error:', error);
-          return of([] as TariffLabourItem[]); // Return an empty array on error
+          return of([] as TariffResidueItem[]); // Return an empty array on error
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const tariffLabourResult = result.tariffLabourResult || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(tariffLabourResult.nodes);
-          this.pageInfo = tariffLabourResult.pageInfo;
-          this.totalCount = tariffLabourResult.totalCount;
-          return tariffLabourResult.nodes;
+          const tariffResidueResult = result.tariffResidueResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(tariffResidueResult.nodes);
+          this.pageInfo = tariffResidueResult.pageInfo;
+          this.totalCount = tariffResidueResult.totalCount;
+          return tariffResidueResult.nodes;
         })
       );
   }
@@ -120,7 +120,7 @@ export class TariffLabourDS extends BaseDataSource<TariffLabourItem> {
 
   addNewTariffBuffer(td: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: ADD_TARIFF_LABOUR,
+      mutation: ADD_TARIFF_RESIDUE,
       variables: {
         td
       }
@@ -134,7 +134,7 @@ export class TariffLabourDS extends BaseDataSource<TariffLabourItem> {
 
     updateTariffBuffer(td: any): Observable<any> {
       return this.apollo.mutate({
-        mutation: UPDATE_TARIFF_LABOUR,
+        mutation: UPDATE_TARIFF_RESIDUE,
         variables: {
           td
         }
