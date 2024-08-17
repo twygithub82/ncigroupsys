@@ -421,7 +421,8 @@
     "GATE-IN-COST":"gate in cost",
     "GATE-OUT-COST":"gate out cost",
     "BUFFER-TYPE":"Buffer Type",
-    "COST":"Cost"
+    "COST":"Cost",
+    "COST-DETAILS":"Cost Details"
     
   },
   "CLEAN-PROCEDURES": {

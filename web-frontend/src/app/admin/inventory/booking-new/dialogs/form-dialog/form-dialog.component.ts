@@ -32,6 +32,7 @@ import { CodeValuesDS } from 'app/data-sources/code-values';
 export interface DialogData {
   action?: string;
   item: StoringOrderTankItem[];
+  booking: BookingItem;
   translatedLangText?: any;
   populateData?: any;
   index?: number;
@@ -82,6 +83,7 @@ export class FormDialogComponent {
   dialogTitle: string;
   bookingForm: UntypedFormGroup;
   storingOrderTank: StoringOrderTankItem[];
+  booking?: BookingItem;
   last_cargoList?: TariffCleaningItem[];
   startDateToday = new Date();
   valueChangesDisabled: boolean = false;
@@ -104,11 +106,14 @@ export class FormDialogComponent {
     this.bkDS = new BookingDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.action = data.action!;
-    this.dialogTitle = 'New Booking';
     if (this.action === 'edit') {
       //this.dialogTitle = 'Edit ' + data.item.tank_no;
       this.storingOrderTank = data.item;
+      this.booking = data.booking;
+      this.dialogTitle = 'Edit Booking';
+      this.startDateToday = Utility.convertDate(this.booking.booking_dt) as Date;
     } else {
+      this.dialogTitle = 'New Booking';
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
     this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
@@ -117,13 +122,11 @@ export class FormDialogComponent {
   }
 
   createStorigOrderTankForm(): UntypedFormGroup {
-    // this.startDateETA = this.storingOrderTank.eta_dt ? (Utility.convertDate(this.storingOrderTank.eta_dt) as Date) : this.startDateETA;
-    // this.startDateETR = this.storingOrderTank.etr_dt ? (Utility.convertDate(this.storingOrderTank.etr_dt) as Date) : this.startDateETR;
     return this.fb.group({
-      reference: [''],
-      book_type_cv: [''],
-      booking_dt: [''],
-      surveyor_guid: ['']
+      reference: this.booking?.reference,
+      book_type_cv: this.booking?.book_type_cv,
+      booking_dt: Utility.convertDate(this.booking?.booking_dt),
+      surveyor_guid: this.booking?.surveyor_guid
     });
   }
 
@@ -131,20 +134,32 @@ export class FormDialogComponent {
     if (this.bookingForm?.valid) {
       const selectedIds = this.storingOrderTank.map(item => item.guid);
       var booking: any = {
+        guid: this.booking?.guid,
         sot_guid: selectedIds,
         book_type_cv: this.bookingForm.value['book_type_cv'],
         booking_dt: Utility.convertDate(this.bookingForm.value['booking_dt']),
         reference: this.bookingForm.value['reference'],
         surveyor_guid: this.bookingForm.value['surveyor_guid'] || "surveyor_guid_222",
+        status_cv: this.booking?.status_cv
       }
       console.log('valid');
       console.log(booking);
-      this.bkDS.addBooking(booking).subscribe(result => {
-        const returnDialog: any = {
-          savedSuccess: (result?.data?.addBooking ?? 0) > 0
-        }
-        this.dialogRef.close(returnDialog);
-      });
+      if (booking.guid) {
+        debugger
+        this.bkDS.updateBooking([booking]).subscribe(result => {
+          const returnDialog: any = {
+            savedSuccess: (result?.data?.updateBooking ?? 0) > 0
+          }
+          this.dialogRef.close(returnDialog);
+        });
+      } else {
+        this.bkDS.addBooking(booking).subscribe(result => {
+          const returnDialog: any = {
+            savedSuccess: (result?.data?.addBooking ?? 0) > 0
+          }
+          this.dialogRef.close(returnDialog);
+        });
+      }
     } else {
       console.log('invalid');
       this.findInvalidControls();

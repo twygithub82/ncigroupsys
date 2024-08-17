@@ -34,12 +34,13 @@ import {TariffDepotItem,TariffDepotDS} from 'app/data-sources/tariff-depot';
 import { elements } from 'chart.js';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
 export interface DialogData {
   action?: string;
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItem:TariffDepotItem;
+   selectedItem:TariffResidueItem;
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -105,14 +106,14 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   index?: number;
   dialogTitle?: string;
 
-  tnkDS :TankDS;
-  trfDepotDS: TariffDepotDS;
-
-  tnkItems?:TankItem[]=[];
   
-  storingOrderTank?: StoringOrderTankItem;
-  sotExistedList?: StoringOrderTankItem[];
-  last_cargoList?: TariffCleaningItem[];
+  trfResidueDS: TariffResidueDS;
+
+
+  
+  // storingOrderTank?: StoringOrderTankItem;
+  // sotExistedList?: StoringOrderTankItem[];
+  // last_cargoList?: TariffCleaningItem[];
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
@@ -212,10 +213,14 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
+    COST : 'COMMON-FORM.COST',
+    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
+    BUFFER_TYPE:"COMMON-FORM.BUFFER-TYPE",
+    TARIFF_RESIDUE:'MENUITEMS.TARIFF.LIST.TARIFF-RESIDUE',
   };
   unit_type_control = new UntypedFormControl();
   
-  selectedItem: TariffDepotItem;
+  selectedItem: TariffResidueItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -230,43 +235,23 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     // Set the defaults
     super();
     this.selectedItem = data.selectedItem;
-     this.tnkDS = new TankDS(this.apollo);
-     this.trfDepotDS =new TariffDepotDS(this.apollo);
-    this.pcForm = this.createTariffDepot();
-    this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
+     this.trfResidueDS =new TariffResidueDS(this.apollo);
+    this.pcForm = this.createTariffResidue();
+    
     this.action = data.action!;
     this.translateLangText();
 
-    const where: any = {};
-    where.tariff_depot_guid={or:[{eq:null},{eq:''}]};
-
-    this.subs.sink = this.tnkDS.search(where,{}).subscribe(data=>{
-      if (this.selectedItem?.tanks) {
-        data.unshift(...this.selectedItem.tanks);
-      }
-      this.tnkItems=data;
-      this.unit_type_control.setValue(this.selectedItem.tanks);
-    }
-
-    );
-    
+   
    
   }
 
-  createTariffDepot(): UntypedFormGroup {
+  createTariffResidue(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: this.selectedItem,
-      action:this.action,
-      name:this.selectedItem.profile_name,
+      action:"edit",
       description:this.selectedItem.description,
-      preinspection_cost:this.selectedItem.preinspection_cost,
-      lolo_cost:this.selectedItem.lolo_cost,
-      storage_cost:this.selectedItem.storage_cost,
-      free_storage:this.selectedItem.free_storage,
-      gate_in_cost:this.selectedItem.gate_in_cost,
-      gate_out_cost:this.selectedItem.gate_out_cost,
-      unit_types:this.unit_type_control,
-      last_updated:['']
+      cost:this.selectedItem.cost,
+      remarks:this.selectedItem.remarks
     });
   }
  
@@ -285,7 +270,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   GetTitle()
   {
    
-      return this.translatedLangText.EDIT + " " + this.translatedLangText.DEPOT_PROFILE;      
+      return this.translatedLangText.EDIT + " " + this.translatedLangText.TARIFF_RESIDUE;      
     
   }
 
@@ -320,11 +305,11 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     if (!this.pcForm?.valid) return;
     
     let where: any = {};
-    if (this.pcForm!.value['name']) {
-      where.profile_name = { contains: this.pcForm!.value['name'] };
+    if (this.pcForm!.value['description']) {
+      where.description = { eq: this.pcForm!.value['description'] };
     }
 
-    this.subs.sink= this.trfDepotDS.SearchTariffDepot(where).subscribe(data=>{
+    this.subs.sink= this.trfResidueDS.SearchTariffResidue(where).subscribe(data=>{
       
       let update =true;
       if(data.length>0)
@@ -333,90 +318,24 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
          if(queriedRec.guid!=this.selectedItem.guid)
          {
            update=false;
-           this.pcForm?.get('name')?.setErrors({ existed: true });
+           this.pcForm?.get('description')?.setErrors({ existed: true });
          }
 
        }
        if(update)
        {
-          let conditions:any[] = [];
-          let unit_types:TankItem[]=[];
-          let insert =true;
-          if(this.unit_type_control.value.length>0)
-          {
-            this.unit_type_control.value.forEach((data:TankItem) => {
-                let cond:any={guid:{eq:String(data.guid)}};
-                conditions.push(cond);
-                let tnk:TankItem= new TankItem();
-                tnk.guid=data.guid;
-                unit_types.push(tnk);
-            });
-            let where ={or:conditions};
-            this.subs.sink=this.tnkDS.search(where).subscribe(data=>{
-              for(const d of data)
-              {
-                if(d.tariff_depot_guid!=null && d.tariff_depot_guid!=this.selectedItem.guid)
-                {
-                  update=false;
-                   break;
-                }
-              }
-               if(update)
-               {
-                  var updatedTD = new TariffDepotItem(this.selectedItem);
-                  updatedTD.profile_name = this.pcForm!.value['name'];
+                  var updatedTD = new TariffResidueItem(this.selectedItem);
+                  updatedTD.cost = this.pcForm!.value['cost'];
                   updatedTD.description = this.pcForm!.value['description'];
-                  updatedTD.free_storage= this.pcForm!.value['free_storage'];
-                  updatedTD.lolo_cost= this.pcForm!.value['lolo_cost'];
-                  updatedTD.preinspection_cost= this.pcForm!.value['preinspection_cost'];
-                  updatedTD.storage_cost= this.pcForm!.value['storage_cost'];
-                  updatedTD.gate_in_cost= this.pcForm!.value['gate_in_cost'];
-                  updatedTD.gate_out_cost= this.pcForm!.value['gate_out_cost'];
-                  updatedTD.tanks = unit_types;
-                  this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result=>{
-                    this.handleSaveSuccess(result?.data?.updateTariffDepot);
+                  updatedTD.remarks= this.pcForm!.value['remarks'];
+                  this.trfResidueDS.updateTariffResidue(updatedTD).subscribe(result=>{
+                    this.handleSaveSuccess(result?.data?.updateTariffResidue);
 
                   });
-               }
-               else
-               {
-                this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
-               }
-
-              });
              
           }
         }
-
-            
-
-        //   }
-        //   if(insert)
-        //   {
-        //     let newDepot = new TariffDepotItem();
-        //     newDepot.lolo_cost= Number(this.pcForm!.value['lolo_cost']);
-        //     newDepot.free_storage= Number(this.pcForm.value['free_storage']);
-        //     newDepot.description= String(this.pcForm.value['description']);
-        //     newDepot.preinspection_cost= Number(this.pcForm.value['preinspection_cost']);
-        //     newDepot.profile_name= String(this.pcForm.value['name']);
-        //     newDepot.storage_cost= Number(this.pcForm.value['storage_cost']);
-        //     newDepot.tanks=unit_types;
-        //     this.trfDepotDS.addNewTariffDepot(newDepot).subscribe(result=>{
-
-        //       this.handleSaveSuccess(result?.data?.addTariffDepot);
-        //     });
-        //   }
-
-        
-
-        // }
-        // else
-        // {
-        //     this.pcForm?.get('name')?.setErrors({ existed: true });
-        // }
-
-
-    });
+    );
 
    
 
