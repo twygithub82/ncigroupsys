@@ -18,9 +18,9 @@ namespace IDMS.Booking.GqlTypes
         {
             try
             {
-                var schedulingDetails = context.scheduling.Where(d => d.delete_dt == null || d.delete_dt == 0)
-                    .Include(b => b.storing_order_tank)
-                    .Include(b => b.release_order);
+                var schedulingDetails = context.scheduling.Where(d => d.delete_dt == null || d.delete_dt == 0);
+                    //.Include(b => b.storing_order_tank)
+                    //.Include(b => b.release_order);
 
                 return schedulingDetails;
             }

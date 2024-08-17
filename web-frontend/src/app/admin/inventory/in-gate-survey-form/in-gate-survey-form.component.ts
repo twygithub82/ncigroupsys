@@ -88,16 +88,6 @@ import { testTypeMapping } from 'environments/environment.development';
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  displayedColumns = [
-    'tank_no',
-    'customer_code',
-    'eir_no',
-    'eir_dt',
-    'last_cargo',
-    'purpose',
-    'tank_status_cv',
-  ];
-
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY-FORM'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',

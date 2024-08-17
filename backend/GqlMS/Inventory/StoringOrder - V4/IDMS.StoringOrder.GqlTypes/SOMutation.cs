@@ -53,7 +53,7 @@ namespace IDMS.StoringOrder.GqlTypes
                     newTank.takein_job_no = tnk.job_no;
                     newTank.release_job_no = tnk.job_no;
                     //context.storing_order_tank.Add(newTank);
-                    newTankList.Add(newTank);   
+                    newTankList.Add(newTank);
                 }
 
                 // Add StoringOrder to DbContext and save changes
@@ -140,12 +140,15 @@ namespace IDMS.StoringOrder.GqlTypes
 
                     if (SOTankAction.ROLLBACK.EqualsIgnore(tnk?.action))
                     {
-                        //existingTank.update_by = user;
-                        //existingTank.update_dt = currentDateTime;
-                        existingTank.status_cv = SOTankStatus.WAITING;
-                        rollbackSOTGuids.Add(tnk.guid);
-                        isSendNotification = true;
-                        continue;
+                        if (RollbackCheckCondition(tnk.tank_no, soDomain))
+                        {
+                            existingTank.status_cv = SOTankStatus.WAITING;
+                            rollbackSOTGuids.Add(tnk.guid);
+                            isSendNotification = true;
+                            continue;
+                        }
+                        else
+                            throw new GraphQLException(new Error("Tank rollback condition failed", "Error"));
                     }
 
                     if (SOTankAction.CANCEL.EqualsIgnore(tnk?.action))
@@ -408,6 +411,16 @@ namespace IDMS.StoringOrder.GqlTypes
                 ig.delete_dt = currentDateTime;
             }
             await context.SaveChangesAsync();
+        }
+
+        private bool RollbackCheckCondition(string tankNo, storing_order SO)
+        {
+
+            var res = SO.storing_order_tank.Any(t => t.tank_no == tankNo &&
+                (t.status_cv.EqualsIgnore(SOTankStatus.WAITING) ||
+                    (t.status_cv.EqualsIgnore(SOTankStatus.ACCEPTED) && !t.tank_status_cv.EqualsIgnore(TankMovementStatus.RO))));
+
+            return res;
         }
     }
 }

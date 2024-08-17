@@ -49,7 +49,7 @@ namespace IDMS.Models.Inventory
         public tariff_cleaning? tariff_cleaning { get; set; }
         public IEnumerable<InGateWithTank>? in_gate { get; set; }
         public IEnumerable<booking>? booking { get; set; }
-        public IEnumerable<scheduling>? scheduling { get; set; }    
+        public IEnumerable<scheduling_sot>? scheduling_sot { get; set; }    
 
     }
 }

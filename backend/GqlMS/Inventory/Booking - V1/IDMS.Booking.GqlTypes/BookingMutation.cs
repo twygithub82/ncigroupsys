@@ -39,7 +39,7 @@ namespace IDMS.Booking.GqlTypes
                     newBooking.book_type_cv = booking.book_type_cv;
                     newBooking.status_cv = StatusConstant.BookingStatus.NEW;
                     newBooking.booking_dt = booking.booking_dt;
-                    newBooking.action_dt = booking.action_dt;
+                    //newBooking.action_dt = booking.action_dt;
 
                     bookings.Add(newBooking);
                 }
@@ -85,7 +85,7 @@ namespace IDMS.Booking.GqlTypes
                             bk.book_type_cv = booking.book_type_cv;
                             bk.status_cv = booking.status_cv;
                             bk.booking_dt = booking.booking_dt;
-                            bk.action_dt = booking.action_dt;
+                            //bk.action_dt = booking.action_dt;
                         }
                     }
                     res = await context.SaveChangesAsync();
