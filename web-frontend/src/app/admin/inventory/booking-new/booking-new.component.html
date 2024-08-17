@@ -226,8 +226,41 @@
                   </div>
                 </div>
                 <mat-divider></mat-divider>
-                <h5 class="mb-1 pt-1">{{translatedLangText.BOOKINGS}}</h5>
-                @if ((row.booking?.length ?? 0) > 0) {
+                <!-- <h5 class="mb-1 pt-1">{{translatedLangText.BOOKINGS}}</h5> -->
+                <table class="table table-hover">
+                  @if ((row.booking?.length ?? 0) > 0) {
+                  <thead>
+                    <tr>
+                      <th>{{translatedLangText.BOOKING_DATE}}</th>
+                      <th>{{translatedLangText.BOOKING_TYPE}}</th>
+                      <th>{{translatedLangText.REFERENCE}}</th>
+                      <th>{{translatedLangText.SURVEYOR}}</th>
+                      <th>{{translatedLangText.STATUS}}</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for(bookingRow of row.booking; track bookingRow){
+                    <tr (click)="editBookingDetails(row, bookingRow, $event)">
+                      <th scope="row">{{displayDate(bookingRow.booking_dt)}}</th>
+                      <td>{{bookingRow?.book_type_cv}}</td>
+                      <td>{{bookingRow?.reference}}</td>
+                      <td>{{bookingRow?.surveyor_guid}}</td>
+                      <td>{{bookingRow?.status_cv}}</td>
+                      <td>
+                        <button mat-icon-button color="primary" class="tbl-action-btn p-2">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                      </td>
+                    </tr>
+                    }
+                  </tbody>
+                  }
+                  @else {
+                  {{langText.NO_RESULT | translate}}
+                  }
+                </table>
+                <!-- @if ((row.booking?.length ?? 0) > 0) {
                 <div class="row">
                   <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-0">
                     <span class="font-bold">{{translatedLangText.BOOKING_DATE}}</span>
@@ -266,7 +299,7 @@
                 }
                 @else {
                 {{langText.NO_RESULT | translate}}
-                }
+                } -->
               </mat-card-content>
               <mat-card-actions [ngClass]="'empty-card-actions'">
               </mat-card-actions>
