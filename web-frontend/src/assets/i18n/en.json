@@ -433,7 +433,14 @@
     "LENGTH":"Length",
     "MATERIAL-COST":"Material Cost",
     "LABOUR-HOUR":"Labour Hour",
-    "SCHEDULING-DATE": "Scheduling Date"
+    "SCHEDULING-DATE": "Scheduling Date",
+    "DIMENSION": "Dimension",
+    "HEIGHT-DIAMETER":"Height / Diameter",
+    "WIDTH-DIAMETER":"Width / Diameter",
+    "THICKNESS":"Thickness",
+    "COST-TYPE":"Cost Type",
+    "REBATE-TYPE":"Rebate Type",
+    "JOB-TYPE":"Job Type"
     
   },
   "CLEAN-PROCEDURES": {
