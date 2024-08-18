@@ -17,7 +17,7 @@ namespace IDMS.Booking.GqlTypes
     [ExtendObjectType(typeof(BookingMutation))]
     public class SchedulingMutation
     {
-        public async Task<int> AddScheduling(SchedulingRequest scheduling, List<SchedulingSOTRequest> scheduling_sots, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<int> AddScheduling(SchedulingRequest scheduling, List<SchedulingSOTRequest> scheduling_SotList, [Service] IHttpContextAccessor httpContextAccessor,
           ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
             try
@@ -39,14 +39,14 @@ namespace IDMS.Booking.GqlTypes
                 //string[] sotGuids = schedulings.Select(s => s.sot_guid).ToArray();
                 //List<storing_order_tank> sotLists = context.storing_order_tank.Where(s => sotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
 
-                foreach (var sch in scheduling_sots)
+                foreach (var sch_sot in scheduling_SotList)
                 {
                     var newSchedulingSOT = new scheduling_sot();
                     newSchedulingSOT.guid = Util.GenerateGUID();
                     newSchedulingSOT.create_by = user;
                     newSchedulingSOT.create_dt = currentDateTime;
 
-                    newSchedulingSOT.sot_guid = sch.sot_guid;
+                    newSchedulingSOT.sot_guid = sch_sot.sot_guid;
                     newSchedulingSOT.scheduling_guid = newScheduling.guid;
                     newSchedulingSOT.status_cv = BookingStatus.NEW;
 
@@ -72,7 +72,7 @@ namespace IDMS.Booking.GqlTypes
             }
         }
 
-        public async Task<int> UpdateScheduling(SchedulingRequest scheduling, List<SchedulingSOTRequest> scheduling_sots, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<int> UpdateScheduling(SchedulingRequest scheduling, List<SchedulingSOTRequest> scheduling_SotList, [Service] IHttpContextAccessor httpContextAccessor,
             ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
         {
             try
@@ -96,7 +96,7 @@ namespace IDMS.Booking.GqlTypes
                 exScheduling.scheduling_dt = scheduling.scheduling_dt;
 
                 IList<scheduling_sot> schedulingsSOTList = new List<scheduling_sot>();
-                foreach (var sch in scheduling_sots)
+                foreach (var sch in scheduling_SotList)
                 {
                     var exSch = new scheduling_sot() { guid = sch.guid };
                     context.Attach(exSch);
@@ -116,84 +116,6 @@ namespace IDMS.Booking.GqlTypes
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
-
-
-
-
-
-                //string[] schSotGuids = scheduling_sots.Select(s => s.guid).ToArray();
-                //List<storing_order_tank> sotLists = context.storing_order_tank.Where(s => schSotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
-
-                //IList<scheduling> newSchedulingsList = new List<scheduling>();
-                //string[] sotGuids = schedulings.Select(s => s.sot_guid).ToArray();
-                //string[] schGuids = schedulings.Select(s => s.guid).ToArray();
-                //List<storing_order_tank> sotLists = context.storing_order_tank.Where(s => schSotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
-                //List<scheduling> existingSchList = context.scheduling.Where(s => schGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
-
-                //foreach (var sch in schedulings)
-                //{
-                //    if (string.IsNullOrEmpty(sch?.action))
-                //        continue;
-
-                //    storing_order_tank? sot = sotLists.Find(s => s.guid == sch.sot_guid);
-                //    if (TankAction.NEW.EqualsIgnore(sch?.action))
-                //    {
-                //        //For Insert
-                //        var newScheduling = new scheduling();
-                //        newScheduling.guid = Util.GenerateGUID();
-                //        newScheduling.create_by = user;
-                //        newScheduling.create_dt = currentDateTime;
-
-                //        //newScheduling.sot_guid = sch.sot_guid;
-                //        //newScheduling.release_order_guid = releaseOrder.guid;
-                //        newScheduling.status_cv = ROStatus.PENDING;
-                //        newScheduling.reference = sch.reference;
-                //        newSchedulingsList.Add(newScheduling);
-
-                //        //storing_order_tank? sot = sotLists.Find(s => s.guid == sch.sot_guid);
-                //        sot.release_job_no = sch?.storing_order_tank?.release_job_no;
-                //        sot.update_by = user;
-                //        sot.update_dt = currentDateTime;
-                //        isSendNotification = true;
-                //        continue;
-                //    }
-
-                //    if (TankAction.EDIT.EqualsIgnore(sch?.action))
-                //    {   //For Update
-                //        var extSch = existingSchList.Find(s => s.guid == sch.guid);
-                //        extSch.reference = sch.reference;
-                //        extSch.update_by = user;
-                //        extSch.update_dt = currentDateTime;
-
-                //        sot.release_job_no = sch.storing_order_tank.release_job_no;
-                //        sot.update_by = user;
-                //        sot.update_dt = currentDateTime;
-                //        continue;
-                //    }
-
-                //    if (TankAction.CANCEL.EqualsIgnore(sch?.action))
-                //    {
-                //        var extSch = existingSchList.Find(s => s.guid == sch.guid);
-                //        extSch.status_cv = ROStatus.CANCELED;
-                //        extSch.update_by = user;
-                //        extSch.update_dt = currentDateTime;
-                //        //extSch.delete_dt = currentDateTime;
-
-                //        //No need to change any info for SOT
-                //        //sot.release_job_no = "";
-                //        //sot.update_by = user;
-                //        //sot.update_dt = currentDateTime;
-                //        isSendNotification = true;
-                //        continue;
-                //    }
-                //}
-
-                //context.UpdateRange(schedulingsSOTList);
-                //var res = await context.SaveChangesAsync();
-
-                ////TODO
-                ////await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
-                //return res;
             }
             catch (Exception ex)
             {

@@ -292,19 +292,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  reloadSOT() {
-    if (this.so_guid) {
-      // EDIT
-      const where: any = { so_guid: { eq: this.so_guid } };
-      this.subs.sink = this.sotDS.reloadStoringOrderTanks(where).subscribe(data => {
-        if (data.length > 0) {
-          this.storingOrderItem.storing_order_tank = data;
-          this.populateSOT(data);
-        }
-      });
-    }
-  }
-
   populateSOForm(so: StoringOrderItem): void {
     this.soForm!.patchValue({
       guid: so.guid,
@@ -503,14 +490,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           }
         });
         this.updateData(data);
-        // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
-        // this.sotDS.cancelStoringOrderTank(sot).subscribe(result => {
-        //   if ((result?.data?.cancelStoringOrderTank ?? 0) > 0) {
-        //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-        //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        //     this.reloadSOT();
-        //   }
-        // });
       }
     });
   }
@@ -548,14 +527,6 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           }
         });
         this.updateData(data);
-        // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
-        // this.sotDS.rollbackStoringOrderTank(sot).subscribe(result => {
-        //   if ((result?.data?.rollbackStoringOrderTank ?? 0) > 0) {
-        //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-        //     ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        //     this.reloadSOT();
-        //   }
-        // });
       }
     });
   }
