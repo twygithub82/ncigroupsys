@@ -34,6 +34,7 @@ import {TariffDepotItem,TariffDepotDS} from 'app/data-sources/tariff-depot';
 import { TankDS,TankItem } from 'app/data-sources/tank';
 import { elements } from 'chart.js';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 
 
 export interface DialogData {
@@ -107,9 +108,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   index?: number;
   dialogTitle?: string;
  
-  tnkDS :TankDS;
-  trfDepotDS: TariffDepotDS;
-  
+  cvDS :CodeValuesDS;
+  groupNameCvList :CodeValuesItem[] = [];
+  subGroupNameCvList :CodeValuesItem[] = [];
+
   tnkItems?:TankItem[];
 
   storingOrderTank?: StoringOrderTankItem;
@@ -118,6 +120,18 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
+
+  groupNameControl = new UntypedFormControl();
+  subGroupNameControl = new UntypedFormControl();
+  testTypeControl  = new UntypedFormControl();
+  dimensionUnitControl = new UntypedFormControl();
+  widthDiameterUnitControl = new UntypedFormControl();
+  thicknessUnitControl = new UntypedFormControl();
+  lengthUnitControl=new UntypedFormControl();
+  costTypeControl = new UntypedFormControl();
+  rebateTypeControl = new UntypedFormControl();
+  jobTypeControl  = new UntypedFormControl();
+
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -215,6 +229,29 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     ASSIGNED : 'COMMON-FORM.ASSIGNED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
+    COST : 'COMMON-FORM.COST',
+    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
+    GROUP_NAME:"COMMON-FORM.GROUP-NAME",
+    SUB_GROUP_NAME:"COMMON-FORM.SUB-GROUP-NAME",
+    PART_NAME:"COMMON-FORM.PART-NAME",
+    MIN_COST:"COMMON-FORM.MIN-COST",
+    MAX_COST:"COMMON-FORM.MAX-COST",
+    LENGTH:"COMMON-FORM.LENGTH",
+    MIN_LENGTH:"COMMON-FORM.MIN-LENGTH",
+    MAX_LENGTH:"COMMON-FORM.MAX-LENGTH",
+    MIN_LABOUR:"COMMON-FORM.MIN-LABOUR",
+    MAX_LABOUR:"COMMON-FORM.MAX-LABOUR",
+    HANDLED_ITEM:"COMMON-FORM.HANDLED-ITEM",
+    LABOUR_HOUR:"COMMON-FORM.LABOUR-HOUR",
+    MATERIAL_COST:"COMMON-FORM.MATERIAL-COST",
+    TEST_TYPE:"COMMON-FORM.TEST-TYPE",
+    DIMENSION:"COMMON-FORM.DIMENSION",
+    HEIGHT_DIAMETER:"COMMON-FORM.HEIGHT-DIAMETER",
+    WIDTH_DIAMETER:"COMMON-FORM.WIDTH-DIAMETER",
+    THICKNESS:"COMMON-FORM.THICKNESS",
+    COST_TYPE:"COMMON-FORM.COST-TYPE",
+    REBATE_TYPE:"COMMON-FORM.REBATE-TYPE",
+    JOB_TYPE:"COMMON-FORM.JOB-TYPE"
   };
   unit_type_control = new UntypedFormControl();
   
@@ -233,77 +270,59 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     // Set the defaults
     super();
     this.selectedItem = data.selectedItem;
-    this.tnkDS = new TankDS(this.apollo);
-    this.trfDepotDS=new TariffDepotDS(this.apollo);
-
-    this.pcForm = this.createTariffDepot();
-    // this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
-    //this.tcDS = new TariffCleaningDS(this.apollo);
-    //this.sotDS = new StoringOrderTankDS(this.apollo);
-    //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-   // this.catDS= new CleaningCategoryDS(this.apollo);
-
+   
+    this.cvDS = new CodeValuesDS(this.apollo);
+    this.pcForm = this.createTariffRepair();
+   
   
-   this.tnkItems=[];
+   
     this.action = data.action!;
     this.translateLangText();
     this.loadData()
-    // this.sotExistedList = data.sotExistedList;
-    // if (this.action === 'edit') {
-    //   this.dialogTitle = 'Edit ' + data.item.tank_no;
-    //   this.storingOrderTank = data.item;
-    // } else {
-    //   this.dialogTitle = 'New Record';
-    //   this.storingOrderTank = new StoringOrderTankItem();
-    // }
-    // this.index = data.index;
-    // this.storingOrderTankForm = this.createStorigOrderTankForm();
-    // this.initializeValueChange();
-
-    // if (this.storingOrderTank?.tariff_cleaning) {
-    //   this.lastCargoControl.setValue(this.storingOrderTank?.tariff_cleaning);
-    // }
+   
   }
 
-  createTariffDepot(): UntypedFormGroup {
+  createTariffRepair(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: null,
       action:"new",
-      name:[''],
-      description:[''],
-      preinspection_cost:[''],
-      lolo_cost:[''],
-      storage_cost:[''],
-      free_storage:[''],
-      gate_in_cost:[''],
-      gate_out_cost:[''],
-      unit_types:this.unit_type_control,
-      last_updated:['']
+      group_name_cv:this.groupNameControl,
+      sub_group_name_cv:this.subGroupNameControl,
+      test_type_cv:this.testTypeControl,
+      part_name:[''],
+      dimension:[''],
+      dimension_unit_cv : this.dimensionUnitControl,
+      width_diameter:[''],
+      width_diameter_uint_cv:this.widthDiameterUnitControl,
+      thickness:[''],
+      thickness_unit_cv : this.thicknessUnitControl,
+      length:[''],
+      length_unit_cv:this.lengthUnitControl,
+      labour_hour:[''],
+      material_cost:[''],
+      cost_type_cv:this.costTypeControl,
+      rebate_type_cv:this.rebateTypeControl,
+      job_type_cv:this.jobTypeControl
+
     });
   }
  
   public loadData() {
 
-    const where: any = {};
-    where.tariff_depot_guid={or:[{eq:null},{eq:''}]};
-    this.subs.sink = this.tnkDS.search(where,{}).subscribe(data=>{
-      this.tnkItems=data;
-    }
-
-    );
-
-    // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-    //   this.customer_companyList = data
-    // });
-
-    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-    //   if(this.clnCatDS.totalCount>0)
-    //   {
-    //     this.cleaning_categoryList=data;
-    //   }
-
-    // });
-
+    const queries = [
+      { alias: 'groupName', codeValType: 'GROUP_NAME' },
+      { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
+     // { alias: 'handledItem', codeValType: 'HANDLED_ITEM' }
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('groupName').subscribe(data => {
+      this.groupNameCvList = data;
+     // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+    });
+    this.cvDS.connectAlias('subGroupName').subscribe(data => {
+      this.subGroupNameCvList = data;
+    });
+ 
   
   }
   
