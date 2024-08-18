@@ -212,7 +212,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     COST : 'COMMON-FORM.COST',
     LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
-    BUFFER_TYPE:"COMMON-FORM.BUFFER-TYPE"
+    BUFFER_TYPE:"COMMON-FORM.BUFFER-TYPE",
+    BUFFER_CLEANING:'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
   };
   unit_type_control = new UntypedFormControl();
   
@@ -298,7 +299,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   GetTitle()
   {
    
-      return this.translatedLangText.NEW + " " + this.translatedLangText.BUFFER_TYPE;      
+      return this.translatedLangText.NEW + " " + this.translatedLangText.BUFFER_CLEANING;      
     
   }
 
