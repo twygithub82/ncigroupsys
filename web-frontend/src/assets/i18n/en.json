@@ -422,7 +422,17 @@
     "GATE-OUT-COST":"gate out cost",
     "BUFFER-TYPE":"Buffer Type",
     "COST":"Cost",
-    "COST-DETAILS":"Cost Details"
+    "COST-DETAILS":"Cost Details",
+    "SUB-GROUP-NAME":"Sub Group Name",
+    "PART-NAME":"Part Name",
+    "MIN-LENGTH":"Minimum Length",
+    "MAX-LENGTH":"Maxmum Length",
+    "MIN-LABOUR":"Minimum Labour",
+    "MAX-LABOUR":"Maxmum Labour",
+    "HANDLED-ITEM":"Handled Item",
+    "LENGTH":"Length",
+    "MATERIAL-COST":"Material Cost",
+    "LABOUR-HOUR":"Labour Hour"
     
   },
   "CLEAN-PROCEDURES": {
