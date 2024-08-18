@@ -595,6 +595,34 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
+  editSchedulingDetails(row: StoringOrderTankItem, scheduling_guid: string | undefined, event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      data: {
+        item: [row],
+        scheduling_guid: scheduling_guid,
+        action: 'edit',
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          bookingTypeCvList: this.bookingTypeCvListNewBooking
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.savedSuccess) {
+        ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+        this.performSearch(this.pageSize, 0, this.pageSize);
+      }
+    });
+  }
+
   checkSchedulings(): boolean {
     if (!this.sotSelection.hasValue()) return true;
 

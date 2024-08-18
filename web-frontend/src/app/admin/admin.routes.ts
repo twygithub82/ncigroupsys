@@ -25,6 +25,7 @@ import { BookingNewComponent } from './inventory/booking-new/booking-new.compone
 import { SchedulingNewComponent } from './inventory/scheduling-new/scheduling-new.component';
 import { ReleaseOrderComponent } from './inventory/release-order/release-order.component';
 import { ReleaseOrderDetailsComponent } from './inventory/release-order-details/release-order-details.component';
+import { SchedulingComponent } from './inventory/scheduling/scheduling.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "cleaning-setps",
@@ -81,6 +82,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "inventory/booking-new",
     component: BookingNewComponent,
+  },
+  {
+    path: "inventory/scheduling",
+    component: SchedulingComponent,
   },
   {
     path: "inventory/scheduling-new",

@@ -44,6 +44,8 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
+import { SchedulingSotDS } from 'app/data-sources/scheduling-sot';
 
 @Component({
   selector: 'app-scheduling',
@@ -91,7 +93,7 @@ export class SchedulingComponent extends UnsubscribeOnDestroyAdapter implements 
     'yard_cv',
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.SCHEDULING'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -136,9 +138,10 @@ export class SchedulingComponent extends UnsubscribeOnDestroyAdapter implements 
   tcDS: TariffCleaningDS;
   bkDS: BookingDS;
   igDS: InGateDS;
+  schedulingSotDS: SchedulingSotDS;
 
   sotList: StoringOrderTankItem[] = [];
-  bookingList: BookingItem[] = [];
+  schedulingSotList: SchedulingItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   yardCvList: CodeValuesItem[] = [];
@@ -150,7 +153,7 @@ export class SchedulingComponent extends UnsubscribeOnDestroyAdapter implements 
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { storing_order_tank: { storing_order: { so_no: "DESC" } } };
+  lastOrderBy: any = {  };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -172,6 +175,7 @@ export class SchedulingComponent extends UnsubscribeOnDestroyAdapter implements 
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.bkDS = new BookingDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
+    this.schedulingSotDS = new SchedulingSotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -319,7 +323,7 @@ export class SchedulingComponent extends UnsubscribeOnDestroyAdapter implements 
         }
       }
 
-      where.storing_order_tank = sotSearch;
+      //where.storing_order_tank = sotSearch;
     }
 
     if (this.searchForm!.value['booking_type_cv']) {
@@ -354,15 +358,15 @@ export class SchedulingComponent extends UnsubscribeOnDestroyAdapter implements 
     //   // }
     //   where.tank = sotSearch;
     // }
-    this.lastSearchCriteria = this.bkDS.addDeleteDtCriteria(where);
+    this.lastSearchCriteria = this.schedulingSotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.bkDS.searchBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.schedulingSotDS.searchSchedulingSot(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.bookingList = data;
-        console.log(this.bookingList);
+        console.log(data)
+        this.schedulingSotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
