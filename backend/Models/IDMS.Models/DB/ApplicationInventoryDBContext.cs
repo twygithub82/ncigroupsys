@@ -32,6 +32,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<release_order> release_order { get; set; } 
         public DbSet<scheduling> scheduling { get; set; }
         public DbSet<scheduling_sot> scheduling_sot { get; set; }
+        public DbSet<release_order_sot> release_order_sot { get; set; }
 
         public DbSet<tank> tank { get; set; }
         public DbSet<code_values> code_values { get; set; }

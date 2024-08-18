@@ -50,6 +50,7 @@ namespace IDMS.Models.Inventory
         public IEnumerable<InGateWithTank>? in_gate { get; set; }
         public IEnumerable<booking>? booking { get; set; }
         public IEnumerable<scheduling_sot>? scheduling_sot { get; set; }    
-
+        public IEnumerable<scheduling>? release_order_sot { get; set; }
+       
     }
 }
