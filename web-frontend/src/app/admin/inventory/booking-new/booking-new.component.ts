@@ -173,7 +173,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   tankStatusCvList: CodeValuesItem[] = [];
 
   lastSearchCriteria: any;
-  lastOrderBy: any = {};
+  lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
   pageIndex = 0;
   pageSize = 10;
   endCursor: string | undefined = undefined;
@@ -551,6 +551,36 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
+  editBookingDetails(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      data: {
+        item: [sot],
+        action: 'edit',
+        booking: booking,
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          bookingTypeCvList: this.bookingTypeCvListNewBooking,
+          yardCvList: this.yardCvList,
+          tankStatusCvList: this.tankStatusCvList
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.savedSuccess) {
+        ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+        this.performSearch(this.pageSize, 0, this.pageSize);
+      }
+    });
+  }
+
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
@@ -579,20 +609,24 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
+  getBookTypeDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.bookingTypeCvList);
+  }
+
   displayDate(input: number | null | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input as number);
   }
 
   checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
     if (!schedulings || !schedulings.length) return false;
-    if (schedulings.some(schedule => schedule.status_cv !== "CANCELED"))
+    if (schedulings.some(schedule => schedule.status_cv === "NEW"))
       return true;
     return false;
   }
 
   checkBooking(bookings: BookingItem[] | undefined): boolean {
     if (!bookings || !bookings.length) return false;
-    if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
+    if (bookings.some(booking => booking.status_cv === "NEW"))
       return true;
     return false;
   }

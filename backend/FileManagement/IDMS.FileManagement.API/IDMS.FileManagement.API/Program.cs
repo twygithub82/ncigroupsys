@@ -1,4 +1,3 @@
-
 using IDMS.FileManagement.Interface;
 using IDMS.FileManagement.Service;
 
@@ -30,7 +29,6 @@ namespace IDMS.FileManagement.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

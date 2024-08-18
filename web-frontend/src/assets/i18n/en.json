@@ -433,6 +433,7 @@
     "LENGTH":"Length",
     "MATERIAL-COST":"Material Cost",
     "LABOUR-HOUR":"Labour Hour"
+    "SCHEDULING-DATE": "Scheduling Date"
     
   },
   "CLEAN-PROCEDURES": {

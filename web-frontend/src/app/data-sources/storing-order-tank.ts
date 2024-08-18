@@ -11,6 +11,7 @@ import { BaseDataSource } from './base-ds';
 import { InGateItem } from './in-gate';
 import { BookingItem } from './booking';
 import { SchedulingItem } from './scheduling';
+import { SchedulingSotItem } from './scheduling-sot';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -87,7 +88,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public tariff_cleaning?: TariffCleaningItem;
   public in_gate?: InGateItem[];
   public booking?: BookingItem[];
-  public scheduling?: SchedulingItem[];
+  public scheduling_sot?: SchedulingSotItem[];
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -95,7 +96,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.tariff_cleaning = item.tariff_cleaning;
     this.in_gate = item.in_gate;
     this.booking = item.booking;
-    this.scheduling = item.scheduling;
+    this.scheduling_sot = item.scheduling_sot;
     this.actions = item.actions || [];
   }
 }
@@ -266,6 +267,29 @@ const GET_STORING_ORDER_TANKS_FOR_BOOKING = gql`
           surveyor_guid
           update_by
           update_dt
+        }
+        scheduling_sot {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          scheduling_guid
+          sot_guid
+          status_cv
+          update_by
+          update_dt
+          scheduling {
+            book_type_cv
+            create_by
+            create_dt
+            delete_dt
+            guid
+            reference
+            scheduling_dt
+            status_cv
+            update_by
+            update_dt
+          }
         }
       }
       pageInfo {

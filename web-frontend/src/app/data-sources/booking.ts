@@ -112,6 +112,12 @@ export const ADD_BOOKING = gql`
   }
 `;
 
+export const UPDATE_BOOKING = gql`
+  mutation UpdateBooking($bookingList: [BookingRequestInput!]!) {
+    updateBooking(bookingList: $bookingList)
+  }
+`;
+
 export class BookingDS extends BaseDataSource<BookingItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -153,6 +159,15 @@ export class BookingDS extends BaseDataSource<BookingItem> {
       mutation: ADD_BOOKING,
       variables: {
         booking
+      }
+    });
+  }
+
+  updateBooking(bookingList: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_BOOKING,
+      variables: {
+        bookingList
       }
     });
   }

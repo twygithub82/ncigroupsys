@@ -15,7 +15,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
           <h5>{{data.translatedLangText.SCHEDULING_DETAILS}}</h5>
           <div class="row">
-            <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
                 <mat-select formControlName="book_type_cv" required>
@@ -31,54 +31,34 @@
                 </mat-error>
                 }
               </mat-form-field>
-            </div> -->
+            </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.translatedLangText.BOOKING_DATE}}</mat-label>
-                <input matInput formControlName="booking_dt" [matDatepicker]="booking_dt_picker" [min]="startDateToday"
+                <mat-label>{{data.translatedLangText.SCHEDULING_DATE}}</mat-label>
+                <input matInput formControlName="scheduling_dt" [matDatepicker]="scheduling_dt_picker" [min]="startDateToday"
                   required>
-                <mat-datepicker-toggle matSuffix [for]="booking_dt_picker"></mat-datepicker-toggle>
-                <mat-datepicker #booking_dt_picker [startAt]="startDateToday"></mat-datepicker>
-                @if (schedulingForm.get('booking_dt')?.hasError('required')) {
+                <mat-datepicker-toggle matSuffix [for]="scheduling_dt_picker"></mat-datepicker-toggle>
+                <mat-datepicker #scheduling_dt_picker [startAt]="startDateToday"></mat-datepicker>
+                @if (schedulingForm.get('scheduling_dt')?.hasError('required')) {
                 <mat-error>
-                  {{data.translatedLangText.BOOKING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
+                  {{data.translatedLangText.SCHEDULING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
                 }
               </mat-form-field>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.translatedLangText.RELEASE_DATE}}</mat-label>
-                <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker" [min]="startDateToday"
-                  required>
-                <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
-                <mat-datepicker #release_dt_picker [startAt]="startDateToday"></mat-datepicker>
-                @if (schedulingForm.get('release_dt')?.hasError('required')) {
-                <mat-error>
-                  {{data.translatedLangText.RELEASE_DATE}} {{data.translatedLangText.SO_REQUIRED}}
-                </mat-error>
-                }
-              </mat-form-field>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>{{data.translatedLangText.HAULIER}}</mat-label>
-                <input matInput formControlName="haulier">
-              </mat-form-field>
-            </div>
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>{{data.translatedLangText.RO_NOTES}}</mat-label>
-                <input matInput formControlName="ro_notes">
+                <mat-label>{{data.translatedLangText.REFERENCE}}</mat-label>
+                <input matInput formControlName="reference">
               </mat-form-field>
             </div>
           </div>
-          <div formArrayName="scheduling">
+          <div formArrayName="schedulingSot">
             @for(row of getSchedulingArray().controls; track row; let index = $index){
             <mat-card [formGroupName]="index" [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
-              <mat-card-content [ngClass]="'pb-0'">
+              <mat-card-content [ngClass]="">
                 <div class="row">
-                  <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-1">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                     <span class="font-bold">{{data.translatedLangText.TANK_NO}}:</span>
                     {{row.get('tank_no')?.value}}
                     @if (row.get('scheduled')?.value){
@@ -87,23 +67,6 @@
                     @else if (row.get('booked')?.value){
                       <div [ngClass]="'badge badge-solid-orange ms-1'">{{data.translatedLangText.BOOKED}}</div>
                     }
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{data.translatedLangText.REFERENCE}}</mat-label>
-                      <input matInput formControlName="reference">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
-                      <input matInput formControlName="release_job_no" required>
-                      @if (row.get('release_job_no')?.hasError('required')) {
-                      <mat-error>
-                        {{data.translatedLangText.JOB_NO}} {{data.translatedLangText.SO_REQUIRED}}
-                      </mat-error>
-                      }
-                    </mat-form-field>
                   </div>
                 </div>
               </mat-card-content>

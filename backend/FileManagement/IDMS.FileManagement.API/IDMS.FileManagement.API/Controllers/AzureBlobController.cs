@@ -1,6 +1,8 @@
 using IDMS.FileManagement.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace IDMS.FileManagement.API.Controllers
 {
@@ -10,7 +12,6 @@ namespace IDMS.FileManagement.API.Controllers
     {
 
         private IFileManagement _fileManagementService;
-
         private readonly ILogger<AzureBlobController> _logger;
 
         public AzureBlobController(ILogger<AzureBlobController> logger, IFileManagement fileManagement)
@@ -19,26 +20,42 @@ namespace IDMS.FileManagement.API.Controllers
             _fileManagementService = fileManagement;
         }
 
-        [HttpGet("Hello")]
-        [AllowAnonymous]
-        public async Task<IActionResult> HelloWorld()
+        [HttpGet("GetFileUrl")]
+        public async Task<IActionResult> GetUrl(string filename, [Required] string fileType)
         {
-            var response = await _fileManagementService.GetUrl();
+            string containerName = Util.GetContainerName(fileType);
+            var response = await _fileManagementService.GetFileUrl(filename, containerName);
             return Ok(response);
         }
 
 
         [HttpPost("UploadFiles")]
-        public async Task<IActionResult> UploadFiles(List<IFormFile> files, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UploadFiles(
+            [SwaggerParameter(Description = "The list of files to upload.")]
+            List<IFormFile> files,
+            [Required]
+            [SwaggerParameter(Description = "The type of the files being uploaded. compulsory parameter with possible values: 'img', 'image', 'pdf'")]
+            string fileType,
+            string filename,
+            CancellationToken cancellationToken = default)
         {
-            var response = await _fileManagementService.UploadFiles(files, cancellationToken);
+            string containerName = Util.GetContainerName(fileType);
+            var response = await _fileManagementService.UploadFiles(files, containerName, filename, cancellationToken);
             return Ok();
         }
 
-        [HttpGet("GetBlobList")]
-        public async Task<IActionResult> GetBlobList()
+        //[HttpGet("GetBlobList")]
+        //public async Task<IActionResult> GetBlobList()
+        //{
+        //    var response = await _fileManagementService.GetBlobItems();
+        //    return Ok(response);
+        //}
+
+        [HttpGet("GetFiles")]
+        public async Task<IActionResult> GetFiles([Required] string fileType)
         {
-            var response = await _fileManagementService.GetBlobItems();
+            string containerName = Util.GetContainerName(fileType);
+            var response = await _fileManagementService.GetFiles(containerName);
             return Ok(response);
         }
     }
