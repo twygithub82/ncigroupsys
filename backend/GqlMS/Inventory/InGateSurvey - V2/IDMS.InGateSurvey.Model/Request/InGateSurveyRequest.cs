@@ -1,8 +1,9 @@
-﻿using IDMS.Models.Inventory;
+﻿using IDMS.Models;
+using IDMS.Models.Inventory;
 
 namespace IDMS.InGateSurvey.Model.Request
 {
-    public class InGateSurveyRequest
+    public class InGateSurveyRequest: Dates
     {
         public string? guid { get; set; }
         public string in_gate_guid { get; set; }

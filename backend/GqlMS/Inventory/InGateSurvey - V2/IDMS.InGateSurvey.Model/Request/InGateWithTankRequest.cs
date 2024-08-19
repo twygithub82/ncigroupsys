@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using IDMS.Models;
 using IDMS.Models.Inventory;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.InGateSurvey.Model.Request
 {
-    public class InGateWithTankRequest
+    public class InGateWithTankRequest: Dates
     {
         public string? guid { get; set; }
         public string? so_tank_guid { get; set; }
