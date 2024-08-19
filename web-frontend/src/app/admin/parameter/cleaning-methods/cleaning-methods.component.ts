@@ -375,10 +375,10 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       this.previous_endCursor=this.endCursor;
       this.subs.sink = this.mthDS.search(where,order,first,after,last,before).subscribe(data => {
         this.clnMethodItem=data;
-        this.endCursor = this.catDS.pageInfo?.endCursor;
-        this.startCursor = this.catDS.pageInfo?.startCursor;
-        this.hasNextPage = this.catDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.catDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.mthDS.pageInfo?.endCursor;
+        this.startCursor = this.mthDS.pageInfo?.startCursor;
+        this.hasNextPage = this.mthDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.mthDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         if(!this.hasPreviousPage)
