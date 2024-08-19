@@ -165,4 +165,12 @@ export class SchedulingSotDS extends BaseDataSource<SchedulingSotItem> {
         })
       );
   }
+
+  getSchedulingSotReleaseOrder(schedulingSot: SchedulingSotItem[] | undefined): SchedulingSotItem | undefined {
+    return this.getSchedulingSotWithType(schedulingSot, "RELEASE_ORDER");
+  }
+
+  getSchedulingSotWithType(schedulingSot: SchedulingSotItem[] | undefined, type: string): SchedulingSotItem | undefined {
+    return schedulingSot?.find(item => item.scheduling?.book_type_cv === type);
+  }
 }

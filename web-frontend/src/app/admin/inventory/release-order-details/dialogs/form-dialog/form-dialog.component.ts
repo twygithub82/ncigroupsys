@@ -32,14 +32,15 @@ import { BookingItem } from 'app/data-sources/booking';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { MatTableModule } from '@angular/material/table';
 
 export interface DialogData {
   action?: string;
   customer_company_guid?: string;
-  item: StoringOrderTankItem[];
+  sotIdList?: string[];
   translatedLangText?: any;
   populateData?: any;
-  sotExistedList?: StoringOrderTankItem[];
+  selectedList?: StoringOrderTankItem[];
 }
 
 @Component({
@@ -73,17 +74,19 @@ export interface DialogData {
     MatMenuModule,
     MatPaginatorModule,
     MatDividerModule,
+    MatTableModule
   ],
 })
 export class FormDialogComponent {
   action: string;
   dialogTitle: string;
-  storingOrderTankForm: UntypedFormGroup;
-  sotList: StoringOrderTankItem[] = [];
-  sotExistedList?: StoringOrderTankItem[] = [];
+  filterTableForm: UntypedFormGroup;
+  sotIdList: string[] = [];
+  customer_company_guid?: string = '';
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
 
+  sotList: StoringOrderTankItem[] = [];
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
 
@@ -92,6 +95,18 @@ export class FormDialogComponent {
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   igDS: InGateDS;
+
+  displayedColumns = [
+    'select',
+    'customer',
+    'eir_no',
+    'eir_date',
+    'capacity',
+    'tare_weight',
+    'status',
+    'yard',
+    'actions'
+  ];
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -107,15 +122,15 @@ export class FormDialogComponent {
     this.cvDS = new CodeValuesDS(this.apollo);
     this.igDS = new InGateDS(this.apollo)
     this.action = data.action!;
+    this.sotIdList = data.sotIdList || [];
     this.dialogTitle = 'Add Tank';
-    this.performSearch(10, 0);
-    this.storingOrderTankForm = this.createStorigOrderTankForm();
-    this.sotExistedList = data.sotExistedList;
+    this.performSearch();
+    this.filterTableForm = this.createStorigOrderTankForm();
   }
 
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
-
+      filterTable: ['']
     });
   }
 
@@ -123,17 +138,18 @@ export class FormDialogComponent {
     if (this.sotSelection.hasValue()) {
       const selectedList = this.sotSelection.selected.map(sot => {
         const sotItem = new StoringOrderTankItem(sot);
-        
+
         // Ensure 'new' is added to actions without duplicates
         sotItem.actions = sotItem.actions || []; // Initialize actions if it's undefined
         if (!sotItem.actions.includes('new')) {
           sotItem.actions.push('new');
         }
-        
+
         return sotItem;
       });
       const returnDialog: DialogData = {
-        item: selectedList,
+        action: 'new',
+        selectedList: selectedList
       }
       console.log('valid');
       this.dialogRef.close(returnDialog);
@@ -159,7 +175,7 @@ export class FormDialogComponent {
   }
 
   findInvalidControls() {
-    const controls = this.storingOrderTankForm.controls;
+    const controls = this.filterTableForm.controls;
     for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);
@@ -171,30 +187,8 @@ export class FormDialogComponent {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
-  validatePurpose(): boolean {
-    let isValid = true;
-    const purposeStorage = this.storingOrderTankForm.get('purpose_storage')?.value;
-    const purposeSteam = this.storingOrderTankForm.get('purpose_steam')?.value;
-    const purposeCleaning = this.storingOrderTankForm.get('purpose_cleaning')?.value;
-    const purposeRepairCV = this.storingOrderTankForm.get('purpose_repair_cv')?.value;
-    const requiredTemp = this.storingOrderTankForm.get('required_temp')?.value;
-
-    // Validate that at least one of the purpose checkboxes is checked
-    if (!purposeStorage && !purposeSteam && !purposeCleaning && !purposeRepairCV) {
-      isValid = false; // At least one purpose must be selected
-      this.storingOrderTankForm.get('purpose')?.setErrors({ required: true });
-    }
-
-    // Validate that required_temp is filled in if purpose_steam is checked
-    if (purposeSteam && !requiredTemp) {
-      isValid = false; // required_temp must be filled if purpose_steam is checked
-      this.storingOrderTankForm.get('required_temp')?.setErrors({ required: true });
-    }
-
-    return isValid;
-  }
-
   toggleRow(row: StoringOrderTankItem) {
+    if (this.checkDisable(row.guid)) return;
     const selectedItems = this.selectedItemsPerPage[0] || new Set<string>();
 
     // Check if the row is already selected
@@ -225,6 +219,10 @@ export class FormDialogComponent {
     return false;
   }
 
+  checkDisable(guid: string | undefined): boolean {
+    return this.sotIdList.some(sot_guid => sot_guid === guid);
+  }
+
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData.tankStatusCvList);
   }
@@ -233,38 +231,32 @@ export class FormDialogComponent {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData.yardCvList);
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+  performSearch(first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    // Get the current date and set the time to the start of the day (00:00:00)
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const startOfTodayEpoch = Math.floor(startOfToday.getTime() / 1000); // Convert to seconds
+
+    // Calculate the end of the day 3 days from now
+    const endOfNext3Days = new Date();
+    endOfNext3Days.setDate(startOfToday.getDate() + 3);
+    endOfNext3Days.setHours(23, 59, 59, 999);
+    const endOfNext3DaysEpoch = Math.floor(endOfNext3Days.getTime() / 1000);
     const where: any = {
       and: [
+        //{ guid: { nin: this.sotIdList } },
         { status_cv: { eq: "ACCEPTED" } },
         { tank_status_cv: { neq: "RO_GENERATED" } },
         { in_gate: { some: { delete_dt: { eq: null } } } },
         { storing_order: { customer_company_guid: { eq: this.data.customer_company_guid } } },
-        {
-          or: [
-            { scheduling: { any: false } },
-            {
-              scheduling: {
-                none: {
-                  status_cv: { in: ["PENDING", "COMPLETED", "PROCESSING"] }
-                }
-              }
-            }
-          ]
-        }
+        { scheduling_sot: { some: { scheduling: { book_type_cv: { eq: "RELEASE_ORDER" }, scheduling_dt: { lte: endOfNext3DaysEpoch } } } } }
       ],
     };
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        if (this.sotExistedList?.length) {
-          this.sotList = data.filter(item =>
-            !this.sotExistedList!.some(existingItem => existingItem.guid === item.guid)
-          )
-        } else {
-          this.sotList = data;
-        }
+        this.sotList = data;
       });
   }
 }

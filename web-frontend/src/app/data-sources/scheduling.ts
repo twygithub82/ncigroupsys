@@ -136,14 +136,14 @@ export const GET_SCHEDULING = gql`
 `;
 
 export const ADD_SCHEDULING = gql`
-  mutation AddScheduling($scheduling: SchedulingRequestInput!, $scheduling_sots: [SchedulingSOTRequestInput!]!) {
-    addScheduling(scheduling: $scheduling, scheduling_sots: $scheduling_sots)
+  mutation AddScheduling($scheduling: SchedulingRequestInput!, $scheduling_SotList: [SchedulingSOTRequestInput!]!) {
+    addScheduling(scheduling: $scheduling, scheduling_SotList: $scheduling_SotList)
   }
 `;
 
 export const UPDATE_SCHEDULING = gql`
-  mutation UpdateScheduling($scheduling: SchedulingRequestInput!, $scheduling_sots: [SchedulingSOTRequestInput!]!) {
-    updateScheduling(scheduling: $scheduling, scheduling_sots: $scheduling_sots)
+  mutation UpdateScheduling($scheduling: SchedulingRequestInput!, $scheduling_SotList: [SchedulingSOTRequestInput!]!) {
+    updateScheduling(scheduling: $scheduling, scheduling_SotList: $scheduling_SotList)
   }
 `;
 
@@ -174,22 +174,22 @@ export class SchedulingDS extends BaseDataSource<SchedulingItem> {
       );
   }
 
-  addScheduling(scheduling: any, scheduling_sots: any): Observable<any> {
+  addScheduling(scheduling: any, scheduling_SotList: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_SCHEDULING,
       variables: {
         scheduling,
-        scheduling_sots
+        scheduling_SotList
       }
     });
   }
 
-  updateScheduling(scheduling: any, scheduling_sots: any): Observable<any> {
+  updateScheduling(scheduling: any, scheduling_SotList: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_SCHEDULING,
       variables: {
         scheduling,
-        scheduling_sots
+        scheduling_SotList
       }
     });
   }

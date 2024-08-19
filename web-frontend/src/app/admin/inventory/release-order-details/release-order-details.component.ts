@@ -47,11 +47,14 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { ReleaseOrderDS, ReleaseOrderItem, ReleaseOrderUpdateItem } from 'app/data-sources/release-order';
+import { ReleaseOrderDS, ReleaseOrderGO, ReleaseOrderItem } from 'app/data-sources/release-order';
 import { SchedulingDS, SchedulingItem, SchedulingUpdateItem } from 'app/data-sources/scheduling';
 import { MatCardModule } from '@angular/material/card';
-import { BookingItem } from 'app/data-sources/booking';
+import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { SchedulingSotDS, SchedulingSotItem, SchedulingSotUpdateItem } from 'app/data-sources/scheduling-sot';
+import { ReleaseOrderSotGO, ReleaseOrderSotItem, ReleaseOrderSotUpdateItem } from 'app/data-sources/release-order-sot';
+import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 
 @Component({
   selector: 'app-release-order-details',
@@ -106,7 +109,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'certificate_cv',
     'actions'
   ];
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-EDIT'
+  pageTitleNew = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-NEW'
+  pageTitleEdit = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.INVENTORY.LIST.STORING-ORDER'
@@ -118,34 +122,16 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     HEADER: 'COMMON-FORM.HEADER',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    SO_NO: 'COMMON-FORM.SO-NO',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
     ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
     TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    REPAIR: 'COMMON-FORM.REPAIR',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
-    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
-    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
     JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
-    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
-    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
@@ -154,7 +140,6 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
     INVALID: 'COMMON-FORM.INVALID',
-    EXISTED: 'COMMON-FORM.EXISTED',
     DUPLICATE: 'COMMON-FORM.DUPLICATE',
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
@@ -178,6 +163,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
     YARD: "COMMON-FORM.YARD",
     ADD: "COMMON-FORM.ADD",
+    FILTER: "COMMON-FORM.FILTER",
+    BOOKING_DATE: "COMMON-FORM.BOOKING-DATE",
+    SCHEDULING_DATE: "COMMON-FORM.SCHEDULING-DATE"
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -187,8 +175,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   roForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
-  releaseOrderItem: ReleaseOrderUpdateItem = new ReleaseOrderUpdateItem();
-  //schedulingList = new MatTableDataSource<SchedulingUpdateItem>();
+  releaseOrderItem: ReleaseOrderItem = new ReleaseOrderItem();
   schedulingList: SchedulingUpdateItem[] = [];
   schedulingSelection = new SelectionModel<SchedulingUpdateItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
@@ -198,13 +185,12 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   customerCodeControl = new UntypedFormControl();
 
-  soDS: StoringOrderDS;
-  sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
-  tDS: TankDS;
   roDS: ReleaseOrderDS;
+  bookingDS: BookingDS;
   schedulingDS: SchedulingDS;
+  schedulingSotDS: SchedulingSotDS;
   igDS: InGateDS;
 
   startDateRO = new Date();
@@ -221,14 +207,13 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   ) {
     super();
     this.translateLangText();
-    this.initSOForm();
-    this.soDS = new StoringOrderDS(this.apollo);
-    this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.initForm();
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.tDS = new TankDS(this.apollo);
     this.roDS = new ReleaseOrderDS(this.apollo);
+    this.bookingDS = new BookingDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
+    this.schedulingSotDS = new SchedulingSotDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -238,44 +223,50 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeFilter();
+    this.initializeValueChanges();
     this.loadData();
   }
 
-  initSOForm() {
+  initForm() {
     this.roForm = this.fb.group({
       guid: [''],
+      customer_code: this.customerCodeControl,
+      customer_company_guid: [''],
       release_dt: [''],
       ro_no: [''],
       ro_notes: [''],
       haulier: [''],
-      scheduling: this.fb.array([])
+      sotList: this.fb.array([])
     });
   }
 
-  createTankGroup(tank: any): UntypedFormGroup {
-    return this.fb.group({
-      sot_guid: [tank.guid],
-      tank_no: [tank.tank_no],
-      customer_company: [this.ccDS.displayName(tank.storing_order?.customer_company)],
-      eir_no: [this.igDS.getInGateItem(tank.in_gate)?.eir_no],
-      eir_dt: [this.igDS.getInGateItem(tank.in_gate)?.eir_dt],
-      capacity: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.capacity],
-      tare_weight: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.tare_weight],
-      tank_status_cv: [tank.tank_status_cv],
-      yard_cv: [this.igDS.getInGateItem(tank.in_gate)?.yard_cv],
-      reference: [''],
-      release_job_no: [tank.release_job_no],
-      booked: [this.checkBooking(tank.booking)],
-      scheduled: [this.checkScheduling(tank.scheduling)],
-    });
+  getReleaseOrderSotArray(): UntypedFormArray {
+    return this.roForm?.get('sotList') as UntypedFormArray;
+  }
+  
+  getFormSotGuids(): string[] {
+    const sotArray = this.getReleaseOrderSotArray();
+    return sotArray.controls.map(control => control.get('sot_guid')?.value);
   }
 
-  getSchedulingArray(): UntypedFormArray {
-    return this.roForm?.get('scheduling') as UntypedFormArray;
-  }
-
-  initializeFilter() {
+  initializeValueChanges() {
+    this.roForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+          this.roForm!.get('customer_company_guid')!.setValue('');
+        } else {
+          searchCriteria = value.code;
+          this.roForm!.get('customer_company_guid')!.setValue(value.guid);
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
   }
 
   public loadData() {
@@ -285,6 +276,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.subs.sink = this.roDS.getReleaseOrderByID(this.ro_guid).subscribe(data => {
         if (this.roDS.totalCount > 0) {
           this.releaseOrderItem = data[0];
+          console.log(this.releaseOrderItem)
           this.populateROForm(this.releaseOrderItem);
         }
       });
@@ -311,50 +303,63 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  reloadSOT() {
-    if (this.ro_guid) {
-      // EDIT
-      const where: any = { ro_guid: { eq: this.ro_guid } };
-      this.subs.sink = this.sotDS.reloadStoringOrderTanks(where).subscribe(data => {
-        if (data.length > 0) {
-          //this.storingOrderItem.storing_order_tank = data;
-          //this.populateSOT(data);
-        }
-      });
-    }
-  }
-
-  populateROForm(ro: ReleaseOrderUpdateItem): void {
+  populateROForm(ro: ReleaseOrderItem): void {
     this.roForm!.patchValue({
       guid: ro.guid,
+      customer_code: ro.customer_company,
+      customer_company_guid: ro.customer_company_guid,
       release_dt: Utility.convertDate(ro.release_dt),
       ro_no: ro.ro_no,
       ro_notes: ro.ro_notes,
       haulier: ro.haulier
     });
-    if (ro.scheduling && ro.scheduling.length) {
-      this.populateSOT(ro.scheduling);
+    if (ro.release_order_sot && ro.release_order_sot.length) {
+      this.populateSOT(ro.release_order_sot);
     }
   }
 
-  populateSOT(scheduling: SchedulingUpdateItem[]) {
-    const schedulingFormArray = this.roForm!.get('scheduling') as UntypedFormArray;
+  populateSOT(sotList: ReleaseOrderSotUpdateItem[]) {
+    const schedulingFormArray = this.roForm!.get('sotList') as UntypedFormArray;
     schedulingFormArray.clear();  // Clear existing items
 
-    scheduling.forEach(item => {
-      schedulingFormArray.push(this.createSchedulingFormGroup(item));
+    sotList.forEach(item => {
+      schedulingFormArray.push(this.createRoSotFormGroup(item));
     });
   }
 
-  createSchedulingFormGroup(item: SchedulingUpdateItem): UntypedFormGroup {
+  createRoSotFormGroup(item: ReleaseOrderSotUpdateItem): UntypedFormGroup {
     return this.fb.group({
-      // guid: [item.guid],
-      // reference: [item.reference],
-      // release_order_guid: [item.release_order_guid],
-      // sot_guid: [item.sot_guid],
-      // tank_no: [item.storing_order_tank?.tank_no],
-      // release_job_no: [item.storing_order_tank?.release_job_no],
-      // action: [item.action],
+      // roSot prop
+      guid: [item.guid],
+      ro_guid: [item.ro_guid],
+      sot_guid: [item.sot_guid],
+      status_cv: [item.status_cv],
+      action: [item.action],
+      // sot prop
+      tank_no: [item.storing_order_tank?.tank_no],
+      release_job_no: [item.storing_order_tank?.release_job_no],
+      eir_no: [this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.eir_no],
+      eir_dt: [Utility.convertEpochToDateStr(this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.eir_dt)],
+      tank_status_cv: [item.storing_order_tank?.tank_status_cv],
+      yard_cv: [this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.yard_cv],
+      booking_dt: [Utility.convertEpochToDateStr(this.bookingDS.getBookingReleaseOrder(item.storing_order_tank?.booking)?.booking_dt)],
+      schedule_dt: [Utility.convertEpochToDateStr(this.schedulingSotDS.getSchedulingSotReleaseOrder(item.storing_order_tank?.scheduling_sot)?.scheduling?.scheduling_dt)],
+    });
+  }
+
+  createTankGroup(tank: any): UntypedFormGroup {
+    return this.fb.group({
+      sot_guid: [tank.guid],
+      tank_no: [tank.tank_no],
+      customer_company: [this.ccDS.displayName(tank.storing_order?.customer_company)],
+      eir_no: [this.igDS.getInGateItem(tank.in_gate)?.eir_no],
+      eir_dt: [this.igDS.getInGateItem(tank.in_gate)?.eir_dt],
+      capacity: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.capacity],
+      tare_weight: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.tare_weight],
+      tank_status_cv: [tank.tank_status_cv],
+      yard_cv: [this.igDS.getInGateItem(tank.in_gate)?.yard_cv],
+      reference: [''],
+      release_job_no: [tank.release_job_no],
     });
   }
 
@@ -381,7 +386,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  addOrderDetails(event: Event, row?: StoringOrderTankItem) {
+  addOrderDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -389,24 +394,26 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
+    const sotGuidList = this.getFormSotGuids();
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
-        item: row,
+        sotIdList: sotGuidList, //this.releaseOrderItem.release_order_sot?.map((tank) => tank.sot_guid),
         action: 'new',
         translatedLangText: this.translatedLangText,
-        customer_company_guid: this.releaseOrderItem.customer_company_guid,
+        customer_company_guid: this.roForm!.get('customer_company_guid')?.value,
         populateData: {
           tankStatusCvList: this.tankStatusCvList,
           yardCvList: this.yardCvList,
         },
-        index: -1,
-        sotExistedList: this.schedulingList
+        index: -1
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log(result.item)
+        const selectedList = result.selectedList;
+        const roSotList = selectedList.map((tank: any) => new ReleaseOrderSotUpdateItem({ sot_guid: tank.guid, storing_order_tank: new StoringOrderTankItem(tank), action: 'new' }))
+        this.populateSOT(roSotList)
         // const data = [...this.schedulingList];
         // const newItem = new StoringOrderTankItem({
         //   ...result.item,
@@ -566,6 +573,32 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     // this.updateData(data);
   }
 
+  deleteItem(row: UntypedFormControl, index: number) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const toRemove = new ReleaseOrderSotUpdateItem({storing_order_tank: new StoringOrderTankItem({tank_no: row.get("tank_no")?.value})});
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      data: {
+        item: toRemove,
+        translatedLangText: this.translatedLangText,
+        index: index,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const sotArray = this.getReleaseOrderSotArray();
+    
+        // Remove the item from the FormArray
+        sotArray.removeAt(index);
+      }
+    });
+  }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     // const numSelected = this.sotSelection.selected.length;
@@ -600,40 +633,41 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   onSOFormSubmit() {
-    this.roForm!.get('sotList')?.setErrors(null);
+    this.roForm!.get('roSotList')?.setErrors(null);
     if (this.roForm?.valid) {
-      // if (!this.schedulingList.length) {
-      //   this.roForm.get('sotList')?.setErrors({ required: true });
-      // } else {
-      //   let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
-      //   so.customer_company_guid = this.roForm.value['customer_company_guid'];
-      //   so.haulier = this.roForm.value['haulier'];
-      //   so.so_notes = this.roForm.value['so_notes'];
+      const sotGuidList = this.getFormSotGuids();
+      if (!sotGuidList.length) {
+        this.roForm.get('roSotList')?.setErrors({ required: true });
+      } else {
+        let ro: ReleaseOrderGO = new ReleaseOrderGO(this.releaseOrderItem);
+        ro.customer_company_guid = this.roForm.value['customer_company_guid'];
+        ro.haulier = this.roForm!.get('haulier')?.value;
+        ro.ro_notes = this.roForm!.get('ro_notes')?.value;
+        ro.release_dt = Utility.convertDate(this.roForm!.get('release_dt')?.value) as number;
 
-      //   const sot: StoringOrderTankGO[] = this.schedulingList.map((item: Partial<StoringOrderTankItem>) => {
-      //     // Ensure action is an array and take the last action only
-      //     const actions = Array.isArray(item!.actions) ? item!.actions : [];
-      //     const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
-
-      //     return new StoringOrderTankUpdateSO({
-      //       ...item,
-      //       action: latestAction // Set the latest action as the single action
-      //     });
-      //   });
-      //   console.log('so Value', so);
-      //   console.log('sot Value', sot);
-      //   if (so.guid) {
-      //     this.soDS.updateStoringOrder(so, sot).subscribe(result => {
-      //       console.log(result)
-      //       this.handleSaveSuccess(result?.data?.updateStoringOrder);
-      //     });
-      //   } else {
-      //     this.soDS.addStoringOrder(so, sot).subscribe(result => {
-      //       console.log(result)
-      //       this.handleSaveSuccess(result?.data?.addStoringOrder);
-      //     });
-      //   }
-      // }
+        const sotArray = this.getReleaseOrderSotArray();
+        const roSot: ReleaseOrderSotItem[] = sotArray.controls.map(control => {
+          const item = control.value as Partial<ReleaseOrderSotItem>;
+          const sot = new StoringOrderTankGO({guid: control.get('sot_guid')?.value, release_job_no: control.get('release_job_no')?.value, tank_status_cv: control.get('tank_status_cv')?.value});
+          return new ReleaseOrderSotItem({
+            ...item,
+            storing_order_tank: sot
+          });
+        });
+        console.log('ro Value', ro);
+        console.log('roSot Value', roSot);
+        if (ro.guid) {
+          this.roDS.updateReleaseOrder(ro, roSot).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result?.data?.updateReleaseOrder);
+          });
+        } else {
+          this.roDS.addReleaseOrder(ro, roSot).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result?.data?.addReleaseOrder);
+          });
+        }
+      }
     } else {
       console.log('Invalid soForm', this.roForm?.value);
     }
@@ -666,23 +700,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     // }
   }
 
-  handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
-    //this.stopEventTrigger(event);
-    let newSot: StoringOrderTankItem = new StoringOrderTankItem();
-    newSot.unit_type_guid = row.unit_type_guid;
-    newSot.last_cargo_guid = row.last_cargo_guid;
-    newSot.tariff_cleaning = row.tariff_cleaning;
-    // newSot.purpose_cleaning = row.purpose_cleaning;
-    // newSot.purpose_storage = row.purpose_storage;
-    // newSot.purpose_repair_cv = row.purpose_repair_cv;
-    // newSot.purpose_steam = row.purpose_steam;
-    // newSot.required_temp = row.required_temp;
-    newSot.clean_status_cv = row.clean_status_cv;
-    newSot.certificate_cv = row.certificate_cv;
-    newSot.so_guid = row.so_guid;
-    newSot.eta_dt = row.eta_dt;
-    newSot.etr_dt = row.etr_dt;
-    this.addOrderDetails(event, newSot);
+  handleDelete(event: Event, row: any, index: number): void {
+    this.deleteItem(row, index);
   }
 
   handleSaveSuccess(count: any) {
@@ -691,7 +710,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        this.router.navigate(['/admin/inventory/storing-order']);
+        this.router.navigate(['/admin/inventory/release-order']);
       });
     }
   }
@@ -729,32 +748,20 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
         return 'badge-solid-blue';
       case 'cancel':
         return 'badge-solid-orange';
+      case 'preorder':
+        return 'badge-solid-pink';
       default:
         return '';
     }
   }
 
-  checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
-    if (!schedulings || !schedulings.length) return false;
-    if (schedulings.some(schedule => schedule.status_cv !== "CANCELED"))
-      return true;
-    return false;
+  getTankStatusDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  checkBooking(bookings: BookingItem[] | undefined): boolean {
-    if (!bookings || !bookings.length) return false;
-    if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
-      return true;
-    return false;
+  getYardDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
-
-  // getRepairDescription(codeValType: string): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeValType, this.repairCv);
-  // }
-
-  // getYesNoDescription(codeValType: string): string | undefined {
-  //   return this.cvDS.getCodeDescription(codeValType, this.yesnoCv);
-  // }
 
   getSoStatusDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.soStatusCvList);

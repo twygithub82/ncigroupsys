@@ -14,11 +14,11 @@ import { StoringOrderTankItem } from './storing-order-tank';
 export class BookingGO {
   public guid?: string;
   public book_type_cv?: string;
-  public booking_dt?: number | null;
+  public booking_dt?: number;
   public reference?: string;
   public sot_guid?: string;
   public status_cv?: string;
-  public surveyor_guid?: string | null;
+  public surveyor_guid?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -182,5 +182,13 @@ export class BookingDS extends BaseDataSource<BookingItem> {
 
   canRollbackStatus(sot: StoringOrderTankItem): boolean {
     return sot && sot.status_cv === 'CANCELED' || sot.status_cv === 'ACCEPTED';
+  }
+
+  getBookingReleaseOrder(booking: BookingItem[] | undefined): BookingItem | undefined {
+    return this.getBookingWithType(booking, "RELEASE_ORDER");
+  }
+
+  getBookingWithType(booking: BookingItem[] | undefined, type: string): BookingItem | undefined {
+    return booking?.find(item => item.book_type_cv === type);
   }
 }
