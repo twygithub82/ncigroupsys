@@ -355,8 +355,17 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     // }
 
     // TODO :: search criteria
+    this.previous_endCursor=this.endCursor;
     this.subs.sink = this.mthDS.loadItems(where,order).subscribe(data => {
-      this.clnMethodItem = data;
+       this.clnMethodItem=data;
+        this.endCursor = this.mthDS.pageInfo?.endCursor;
+        this.startCursor = this.mthDS.pageInfo?.startCursor;
+        this.hasNextPage = this.mthDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.mthDS.pageInfo?.hasPreviousPage ?? false;
+        this.pageIndex=0;
+        this.paginator.pageIndex=this.pageIndex;
+        if(!this.hasPreviousPage)
+          this.previous_endCursor=undefined;
     });
   }
   

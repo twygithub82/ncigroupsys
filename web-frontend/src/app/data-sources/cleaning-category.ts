@@ -130,6 +130,7 @@ export class CleaningCategoryDS extends BaseDataSource<CleaningCategoryItem> {
         map((result) => {
           const rst = result.queryCleaningCategory || { nodes: [], totalCount: 0 };
           this.itemsSubjects.next(rst.nodes);
+          this.pageInfo = rst.pageInfo;
           this.totalCount = rst.totalCount;
           return rst.nodes;
         })

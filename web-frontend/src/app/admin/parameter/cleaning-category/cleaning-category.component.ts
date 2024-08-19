@@ -346,8 +346,17 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     // TODO :: search criteria
+    this.previous_endCursor=this.endCursor;
     this.subs.sink = this.catDS.loadItems(where,order).subscribe(data => {
       this.catList = data;
+      this.endCursor = this.catDS.pageInfo?.endCursor;
+      this.startCursor = this.catDS.pageInfo?.startCursor;
+      this.hasNextPage = this.catDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.catDS.pageInfo?.hasPreviousPage ?? false;
+      this.pageIndex=0;
+      this.paginator.pageIndex=this.pageIndex;
+      if(!this.hasPreviousPage)
+        this.previous_endCursor=undefined;
     });
   }
   

@@ -34,7 +34,13 @@ export const GET_CLEANING_METHOD_QUERY = gql`
         update_by
         update_dt
      }
-      totalCount
+         totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
   }
 }
   `;
@@ -112,6 +118,7 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
                 map((result) => {
                     const rst = result.queryCleaningMethod || { nodes: [], totalCount: 0 };
                     this.itemsSubjects.next(rst.nodes);
+                    this.pageInfo = rst.pageInfo;
                     this.totalCount = rst.totalCount;
                     return rst.nodes;
                 })
@@ -139,6 +146,7 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
             map((result) => {
               const rst = result.queryCleaningMethod || { nodes: [], totalCount: 0 };
               this.itemsSubjects.next(rst.nodes);
+              this.pageInfo = rst.pageInfo;
               this.totalCount = rst.totalCount;
               return rst.nodes;
             })
