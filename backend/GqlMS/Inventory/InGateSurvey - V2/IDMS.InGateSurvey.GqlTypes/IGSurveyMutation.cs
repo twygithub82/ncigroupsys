@@ -39,7 +39,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                 ingateSurvey.create_dt = currentDateTime;
                 context.in_gate_survey.Add(ingateSurvey);
 
-                var igWithTank = inGateWithTankRequest.InGateWithTank;
+                var igWithTank = inGateWithTankRequest;
                 var ingate = context.in_gate.Where(i => i.guid == igWithTank.guid).FirstOrDefault();
                 if (ingate != null)
                 {
@@ -53,7 +53,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                     ingate.update_dt = currentDateTime;
                 }
 
-                var tnk = inGateWithTankRequest.InGateWithTank.tank;
+                var tnk = inGateWithTankRequest.tank;
                 var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
                 if (sot != null)
                 {
@@ -111,7 +111,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                     ingateSurvey.update_dt = currentDateTime;
                 }
 
-                var igWithTank = inGateWithTankRequest.InGateWithTank;
+                var igWithTank = inGateWithTankRequest;
                 var ingate = context.in_gate.Where(i => i.guid == igWithTank.guid).FirstOrDefault();
                 if (ingate != null)
                 {
@@ -125,7 +125,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                     ingate.update_dt = currentDateTime;
                 }
 
-                var tnk = inGateWithTankRequest.InGateWithTank.tank;
+                var tnk = inGateWithTankRequest.tank;
                 var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
                 if (sot != null)
                 {
