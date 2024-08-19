@@ -363,6 +363,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
         this.hasPreviousPage = this.catDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
+        if(!this.hasPreviousPage)
+          this.previous_endCursor=undefined;
         
      });
     }

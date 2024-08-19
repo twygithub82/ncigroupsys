@@ -12,6 +12,7 @@ namespace IDMS.Models.Parameter
     public  class cleaning_method:Dates
     {
         [Key]
+        [IsProjected(true)]
         public string? guid { get; set; }
 
         public string? name { get; set; }
@@ -29,15 +30,23 @@ namespace IDMS.Models.Parameter
     }
 
     
-    public class CleaningMethodWithTariff: cleaning_method
+    public class CleaningMethodWithTariff: Dates
     {
-        //[Key]
-        //public string? guid { get; set; }
+        [Key]
+        [IsProjected(true)]
+        public string? guid { get; set; }
 
-        //public string? name { get; set; }
+        public string? name { get; set; }
 
-        //public string? description { get; set; }
+        public int? sequence { get; set; }
+        public string? description { get; set; }
 
-        //public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
+        // public int? duration { get; set; }
+
+        // public string? cleaning_group_cv { get; set; }
+
+        // public double? cost { get; set; }
+
+        public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
     }
 }

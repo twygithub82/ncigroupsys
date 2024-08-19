@@ -53,9 +53,9 @@ namespace IDMS.Models.Parameter
 
     public class EntityClass_CleaningCategoryWithCustomerCompanyAndCleaningCategory: cleaning_category
     {
-        public IEnumerable<customer_company>? customer_companies { get; set; }
+        public IEnumerable<customer_company?>? customer_companies { get; set; }
 
-        public IEnumerable<customer_company_cleaning_category>? customer_company_cleaning_categories { get; set; }
+        public IEnumerable<customer_company_cleaning_category?>? customer_company_cleaning_categories { get; set; }
     }
 
 }

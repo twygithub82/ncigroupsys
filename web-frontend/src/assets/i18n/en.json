@@ -440,7 +440,10 @@
     "THICKNESS":"Thickness",
     "COST-TYPE":"Cost Type",
     "REBATE-TYPE":"Rebate Type",
-    "JOB-TYPE":"Job Type"
+    "JOB-TYPE":"Job Type",
+    "CLEANING-METHOD" :"Cleaning Method",
+    "METHOD-NAME":"Method Name"
+
     
   },
   "CLEAN-PROCEDURES": {

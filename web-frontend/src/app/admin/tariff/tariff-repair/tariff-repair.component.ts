@@ -343,7 +343,7 @@ implements OnInit {
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
      const dialogRef = this.dialog.open(FormDialogComponent_New,{
-       width: '600px',
+       width: '700px',
        height:'auto',
        data: {
          action: 'new',

@@ -30,13 +30,16 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { ComponentUtil } from 'app/utilities/component-util';
 import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
+import { CleaningMethodDS,CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { elements } from 'chart.js';
+
+
 export interface DialogData {
   action?: string;
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItem:CleaningCategoryItem;
+   selectedItem:CleaningMethodItem;
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -86,7 +89,7 @@ export class FormDialogComponent {
       // 'img',
        'fName',
        'lName',
-       'email',
+      // 'email',
       // 'gender',
       // 'bDate',
       // 'mobile',
@@ -105,7 +108,9 @@ export class FormDialogComponent {
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  catDS :CleaningCategoryDS;
+//  catDS :CleaningCategoryDS;
+  mthDS:CleaningMethodDS;
+
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -192,7 +197,10 @@ export class FormDialogComponent {
     CATEGORY_NAME:"COMMON-FORM.CATEGORY-NAME",
     CATEGORY_DESCRIPTION:"COMMON-FORM.CATEGORY-DESCRIPTION",
     CATEGORY_COST:"COMMON-FORM.CARGO-COST",
-    CLEANING_CATEGORY:"COMMON-FORM.CLEANING-CATEGORY"
+    CLEANING_CATEGORY:"COMMON-FORM.CLEANING-CATEGORY",
+    CLEANING_METHOD:'COMMON-FORM.CLEANING-METHOD',
+    DESCRIPTION :'COMMON-FORM.DESCRIPTION',
+    METHOD_NAME:"COMMON-FORM.METHOD-NAME",
   };
 
   
@@ -216,8 +224,8 @@ export class FormDialogComponent {
     //this.tcDS = new TariffCleaningDS(this.apollo);
     //this.sotDS = new StoringOrderTankDS(this.apollo);
     //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    this.catDS= new CleaningCategoryDS(this.apollo);
-
+    //this.catDS= new CleaningCategoryDS(this.apollo);
+    this.mthDS = new CleaningMethodDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     // this.sotExistedList = data.sotExistedList;
@@ -262,11 +270,11 @@ export class FormDialogComponent {
   {
     if(this.selectedItem.name!== undefined)
     {
-      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_CATEGORY;      
+      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_METHOD;      
     }
     else
     {
-      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_CATEGORY;
+      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_METHOD;
     }
   }
 
@@ -327,11 +335,10 @@ export class FormDialogComponent {
 
     if (!this.pcForm?.valid) return;
     
-    let cc: CleaningCategoryItem = new CleaningCategoryItem(this.selectedItem);
+    let cc: CleaningMethodItem = new CleaningMethodItem(this.selectedItem);
     // tc.guid='';
      cc.name = this.pcForm.value['name'];
      cc.description= this.pcForm.value['description'];
-     cc.cost = this.pcForm.value['adjusted_cost'];
      
 
     const where: any = {};
@@ -339,22 +346,22 @@ export class FormDialogComponent {
       where.name = { eq: this.pcForm!.value['name'] };
     }
 
-    this.catDS.search(where).subscribe(p=>{
+    this.mthDS.search(where).subscribe(p=>{
        if(p.length==0)
        {
         if (this.selectedItem.guid) {
 
-          this.catDS.updateCleaningCategory(cc).subscribe(result => {
+          this.mthDS.updateCleaningMethod(cc).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result?.data?.updateCleaningCategory);
+            this.handleSaveSuccess(result?.data?.updateCleaningMethod);
             });
   
         }
         else
         {
-         this.catDS.addCleaningCategory(cc).subscribe(result => {
+         this.mthDS.addCleaningMethod(cc).subscribe(result => {
           console.log(result)
-          this.handleSaveSuccess(result?.data?.addCleaningCategory);
+          this.handleSaveSuccess(result?.data?.addCleaningMethod);
           });
         }
 
@@ -373,9 +380,9 @@ export class FormDialogComponent {
 
             if (this.selectedItem.guid) {
 
-              this.catDS.updateCleaningCategory(cc).subscribe(result => {
+              this.mthDS.updateCleaningMethod(cc).subscribe(result => {
                 console.log(result)
-                this.handleSaveSuccess(result?.data?.updateCleaningCategory);
+                this.handleSaveSuccess(result?.data?.updateCleaningMethod);
                 });
       
             }

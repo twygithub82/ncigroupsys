@@ -124,7 +124,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
   testTypeControl  = new UntypedFormControl();
-  dimensionUnitControl = new UntypedFormControl();
+  heightDiameterUnitControl = new UntypedFormControl();
   widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl = new UntypedFormControl();
   lengthUnitControl=new UntypedFormControl();
@@ -290,8 +290,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       sub_group_name_cv:this.subGroupNameControl,
       test_type_cv:this.testTypeControl,
       part_name:[''],
-      dimension:[''],
-      dimension_unit_cv : this.dimensionUnitControl,
+      height_diameter:[''],
+      height_diameter_unit_cv : this.heightDiameterUnitControl,
       width_diameter:[''],
       width_diameter_uint_cv:this.widthDiameterUnitControl,
       thickness:[''],
@@ -340,7 +340,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   GetTitle()
   {
    
-      return this.translatedLangText.NEW + " " + this.translatedLangText.DEPOT_PROFILE;      
+      return this.translatedLangText.NEW + " " + this.translatedLangText.REPAIR;      
     
   }
 
@@ -381,63 +381,63 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       where.profile_name = { contains: this.pcForm!.value['name'] };
     }
 
-    this.subs.sink= this.trfDepotDS.SearchTariffDepot(where).subscribe(data=>{
-        if(data.length==0)
-        {
-          let conditions:Condition[] = [];
-          let unit_types:TankItem[]=[];
-          let insert =true;
-          if(this.unit_type_control.value.length>0)
-          {
-            this.unit_type_control.value.forEach((data:TankItem) => {
-                let cond:Condition={guid:{eq:String(data.guid)},tariff_depot_guid:{eq:null}};
-                conditions.push(cond);
-                let tnk:TankItem= new TankItem();
-                tnk.guid=data.guid;
-                unit_types.push(tnk);
-            });
-            let where ={or:conditions};
-            this.subs.sink=this.tnkDS.search(where).subscribe(data=>{
-              if(data.length!=this.unit_type_control.value.length)
-              {
-                insert=false;
-                this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
-              } 
+    // this.subs.sink= this.trfDepotDS.SearchTariffDepot(where).subscribe(data=>{
+    //     if(data.length==0)
+    //     {
+    //       let conditions:Condition[] = [];
+    //       let unit_types:TankItem[]=[];
+    //       let insert =true;
+    //       if(this.unit_type_control.value.length>0)
+    //       {
+    //         this.unit_type_control.value.forEach((data:TankItem) => {
+    //             let cond:Condition={guid:{eq:String(data.guid)},tariff_depot_guid:{eq:null}};
+    //             conditions.push(cond);
+    //             let tnk:TankItem= new TankItem();
+    //             tnk.guid=data.guid;
+    //             unit_types.push(tnk);
+    //         });
+    //         let where ={or:conditions};
+    //         this.subs.sink=this.tnkDS.search(where).subscribe(data=>{
+    //           if(data.length!=this.unit_type_control.value.length)
+    //           {
+    //             insert=false;
+    //             this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
+    //           } 
 
 
-            });
+    //         });
 
             
 
-          }
-          if(insert)
-          {
-            let newDepot = new TariffDepotItem();
-            newDepot.lolo_cost= Number(this.pcForm!.value['lolo_cost']);
-            newDepot.free_storage= Number(this.pcForm.value['free_storage']);
-            newDepot.description= String(this.pcForm.value['description']);
-            newDepot.preinspection_cost= Number(this.pcForm.value['preinspection_cost']);
-            newDepot.gate_in_cost= Number(this.pcForm.value['gate_in_cost']);
-            newDepot.gate_out_cost= Number(this.pcForm.value['gate_out_cost']);
-            newDepot.profile_name= String(this.pcForm.value['name']);
-            newDepot.storage_cost= Number(this.pcForm.value['storage_cost']);
-            newDepot.tanks=unit_types;
-            this.trfDepotDS.addNewTariffDepot(newDepot).subscribe(result=>{
+    //       }
+    //       if(insert)
+    //       {
+    //         let newDepot = new TariffDepotItem();
+    //         newDepot.lolo_cost= Number(this.pcForm!.value['lolo_cost']);
+    //         newDepot.free_storage= Number(this.pcForm.value['free_storage']);
+    //         newDepot.description= String(this.pcForm.value['description']);
+    //         newDepot.preinspection_cost= Number(this.pcForm.value['preinspection_cost']);
+    //         newDepot.gate_in_cost= Number(this.pcForm.value['gate_in_cost']);
+    //         newDepot.gate_out_cost= Number(this.pcForm.value['gate_out_cost']);
+    //         newDepot.profile_name= String(this.pcForm.value['name']);
+    //         newDepot.storage_cost= Number(this.pcForm.value['storage_cost']);
+    //         newDepot.tanks=unit_types;
+    //         this.trfDepotDS.addNewTariffDepot(newDepot).subscribe(result=>{
 
-              this.handleSaveSuccess(result?.data?.addTariffDepot);
-            });
-          }
+    //           this.handleSaveSuccess(result?.data?.addTariffDepot);
+    //         });
+    //       }
 
         
 
-        }
-        else
-        {
-            this.pcForm?.get('name')?.setErrors({ existed: true });
-        }
+    //     }
+    //     else
+    //     {
+    //         this.pcForm?.get('name')?.setErrors({ existed: true });
+    //     }
 
 
-    });
+    // });
 
    
 

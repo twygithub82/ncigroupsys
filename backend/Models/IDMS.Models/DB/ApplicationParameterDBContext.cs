@@ -79,6 +79,7 @@ namespace IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB
 
         public DbSet<IDMS.Models.Master.customer_company> customer_company { get; set; }
 
+        
         public DbSet<IDMS.Models.Package.customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
     }
 }
