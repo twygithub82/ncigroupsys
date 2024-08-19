@@ -106,7 +106,7 @@
       "TEXT": "Parameter",
       "LIST": {
         "CLEANING-CATEGORY": "Category",
-        "CLEANING-METHODS": "Methods"
+        "CLEANING-METHODS": "Method"
       }
     },
     "PACKAGE": {
@@ -124,7 +124,7 @@
     "CLEANING-MANAGEMENT": {
       "TEXT": "Cleaning Management",
       "LIST": {
-        "CLEAN-METHODS": "Cleaning Methods",
+        "CLEAN-METHODS": "Cleaning Method",
         "CLEAN-CATEGORY": "Cleaning Category",
         "CLEAN-STEPS": "Cleaning Steps",
         "CLEAN-PROCEDURES": "Cleaning Procedures",
