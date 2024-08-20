@@ -16,20 +16,13 @@ export class TariffRepairItem {
   
   public group_name_cv?: string;
   public subgroup_name_cv?: string;
-  public test_type_cv?: string;
   public part_name?: string;
   public dimension?: number;
-  public dimension_unit_cv?: string;
   public width_diameter?: number;
-  public width_diameter_unit_cv?: string;
   public thickness?: number;
-  public thickness_unit_cv?: string;
   public length?: number;
   public length_unit_cv?: string;
   public labour_hour?:number;
-  public cost_type_cv?: string;
-  public rebate_type_cv?: string;
-  public job_type_cv?: string;
   public material_cost?: number;
   public remarks?:string;
   public create_dt?: number;
@@ -43,20 +36,13 @@ export class TariffRepairItem {
     if (!this.guid) this.guid = '';
     this.group_name_cv = item.group_name_cv;
     this.subgroup_name_cv=item.subgroup_name_cv;
-    this.test_type_cv=item.test_type_cv;
     this.part_name=item.part_name;
     this.dimension=item.dimension;
-    this.dimension_unit_cv=item.dimension_unit_cv;
     this.width_diameter=item.width_diameter;
-    this.width_diameter_unit_cv=item.width_diameter_unit_cv;
     this.thickness=item.thickness;
-    this.thickness_unit_cv=item.thickness_unit_cv;
     this.length=item.length;
     this.length_unit_cv=item.length_unit_cv;
     this.labour_hour=item.labour_hour;
-    this.cost_type_cv=item.cost_type_cv;
-    this.rebate_type_cv=item.rebate_type_cv;
-    this.job_type_cv=item.job_type_cv;
     this.material_cost=item.material_cost;
     this.remarks=item.remarks;
     this.create_dt = item.create_dt;
@@ -78,30 +64,23 @@ export const GET_TARIFF_REPAIR_QUERY = gql`
   query queryTariffRepair($where: tariff_repairFilterInput, $order:[tariff_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     tariffRepairResult : queryTariffRepair(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-        cost_type_cv
-        create_by
-        create_dt
-        delete_dt
-        dimension
-        dimension_unit_cv
-        group_name
-        guid
-        job_type_cv
-        labour_hour
-        length
-        length_unit_cv
-        material_cost
-        part_name
-        rebate_type_cv
-        remarks
-        subgroup_name_cv
-        test_type_cv
-        thickness
-        thickness_unit_cv
-        update_by
-        update_dt
-        width_diameter
-        width_diameter_unit_cv
+      create_by
+      create_dt
+      delete_dt
+      dimension
+      group_name_cv
+      guid
+      labour_hour
+      length
+      length_unit_cv
+      material_cost
+      part_name
+      remarks
+      subgroup_name_cv
+      thickness
+      update_by
+      update_dt
+      width_diameter
       }
       pageInfo {
         endCursor

@@ -662,23 +662,16 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 var newTariffRepair = new tariff_repair();
                 newTariffRepair.guid = NewTariffRepair.guid;
                 newTariffRepair.remarks = NewTariffRepair.remarks;
-                newTariffRepair.cost_type_cv = NewTariffRepair.cost_type_cv;
                 newTariffRepair.dimension = NewTariffRepair.dimension;
-                newTariffRepair.dimension_unit_cv = NewTariffRepair.dimension_unit_cv;
-                newTariffRepair.group_name = NewTariffRepair.group_name;
+                newTariffRepair.group_name_cv = NewTariffRepair.group_name_cv;
                 newTariffRepair.subgroup_name_cv = NewTariffRepair.subgroup_name_cv;
-                newTariffRepair.width_diameter_unit_cv = NewTariffRepair.width_diameter_unit_cv;
                 newTariffRepair.width_diameter=NewTariffRepair.width_diameter;
-                newTariffRepair.job_type_cv = NewTariffRepair.job_type_cv;
                 newTariffRepair.labour_hour=NewTariffRepair.labour_hour;
                 newTariffRepair.length=NewTariffRepair.length;
                 newTariffRepair.length_unit_cv = NewTariffRepair.length_unit_cv;
                 newTariffRepair.material_cost=NewTariffRepair.material_cost;
                 newTariffRepair.part_name=NewTariffRepair.part_name;
-                newTariffRepair.rebate_type_cv = NewTariffRepair.rebate_type_cv;
-                newTariffRepair.test_type_cv=NewTariffRepair.test_type_cv ;
                 newTariffRepair.thickness=NewTariffRepair.thickness;
-                newTariffRepair.thickness_unit_cv=NewTariffRepair.thickness_unit_cv ;
                 newTariffRepair.create_by = uid;
                 newTariffRepair.create_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_repair.Add(newTariffRepair);
@@ -724,23 +717,16 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 }
 
                 dbTariffRepair.remarks = UpdateTariffRepair.remarks;
-                dbTariffRepair.cost_type_cv = UpdateTariffRepair.cost_type_cv;
                 dbTariffRepair.dimension = UpdateTariffRepair.dimension;
-                dbTariffRepair.dimension_unit_cv = UpdateTariffRepair.dimension_unit_cv;
-                dbTariffRepair.group_name = UpdateTariffRepair.group_name;
+                dbTariffRepair.group_name_cv = UpdateTariffRepair.group_name_cv;
                 dbTariffRepair.subgroup_name_cv = UpdateTariffRepair.subgroup_name_cv;
-                dbTariffRepair.width_diameter_unit_cv = UpdateTariffRepair.width_diameter_unit_cv;
                 dbTariffRepair.width_diameter = UpdateTariffRepair.width_diameter;
-                dbTariffRepair.job_type_cv = UpdateTariffRepair.job_type_cv;
                 dbTariffRepair.labour_hour = UpdateTariffRepair.labour_hour;
                 dbTariffRepair.length = UpdateTariffRepair.length;
                 dbTariffRepair.length_unit_cv = UpdateTariffRepair.length_unit_cv;
                 dbTariffRepair.material_cost = UpdateTariffRepair.material_cost;
                 dbTariffRepair.part_name = UpdateTariffRepair.part_name;
-                dbTariffRepair.rebate_type_cv = UpdateTariffRepair.rebate_type_cv;
-                dbTariffRepair.test_type_cv = UpdateTariffRepair.test_type_cv;
                 dbTariffRepair.thickness = UpdateTariffRepair.thickness;
-                dbTariffRepair.thickness_unit_cv = UpdateTariffRepair.thickness_unit_cv;
 
                 
                 dbTariffRepair.update_by = uid;

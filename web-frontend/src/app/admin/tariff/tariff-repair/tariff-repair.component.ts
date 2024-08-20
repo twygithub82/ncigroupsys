@@ -58,6 +58,8 @@ import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.compone
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { TariffRepairDS,TariffRepairItem } from 'app/data-sources/tariff-repair';
+
 
 @Component({
   selector: 'app-tariff-repair',
@@ -139,9 +141,9 @@ implements OnInit {
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  tariffResidueDS : TariffResidueDS;
+  trfRepairDS : TariffRepairDS;
   cvDS :CodeValuesDS;
-  tariffResidueItems : TariffResidueItem[]=[];
+  trfRepairItems : TariffRepairItem[]=[];
 
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList1?: CustomerCompanyItem[];
@@ -154,7 +156,7 @@ implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { description: "ASC" };
+  lastOrderBy: any = { part_name: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -286,7 +288,7 @@ implements OnInit {
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.tariffResidueDS= new TariffResidueDS(this.apollo);
+    this.trfRepairDS= new TariffRepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -401,6 +403,27 @@ implements OnInit {
     event.preventDefault(); // Prevents the form submission
   }
 
+  displayGroupNameCodeValue_Description (codeValue:String)
+  {
+    return this.GetCodeValue_Description(codeValue,this.groupNameCvList);
+  }
+
+  displaySubGroupNameCodeValue_Description (codeValue:String)
+  {
+    return this.GetCodeValue_Description(codeValue,this.subGroupNameCvList);
+  }
+
+  GetCodeValue_Description(codeValue:String, codeValueItems:CodeValuesItem[])
+  {
+    let retval:string='';
+    const foundItem  = codeValueItems.find(item => item.code_val === codeValue);
+    if(foundItem)
+    {
+      retval = foundItem.description||'';
+    }
+
+    return retval;
+  }
   displayLastUpdated(r: TariffLabourItem) {
     var updatedt= r.update_dt;
     if(updatedt===null)
@@ -472,7 +495,7 @@ implements OnInit {
             //{
               this.handleSaveSuccess(result);
               //this.search();
-              if(this.tariffResidueDS.totalCount>0)
+              if(this.trfRepairDS.totalCount>0)
               {
                 this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
               }
@@ -543,10 +566,10 @@ implements OnInit {
   {
     const where: any = {};
 
-    if (this.pcForm!.value["description"])
+    if (this.pcForm!.value["part_name"])
       {
-        const description :Text = this.pcForm!.value["description"];
-        where.description ={contains:description}
+        const description :Text = this.pcForm!.value["part_name"];
+        where.description ={eq:description}
       }
 
     if (this.pcForm!.value["min_cost"])
@@ -561,13 +584,13 @@ implements OnInit {
         where.cost ={ngte:maxCost}
       }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.tariffResidueDS.SearchTariffResidue(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.tariffResidueItems=data;
+    this.subs.sink = this.trfRepairDS.SearchTariffRepair(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.trfRepairItems=data;
        this.previous_endCursor=undefined;
-       this.endCursor = this.tariffResidueDS.pageInfo?.endCursor;
-       this.startCursor = this.tariffResidueDS.pageInfo?.startCursor;
-       this.hasNextPage = this.tariffResidueDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.tariffResidueDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
+       this.startCursor = this.trfRepairDS.pageInfo?.startCursor;
+       this.hasNextPage = this.trfRepairDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.trfRepairDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -632,12 +655,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.tariffResidueDS.SearchTariffResidue(where,order,first,after,last,before).subscribe(data => {
-        this.tariffResidueItems=data;
-        this.endCursor = this.tariffResidueDS.pageInfo?.endCursor;
-        this.startCursor = this.tariffResidueDS.pageInfo?.startCursor;
-        this.hasNextPage = this.tariffResidueDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.tariffResidueDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.trfRepairDS.SearchTariffRepair(where,order,first,after,last,before).subscribe(data => {
+        this.trfRepairItems=data;
+        this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
+        this.startCursor = this.trfRepairDS.pageInfo?.startCursor;
+        this.hasNextPage = this.trfRepairDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.trfRepairDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
