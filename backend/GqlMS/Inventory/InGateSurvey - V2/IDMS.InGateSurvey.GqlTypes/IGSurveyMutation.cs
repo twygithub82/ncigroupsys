@@ -54,13 +54,21 @@ namespace IDMS.InGateSurvey.GqlTypes
                 }
 
                 var tnk = inGateWithTankRequest.tank;
-                var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
-                if (sot != null)
-                {
-                    sot.unit_type_guid = tnk.unit_type_guid;
-                    sot.update_by = user;
-                    sot.update_dt = currentDateTime;
-                }
+                //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
+                //if (sot != null)
+                //{
+                //    sot.unit_type_guid = tnk.unit_type_guid;
+                //    sot.update_by = user;
+                //    sot.update_dt = currentDateTime;
+                //}
+
+                //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
+                storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
+                context.Attach(sot);
+                sot.unit_type_guid = tnk.unit_type_guid;
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+                
 
                 retval = await context.SaveChangesAsync();
                 //TODO
@@ -85,7 +93,7 @@ namespace IDMS.InGateSurvey.GqlTypes
 
             try
             {
-                in_gate_survey? ingateSurvey = await context.in_gate_survey.Where(i => i.guid == inGateSurveyRequest.guid && 
+                in_gate_survey? ingateSurvey = await context.in_gate_survey.Where(i => i.guid == inGateSurveyRequest.guid &&
                                                                                  (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
                 if (ingateSurvey == null)
                     throw new GraphQLException(new Error("Ingate survey not found.", "NOT_FOUND"));
@@ -93,7 +101,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                 if (ingateSurvey.in_gate_guid == null)
                     throw new GraphQLException(new Error("Ingate guid cant be null.", "Error"));
 
-                var user=GqlUtils.IsAuthorize(config,httpContextAccessor);
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
                 mapper.Map(inGateSurveyRequest, ingateSurvey);
@@ -126,13 +134,19 @@ namespace IDMS.InGateSurvey.GqlTypes
                 }
 
                 var tnk = inGateWithTankRequest.tank;
-                var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
-                if (sot != null)
-                {
-                    sot.unit_type_guid = tnk.unit_type_guid;
-                    sot.update_by = user;
-                    sot.update_dt = currentDateTime;
-                }
+                //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
+                //if (sot != null)
+                //{
+                //    sot.unit_type_guid = tnk.unit_type_guid;
+                //    sot.update_by = user;
+                //    sot.update_dt = currentDateTime;
+                //}
+
+                storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
+                context.Attach(sot);
+                sot.unit_type_guid = tnk.unit_type_guid;
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
 
                 retval = await context.SaveChangesAsync();
                 //TODO

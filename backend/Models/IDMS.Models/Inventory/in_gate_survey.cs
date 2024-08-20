@@ -69,6 +69,13 @@ namespace IDMS.Models.Inventory
         public bool? dipstick { get; set; } = false;
         public float? residue { get; set; }
         public string? comments { get; set; }
+        public string? top_coord { get; set; }
+        public string? bottom_coord { get; set; }
+        public string? front_coord { get; set; }
+        public string? rear_coord { get; set; }
+        public string? left_coord { get; set; }
+        public string? right_coord { get; set; }
         public InGateWithTank? in_gate { get; set; }
+
     }
 }
