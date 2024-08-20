@@ -509,6 +509,7 @@ implements OnInit {
   }
 
   
+
   deleteItem(row: AdvanceTable) {
     // this.id = row.id;
     // let tempDirection: Direction;
@@ -546,7 +547,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.custCompClnCatItems.length;
+    const numRows = this.trfRepairItems.length;
     return numSelected === numRows;
   }
 
@@ -558,7 +559,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.custCompClnCatItems.forEach((row) =>
+       : this.trfRepairItems.forEach((row) =>
            this.selection.select(row)
          );
   }
