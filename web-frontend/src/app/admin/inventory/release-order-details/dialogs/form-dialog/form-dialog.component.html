@@ -10,54 +10,51 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <div class="row">
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        FILTER
+    <form class="ms-0" [formGroup]="filterTableForm!" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.FILTER}}</mat-label>
+            <input matInput formControlName="filterTable">
+          </mat-form-field>
+        </div>
       </div>
-    </div>
+    </form>
     <div class="body overflow-auto">
       @for(row of sotList; track row){
-      <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
+      <mat-card [ngClass]="{'bg-grey': checkDisable(row.guid), 'card-content p-0 m-b-10': true}" matRipple>
         <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center"
           (click)="toggleRow(row)">
           <mat-card-title [ngClass]="{'pt-1': true}">
-            <!-- <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
-              class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkScheduling(row.scheduling)">
+            <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
+              class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkDisable(row.guid)">
             </mat-checkbox>
             {{row.tank_no}}
-            @if (checkScheduling(row.scheduling)){
-            <div [ngClass]="'badge badge-solid-green ms-1'">{{data.translatedLangText.SCHEDULED}}</div>
-            }
-            @else if (checkBooking(row.booking)){
-            <div [ngClass]="'badge badge-solid-orange ms-1'">{{data.translatedLangText.BOOKED}}</div>
-            } -->
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="row" (click)="toggleRow(row)">
-            <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
-              <span class="font-bold">{{data.translatedLangText.CUSTOMER}}:</span> {{
-              ccDS.displayName(row.storing_order?.customer_company)}}
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+              <span class="font-bold">{{data.translatedLangText.EIR_NO}}:</span>
+              {{igDS.getInGateItem(row.in_gate)?.eir_no}}
             </div>
-            <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1">
-              <span class="font-bold">{{data.translatedLangText.EIR_NO}}:</span> {{igDS.getInGateItem(row.in_gate)?.eir_no}}
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+              <span class="font-bold">{{data.translatedLangText.EIR_DATE}}:</span>
+              {{igDS.getInGateItem(row.in_gate)?.eir_dt}}
             </div>
-            <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
-              <span class="font-bold">{{data.translatedLangText.EIR_DATE}}:</span> {{igDS.getInGateItem(row.in_gate)?.eir_dt}}
-            </div>
-            <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
-              <span class="font-bold">{{data.translatedLangText.CAPACITY}}:</span> {{
-                igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
-            </div>
-            <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
-              <span class="font-bold">{{data.translatedLangText.TARE_WEIGHT}}:</span> {{
-                igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
-            </div>
-            <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
               <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>
               {{getTankStatusDescription(row.tank_status_cv)}}
             </div>
-            <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+              <span class="font-bold">{{data.translatedLangText.CAPACITY}}:</span> {{
+              igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
+              <span class="font-bold">{{data.translatedLangText.TARE_WEIGHT}}:</span> {{
+              igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
               <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
               {{getYardDescription(igDS.getInGateItem(row.in_gate)?.yard_cv)}}
             </div>

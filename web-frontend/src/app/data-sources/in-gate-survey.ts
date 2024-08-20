@@ -475,14 +475,14 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
 `
 
 export const ADD_IN_GATE_SURVEY = gql`
-  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankInput) {
-    addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: { in_gate: $inGate })
+  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankRequestInput!) {
+    addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: $inGate)
   }
 `;
 
 export const UPDATE_IN_GATE_SURVEY = gql`
-  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankInput) {
-    updateInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: { in_gate: $inGate })
+  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankRequestInput!) {
+    updateInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: $inGate)
   }
 `;
 

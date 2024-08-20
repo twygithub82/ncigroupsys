@@ -96,6 +96,10 @@ export const ADMIN_ROUTE: Routes = [
     component: ReleaseOrderComponent,
   },
   {
+    path: "inventory/release-order/new",
+    component: ReleaseOrderDetailsComponent,
+  },
+  {
     path: "inventory/release-order/edit/:id",
     component: ReleaseOrderDetailsComponent,
   },

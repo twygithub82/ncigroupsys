@@ -37,14 +37,37 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<tank> tank { get; set; }
         public DbSet<code_values> code_values { get; set; }
         public DbSet<surveyor> surveyor { get; set; }
-
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<InGateWithTank>()
                 .Ignore(e => e.haulier);
+
+            modelBuilder.Entity<in_gate_survey>()
+                 .Property(e => e.top_coord)
+                 .HasColumnType("json"); // Specify the column type as JSON for MySQL
+
+            modelBuilder.Entity<in_gate_survey>()
+                 .Property(e => e.bottom_coord)
+                 .HasColumnType("json"); // Specify the column type as JSON for MySQL
+
+            modelBuilder.Entity<in_gate_survey>()
+                 .Property(e => e.front_coord)
+                 .HasColumnType("json"); // Specify the column type as JSON for MySQL
+
+            modelBuilder.Entity<in_gate_survey>()
+                 .Property(e => e.rear_coord)
+                 .HasColumnType("json"); // Specify the column type as JSON for MySQL
+
+            modelBuilder.Entity<in_gate_survey>()
+                 .Property(e => e.left_coord)
+                 .HasColumnType("json"); // Specify the column type as JSON for MySQL
+
+            modelBuilder.Entity<in_gate_survey>()
+                 .Property(e => e.right_coord)
+                 .HasColumnType("json"); // Specify the column type as JSON for MySQL
+
         }
     }
 }

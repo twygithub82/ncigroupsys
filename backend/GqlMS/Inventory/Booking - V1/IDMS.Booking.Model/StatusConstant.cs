@@ -31,5 +31,19 @@ namespace IDMS.Booking.Model
             public const string ROLLBACK = "ROLLBACK";
             public const string CANCEL = "CANCEL";
         }
+
+        public static class TankMovementStatus
+        {
+            public const string CLEANING = "CLEANING";
+            public const string INGATE = "IN_GATE";
+            public const string INGATE_SURVEY = "IN_SURVEY";
+            public const string OUTGATE = "OUT_GATE";
+            public const string OUTGATE_SURVEY = "OUT_SURVEY";
+            public const string RESIDUE = "RESIDUE";
+            public const string REPAIR = "REPAIR";
+            public const string STEAM = "STEAM";
+            public const string STORAGE = "STORAGE";
+            public const string RO = "RO_GENERATED";
+        }
     }
 }

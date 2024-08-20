@@ -8,17 +8,12 @@ import { StoringOrderTankItem } from './storing-order-tank';
 import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
 import { SchedulingItem, SchedulingUpdateItem } from './scheduling';
-import { ReleaseOrderSotItem } from './release-order-sot';
+import { ReleaseOrderItem } from './release-order';
 
-export class ReleaseOrderGO {
+export class ReleaseOrderSotGO {
   public guid?: string;
-  public customer_company_guid?: string;
-  public haulier?: string;
-  public release_dt?: number | null;
-  public remarks?: string;
-  public ro_generated?: boolean;
-  public ro_no?: string;
-  public ro_notes?: string;
+  public ro_guid?: string;
+  public sot_guid?: string;
   public status_cv?: string;
   public create_dt?: number;
   public create_by?: string;
@@ -26,15 +21,10 @@ export class ReleaseOrderGO {
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<ReleaseOrderGO> = {}) {
+  constructor(item: Partial<ReleaseOrderSotGO> = {}) {
     this.guid = item.guid;
-    this.customer_company_guid = item.customer_company_guid;
-    this.haulier = item.haulier || '';
-    this.release_dt = item.release_dt;
-    this.remarks = item.remarks || '';
-    this.ro_generated = item.ro_generated;
-    this.ro_no = item.ro_no || '';
-    this.ro_notes = item.ro_notes || '';
+    this.ro_guid = item.ro_guid;
+    this.sot_guid = item.sot_guid || '';
     this.status_cv = item.status_cv || '';
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
@@ -44,13 +34,23 @@ export class ReleaseOrderGO {
   }
 }
 
-export class ReleaseOrderItem extends ReleaseOrderGO {
-  public customer_company?: CustomerCompanyItem;
-  public release_order_sot?: ReleaseOrderSotItem[];
+export class ReleaseOrderSotItem extends ReleaseOrderSotGO {
+  public release_order?: ReleaseOrderItem;
+  public storing_order_tank?: StoringOrderTankItem;
 
-  constructor(item: Partial<ReleaseOrderItem> = {}) {
+  constructor(item: Partial<ReleaseOrderSotItem> = {}) {
     super(item);
-    this.release_order_sot = item.release_order_sot;
+    this.release_order = item.release_order;
+    this.storing_order_tank = item.storing_order_tank;
+  }
+}
+
+export class ReleaseOrderSotUpdateItem extends ReleaseOrderSotItem {
+  public action?: string;
+
+  constructor(item: Partial<ReleaseOrderSotUpdateItem> = {}) {
+    super(item);
+    this.action = item.action;
   }
 }
 
@@ -75,72 +75,6 @@ export const GET_RELEASE_ORDERS = gql`
         customer_company {
           code
           name
-          guid
-        }
-        release_order_sot {
-          create_by
-          create_dt
-          delete_dt
-          guid
-          ro_guid
-          sot_guid
-          status_cv
-          update_by
-          update_dt
-          storing_order_tank {
-            certificate_cv
-            clean_status_cv
-            estimate_cv
-            eta_dt
-            etr_dt
-            guid
-            job_no
-            last_cargo_guid
-            last_test_guid
-            liftoff_job_no
-            lifton_job_no
-            preinspect_job_no
-            purpose_cleaning
-            purpose_repair_cv
-            purpose_steam
-            purpose_storage
-            release_job_no
-            remarks
-            required_temp
-            so_guid
-            status_cv
-            takein_job_no
-            tank_no
-            tank_status_cv
-            unit_type_guid
-            booking {
-              book_type_cv
-              booking_dt
-              guid
-              reference
-              sot_guid
-              status_cv
-              surveyor_guid
-            }
-            scheduling_sot {
-              guid
-              scheduling_guid
-              sot_guid
-              status_cv
-              scheduling {
-                book_type_cv
-                guid
-                reference
-                scheduling_dt
-                status_cv
-              }
-            }
-            in_gate {
-              eir_dt
-              eir_no
-              yard_cv
-            }
-          }
         }
       }
       pageInfo {
@@ -157,7 +91,6 @@ export const GET_RELEASE_ORDERS = gql`
 export const GET_RELEASE_ORDER_BY_ID = gql`
   query QueryReleaseOrder($where: release_orderFilterInput) {
     roList: queryReleaseOrder(where: $where) {
-      
       nodes {
         create_by
         create_dt
@@ -176,72 +109,6 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
         customer_company {
           code
           name
-          guid
-        }
-        release_order_sot {
-          create_by
-          create_dt
-          delete_dt
-          guid
-          ro_guid
-          sot_guid
-          status_cv
-          update_by
-          update_dt
-          storing_order_tank {
-            certificate_cv
-            clean_status_cv
-            estimate_cv
-            eta_dt
-            etr_dt
-            guid
-            job_no
-            last_cargo_guid
-            last_test_guid
-            liftoff_job_no
-            lifton_job_no
-            preinspect_job_no
-            purpose_cleaning
-            purpose_repair_cv
-            purpose_steam
-            purpose_storage
-            release_job_no
-            remarks
-            required_temp
-            so_guid
-            status_cv
-            takein_job_no
-            tank_no
-            tank_status_cv
-            unit_type_guid
-            booking {
-              book_type_cv
-              booking_dt
-              guid
-              reference
-              sot_guid
-              status_cv
-              surveyor_guid
-            }
-            scheduling_sot {
-              guid
-              scheduling_guid
-              sot_guid
-              status_cv
-              scheduling {
-                book_type_cv
-                guid
-                reference
-                scheduling_dt
-                status_cv
-              }
-            }
-            in_gate {
-              eir_dt
-              eir_no
-              yard_cv
-            }
-          }
         }
       }
       pageInfo {
@@ -256,14 +123,14 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
 `;
 
 export const ADD_RELEASE_ORDER = gql`
-  mutation AddReleaseOrder($ro: ReleaseOrderRequestInput!, $ro_SotList: [ReleaseOrderSOTRequestInput!]!) {
-    addReleaseOrder(releaseOrder: $ro, ro_SotList: $ro_SotList)
+  mutation AddReleaseOrder($ro: ReleaseOrderRequestInput!, $schedulings: [SchedulingRequestInput!]!) {
+    addReleaseOrder(releaseOrder: $ro, schedulings: $schedulings)
   }
 `;
 
-export const UPDATE_RELEASE_ORDER = gql`
-  mutation UpdateReleaseOrder($ro: ReleaseOrderRequestInput!, $ro_SotList: [ReleaseOrderSOTRequestInput!]!) {
-    updateReleaseOrder(releaseOrder: $ro, ro_SotList: $ro_SotList)
+export const UPDATE_STORING_ORDER = gql`
+  mutation UpdateStoringOrder($so: StoringOrderRequestInput!, $soTanks: [StoringOrderTankRequestInput!]!) {
+    updateStoringOrder(so: $so, soTanks: $soTanks)
   }
 `;
 
@@ -305,6 +172,7 @@ export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
     let where = this.addDeleteDtCriteria({ guid: { eq: id } });
     return this.apollo
       .query<any>({
+        //query: GET_STORING_ORDER_BY_ID,
         query: GET_RELEASE_ORDER_BY_ID,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
@@ -322,22 +190,22 @@ export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
       );
   }
 
-  addReleaseOrder(ro: any, ro_SotList: any): Observable<any> {
+  addReleaseOrder(ro: any, schedulings: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_RELEASE_ORDER,
       variables: {
         ro,
-        ro_SotList
+        schedulings
       }
     });
   }
 
-  updateReleaseOrder(ro: any, ro_SotList: any): Observable<any> {
+  updateStoringOrder(so: any, soTanks: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: UPDATE_RELEASE_ORDER,
+      mutation: UPDATE_STORING_ORDER,
       variables: {
-        ro,
-        ro_SotList
+        so,
+        soTanks
       }
     });
   }

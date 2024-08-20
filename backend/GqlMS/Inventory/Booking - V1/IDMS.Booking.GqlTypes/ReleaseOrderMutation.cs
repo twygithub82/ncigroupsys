@@ -8,6 +8,7 @@ using IDMS.Models;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using static IDMS.Booking.Model.StatusConstant;
 
@@ -35,7 +36,7 @@ namespace IDMS.Booking.GqlTypes
                 newRO.remarks = releaseOrder.remarks;
                 newRO.status_cv = ROStatus.PENDING;
                 newRO.customer_company_guid = releaseOrder.customer_company_guid;
-                newRO.ro_generated = false;
+                newRO.ro_generated = true;
                 newRO.release_dt = releaseOrder.release_dt;
 
                 IList<release_order_sot> newROSotList = new List<release_order_sot>();
@@ -61,6 +62,7 @@ namespace IDMS.Booking.GqlTypes
                     context.Attach(sot);
 
                     sot.release_job_no = roSOT.storing_order_tank.release_job_no;
+                    sot.tank_status_cv = TankMovementStatus.RO;
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
                 }
@@ -118,6 +120,7 @@ namespace IDMS.Booking.GqlTypes
 
                         //Update the SOT detail
                         sot.release_job_no = roSOT.storing_order_tank.release_job_no;
+                        sot.tank_status_cv = TankMovementStatus.RO;
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
 
@@ -156,6 +159,10 @@ namespace IDMS.Booking.GqlTypes
                         extROSot.update_by = user;
                         extROSot.update_dt = currentDateTime;
 
+                        sot.tank_status_cv = TankMovementStatus.STORAGE;
+                        sot.update_by = user;
+                        sot.update_dt = currentDateTime;
+
                         isSendNotification = true;
                         continue;
                     }
@@ -172,6 +179,59 @@ namespace IDMS.Booking.GqlTypes
                 existingRO.remarks = releaseOrder.remarks;
                 existingRO.release_dt = releaseOrder.release_dt;
                 
+                //TODO
+                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> CancelReleaseOrder(List<ReleaseOrderRequest> releaseOrderList, [Service] IHttpContextAccessor httpContextAccessor,
+            ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
+        {
+            try
+            {
+                bool isSendNotification = false;
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var res = 0;
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                //IList<release_order> roList = new List<release_order>();
+                string[] roGuids = releaseOrderList.Select(r => r.guid).ToArray();
+                //string[] schGuids = ro_SotList.Select(s => s.guid).ToArray();
+                //IList<storing_order_tank> sotLists = new List<storing_order_tank>(); //context.storing_order_tank.Where(s => sotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
+                List<release_order_sot> extROSotList = context.release_order_sot.Where(s => roGuids.Contains(s.ro_guid)).ToList();
+                foreach (var roSOT in extROSotList)
+                {
+                    roSOT.update_by = user;
+                    roSOT.update_dt = currentDateTime;
+                    roSOT.status_cv = ROStatus.CANCELED;
+
+                    storing_order_tank sot = new() { guid = roSOT.sot_guid };
+                    //Start add the entity into EF for tracking
+                    context.Attach(sot);
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;
+                    sot.tank_status_cv = TankMovementStatus.STORAGE;
+                    //sotLists.Add(sot);
+                }
+                //context.AttachRange(sotLists);
+
+                foreach(var item in releaseOrderList)
+                {
+                    release_order ro = new release_order() { guid = item.guid };
+                    context.Attach(ro);
+                    ro.update_by = user;
+                    ro.update_dt = currentDateTime;
+                    ro.status_cv = ROStatus.CANCELED;
+                    //roList.Add(ro);
+                }
+                //context.AttachRange(roList);
+        
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 res = await context.SaveChangesAsync();

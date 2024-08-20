@@ -187,6 +187,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
     TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
   }
 
   in_gate_guid: string | null | undefined;

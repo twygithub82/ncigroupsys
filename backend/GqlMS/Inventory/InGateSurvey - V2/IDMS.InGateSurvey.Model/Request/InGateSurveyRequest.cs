@@ -1,12 +1,12 @@
-﻿using IDMS.Models.Inventory;
+﻿using IDMS.Models;
+using IDMS.Models.Inventory;
 
 namespace IDMS.InGateSurvey.Model.Request
 {
-    public class InGateSurveyRequest
+    public class InGateSurveyRequest: Dates
     {
         public string? guid { get; set; }
         public string in_gate_guid { get; set; }
-        //public string? periodic_test_guid { get; set; }
         public int? capacity { get; set; }
         public int? tare_weight { get; set; }
         public string? take_in_reference { get; set; }
@@ -23,7 +23,6 @@ namespace IDMS.InGateSurvey.Model.Request
         public string? height_cv { get; set; }
         public string? walkway_cv { get; set; }
         public string? tank_comp_cv { get; set; }
-        //public string? take_in_status_cv { get; set; }
         public string? btm_dis_comp_cv { get; set; }
         public string? btm_dis_valve_cv { get; set; }
         public string? btm_dis_valve_spec_cv { get; set; }
@@ -56,5 +55,11 @@ namespace IDMS.InGateSurvey.Model.Request
         public bool? dipstick { get; set; } = false;
         public float? residue { get; set; }
         public string? comments { get; set; }
+        public string? top_coord { get; set; }
+        public string? bottom_coord { get; set; }
+        public string? front_coord { get; set; }
+        public string? rear_coord { get; set; }
+        public string? left_coord { get; set; }
+        public string? right_coord { get; set; }
     }
 }

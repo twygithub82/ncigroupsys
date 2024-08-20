@@ -150,7 +150,8 @@
         "SCHEDULING": "Scheduling",
         "SCHEDULING-NEW": "New Scheduling",
         "RELEASE-ORDER": "Release Order",
-        "RELEASE-ORDER-EDIT": "Edit Release Order"
+        "RELEASE-ORDER-EDIT": "Edit Release Order",
+        "RELEASE-ORDER-NEW": "New Release Order"
       }
     }
   },
@@ -442,9 +443,8 @@
     "REBATE-TYPE":"Rebate Type",
     "JOB-TYPE":"Job Type",
     "CLEANING-METHOD" :"Cleaning Method",
-    "METHOD-NAME":"Method Name"
-
-    
+    "METHOD-NAME":"Method Name",
+    "FILTER": "FILTER"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
