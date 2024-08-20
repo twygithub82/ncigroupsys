@@ -12,6 +12,7 @@ using IDMS.Booking.Model;
 using IDMS.Models.Shared;
 using HotChocolate.Types;
 using Microsoft.Extensions.Configuration;
+using static IDMS.Booking.Model.StatusConstant;
 
 namespace IDMS.Booking.GqlTypes
 {
@@ -85,13 +86,47 @@ namespace IDMS.Booking.GqlTypes
                             bk.book_type_cv = booking.book_type_cv;
                             bk.status_cv = booking.status_cv;
                             bk.booking_dt = booking.booking_dt;
-                            //bk.action_dt = booking.action_dt;
+                            bk.remarks = booking.remarks;
                         }
                     }
                     res = await context.SaveChangesAsync();
                 }
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> CancelBooking(List<BookingRequest> bookingList, [Service] IHttpContextAccessor httpContextAccessor,
+            ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config) //[Service] IMapper mapper)
+        {
+
+            try
+            {
+                var res = 0;
+                string user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var booking in bookingList)
+                {
+                    var bk = new booking() { guid = booking.guid };
+                    context.Attach(bk);
+
+                    bk.update_dt = currentDateTime;
+                    bk.update_by = user;
+                    bk.status_cv = BookingStatus.CANCELED;
+                    bk.remarks = booking.remarks;   
+                }
+                //context.UpdateRange(bookings);
+                res = await context.SaveChangesAsync();
+                
+                //TODO
+                //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
+                //await topicEventSender.SendAsync(updateCourseTopic, course);
                 return res;
             }
             catch (Exception ex)
@@ -133,28 +168,6 @@ namespace IDMS.Booking.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
-        //public async Task<int> updateSurveyor(surveyor surveyor, [Service] IHttpContextAccessor httpContextAccessor,
-        // [Service] ApplicationInventoryDBContext context)
-        //{
-
-        //    try
-        //    {
-        //        var res = 0;
-        //        string user = "admin";
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-
-        //        var svr = new surveyor() { guid = "1", name ="Edmund" };
-        //        svr.name = surveyor.name;
-        //        context.Update<surveyor>(svr);
-        //        context.SaveChanges();
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-        //    }
-        //}
 
     }
 }

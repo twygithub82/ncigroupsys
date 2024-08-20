@@ -94,6 +94,7 @@ namespace IDMS.Booking.GqlTypes
                     exScheduling.status_cv = scheduling.status_cv;
                 exScheduling.book_type_cv = scheduling.book_type_cv;
                 exScheduling.scheduling_dt = scheduling.scheduling_dt;
+                exScheduling.remarks = scheduling.remarks;
 
                 IList<scheduling_sot> schedulingsSOTList = new List<scheduling_sot>();
                 foreach (var sch in scheduling_SotList)
@@ -108,7 +109,7 @@ namespace IDMS.Booking.GqlTypes
                         exSch.status_cv = sch.status_cv;
                     exSch.update_by = user;
                     exSch.update_dt = currentDateTime;
-                    //schedulingsSOTList.Add(exSch);
+                    exSch.remarks = sch.remarks;
                 }
 
                 var res = await context.SaveChangesAsync();
