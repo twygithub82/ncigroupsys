@@ -374,29 +374,7 @@ implements OnInit {
     }
 
 
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: this.advanceTable,
-    //     action: 'add',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // After dialog is closed we're doing frontend updates
-    //     // For add we're just pushing a new row inside DataService
-    //     this.exampleDatabase?.dataChange.value.unshift(
-    //       this.advanceTableService.getDialogData()
-    //     );
-    //     this.refreshTable();
-    //     this.showNotification(
-    //       'snackbar-success',
-    //       'Add Record Successfully...!!!',
-    //       'bottom',
-    //       'center'
-    //     );
-    //   }
-    // });
+    
   }
 
   preventDefault(event: Event) {
@@ -570,23 +548,69 @@ implements OnInit {
   {
     const where: any = {};
 
+    if (this.groupNameControl.value) {
+      if(this.groupNameControl.value.length>0)
+        {
+         
+        
+          const cdValues :CodeValuesItem[] = this.groupNameControl.value;
+          var codes = cdValues.map(cc=>cc);
+          where.group_name_cv = { in: codes };
+        }
+    }
+
+    if (this.subGroupNameControl.value) {
+      if(this.subGroupNameControl.value.length>0)
+        {
+         
+        
+          const cdValues :CodeValuesItem[] = this.subGroupNameControl.value;
+          var codes = cdValues.map(cc=>cc);
+          where.subgroup_name_cv = { in: codes };
+        }
+    }
+
     if (this.pcForm!.value["part_name"])
       {
         const description :Text = this.pcForm!.value["part_name"];
-        where.description ={eq:description}
+        where.part_name ={contains:description}
       }
 
     if (this.pcForm!.value["min_cost"])
     {
       const minCost :number = Number(this.pcForm!.value["min_cost"]);
-      where.cost ={gte:minCost}
+      where.material_cost ={gte:minCost}
     }
 
     if (this.pcForm!.value["max_cost"])
       {
         const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-        where.cost ={ngte:maxCost}
+        where.material_cost ={ngt:maxCost}
       }
+
+      if (this.pcForm!.value["min_len"])
+        {
+          const min :number = Number(this.pcForm!.value["min_len"]);
+          where.length ={gte:min}
+        }
+    
+        if (this.pcForm!.value["max_len"])
+          {
+            const max :number = Number(this.pcForm!.value["max_len"]);
+            where.length ={ngte:max}
+          }
+
+          if (this.pcForm!.value["min_labour"])
+            {
+              const min :number = Number(this.pcForm!.value["min_labour"]);
+              where.labour_hour ={gte:min}
+            }
+        
+            if (this.pcForm!.value["max_labour"])
+              {
+                const max :number = Number(this.pcForm!.value["max_labour"]);
+                where.labour_hour ={ngt:max}
+              }
       this.lastSearchCriteria=where;
     this.subs.sink = this.trfRepairDS.SearchTariffRepair(where,this.lastOrderBy,this.pageSize).subscribe(data => {
        this.trfRepairItems=data;
