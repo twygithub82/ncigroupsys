@@ -145,7 +145,7 @@
             </mat-accordion>
             <div class="body overflow-auto">
               <div class="responsive_table">
-                <table mat-table [dataSource]="tariffResidueItems" matSort class="mat-cell advance-table">
+                <table mat-table [dataSource]="trfRepairItems" matSort class="mat-cell advance-table">
                   <!-- Checkbox Column -->
                   <ng-container matColumnDef="select">
                     <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
@@ -164,32 +164,32 @@
                   <ng-container matColumnDef="fName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PART_NAME }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.DESCRIPTION }}:</span>{{row.description}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.PART_NAME }}:</span>{{row.part_name}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="lName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LENGTH }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.COST }}:</span>{{row.cost}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.LENGTH }}:</span>{{row.length}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="email">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span> {{this.displayLastUpdated(row)}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span> {{this.displayGroupNameCodeValue_Description(row.group_name_cv)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="subgroup">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span> {{this.displayLastUpdated(row)}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span> {{this.displaySubGroupNameCodeValue_Description(row.sub_group_name_cv)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="gender">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span> {{this.displayLastUpdated(row)}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span> {{row.labour_hour}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="bDate">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.MATERIAL_COST}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST}}:</span> {{this.displayLastUpdated(row)}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST}}:</span> {{row.material_cost}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="mobile">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
@@ -234,14 +234,14 @@
                 </table>
               </div>
               <!-- Loading spinner -->
-              @if (!(tariffResidueDS.loading$ | async) && !tariffResidueItems.length) {
+              @if (!(trfRepairDS.loading$ | async) && !trfRepairItems.length) {
                 <mat-divider></mat-divider>
-                <div class="no-results m-l-20 pt-3" [style.display]="tariffResidueItems.length === 0 ? '' : 'none'">
+                <div class="no-results m-l-20 pt-3" [style.display]="trfRepairItems.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
                 </div>
                 }
                 <!-- Loading spinner -->
-                @if (tariffResidueDS.loading$ | async) {
+                @if (trfRepairDS.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                   </mat-progress-spinner>
@@ -296,7 +296,7 @@
               </mat-menu> -->
               <!-- context menu end -->
              
-              <mat-paginator #paginator [length]="tariffResidueDS.totalCount" [pageIndex]="0" [pageSize]="10"
+              <mat-paginator #paginator [length]="trfRepairDS.totalCount" [pageIndex]="0" [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageEvent($event)">
               </mat-paginator>
             </div>

@@ -1,5 +1,5 @@
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject, OnInit,ViewChild } from '@angular/core';
+import { Component, Inject, numberAttribute, OnInit,ViewChild } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
@@ -22,7 +22,7 @@ import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
+import { TariffRepairDS,TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
@@ -42,7 +42,7 @@ export interface DialogData {
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItem:TariffDepotItem;
+   selectedItems:TariffRepairItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -111,9 +111,13 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   cvDS :CodeValuesDS;
   groupNameCvList :CodeValuesItem[] = [];
   subGroupNameCvList :CodeValuesItem[] = [];
+  lengthTypeCvList :CodeValuesItem[] = [];
 
   tnkItems?:TankItem[];
 
+  trfRepairDS:TariffRepairDS;
+
+  
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -255,7 +259,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   };
   unit_type_control = new UntypedFormControl();
   
-  selectedItem: TariffDepotItem;
+ // selectedItem: TariffRepairItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -269,8 +273,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
-    this.selectedItem = data.selectedItem;
+    //this.selectedItem = data.selectedItem;
    
+    this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.pcForm = this.createTariffRepair();
    
@@ -288,21 +293,14 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       action:"new",
       group_name_cv:this.groupNameControl,
       sub_group_name_cv:this.subGroupNameControl,
-      test_type_cv:this.testTypeControl,
       part_name:[''],
       height_diameter:[''],
-      height_diameter_unit_cv : this.heightDiameterUnitControl,
       width_diameter:[''],
-      width_diameter_uint_cv:this.widthDiameterUnitControl,
       thickness:[''],
-      thickness_unit_cv : this.thicknessUnitControl,
       length:[''],
       length_unit_cv:this.lengthUnitControl,
       labour_hour:[''],
       material_cost:[''],
-      cost_type_cv:this.costTypeControl,
-      rebate_type_cv:this.rebateTypeControl,
-      job_type_cv:this.jobTypeControl
 
     });
   }
@@ -312,7 +310,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
       { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
-     // { alias: 'handledItem', codeValType: 'HANDLED_ITEM' }
+      { alias: 'lengthType', codeValType: 'LENGTH_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
@@ -321,6 +319,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     });
     this.cvDS.connectAlias('subGroupName').subscribe(data => {
       this.subGroupNameCvList = data;
+    });
+
+    this.cvDS.connectAlias('lengthType').subscribe(data => {
+      this.lengthTypeCvList = data;
     });
  
   
@@ -377,71 +379,54 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     if (!this.pcForm?.valid) return;
     
     let where: any = {};
-    if (this.pcForm!.value['name']) {
-      where.profile_name = { contains: this.pcForm!.value['name'] };
+    if (this.pcForm!.value['part_name']) {
+      where.part_name = { eq: this.pcForm!.value['part_name'] };
     }
 
-    // this.subs.sink= this.trfDepotDS.SearchTariffDepot(where).subscribe(data=>{
-    //     if(data.length==0)
-    //     {
-    //       let conditions:Condition[] = [];
-    //       let unit_types:TankItem[]=[];
-    //       let insert =true;
-    //       if(this.unit_type_control.value.length>0)
-    //       {
-    //         this.unit_type_control.value.forEach((data:TankItem) => {
-    //             let cond:Condition={guid:{eq:String(data.guid)},tariff_depot_guid:{eq:null}};
-    //             conditions.push(cond);
-    //             let tnk:TankItem= new TankItem();
-    //             tnk.guid=data.guid;
-    //             unit_types.push(tnk);
-    //         });
-    //         let where ={or:conditions};
-    //         this.subs.sink=this.tnkDS.search(where).subscribe(data=>{
-    //           if(data.length!=this.unit_type_control.value.length)
-    //           {
-    //             insert=false;
-    //             this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
-    //           } 
+    this.subs.sink= this.trfRepairDS.SearchTariffRepair(where).subscribe(data=>{
+        if(data.length==0)
+        {
+         
+          let newRepair = new TariffRepairItem();
+          newRepair.part_name=String(this.pcForm.value['part_name']);
+          newRepair.material_cost= Number(this.pcForm!.value['material_cost']);
+          newRepair.dimension= Number(this.pcForm.value['height_diameter']);
+          newRepair.width_diameter= Number(this.pcForm.value['width_diameter']);
+          newRepair.group_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['group_name_cv']));
+          newRepair.subgroup_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['sub_group_name_cv']));
+          newRepair.labour_hour= Number(this.pcForm.value['labour_hour']);
+          newRepair.length= Number(this.pcForm.value['length']);
+          newRepair.length_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['length_unit_cv']));
+          newRepair.thickness=Number(this.pcForm.value['thickness']);
+          this.trfRepairDS.addNewTariffRepair(newRepair).subscribe(result=>{
+
+            this.handleSaveSuccess(result?.data?.addTariffRepair);
+          });
+        }
+
+        else
+        {
+            this.pcForm?.get('part_name')?.setErrors({ existed: true });
+        }
 
 
-    //         });
-
-            
-
-    //       }
-    //       if(insert)
-    //       {
-    //         let newDepot = new TariffDepotItem();
-    //         newDepot.lolo_cost= Number(this.pcForm!.value['lolo_cost']);
-    //         newDepot.free_storage= Number(this.pcForm.value['free_storage']);
-    //         newDepot.description= String(this.pcForm.value['description']);
-    //         newDepot.preinspection_cost= Number(this.pcForm.value['preinspection_cost']);
-    //         newDepot.gate_in_cost= Number(this.pcForm.value['gate_in_cost']);
-    //         newDepot.gate_out_cost= Number(this.pcForm.value['gate_out_cost']);
-    //         newDepot.profile_name= String(this.pcForm.value['name']);
-    //         newDepot.storage_cost= Number(this.pcForm.value['storage_cost']);
-    //         newDepot.tanks=unit_types;
-    //         this.trfDepotDS.addNewTariffDepot(newDepot).subscribe(result=>{
-
-    //           this.handleSaveSuccess(result?.data?.addTariffDepot);
-    //         });
-    //       }
-
-        
-
-    //     }
-    //     else
-    //     {
-    //         this.pcForm?.get('name')?.setErrors({ existed: true });
-    //     }
-
-
-    // });
+    });
 
    
 
    
+
+  }
+
+  RetrieveCodeValue(CdValue :CodeValuesItem):String
+  {
+    let retCodeValue:String='';
+
+    if(CdValue)
+    {
+      retCodeValue=CdValue.code_val||'';
+    }
+    return retCodeValue;
 
   }
   
