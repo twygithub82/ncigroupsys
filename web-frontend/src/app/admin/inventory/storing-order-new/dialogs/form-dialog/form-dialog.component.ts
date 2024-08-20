@@ -320,6 +320,11 @@ export class FormDialogComponent {
         requiredTempControl!.setValue(''); // Clear the value if disabled
       }
 
+      if (!this.canEdit()) {
+        purposeSteamControl!.disable();
+        requiredTempControl!.disable();
+      }
+
       requiredTempControl!.updateValueAndValidity();
     } else {
       this.storingOrderTankForm.get('flash_point')!.reset();

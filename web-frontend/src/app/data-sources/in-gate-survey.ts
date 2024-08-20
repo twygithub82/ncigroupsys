@@ -61,6 +61,12 @@ export class InGateSurveyGO {
   public residue?: number;
   public dipstick?: boolean;
   public comments?: string;
+  public top_coord?: string;
+  public bottom_coord?: string;
+  public front_coord?: string;
+  public rear_coord?: string;
+  public left_coord?: string;
+  public right_coord?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -118,6 +124,12 @@ export class InGateSurveyGO {
     this.residue = item.residue;
     this.dipstick = item.dipstick;
     this.comments = item.comments;
+    this.top_coord = item.top_coord;
+    this.bottom_coord = item.bottom_coord;
+    this.front_coord = item.front_coord;
+    this.rear_coord = item.rear_coord;
+    this.left_coord = item.left_coord;
+    this.right_coord = item.right_coord;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -241,97 +253,6 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
   }
 `;
 
-export const GET_IN_GATE_BY_ID = gql`
-  query getInGateByID($where: InGateWithTankFilterInput) {
-    inGates: queryInGates(where: $where) {
-      totalCount
-      nodes {
-        create_by
-        create_dt
-        delete_dt
-        driver_name
-        eir_dt
-        eir_no
-        eir_status_cv
-        guid
-        haulier
-        lolo_cv
-        preinspection_cv
-        remarks
-        so_tank_guid
-        update_by
-        update_dt
-        vehicle_no
-        yard_cv
-        tank {
-          certificate_cv
-          clean_status_cv
-          create_by
-          create_dt
-          delete_dt
-          estimate_cv
-          eta_dt
-          etr_dt
-          guid
-          job_no
-          preinspect_job_no
-          liftoff_job_no
-          lifton_job_no
-          takein_job_no
-          release_job_no
-          last_cargo_guid
-          purpose_cleaning
-          purpose_repair_cv
-          purpose_steam
-          purpose_storage
-          remarks
-          required_temp
-          so_guid
-          status_cv
-          tank_no
-          tank_status_cv
-          unit_type_guid
-          update_by
-          update_dt
-          tariff_cleaning {
-            alias
-            ban_type_cv
-            cargo
-            class_cv
-            cleaning_category_guid
-            cleaning_method_guid
-            create_by
-            create_dt
-            delete_dt
-            depot_note
-            description
-            flash_point
-            guid
-            hazard_level_cv
-            in_gate_alert
-            msds_guid
-            nature_cv
-            open_on_gate_cv
-            remarks
-            un_no
-            update_by
-            update_dt
-          }
-          storing_order {
-            so_no
-            haulier
-            customer_company {
-              name
-              guid
-              code
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
 export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
   query queryInGateSurveyByID($where: in_gate_surveyFilterInput){
     inGatesSurvey: queryInGateSurvey(where: $where) {
@@ -387,6 +308,12 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
         update_by
         update_dt
         walkway_cv
+        top_coord
+        bottom_coord
+        front_coord
+        rear_coord
+        left_coord
+        right_coord
         in_gate {
           create_by
           create_dt

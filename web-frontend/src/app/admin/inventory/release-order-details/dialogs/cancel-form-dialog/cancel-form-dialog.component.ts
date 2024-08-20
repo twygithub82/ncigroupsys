@@ -22,11 +22,11 @@ import { startWith, debounceTime, tap } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatDividerModule } from '@angular/material/divider';
 import { SchedulingItem } from 'app/data-sources/scheduling';
+import { ReleaseOrderSotItem } from 'app/data-sources/release-order-sot';
 
 export interface DialogData {
   action?: string;
-  item: SchedulingItem[];
-  langText?: any;
+  item: ReleaseOrderSotItem[];
   translatedLangText?: any;
   index: number;
 }
@@ -54,8 +54,8 @@ export interface DialogData {
 export class CancelFormDialogComponent {
   index: number;
   dialogTitle?: string;
-  scheduling: SchedulingItem[];
-  schedulingForm: UntypedFormGroup;
+  roSotList: ReleaseOrderSotItem[];
+  roSotListForm: UntypedFormGroup;
   startDate = new Date();
 
   lastCargoControl = new UntypedFormControl();
@@ -65,37 +65,38 @@ export class CancelFormDialogComponent {
     private fb: UntypedFormBuilder
   ) {
     // Set the defaults
-    this.scheduling = data.item;
-    this.schedulingForm = this.createSchedulingForm();
+    this.roSotList = data.item;
+    this.roSotListForm = this.createRoSotListForm();
     this.index = data.index;
   }
-  createSchedulingForm(): UntypedFormGroup {
+  createRoSotListForm(): UntypedFormGroup {
     return this.fb.group({
-      scheduling: this.fb.array(this.scheduling.map(scheduling => this.createTankGroup(scheduling)))
+      roSotList: this.fb.array(this.roSotList.map(roSot => this.createTankGroup(roSot))),
+      remarks: ['', Validators.required]
     });
   }
-  createTankGroup(scheduling: any): UntypedFormGroup {
+  createTankGroup(roSot: any): UntypedFormGroup {
     return this.fb.group({
-      tank_no: [scheduling.storing_order_tank?.tank_no],
-      status_cv: [scheduling.status_cv],
+      tank_no: [roSot.storing_order_tank?.tank_no],
+      status_cv: [roSot.status_cv],
     });
   }
   onNoClick(): void {
     this.dialogRef.close();
   }
   confirm(): void {
-    if (this.schedulingForm.valid) {
-      let remarks = this.schedulingForm.value['remarks']
-      //this.scheduling.forEach(row => row.remarks = remarks);
+    if (this.roSotListForm.valid) {
+      const remarks = this.roSotListForm.value['remarks']
+      this.roSotList.forEach(row => row.remarks = remarks);
       const returnDialog: DialogData = {
         action: 'confirmed',
-        item: this.scheduling,
+        item: this.roSotList,
         index: this.index
       }
       this.dialogRef.close(returnDialog);
     }
   }
-  getSchedulingArray(): UntypedFormArray {
-    return this.schedulingForm.get('scheduling') as UntypedFormArray;
+  getRoSotListArray(): UntypedFormArray {
+    return this.roSotListForm.get('roSotList') as UntypedFormArray;
   }
 }

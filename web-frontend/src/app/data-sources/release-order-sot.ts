@@ -15,6 +15,7 @@ export class ReleaseOrderSotGO {
   public ro_guid?: string;
   public sot_guid?: string;
   public status_cv?: string;
+  public remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -26,6 +27,7 @@ export class ReleaseOrderSotGO {
     this.ro_guid = item.ro_guid;
     this.sot_guid = item.sot_guid || '';
     this.status_cv = item.status_cv || '';
+    this.remarks = item.remarks || '';
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -45,181 +47,46 @@ export class ReleaseOrderSotItem extends ReleaseOrderSotGO {
   }
 }
 
-export class ReleaseOrderSotUpdateItem extends ReleaseOrderSotItem {
+export class ReleaseOrderSotUpdateRO extends ReleaseOrderSotItem {
   public action?: string;
 
-  constructor(item: Partial<ReleaseOrderSotUpdateItem> = {}) {
+  constructor(item: Partial<ReleaseOrderSotUpdateRO> = {}) {
     super(item);
     this.action = item.action;
   }
 }
 
-export const GET_RELEASE_ORDERS = gql`
-  query QueryReleaseOrder($where: release_orderFilterInput, $order: [release_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    roList: queryReleaseOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-      nodes {
-        create_by
-        create_dt
-        customer_company_guid
-        delete_dt
-        guid
-        haulier
-        release_dt
-        remarks
-        ro_generated
-        ro_no
-        ro_notes
-        status_cv
-        update_by
-        update_dt
-        customer_company {
-          code
-          name
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      totalCount
-    }
-  }
-`;
+export class ReleaseOrderSotUpdateItem extends ReleaseOrderSotUpdateRO {
+  public actions?: string[] = [];
 
-export const GET_RELEASE_ORDER_BY_ID = gql`
-  query QueryReleaseOrder($where: release_orderFilterInput) {
-    roList: queryReleaseOrder(where: $where) {
-      nodes {
-        create_by
-        create_dt
-        customer_company_guid
-        delete_dt
-        guid
-        haulier
-        release_dt
-        remarks
-        ro_generated
-        ro_no
-        ro_notes
-        status_cv
-        update_by
-        update_dt
-        customer_company {
-          code
-          name
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      totalCount
-    }
+  constructor(item: Partial<ReleaseOrderSotUpdateItem> = {}) {
+    super(item);
+    this.actions = item.actions || [];
   }
-`;
+}
 
-export const ADD_RELEASE_ORDER = gql`
-  mutation AddReleaseOrder($ro: ReleaseOrderRequestInput!, $schedulings: [SchedulingRequestInput!]!) {
-    addReleaseOrder(releaseOrder: $ro, schedulings: $schedulings)
-  }
-`;
-
-export const UPDATE_STORING_ORDER = gql`
-  mutation UpdateStoringOrder($so: StoringOrderRequestInput!, $soTanks: [StoringOrderTankRequestInput!]!) {
-    updateStoringOrder(so: $so, soTanks: $soTanks)
-  }
-`;
-
-export const CANCEL_STORING_ORDER = gql`
-  mutation CancelStoringOrder($so: [StoringOrderRequestInput!]!) {
-    cancelStoringOrder(so: $so)
-  }
-`;
-
-export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
+export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem> {
   constructor(private apollo: Apollo) {
     super();
   }
 
-  searchReleaseOrder(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ReleaseOrderItem[]> {
-    this.loadingSubject.next(true);
-    return this.apollo
-      .query<any>({
-        query: GET_RELEASE_ORDERS,
-        variables: { where, order, first, after, last, before },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ roList: { nodes: [], totalCount: 0 } })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const roList = result.roList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(roList.nodes);
-          this.totalCount = roList.totalCount;
-          this.pageInfo = roList.pageInfo;
-          return roList.nodes;
-        })
-      );
+  canCancel(roSot: any): boolean {
+    return roSot && this.canCancelStatus(roSot.status_cv);
   }
 
-  getReleaseOrderByID(id: string): Observable<ReleaseOrderItem[]> {
-    this.loadingSubject.next(true);
-    let where = this.addDeleteDtCriteria({ guid: { eq: id } });
-    return this.apollo
-      .query<any>({
-        //query: GET_STORING_ORDER_BY_ID,
-        query: GET_RELEASE_ORDER_BY_ID,
-        variables: { where },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ roList: [] })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const roList = result.roList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(roList.nodes);
-          this.totalCount = roList.totalCount;
-          return roList.nodes;
-        })
-      );
+  canCancelStatus(status_cv: any): boolean {
+    return status_cv === 'PENDING';
   }
 
-  addReleaseOrder(ro: any, schedulings: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: ADD_RELEASE_ORDER,
-      variables: {
-        ro,
-        schedulings
-      }
-    });
+  canRollback(roSot: any): boolean {
+    return roSot && this.canRollbackStatus(roSot.status_cv);
   }
 
-  updateStoringOrder(so: any, soTanks: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: UPDATE_STORING_ORDER,
-      variables: {
-        so,
-        soTanks
-      }
-    });
+  canRollbackStatus(status_cv: any): boolean {
+    return status_cv === 'CANCELED';
   }
 
-  cancelStoringOrder(so: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: CANCEL_STORING_ORDER,
-      variables: {
-        so
-      }
-    });
-  }
-
-  canCancel(ro: any): boolean {
-    return ro && ro.status_cv === 'PENDING';
+  canEdit(status_cv: any): boolean {
+    return status_cv === '' || status_cv === 'PENDING';
   }
 }

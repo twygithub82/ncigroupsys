@@ -28,11 +28,12 @@ import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/p
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SelectionModel } from '@angular/cdk/collections';
 import { SchedulingItem } from 'app/data-sources/scheduling';
-import { BookingItem } from 'app/data-sources/booking';
+import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatTableModule } from '@angular/material/table';
+import { SchedulingSotDS } from 'app/data-sources/scheduling-sot';
 
 export interface DialogData {
   action?: string;
@@ -95,6 +96,8 @@ export class FormDialogComponent {
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   igDS: InGateDS;
+  bookingDS: BookingDS;
+  schedulingSotDS: SchedulingSotDS;
 
   displayedColumns = [
     'select',
@@ -121,6 +124,8 @@ export class FormDialogComponent {
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.igDS = new InGateDS(this.apollo)
+    this.bookingDS = new BookingDS(this.apollo)
+    this.schedulingSotDS = new SchedulingSotDS(this.apollo)
     this.action = data.action!;
     this.sotIdList = data.sotIdList || [];
     this.dialogTitle = 'Add Tank';
@@ -183,10 +188,6 @@ export class FormDialogComponent {
     }
   }
 
-  displayLastCargoFn(tc: TariffCleaningItem): string {
-    return tc && tc.cargo ? `${tc.cargo}` : '';
-  }
-
   toggleRow(row: StoringOrderTankItem) {
     if (this.checkDisable(row.guid)) return;
     const selectedItems = this.selectedItemsPerPage[0] || new Set<string>();
@@ -229,6 +230,10 @@ export class FormDialogComponent {
 
   getYardDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData.yardCvList);
+  }
+
+  displayDate(input: number | undefined): string {
+    return Utility.convertDateToStr(Utility.convertDate(input) as Date);
   }
 
   performSearch(first?: number, after?: string, last?: number, before?: string, callback?: () => void) {

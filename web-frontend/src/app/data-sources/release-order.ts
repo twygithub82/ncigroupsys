@@ -157,7 +157,6 @@ export const GET_RELEASE_ORDERS = gql`
 export const GET_RELEASE_ORDER_BY_ID = gql`
   query QueryReleaseOrder($where: release_orderFilterInput) {
     roList: queryReleaseOrder(where: $where) {
-      
       nodes {
         create_by
         create_dt
@@ -183,6 +182,7 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
           create_dt
           delete_dt
           guid
+          remarks
           ro_guid
           sot_guid
           status_cv
