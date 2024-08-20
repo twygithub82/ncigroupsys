@@ -139,6 +139,7 @@ namespace IDMS.Booking.GqlTypes
                         extROSot.update_by = user;
                         extROSot.update_dt = currentDateTime;
                         extROSot.status_cv = roSOT.status_cv;
+                        extROSot.remarks = roSOT.remarks;
 
                         sot.release_job_no = roSOT.storing_order_tank.release_job_no;
                         sot.update_by = user;
@@ -156,6 +157,7 @@ namespace IDMS.Booking.GqlTypes
                         var extROSot = new release_order_sot() { guid = roSOT.guid };
                         context.Attach(extROSot);
                         extROSot.status_cv = ROStatus.CANCELED;
+                        extROSot.remarks = roSOT.remarks;
                         extROSot.update_by = user;
                         extROSot.update_dt = currentDateTime;
 
@@ -210,6 +212,7 @@ namespace IDMS.Booking.GqlTypes
                     roSOT.update_by = user;
                     roSOT.update_dt = currentDateTime;
                     roSOT.status_cv = ROStatus.CANCELED;
+                    roSOT.remarks = releaseOrderList.Find(r => r.guid == roSOT.ro_guid)?.remarks;
 
                     storing_order_tank sot = new() { guid = roSOT.sot_guid };
                     //Start add the entity into EF for tracking
@@ -228,7 +231,7 @@ namespace IDMS.Booking.GqlTypes
                     ro.update_by = user;
                     ro.update_dt = currentDateTime;
                     ro.status_cv = ROStatus.CANCELED;
-                    //roList.Add(ro);
+                    ro.remarks = item.remarks;
                 }
                 //context.AttachRange(roList);
         

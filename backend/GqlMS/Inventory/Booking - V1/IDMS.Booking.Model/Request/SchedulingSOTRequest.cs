@@ -14,6 +14,7 @@ namespace IDMS.Models.Inventory
         public string? sot_guid { get; set; }
         public string? scheduling_guid { get; set; }
         public string? status_cv { get; set; }
+        public string? remarks { get; set; }
 
         [NotMapped]
         public string? action { get; set; }
