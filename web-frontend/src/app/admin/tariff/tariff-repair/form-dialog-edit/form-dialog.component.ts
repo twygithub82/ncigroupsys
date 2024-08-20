@@ -34,12 +34,15 @@ import {TariffDepotItem,TariffDepotDS} from 'app/data-sources/tariff-depot';
 import { elements } from 'chart.js';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { TariffRepairDS,TariffRepairItem } from 'app/data-sources/tariff-repair';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+
 export interface DialogData {
   action?: string;
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItem:TariffDepotItem;
+   selectedItems:TariffRepairItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -105,9 +108,13 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   index?: number;
   dialogTitle?: string;
 
-  tnkDS :TankDS;
-  trfDepotDS: TariffDepotDS;
 
+  cvDS :CodeValuesDS;
+  groupNameCvList :CodeValuesItem[] = [];
+  subGroupNameCvList :CodeValuesItem[] = [];
+  lengthTypeCvList :CodeValuesItem[] = [];
+  
+  trfRepairDS: TariffRepairDS;
   tnkItems?:TankItem[]=[];
   
   storingOrderTank?: StoringOrderTankItem;
@@ -116,6 +123,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
+
+  groupNameControl = new UntypedFormControl();
+  subGroupNameControl = new UntypedFormControl();
+  lengthUnitControl=new UntypedFormControl();
+
+
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -210,12 +223,36 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     STORAGE_COST:"COMMON-FORM.STORAGE-COST",
     FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
     LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
+    ASSIGNED : 'COMMON-FORM.ASSIGNED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
+    COST : 'COMMON-FORM.COST',
+    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
+    GROUP_NAME:"COMMON-FORM.GROUP-NAME",
+    SUB_GROUP_NAME:"COMMON-FORM.SUB-GROUP-NAME",
+    PART_NAME:"COMMON-FORM.PART-NAME",
+    MIN_COST:"COMMON-FORM.MIN-COST",
+    MAX_COST:"COMMON-FORM.MAX-COST",
+    LENGTH:"COMMON-FORM.LENGTH",
+    MIN_LENGTH:"COMMON-FORM.MIN-LENGTH",
+    MAX_LENGTH:"COMMON-FORM.MAX-LENGTH",
+    MIN_LABOUR:"COMMON-FORM.MIN-LABOUR",
+    MAX_LABOUR:"COMMON-FORM.MAX-LABOUR",
+    HANDLED_ITEM:"COMMON-FORM.HANDLED-ITEM",
+    LABOUR_HOUR:"COMMON-FORM.LABOUR-HOUR",
+    MATERIAL_COST:"COMMON-FORM.MATERIAL-COST",
+    TEST_TYPE:"COMMON-FORM.TEST-TYPE",
+    DIMENSION:"COMMON-FORM.DIMENSION",
+    HEIGHT_DIAMETER:"COMMON-FORM.HEIGHT-DIAMETER",
+    WIDTH_DIAMETER:"COMMON-FORM.WIDTH-DIAMETER",
+    THICKNESS:"COMMON-FORM.THICKNESS",
+    COST_TYPE:"COMMON-FORM.COST-TYPE",
+    REBATE_TYPE:"COMMON-FORM.REBATE-TYPE",
+    JOB_TYPE:"COMMON-FORM.JOB-TYPE"
   };
   unit_type_control = new UntypedFormControl();
   
-  selectedItem: TariffDepotItem;
+  selectedItems: TariffRepairItem[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -229,44 +266,50 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   ) {
     // Set the defaults
     super();
-    this.selectedItem = data.selectedItem;
-     this.tnkDS = new TankDS(this.apollo);
-     this.trfDepotDS =new TariffDepotDS(this.apollo);
-    this.pcForm = this.createTariffDepot();
-    this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
+    this.selectedItems = data.selectedItems;
+     //this.tnkDS = new TankDS(this.apollo);
+     this.cvDS = new CodeValuesDS(this.apollo);
+     this.trfRepairDS =new TariffRepairDS(this.apollo);
+    this.pcForm = this.createTarifRepair();
     this.action = data.action!;
     this.translateLangText();
+    this.loadData();
 
-    const where: any = {};
-    where.tariff_depot_guid={or:[{eq:null},{eq:''}]};
+    if(this.selectedItems.length==1)
+    {
+      var rec = this.selectedItems[0];
+      this.pcForm.patchValue({
+        group_name_cv: this.groupNameControl ,
+        sub_group_name_cv:this.subGroupNameControl,
+        part_name:rec.part_name,
+        height_diameter:rec.dimension,
+        width_diameter:rec.width_diameter,
+        thickness:rec.width_diameter,
+        length:rec.length,
+        length_unit_cv:this.lengthUnitControl,
+        labour_hour:rec.labour_hour,
+        material_cost:rec.material_cost,
+      });
 
-    this.subs.sink = this.tnkDS.search(where,{}).subscribe(data=>{
-      if (this.selectedItem?.tanks) {
-        data.unshift(...this.selectedItem.tanks);
-      }
-      this.tnkItems=data;
-      this.unit_type_control.setValue(this.selectedItem.tanks);
+     
     }
-
-    );
-    
    
   }
 
-  createTariffDepot(): UntypedFormGroup {
+  createTarifRepair(): UntypedFormGroup {
     return this.fb.group({
-      selectedItem: this.selectedItem,
+      selectedItems: this.selectedItems,
       action:this.action,
-      name:this.selectedItem.profile_name,
-      description:this.selectedItem.description,
-      preinspection_cost:this.selectedItem.preinspection_cost,
-      lolo_cost:this.selectedItem.lolo_cost,
-      storage_cost:this.selectedItem.storage_cost,
-      free_storage:this.selectedItem.free_storage,
-      gate_in_cost:this.selectedItem.gate_in_cost,
-      gate_out_cost:this.selectedItem.gate_out_cost,
-      unit_types:this.unit_type_control,
-      last_updated:['']
+      group_name_cv:this.groupNameControl,
+      sub_group_name_cv:this.subGroupNameControl,
+      part_name:[''],
+      height_diameter:[''],
+      width_diameter:[''],
+      thickness:[''],
+      length:[''],
+      length_unit_cv:this.lengthUnitControl,
+      labour_hour:[''],
+      material_cost:[''],
     });
   }
  
@@ -285,7 +328,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   GetTitle()
   {
    
-      return this.translatedLangText.EDIT + " " + this.translatedLangText.DEPOT_PROFILE;      
+      return this.translatedLangText.EDIT + " " + this.translatedLangText.REPAIR;      
     
   }
 
@@ -295,6 +338,43 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     });
   }
   
+  public loadData() {
+
+    const queries = [
+      { alias: 'groupName', codeValType: 'GROUP_NAME' },
+      { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
+      { alias: 'lengthType', codeValType: 'LENGTH_TYPE' }
+    ];
+    this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('groupName').subscribe(data => {
+      this.groupNameCvList = data;
+      if(this.selectedItems.length==1)
+      { 
+        var rec=this.selectedItems[0];
+        this.groupNameControl.setValue(this.getGroupNameCodeValue(rec.group_name_cv!));
+      }
+     // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+    });
+    this.cvDS.connectAlias('subGroupName').subscribe(data => {
+      this.subGroupNameCvList = data;
+      if(this.selectedItems.length==1)
+        { 
+          var rec=this.selectedItems[0];
+          this.subGroupNameControl.setValue(this.getSubGroupNameCodeValue(rec.subgroup_name_cv!));
+        }
+    });
+
+    this.cvDS.connectAlias('lengthType').subscribe(data => {
+      this.lengthTypeCvList = data;
+      if(this.selectedItems.length==1)
+        { 
+          var rec=this.selectedItems[0];
+          this.lengthUnitControl.setValue(this.geLengthUnitCodeValue(rec.length_unit_cv!));
+        }
+    });
+
+  
+  }
 
   canEdit()
   {
@@ -315,77 +395,142 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     }
   }
 
+  getGroupNameCodeValue (codeValue:String)
+  {
+    return this.GetCodeValue(codeValue,this.groupNameCvList);
+  }
+
+  getSubGroupNameCodeValue (codeValue:String)
+  {
+    return this.GetCodeValue(codeValue,this.subGroupNameCvList);
+  }
+
+  geLengthUnitCodeValue (codeValue:String)
+  {
+    return this.GetCodeValue(codeValue,this.lengthTypeCvList);
+  }
+
+  GetCodeValue(codeValue:String, codeValueItems:CodeValuesItem[])
+  {
+   
+    return codeValueItems.find(item => item.code_val === codeValue);
+    
+  }
+
+
+  RetrieveCodeValue(CdValue :CodeValuesItem):String
+  {
+    let retCodeValue:String='';
+
+    if(CdValue)
+    {
+      retCodeValue=CdValue.code_val||'';
+    }
+    return retCodeValue;
+
+  }
+  
   update() {
 
     if (!this.pcForm?.valid) return;
     
     let where: any = {};
-    if (this.pcForm!.value['name']) {
-      where.profile_name = { contains: this.pcForm!.value['name'] };
+    if (this.pcForm!.value['part_name']) {
+      where.part_name = { eq: this.pcForm!.value['part_name'] };
     }
 
-    this.subs.sink= this.trfDepotDS.SearchTariffDepot(where).subscribe(data=>{
+    this.subs.sink= this.trfRepairDS.SearchTariffRepair(where).subscribe(data=>{
       
       let update =true;
       if(data.length>0)
        {
          var queriedRec =data[0];
-         if(queriedRec.guid!=this.selectedItem.guid)
+         if(this.selectedItems.length>1)
          {
+          update=false;
+          this.pcForm?.get('part_name')?.setErrors({ existed: true });
+         }
+         else if(queriedRec.guid!=this.selectedItems[0].guid)
+         {
+           
            update=false;
-           this.pcForm?.get('name')?.setErrors({ existed: true });
+           this.pcForm?.get('part_name')?.setErrors({ existed: true });
          }
 
        }
        if(update)
        {
-          let conditions:any[] = [];
-          let unit_types:TankItem[]=[];
-          let insert =true;
-          if(this.unit_type_control.value.length>0)
-          {
-            this.unit_type_control.value.forEach((data:TankItem) => {
-                let cond:any={guid:{eq:String(data.guid)}};
-                conditions.push(cond);
-                let tnk:TankItem= new TankItem();
-                tnk.guid=data.guid;
-                unit_types.push(tnk);
-            });
-            let where ={or:conditions};
-            this.subs.sink=this.tnkDS.search(where).subscribe(data=>{
-              for(const d of data)
-              {
-                if(d.tariff_depot_guid!=null && d.tariff_depot_guid!=this.selectedItem.guid)
-                {
-                  update=false;
-                   break;
-                }
-              }
-               if(update)
-               {
-                  var updatedTD = new TariffDepotItem(this.selectedItem);
-                  updatedTD.profile_name = this.pcForm!.value['name'];
-                  updatedTD.description = this.pcForm!.value['description'];
-                  updatedTD.free_storage= this.pcForm!.value['free_storage'];
-                  updatedTD.lolo_cost= this.pcForm!.value['lolo_cost'];
-                  updatedTD.preinspection_cost= this.pcForm!.value['preinspection_cost'];
-                  updatedTD.storage_cost= this.pcForm!.value['storage_cost'];
-                  updatedTD.gate_in_cost= this.pcForm!.value['gate_in_cost'];
-                  updatedTD.gate_out_cost= this.pcForm!.value['gate_out_cost'];
-                  updatedTD.tanks = unit_types;
-                  this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result=>{
-                    this.handleSaveSuccess(result?.data?.updateTariffDepot);
 
-                  });
-               }
-               else
-               {
-                this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
-               }
+          if(this.selectedItems.length==1)
+          {
+              var trfRepairItem = new TariffRepairItem(this.selectedItems[0]);
+              trfRepairItem.part_name=this.pcForm!.value['part_name'];
+              trfRepairItem.dimension=this.pcForm!.value['height_diameter'];
+              trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
+              trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
+              trfRepairItem.labour_hour=this.pcForm!.value['labour_hour'];
+              trfRepairItem.material_cost=this.pcForm!.value['material_cost'];
+              trfRepairItem.length=this.pcForm!.value['length'];
+              trfRepairItem.length_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['length_unit_cv']));
+              trfRepairItem.width_diameter=this.pcForm!.value['width_diameter'];
+              trfRepairItem.thickness=this.pcForm!.value['thickness'];
+              
+              this.trfRepairDS.updateTariffRepair(trfRepairItem).subscribe(result=>{
+                this.handleSaveSuccess(result?.data?.updateTariffRepair);
 
               });
-             
           }
+          else
+          {
+
+          }
+          // let conditions:any[] = [];
+          // let unit_types:TankItem[]=[];
+          // let insert =true;
+          // if(this.unit_type_control.value.length>0)
+          // {
+          //   this.unit_type_control.value.forEach((data:TankItem) => {
+          //       let cond:any={guid:{eq:String(data.guid)}};
+          //       conditions.push(cond);
+          //       let tnk:TankItem= new TankItem();
+          //       tnk.guid=data.guid;
+          //       unit_types.push(tnk);
+          //   });
+          //   let where ={or:conditions};
+          //   this.subs.sink=this.tnkDS.search(where).subscribe(data=>{
+          //     for(const d of data)
+          //     {
+          //       if(d.tariff_depot_guid!=null && d.tariff_depot_guid!=this.selectedItem.guid)
+          //       {
+          //         update=false;
+          //          break;
+          //       }
+          //     }
+          //      if(update)
+          //      {
+          //         var updatedTD = new TariffDepotItem(this.selectedItem);
+          //         updatedTD.profile_name = this.pcForm!.value['name'];
+          //         updatedTD.description = this.pcForm!.value['description'];
+          //         updatedTD.free_storage= this.pcForm!.value['free_storage'];
+          //         updatedTD.lolo_cost= this.pcForm!.value['lolo_cost'];
+          //         updatedTD.preinspection_cost= this.pcForm!.value['preinspection_cost'];
+          //         updatedTD.storage_cost= this.pcForm!.value['storage_cost'];
+          //         updatedTD.gate_in_cost= this.pcForm!.value['gate_in_cost'];
+          //         updatedTD.gate_out_cost= this.pcForm!.value['gate_out_cost'];
+          //         updatedTD.tanks = unit_types;
+          //         this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result=>{
+          //           this.handleSaveSuccess(result?.data?.updateTariffDepot);
+
+          //         });
+          //      }
+          //      else
+          //      {
+          //       this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
+          //      }
+
+          //     });
+             
+          //}
         }
 
             
@@ -424,93 +569,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
 
   }
 
-  save() {
-
-    if (!this.pcForm?.valid) return;
-    
-    // let cc: CleaningCategoryItem = new CleaningCategoryItem(this.selectedItem);
-    // // tc.guid='';
-    //  cc.name = this.pcForm.value['name'];
-    //  cc.description= this.pcForm.value['description'];
-    //  cc.cost = this.pcForm.value['adjusted_cost'];
-     
-
-    const where: any = {};
-    if (this.pcForm!.value['name']) {
-      where.name = { contains: this.pcForm!.value['name'] };
-    }
-
-    // this.catDS.search(where).subscribe(p=>{
-    //    if(p.length==0)
-    //    {
-    //     if (this.selectedItem.guid) {
-
-    //       this.catDS.updateCleaningCategory(cc).subscribe(result => {
-    //         console.log(result)
-    //         this.handleSaveSuccess(result?.data?.updateCleaningCategory);
-    //         });
   
-    //     }
-    //     else
-    //     {
-    //      this.catDS.addCleaningCategory(cc).subscribe(result => {
-    //       console.log(result)
-    //       this.handleSaveSuccess(result?.data?.addCleaningCategory);
-    //       });
-    //     }
-
-    //    }
-    //    else
-    //    {
-    //       var allowUpdate=true;
-    //       for (let i = 0; i < p.length; i++) {
-    //         if (p[i].guid != this.selectedItem.guid) {
-    //           allowUpdate = false;
-    //           break;  // Exit the loop
-    //         }
-    //       }
-    //       if(allowUpdate)
-    //       {
-
-    //         if (this.selectedItem.guid) {
-
-    //           this.catDS.updateCleaningCategory(cc).subscribe(result => {
-    //             console.log(result)
-    //             this.handleSaveSuccess(result?.data?.updateCleaningCategory);
-    //             });
-      
-    //         }
-    //       }
-    //       else
-    //       {
-    //          this.pcForm?.get('name')?.setErrors({ existed: true });
-    //       }
-    //    }
-    // });
-    // let pc_guids:string[] = this.selectedItems
-    // .map(cc => cc.guid)
-    // .filter((guid): guid is string => guid !== undefined);
-
-    // var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
-    // var remarks = this.pcForm!.value["remarks"];
-
-    // this.custCompClnCatDS.updatePackageCleanings(pc_guids,remarks,adjusted_price).subscribe(result => {
-    //   console.log(result)
-    //   if(result.data.updatePackageCleans>0)
-    //   {
-    //       //this.handleSaveSuccess(result?.data?.updateTariffClean);
-    //       const returnDialog: DialogData = {
-    //         selectedValue:result.data.updatePackageCleans,
-    //         selectedItems:[]
-    //       }
-    //       console.log('valid');
-    //       this.dialogRef.close(returnDialog);
-    //   }
-    // });
-
-   
-
-  }
   
   displayLastUpdated(r: TariffDepotItem) {
     var updatedt= r.update_dt;

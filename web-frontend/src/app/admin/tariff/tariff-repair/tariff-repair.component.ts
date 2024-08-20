@@ -471,7 +471,7 @@ implements OnInit {
       });
   }
 
-  editCall(row: TariffResidueItem) {
+  editCall(row: TariffRepairItem) {
    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -479,12 +479,15 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
+
+    var rows :TariffRepairItem[] =[] ;
+    rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
       width: '600px',
       data: {
         action: 'edit',
         langText: this.langText,
-        selectedItem:row
+        selectedItems:rows
       }
         
     });

@@ -12,143 +12,154 @@
   <div mat-dialog-content class="auto-height">
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-          <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PROFILE_NAME }}</mat-label>
-                    <input matInput formControlName="name" type="text" required >
-                    @if (pcForm.get('name')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.PROFILE_NAME }} {{translatedLangText.CARGO_REQUIRED}}
-                      </mat-error>
-                      }
-                      @if (pcForm.get('name')?.hasError('existed')) {
-                        <mat-error>
-                          {{translatedLangText.PROFILE_NAME }}: {{translatedLangText.EXISTED }}
-                        </mat-error>
-                        }
-                  </mat-form-field> 
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.DESCRIPTION }}</mat-label>
-                    <input matInput formControlName="description" type="text" required >
-                  </mat-form-field> 
-                </div>
-            
-          </div>
-          <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PREINSPECTION_COST}}</mat-label>
-                    <input matInput formControlName="preinspection_cost" type="number" required >
-                    @if (pcForm.get('preinspection_cost')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.PREINSPECTION_COST }} {{translatedLangText.CARGO_REQUIRED}}
-                      </mat-error>
-                      }
-                  </mat-form-field> 
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.LOLO_COST}}</mat-label>
-                    <input matInput formControlName="lolo_cost" type="number" required >
-                    @if (pcForm.get('lolo_cost')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.LOLO_COST }} {{translatedLangText.CARGO_REQUIRED }}
-                      </mat-error>
-                      }
-                  </mat-form-field> 
-                </div>
-            
-          </div>
-          <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.STORAGE_COST }}</mat-label>
-                    <input matInput formControlName="storage_cost" type="number" required >
-                    @if (pcForm.get('storage_cost')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.STORAGE_COST }} {{translatedLangText.CARGO_REQUIRED }}
-                      </mat-error>
-                      }
-                  </mat-form-field> 
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.FREE_STORAGE }}</mat-label>
-                    <input matInput formControlName="free_storage" type="number" required >
-                    @if (pcForm.get('free_storage')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.FREE_STORAGE }} {{translatedLangText.CARGO_REQUIRED}}
-                      </mat-error>
-                      }
-                  </mat-form-field> 
-                </div>
-            
-          </div>
-          <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.GATE_IN_COST }}</mat-label>
-                    <input matInput formControlName="gate_in_cost" type="number" required >
-                    @if (pcForm.get('gate_in_cost')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.GATE_IN_COST }} {{translatedLangText.CARGO_REQUIRED }}
-                      </mat-error>
-                      }
-                  </mat-form-field> 
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.GATE_OUT_COST }}</mat-label>
-                    <input matInput formControlName="gate_out_cost" type="number" required >
-                    @if (pcForm.get('gate_out_cost')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.GATE_OUT_COST }} {{translatedLangText.CARGO_REQUIRED}}
-                      </mat-error>
-                      }
-                  </mat-form-field> 
-                </div>
-            
-          </div>
-           <div class="row">
-             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-             
-              <mat-label>{{langText.UNIT_TYPE | translate}}</mat-label>
-              <mat-select [formControl]="unit_type_control" formControlName="unit_types" multiple>
-                <mat-option *ngFor="let t of tnkItems" [value]="t">
-                 
-                    {{ t.unit_type }}
-                 
+        <div class="row">
+          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+           <!-- <mat-form-field class="example-full-width"> -->
+            <mat-form-field class="example-full-width">
+             <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
+             <mat-select [formControl]="groupNameControl" formControlName="group_name_cv" required>
+               <mat-option *ngFor="let t of groupNameCvList" [value]="t">
+                   {{ t.description }}
+               </mat-option>
+              </mat-select>
+             @if (pcForm.get('group_name_cv')?.hasError('required')) {
+               <mat-error>
+                 {{translatedLangText.GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
+               </mat-error>
+               }
+               </mat-form-field>  
+           </div> 
+           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+             <mat-form-field class="example-full-width"> 
+              <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
+              <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv" required>
+                <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
+                    {{ t.description }}
                 </mat-option>
               </mat-select>
-              @if (pcForm.get('unit_types')?.hasError('assigned')) {
+              @if (pcForm.get('group_name_cv')?.hasError('required')) {
                 <mat-error>
-                  {{translatedLangText.UNIT_TYPE }} {{translatedLangText.ASSIGNED }}
+                  {{translatedLangText.SUB_GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
                 }
-               
-                </div> 
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.LAST_UPDATED_DT | translate}}</mat-label>
-                    <input matInput formControlName="last_updated" type="text"  [readonly]="true"
-                    [value]="action === 'view' ? displayLastUpdated(this.selectedItem) : displayLastUpdated(pcForm.get('last_updated')?.value)">
-                  </mat-form-field> 
-                </div>
-            
-          </div> 
+              </mat-form-field> 
+            </div> 
+        </div> 
+        <div class="row">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+              <input matInput formControlName="part_name" type="text" required>
+              @if (pcForm.get('part_name')?.hasError('required')) {
+                <mat-error>
+                  {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
+                </mat-error>
+                }
+                @if (pcForm.get('part_name')?.hasError('existed')) {
+                  <mat-error>
+                    {{translatedLangText.PART_NAME }} {{translatedLangText.EXISTED }}
+                  </mat-error>
+                  }
+            </mat-form-field>
+          </div>
         </div>
+         <div class="row">
+          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 mb-1">
+            <mat-form-field class="example-full-width"> 
+             <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
+             <input matInput formControlName="height_diameter" type="number"  >
+             </mat-form-field>  
+          </div>
+           <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 mb-1">
+            <mat-form-field class="example-full-width"> 
+             <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
+             <input matInput formControlName="width_diameter" type="number"  >
+             </mat-form-field>  
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 mb-1">
+            <mat-form-field class="example-full-width"> 
+             <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
+             <input matInput formControlName="thickness" type="number"  >
+             </mat-form-field>  
+           </div> 
+
+        </div> 
+        <div class="row">
+          
+           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+            <mat-form-field class="example-full-width"> 
+             <mat-label>{{translatedLangText.LENGTH}}</mat-label>
+             <input matInput formControlName="length" type="number"  >
+             </mat-form-field>  
+           </div> 
+           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+            <mat-form-field class="example-full-width">
+              <mat-select [formControl]="lengthUnitControl" formControlName="length_unit_cv" > 
+                <mat-option *ngFor="let t of lengthTypeCvList" [value]="t">
+                  {{ t.description }}
+               </mat-option>
+             </mat-select>
+            
+             </mat-form-field>
+           </div>  
+           <div class="col-xl-3 col-lg3 col-md-3 col-sm-3 mb-1">
+            <mat-form-field class="example-full-width"> 
+             <mat-label>{{translatedLangText.LABOUR_HOUR}}</mat-label>
+             <input matInput formControlName="labour_hour" type="number" >
+             </mat-form-field>  
+           </div> 
+           <div class="col-xl-3 col-lg3 col-md-3 col-sm-3 mb-1">
+            <mat-form-field class="example-full-width"> 
+             <mat-label>{{translatedLangText.MATERIAL_COST}}</mat-label>
+             <input matInput formControlName="material_cost" type="number"  >
+             </mat-form-field>  
+           </div> 
+        </div> 
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+              <div class="materialTableHeader">
+              </div>
+              <div class="body overflow-auto">
+                <div class="responsive_table">
+                  <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
+                    
+                    <ng-container matColumnDef="fName">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.PART_NAME }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" >
+                        <span class="mobile-label">{{translatedLangText.PART_NAME }}:</span>{{row.part_name}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="lName">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.GROUP_NAME }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" >
+                        <span class="mobile-label">{{translatedLangText.GROUP_NAME }}:</span>{{this.getGroupNameCodeValue(row.group_name_cv)?.description}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="email">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.SUB_GROUP_NAME }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" >
+                        <span class="mobile-label">{{translatedLangText.SUB_GROUP_NAME }}:</span> {{this.getSubGroupNameCodeValue(row.subgroup_name_cv)?.description}}</mat-cell>
+                    </ng-container>
+                    
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;" 
+                      [style.cursor]="'pointer'" matRipple>
+                    </mat-row>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      </div>
         
-      </div>
-      <div mat-dialog-actions class="mb-1 align-right">
-        @if (canEdit()) {
-          <button mat-flat-button color="primary" (click)="update()">{{translatedLangText.UPDATE}}</button>
-        }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
-      </div>
+      <div class="row">
+        <div mat-dialog-actions class="mb-1 align-right">
+          @if (canEdit()) {
+            <button mat-flat-button color="primary" (click)="update()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+          }
+          <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
+        </div>
+     </div>
     </form>
   </div>
 </div>
