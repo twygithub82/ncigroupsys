@@ -11,6 +11,7 @@ import { TankItem } from './tank';
 import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
 import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
+import { lab } from 'd3';
 export class TariffRepairItem {
   public guid?: string;
   
@@ -18,8 +19,11 @@ export class TariffRepairItem {
   public subgroup_name_cv?: string;
   public part_name?: string;
   public dimension?: number;
+  public dimension_unit_cv?: string;
   public width_diameter?: number;
+  public width_diameter_unit_cv?: string;
   public thickness?: number;
+  public thickness_unit_cv?: string;
   public length?: number;
   public length_unit_cv?: string;
   public labour_hour?:number;
@@ -38,8 +42,11 @@ export class TariffRepairItem {
     this.subgroup_name_cv=item.subgroup_name_cv;
     this.part_name=item.part_name;
     this.dimension=item.dimension;
+    this.dimension_unit_cv=item.dimension_unit_cv;
     this.width_diameter=item.width_diameter;
+    this.width_diameter_unit_cv=item.width_diameter_unit_cv;
     this.thickness=item.thickness;
+    this.thickness_unit_cv=item.thickness_unit_cv;
     this.length=item.length;
     this.length_unit_cv=item.length_unit_cv;
     this.labour_hour=item.labour_hour;
@@ -64,10 +71,11 @@ export const GET_TARIFF_REPAIR_QUERY = gql`
   query queryTariffRepair($where: tariff_repairFilterInput, $order:[tariff_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     tariffRepairResult : queryTariffRepair(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-      create_by
+       create_by
       create_dt
       delete_dt
       dimension
+      dimension_unit_cv
       group_name_cv
       guid
       labour_hour
@@ -78,9 +86,11 @@ export const GET_TARIFF_REPAIR_QUERY = gql`
       remarks
       subgroup_name_cv
       thickness
+      thickness_unit_cv
       update_by
       update_dt
       width_diameter
+      width_diameter_unit_cv
       }
       pageInfo {
         endCursor
@@ -107,6 +117,16 @@ export const UPDATE_TARIFF_REPAIR = gql`
   }
 `;
 
+export const UPDATE_TARIFF_REPAIRS = gql`
+  mutation updateTariffRepairs($updatedTariffRepair_guids: [String!]!,$group_name_cv:String!,$subgroup_name_cv:String!,
+    $dimension:Float!,$dimension_unit_cv:String!,$width_diameter:Float!,$width_diameter_unit_cv:String!,$labour_hour:Float!,$length:Float!,
+    $length_unit_cv:String!,$material_cost:Float!,$part_name:String!,$thickness:Float!,$thickness_unit_cv:String!,$remarks:String!) {
+    updateTariffRepairs(updatedTariffRepair_guids: $updatedTariffRepair_guids,group_name_cv:$group_name_cv,
+    subgroup_name_cv:$subgroup_name_cv,dimension:$dimension,dimension_unit_cv:$dimension_unit_cv,width_diameter:$width_diameter,
+    width_diameter_unit_cv:$width_diameter_unit_cv,labour_hour:$labour_hour,length:$length,length_unit_cv:$length_unit_cv,
+    material_cost:$material_cost,part_name:$part_name,thickness:$thickness,thickness_unit_cv:$thickness_unit_cv,remarks:$remarks)
+  }
+`;
 
 export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
   constructor(private apollo: Apollo) {
@@ -169,4 +189,36 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
         }),
       );
     }
+
+    updateTariffRepairs(updatedTariffRepair_guids: any,group_name_cv:any,subgroup_name_cv:any,
+      dimension:any,dimension_unit_cv:any,width_diameter:any,width_diameter_unit_cv:any,labour_hour:any,
+      length:any,length_unit_cv:any,material_cost:any,part_name:any,thickness:any,thickness_unit_cv:any,remarks:any): Observable<any> {
+      return this.apollo.mutate({
+        mutation: UPDATE_TARIFF_REPAIRS,
+        variables: {
+          updatedTariffRepair_guids,
+          group_name_cv,
+          subgroup_name_cv,
+          dimension,
+          dimension_unit_cv,
+          width_diameter,
+          width_diameter_unit_cv,
+          labour_hour,
+          length,
+          length_unit_cv,
+          material_cost,
+          part_name,
+          thickness,
+          thickness_unit_cv,
+          remarks
+        }
+      }).pipe(
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+      );
+    }
+
+    
 }

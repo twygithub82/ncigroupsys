@@ -113,6 +113,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   groupNameCvList :CodeValuesItem[] = [];
   subGroupNameCvList :CodeValuesItem[] = [];
   lengthTypeCvList :CodeValuesItem[] = [];
+  unitTypeCvList : CodeValuesItem[]=[];
+  allSubGroupNameCvList :CodeValuesItem[] = [];
   
   trfRepairDS: TariffRepairDS;
   tnkItems?:TankItem[]=[];
@@ -127,7 +129,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
   lengthUnitControl=new UntypedFormControl();
-
+  dimensionUnitControl=new UntypedFormControl();
+  widthDiadmeterUnitControl = new UntypedFormControl();
+  thicknessUnitControl =new UntypedFormControl();
 
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
@@ -283,8 +287,11 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
         sub_group_name_cv:this.subGroupNameControl,
         part_name:rec.part_name,
         height_diameter:rec.dimension,
+        height_diameter_unit_cv:this.dimensionUnitControl,
         width_diameter:rec.width_diameter,
+        width_diameter_unit_cv: this.widthDiadmeterUnitControl,
         thickness:rec.width_diameter,
+        thickness_unit_cv:this.thicknessUnitControl,
         length:rec.length,
         length_unit_cv:this.lengthUnitControl,
         labour_hour:rec.labour_hour,
@@ -304,8 +311,11 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
       sub_group_name_cv:this.subGroupNameControl,
       part_name:[''],
       height_diameter:[''],
+      height_diameter_unit_cv:this.dimensionUnitControl,
       width_diameter:[''],
+      width_diameter_unit_cv: this.widthDiadmeterUnitControl,
       thickness:[''],
+      thickness_unit_cv:this.thicknessUnitControl,
       length:[''],
       length_unit_cv:this.lengthUnitControl,
       labour_hour:[''],
@@ -342,39 +352,102 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
 
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
-      { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
-      { alias: 'lengthType', codeValType: 'LENGTH_TYPE' }
+      //{ alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
+      { alias: 'unitType', codeValType: 'UNIT_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
+      const subqueries :any[]= [];
+       data.map(d=>{
+        
+         if(d.child_code)
+         {
+           let q ={alias:d.child_code,codeValType:d.child_code};
+           const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+           if(!hasMatch)
+           {
+             subqueries.push(q);
+
+           }
+         }
+       });
+       if(subqueries.length>0)
+       {
+
+       
+       this.cvDS.getCodeValuesByType(subqueries)
+       subqueries.map(s=>{
+          this.cvDS.connectAlias(s.alias).subscribe(data => {
+            this.allSubGroupNameCvList.push(...data);
+         
+          });
+
+       });
+     
+      }
       if(this.selectedItems.length==1)
       { 
         var rec=this.selectedItems[0];
-        this.groupNameControl.setValue(this.getGroupNameCodeValue(rec.group_name_cv!));
+        var group_name_codeValue =this.getGroupNameCodeValue(rec.group_name_cv!)||new CodeValuesItem();
+        this.groupNameControl.setValue(group_name_codeValue);
+        // var aliasName =group_name_codeValue.child_code||'';
+        // const subqueries :any[]=  [{ alias: aliasName, codeValType: aliasName }];
+        // this.cvDS.getCodeValuesByType(subqueries);
+        // this.cvDS.connectAlias(aliasName).subscribe(data => {
+        //   this.subGroupNameCvList = data;
+        //   //this.subGroupNameControl.setValue(this.getSubGroupNameCodeValue(rec.subgroup_name_cv!));
+        // });
+
       }
      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
-    this.cvDS.connectAlias('subGroupName').subscribe(data => {
-      this.subGroupNameCvList = data;
+    // this.cvDS.connectAlias('subGroupName').subscribe(data => {
+    //   this.subGroupNameCvList = data;
+    //   if(this.selectedItems.length==1)
+    //     { 
+    //       var rec=this.selectedItems[0];
+    //       this.subGroupNameControl.setValue(this.getSubGroupNameCodeValue(rec.subgroup_name_cv!));
+    //     }
+    // });
+
+    this.cvDS.connectAlias('unitType').subscribe(data => {
+      this.unitTypeCvList = data;
       if(this.selectedItems.length==1)
         { 
           var rec=this.selectedItems[0];
-          this.subGroupNameControl.setValue(this.getSubGroupNameCodeValue(rec.subgroup_name_cv!));
+          this.lengthUnitControl.setValue(this.getUnitTypeCodeValue(rec.length_unit_cv!));
+          this.widthDiadmeterUnitControl.setValue(this.getUnitTypeCodeValue(rec.width_diameter_unit_cv!));
+          this.dimensionUnitControl.setValue(this.getUnitTypeCodeValue(rec.dimension_unit_cv!));
+          this.thicknessUnitControl.setValue(this.getUnitTypeCodeValue(rec.thickness_unit_cv!));
         }
     });
 
-    this.cvDS.connectAlias('lengthType').subscribe(data => {
-      this.lengthTypeCvList = data;
-      if(this.selectedItems.length==1)
-        { 
-          var rec=this.selectedItems[0];
-          this.lengthUnitControl.setValue(this.geLengthUnitCodeValue(rec.length_unit_cv!));
-        }
-    });
+    this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
+      console.log('Selected value:', value);
+      var aliasName =value.child_code;
+      if(aliasName===undefined) return;
+      const subqueries :any[]=  [{ alias: aliasName, codeValType: aliasName }];
+      this.cvDS.getCodeValuesByType(subqueries);
+      this.cvDS.connectAlias(aliasName).subscribe(data => {
+        this.subGroupNameCvList = data;
+        if(this.selectedItems.length==1)
+         { 
+           var rec=this.selectedItems[0];
+           var subgroupNameCodeValue=this.GetCodeValue(rec.subgroup_name_cv!,this.subGroupNameCvList);
+           this.subGroupNameControl.setValue(subgroupNameCodeValue);
+          }
 
+      });
+      // Handle value changes here
+    });
   
   }
+
+   isFieldRequired()
+   {
+    return this.selectedItems.length==1;
+   }
 
   canEdit()
   {
@@ -402,12 +475,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
 
   getSubGroupNameCodeValue (codeValue:String)
   {
-    return this.GetCodeValue(codeValue,this.subGroupNameCvList);
+    return this.GetCodeValue(codeValue,this.allSubGroupNameCvList);
   }
 
-  geLengthUnitCodeValue (codeValue:String)
+  getUnitTypeCodeValue (codeValue:String)
   {
-    return this.GetCodeValue(codeValue,this.lengthTypeCvList);
+    return this.GetCodeValue(codeValue,this.unitTypeCvList);
   }
 
   GetCodeValue(codeValue:String, codeValueItems:CodeValuesItem[])
@@ -434,6 +507,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
 
     if (!this.pcForm?.valid) return;
     
+    if(this.selectedItems.length==1)
+    {
     let where: any = {};
     if (this.pcForm!.value['part_name']) {
       where.part_name = { eq: this.pcForm!.value['part_name'] };
@@ -466,14 +541,19 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
               var trfRepairItem = new TariffRepairItem(this.selectedItems[0]);
               trfRepairItem.part_name=this.pcForm!.value['part_name'];
               trfRepairItem.dimension=this.pcForm!.value['height_diameter'];
+              trfRepairItem.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['height_diameter_unit_cv']));
+
               trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
               trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
               trfRepairItem.labour_hour=this.pcForm!.value['labour_hour'];
               trfRepairItem.material_cost=this.pcForm!.value['material_cost'];
               trfRepairItem.length=this.pcForm!.value['length'];
               trfRepairItem.length_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['length_unit_cv']));
+
               trfRepairItem.width_diameter=this.pcForm!.value['width_diameter'];
+              trfRepairItem.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['width_diameter_unit_cv']));
               trfRepairItem.thickness=this.pcForm!.value['thickness'];
+              trfRepairItem.thickness_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['thickness_unit_cv']));
               
               this.trfRepairDS.updateTariffRepair(trfRepairItem).subscribe(result=>{
                 this.handleSaveSuccess(result?.data?.updateTariffRepair);
@@ -484,86 +564,60 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
           {
 
           }
-          // let conditions:any[] = [];
-          // let unit_types:TankItem[]=[];
-          // let insert =true;
-          // if(this.unit_type_control.value.length>0)
-          // {
-          //   this.unit_type_control.value.forEach((data:TankItem) => {
-          //       let cond:any={guid:{eq:String(data.guid)}};
-          //       conditions.push(cond);
-          //       let tnk:TankItem= new TankItem();
-          //       tnk.guid=data.guid;
-          //       unit_types.push(tnk);
-          //   });
-          //   let where ={or:conditions};
-          //   this.subs.sink=this.tnkDS.search(where).subscribe(data=>{
-          //     for(const d of data)
-          //     {
-          //       if(d.tariff_depot_guid!=null && d.tariff_depot_guid!=this.selectedItem.guid)
-          //       {
-          //         update=false;
-          //          break;
-          //       }
-          //     }
-          //      if(update)
-          //      {
-          //         var updatedTD = new TariffDepotItem(this.selectedItem);
-          //         updatedTD.profile_name = this.pcForm!.value['name'];
-          //         updatedTD.description = this.pcForm!.value['description'];
-          //         updatedTD.free_storage= this.pcForm!.value['free_storage'];
-          //         updatedTD.lolo_cost= this.pcForm!.value['lolo_cost'];
-          //         updatedTD.preinspection_cost= this.pcForm!.value['preinspection_cost'];
-          //         updatedTD.storage_cost= this.pcForm!.value['storage_cost'];
-          //         updatedTD.gate_in_cost= this.pcForm!.value['gate_in_cost'];
-          //         updatedTD.gate_out_cost= this.pcForm!.value['gate_out_cost'];
-          //         updatedTD.tanks = unit_types;
-          //         this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result=>{
-          //           this.handleSaveSuccess(result?.data?.updateTariffDepot);
-
-          //         });
-          //      }
-          //      else
-          //      {
-          //       this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
-          //      }
-
-          //     });
-             
-          //}
+          
         }
-
-            
-
-        //   }
-        //   if(insert)
-        //   {
-        //     let newDepot = new TariffDepotItem();
-        //     newDepot.lolo_cost= Number(this.pcForm!.value['lolo_cost']);
-        //     newDepot.free_storage= Number(this.pcForm.value['free_storage']);
-        //     newDepot.description= String(this.pcForm.value['description']);
-        //     newDepot.preinspection_cost= Number(this.pcForm.value['preinspection_cost']);
-        //     newDepot.profile_name= String(this.pcForm.value['name']);
-        //     newDepot.storage_cost= Number(this.pcForm.value['storage_cost']);
-        //     newDepot.tanks=unit_types;
-        //     this.trfDepotDS.addNewTariffDepot(newDepot).subscribe(result=>{
-
-        //       this.handleSaveSuccess(result?.data?.addTariffDepot);
-        //     });
-        //   }
-
-        
-
-        // }
-        // else
-        // {
-        //     this.pcForm?.get('name')?.setErrors({ existed: true });
-        // }
-
 
     });
 
-   
+  }
+  else if(this.selectedItems.length>1)
+  {
+    let pd_guids:string[] = this.selectedItems
+    .map(cc => cc.guid)
+    .filter((guid): guid is string => guid !== undefined);
+
+
+    var trfRepairItem = new TariffRepairItem();
+    trfRepairItem.part_name=this.pcForm!.value['part_name'];
+
+    trfRepairItem.dimension=-1;
+    if(this.pcForm!.value['height_diameter'])trfRepairItem.dimension=this.pcForm!.value['height_diameter'];
+    trfRepairItem.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['height_diameter_unit_cv']));
+
+    trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
+    trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
+
+    trfRepairItem.labour_hour=-1;
+    if(this.pcForm!.value['labour_hour'])trfRepairItem.labour_hour=this.pcForm!.value['labour_hour'];
+
+    trfRepairItem.material_cost=-1;
+    if(this.pcForm!.value['material_cost']) trfRepairItem.material_cost=this.pcForm!.value['material_cost'];
+    
+    trfRepairItem.length=-1;
+    if(this.pcForm!.value['length']) trfRepairItem.length=this.pcForm!.value['length'];
+
+
+    trfRepairItem.length_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['length_unit_cv']));
+    
+    trfRepairItem.width_diameter=-1;
+    if(this.pcForm!.value['width_diameter'])trfRepairItem.width_diameter=this.pcForm!.value['width_diameter'];
+    trfRepairItem.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['width_diameter_unit_cv']));
+    
+    trfRepairItem.thickness=-1;
+    if(this.pcForm!.value['thickness']) trfRepairItem.thickness=this.pcForm!.value['thickness'];
+    trfRepairItem.thickness_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['thickness_unit_cv']));
+
+    trfRepairItem.remarks =String(this.RetrieveCodeValue(this.pcForm!.value['remarks']));
+     
+    this.trfRepairDS.updateTariffRepairs(pd_guids,trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,trfRepairItem.dimension,
+      trfRepairItem.dimension_unit_cv,trfRepairItem.width_diameter,trfRepairItem.width_diameter_unit_cv,trfRepairItem.labour_hour,
+      trfRepairItem.length,trfRepairItem.length_unit_cv,trfRepairItem.material_cost,trfRepairItem.part_name,trfRepairItem.thickness,trfRepairItem.thickness_unit_cv,
+      trfRepairItem.remarks
+    ).subscribe(result=>{
+      this.handleSaveSuccess(result?.data?.updateTariffRepairs);
+
+    });
+  }
 
    
 

@@ -17,11 +17,11 @@ namespace IDMS.Models.Tariff
        // public string? test_type_cv { get; set; }
         public string? part_name { get; set; }
         public double? dimension { get; set; }
-       // public string? dimension_unit_cv { get; set; }
+        public string? dimension_unit_cv { get; set; }
         public double? width_diameter { get; set; }
-      //  public string? width_diameter_unit_cv { get; set; }
+        public string? width_diameter_unit_cv { get; set; }
         public double? thickness { get; set; }
-      //  public string? thickness_unit_cv { get; set; }
+        public string? thickness_unit_cv { get; set; }
         public double? length { get; set; }
         public string? length_unit_cv { get; set; }
         public double? labour_hour { get; set; }

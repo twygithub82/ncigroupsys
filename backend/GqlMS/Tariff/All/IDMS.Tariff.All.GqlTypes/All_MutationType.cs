@@ -663,15 +663,18 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffRepair.guid = NewTariffRepair.guid;
                 newTariffRepair.remarks = NewTariffRepair.remarks;
                 newTariffRepair.dimension = NewTariffRepair.dimension;
+                newTariffRepair.dimension_unit_cv = NewTariffRepair.dimension_unit_cv;
                 newTariffRepair.group_name_cv = NewTariffRepair.group_name_cv;
                 newTariffRepair.subgroup_name_cv = NewTariffRepair.subgroup_name_cv;
                 newTariffRepair.width_diameter=NewTariffRepair.width_diameter;
+                newTariffRepair.width_diameter_unit_cv = NewTariffRepair.width_diameter_unit_cv;
                 newTariffRepair.labour_hour=NewTariffRepair.labour_hour;
                 newTariffRepair.length=NewTariffRepair.length;
                 newTariffRepair.length_unit_cv = NewTariffRepair.length_unit_cv;
                 newTariffRepair.material_cost=NewTariffRepair.material_cost;
                 newTariffRepair.part_name=NewTariffRepair.part_name;
                 newTariffRepair.thickness=NewTariffRepair.thickness;
+                newTariffRepair.thickness_unit_cv = NewTariffRepair.thickness_unit_cv;
                 newTariffRepair.create_by = uid;
                 newTariffRepair.create_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_repair.Add(newTariffRepair);
@@ -718,19 +721,93 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
                 dbTariffRepair.remarks = UpdateTariffRepair.remarks;
                 dbTariffRepair.dimension = UpdateTariffRepair.dimension;
+                dbTariffRepair.dimension_unit_cv = UpdateTariffRepair.dimension_unit_cv;
                 dbTariffRepair.group_name_cv = UpdateTariffRepair.group_name_cv;
                 dbTariffRepair.subgroup_name_cv = UpdateTariffRepair.subgroup_name_cv;
                 dbTariffRepair.width_diameter = UpdateTariffRepair.width_diameter;
+                dbTariffRepair.width_diameter_unit_cv=UpdateTariffRepair.width_diameter_unit_cv;
                 dbTariffRepair.labour_hour = UpdateTariffRepair.labour_hour;
                 dbTariffRepair.length = UpdateTariffRepair.length;
                 dbTariffRepair.length_unit_cv = UpdateTariffRepair.length_unit_cv;
                 dbTariffRepair.material_cost = UpdateTariffRepair.material_cost;
                 dbTariffRepair.part_name = UpdateTariffRepair.part_name;
                 dbTariffRepair.thickness = UpdateTariffRepair.thickness;
+                dbTariffRepair.thickness_unit_cv = UpdateTariffRepair.thickness_unit_cv;
 
-                
                 dbTariffRepair.update_by = uid;
                 dbTariffRepair.update_dt = GqlUtils.GetNowEpochInSec();
+
+
+
+
+
+
+                retval = context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+
+        public async Task<int> UpdateTariffRepairs(ApplicationTariffDBContext context, [Service] IConfiguration config,
+        [Service] IHttpContextAccessor httpContextAccessor, List<string> updatedTariffRepair_guids,string group_name_cv,string subgroup_name_cv,
+            double dimension,string dimension_unit_cv,double width_diameter, string width_diameter_unit_cv,double labour_hour,double length, 
+            string length_unit_cv, double material_cost,string part_name,double thickness, string thickness_unit_cv,string remarks)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                
+                var dbTariffRepairs = context.tariff_repair.Where(t => updatedTariffRepair_guids.Contains(t.guid)).ToArray();
+
+                if (dbTariffRepairs == null)
+                {
+                    throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
+                }
+
+                foreach(var r in dbTariffRepairs)
+                {
+                    if (!string.IsNullOrEmpty(group_name_cv)) r.group_name_cv = group_name_cv;
+                    if (!string.IsNullOrEmpty(subgroup_name_cv)) r.subgroup_name_cv = subgroup_name_cv;
+                    if (dimension > 0) r.dimension = dimension;
+                    if (!string.IsNullOrEmpty(dimension_unit_cv)) r.dimension_unit_cv = dimension_unit_cv;
+                    if (width_diameter > 0) r.width_diameter = width_diameter;
+                    if (!string.IsNullOrEmpty(width_diameter_unit_cv)) r.width_diameter_unit_cv = width_diameter_unit_cv;
+                    if (labour_hour > 0) r.labour_hour = labour_hour;
+                    if (length > 0) r.length = length;
+                    if (!string.IsNullOrEmpty(length_unit_cv)) r.length_unit_cv = length_unit_cv;
+                    if (material_cost > 0) r.material_cost = material_cost;
+                    if (thickness > 0) r.thickness = thickness;
+                    if (!string.IsNullOrEmpty(part_name)) r.part_name = part_name;
+                    if (!string.IsNullOrEmpty(thickness_unit_cv)) r.thickness_unit_cv = thickness_unit_cv;
+                    if (!string.IsNullOrEmpty(remarks)) r.remarks = remarks;
+                    r.update_by = uid;
+                    r.update_dt = GqlUtils.GetNowEpochInSec();
+                }
+                //dbTariffRepair.remarks = UpdateTariffRepair.remarks;
+                //dbTariffRepair.dimension = UpdateTariffRepair.dimension;
+                //dbTariffRepair.dimension_unit_cv = UpdateTariffRepair.dimension_unit_cv;
+                //dbTariffRepair.group_name_cv = UpdateTariffRepair.group_name_cv;
+                //dbTariffRepair.subgroup_name_cv = UpdateTariffRepair.subgroup_name_cv;
+                //dbTariffRepair.width_diameter = UpdateTariffRepair.width_diameter;
+                //dbTariffRepair.width_diameter_unit_cv = UpdateTariffRepair.width_diameter_unit_cv;
+                //dbTariffRepair.labour_hour = UpdateTariffRepair.labour_hour;
+                //dbTariffRepair.length = UpdateTariffRepair.length;
+                //dbTariffRepair.length_unit_cv = UpdateTariffRepair.length_unit_cv;
+                //dbTariffRepair.material_cost = UpdateTariffRepair.material_cost;
+                //dbTariffRepair.part_name = UpdateTariffRepair.part_name;
+                //dbTariffRepair.thickness = UpdateTariffRepair.thickness;
+                //dbTariffRepair.thickness_unit_cv = UpdateTariffRepair.thickness_unit_cv;
+
+                //dbTariffRepair.update_by = uid;
+                //dbTariffRepair.update_dt = GqlUtils.GetNowEpochInSec();
 
 
 

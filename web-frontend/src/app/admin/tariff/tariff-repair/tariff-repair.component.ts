@@ -422,6 +422,7 @@ implements OnInit {
   }
   adjustCost()
   {
+    if(this.selection.selected.length==0) return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -429,7 +430,7 @@ implements OnInit {
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
-      width: '600px',
+      width: '700px',
       data: {
         action: 'new',
         langText: this.langText,
@@ -439,12 +440,11 @@ implements OnInit {
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          if(result.selectedValue>0)
-          {
-            this.handleSaveSuccess(result.selectedValue);
+         if (result>0) {
+          
+            this.handleSaveSuccess(result);
             this.search();
-          }
+          
       }
       });
   }
@@ -461,7 +461,7 @@ implements OnInit {
     var rows :TariffRepairItem[] =[] ;
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
-      width: '600px',
+      width: '700px',
       data: {
         action: 'edit',
         langText: this.langText,
@@ -738,12 +738,39 @@ implements OnInit {
 
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
-      { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
+  //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
       { alias: 'handledItem', codeValType: 'HANDLED_ITEM' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
+
+       const subqueries :any[]= [];
+       data.map(d=>{
+        
+         if(d.child_code)
+         {
+           let q ={alias:d.child_code,codeValType:d.child_code};
+           const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+           if(!hasMatch)
+           {
+             subqueries.push(q);
+
+           }
+         }
+       });
+       if(subqueries.length>0)
+       {
+
+       
+       this.cvDS.getCodeValuesByType(subqueries)
+       subqueries.map(s=>{
+          this.cvDS.connectAlias(s.alias).subscribe(data => {
+            this.subGroupNameCvList.push(...data);
+          });
+       });
+     
+      }
      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('subGroupName').subscribe(data => {
@@ -752,6 +779,19 @@ implements OnInit {
     this.cvDS.connectAlias('handledItem').subscribe(data => {
       this.handledItemCvList = data;
     });
+
+
+    // this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
+    //   console.log('Selected value:', value);
+    //   var aliasName =value.child_code;
+
+    //   const subqueries :any[]=  [{ alias: aliasName, codeValType: aliasName }];
+    //   this.cvDS.getCodeValuesByType(subqueries);
+    //   this.cvDS.connectAlias(aliasName).subscribe(data => {
+    //     this.subGroupNameCvList = data;
+    //   });
+    //   // Handle value changes here
+    // });
 
   
   }

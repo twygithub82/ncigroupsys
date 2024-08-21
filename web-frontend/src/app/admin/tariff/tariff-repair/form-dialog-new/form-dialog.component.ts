@@ -112,11 +112,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   groupNameCvList :CodeValuesItem[] = [];
   subGroupNameCvList :CodeValuesItem[] = [];
   lengthTypeCvList :CodeValuesItem[] = [];
+  unitTypeCvList : CodeValuesItem[]=[];
 
   tnkItems?:TankItem[];
 
   trfRepairDS:TariffRepairDS;
-
+  subGrpNames :any[]=[];
   
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -127,15 +128,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
-  testTypeControl  = new UntypedFormControl();
-  heightDiameterUnitControl = new UntypedFormControl();
-  widthDiameterUnitControl = new UntypedFormControl();
-  thicknessUnitControl = new UntypedFormControl();
   lengthUnitControl=new UntypedFormControl();
-  costTypeControl = new UntypedFormControl();
-  rebateTypeControl = new UntypedFormControl();
-  jobTypeControl  = new UntypedFormControl();
-
+  dimensionUnitControl=new UntypedFormControl();
+  widthDiadmeterUnitControl = new UntypedFormControl();
+  thicknessUnitControl =new UntypedFormControl();
+  
+  
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -295,8 +293,11 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       sub_group_name_cv:this.subGroupNameControl,
       part_name:[''],
       height_diameter:[''],
+      height_diameter_unit_cv: this.dimensionUnitControl,
       width_diameter:[''],
+      width_diameter_unit_cv : this.widthDiadmeterUnitControl,
       thickness:[''],
+      thickness_unit_cv:this.thicknessUnitControl,
       length:[''],
       length_unit_cv:this.lengthUnitControl,
       labour_hour:[''],
@@ -309,22 +310,62 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
-      { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
-      { alias: 'lengthType', codeValType: 'LENGTH_TYPE' }
+     // { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME1' },
+      { alias: 'unitType', codeValType: 'UNIT_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
+
+
+      //  const subqueries :any[]= [];
+      //  data.map(d=>{
+        
+      //    if(d.child_code)
+      //    {
+      //      let q ={alias:d.child_code,codeValType:d.child_code};
+      //      const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+      //      if(!hasMatch)
+      //      {
+      //        subqueries.push(q);
+
+      //      }
+      //    }
+      //  });
+      //  if(subqueries.length>0)
+      //  {
+
+       
+      //  this.cvDS.getCodeValuesByType(subqueries).subscribe({
+      //  subqueries.map(s=>{
+      //     this.cvDS.connectAlias(s.alias).subscribe(data => {
+      //        let grpNm= {name:s.alias ,codeData : data};
+      //        this.subGrpNames.push(grpNm);
+      //     });
+      //  });
+      // });
+      // }
      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('subGroupName').subscribe(data => {
       this.subGroupNameCvList = data;
     });
-
-    this.cvDS.connectAlias('lengthType').subscribe(data => {
-      this.lengthTypeCvList = data;
+    this.cvDS.connectAlias('unitType').subscribe(data => {
+      this.unitTypeCvList = data;
     });
  
+    this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
+      console.log('Selected value:', value);
+      var aliasName =value.child_code;
+
+      const subqueries :any[]=  [{ alias: aliasName, codeValType: aliasName }];
+      this.cvDS.getCodeValuesByType(subqueries);
+      this.cvDS.connectAlias(aliasName).subscribe(data => {
+        this.subGroupNameCvList = data;
+      });
+      // Handle value changes here
+    });
+  
   
   }
   
@@ -391,19 +432,21 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
           newRepair.part_name=String(this.pcForm.value['part_name']);
           newRepair.material_cost= Number(this.pcForm!.value['material_cost']);
           newRepair.dimension= Number(this.pcForm.value['height_diameter']);
+          newRepair.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
           newRepair.width_diameter= Number(this.pcForm.value['width_diameter']);
+          newRepair.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['width_diameter_unit_cv']));
           newRepair.group_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['group_name_cv']));
           newRepair.subgroup_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['sub_group_name_cv']));
           newRepair.labour_hour= Number(this.pcForm.value['labour_hour']);
           newRepair.length= Number(this.pcForm.value['length']);
           newRepair.length_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['length_unit_cv']));
           newRepair.thickness=Number(this.pcForm.value['thickness']);
+          newRepair.thickness_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['thickness_unit_cv']));
           this.trfRepairDS.addNewTariffRepair(newRepair).subscribe(result=>{
 
             this.handleSaveSuccess(result?.data?.addTariffRepair);
           });
         }
-
         else
         {
             this.pcForm?.get('part_name')?.setErrors({ existed: true });
