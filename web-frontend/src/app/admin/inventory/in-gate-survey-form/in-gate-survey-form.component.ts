@@ -588,6 +588,22 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         dipstick: ig.in_gate_survey?.dipstick,
       }
     });
+    this.highlightedCellsLeft = this.populateHighlightedCells(this.highlightedCellsLeft, JSON.parse(ig.in_gate_survey?.left_coord || '[]'));
+    this.highlightedCellsRear = this.populateHighlightedCells(this.highlightedCellsRear, JSON.parse(ig.in_gate_survey?.rear_coord || '[]'));
+    this.highlightedCellsRight = this.populateHighlightedCells(this.highlightedCellsRight, JSON.parse(ig.in_gate_survey?.right_coord || '[]'));
+    this.highlightedCellsTop = this.populateHighlightedCells(this.highlightedCellsTop, JSON.parse(ig.in_gate_survey?.top_coord || '[]'));
+    this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(ig.in_gate_survey?.front_coord || '[]'));
+    this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(ig.in_gate_survey?.bottom_coord || '[]'));
+  }
+
+  populateHighlightedCells(toUpdateCells: boolean[], coordinates: { x: number; y: number }[]): boolean[] {
+    toUpdateCells = Array(this.rowSize * this.colSize).fill(false);
+  
+    coordinates.forEach(coord => {
+      const index = coord.y * this.colSize + coord.x;
+      toUpdateCells[index] = true;
+    });
+    return toUpdateCells;
   }
 
   showNotification(
@@ -623,7 +639,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onFormSubmit() {
-    console.log('leftSide', this.getHighlightedCoordinates(this.highlightedCellsLeft));
     if (this.surveyForm?.valid) {
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
       sot.unit_type_guid = this.surveyForm.get('unit_type_guid')?.value;
@@ -689,12 +704,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.buffer_plate = manlidFormGroup.get('buffer_plate')?.value;
       igs.residue = manlidFormGroup.get('residue')?.value;
       igs.dipstick = manlidFormGroup.get('dipstick')?.value;
-      //igs.left_coor = this.getHighlightedCoordinates(this.highlightedCellsLeft);
-      //igs.rear_coor = this.getHighlightedCoordinates(this.highlightedCellsRear);
-      //igs.right_coor = this.getHighlightedCoordinates(this.highlightedCellsRight);
-      //igs.top_coor = this.getHighlightedCoordinates(this.highlightedCellsTop);
-      //igs.front_coor = this.getHighlightedCoordinates(this.highlightedCellsFront);
-      //igs.bottom_coor = this.getHighlightedCoordinates(this.highlightedCellsBottom);
+
+      igs.left_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsLeft));
+      igs.rear_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsRear));
+      igs.right_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsRight));
+      igs.top_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsTop));
+      igs.front_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsFront));
+      igs.bottom_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsBottom));
       console.log('igs Value', igs);
       console.log('ig Value', ig);
       if (igs.guid) {
