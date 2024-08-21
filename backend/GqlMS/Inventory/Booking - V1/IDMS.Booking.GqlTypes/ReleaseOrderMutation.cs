@@ -174,6 +174,8 @@ namespace IDMS.Booking.GqlTypes
                 release_order existingRO = new release_order() { guid = releaseOrder.guid };
                 context.Attach(existingRO);
 
+                context.AddRange(newRoSotList);
+
                 existingRO.update_by = user;
                 existingRO.update_dt = currentDateTime;
                 existingRO.ro_notes = releaseOrder.ro_notes;
