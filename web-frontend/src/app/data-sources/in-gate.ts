@@ -328,6 +328,12 @@ export const GET_IN_GATE_BY_ID = gql`
           update_by
           update_dt
           walkway_cv
+          top_coord
+          bottom_coord
+          front_coord
+          rear_coord
+          left_coord
+          right_coord
         }
       }
     }

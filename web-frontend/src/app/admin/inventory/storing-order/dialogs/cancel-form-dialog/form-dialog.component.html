@@ -7,7 +7,7 @@
     <form class="register-form" [formGroup]="storingOrderForm" #formDirective="ngForm">
       <div formArrayName="storingOrder">
         @for (so of storingOrderArray().controls; track so; let index = $index) {
-        <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-grey')">
+        <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-light-grey')">
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
             <div [class]="'row pt-2'">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">

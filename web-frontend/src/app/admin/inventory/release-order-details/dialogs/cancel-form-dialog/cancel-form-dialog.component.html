@@ -4,21 +4,34 @@
   </div>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
-    <form class="register-form" [formGroup]="schedulingForm" #formDirective="ngForm">
-      <div formArrayName="scheduling">
-        @for (scheduling of getSchedulingArray().controls; track scheduling; let index = $index) {
-        <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-grey')">
+    <form class="register-form" [formGroup]="roSotListForm" #formDirective="ngForm">
+      <div formArrayName="roSotList">
+        @for (roSot of getRoSotListArray().controls; track roSot; let index = $index) {
+        <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-light-grey')">
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
             <div [class]="'row pt-2'">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
                 <mat-label>
-                  {{data.translatedLangText.TANK_NO}}: {{scheduling.get('tank_no')?.value}}
+                  {{data.translatedLangText.TANK_NO}}: {{roSot.get('tank_no')?.value}}
                 </mat-label>
               </div>
             </div>
           </div>
         </div>
         }
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+            <input matInput formControlName="remarks">
+            @if (roSotListForm.get('remarks')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
       </div>
     </form>
   </div>

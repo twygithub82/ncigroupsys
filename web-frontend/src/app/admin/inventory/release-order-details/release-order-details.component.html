@@ -46,7 +46,7 @@
                   </mat-form-field>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
-                  <span class="font-bold">{{translatedLangText.STATUS}}:</span> {{releaseOrderItem.status_cv}}
+                  <span class="font-bold">{{translatedLangText.STATUS}}:</span> {{getRoStatusDescription(releaseOrderItem.status_cv)}}
                 </div>
               </div>
               <div class="row">
@@ -88,10 +88,22 @@
                   <div formArrayName="sotList">
                     @for(row of getReleaseOrderSotArray().controls; track row; let index = $index){
                     <mat-card [formGroupName]="index" [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
+                      <mat-card-header class="pt-0 pe-0 pb-0 d-flex justify-content-between align-items-center"
+                        (click)="toggleRow(row)">
+                        <mat-card-title [ngClass]="{'pt-1': true}">
+                          <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="roSotSelection.isSelected(row)"
+                            class="card-checkbox" (click)="$event.stopPropagation()">
+                          </mat-checkbox>
+                          {{row.get('tank_no')?.value}}
+                          <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.get('actions')?.value)) + ' ms-1'">{{
+                            getLastAction(row.get('actions')?.value) | uppercase }}
+                          </div>
+                        </mat-card-title>
+                      </mat-card-header>
                       <mat-card-content [ngClass]="'pb-0'">
                         <div class="row">
                           <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 mb-1">
-                            <div class="row">
+                            <!-- <div class="row">
                               <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.TANK_NO}}:</span>
                                 {{row.get('tank_no')?.value}}
@@ -103,7 +115,7 @@
                                 <span class="font-bold">{{translatedLangText.STATUS}}:</span>
                                 {{row.get('status_cv')?.value}}
                               </div>
-                            </div>
+                            </div> -->
                             <div class="row">
                               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
@@ -131,6 +143,18 @@
                                 <span class="font-bold">{{translatedLangText.SCHEDULING_DATE}}:</span>
                                 {{row.get('schedule_dt')?.value}}
                               </div>
+                              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                              </div>
+                              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                                <span class="font-bold">{{translatedLangText.STATUS}}:</span>
+                                {{row.get('status_cv')?.value}}
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+                                <span class="font-bold">{{translatedLangText.REMARKS}}:</span>
+                                {{row.get('remarks')?.value}}
+                              </div>
                             </div>
                           </div>
                           <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-1">
@@ -149,16 +173,28 @@
                               <mat-icon>more_vert</mat-icon>
                             </button>
                             <mat-menu #menu="matMenu">
-                              @if (row.get('action')?.value !== 'new') {
-                              <button mat-menu-item>
+                              @if (!row.get('actions')?.value.includes('cancel') && roSotDS.canCancelStatus(row.get('status_cv')?.value)) {
+                              <button mat-menu-item (click)="cancelItem($event, row)">
                                 <mat-icon>cancel</mat-icon>
                                 <span>{{translatedLangText.CANCEL}}</span>
+                              </button>
+                              }
+                              @if (!row.get('actions')?.value.includes('rollback') && roSotDS.canRollbackStatus(row.get('status_cv')?.value)) {
+                              <button mat-menu-item (click)="rollbackItem($event, row)">
+                                <mat-icon>undo</mat-icon>
+                                <span>{{translatedLangText.ROLLBACK_STATUS}}</span>
                               </button>
                               }
                               @if (row.get('action')?.value === 'new') {
                               <button mat-menu-item (click)="handleDelete($event, row, index)">
                                 <mat-icon>delete</mat-icon>
                                 <span>{{translatedLangText.DELETE}}</span>
+                              </button>
+                              }
+                              @if (row.get('actions')?.value.includes('cancel')) {
+                              <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
+                                <mat-icon>undo</mat-icon>
+                                <span>{{translatedLangText.UNDO}} {{translatedLangText.CANCEL}}</span>
                               </button>
                               }
                             </mat-menu>

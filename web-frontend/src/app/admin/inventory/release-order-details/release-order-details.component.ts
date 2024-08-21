@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl, UntypedFormArray } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl, UntypedFormArray, AbstractControl } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -53,7 +53,7 @@ import { MatCardModule } from '@angular/material/card';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { SchedulingSotDS, SchedulingSotItem, SchedulingSotUpdateItem } from 'app/data-sources/scheduling-sot';
-import { ReleaseOrderSotGO, ReleaseOrderSotItem, ReleaseOrderSotUpdateItem } from 'app/data-sources/release-order-sot';
+import { ReleaseOrderSotDS, ReleaseOrderSotGO, ReleaseOrderSotItem, ReleaseOrderSotUpdateItem, ReleaseOrderSotUpdateRO } from 'app/data-sources/release-order-sot';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 
 @Component({
@@ -177,9 +177,10 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   releaseOrderItem: ReleaseOrderItem = new ReleaseOrderItem();
   schedulingList: SchedulingUpdateItem[] = [];
-  schedulingSelection = new SelectionModel<SchedulingUpdateItem>(true, []);
+  selectedItemsPerPage: { [key: number]: Set<string> } = {};
+  roSotSelection = new SelectionModel<any>(true, []);
   customer_companyList?: CustomerCompanyItem[];
-  soStatusCvList: CodeValuesItem[] = []
+  roStatusCvList: CodeValuesItem[] = []
   yardCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
 
@@ -188,6 +189,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   roDS: ReleaseOrderDS;
+  roSotDS: ReleaseOrderSotDS;
   bookingDS: BookingDS;
   schedulingDS: SchedulingDS;
   schedulingSotDS: SchedulingSotDS;
@@ -211,6 +213,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.roDS = new ReleaseOrderDS(this.apollo);
+    this.roSotDS = new ReleaseOrderSotDS(this.apollo);
     this.bookingDS = new BookingDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
     this.schedulingSotDS = new SchedulingSotDS(this.apollo);
@@ -243,7 +246,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   getReleaseOrderSotArray(): UntypedFormArray {
     return this.roForm?.get('sotList') as UntypedFormArray;
   }
-  
+
   getFormSotGuids(): string[] {
     const sotArray = this.getReleaseOrderSotArray();
     return sotArray.controls.map(control => control.get('sot_guid')?.value);
@@ -276,8 +279,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.subs.sink = this.roDS.getReleaseOrderByID(this.ro_guid).subscribe(data => {
         if (this.roDS.totalCount > 0) {
           this.releaseOrderItem = data[0];
-          console.log(this.releaseOrderItem)
           this.populateROForm(this.releaseOrderItem);
+          this.roForm!.get('customer_code')!.disable();
+          this.roForm!.get('customer_company_guid')!.disable();
         }
       });
     } else {
@@ -288,7 +292,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const queries = [
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'soStatusCv', codeValType: 'SO_STATUS' }
+      { alias: 'roStatusCv', codeValType: 'RO_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -298,8 +302,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
     });
-    this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-      this.soStatusCvList = data;
+    this.cvDS.connectAlias('roStatusCv').subscribe(data => {
+      this.roStatusCvList = data;
     });
   }
 
@@ -320,10 +324,13 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   populateSOT(sotList: ReleaseOrderSotUpdateItem[]) {
     const schedulingFormArray = this.roForm!.get('sotList') as UntypedFormArray;
-    schedulingFormArray.clear();  // Clear existing items
+    // schedulingFormArray.clear();  // Clear existing items
 
     sotList.forEach(item => {
-      schedulingFormArray.push(this.createRoSotFormGroup(item));
+      const roSotForm = this.createRoSotFormGroup(item);
+      schedulingFormArray.push(roSotForm);
+      this.updateEditableField(roSotForm)
+      this.subscribeToReleaseJobNoChanges(roSotForm);
     });
   }
 
@@ -331,10 +338,12 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.fb.group({
       // roSot prop
       guid: [item.guid],
-      ro_guid: [item.ro_guid],
+      ro_guid: [this.ro_guid || item.ro_guid],
       sot_guid: [item.sot_guid],
       status_cv: [item.status_cv],
+      remarks: [item.remarks],
       action: [item.action],
+      actions: [item.actions || []],
       // sot prop
       tank_no: [item.storing_order_tank?.tank_no],
       release_job_no: [item.storing_order_tank?.release_job_no],
@@ -347,25 +356,29 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  createTankGroup(tank: any): UntypedFormGroup {
-    return this.fb.group({
-      sot_guid: [tank.guid],
-      tank_no: [tank.tank_no],
-      customer_company: [this.ccDS.displayName(tank.storing_order?.customer_company)],
-      eir_no: [this.igDS.getInGateItem(tank.in_gate)?.eir_no],
-      eir_dt: [this.igDS.getInGateItem(tank.in_gate)?.eir_dt],
-      capacity: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.capacity],
-      tare_weight: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.tare_weight],
-      tank_status_cv: [tank.tank_status_cv],
-      yard_cv: [this.igDS.getInGateItem(tank.in_gate)?.yard_cv],
-      reference: [''],
-      release_job_no: [tank.release_job_no],
-    });
+  subscribeToReleaseJobNoChanges(formGroup: UntypedFormGroup) {
+    const releaseJobNoControl = formGroup.get('release_job_no');
+    const actionControl = formGroup.get('action');
+    const actionsControl = formGroup.get('actions');
+
+    if (releaseJobNoControl) {
+      releaseJobNoControl.valueChanges.subscribe(newValue => {
+        if (actionsControl) {
+          const actions = actionsControl.value as string[];
+
+          if (!actions.includes('new') && !actions.includes('cancel')) {
+            actionControl?.setValue('edit')
+            actions.push('edit');
+            actionsControl.setValue(actions);
+          }
+        }
+      });
+    }
   }
 
   updateData(newData: SchedulingItem[]): void {
     this.schedulingList = [...newData];
-    this.schedulingSelection.clear();
+    this.roSotSelection.clear();
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -412,7 +425,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const selectedList = result.selectedList;
-        const roSotList = selectedList.map((tank: any) => new ReleaseOrderSotUpdateItem({ sot_guid: tank.guid, storing_order_tank: new StoringOrderTankItem(tank), action: 'new' }))
+        const roSotList = selectedList.map((tank: any) => new ReleaseOrderSotUpdateItem({ sot_guid: tank.guid, storing_order_tank: new StoringOrderTankItem(tank), action: 'new', actions: ['new'] }))
         this.populateSOT(roSotList)
         // const data = [...this.schedulingList];
         // const newItem = new StoringOrderTankItem({
@@ -428,52 +441,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
-    // this.preventDefault(event);  // Prevents the form submission
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     item: row,
-    //     action: 'edit',
-    //     translatedLangText: this.translatedLangText,
-    //     populateData: {
-    //       unit_typeList: this.unit_typeList,
-    //       repairCv: this.repairCv,
-    //       clean_statusCv: this.clean_statusCv,
-    //       yesnoCv: this.yesnoCv
-    //     },
-    //     index: index,
-    //     sotExistedList: this.schedulingList.data
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     if (result.index >= 0) {
-    //       const data = [...this.schedulingList.data];
-    //       let actions = Array.isArray(data[index].actions!) ? [...data[index].actions!] : [];
-    //       if (!actions.includes('new')) {
-    //         actions = [...new Set([...actions, 'edit'])];
-    //       }
-    //       const updatedItem = new SchedulingItem({
-    //         ...result.item,
-    //         actions: actions
-    //       });
-    //       data[result.index] = updatedItem;
-    //       this.updateData(data);
-    //     } else {
-    //       this.updateData([...this.schedulingList.data, result.item]);
-    //     }
-    //   }
-    // });
-  }
-
-  cancelSelectedRows(row: SchedulingItem[]) {
+  cancelSelectedRows(row: UntypedFormControl[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -481,31 +449,44 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
+    const toCancel = row.map((tank) => new ReleaseOrderSotItem({ guid: tank.get('guid')?.value, remarks: tank.get('remarks')?.value, storing_order_tank: new StoringOrderTankItem({ tank_no: tank.get('tank_no')?.value }) }));
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       data: {
         action: "cancel",
-        item: [...row],
+        item: [...toCancel],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data = [...this.schedulingList];
-        result.item.forEach((newItem: SchedulingItem) => {
-          // Find the index of the item in data with the same id
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+        const roSotList = this.getReleaseOrderSotArray();
+        result.item.forEach((newItem: ReleaseOrderSotItem) => {
+          // Find the index of the FormGroup in the FormArray with the same guid
+          const index = roSotList.controls.findIndex((control: AbstractControl) => {
+            const formGroup = control as UntypedFormGroup;
+            return formGroup.get('guid')?.value === newItem.guid;
+          });
 
-          // If the item is found, update the properties
+          // If the FormGroup is found, update the remarks
           if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              action: 'cancel'
-            };
+            const formGroup = roSotList.at(index) as UntypedFormGroup;
+            const actionsControl = formGroup.get('actions');
+
+            if (actionsControl) {
+              const actions = actionsControl.value as string[];
+
+              actions.push('cancel');
+              // Update the remarks field
+              formGroup.patchValue({
+                remarks: newItem.remarks,
+                action: 'cancel',
+                actions: actions
+              });
+              this.updateEditableField(formGroup)
+            }
           }
         });
-        this.updateData(data);
       }
     });
   }
@@ -555,22 +536,28 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     // });
   }
 
-  undoTempAction(row: StoringOrderTankItem[], actionToBeRemove: string) {
-    // const data = [...this.schedulingList.data];
-    // row.forEach((newItem: StoringOrderTankItem) => {
-    //   const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+  undoTempAction(row: UntypedFormControl[], actionToBeRemove: string) {
+    const roSotList = this.getReleaseOrderSotArray();
+    row.forEach((newItem: UntypedFormControl) => {
+      const index = roSotList.controls.findIndex((control: AbstractControl) => {
+        const formGroup = control as UntypedFormGroup;
+        return formGroup.get('guid')?.value === newItem.get('guid')?.value;
+      });
 
-    //   if (index !== -1) {
-    //     data[index] = {
-    //       ...data[index],
-    //       ...newItem,
-    //       actions: Array.isArray(data[index].actions!)
-    //         ? data[index].actions!.filter(action => action !== actionToBeRemove)
-    //         : []
-    //     };
-    //   }
-    // });
-    // this.updateData(data);
+      if (index !== -1) {
+        const formGroup = roSotList.at(index) as UntypedFormGroup;
+        const currentActions = formGroup.get('actions')?.value as string[]; // Get the actions array
+
+        // Remove the specific action
+        const updatedActions = Array.isArray(currentActions)
+          ? currentActions.filter(action => action !== actionToBeRemove)
+          : [];
+
+        // Update the form group with the modified actions array
+        formGroup.patchValue({ actions: updatedActions, remarks: '' });
+        this.updateEditableField(formGroup)
+      }
+    });
   }
 
   deleteItem(row: UntypedFormControl, index: number) {
@@ -580,7 +567,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const toRemove = new ReleaseOrderSotUpdateItem({storing_order_tank: new StoringOrderTankItem({tank_no: row.get("tank_no")?.value})});
+    const toRemove = new ReleaseOrderSotUpdateItem({ storing_order_tank: new StoringOrderTankItem({ tank_no: row.get("tank_no")?.value }) });
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
       data: {
         item: toRemove,
@@ -592,7 +579,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const sotArray = this.getReleaseOrderSotArray();
-    
+
         // Remove the item from the FormArray
         sotArray.removeAt(index);
       }
@@ -613,6 +600,23 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     //   : this.schedulingList.data?.forEach((scheduling) =>
     //     this.sotSelection.select(scheduling)
     //   );
+  }
+
+  toggleRow(row: any) {
+    const selectedItems = this.selectedItemsPerPage[0] || new Set<string>();
+
+    // Check if the row is already selected
+    if (this.roSotSelection.isSelected(row)) {
+      // Deselect the row
+      this.roSotSelection.deselect(row);
+      selectedItems.delete(row.get('sot_guid')?.value);
+    } else {
+      // If the row is not selected, check if it should be selected based on the company
+      this.roSotSelection.select(row);
+      selectedItems.add(row.get('sot_guid')?.value);
+    }
+
+    this.selectedItemsPerPage[0] = selectedItems;
   }
 
   // context menu
@@ -646,10 +650,10 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
         ro.release_dt = Utility.convertDate(this.roForm!.get('release_dt')?.value) as number;
 
         const sotArray = this.getReleaseOrderSotArray();
-        const roSot: ReleaseOrderSotItem[] = sotArray.controls.map(control => {
-          const item = control.value as Partial<ReleaseOrderSotItem>;
-          const sot = new StoringOrderTankGO({guid: control.get('sot_guid')?.value, release_job_no: control.get('release_job_no')?.value, tank_status_cv: control.get('tank_status_cv')?.value});
-          return new ReleaseOrderSotItem({
+        const roSot: ReleaseOrderSotUpdateRO[] = sotArray.controls.map(control => {
+          const item = control.value as Partial<ReleaseOrderSotUpdateRO>;
+          const sot = new StoringOrderTankGO({ guid: control.get('sot_guid')?.value, release_job_no: control.get('release_job_no')?.value, tank_status_cv: control.get('tank_status_cv')?.value });
+          return new ReleaseOrderSotUpdateRO({
             ...item,
             storing_order_tank: sot
           });
@@ -673,15 +677,15 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  cancelItem(event: Event, row: StoringOrderTankItem) {
-    if (this.schedulingSelection.hasValue()) {
-      this.cancelSelectedRows(this.schedulingSelection.selected)
+  cancelItem(event: Event, row: any) {
+    if (this.roSotSelection.hasValue()) {
+      this.cancelSelectedRows(this.roSotSelection.selected)
     } else {
       this.cancelSelectedRows([row])
     }
   }
 
-  rollbackItem(event: Event, row: StoringOrderTankItem) {
+  rollbackItem(event: Event, row: any) {
     // this.id = row.id;
     // if (this.sotSelection.hasValue()) {
     //   this.rollbackSelectedRows(this.sotSelection.selected)
@@ -690,14 +694,13 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     // }
   }
 
-  undoAction(event: Event, row: StoringOrderTankItem, action: string) {
-    // this.id = row.id;
-    // this.stopPropagation(event);
-    // if (this.sotSelection.hasValue()) {
-    //   this.undoTempAction(this.sotSelection.selected, action)
-    // } else {
-    //   this.undoTempAction([row], action)
-    // }
+  undoAction(event: Event, row: any, action: string) {
+    //this.stopPropagation(event);
+    if (this.roSotSelection.hasValue()) {
+      this.undoTempAction(this.roSotSelection.selected, action)
+    } else {
+      this.undoTempAction([row], action)
+    }
   }
 
   handleDelete(event: Event, row: any, index: number): void {
@@ -713,6 +716,18 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.router.navigate(['/admin/inventory/release-order']);
       });
     }
+  }
+
+  updateEditableField(item: UntypedFormGroup) {
+    if (!this.canEdit(item)) {
+      item.get('release_job_no')?.disable()
+    } else {
+      item.get('release_job_no')?.enable()
+    }
+  }
+
+  canEdit(item: UntypedFormGroup): boolean {
+    return this.roSotDS.canEdit(item.get('status_cv')?.value) && !item.get('actions')?.value!.includes('cancel') && !item.get('actions')?.value!.includes('rollback');
   }
 
   translateLangText() {
@@ -738,6 +753,11 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 
+  getLastAction(actions: string[] | undefined): string {
+    if (!actions) return "";
+    return actions[actions.length - 1];
+  }
+
   getBadgeClass(action: string): string {
     switch (action) {
       case 'new':
@@ -755,15 +775,15 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  getTankStatusDescription(codeValType: string): string | undefined {
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  getYardDescription(codeValType: string): string | undefined {
+  getYardDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
-  getSoStatusDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.soStatusCvList);
+  getRoStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.roStatusCvList);
   }
 }
