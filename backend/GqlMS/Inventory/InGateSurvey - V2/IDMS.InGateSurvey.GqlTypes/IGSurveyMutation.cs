@@ -17,15 +17,16 @@ namespace IDMS.InGateSurvey.GqlTypes
     public class IGSurveyMutation
     {
         //[Authorize]
-        public async Task<int> AddInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<Record> AddInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
             InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
         {
             int retval = 0;
+            List<string> retGuids = new List<string>();
+            Record record = new();
 
             try
             {
-                //string so_guid = "";
                 //long epochNow = GqlUtils.GetNowEpochInSec();
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 //string user = "admin";
@@ -68,7 +69,9 @@ namespace IDMS.InGateSurvey.GqlTypes
                 sot.unit_type_guid = tnk.unit_type_guid;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
-                
+
+                //Add the newly created guid into list for return
+                retGuids.Add(ingateSurvey.guid);
 
                 retval = await context.SaveChangesAsync();
                 //TODO
@@ -76,12 +79,14 @@ namespace IDMS.InGateSurvey.GqlTypes
                 string evtName = EventName.NEW_INGATE;
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
 
+                //Bundle the retVal and retGuid return as record object
+                record = new Record() { affected = retval, guid = retGuids }; 
             }
             catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
-            return retval;
+            return record;
         }
 
         //[Authorize]
