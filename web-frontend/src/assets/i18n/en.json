@@ -151,7 +151,11 @@
         "SCHEDULING-NEW": "New Scheduling",
         "RELEASE-ORDER": "Release Order",
         "RELEASE-ORDER-EDIT": "Edit Release Order",
-        "RELEASE-ORDER-NEW": "New Release Order"
+        "RELEASE-ORDER-NEW": "New Release Order",
+        "OUT-GATE": "Out Gate",
+        "OUT-GATE-DETAILS": "Out Gate Details",
+        "OUT-GATE-SURVEY": "Out Gate Survey",
+        "OUT-GATE-SURVEY-FORM": "Out Gate Survey Form"
       }
     }
   },
@@ -272,6 +276,7 @@
     "CLEANING-CATEGORY": "Cleaning Category",
     "TOTAL-CLEANED": "Total Cleaned",
     "IN-GATE-ALERT": "In-Gate Alert",
+    "OUT-GATE-ALERT": "Out-Gate Alert",
     "MSDS": "MSDS",
     "CARGO-OTHER-DETAILS": "Other Details",
     "CARGO-ALERT": "In-Gate Alert",
@@ -280,6 +285,7 @@
     "CONFIRM": "Confirm",
     "UNDO": "Undo",
     "IN-GATE": "In Gate",
+    "OUT-GATE": "Out Gate",
     "EIR-DATE": "EIR Date",
     "VEHICLE-NO": "Vehicle No.",
     "DRIVER-NAME": "Driver Name",
@@ -331,6 +337,8 @@
     "CARGO-CLASS-9-2": "9",
     "IN-GATE-DETAILS": "In-Gate Details",
     "IN-GATE-REMARKS": "In-Gate Remarks",
+    "OUT-GATE-DETAILS": "Out-Gate Details",
+    "OUT-GATE-REMARKS": "Out-Gate Remarks",
     "LAST-UPDATE-BY": "Last Update By",
     "LAST-UPDATE-ON": "Last Update On",
     "MANUFACTURER-AND-DOM": "Manufacturer & DOM",

@@ -42,10 +42,10 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 
 @Component({
-  selector: 'app-in-gate',
+  selector: 'app-out-gate',
   standalone: true,
-  templateUrl: './in-gate.component.html',
-  styleUrl: './in-gate.component.scss',
+  templateUrl: './out-gate.component.html',
+  styleUrl: './out-gate.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -75,7 +75,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
     MatDividerModule,
   ]
 })
-export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
     'customer_code',
@@ -84,7 +84,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     'so_no',
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -209,7 +209,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
       const searchField = this.searchField;
       const where: any = {
         and: [
-          { status_cv: { eq: "WAITING" } },
+          { tank_status_cv: { eq: "RO_GENERATED" } },
           {
             or: [
               { storing_order: { so_no: { contains: searchField } } },

@@ -162,7 +162,7 @@
                   <div class="card">
                     <div class="header">
                       <h2>
-                        {{translatedLangText.IN_GATE}}
+                        {{translatedLangText.OUT_GATE}}
                       </h2>
                     </div>
                     <div class="body">
@@ -222,7 +222,7 @@
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                              <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.YARD}}</mat-label>
                                   <mat-select formControlName="yard_cv" required>
@@ -266,7 +266,7 @@
                                   </mat-error>
                                   }
                                 </mat-form-field>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
                           <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-0">
@@ -287,7 +287,7 @@
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                              <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                                   <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -310,10 +310,10 @@
                                   </mat-error>
                                   }
                                 </mat-form-field>
-                              </div>
+                              </div> -->
                             </div>
                             <div class="row">
-                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 p-t-10">
+                              <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
                                   {{translatedLangText.STORAGE}}
                                 </mat-checkbox>
@@ -327,7 +327,7 @@
                                   </mat-radio-button>
                                   }
                                 </mat-radio-group>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
                         </div>
@@ -335,7 +335,7 @@
                         <div class="row m-t-10">
                           <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12">
                             <button mat-flat-button aria-label="Back to previous page"
-                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/in-gate/']">
+                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/out-gate/']">
                               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                             </button>
                           </div>

@@ -91,9 +91,9 @@
                       <mat-card-header class="pt-0 pe-0 pb-0 d-flex justify-content-between align-items-center"
                         (click)="toggleRow(row)">
                         <mat-card-title [ngClass]="{'pt-1': true}">
-                          <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="roSotSelection.isSelected(row)"
+                          <!-- <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="roSotSelection.isSelected(row)"
                             class="card-checkbox" (click)="$event.stopPropagation()">
-                          </mat-checkbox>
+                          </mat-checkbox> -->
                           {{row.get('tank_no')?.value}}
                           <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.get('actions')?.value)) + ' ms-1'">{{
                             getLastAction(row.get('actions')?.value) | uppercase }}

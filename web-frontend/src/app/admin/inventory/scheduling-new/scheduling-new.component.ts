@@ -97,7 +97,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     'actions',
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.SCHEDULING-NEW'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.SCHEDULING'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
