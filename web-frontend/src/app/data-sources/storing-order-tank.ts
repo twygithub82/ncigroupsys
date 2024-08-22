@@ -163,7 +163,7 @@ const GET_STORING_ORDER_TANKS = gql`
   }
 `;
 
-const GET_STORING_ORDER_TANKS_IN_GATE = gql`
+const GET_STORING_ORDER_TANKS_INOUT_GATE = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -477,12 +477,12 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  searchStoringOrderTanksInGate(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksInOutGate(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
     
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANKS_IN_GATE,
+        query: GET_STORING_ORDER_TANKS_INOUT_GATE,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

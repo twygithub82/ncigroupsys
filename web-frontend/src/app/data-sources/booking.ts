@@ -19,6 +19,7 @@ export class BookingGO {
   public sot_guid?: string;
   public status_cv?: string;
   public surveyor_guid?: string;
+  public remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -33,6 +34,7 @@ export class BookingGO {
     this.sot_guid = item.sot_guid;
     this.status_cv = item.status_cv;
     this.surveyor_guid = item.surveyor_guid;
+    this.remarks = item.remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -71,6 +73,7 @@ const GET_BOOKING = gql`
         sot_guid
         status_cv
         surveyor_guid
+        remarks
         update_by
         update_dt
         storing_order_tank {
@@ -100,12 +103,6 @@ const GET_BOOKING = gql`
   }
 `;
 
-export const CANCEL_STORING_ORDER_TANK = gql`
-  mutation CancelStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
-    cancelStoringOrderTank(sot: $sot)
-  }
-`;
-
 export const ADD_BOOKING = gql`
   mutation AddBooking($booking: BookingRequestInput!) {
     addBooking(booking: $booking)
@@ -115,6 +112,12 @@ export const ADD_BOOKING = gql`
 export const UPDATE_BOOKING = gql`
   mutation UpdateBooking($bookingList: [BookingRequestInput!]!) {
     updateBooking(bookingList: $bookingList)
+  }
+`;
+
+export const CANCEL_BOOKING = gql`
+  mutation CancelBooking($bookingList: [BookingRequestInput!]!) {
+    cancelBooking(bookingList: $bookingList)
   }
 `;
 
@@ -145,15 +148,6 @@ export class BookingDS extends BaseDataSource<BookingItem> {
       );
   }
 
-  cancelBooking(sot: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: CANCEL_STORING_ORDER_TANK,
-      variables: {
-        sot
-      }
-    });
-  }
-
   addBooking(booking: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_BOOKING,
@@ -172,12 +166,17 @@ export class BookingDS extends BaseDataSource<BookingItem> {
     });
   }
 
-  canAddRemove(sot: StoringOrderTankItem): boolean {
-    return sot && !sot.status_cv;
+  cancelBooking(bookingList: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: CANCEL_BOOKING,
+      variables: {
+        bookingList
+      }
+    });
   }
 
-  canCancel(sot: StoringOrderTankItem): boolean {
-    return sot && sot.status_cv === 'WAITING';
+  canCancel(booking: BookingItem): boolean {
+    return booking && booking.status_cv === 'NEW';
   }
 
   canRollbackStatus(sot: StoringOrderTankItem): boolean {

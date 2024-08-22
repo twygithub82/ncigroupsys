@@ -162,7 +162,7 @@
                   <div class="card">
                     <div class="header">
                       <h2>
-                        {{translatedLangText.IN_GATE}}
+                        {{translatedLangText.OUT_GATE}}
                       </h2>
                     </div>
                     <div class="body">
@@ -222,7 +222,7 @@
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                              <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.YARD}}</mat-label>
                                   <mat-select formControlName="yard_cv" required>
@@ -266,7 +266,7 @@
                                   </mat-error>
                                   }
                                 </mat-form-field>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
                           <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-0">
@@ -287,7 +287,7 @@
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                              <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                                   <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -310,10 +310,10 @@
                                   </mat-error>
                                   }
                                 </mat-form-field>
-                              </div>
+                              </div> -->
                             </div>
                             <div class="row">
-                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 p-t-10">
+                              <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-3 p-t-10">
                                 <mat-checkbox formControlName="purpose_storage" class="m-r-5" color="primary">
                                   {{translatedLangText.STORAGE}}
                                 </mat-checkbox>
@@ -327,7 +327,7 @@
                                   </mat-radio-button>
                                   }
                                 </mat-radio-group>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
                         </div>
@@ -335,7 +335,7 @@
                         <div class="row m-t-10">
                           <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12">
                             <button mat-flat-button aria-label="Back to previous page"
-                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/in-gate/']">
+                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/out-gate/']">
                               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                             </button>
                           </div>
@@ -388,7 +388,7 @@
                           {{translatedLangText.CARGO_NAME}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.cargo ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -396,7 +396,7 @@
                           {{translatedLangText.DESCRIPTION}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.description ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.description ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -404,7 +404,7 @@
                           {{translatedLangText.ALIAS_NAME}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.alias ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.alias ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -412,7 +412,7 @@
                           {{translatedLangText.CARGO_CLASS}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.class_cv ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.class_cv ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -420,7 +420,7 @@
                           {{translatedLangText.CARGO_UN_NO}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.un_no ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.un_no ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -428,7 +428,7 @@
                           {{translatedLangText.CARGO_FLASH_POINT}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.flash_point ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.flash_point ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -436,7 +436,7 @@
                           {{translatedLangText.CARGO_HAZARD_LEVEL}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.hazard_level_cv ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.hazard_level_cv ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -444,7 +444,7 @@
                           {{translatedLangText.CARGO_BAN_TYPE}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.ban_type_cv ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.ban_type_cv ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -452,7 +452,7 @@
                           {{translatedLangText.CARGO_NATURE}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.nature_cv ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.nature_cv ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -460,7 +460,7 @@
                           {{translatedLangText.CLEANING_CATEGORY}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.cleaning_category?.name ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.cleaning_category?.name ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -468,7 +468,7 @@
                           {{translatedLangText.TOTAL_CLEANED}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.cargo ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -476,7 +476,7 @@
                           {{translatedLangText.IN_GATE_ALERT}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.in_gate_alert ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.in_gate_alert ?? "-"}}
                         </div>
                       </div>
                       <div class="row">
@@ -484,7 +484,7 @@
                           {{translatedLangText.MSDS}}:
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.msds_guid ?? "-"}}
+                          {{storingOrderTankItem?.tariff_cleaning?.msds_guid ?? "-"}}
                         </div>
                       </div>
                     </div>

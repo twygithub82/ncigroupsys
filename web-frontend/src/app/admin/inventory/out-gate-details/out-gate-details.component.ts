@@ -49,10 +49,10 @@ import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 
 @Component({
-  selector: 'app-in-gate-details',
+  selector: 'app-out-gate-details',
   standalone: true,
-  templateUrl: './in-gate-details.component.html',
-  styleUrl: './in-gate-details.component.scss',
+  templateUrl: './out-gate-details.component.html',
+  styleUrl: './out-gate-details.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -86,7 +86,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
     MatRadioModule,
   ]
 })
-export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
     'so_no',
@@ -96,10 +96,10 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     'actions'
   ];
 
-  pageTitleNew = 'MENUITEMS.INVENTORY.LIST.IN-GATE-DETAILS'
+  pageTitleNew = 'MENUITEMS.INVENTORY.LIST.OUT-GATE-DETAILS'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.INVENTORY.LIST.IN-GATE'
+    'MENUITEMS.INVENTORY.LIST.OUT-GATE'
   ]
 
   translatedLangText: any = {};
@@ -143,7 +143,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     TOTAL_CLEANED: 'COMMON-FORM.TOTAL-CLEANED',
     IN_GATE_ALERT: 'COMMON-FORM.IN-GATE-ALERT',
     MSDS: 'COMMON-FORM.MSDS',
-    IN_GATE: 'COMMON-FORM.IN-GATE',
+    OUT_GATE: 'COMMON-FORM.OUT-GATE',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
     HAULIER: 'COMMON-FORM.HAULIER',
     VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
@@ -184,7 +184,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   last_cargoList?: TariffCleaningItem[];
-  cargoDetails?: TariffCleaningItem;
 
   constructor(
     public httpClient: HttpClient,
@@ -316,7 +315,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
     if (sot.tariff_cleaning) {
       this.lastCargoControl.setValue(sot.tariff_cleaning);
-      this.cargoDetails = sot.tariff_cleaning;
     }
   }
 
@@ -390,7 +388,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         } else {
           searchCriteria = value.cargo;
           this.inGateForm!.get('last_cargo_guid')!.setValue(value.guid);
-          this.cargoDetails = value;
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           if (JSON.stringify(data) !== JSON.stringify(this.last_cargoList)) {
@@ -467,7 +464,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/inventory/in-gate']);
+      this.router.navigate(['/admin/inventory/out-gate']);
     }
   }
 

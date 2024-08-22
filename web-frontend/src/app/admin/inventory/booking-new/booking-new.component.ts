@@ -26,7 +26,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -45,8 +45,9 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { SchedulingItem } from 'app/data-sources/scheduling';
-import { BookingItem } from 'app/data-sources/booking';
+import { BookingDS, BookingGO, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 
 @Component({
   selector: 'app-booking-new',
@@ -97,7 +98,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     'actions',
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING-NEW'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -146,7 +147,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
     REPAIR_COMPLETION_DATE: 'COMMON-FORM.REPAIR-COMPLETION-DATE',
     BOOKED: 'COMMON-FORM.BOOKED',
-    SCHEDULED: 'COMMON-FORM.SCHEDULED'
+    SCHEDULED: 'COMMON-FORM.SCHEDULED',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    CONFIRM: 'COMMON-FORM.CONFIRM'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -159,6 +162,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
+  bookingDS: BookingDS;
 
   sotList: StoringOrderTankItem[] = [];
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
@@ -187,6 +191,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
+    private router: Router,
     private translate: TranslateService
   ) {
     super();
@@ -196,6 +201,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
+    this.bookingDS = new BookingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -260,6 +266,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -392,10 +399,10 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       where.storing_order = soSearch;
     }
 
-    if (this.searchForm!.value['capacity'] || 
-      this.searchForm!.value['eir_no'] || 
-      this.searchForm!.value['eir_dt_start'] || 
-      this.searchForm!.value['eir_dt_end'] || 
+    if (this.searchForm!.value['capacity'] ||
+      this.searchForm!.value['eir_no'] ||
+      this.searchForm!.value['eir_dt_start'] ||
+      this.searchForm!.value['eir_dt_end'] ||
       this.searchForm!.value['tare_weight']) {
       // In Gate
       const igSearch: any = {};
@@ -579,6 +586,51 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         this.performSearch(this.pageSize, 0, this.pageSize);
       }
     });
+  }
+
+  cancelItem(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
+    this.stopPropagation(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      data: {
+        action: "cancel",
+        sot: sot,
+        booking: booking,
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          bookingTypeCvList: this.bookingTypeCvListNewBooking,
+          yardCvList: this.yardCvList,
+          tankStatusCvList: this.tankStatusCvList
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const cancelBookingReq = new BookingGO(result.booking);
+        this.bookingDS.cancelBooking([cancelBookingReq]).subscribe(cancelResult => {
+          console.log(cancelResult)
+          this.handleSaveSuccess(cancelResult?.data?.cancelBooking);
+          this.performSearch(this.pageSize, 0, this.pageSize);
+        });
+      }
+    });
+  }
+
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    }
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
   }
 
   preventDefault(event: Event) {

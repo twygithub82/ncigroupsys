@@ -26,6 +26,8 @@ import { SchedulingNewComponent } from './inventory/scheduling-new/scheduling-ne
 import { ReleaseOrderComponent } from './inventory/release-order/release-order.component';
 import { ReleaseOrderDetailsComponent } from './inventory/release-order-details/release-order-details.component';
 import { SchedulingComponent } from './inventory/scheduling/scheduling.component';
+import { OutGateComponent } from './inventory/out-gate/out-gate.component';
+import { OutGateDetailsComponent } from './inventory/out-gate-details/out-gate-details.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "cleaning-setps",
@@ -76,21 +78,37 @@ export const ADMIN_ROUTE: Routes = [
     component: InGateSurveyFormComponent,
   },
   {
-    path: "inventory/booking",
-    component: BookingComponent,
+    path: "inventory/out-gate",
+    component: OutGateComponent,
   },
   {
-    path: "inventory/booking-new",
+    path: "inventory/out-gate/details/:id",
+    component: OutGateDetailsComponent,
+  },
+  // {
+  //   path: "inventory/booking",
+  //   component: BookingComponent,
+  // },
+  {
+    path: "inventory/booking",
     component: BookingNewComponent,
   },
+  // {
+  //   path: "inventory/booking-new",
+  //   component: BookingNewComponent,
+  // },
+  // {
+  //   path: "inventory/scheduling",
+  //   component: SchedulingComponent,
+  // },
   {
     path: "inventory/scheduling",
-    component: SchedulingComponent,
-  },
-  {
-    path: "inventory/scheduling-new",
     component: SchedulingNewComponent,
   },
+  // {
+  //   path: "inventory/scheduling-new",
+  //   component: SchedulingNewComponent,
+  // },
   {
     path: "inventory/release-order",
     component: ReleaseOrderComponent,
