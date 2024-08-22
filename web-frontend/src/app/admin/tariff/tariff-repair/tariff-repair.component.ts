@@ -54,7 +54,7 @@ import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem }
 import {SearchCriteriaService} from 'app/services/search-criteria.service';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
-
+import { FormDialogComponent_Edit_Cost} from './form-dialog-edit-cost/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
@@ -420,7 +420,37 @@ implements OnInit {
     return `${day}/${month}/${year}`;
 
   }
+
   adjustCost()
+  {
+   // if(this.selection.selected.length==0) return;
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost,{
+      width: '700px',
+      data: {
+        action: 'new',
+        langText: this.langText,
+        selectedItems:this.selection.selected
+      }
+        
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         if (result>0) {
+          
+            this.handleSaveSuccess(result);
+            this.search();
+          
+      }
+      });
+  }
+
+  editCallSelection()
   {
     if(this.selection.selected.length==0) return;
     let tempDirection: Direction;
