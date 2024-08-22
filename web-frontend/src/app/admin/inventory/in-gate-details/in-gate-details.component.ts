@@ -184,6 +184,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   last_cargoList?: TariffCleaningItem[];
+  cargoDetails?: TariffCleaningItem;
 
   constructor(
     public httpClient: HttpClient,
@@ -315,6 +316,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
     if (sot.tariff_cleaning) {
       this.lastCargoControl.setValue(sot.tariff_cleaning);
+      this.cargoDetails = sot.tariff_cleaning;
     }
   }
 
@@ -388,6 +390,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         } else {
           searchCriteria = value.cargo;
           this.inGateForm!.get('last_cargo_guid')!.setValue(value.guid);
+          this.cargoDetails = value;
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           if (JSON.stringify(data) !== JSON.stringify(this.last_cargoList)) {
