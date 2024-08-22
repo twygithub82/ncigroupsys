@@ -12,6 +12,8 @@ import { InGateItem } from './in-gate';
 import { BookingItem } from './booking';
 import { SchedulingItem } from './scheduling';
 import { SchedulingSotItem } from './scheduling-sot';
+import { ReleaseOrderSotItem } from './release-order-sot';
+import { OutGateItem } from './out-gate';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -89,6 +91,8 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public in_gate?: InGateItem[];
   public booking?: BookingItem[];
   public scheduling_sot?: SchedulingSotItem[];
+  public release_order_sot?: ReleaseOrderSotItem[];
+  public out_gate?: OutGateItem[];
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -97,6 +101,8 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.in_gate = item.in_gate;
     this.booking = item.booking;
     this.scheduling_sot = item.scheduling_sot;
+    this.release_order_sot = item.release_order_sot;
+    this.out_gate = item.out_gate;
     this.actions = item.actions || [];
   }
 }
@@ -422,6 +428,99 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANK_BY_ID_OUT_GATE = gql`
+  ${TARIFF_CLEANING_FRAGMENT}
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        certificate_cv
+        clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        eta_dt
+        etr_dt
+        guid
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        last_cargo_guid
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        remarks
+        required_temp
+        so_guid
+        status_cv
+        tank_no
+        tank_status_cv
+        unit_type_guid
+        update_by
+        update_dt
+        out_gate {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          eir_dt
+          eir_no
+          eir_status_cv
+          guid
+          haulier
+          remarks
+          so_tank_guid
+          update_by
+          update_dt
+          vehicle_no
+        }
+        tariff_cleaning {
+          ...TariffCleaningFields
+        }
+        release_order_sot {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          remarks
+          ro_guid
+          sot_guid
+          status_cv
+          update_by
+          update_dt
+          release_order {
+            create_by
+            create_dt
+            customer_company_guid
+            delete_dt
+            guid
+            haulier
+            release_dt
+            remarks
+            ro_generated
+            ro_no
+            ro_notes
+            status_cv
+            update_by
+            update_dt
+            customer_company {
+              code
+              guid
+              name
+              alias
+            }
+          }
+        }
+      }
+      totalCount
+    }
+  }
+`;
+
 const CHECK_ANY_ACTIVE_SOT = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
@@ -536,7 +635,28 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          console.log(sotList);
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTankByIDForOutGate(id: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = { guid: { eq: id } }
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANK_BY_ID_OUT_GATE,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
           return sotList.nodes;

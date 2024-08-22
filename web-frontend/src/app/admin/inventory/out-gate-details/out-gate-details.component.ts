@@ -47,6 +47,9 @@ import { MatRadioModule } from '@angular/material/radio';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { OutGateDS, OutGateGO, OutGateItem } from 'app/data-sources/out-gate';
+import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
+import { ReleaseOrderGO, ReleaseOrderItem } from 'app/data-sources/release-order';
 
 @Component({
   selector: 'app-out-gate-details',
@@ -106,10 +109,10 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   langText = {
     DETAILS: 'COMMON-FORM.DETAILS',
     STATUS: 'COMMON-FORM.STATUS',
-    SO_NO: 'COMMON-FORM.SO-NO',
+    RO_NO: 'COMMON-FORM.RO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
-    SO_DATE: 'COMMON-FORM.SO-DATE',
+    RO_DATE: 'COMMON-FORM.RO-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
@@ -125,7 +128,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
+    RO_NOTES: 'COMMON-FORM.RO-NOTES',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
     EIR_NO: 'COMMON-FORM.EIR-NO',
     CLEANING_CONDITIONS: 'COMMON-FORM.CLEANING-CONDITIONS',
@@ -163,7 +166,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION'
   }
 
-  inGateForm?: UntypedFormGroup;
+  outGateForm?: UntypedFormGroup;
 
   storingOrderTankItem?: StoringOrderTankItem;
 
@@ -171,7 +174,8 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
-  igDS: InGateDS;
+  ogDS: OutGateDS;
+  roSotDS: ReleaseOrderSotDS;
 
   sot_guid?: string | null;
 
@@ -197,12 +201,13 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   ) {
     super();
     this.translateLangText();
-    this.createInGateForm();
+    this.createOutGateForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
-    this.igDS = new InGateDS(this.apollo);
+    this.ogDS = new OutGateDS(this.apollo);
+    this.roSotDS = new ReleaseOrderSotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -219,10 +224,10 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     this.loadData();
   }
 
-  createInGateForm() {
-    this.inGateForm = this.fb.group({
+  createOutGateForm() {
+    this.outGateForm = this.fb.group({
       eir_dt: [{ value: new Date(), disabled: true }],
-      job_no: [''],
+      release_job_no: [''],
       haulier: [''],
       vehicle_no: [''],
       driver_name: [''],
@@ -238,19 +243,13 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   public loadData() {
-    // this.igDS.getInGateByID('140ca688ba104671b05d137e0d8a285f').subscribe(data=>{
-    //   if(this.igDS.totalCount>0)
-    //   {
-
-    //   }
-    // })
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
-      this.subs.sink = this.sotDS.getStoringOrderTankByID(this.sot_guid).subscribe(data => {
+      this.subs.sink = this.sotDS.getStoringOrderTankByIDForOutGate(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.storingOrderTankItem = data[0];
-          this.populateInGateForm(this.storingOrderTankItem);
+          this.populateOutGateForm(this.storingOrderTankItem);
         }
       });
     } else {
@@ -282,40 +281,21 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
-  }
-
-  populateInGateForm(sot: StoringOrderTankItem): void {
-    this.inGateForm!.patchValue({
-      haulier: sot.storing_order?.haulier,
-      vehicle_no: this.igDS.getInGateItem(sot.in_gate)?.vehicle_no,
-      driver_name: this.igDS.getInGateItem(sot.in_gate)?.driver_name,
-      eir_dt: this.igDS.getInGateItem(sot.in_gate)?.eir_dt ? Utility.convertDate(this.igDS.getInGateItem(sot.in_gate)?.eir_dt) : new Date(),
-      job_no: sot.job_no,
-      remarks: this.igDS.getInGateItem(sot.in_gate)?.remarks,
-      last_cargo_guid: sot.last_cargo_guid,
-      last_cargo: this.lastCargoControl,
-      purpose_storage: sot.purpose_storage,
-      open_on_gate: sot.tariff_cleaning?.open_on_gate_cv,
-      yard_cv: this.igDS.getInGateItem(sot.in_gate)?.yard_cv,
-      preinspection_cv: this.igDS.getInGateItem(sot.in_gate)?.preinspection_cv,
-      lolo_cv: 'BOTH' // default BOTH
+  populateOutGateForm(sot: StoringOrderTankItem): void {
+    this.outGateForm!.patchValue({
+      haulier: this.roSotDS.getReleaseOrderSotItem(sot.release_order_sot)?.release_order?.haulier,
+      vehicle_no: this.ogDS.getOutGateItem(sot.out_gate)?.vehicle_no,
+      driver_name: this.ogDS.getOutGateItem(sot.out_gate)?.driver_name,
+      eir_dt: this.ogDS.getOutGateItem(sot.out_gate)?.eir_dt ? Utility.convertDate(this.ogDS.getOutGateItem(sot.out_gate)?.eir_dt) : new Date(),
+      release_job_no: sot.release_job_no,
+      remarks: this.ogDS.getOutGateItem(sot.out_gate)?.remarks,
+      // last_cargo_guid: sot.last_cargo_guid,
+      // last_cargo: this.lastCargoControl,
     });
 
-    if (sot.tariff_cleaning) {
-      this.lastCargoControl.setValue(sot.tariff_cleaning);
-    }
+    // if (sot.tariff_cleaning) {
+    //   this.lastCargoControl.setValue(sot.tariff_cleaning);
+    // }
   }
 
   // export table data in excel file
@@ -378,64 +358,61 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   initializeFilter() {
-    this.inGateForm!.get('last_cargo')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-          this.inGateForm!.get('last_cargo_guid')!.setValue(value.guid);
-        }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          if (JSON.stringify(data) !== JSON.stringify(this.last_cargoList)) {
-            this.last_cargoList = data;
-            this.updateValidators(this.last_cargoList);
-            this.lastCargoControl.updateValueAndValidity();
-          }
-        });
-      })
-    ).subscribe();
+    // this.outGateForm!.get('last_cargo')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     if (typeof value === 'string') {
+    //       searchCriteria = value;
+    //     } else {
+    //       searchCriteria = value.cargo;
+    //       this.outGateForm!.get('last_cargo_guid')!.setValue(value.guid);
+    //     }
+    //     this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+    //       if (JSON.stringify(data) !== JSON.stringify(this.last_cargoList)) {
+    //         this.last_cargoList = data;
+    //         this.updateValidators(this.last_cargoList);
+    //         this.lastCargoControl.updateValueAndValidity();
+    //       }
+    //     });
+    //   })
+    // ).subscribe();
   }
 
-  onInGateFormSubmit() {
-    if (this.inGateForm?.valid) {
-      console.log('Valid inGateForm', this.inGateForm?.value);
-      this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.get('haulier')?.value;
-      this.storingOrderTankItem!.job_no = this.inGateForm.get('job_no')?.value;
-      this.storingOrderTankItem!.purpose_storage = this.inGateForm.get('purpose_storage')?.value;
-      this.storingOrderTankItem!.last_cargo_guid = this.inGateForm.get('last_cargo_guid')?.value;
-      let so = new StoringOrderGO(this.storingOrderTankItem!.storing_order);
-      let sot = new StoringOrderTankGO(this.storingOrderTankItem);
-      sot.storing_order = so;
-      let ig = new InGateGO({
-        guid: this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.guid,
-        eir_no: this.igDS.getInGateItem(this.storingOrderTankItem?.in_gate)?.eir_no,
-        eir_dt: Utility.convertDate(this.inGateForm.get('eir_dt')?.value) as number,
-        so_tank_guid: this.storingOrderTankItem?.guid,
-        driver_name: this.inGateForm.get('driver_name')?.value,
-        vehicle_no: this.inGateForm.get('vehicle_no')?.value,
-        remarks: this.inGateForm.get('remarks')?.value,
-        tank: sot,
-        yard_cv: this.inGateForm.get('yard_cv')?.value,
-        preinspection_cv: this.inGateForm.get('preinspection_cv')?.value,
-        lolo_cv: this.inGateForm.get('lolo_cv')?.value,
-        haulier: this.inGateForm.get('haulier')?.value
+  onOutGateFormSubmit() {
+    if (this.outGateForm?.valid) {
+      console.log('Valid outGateForm', this.outGateForm?.value);
+      const ro = new ReleaseOrderGO(this.roSotDS.getReleaseOrderSotItem(this.storingOrderTankItem!.release_order_sot)?.release_order);
+      ro.haulier = this.outGateForm.get('haulier')?.value;
+
+      const sot = new StoringOrderTankGO(this.storingOrderTankItem);
+      sot.release_job_no = this.outGateForm.get('release_job_no')?.value;
+      
+      const og = new OutGateItem({
+        ...this.ogDS.getOutGateItem(this.storingOrderTankItem?.out_gate),
+        eir_dt: Utility.convertDate(this.outGateForm.get('eir_dt')?.value) as number,
+        driver_name: this.outGateForm.get('driver_name')?.value,
+        vehicle_no: this.outGateForm.get('vehicle_no')?.value,
+        remarks: this.outGateForm.get('remarks')?.value,
+        so_tank_guid: sot.guid,
+        tank: sot
       })
-      console.log(ig);
-      if (ig.guid) {
-        this.igDS.updateInGate(ig).subscribe(result => {
-          this.handleSaveSuccess(result?.data?.updateInGate);
+      console.log(og);
+      console.log(ro);
+      if (og.guid) {
+        this.ogDS.updateOutGate(og, ro).subscribe(result => {
+          console.log(result?.data)
+          // this.handleSaveSuccess(result?.data);
         });
       } else {
-        this.igDS.addInGate(ig).subscribe(result => {
-          this.handleSaveSuccess(result?.data?.addInGate);
+        this.ogDS.addOutGate(og, ro).subscribe(result => {
+          console.log(result?.data)
+          // this.handleSaveSuccess(result?.data);
         });
       }
     } else {
-      console.log('Invalid inGateForm', this.inGateForm?.value);
+      console.log('Invalid inGateForm', this.outGateForm?.value);
     }
   }
 
@@ -445,9 +422,9 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-  displayLastCargoFn(tc: TariffCleaningItem): string {
-    return tc && tc.cargo ? `${tc.cargo}` : '';
-  }
+  // displayLastCargoFn(tc: TariffCleaningItem): string {
+  //   return tc && tc.cargo ? `${tc.cargo}` : '';
+  // }
 
   cleanStatusColor(clean_status_cv?: string): string {
     if (clean_status_cv === 'DIRTY') {
@@ -470,25 +447,25 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
 
   resetForm(event: Event) {
     event.preventDefault(); // Prevents the form submission
-    this.inGateForm!.patchValue({
-      haulier: this.storingOrderTankItem!.storing_order?.haulier,
-      vehicle_no: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.vehicle_no || '',
-      driver_name: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.driver_name || '',
-      eir_dt: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt ? Utility.convertDate(this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt) : new Date(),
-      job_no: this.storingOrderTankItem!.job_no,
-      remarks: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.remarks,
-      purpose_storage: this.storingOrderTankItem!.purpose_storage,
-      open_on_gate: this.storingOrderTankItem!.tariff_cleaning?.open_on_gate_cv,
-      yard_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.yard_cv,
-      preinspection_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.preinspection_cv,
-      lolo_cv: 'BOTH' // default BOTH
-    });
+    // this.outGateForm!.patchValue({
+    //   haulier: this.storingOrderTankItem!.storing_order?.haulier,
+    //   vehicle_no: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.vehicle_no || '',
+    //   driver_name: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.driver_name || '',
+    //   eir_dt: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt ? Utility.convertDate(this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt) : new Date(),
+    //   job_no: this.storingOrderTankItem!.job_no,
+    //   remarks: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.remarks,
+    //   purpose_storage: this.storingOrderTankItem!.purpose_storage,
+    //   open_on_gate: this.storingOrderTankItem!.tariff_cleaning?.open_on_gate_cv,
+    //   yard_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.yard_cv,
+    //   preinspection_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.preinspection_cv,
+    //   lolo_cv: 'BOTH' // default BOTH
+    // });
     
-    if (this.storingOrderTankItem!.tariff_cleaning) {
-      this.lastCargoControl.setValue(this.storingOrderTankItem!.tariff_cleaning);
-    } else {
-      this.lastCargoControl.reset(); // Reset the control if there's no tariff_cleaning
-    }
+    // if (this.storingOrderTankItem!.tariff_cleaning) {
+    //   this.lastCargoControl.setValue(this.storingOrderTankItem!.tariff_cleaning);
+    // } else {
+    //   this.lastCargoControl.reset(); // Reset the control if there's no tariff_cleaning
+    // }
   }
 
   updateValidators(validOptions: any[]) {

@@ -7,7 +7,7 @@
     </div>
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <form class="ms-0" [formGroup]="inGateForm!" (ngSubmit)="onInGateFormSubmit()" #formDirective="ngForm">
+        <form class="ms-0" [formGroup]="outGateForm!" (ngSubmit)="onOutGateFormSubmit()" #formDirective="ngForm">
           <div class="card">
             <div class="header">
               <h2>
@@ -27,18 +27,18 @@
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.SO_NO}}:</span>
+                        <span>{{translatedLangText.RO_NO}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_no}}</div>
+                        <div class="contact-detail-info font-bold">{{roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.ro_no}}</div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.SO_NOTES}}:</span>
+                        <span>{{translatedLangText.RO_NOTES}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_notes}}
+                        <div class="contact-detail-info font-bold">{{roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.ro_notes}}
                         </div>
                       </div>
                     </div>
@@ -50,7 +50,7 @@
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                         <div class="contact-detail-info font-bold">
-                          {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
+                          {{ccDS.displayName(roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.customer_company)}}</div>
                       </div>
                     </div>
                     <div class="row">
@@ -59,18 +59,18 @@
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                         <div class="contact-detail-info font-bold">
-                          {{storingOrderTankItem?.storing_order?.customer_company?.alias}}</div>
+                          {{roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.customer_company?.alias}}</div>
                       </div>
                     </div>
                   </div>
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.SO_DATE}}:</span>
+                        <span>{{translatedLangText.RO_DATE}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                         <div class="contact-detail-info font-bold">
-                          {{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
+                          {{displayDate(roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.release_dt!)}}
                         </div>
                       </div>
                     </div>
@@ -79,7 +79,7 @@
                         <span>{{translatedLangText.STATUS}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.status_cv}}
+                        <div class="contact-detail-info font-bold">{{roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.status_cv}}
                         </div>
                       </div>
                     </div>
@@ -90,7 +90,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 m-b-5">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                   <div class="card">
@@ -134,7 +134,7 @@
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <span
-                                  [class]="'font-bold'">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
+                                  [class]="'font-bold'">{{ogDS.getOutGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
                               </div>
                             </div>
                             <div class="row">
@@ -181,7 +181,7 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                                   <input matInput formControlName="haulier" required>
-                                  @if (inGateForm?.get('haulier')?.hasError('required')) {
+                                  @if (outGateForm?.get('haulier')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
@@ -194,7 +194,7 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
                                   <input matInput formControlName="vehicle_no" required>
-                                  @if (inGateForm?.get('vehicle_no')?.hasError('required')) {
+                                  @if (outGateForm?.get('vehicle_no')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
@@ -205,7 +205,7 @@
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
                                   <input matInput formControlName="driver_name" required>
-                                  @if (inGateForm?.get('driver_name')?.hasError('required')) {
+                                  @if (outGateForm?.get('driver_name')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
@@ -282,7 +282,7 @@
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                                  <input matInput formControlName="job_no" required>
+                                  <input matInput formControlName="release_job_no" required>
                                 </mat-form-field>
                               </div>
                             </div>
@@ -344,11 +344,11 @@
                               {{translatedLangText.RESET}}
                             </button>
                             <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
-                              [disabled]="(igDS.loading$| async)">
+                              [disabled]="(ogDS.loading$| async)">
                               <mat-icon>
-                                @if (!(igDS.loading$ | async)) {
+                                @if (!(ogDS.loading$ | async)) {
                                 move_to_inbox
-                                } @else if ((igDS.loading$ | async)) {
+                                } @else if ((ogDS.loading$ | async)) {
                                 <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                                 }
                               </mat-icon>
@@ -363,133 +363,6 @@
                       }
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
-              <div class="card">
-                <div class="header">
-                  <h2>
-                    {{translatedLangText.CARGO_DETAILS}}
-                  </h2>
-                </div>
-                <div class="body p-1">
-                  @if (sotDS.loading$ | async) {
-                  <div class="tbl-spinner">
-                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                    </mat-progress-spinner>
-                  </div>
-                  }
-                  @if (!(sotDS.loading$ | async)) {
-                  <mat-card-content>
-                    <div class="container pt-2">
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_NAME}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.DESCRIPTION}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.description ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.ALIAS_NAME}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.alias ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_CLASS}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.class_cv ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_UN_NO}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.un_no ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_FLASH_POINT}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.flash_point ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_HAZARD_LEVEL}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.hazard_level_cv ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_BAN_TYPE}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.ban_type_cv ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_NATURE}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.nature_cv ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CLEANING_CATEGORY}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.cleaning_category?.name ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.TOTAL_CLEANED}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.cargo ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.IN_GATE_ALERT}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.in_gate_alert ?? "-"}}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.MSDS}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{storingOrderTankItem?.tariff_cleaning?.msds_guid ?? "-"}}
-                        </div>
-                      </div>
-                    </div>
-                  </mat-card-content>
-                  }
                 </div>
               </div>
             </div>
