@@ -109,7 +109,7 @@ namespace IDMS.Models.Package.All.GqlTypes
                     if(free_storage > -1) dbPackageDepot.free_storage = free_storage;
                     if (lolo_cost > -1) dbPackageDepot.lolo_cost = lolo_cost;
                     if (preinspection_cost > -1) dbPackageDepot.preinspection_cost = preinspection_cost;
-                    if (!string.IsNullOrEmpty(remarks)) dbPackageDepot.remarks = remarks;
+                    if (!string.IsNullOrEmpty(remarks)) dbPackageDepot.remarks = (remarks=="--")?"":remarks;
                     if (!string.IsNullOrEmpty(storage_cal_cv)) dbPackageDepot.storage_cal_cv = storage_cal_cv;
                     if (storage_cost > -1) dbPackageDepot.storage_cost = storage_cost;
                     if (gate_in_cost > -1) dbPackageDepot.gate_in_cost = gate_in_cost;

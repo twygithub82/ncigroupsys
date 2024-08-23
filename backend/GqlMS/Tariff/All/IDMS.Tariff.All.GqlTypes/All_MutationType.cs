@@ -74,6 +74,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                     pack_depot.storage_cost = newTariffDepot.storage_cost;
                     pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
                     pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
+                    pack_depot.storage_cal_cv = "TANK_IN_DATE";
                     pack_depot.create_by = uid;
                     pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
                     context.package_depot.Add(pack_depot);

@@ -411,7 +411,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     var gate_out_cost=-1;
     if(this.pcForm!.value["gate_out_cost_cust"]) gate_out_cost=Number(this.pcForm!.value["gate_out_cost_cust"]);
 
-    var storageCalValue:String="-";
+    var storageCalValue:String="";
     if(this.storageCalControl.value)
     {
         const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
@@ -420,7 +420,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     var storage_cal_cv = storageCalValue;
     var remarks = this.pcForm!.value["remarks"]||"";
-
+     if(pd_guids.length==1)
+     {
+       if(!remarks)
+       {
+          remarks="--";
+       }
+     }
       this.packageDepotDS?.updatePackageDepots(pd_guids,free_storage,lolo_cost,preinspection_cost,storage_cost,gate_in_cost, gate_out_cost,remarks,storage_cal_cv).subscribe(result=>{
       if(result.data.updatePackageDepots>0)
       {

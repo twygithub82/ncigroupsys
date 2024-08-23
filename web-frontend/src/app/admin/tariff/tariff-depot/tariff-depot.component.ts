@@ -463,7 +463,7 @@ implements OnInit {
     if (this.tdForm!.value["profile_name"])
       {
         let name = this.tdForm!.value["profile_name"];
-      where.name ={contains:name}
+      where.profile_name ={contains:name}
       }
       this.lastSearchCriteria=where;
     this.subs.sink = this.tfDepotDS.SearchTariffDepot(where,this.lastOrderBy,this.pageSize).subscribe(data => {
@@ -662,8 +662,10 @@ implements OnInit {
      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result>0) {
            this.handleSaveSuccess(result);
+           
            //this.search();
-          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+           if(this.tariffDepotItems.length>0)
+               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
     
       }
    });

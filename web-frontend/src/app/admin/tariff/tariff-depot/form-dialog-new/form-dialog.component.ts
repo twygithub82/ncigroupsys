@@ -34,7 +34,7 @@ import {TariffDepotItem,TariffDepotDS} from 'app/data-sources/tariff-depot';
 import { TankDS,TankItem } from 'app/data-sources/tank';
 import { elements } from 'chart.js';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface DialogData {
   action?: string;
@@ -62,6 +62,7 @@ interface Condition {
   imports: [
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     MatDialogContent,
     FormsModule,
     ReactiveFormsModule,
