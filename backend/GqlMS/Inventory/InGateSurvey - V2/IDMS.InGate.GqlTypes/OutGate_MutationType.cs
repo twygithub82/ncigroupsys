@@ -34,7 +34,7 @@ namespace IDMS.InGate.GqlTypes
 
                 var currentDate = DateTime.Now.ToEpochTime();
                 var newGuid = (string.IsNullOrEmpty(OutGate.guid) ? Util.GenerateGUID() : OutGate.guid);
-                
+
                 out_gate newOutGate = new()
                 {
                     guid = newGuid,
@@ -44,9 +44,8 @@ namespace IDMS.InGate.GqlTypes
                     eir_dt = currentDate,
                     driver_name = OutGate.driver_name,
                     //Trigger auto generated
-                    //eir_no = OutGate.eir_no,
                     //eir_status_cv = "YET_TO_SURVEY",
-
+                    eir_no = string.IsNullOrEmpty(OutGate.eir_no) ? ReleaseOrder.ro_no : OutGate.eir_no,
                     so_tank_guid = OutGate.so_tank_guid,
                     vehicle_no = OutGate.vehicle_no,
                     remarks = OutGate.remarks,
