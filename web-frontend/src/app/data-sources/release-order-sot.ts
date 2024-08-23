@@ -89,4 +89,8 @@ export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem>
   canEdit(status_cv: any): boolean {
     return status_cv === '' || status_cv === 'PENDING';
   }
+
+  getReleaseOrderSotItem(roSot: ReleaseOrderSotItem[] | undefined): ReleaseOrderSotItem | undefined {
+    return roSot?.find(ros => ros.status_cv !== 'CANCELED' && !(ros.delete_dt));
+  }
 }

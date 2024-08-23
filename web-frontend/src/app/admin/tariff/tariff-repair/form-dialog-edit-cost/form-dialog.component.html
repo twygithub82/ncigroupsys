@@ -164,7 +164,12 @@
            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
             <mat-form-field class="example-full-width"> 
              <mat-label>{{translatedLangText.MATERIAL_COST}} (%)</mat-label>
-             <input matInput formControlName="material_cost_percentage" type="number" min="-20" max="20" >
+             <input matInput formControlName="material_cost_percentage" type="number" min="-20" max="20" required>
+             @if (pcForm.get('material_cost_percentage')?.hasError('required')) {
+              <mat-error>
+                {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
+              </mat-error>
+              }
              </mat-form-field>  
            </div> 
         </div>

@@ -37,6 +37,8 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TariffRepairDS,TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { stringifyForDisplay } from '@apollo/client/utilities';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface DialogData {
   action?: string;
@@ -65,6 +67,7 @@ interface Condition {
     MatButtonModule,
     MatIconModule,
     MatDialogContent,
+    MatProgressSpinnerModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -88,6 +91,7 @@ interface Condition {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    
     
     
   ],
@@ -473,61 +477,20 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     
     if (!this.pcForm?.valid) return;
     
+    var trfRepairItem = new TariffRepairItem();
+    trfRepairItem.part_name=this.pcForm!.value['part_name'];
+    
+    trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
+    trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
+    trfRepairItem.material_cost=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
+    //var material_cost_percentage=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
   
-    this.subs.sink= this.trfRepairDS.SearchTariffRepair(where).subscribe(data=>{
-      
-      let update =true;
-      if(data.length>0)
-       {
-         var queriedRec =data[0];
-         if(this.selectedItems.length>1)
-         {
-          update=false;
-          this.pcForm?.get('part_name')?.setErrors({ existed: true });
-         }
-         else if(queriedRec.guid!=this.selectedItems[0].guid)
-         {
-           
-           update=false;
-           this.pcForm?.get('part_name')?.setErrors({ existed: true });
-         }
-
-       }
-       if(update)
-       {
-
-          if(this.selectedItems.length==1)
-          {
-              var trfRepairItem = new TariffRepairItem(this.selectedItems[0]);
-              trfRepairItem.part_name=this.pcForm!.value['part_name'];
-              trfRepairItem.dimension=this.pcForm!.value['height_diameter'];
-              trfRepairItem.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['height_diameter_unit_cv']));
-
-              trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
-              trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
-              trfRepairItem.labour_hour=this.pcForm!.value['labour_hour'];
-              trfRepairItem.material_cost=this.pcForm!.value['material_cost'];
-              trfRepairItem.length=this.pcForm!.value['length'];
-              trfRepairItem.length_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['length_unit_cv']));
-
-              trfRepairItem.width_diameter=this.pcForm!.value['width_diameter'];
-              trfRepairItem.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['width_diameter_unit_cv']));
-              trfRepairItem.thickness=this.pcForm!.value['thickness'];
-              trfRepairItem.thickness_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['thickness_unit_cv']));
-              
-              this.trfRepairDS.updateTariffRepair(trfRepairItem).subscribe(result=>{
-                this.handleSaveSuccess(result?.data?.updateTariffRepair);
-
-              });
-          }
-          else
-          {
-
-          }
-          
-        }
+    this.trfRepairDS.updateTariffRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,trfRepairItem.part_name,trfRepairItem.material_cost).subscribe(result=>{
+      this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
 
     });
+
+    
 
   
 

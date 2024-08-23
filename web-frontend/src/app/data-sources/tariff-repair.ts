@@ -117,6 +117,15 @@ export const UPDATE_TARIFF_REPAIR = gql`
   }
 `;
 
+export const UPDATE_TARIFF_REPAIRS_MATERIAL_COST = gql`
+  mutation updateTariffRepair_MaterialCost($group_name_cv:String,$subgroup_name_cv:String,
+    $part_name:String,$material_cost_percentage:Float!) {
+    updateTariffRepair_MaterialCost(group_name_cv:$group_name_cv,subgroup_name_cv:$subgroup_name_cv,
+    part_name:$part_name,material_cost_percentage:$material_cost_percentage)
+  }
+`;
+
+
 export const UPDATE_TARIFF_REPAIRS = gql`
   mutation updateTariffRepairs($updatedTariffRepair_guids: [String!]!,$group_name_cv:String!,$subgroup_name_cv:String!,
     $dimension:Float!,$dimension_unit_cv:String!,$width_diameter:Float!,$width_diameter_unit_cv:String!,$labour_hour:Float!,$length:Float!,
@@ -211,6 +220,23 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
           thickness,
           thickness_unit_cv,
           remarks
+        }
+      }).pipe(
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+      );
+    }
+
+    updateTariffRepairs_MaterialCost(group_name_cv:any,subgroup_name_cv:any,part_name:any,material_cost_percentage:any): Observable<any> {
+      return this.apollo.mutate({
+        mutation: UPDATE_TARIFF_REPAIRS_MATERIAL_COST,
+        variables: {
+          group_name_cv,
+          subgroup_name_cv,
+          part_name,
+          material_cost_percentage
         }
       }).pipe(
         catchError((error: ApolloError) => {
