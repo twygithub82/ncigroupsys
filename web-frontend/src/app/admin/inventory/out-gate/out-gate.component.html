@@ -11,7 +11,7 @@
             <div class="left">
               <ul class="header-buttons-left ms-0">
                 <li class="tbl-title">
-                  <h2>{{translatedLangText.SO_NO}}/{{translatedLangText.TANK_NO}}/{{translatedLangText.JOB_NO}}
+                  <h2>{{translatedLangText.RO_NO}}/{{translatedLangText.TANK_NO}}/{{translatedLangText.JOB_NO}}
                   </h2>
                 </li>
                 <li class="tbl-search-box">
@@ -65,15 +65,39 @@
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order?.customer_company)}}
+                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(roSotDS.getReleaseOrderSotItem(row.release_order_sot)?.release_order?.customer_company)}}
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="so_no">
+                <ng-container matColumnDef="ro_no">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{translatedLangText.SO_NO}}
+                    {{translatedLangText.RO_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.SO_NO}}:</span>{{row.storing_order?.so_no}}
+                    <span class="mobile-label">{{translatedLangText.RO_NO}}:</span>{{roSotDS.getReleaseOrderSotItem(row.release_order_sot)?.release_order?.ro_no}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="eir_no">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.EIR_NO}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{ogDS.getOutGateItem(row?.out_gate)?.eir_no}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="eir_dt">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.EIR_DATE}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{ogDS.getOutGateItem(row?.out_gate)?.eir_dt}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="eir_status_cv">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.EIR_STATUS}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{ogDS.getOutGateItem(row.storing_order?.out_gate)?.eir_status_cv}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

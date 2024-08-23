@@ -68,18 +68,18 @@
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
-                    <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table table-hover">
+                    <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table striped-rows hover-highlight">
                       <!-- Checkbox Column -->
                       <ng-container matColumnDef="select">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <mat-checkbox (change)="$event ? masterToggle() : null"
                             [checked]="sotSelection.hasValue() && isAllSelected()"
                             [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                           </mat-checkbox>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <mat-checkbox (click)="$event.stopPropagation()"
                             (change)="$event ? sotSelection.toggle(row) : null" [checked]="sotSelection.isSelected(row)"
                             [ngClass]="'tbl-checkbox'">
@@ -93,11 +93,11 @@
                       </ng-container>
                       <ng-container matColumnDef="tank_no">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.TANK_NO}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">
                             {{translatedLangText.TANK_NO}}:
                           </span>
@@ -107,12 +107,12 @@
                       </ng-container>
                       <ng-container matColumnDef="tank_no_validity">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           <i class="fas fa-ellipsis-h"></i>
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">Validity:</span>
                           @if (row.tank_no_validity==='valid') {
                           <div>
@@ -132,12 +132,12 @@
                       </ng-container>
                       <ng-container matColumnDef="last_cargo">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.LAST_CARGO}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>
                             {{row.tariff_cleaning?.cargo}}
@@ -146,24 +146,24 @@
                       </ng-container>
                       <ng-container matColumnDef="job_no">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.JOB_NO}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>
                           {{row.job_no}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="purpose_storage">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.STORAGE}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.STORAGE}}:</span>
                           @if (row.purpose_storage) {
                           <div>
@@ -183,12 +183,12 @@
                       </ng-container>
                       <ng-container matColumnDef="purpose_cleaning">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.CLEANING}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.CLEANING}}:</span>
                           @if (row.purpose_cleaning) {
                           <div>
@@ -208,12 +208,12 @@
                       </ng-container>
                       <ng-container matColumnDef="purpose_steam">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.STEAM}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.STEAM}}:</span>
                           @if (row.purpose_steam) {
                           <div>
@@ -233,36 +233,36 @@
                       </ng-container>
                       <ng-container matColumnDef="purpose_repair_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
                           {{getRepairDescription(row.purpose_repair_cv)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="status_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.STATUS}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
                           <span [matTooltip]="row.remarks ? ('Remarks: ' + row.remarks) : ''">{{getSoStatusDescription(row.status_cv)}}</span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="certificate_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.CERTIFICATE}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.CERTIFICATE}}:</span>
                           {{getYesNoDescription(row.certificate_cv)}}
                         </mat-cell>

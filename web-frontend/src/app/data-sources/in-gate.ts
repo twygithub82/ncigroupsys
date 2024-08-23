@@ -461,7 +461,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
   }
 
   getInGateItem(in_gates: InGateItem[] | undefined): InGateItem | undefined {
-    return in_gates?.length ? in_gates[0] : undefined;
+    return in_gates?.find(ig => !ig.delete_dt);
   }
 }
 
