@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -40,12 +40,15 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
+import { OutGateDS } from 'app/data-sources/out-gate';
 
 @Component({
   selector: 'app-out-gate',
   standalone: true,
   templateUrl: './out-gate.component.html',
   styleUrl: './out-gate.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -81,7 +84,9 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
     'customer_code',
     'job_no',
     'last_cargo',
-    'so_no',
+    'ro_no',
+    'eir_no',
+    'eir_dt',
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE'
@@ -92,15 +97,16 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
-    SO_NO: 'COMMON-FORM.SO-NO',
+    RO_NO: 'COMMON-FORM.RO-NO',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
-    SO_DATE: 'COMMON-FORM.SO-DATE',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
     PURPOSE: 'COMMON-FORM.PURPOSE',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
@@ -114,6 +120,8 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
+  roSotDS: ReleaseOrderSotDS;
+  ogDS: OutGateDS;
 
   sotList: StoringOrderTankItem[] = [];
 
@@ -138,6 +146,8 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.translateLangText();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.roSotDS = new ReleaseOrderSotDS(this.apollo);
+    this.ogDS = new OutGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -209,7 +219,12 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
       const searchField = this.searchField;
       const where: any = {
         and: [
-          { tank_status_cv: { eq: "RO_GENERATED" } },
+          {
+            or: [
+              { tank_status_cv: { eq: "RO_GENERATED" } },
+              { tank_status_cv: { eq: "OUT_GATE" } }
+            ]
+          },
           {
             or: [
               { storing_order: { so_no: { contains: searchField } } },
@@ -224,8 +239,9 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksInOutGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksOutGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
+        console.log(data)
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;

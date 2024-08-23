@@ -169,7 +169,7 @@ const GET_STORING_ORDER_TANKS = gql`
   }
 `;
 
-const GET_STORING_ORDER_TANKS_INOUT_GATE = gql`
+const GET_STORING_ORDER_TANKS_IN_GATE = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -196,6 +196,58 @@ const GET_STORING_ORDER_TANKS_INOUT_GATE = gql`
             name
             alias
           }
+        }
+        in_gate {
+          eir_no
+          eir_dt
+          guid
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+const GET_STORING_ORDER_TANKS_OUT_GATE = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        guid
+        tank_no
+        so_guid
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+        }
+        release_order_sot {
+          release_order {
+            ro_no
+            ro_notes
+            customer_company {
+              code
+              guid
+              name
+              alias
+            }
+          }
+        }
+        out_gate {
+          eir_no
+          eir_dt
+          guid
         }
       }
       pageInfo {
@@ -576,12 +628,35 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  searchStoringOrderTanksInOutGate(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksInGate(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-    
+
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANKS_INOUT_GATE,
+        query: GET_STORING_ORDER_TANKS_IN_GATE,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  searchStoringOrderTanksOutGate(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_OUT_GATE,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
