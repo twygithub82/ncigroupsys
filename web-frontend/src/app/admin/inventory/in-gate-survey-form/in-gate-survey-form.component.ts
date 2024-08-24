@@ -721,7 +721,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       } else {
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)
-          this.handleSaveSuccess(result?.data?.addInGateSurvey);
+          const record = result.data.record
+          if (record?.affected) {
+            // TODO :: use new guid to upload images
+            this.handleSaveSuccess(record?.affected);
+          }
         });
       }
     } else {

@@ -671,7 +671,6 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
     untypedFormControl.setValidators([
-      Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
   }
