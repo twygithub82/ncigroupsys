@@ -357,6 +357,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     return this.cvDS.getCodeDescription(codeValType, this.eirStatusCvList);
   }
 
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
+  }
+
   initializeFilterCustomerCompany() {
   }
 
