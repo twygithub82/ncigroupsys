@@ -427,8 +427,8 @@
     "STANDARD-COST":"Standard Cost",
     "CUSTOMER-COST":"Customer Cost",
     "STORAGE-CALCULATE-BY":"Storage Calculate By",
-    "GATE-IN-COST":"Gate In Cost",
-    "GATE-OUT-COST":"Gate Out Cost",
+    "GATE-IN-COST":"gate in cost",
+    "GATE-OUT-COST":"gate out cost",
     "BUFFER-TYPE":"Buffer Type",
     "COST":"Cost",
     "COST-DETAILS":"Cost Details",
@@ -452,7 +452,8 @@
     "JOB-TYPE":"Job Type",
     "CLEANING-METHOD" :"Cleaning Method",
     "METHOD-NAME":"Method Name",
-    "FILTER": "FILTER"
+    "FILTER": "Filter",
+    "ARE-YOU-SURE": "Are you sure?"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
