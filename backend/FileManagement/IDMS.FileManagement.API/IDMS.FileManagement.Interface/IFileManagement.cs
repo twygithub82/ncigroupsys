@@ -13,6 +13,8 @@ namespace IDMS.FileManagement.Interface
         public Task<List<BlobItem>> GetFiles(string containerName, CancellationToken cancellationToken = default);
         public Task<string> GetFileUrl_SAS(string filename, string containerName);
         public Task<List<string>> GetFileUrlFromDB(List<string> guid);
+
+        public Task<List<string>> GetGroupFileUrlFromDB(List<string> groupGuid);
         public Task<int> DeleteFile(List<string> guid);
 
     }

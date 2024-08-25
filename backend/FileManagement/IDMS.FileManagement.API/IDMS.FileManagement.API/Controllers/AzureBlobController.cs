@@ -120,6 +120,22 @@ namespace IDMS.FileManagement.API.Controllers
             }
         }
 
+
+        [HttpPost("GetFileUrlByGroupGuid")]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> GetFileUrlByGroupGuid([FromBody] List<string> guid)
+        {
+            try
+            {
+                var response = await _fileManagementService.GetGroupFileUrlFromDB(guid);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}");
+            }
+        }
+
         [HttpDelete("DeleteFile")]
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> DeleteFile([FromBody] List<string> guid)
