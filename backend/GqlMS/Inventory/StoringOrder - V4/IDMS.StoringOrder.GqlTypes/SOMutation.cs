@@ -428,14 +428,14 @@ namespace IDMS.StoringOrder.GqlTypes
             return res;
         }
 
-        private async void ResolvekAnyPreOrdrTank(ApplicationInventoryDBContext context, string tankNo, string user, long currentDate)
+        private void ResolvekAnyPreOrdrTank(ApplicationInventoryDBContext context, string tankNo, string user, long currentDate)
         {
-            var sot = await context.storing_order_tank.Where(s => s.tank_no == tankNo && (s.tank_status_cv == SOTankStatus.PREORDER) &&
-                (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
+            var sot = context.storing_order_tank.Where(s => s.tank_no == tankNo && (s.status_cv == SOTankStatus.PREORDER) &&
+                (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefault();
 
             if (sot != null)
             {
-                sot.tank_status_cv = SOTankStatus.WAITING;
+                sot.status_cv = SOTankStatus.WAITING;
                 sot.update_by = user;
                 sot.update_dt = currentDate;
             }
