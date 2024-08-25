@@ -9,10 +9,18 @@
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.21.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+    <PackageReference Include="MySql.Data" Version="8.4.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IDMS.FileManagement.Interface\IDMS.FileManagement.Interface.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CommonUtil.Core.Service">
+      <HintPath>..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

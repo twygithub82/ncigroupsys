@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using HotChocolate.Data;
 using AutoMapper;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using HotChocolate.Types.Pagination;
 
 namespace IDMS.Booking.Application
 {
@@ -69,6 +70,10 @@ namespace IDMS.Booking.Application
                             .AddFiltering()
                             .AddSorting()
                             .AddProjections()
+                            .SetPagingOptions(new PagingOptions
+                            {
+                                MaxPageSize = 100
+                            })
                             .AddInMemorySubscriptions();// Must add this as well for websocket
 
             //------------------------------------------------------------------------------
