@@ -325,6 +325,10 @@ implements OnInit {
      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result>0) {
            this.handleSaveSuccess(result);
+           if(this.tariffBufferDS.totalCount>0)
+            {
+            this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+            }
            //this.search();
           // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
     
@@ -485,17 +489,17 @@ implements OnInit {
         where.buffer_type ={contains:buffer_type}
       }
 
-    if (this.pcForm!.value["min_cost"])
-    {
-      const minCost :number = Number(this.pcForm!.value["min_cost"]);
-      where.cost ={gte:minCost}
+      if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
+        const minCost: number = Number(this.pcForm!.value["min_cost"]);
+        const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+        where.cost = { gte: minCost, lte: maxCost };
+    } else if (this.pcForm!.value["min_cost"]) {
+        const minCost: number = Number(this.pcForm!.value["min_cost"]);
+        where.cost = { gte: minCost };
+    } else if (this.pcForm!.value["max_cost"]) {
+        const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+        where.cost = { lte: maxCost };
     }
-
-    if (this.pcForm!.value["max_cost"])
-      {
-        const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-        where.cost ={ngt:maxCost}
-      }
       this.lastSearchCriteria=where;
     this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where,this.lastOrderBy,this.pageSize).subscribe(data => {
        this.tariffBufferItems=data;
