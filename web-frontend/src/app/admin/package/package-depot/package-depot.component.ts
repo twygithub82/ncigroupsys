@@ -455,6 +455,8 @@ implements OnInit {
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
+       if(!this.hasPreviousPage)
+        this.previous_endCursor=undefined;
     });
   }
   selectStorageCalculateCV_Description(valCode?:string):string

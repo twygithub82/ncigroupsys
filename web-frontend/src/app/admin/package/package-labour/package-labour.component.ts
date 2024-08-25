@@ -543,6 +543,8 @@ implements OnInit {
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
+        if(!this.hasPreviousPage)
+         this.previous_endCursor=undefined;
      });
     }
   
