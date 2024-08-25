@@ -47,6 +47,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-in-gate-details',
@@ -471,8 +472,30 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     }
   }
 
-  resetForm(event: Event) {
+  resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: null,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
     this.inGateForm!.patchValue({
       haulier: this.storingOrderTankItem!.storing_order?.haulier,
       vehicle_no: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.vehicle_no || '',
@@ -486,7 +509,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       preinspection_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.preinspection_cv,
       lolo_cv: 'BOTH' // default BOTH
     });
-    
+
     if (this.storingOrderTankItem!.tariff_cleaning) {
       this.lastCargoControl.setValue(this.storingOrderTankItem!.tariff_cleaning);
     } else {

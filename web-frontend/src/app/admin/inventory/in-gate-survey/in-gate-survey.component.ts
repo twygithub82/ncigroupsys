@@ -239,6 +239,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   search() {
     const where: any = {
       //eir_status_cv: { eq: "YET_TO_SURVEY" }
+
     };
 
     if (this.searchForm!.value['eir_no']) {
@@ -355,6 +356,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
 
   getEirStatusDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.eirStatusCvList);
+  }
+
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
   }
 
   initializeFilterCustomerCompany() {

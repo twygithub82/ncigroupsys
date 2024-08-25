@@ -26,7 +26,7 @@ import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { MatDividerModule } from '@angular/material/divider';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { MatCardModule } from '@angular/material/card';
-import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
+import { SchedulingDS, SchedulingGO, SchedulingItem } from 'app/data-sources/scheduling';
 import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { SchedulingSotItem } from 'app/data-sources/scheduling-sot';
@@ -89,6 +89,7 @@ export class FormDialogComponent {
   storingOrderTank: StoringOrderTankItem[];
   startDateToday = new Date();
   scheduling_guid?: string;
+  scheduling?: SchedulingItem;
 
   ccDS: CustomerCompanyDS;
   schedulingDS: SchedulingDS;
@@ -137,6 +138,7 @@ export class FormDialogComponent {
         .subscribe(data => {
           if (this.schedulingDS.totalCount > 0) {
             const scheduling = data[0];
+            this.scheduling = scheduling;
             formGroup.patchValue({
               reference: scheduling.reference,
               book_type_cv: scheduling.book_type_cv,
@@ -172,17 +174,20 @@ export class FormDialogComponent {
     });
   }
 
-  createScheduleTankGroup(schedulingTank: any): UntypedFormGroup {
+  createScheduleTankGroup(schedulingTank: SchedulingSotItem): UntypedFormGroup {
     return this.fb.group({
-      sot_guid: [schedulingTank.storing_order_tank.guid],
-      tank_no: [schedulingTank.storing_order_tank.tank_no],
-      customer_company: [this.ccDS.displayName(schedulingTank.storing_order_tank.storing_order?.customer_company)],
-      eir_no: [this.igDS.getInGateItem(schedulingTank.storing_order_tank.in_gate)?.eir_no],
-      eir_dt: [this.igDS.getInGateItem(schedulingTank.storing_order_tank.in_gate)?.eir_dt],
-      capacity: [this.igDS.getInGateItem(schedulingTank.storing_order_tank.in_gate)?.in_gate_survey?.capacity],
-      tare_weight: [this.igDS.getInGateItem(schedulingTank.storing_order_tank.in_gate)?.in_gate_survey?.tare_weight],
-      tank_status_cv: [schedulingTank.storing_order_tank.tank_status_cv],
-      yard_cv: [this.igDS.getInGateItem(schedulingTank.storing_order_tank.in_gate)?.yard_cv]
+      guid: [schedulingTank.guid],
+      scheduling_guid: [schedulingTank.scheduling_guid],
+      sot_guid: [schedulingTank.storing_order_tank?.guid],
+      tank_no: [schedulingTank.storing_order_tank?.tank_no],
+      status_cv: [schedulingTank.status_cv],
+      customer_company: [this.ccDS.displayName(schedulingTank.storing_order_tank?.storing_order?.customer_company)],
+      eir_no: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.eir_no],
+      eir_dt: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.eir_dt],
+      capacity: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.in_gate_survey?.capacity],
+      tare_weight: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.in_gate_survey?.tare_weight],
+      tank_status_cv: [schedulingTank.storing_order_tank?.tank_status_cv],
+      yard_cv: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.yard_cv]
     });
   }
 
@@ -192,7 +197,7 @@ export class FormDialogComponent {
 
   submit() {
     if (this.schedulingForm?.valid) {
-      let scheduling = new SchedulingItem();
+      let scheduling = new SchedulingGO(this.scheduling);
       scheduling.reference = this.schedulingForm.value['reference'];
       //scheduling.status_cv = this.schedulingForm.value['status_cv'];
       scheduling.book_type_cv = this.schedulingForm.value['book_type_cv'];
@@ -201,14 +206,23 @@ export class FormDialogComponent {
       let schedulingSot: SchedulingSotItem[] = [];
       const schedulingSotForm = this.schedulingForm.value['schedulingSot']
       schedulingSotForm.forEach((s: any) => {
-        schedulingSot.push(new SchedulingSotItem({ sot_guid: s.sot_guid }))
+        schedulingSot.push(new SchedulingSotItem({
+          guid: s.guid,
+          scheduling_guid: s.scheduling_guid,
+          sot_guid: s.sot_guid,
+          status_cv: s.status_cv
+        }))
       });
 
       console.log(scheduling);
       console.log(schedulingSot);
-
       if (scheduling.guid) {
-
+        this.schedulingDS.updateScheduling(scheduling, schedulingSot).subscribe(result => {
+          const returnDialog: any = {
+            savedSuccess: (result?.data?.updateScheduling ?? 0) > 0
+          }
+          this.dialogRef.close(returnDialog);
+        });
       } else {
         this.schedulingDS.addScheduling(scheduling, schedulingSot).subscribe(result => {
           const returnDialog: any = {

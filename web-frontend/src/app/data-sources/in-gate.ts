@@ -405,7 +405,6 @@ export class InGateDS extends BaseDataSource<InGateItem> {
           // Update internal state
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
-          console.log(retResult.nodes);
   
           // Return the nodes
           return retResult.nodes;

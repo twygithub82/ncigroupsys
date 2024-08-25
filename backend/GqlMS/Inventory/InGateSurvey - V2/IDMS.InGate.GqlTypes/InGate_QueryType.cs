@@ -59,7 +59,7 @@ namespace IDMS.InGate.GqlTypes
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
 
             return query;

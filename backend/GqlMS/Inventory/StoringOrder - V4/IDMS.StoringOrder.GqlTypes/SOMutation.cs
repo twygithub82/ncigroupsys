@@ -11,6 +11,7 @@ using HotChocolate.Utilities;
 using Microsoft.Extensions.Configuration;
 using IDMS.Models;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.Models.Shared;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
@@ -157,6 +158,8 @@ namespace IDMS.StoringOrder.GqlTypes
                         //existingTank.update_dt = currentDateTime;
                         existingTank.status_cv = SOTankStatus.CANCELED;
                         isSendNotification = true;
+
+                        ResolvekAnyPreOrdrTank(context, tnk.tank_no, user, currentDateTime);
                         continue;
                     }
 
@@ -257,6 +260,8 @@ namespace IDMS.StoringOrder.GqlTypes
                                     tnk.status_cv = SOTankStatus.CANCELED;
                                     tnk.update_dt = currentDateTime;
                                     tnk.update_by = user;
+
+                                    ResolvekAnyPreOrdrTank(context, tnk.tank_no, user, currentDateTime);
                                 }
 
                                 if (SOTankStatus.ACCEPTED.EqualsIgnore(tnk.status_cv))
@@ -421,6 +426,20 @@ namespace IDMS.StoringOrder.GqlTypes
                     (t.status_cv.EqualsIgnore(SOTankStatus.ACCEPTED) && !t.tank_status_cv.EqualsIgnore(TankMovementStatus.RO))));
 
             return res;
+        }
+
+        private async void ResolvekAnyPreOrdrTank(ApplicationInventoryDBContext context, string tankNo, string user, long currentDate)
+        {
+            var sot = await context.storing_order_tank.Where(s => s.tank_no == tankNo && (s.tank_status_cv == SOTankStatus.PREORDER) &&
+                (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
+
+            if (sot != null)
+            {
+                sot.tank_status_cv = SOTankStatus.WAITING;
+                sot.update_by = user;
+                sot.update_dt = currentDate;
+            }
+            
         }
     }
 }

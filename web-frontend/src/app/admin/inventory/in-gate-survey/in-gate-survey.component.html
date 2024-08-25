@@ -162,7 +162,7 @@
                     {{translatedLangText.EIR_DATE}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{row.eir_dt}}
+                    <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.eir_dt)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_status_cv">
