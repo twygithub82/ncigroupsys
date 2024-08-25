@@ -204,20 +204,9 @@ namespace IDMS.Models.Package.All.GqlTypes
 
         #region Package Labour methods
 
-        public async Task<int> SyncPackageLabours(ApplicationPackageDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
-        {
-            int retval = 0;
-            try
-            { }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
-            }
-            return retval;
-        }
+      
         public async Task<int> UpdatePackageLabours(ApplicationPackageDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageLabour_guids, int cost, string remarks, string storage_cal_cv)
+            [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageLabour_guids, double cost, string remarks)
         {
             int retval = 0;
             try
@@ -232,8 +221,8 @@ namespace IDMS.Models.Package.All.GqlTypes
                 }
                 foreach (var dbPackageLabour in dbPackageLabours)
                 {
-                    dbPackageLabour.cost = cost;
-                    dbPackageLabour.remarks = remarks;
+                   if(cost>-1) dbPackageLabour.cost = cost;
+                   if(!string.IsNullOrEmpty(remarks)) dbPackageLabour.remarks = remarks;
                     dbPackageLabour.update_by = uid;
                     dbPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
                 }
