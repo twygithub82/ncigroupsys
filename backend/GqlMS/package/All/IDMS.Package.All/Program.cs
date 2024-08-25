@@ -40,6 +40,9 @@ builder.Services.AddGraphQLServer()
                .AddMutationType<IDMS.Models.Package.All.GqlTypes.PackageAll_MutationType>()
                .AddFiltering()
                .AddProjections()
+               .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions { 
+                MaxPageSize=100
+               })
                .AddSorting();
 
 
