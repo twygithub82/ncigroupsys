@@ -2,7 +2,7 @@
   <div class="modalHeader">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h3>{{this.translatedLangText.EDIT_PACKAGE_CLEANING}} </h3>
+        <h3>{{this.translatedLangText.EDIT}} {{this.translatedLangText.PACKAGE_LABOUR}} </h3>
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -16,12 +16,22 @@
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST | translate}}</mat-label>
+                    <mat-label>{{translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST }}</mat-label>
                     <input matInput formControlName="adjusted_cost" type="number">
                    
                   </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+              <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.STANDARD_COST}}</mat-label>
+                  <input matInput formControlName="standard_cost" type="text" readonly>
+                 
+                </mat-form-field>
+          </div>
+          
+          </div>
+          <div class ="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.REMARKS }}</mat-label>
                   <input matInput formControlName="remarks" type="text">
@@ -48,11 +58,11 @@
                         <mat-cell *matCellDef="let row" >
                           <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="email">
+                      <!-- <ng-container matColumnDef="email">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_CATEGORY }}</mat-header-cell>
                         <mat-cell *matCellDef="let row" >
                           <span class="mobile-label">{{translatedLangText.CARGO_CATEGORY }}:</span> {{row.cleaning_category.name}}</mat-cell>
-                      </ng-container>
+                      </ng-container> -->
                       
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; columns: displayedColumns;" 

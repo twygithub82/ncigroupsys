@@ -14,8 +14,8 @@ export class PackageLabourGO {
   public guid?: string;
   public customer_company_guid?: string;
   public tariff_labour_guid?: string;
-  public initial_cost?: number;
-  public adjusted_cost?: number;
+  public cost?: number;
+  //public adjusted_cost?: number;
   public remarks?: string;
   public create_dt?: number;
   public create_by?: string;
@@ -27,8 +27,8 @@ export class PackageLabourGO {
     this.guid = item.guid;
     this.customer_company_guid = item.customer_company_guid;
     this.tariff_labour_guid = item.tariff_labour_guid;
-    this.initial_cost = item.initial_cost;
-    this.adjusted_cost = item.adjusted_cost;
+    this.cost = item.cost;
+    //this.adjusted_cost = item.adjusted_cost;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -52,14 +52,20 @@ export interface PackageLabourResult {
   totalCount: number;
 }
 
-export const UPDATE_PACKAGE_CLEANINGS = gql`
-  mutation updatePackageCleans($guids: [String!]!,$remarks:String!,$adjusted_price:Float!) {
-    updatePackageCleans(updatePackageClean_guids: $guids,remarks:$remarks,adjusted_price:$adjusted_price)
+export const UPDATE_PACKAGE_LABOUR = gql`
+  mutation updatePackageLabour($updatePackLabour: package_labourInput!) {
+    updatePackageLabour(updatePackageLabour: $updatePackLabour)
   }
 `;
-export const GET_COMPANY_CATEGORY_QUERY = gql`
+
+export const UPDATE_PACKAGE_LABOURS = gql`
+  mutation updatePackageLabours($guids: [String!]!,$cost:Float!,$remarks:String!) {
+    updatePackageLabours(updatePackageLabour_guids: $guids,cost:$cost,remarks:$remarks)
+  }
+`;
+export const GET_PACKAGE_LABOUR_QUERY = gql`
   query  queryPackageLabour($where: package_labourFilterInput, $order: [package_labourSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
-    companycategoryList:  queryPackageLabour(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+   packageLabourList:  queryPackageLabour(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
        totalCount
       pageInfo {
         endCursor
@@ -121,18 +127,18 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
   }
 `;
 
-export class CustomerCompanyCleaningCategoryDS extends BaseDataSource<CustomerCompanyCleaningCategoryItem> {
+export class PackageLabourDS extends BaseDataSource<PackageLabourItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<CustomerCompanyCleaningCategoryItem[]> {
+  search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<PackageLabourItem[]> {
     this.loadingSubject.next(true);
     if (!last)
       if (!first)
         first = 10;
     return this.apollo
       .query<any>({
-        query: GET_COMPANY_CATEGORY_QUERY,
+        query: GET_PACKAGE_LABOUR_QUERY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -140,11 +146,11 @@ export class CustomerCompanyCleaningCategoryDS extends BaseDataSource<CustomerCo
         map((result) => result.data),
         catchError((error: ApolloError) => {
           console.error('GraphQL Error:', error);
-          return of([] as CustomerCompanyCleaningCategoryItem[]); // Return an empty array on error
+          return of([] as PackageLabourItem[]); // Return an empty array on error
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const list = result.companycategoryList || { nodes: [], totalCount: 0 };
+          const list = result.packageLabourList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(list.nodes);
           this.pageInfo = list.pageInfo;
           this.totalCount = list.totalCount;
@@ -153,13 +159,27 @@ export class CustomerCompanyCleaningCategoryDS extends BaseDataSource<CustomerCo
       );
   }
 
-  updatePackageCleanings(guids: string[], remarks: string, adjusted_price: number): Observable<any> {
+  updatePackageLabours(guids: string[],  cost: number,remarks: string): Observable<any> {
     return this.apollo.mutate({
-      mutation: UPDATE_PACKAGE_CLEANINGS,
+      mutation: UPDATE_PACKAGE_LABOURS,
       variables: {
         guids,
-        remarks,
-        adjusted_price
+        cost,
+        remarks
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  updatePackageLabour(updatePackLabour:PackageLabourItem): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_PACKAGE_LABOUR,
+      variables: {
+        updatePackLabour
       }
     }).pipe(
       catchError((error: ApolloError) => {

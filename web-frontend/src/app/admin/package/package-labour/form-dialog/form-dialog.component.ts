@@ -29,13 +29,14 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { PackageLabourItem,PackageLabourDS } from 'app/data-sources/package-labour';
 
 export interface DialogData {
   action?: string;
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItems:CustomerCompanyCleaningCategoryItem[];
+   selectedItems:PackageLabourItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -85,7 +86,7 @@ export class FormDialogComponent {
       // 'img',
        'fName',
        'lName',
-       'email',
+      // 'email',
       // 'gender',
       // 'bDate',
       // 'mobile',
@@ -104,6 +105,7 @@ export class FormDialogComponent {
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
   custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
+  packLabourDS : PackageLabourDS;
 
   translatedLangText: any = {};
   langText = {
@@ -187,11 +189,13 @@ export class FormDialogComponent {
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-     EDIT_PACKAGE_CLEANING:"MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING-EDIT"
+     EDIT_PACKAGE_CLEANING:"MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING-EDIT",
+     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
+     PACKAGE_LABOUR:"COMMON-FORM.PACKAGE-LABOUR"
   };
 
   
-  selectedItems: CustomerCompanyCleaningCategoryItem[]=[];
+  selectedItems: PackageLabourItem[]=[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -207,10 +211,23 @@ export class FormDialogComponent {
     
     this.selectedItems = data.selectedItems;
     
-    this.pcForm = this.createPackageCleaning();
+    this.pcForm = this.createPackageLabour();
+    if(this.selectedItems.length==1)
+      this.pcForm.patchValue({
+      
+        adjusted_cost:this.selectedItems[0].cost,
+        standard_cost:this.selectedItems[0].tariff_labour?.cost,
+        remarks:this.selectedItems[0].remarks
+      
+        //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
+      });
+    
+         
     //this.tcDS = new TariffCleaningDS(this.apollo);
     //this.sotDS = new StoringOrderTankDS(this.apollo);
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.packLabourDS = new PackageLabourDS(this.apollo);
+
     this.action = data.action!;
     this.translateLangText();
     // this.sotExistedList = data.sotExistedList;
@@ -230,10 +247,11 @@ export class FormDialogComponent {
     // }
   }
 
-  createPackageCleaning(): UntypedFormGroup {
+  createPackageLabour(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      adjusted_cost:200,
+      adjusted_cost:[''],
+      standard_cost:['-'],
       remarks:['']
     });
   }
@@ -244,32 +262,7 @@ export class FormDialogComponent {
       this.translatedLangText = translations;
     });
   }
-  // tabs = Array.from(Array(20).keys());
-
-  // @ViewChild('tabGroup')
-  // tabGroup;
-
-  // scrollTabs(event: Event) {
-  //   const children = this.tabGroup._tabHeader._elementRef.nativeElement.children;
-  //   const back = children[0];
-  //   const forward = children[2];
-  //   if (event.deltaY > 0) {
-  //     forward.click();
-  //   } else {
-  //     back.click();
-  //   }
-  // }
-
-  
-
-  
-  // selectClassNo(value:string):void{
-  //   const returnDialog: DialogData = {
-  //     selectedValue:value
-  //   }
-  //   console.log('valid');
-  //   this.dialogRef.close(returnDialog);
-  // }
+ 
 
   canEdit()
   {
@@ -289,26 +282,64 @@ export class FormDialogComponent {
 
   save() {
 
-    let pc_guids:string[] = this.selectedItems
-    .map(cc => cc.guid)
-    .filter((guid): guid is string => guid !== undefined);
+   
 
     var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
     var remarks = this.pcForm!.value["remarks"];
 
-    this.custCompClnCatDS.updatePackageCleanings(pc_guids,remarks,adjusted_price).subscribe(result => {
-      console.log(result)
-      if(result.data.updatePackageCleans>0)
-      {
-          //this.handleSaveSuccess(result?.data?.updateTariffClean);
-          const returnDialog: DialogData = {
-            selectedValue:result.data.updatePackageCleans,
-            selectedItems:[]
+    if(this.selectedItems.length==1)
+    {
+      var packLabour = new PackageLabourItem(this.selectedItems[0]);
+      packLabour.cost= this.pcForm!.value["adjusted_cost"];
+      packLabour.remarks=this.pcForm!.value["remarks"];
+      packLabour.tariff_labour=undefined;
+      packLabour.customer_company=undefined;
+      this.packLabourDS.updatePackageLabour(packLabour).subscribe(result=>{
+
+        if(result.data.updatePackageLabour>0)
+          {
+           
+                    console.log('valid');
+                    this.dialogRef.close(result.data.updatePackageLabour);
+    
           }
-          console.log('valid');
-          this.dialogRef.close(returnDialog);
-      }
-    });
+      });
+    }
+    else if(this.selectedItems.length>1)
+    {
+      let pc_guids:string[] = this.selectedItems
+      .map(cc => cc.guid)
+      .filter((guid): guid is string => guid !== undefined);
+
+      let cost= -1;
+      if(this.pcForm!.value["adjusted_cost"]) cost = this.pcForm!.value["adjusted_cost"];
+
+      let remarks =this.pcForm!.value["remarks"];
+      this.packLabourDS.updatePackageLabours(pc_guids,cost,remarks).subscribe(result=>{
+
+        if(result.data.updatePackageLabours>0)
+          {
+           
+                    console.log('valid');
+                    this.dialogRef.close(result.data.updatePackageLabours);
+    
+          }
+      });
+
+    }
+    // this.custCompClnCatDS.updatePackageCleanings(pc_guids,remarks,adjusted_price).subscribe(result => {
+    //   console.log(result)
+    //   if(result.data.updatePackageCleans>0)
+    //   {
+    //       //this.handleSaveSuccess(result?.data?.updateTariffClean);
+    //       const returnDialog: DialogData = {
+    //         selectedValue:result.data.updatePackageCleans,
+    //         selectedItems:[]
+    //       }
+    //       console.log('valid');
+    //       this.dialogRef.close(returnDialog);
+    //   }
+    // });
 
    
 

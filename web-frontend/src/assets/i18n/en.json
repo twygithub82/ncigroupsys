@@ -453,7 +453,8 @@
     "CLEANING-METHOD" :"Cleaning Method",
     "METHOD-NAME":"Method Name",
     "FILTER": "Filter",
-    "ARE-YOU-SURE": "Are you sure?"
+    "ARE-YOU-SURE": "Are you sure?",
+    "PACKAGE-LABOUR":"Package Labour"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
