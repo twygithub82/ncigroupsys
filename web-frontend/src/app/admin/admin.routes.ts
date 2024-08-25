@@ -28,6 +28,7 @@ import { ReleaseOrderDetailsComponent } from './inventory/release-order-details/
 import { SchedulingComponent } from './inventory/scheduling/scheduling.component';
 import { OutGateComponent } from './inventory/out-gate/out-gate.component';
 import { OutGateDetailsComponent } from './inventory/out-gate-details/out-gate-details.component';
+import { PackageLabourComponent } from './package/package-labour/package-labour.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "cleaning-setps",
@@ -168,6 +169,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "package/package-depot",
     component: PackageDepotComponent,
+  },
+  {
+    path: "package/package-labour",
+    component: PackageLabourComponent,
   }
 ];
 

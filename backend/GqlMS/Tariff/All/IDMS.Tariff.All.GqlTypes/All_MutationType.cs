@@ -1,5 +1,7 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate.Data;
+using IDMS.Models.DB;
+using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
@@ -431,6 +433,45 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
 
         #region Tariff Labour methods
+
+        public async Task<int> SyncUpPackageLabours(ApplicationTariffDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var notFoundCCInPackageLabour = context.customer_company.Where(
+                                                c => !context.package_labour.Select(
+                                                     pl => pl.customer_company_guid).Contains(c.guid))
+                                                     .ToArray();
+                
+                var trfLabour = context.tariff_labour.Where(tl => tl.delete_dt == null || tl.delete_dt == 0).FirstOrDefault();
+                
+                if (trfLabour != null && notFoundCCInPackageLabour.Length>0)
+                {
+                    foreach (var cc in notFoundCCInPackageLabour)
+                    {
+                        var pack_labour = new package_labour();
+                        pack_labour.guid = Util.GenerateGUID();
+                        pack_labour.tariff_labour_guid = trfLabour.guid;
+                        pack_labour.customer_company_guid = cc.guid;
+                        pack_labour.cost = trfLabour.cost;
+                        pack_labour.remarks = trfLabour.remarks;
+                        pack_labour.create_by = uid;
+                        pack_labour.create_dt = GqlUtils.GetNowEpochInSec();
+                        context.package_labour.Add(pack_labour);
+                    }
+
+                     retval=context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
 
         public async Task<int> AddTariffLabour( ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, tariff_labour NewTariffLabour)

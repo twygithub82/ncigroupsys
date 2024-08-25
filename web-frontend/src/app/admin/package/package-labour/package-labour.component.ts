@@ -52,16 +52,14 @@ import {ExampleDataSource} from 'app/advance-table/advance-table.component';
 import { AdvanceTableService } from 'app/advance-table/advance-table.service';
 import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import {SearchCriteriaService} from 'app/services/search-criteria.service';
-import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
-import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffBufferDS,TariffBufferItem } from 'app/data-sources/tariff-buffer';
 
 @Component({
-  selector: 'app-tariff-buffer',
+  selector: 'app-package-labour',
   standalone: true,
-  templateUrl: './tariff-buffer.component.html',
-  styleUrl: './tariff-buffer.component.scss',
+  templateUrl: './package-labour.component.html',
+  styleUrl: './package-labour.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -90,25 +88,26 @@ import { TariffBufferDS,TariffBufferItem } from 'app/data-sources/tariff-buffer'
     MatAutocompleteModule,
     MatDividerModule,
   ]
+
 })
-export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
+export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
-   // 'select',
+    'select',
     // 'img',
      'fName',
      'lName',
      'email',
-    //  'gender',
+     'gender',
     // 'bDate',
     // 'mobile',
     // 'actions',
   ];
 
-  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER'
+  pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.TARIFF.TEXT'
+    'MENUITEMS.PACKAGE.TEXT'
   ]
 
   PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
@@ -131,21 +130,18 @@ implements OnInit {
   customerCodeControl = new UntypedFormControl();
   categoryControl= new UntypedFormControl();
 
-  // ccDS: CustomerCompanyDS;
-  // clnCatDS:CleaningCategoryDS;
-  // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  tariffBufferDS : TariffBufferDS;
+  ccDS: CustomerCompanyDS;
+  clnCatDS:CleaningCategoryDS;
+  custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
 
-  tariffBufferItems : TariffBufferItem[]=[];
-
-  // custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
-  // customer_companyList1?: CustomerCompanyItem[];
-  // cleaning_categoryList?: CleaningCategoryItem[];
+  custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
+  customer_companyList1?: CustomerCompanyItem[];
+  cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { buffer_type: "ASC" };
+  lastOrderBy: any = { customer_company:{code: "ASC" }, cleaning_category: { sequence: "ASC" }};
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -155,7 +151,7 @@ implements OnInit {
 
    exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
-  selection = new SelectionModel<TariffBufferItem>(true, []);
+  selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
   
   id?: number;
   advanceTable?: AdvanceTable;
@@ -242,10 +238,6 @@ implements OnInit {
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    DESCRIPTION : 'COMMON-FORM.BUFFER-TYPE',
-    BUFFER_CLEANING:'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
-    COST : 'COMMON-FORM.COST',
-    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED"
      }
   
   constructor(
@@ -261,10 +253,9 @@ implements OnInit {
   ) {
     super();
     this.initTcForm();
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    this.tariffBufferDS= new TariffBufferDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.clnCatDS= new CleaningCategoryDS(this.apollo);
+    this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -286,9 +277,8 @@ implements OnInit {
   initTcForm() {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
-      // customer_code: this.customerCodeControl,
-      // cleaning_category:this.categoryControl,
-      buffer_type : [''],
+      customer_code: this.customerCodeControl,
+      cleaning_category:this.categoryControl,
       min_cost:[''],
       max_cost:['']
     });
@@ -301,63 +291,20 @@ implements OnInit {
   refresh() {
     this.loadData();
   }
-  addCall() {
-    // this.preventDefault(event);  // Prevents the form submission
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
-    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
-    //  rows.push(row);
-     const dialogRef = this.dialog.open(FormDialogComponent_New,{
-       width: '600px',
-       height:'auto',
-       data: {
-         action: 'new',
-         langText: this.langText,
-         selectedItem:null
-       }
-         
-     });
-
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result>0) {
-           this.handleSaveSuccess(result);
-           if(this.tariffBufferDS.totalCount>0)
-            {
-            this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-            }
-           //this.search();
-          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-    
-      }
-   });
+  addNew() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+   
+  }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayLastUpdated(r: TariffBufferItem) {
-    var updatedt= r.update_dt;
-    if(updatedt===null)
-    {
-      updatedt= r.create_dt;
-    }
-    const date = new Date(updatedt! * 1000);
-    
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();   
-
-   // Replace the '/' with '-' to get the required format
- 
-
-    return `${day}/${month}/${year}`;
-
-  }
   adjustCost()
   {
     let tempDirection: Direction;
@@ -366,7 +313,8 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
+    if(this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent,{
       width: '600px',
       data: {
         action: 'new',
@@ -386,8 +334,7 @@ implements OnInit {
       }
       });
   }
-
-  editCall(row: TariffBufferItem) {
+  editCall(row: CustomerCompanyCleaningCategoryItem) {
    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -395,28 +342,26 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-  
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
+    var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    rows.push(row);
+    const dialogRef = this.dialog.open(FormDialogComponent,{
       width: '600px',
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItem:row
+        selectedItems:rows
       }
         
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result>0) {
-          //if(result.selectedValue>0)
-            //{
-              this.handleSaveSuccess(result);
+         if (result) {
+          if(result.selectedValue>0)
+            {
+              this.handleSaveSuccess(result.selectedValue);
               //this.search();
-              if(this.tariffBufferDS.totalCount>0)
-              {
               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-              }
-            //}
+            }
       }
       });
    
@@ -460,7 +405,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.tariffBufferItems.length;
+    const numRows = this.custCompClnCatItems.length;
     return numSelected === numRows;
   }
 
@@ -472,7 +417,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.tariffBufferItems.forEach((row) =>
+       : this.custCompClnCatItems.forEach((row) =>
            this.selection.select(row)
          );
   }
@@ -483,32 +428,44 @@ implements OnInit {
   {
     const where: any = {};
 
-    if (this.pcForm!.value["buffer_type"])
-      {
-        const buffer_type :Text = this.pcForm!.value["buffer_type"];
-        where.buffer_type ={contains:buffer_type}
-      }
-
-      if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
-        const minCost: number = Number(this.pcForm!.value["min_cost"]);
-        const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-        where.cost = { gte: minCost, lte: maxCost };
-    } else if (this.pcForm!.value["min_cost"]) {
-        const minCost: number = Number(this.pcForm!.value["min_cost"]);
-        where.cost = { gte: minCost };
-    } else if (this.pcForm!.value["max_cost"]) {
-        const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-        where.cost = { lte: maxCost };
+    if (this.customerCodeControl.value) {
+      if(this.customerCodeControl.value.length>0)
+        {
+         
+        
+          const customerCodes :CustomerCompanyItem[] = this.customerCodeControl.value;
+          var guids = customerCodes.map(cc=>cc.guid);
+          where.customer_company_guid = { in: guids };
+        }
     }
-    
+
+    if (this.categoryControl.value) {
+      if(this.categoryControl.value.length>0)
+      {
+        const guids = this.categoryControl.value;
+        where.cleaning_category_guid = { in: guids };
+      }
+    }
+
+    if (this.pcForm!.value["min_cost"])
+    {
+      const minCost :number = Number(this.pcForm!.value["min_cost"]);
+      where.adjusted_price ={gte:minCost}
+    }
+
+    if (this.pcForm!.value["max_cost"])
+      {
+        const maxCost :number = Number(this.pcForm!.value["max_cost"]);
+        where.adjusted_price ={ngte:maxCost}
+      }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.tariffBufferItems=data;
+    this.subs.sink = this.custCompClnCatDS.search(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.custCompClnCatItems=data;
        this.previous_endCursor=undefined;
-       this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
-       this.startCursor = this.tariffBufferDS.pageInfo?.startCursor;
-       this.hasNextPage = this.tariffBufferDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.tariffBufferDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
+       this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;
+       this.hasNextPage = this.custCompClnCatDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.custCompClnCatDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -573,17 +530,15 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where,order,first,after,last,before).subscribe(data => {
-        this.tariffBufferItems=data;
-        this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
-        this.startCursor = this.tariffBufferDS.pageInfo?.startCursor;
-        this.hasNextPage = this.tariffBufferDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.tariffBufferDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.custCompClnCatDS.search(where,order,first,after,last,before).subscribe(data => {
+        this.custCompClnCatItems=data;
+        this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
+        this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;
+        this.hasNextPage = this.custCompClnCatDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.custCompClnCatDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
-        if(!this.hasPreviousPage)
-          this.previous_endCursor=undefined;
      });
     }
   
@@ -626,17 +581,17 @@ implements OnInit {
   }
   public loadData() {
 
-    // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-    //  // this.customer_companyList1 = data
-    // });
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+     // this.customer_companyList1 = data
+    });
 
-    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-    //   if(this.clnCatDS.totalCount>0)
-    //   {
-    //     this.cleaning_categoryList=data;
-    //   }
+    this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
+      if(this.clnCatDS.totalCount>0)
+      {
+        this.cleaning_categoryList=data;
+      }
 
-    // });
+    });
 
   
   }

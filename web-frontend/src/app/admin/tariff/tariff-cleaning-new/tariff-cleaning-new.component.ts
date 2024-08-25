@@ -314,7 +314,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       un_no:[tc.un_no, [Validators.required, this.onlyNumbersDashValidator]],
       nature:{ value: tc.nature_cv, disabled: false },
       in_gate_alert:tc.in_gate_alert,
-      depot_note:tc.depot_note
+      depot_note:tc.depot_note,
+      sds_file:['']
     });
    
   }

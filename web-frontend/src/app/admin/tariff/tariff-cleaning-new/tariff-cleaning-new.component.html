@@ -192,32 +192,48 @@
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{langText.CARGO_FLASH_POINT | translate}}</mat-label>
+                          <mat-label>{{translatedLangText.CARGO_FLASH_POINT }}</mat-label>
                           <input matInput formControlName="flash_point" required type="number">
                           @if (tcForm?.get('flash_point')?.hasError('required')) {
                           <mat-error>
-                            {{langText.CARGO_FLASH_POINT | translate}} {{langText.CARGO_REQUIRED | translate}}
+                            {{translatedLangText.CARGO_FLASH_POINT }} {{translatedLangText.CARGO_REQUIRED }}
                           </mat-error>
                           }
                         </mat-form-field>
                       </div>
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{langText.CARGO_CLASS | translate}}</mat-label>
+                          <mat-label>{{translatedLangText.CARGO_CLASS }}</mat-label>
                           <input matInput formControlName="class_no" readonly required (click)="addOrderDetails($event)">
                           @if (tcForm?.get('class_no')?.hasError('required')) {
                             <mat-error>
-                              {{langText.CARGO_CLASS | translate}} {{langText.CARGO_REQUIRED | translate}}
+                              {{translatedLangText.CARGO_CLASS }} {{translatedLangText.CARGO_REQUIRED }}
                             </mat-error>
                             }
-                          <!-- <mat-select formControlName="class_no" required>
-                            @for (cn of classNoCvList; track cn) {
-                            <mat-option [value]="cn.code_val">
-                              {{cn.code_val}}
-                            </mat-option>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row">
+                      
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
+                          <input matInput formControlName="un_no" type="file">
+                          @if (tcForm?.get('un_no')?.hasError('required')) {
+                          <mat-error>
+                            {{langText.CARGO_UN_NO | translate}} {{langText.CARGO_REQUIRED | translate}}
+                          </mat-error>
+                          }
+                          @if (tcForm?.get('un_no')?.hasError('existed')) {
+                            <mat-error>
+                              {{langText.CARGO_UN_NO | translate}}: {{langText.EXISTED | translate}}
+                            </mat-error>
                             }
-                          </mat-select> -->
-    
+                          @if (tcForm?.get('un_no')?.hasError('invalidCharacter')) {
+                              <mat-error>
+                                {{langText.CARGO_UN_NO | translate}}: {{langText.INVALID | translate}}
+                              </mat-error>
+                              }
                         </mat-form-field>
                       </div>
                     </div>

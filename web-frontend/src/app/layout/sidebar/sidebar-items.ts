@@ -145,6 +145,17 @@ export const ROUTES: RouteInfo[] = [
     badgeClass: "",
     submenu: [
       {
+        path: "admin/package/package-labour",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-LABOUR",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
         path: "admin/package/package-cleaning",
         title: "MENUITEMS.TARIFF.LIST.TARIFF-CLEANING",
         iconType: "",
