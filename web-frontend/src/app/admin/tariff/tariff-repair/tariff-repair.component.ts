@@ -606,41 +606,45 @@ implements OnInit {
         where.part_name ={contains:description}
       }
 
-    if (this.pcForm!.value["min_cost"])
-    {
-      const minCost :number = Number(this.pcForm!.value["min_cost"]);
-      where.material_cost ={gte:minCost}
+   
+    // Handling material_cost
+    if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
+      const minCost: number = Number(this.pcForm!.value["min_cost"]);
+      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+      where.material_cost = { gte: minCost, lte: maxCost };
+    } else if (this.pcForm!.value["min_cost"]) {
+      const minCost: number = Number(this.pcForm!.value["min_cost"]);
+      where.material_cost = { gte: minCost };
+    } else if (this.pcForm!.value["max_cost"]) {
+      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+      where.material_cost = { lte: maxCost };
     }
 
-    if (this.pcForm!.value["max_cost"])
-      {
-        const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-        where.material_cost ={ngt:maxCost}
-      }
+    // Handling length
+    if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
+      const minLen: number = Number(this.pcForm!.value["min_len"]);
+      const maxLen: number = Number(this.pcForm!.value["max_len"]);
+      where.length = { gte: minLen, lte: maxLen };
+    } else if (this.pcForm!.value["min_len"]) {
+      const minLen: number = Number(this.pcForm!.value["min_len"]);
+      where.length = { gte: minLen };
+    } else if (this.pcForm!.value["max_len"]) {
+      const maxLen: number = Number(this.pcForm!.value["max_len"]);
+      where.length = { lte: maxLen };
+    }
 
-      if (this.pcForm!.value["min_len"])
-        {
-          const min :number = Number(this.pcForm!.value["min_len"]);
-          where.length ={gte:min}
-        }
-    
-        if (this.pcForm!.value["max_len"])
-          {
-            const max :number = Number(this.pcForm!.value["max_len"]);
-            where.length ={ngte:max}
-          }
-
-          if (this.pcForm!.value["min_labour"])
-            {
-              const min :number = Number(this.pcForm!.value["min_labour"]);
-              where.labour_hour ={gte:min}
-            }
-        
-            if (this.pcForm!.value["max_labour"])
-              {
-                const max :number = Number(this.pcForm!.value["max_labour"]);
-                where.labour_hour ={ngt:max}
-              }
+    // Handling labour_hour
+    if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
+      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+      where.labour_hour = { gte: minLabour, lte: maxLabour };
+    } else if (this.pcForm!.value["min_labour"]) {
+      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+      where.labour_hour = { gte: minLabour };
+    } else if (this.pcForm!.value["max_labour"]) {
+      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+      where.labour_hour = { lte: maxLabour };
+    }
       this.lastSearchCriteria=where;
     this.subs.sink = this.trfRepairDS.SearchTariffRepair(where,this.lastOrderBy,this.pageSize).subscribe(data => {
        this.trfRepairItems=data;

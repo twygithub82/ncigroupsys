@@ -37,6 +37,10 @@ builder.Services.AddGraphQLServer()
     .AddMutationType<IDMS.Models.Parameter.CleaningMethod.GqlTypes.CleanningMethod_MutationType>()
     .AddFiltering()
     .AddProjections()
+     .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
+     {
+         MaxPageSize = 100
+     })
     .AddSorting();
 
 

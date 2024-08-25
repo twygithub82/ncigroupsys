@@ -9,6 +9,12 @@
       <mat-icon>close</mat-icon>
     </button> -->
   </div>
+  @if (trfRepairDS.loading$ | async) {
+    <div class="tbl-spinner">
+      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    }
   <div mat-dialog-content class="auto-height">
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
@@ -70,95 +76,7 @@
           </div>
         </div>
         </div> 
-        <!-- <div class="row">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-              <input matInput formControlName="part_name" type="text"  [required]="isFieldRequired()" [readonly]="!isFieldRequired()">
-              @if (pcForm.get('part_name')?.hasError('required')) {
-                <mat-error>
-                  {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
-                </mat-error>
-                }
-                @if (pcForm.get('part_name')?.hasError('existed')) {
-                  <mat-error>
-                    {{translatedLangText.PART_NAME }} {{translatedLangText.EXISTED }}
-                  </mat-error>
-                  }
-            </mat-form-field>
-          </div>
-        </div>
-         <div class="row">
-          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 mb-1">
-            <mat-form-field class="example-full-width"> 
-             <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
-             <input matInput formControlName="height_diameter" type="number"  >
-             </mat-form-field>  
-          </div>
-          <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-select [formControl]="dimensionUnitControl" formControlName="height_diameter_unit_cv" > 
-                <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
-                  {{ t.description }}
-               </mat-option>
-             </mat-select>
-            
-             </mat-form-field>
-           </div>  
-           <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 mb-1">
-            <mat-form-field class="example-full-width"> 
-             <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
-             <input matInput formControlName="width_diameter" type="number"  >
-             </mat-form-field>  
-          </div>
-          <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-select [formControl]="widthDiadmeterUnitControl" formControlName="width_diameter_unit_cv" > 
-                <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
-                  {{ t.description }}
-               </mat-option>
-             </mat-select>
-            
-             </mat-form-field>
-           </div>  
-
-        </div> 
-        <div class="row">
-          
-          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 mb-1">
-            <mat-form-field class="example-full-width"> 
-             <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
-             <input matInput formControlName="thickness" type="number"  >
-             </mat-form-field>  
-           </div> 
-           <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-select [formControl]="thicknessUnitControl" formControlName="thickness_unit_cv" > 
-                <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
-                  {{ t.description }}
-               </mat-option>
-             </mat-select>
-            
-             </mat-form-field>
-           </div>  
-           <div class="col-xl-4 col-lg4 col-md-4 col-sm-4 mb-1">
-            <mat-form-field class="example-full-width"> 
-             <mat-label>{{translatedLangText.LENGTH}}</mat-label>
-             <input matInput formControlName="length" type="number"  >
-             </mat-form-field>  
-           </div> 
-           <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-select [formControl]="lengthUnitControl" formControlName="length_unit_cv" > 
-                <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
-                  {{ t.description }}
-               </mat-option>
-             </mat-select>
-            
-             </mat-form-field>
-           </div>  
-        
-        </div>  -->
+       
         <div class="row">
          
            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
@@ -173,41 +91,7 @@
              </mat-form-field>  
            </div> 
         </div>
-        <!-- <div class="row">
-          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="card">
-              <div class="materialTableHeader">
-              </div>
-              <div class="body overflow-auto">
-                <div class="responsive_table">
-                  <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
-                    
-                    <ng-container matColumnDef="fName">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.PART_NAME }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" >
-                        <span class="mobile-label">{{translatedLangText.PART_NAME }}:</span>{{row.part_name}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="lName">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.GROUP_NAME }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" >
-                        <span class="mobile-label">{{translatedLangText.GROUP_NAME }}:</span>{{this.getGroupNameCodeValue(row.group_name_cv)?.description}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="email">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.SUB_GROUP_NAME }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" >
-                        <span class="mobile-label">{{translatedLangText.SUB_GROUP_NAME }}:</span> {{this.getSubGroupNameCodeValue(row.subgroup_name_cv)?.description}}</mat-cell>
-                    </ng-container>
-                    
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;" 
-                      [style.cursor]="'pointer'" matRipple>
-                    </mat-row>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> -->
+     
       </div>
         
       <div class="row">
