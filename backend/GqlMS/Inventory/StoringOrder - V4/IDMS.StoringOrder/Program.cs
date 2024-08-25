@@ -10,6 +10,7 @@ using IDMS.StoringOrder.Model.Request;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.StoringOrder.GqlTypes.Repo;
+using HotChocolate.Types.Pagination;
 
 namespace IDMS.StoringOrder.Application
 {
@@ -70,19 +71,18 @@ namespace IDMS.StoringOrder.Application
             builder.Services.AddGraphQLServer()
                             .InitializeOnStartup()
                             .RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Pooled)
-                            //.RegisterDbContext<AppDbContext>(DbContextKind.Synchronized)
-                            //.RegisterDbContext<RODbContext>(DbContextKind.Synchronized)
-                            //.RegisterDbContext<BookDbContext>(DbContextKind.Synchronized)
                             .AddQueryType<Query>()
                             .AddTypeExtension<SOQuery>()
                             .AddSubscriptionType<SOSubscription>()
                             .AddMutationType<SOMutation>()
                             .AddTypeExtension<SOTMutation>()
-                            //.AddTypeExtension<BookQuery>()
-                            //.AddTypeExtension<ROQuery>()
                             .AddFiltering()
                             .AddSorting()
                             .AddProjections()
+                            .SetPagingOptions(new PagingOptions
+                            {
+                                MaxPageSize = 100
+                            })
                             .AddInMemorySubscriptions();// Must add this as well for websocket
 
 
