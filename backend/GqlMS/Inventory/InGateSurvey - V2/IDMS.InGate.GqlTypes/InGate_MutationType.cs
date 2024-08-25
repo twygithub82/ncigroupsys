@@ -40,6 +40,7 @@ namespace IDMS.InGate.GqlTypes
                     eir_dt = currentDate,
                     eir_no = InGate.eir_no,
                     guid = InGate.guid,
+                    remarks = InGate.remarks,
                     //   haulier =InGate.haulier,
                     lolo_cv = InGate.lolo_cv,
                     preinspection_cv = InGate.preinspection_cv,
@@ -122,9 +123,9 @@ namespace IDMS.InGate.GqlTypes
                     GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in", notification_uid);
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -140,8 +141,16 @@ namespace IDMS.InGate.GqlTypes
                 {
                     long epochNow = GqlUtils.GetNowEpochInSec();
                     var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                    InGate.update_by = uid;
-                    InGate.update_dt = epochNow;
+
+                    //added to update ingate as well
+                    var updatedIngate = new InGateWithTank() { guid = InGate.guid };
+                    context.Attach(updatedIngate);
+
+                    updatedIngate.remarks = InGate.remarks;
+                    updatedIngate.driver_name = InGate.driver_name;
+                    updatedIngate.vehicle_no = InGate.vehicle_no;
+                    updatedIngate.update_by = uid;
+                    updatedIngate.update_dt = epochNow;
 
                     var so_tank = context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefault();
 
@@ -166,7 +175,7 @@ namespace IDMS.InGate.GqlTypes
                     {
                         so.haulier = InGate.haulier;
                         so.update_by = uid;
-                        so.update_dt = GqlUtils.GetNowEpochInSec();
+                        so.update_dt = epochNow;
                     }
 
                     if (InGate.tank != null)
@@ -178,26 +187,23 @@ namespace IDMS.InGate.GqlTypes
                         so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
                         so_tank.purpose_storage = InGate.tank.purpose_storage;
                         so_tank.update_by = uid;
-                        so_tank.update_dt = GqlUtils.GetNowEpochInSec();
+                        so_tank.update_dt = epochNow;
                         so_guid = so_tank.so_guid;
                     }
-
-                    //context.in_gate.Update(InGate);
-
 
                     if (!string.IsNullOrEmpty(so_guid))
                     {
                         CheckAndUpdateSOStatus(context, so_guid);
                     }
 
-                    retval = context.SaveChanges();
+                    retval = await context.SaveChangesAsync();
                     // retval = InGate;
                 }
 
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -246,9 +252,9 @@ namespace IDMS.InGate.GqlTypes
                 //    retval.result = Convert.ToInt32(result["result"]);
                 //}
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
             return retval;
         }
