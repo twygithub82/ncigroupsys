@@ -8,6 +8,7 @@ export class User {
   email!: string;
   groupsid!: string;
   role!: string;
+  roles!: string[];
   primarygroupsid!: string;
   token!: JwtPayload;
   plainToken!: string;

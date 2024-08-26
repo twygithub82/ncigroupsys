@@ -42,13 +42,14 @@ export class AuthService {
     return this.http.post<any>(url, body, { headers })
       .pipe(map(user => {
         if (user && user.token) {
-          
+
           const decodedToken = decodeToken(user.token);
           var usr = new User;
           usr.name = decodedToken[jwt_mapping.name.key]
           usr.email = decodedToken[jwt_mapping.email.key]
           usr.groupsid = decodedToken[jwt_mapping.groupsid.key]
           usr.role = decodedToken[jwt_mapping.role.key]
+          usr.roles = [decodedToken[jwt_mapping.role.key]]
           usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key]
           usr.token = decodedToken;
           usr.plainToken = user.token;
@@ -82,17 +83,25 @@ export class AuthService {
     this.currentUserSubject.next(new User);
     return of({ success: false });
   }
-  
+
   getRememberedUsername(): string | null {
     return localStorage.getItem('rememberMe') === 'true' ? localStorage.getItem('username') : null;
   }
-  
+
   getDecodedToken(): any {
     // const token = this.currentUserValue?.token;
     // return token ? decodeToken(token) : null;
   }
 
-  // hasRole(role: string): boolean {
-  //   return this.roles.includes(role);
-  // }
+  hasRole(expectedRoles: string[] | undefined): boolean {
+    const userRoles = this.currentUserValue?.roles || [];
+    const userRole = this.currentUserValue?.role || '';
+    // If no specific role is required, as long as the user is logged in, return true
+    if (!expectedRoles || expectedRoles.length === 0) {
+      return !!this.currentUserValue.token;
+    }
+
+    // Check if any of the user's roles match any of the expected roles
+    return expectedRoles.some(role => userRoles.some(userRole => userRole.toLowerCase() === role.toLowerCase())) || expectedRoles.some(role => role.toLowerCase() === userRole.toLowerCase());
+  }
 }

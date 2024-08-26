@@ -16,7 +16,7 @@ import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-
 import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey.component';
 import { InGateSurveyFormComponent } from './inventory/in-gate-survey-form/in-gate-survey-form.component';
 import { BookingComponent } from './inventory/booking/booking.component';
-import {PackageCleaningComponent} from "./package/package-cleaning/package-cleaning.component"
+import { PackageCleaningComponent } from "./package/package-cleaning/package-cleaning.component"
 import { PackageDepotComponent } from './package/package-depot/package-depot.component';
 import { BookingNewComponent } from './inventory/booking-new/booking-new.component';
 import { SchedulingNewComponent } from './inventory/scheduling-new/scheduling-new.component';
@@ -26,10 +26,12 @@ import { SchedulingComponent } from './inventory/scheduling/scheduling.component
 import { OutGateComponent } from './inventory/out-gate/out-gate.component';
 import { OutGateDetailsComponent } from './inventory/out-gate-details/out-gate-details.component';
 import { PackageLabourComponent } from './package/package-labour/package-labour.component';
+import { AuthGuard } from '@core/guard/auth.guard';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
     component: CleaningCategoryComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: "parameter/cleaning-methods",
@@ -38,14 +40,18 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "inventory/storing-order",
     component: StoringOrderComponent,
+    canActivate: [AuthGuard],
+    data: { expectedRole: ['Admin'] }
   },
   {
     path: "inventory/storing-order/new",
     component: StoringOrderNewComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: "inventory/storing-order/edit/:id",
     component: StoringOrderNewComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: "inventory/in-gate",
