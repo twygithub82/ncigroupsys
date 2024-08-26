@@ -230,7 +230,7 @@
                 @if ((row.booking?.length ?? 0) > 0) {
                 <div class="responsive_table">
                   <table mat-table [dataSource]="row.booking || []" matSort
-                    class="mat-cell advance-table striped-rows hover-highlight">
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="id">
                       <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                       <mat-cell *matCellDef="let bookingRow">{{row.guid}}</mat-cell>
