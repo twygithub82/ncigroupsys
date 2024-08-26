@@ -47,6 +47,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { BookingItem } from 'app/data-sources/booking';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { SchedulingSotDS } from 'app/data-sources/scheduling-sot';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -85,15 +86,10 @@ import { InGateDS } from 'app/data-sources/in-gate';
 })
 export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'select',
-    'tank_no',
-    'customer_code',
-    'eir_no',
-    'eir_dt',
-    'capacity',
-    'tare_weight',
-    'tank_status',
-    'yard',
+    'scheduling_dt',
+    'book_type_cv',
+    'reference',
+    'status_cv',
     'actions',
   ];
 
@@ -165,6 +161,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   schedulingDS: SchedulingDS;
+  schedulingSotDS: SchedulingSotDS;
   igDS: InGateDS;
 
   sotList: StoringOrderTankItem[] = [];
@@ -205,6 +202,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
+    this.schedulingSotDS = new SchedulingSotDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;

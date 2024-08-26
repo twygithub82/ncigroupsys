@@ -86,15 +86,11 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 })
 export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'select',
-    'tank_no',
-    'customer',
-    'eir_no',
-    'eir_dt',
-    'capacity',
-    'tare_weight',
-    'tank_status',
-    'yard',
+    'booking_dt',
+    'book_type_cv',
+    'reference',
+    'surveyor',
+    'status_cv',
     'actions',
   ];
 
