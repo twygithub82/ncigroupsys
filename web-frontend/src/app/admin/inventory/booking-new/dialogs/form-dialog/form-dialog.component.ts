@@ -27,6 +27,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { CodeValuesDS } from 'app/data-sources/code-values';
+import { setThrowInvalidWriteToSignalError } from '@angular/core/primitives/signals';
 
 
 export interface DialogData {
@@ -81,6 +82,7 @@ export class FormDialogComponent {
   ];
   action: string;
   dialogTitle: string;
+  referenceTitle?: string;
   bookingForm: UntypedFormGroup;
   storingOrderTank: StoringOrderTankItem[];
   booking?: BookingItem;
@@ -107,7 +109,6 @@ export class FormDialogComponent {
     this.igDS = new InGateDS(this.apollo);
     this.action = data.action!;
     if (this.action === 'edit') {
-      //this.dialogTitle = 'Edit ' + data.item.tank_no;
       this.storingOrderTank = data.item;
       this.booking = data.booking;
       this.dialogTitle = 'Edit Booking';
@@ -145,7 +146,6 @@ export class FormDialogComponent {
       console.log('valid');
       console.log(booking);
       if (booking.guid) {
-        debugger
         this.bkDS.updateBooking([booking]).subscribe(result => {
           const returnDialog: any = {
             savedSuccess: (result?.data?.updateBooking ?? 0) > 0
@@ -182,6 +182,17 @@ export class FormDialogComponent {
   }
 
   initializeValueChange() {
+    this.bookingForm!.get('book_type_cv')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(100),
+      tap(value => {
+        if (value === 'RELEASE_ORDER') {
+          this.referenceTitle = this.data.translatedLangText.JOB_NO;
+        } else {
+          this.referenceTitle = this.data.translatedLangText.REFERENCE;
+        }
+      })
+    ).subscribe();
   }
 
   findInvalidControls() {

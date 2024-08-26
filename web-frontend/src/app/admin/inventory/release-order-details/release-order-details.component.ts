@@ -346,7 +346,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       actions: [item.actions || []],
       // sot prop
       tank_no: [item.storing_order_tank?.tank_no],
-      release_job_no: [item.storing_order_tank?.release_job_no],
+      release_job_no: [this.schedulingSotDS.getSchedulingSotReleaseJobNo(item.storing_order_tank?.scheduling_sot) || item.storing_order_tank?.release_job_no],
       eir_no: [this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.eir_no],
       eir_dt: [Utility.convertEpochToDateStr(this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.eir_dt)],
       tank_status_cv: [item.storing_order_tank?.tank_status_cv],
