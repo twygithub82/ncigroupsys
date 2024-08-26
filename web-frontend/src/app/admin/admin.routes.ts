@@ -1,8 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CleaningStepsComponent } from './cleaning-steps/cleaning-steps.component';
-import { CleaningProceduresComponent } from './cleaning-procedures/cleaning-procedures.component';
-import { CleaningProceduresNewComponent } from './cleaning-procedures-new/cleaning-procedures-new.component';
 import { StoringOrderComponent } from './inventory/storing-order/storing-order.component';
 import { StoringOrderNewComponent } from './inventory/storing-order-new/storing-order-new.component';
 import { InGateComponent } from './inventory/in-gate/in-gate.component';
@@ -31,24 +28,12 @@ import { OutGateDetailsComponent } from './inventory/out-gate-details/out-gate-d
 import { PackageLabourComponent } from './package/package-labour/package-labour.component';
 export const ADMIN_ROUTE: Routes = [
   {
-    path: "cleaning-setps",
-    component: CleaningStepsComponent,
-  },
-  {
-    path: "cleaning-procedures",
-    component: CleaningProceduresComponent,
-  },
-  {
     path: "parameter/cleaning-category",
     component: CleaningCategoryComponent,
   },
   {
     path: "parameter/cleaning-methods",
     component: CleaningMethodsComponent,
-  },
-  {
-    path: "cleaning-procedures/cleaning-procedures-new",
-    component: CleaningProceduresNewComponent,
   },
   {
     path: "inventory/storing-order",
