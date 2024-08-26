@@ -49,6 +49,7 @@ import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/clean
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { HttpClientModule  } from '@angular/common/http';
 
 @Component({
   selector: 'app-tariff-cleaning-new',
@@ -194,7 +195,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     
   }
 
-
+  sdsFiles: (string | ArrayBuffer)[] = [];
   cCategoryList : CleaningCategoryItem[]=[];
   cMethodList : CleaningMethodItem[]=[];
   tcList :TariffCleaningItem[]=[];
@@ -226,7 +227,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   cCategoryDS:CleaningCategoryDS;
   cMethodDS:CleaningMethodDS;
 
-  
+  selectedFile: File | null = null;
   
   soList: StoringOrderItem[] = [];
 
@@ -276,7 +277,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       un_no: ['', [Validators.required, this.onlyNumbersDashValidator]],
       nature:this.natureCvList,
       in_gate_alert:[''],
-      depot_note:['']
+      depot_note:[''],
+      sds_file:[null]
     });
   }
 
@@ -524,6 +526,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
+      if(this.selectedFile)
+      {
+        let groupGuid =this.tcForm?.value['un_no'];
+        this.onSubmit(groupGuid,'tariff_cleaning');
+      }
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
@@ -648,4 +655,39 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     //   }
     // });
   }
+
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      this.tcForm?.patchValue({sds_file:this.selectedFile});
+      this.tcForm?.get("sds_file")?.updateValueAndValidity();
+    }
+  }
+
+  onSubmit(groupGuid :string,tableName:string): void {
+    if (this.selectedFile) {
+      const formData = new FormData();
+
+      const jsonObject = {
+        TableName: `${tableName}`,
+        FileType: 'pdf',
+        GroupGuid: `${groupGuid}`,
+        Description: 'SDS file'
+      };
+      
+      formData.append('file', this.selectedFile, this.selectedFile.name);
+      formData.append('metadata', JSON.stringify(jsonObject));
+      this.httpClient.post('https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/UploadFiles', formData).subscribe({
+        next: (response) => {
+          console.log('File successfully uploaded!', response);
+        },
+        error: (err) => {
+          console.error('Upload error:', err);
+        },
+      });
+    }
+  }
+
 }

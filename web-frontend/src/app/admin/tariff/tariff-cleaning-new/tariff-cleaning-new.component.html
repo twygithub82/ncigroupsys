@@ -213,30 +213,16 @@
                         </mat-form-field>
                       </div>
                     </div>
-                    <!-- <div class="row">
-                      
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                        <mat-form-field class="example-full-width">
-                          <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
-                          <input matInput formControlName="un_no" type="file">
-                          @if (tcForm?.get('un_no')?.hasError('required')) {
-                          <mat-error>
-                            {{langText.CARGO_UN_NO | translate}} {{langText.CARGO_REQUIRED | translate}}
-                          </mat-error>
-                          }
-                          @if (tcForm?.get('un_no')?.hasError('existed')) {
-                            <mat-error>
-                              {{langText.CARGO_UN_NO | translate}}: {{langText.EXISTED | translate}}
-                            </mat-error>
-                            }
-                          @if (tcForm?.get('un_no')?.hasError('invalidCharacter')) {
-                              <mat-error>
-                                {{langText.CARGO_UN_NO | translate}}: {{langText.INVALID | translate}}
-                              </mat-error>
-                              }
-                        </mat-form-field>
+                    <div class="row">
+                      <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 col-xs-12 mb-1">
+                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button">
+                          <i class="material-icons">attach_file</i>
+                        </button>
+                        <input type="file" #fileInput class="default" (change)="onFileSelected($event)" 
+                          style="display: none;">
                       </div>
-                    </div> -->
+                    
+                    </div>
                   
               </div>
              </div>
