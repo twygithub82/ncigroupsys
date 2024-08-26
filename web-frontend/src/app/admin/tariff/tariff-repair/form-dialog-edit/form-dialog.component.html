@@ -32,12 +32,12 @@
            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
              <mat-form-field class="example-full-width"> 
               <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
-              <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv"  [required]="isFieldRequired()">
+              <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv"  [required]="isFieldRequiredSubGroup()">
                 <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
                     {{ t.description }}
                 </mat-option>
               </mat-select>
-              @if (pcForm.get('group_name_cv')?.hasError('required')) {
+              @if (pcForm.get('sub_group_name_cv')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.SUB_GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>

@@ -274,10 +274,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
      //this.tnkDS = new TankDS(this.apollo);
      this.cvDS = new CodeValuesDS(this.apollo);
      this.trfRepairDS =new TariffRepairDS(this.apollo);
-    this.pcForm = this.createTarifRepair();
-    this.action = data.action!;
+     this.pcForm = this.createTarifRepair();
+     this.action = data.action!;
     this.translateLangText();
-    this.loadData();
+   this.loadData();
 
     if(this.selectedItems.length==1)
     {
@@ -379,7 +379,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
        this.cvDS.getCodeValuesByType(subqueries)
        subqueries.map(s=>{
           this.cvDS.connectAlias(s.alias).subscribe(data => {
-            this.allSubGroupNameCvList.push(...data);
+            if(data.length>0)
+              this.allSubGroupNameCvList.push(...data);
          
           });
 
@@ -391,14 +392,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
         var rec=this.selectedItems[0];
         var group_name_codeValue =this.getGroupNameCodeValue(rec.group_name_cv!)||new CodeValuesItem();
         this.groupNameControl.setValue(group_name_codeValue);
-        // var aliasName =group_name_codeValue.child_code||'';
-        // const subqueries :any[]=  [{ alias: aliasName, codeValType: aliasName }];
-        // this.cvDS.getCodeValuesByType(subqueries);
-        // this.cvDS.connectAlias(aliasName).subscribe(data => {
-        //   this.subGroupNameCvList = data;
-        //   //this.subGroupNameControl.setValue(this.getSubGroupNameCodeValue(rec.subgroup_name_cv!));
-        // });
-
       }
      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
@@ -444,9 +437,14 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   
   }
 
+  isFieldRequiredSubGroup()
+   {
+    return this.selectedItems.length==1 ||  !!this.pcForm.controls['group_name_cv'].value;;
+   }
+
    isFieldRequired()
    {
-    return this.selectedItems.length==1;
+    return this.selectedItems.length==1 ;
    }
 
   canEdit()
@@ -587,7 +585,15 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
 
     trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
     trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
-
+    if (trfRepairItem.group_name_cv) {
+      // Check if subgroup_name_cv is empty
+      if (!trfRepairItem.subgroup_name_cv) {
+          // Throw an error, show a message, or handle the requirement as needed
+          console.error('Subgroup Name is required when Group Name is provided.');
+          // Optionally, set a validation error on the form control
+          this.pcForm.controls['sub_group_name_cv'].setErrors({ 'required': true });
+      }
+  }
     trfRepairItem.labour_hour=-1;
     if(this.pcForm!.value['labour_hour'])trfRepairItem.labour_hour=this.pcForm!.value['labour_hour'];
 
