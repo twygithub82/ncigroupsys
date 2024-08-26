@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Bcpg;
+using System;
 
 namespace IDMS.FileManagement.Service
 {
@@ -258,6 +259,21 @@ namespace IDMS.FileManagement.Service
                 return res;
             }
             catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        public async Task<List<string>> GetGroupFileUrlFromDB(List<string> groupGuid)
+        {
+            try
+            {
+                List<string> res = new List<string>();
+                res = await _context.file_management.Where(f => groupGuid.Contains(f.group_guid) && (f.delete_dt == null || f.delete_dt == 0)).Select(f => f.url).ToListAsync();
+                return res;
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }

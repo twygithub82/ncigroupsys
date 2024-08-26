@@ -844,6 +844,11 @@ $breakpoints: (
   }
 }
 
+.dark-header .mat-mdc-header-cell {
+  background-color: #dcdcdc !important; /* Darker gray for header */
+  color: #333; /* Dark text color for better contrast */
+}
+
 /* Class for striped rows */
 .striped-rows .mdc-data-table__row:nth-child(odd) {
   background-color: #ececec; /* Slightly darker gray for odd rows */

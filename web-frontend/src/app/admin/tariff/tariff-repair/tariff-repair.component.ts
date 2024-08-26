@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild,HostListener } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl,AbstractControl,Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl, AbstractControl, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -48,23 +48,22 @@ import { MatDividerModule } from '@angular/material/divider';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 //import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
-import {ExampleDataSource} from 'app/advance-table/advance-table.component';
+import { ExampleDataSource } from 'app/advance-table/advance-table.component';
 import { AdvanceTableService } from 'app/advance-table/advance-table.service';
-import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
-import {SearchCriteriaService} from 'app/services/search-criteria.service';
+import { CustomerCompanyCleaningCategoryDS, CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
+import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
-import { FormDialogComponent_Edit_Cost} from './form-dialog-edit-cost/form-dialog.component';
+import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour';
-import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
-import { TariffRepairDS,TariffRepairItem } from 'app/data-sources/tariff-repair';
+import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour';
+import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 
 
 @Component({
   selector: 'app-tariff-repair',
   standalone: true,
-  
   templateUrl: './tariff-repair.component.html',
   styleUrl: './tariff-repair.component.scss',
   imports: [
@@ -97,18 +96,17 @@ import { TariffRepairDS,TariffRepairItem } from 'app/data-sources/tariff-repair'
   ]
 })
 export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
-implements OnInit {
+  implements OnInit {
   displayedColumns = [
     'select',
     // // 'img',
-      'fName',
-      'lName',
-      'email',
-      'subgroup',
-     'gender',
-     'bDate',
-     'mobile',
-     
+    'fName',
+    'lName',
+    'email',
+    'subgroup',
+    'gender',
+    'bDate',
+    'mobile',
   ];
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-REPAIR'
@@ -131,27 +129,27 @@ implements OnInit {
   PROCEDURE_STEP_DURATION_TOOLTIP = 'COMMON-FORM.STEP-DURATION-TOOLTIP'
   CLEANING_GROUP_NAME = 'COMMON-FORM.GROUP-NAME'
   CLEANING_BAY = 'COMMON-FORM.BAY'
-  
+
   CLEANING_LAST_UPDATED_DT = 'COMMON-FORM.LAST-UPDATED'
 
   groupNameControl = new UntypedFormControl();
-  subGroupNameControl= new UntypedFormControl();
-  handledItemControl=new UntypedFormControl();
+  subGroupNameControl = new UntypedFormControl();
+  handledItemControl = new UntypedFormControl();
 
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  trfRepairDS : TariffRepairDS;
-  cvDS :CodeValuesDS;
-  trfRepairItems : TariffRepairItem[]=[];
+  trfRepairDS: TariffRepairDS;
+  cvDS: CodeValuesDS;
+  trfRepairItems: TariffRepairItem[] = [];
 
-  custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
+  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList1?: CustomerCompanyItem[];
   cleaning_categoryList?: CleaningCategoryItem[];
 
-  groupNameCvList :CodeValuesItem[] = [];
-  subGroupNameCvList :CodeValuesItem[] = [];
-  handledItemCvList :CodeValuesItem[] = [];
+  groupNameCvList: CodeValuesItem[] = [];
+  subGroupNameCvList: CodeValuesItem[] = [];
+  handledItemCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -162,15 +160,14 @@ implements OnInit {
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  
 
-   exampleDatabase?: AdvanceTableService;
-   dataSource!: ExampleDataSource;
+  exampleDatabase?: AdvanceTableService;
+  dataSource!: ExampleDataSource;
   selection = new SelectionModel<TariffResidueItem>(true, []);
-  
+
   id?: number;
   advanceTable?: AdvanceTable;
-  pcForm?: UntypedFormGroup;
+  pcForm: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -178,7 +175,7 @@ implements OnInit {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -226,69 +223,69 @@ implements OnInit {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME:'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS:'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST :'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
-    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
-    PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    DESCRIPTION : 'COMMON-FORM.DESCRIPTION',
-    COST : 'COMMON-FORM.COST',
-    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
-    GROUP_NAME:"COMMON-FORM.GROUP-NAME",
-    SUB_GROUP_NAME:"COMMON-FORM.SUB-GROUP-NAME",
-    PART_NAME:"COMMON-FORM.PART-NAME",
-    MIN_COST:"COMMON-FORM.MIN-COST",
-    MAX_COST:"COMMON-FORM.MAX-COST",
-    LENGTH:"COMMON-FORM.LENGTH",
-    MIN_LENGTH:"COMMON-FORM.MIN-LENGTH",
-    MAX_LENGTH:"COMMON-FORM.MAX-LENGTH",
-    MIN_LABOUR:"COMMON-FORM.MIN-LABOUR",
-    MAX_LABOUR:"COMMON-FORM.MAX-LABOUR",
-    HANDLED_ITEM:"COMMON-FORM.HANDLED-ITEM",
-    LABOUR_HOUR:"COMMON-FORM.LABOUR-HOUR",
-    MATERIAL_COST:"COMMON-FORM.MATERIAL-COST",
-     }
-  
+    CARGO_ALERT: 'COMMON-FORM.CARGO-ALERT',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    COST: 'COMMON-FORM.COST',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    GROUP_NAME: "COMMON-FORM.GROUP-NAME",
+    SUB_GROUP_NAME: "COMMON-FORM.SUB-GROUP-NAME",
+    PART_NAME: "COMMON-FORM.PART-NAME",
+    MIN_COST: "COMMON-FORM.MIN-COST",
+    MAX_COST: "COMMON-FORM.MAX-COST",
+    LENGTH: "COMMON-FORM.LENGTH",
+    MIN_LENGTH: "COMMON-FORM.MIN-LENGTH",
+    MAX_LENGTH: "COMMON-FORM.MAX-LENGTH",
+    MIN_LABOUR: "COMMON-FORM.MIN-LABOUR",
+    MAX_LABOUR: "COMMON-FORM.MAX-LABOUR",
+    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
+    LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
+    MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
+  }
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-   // public advanceTableService: AdvanceTableService,
+    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
     private translate: TranslateService
 
   ) {
     super();
-    this.initTcForm();
+    this.pcForm = this.initTcForm();
     // this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.trfRepairDS= new TariffRepairDS(this.apollo);
+    this.trfRepairDS = new TariffRepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -306,23 +303,22 @@ implements OnInit {
       this.translatedLangText = translations;
     });
   }
-  
-  initTcForm() {
-    this.pcForm = this.fb.group({
-     // guid: [{value:''}],
+
+  initTcForm(): UntypedFormGroup {
+    return this.fb.group({
+      // guid: [{value:''}],
       // customer_code: this.customerCodeControl,
       // cleaning_category:this.categoryControl,
-      group_name_cv : this.groupNameControl,
-      sub_group_name_cv:this.subGroupNameControl,
-      part_name:[''],
-      min_len:[''],
-      max_len:[''],
-      min_labour:[''],
-      max_labour:[''],
-      min_cost:[''],
-      max_cost:[''],
-      handled_item_cv:this.handledItemControl
-      
+      group_name_cv: this.groupNameControl,
+      sub_group_name_cv: this.subGroupNameControl,
+      part_name: [''],
+      min_len: [''],
+      max_len: [''],
+      min_labour: [''],
+      max_labour: [''],
+      min_cost: [''],
+      max_cost: [''],
+      handled_item_cv: this.handledItemControl
     });
   }
 
@@ -334,37 +330,37 @@ implements OnInit {
     this.loadData();
   }
 
-   addCall() {
+  addCall() {
     // this.preventDefault(event);  // Prevents the form submission
-     let tempDirection: Direction;
-     if (localStorage.getItem('isRtl') === 'true') {
-       tempDirection = 'rtl';
-     } else {
-       tempDirection = 'ltr';
-     }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
-     const dialogRef = this.dialog.open(FormDialogComponent_New,{
-       width: '700px',
-       height:'auto',
-       data: {
-         action: 'new',
-         langText: this.langText,
-         selectedItem:null
-       }
-         
-     });
-
-     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result>0) {
-           this.handleSaveSuccess(result);
-           //this.search();
-          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-    
+    const dialogRef = this.dialog.open(FormDialogComponent_New, {
+      width: '700px',
+      height: 'auto',
+      data: {
+        action: 'new',
+        langText: this.langText,
+        selectedItem: null
       }
-   });
-    }
-  
+
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+        this.handleSaveSuccess(result);
+        //this.search();
+        // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+
+      }
+    });
+  }
+
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -374,113 +370,106 @@ implements OnInit {
     }
 
 
-    
+
   }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayGroupNameCodeValue_Description (codeValue:String)
-  {
-    return this.GetCodeValue_Description(codeValue,this.groupNameCvList);
+  displayGroupNameCodeValue_Description(codeValue: String) {
+    return this.GetCodeValue_Description(codeValue, this.groupNameCvList);
   }
 
-  displaySubGroupNameCodeValue_Description (codeValue:String)
-  {
-    return this.GetCodeValue_Description(codeValue,this.subGroupNameCvList);
+  displaySubGroupNameCodeValue_Description(codeValue: String) {
+    return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
   }
 
-  GetCodeValue_Description(codeValue:String, codeValueItems:CodeValuesItem[])
-  {
-    let retval:string='';
-    const foundItem  = codeValueItems.find(item => item.code_val === codeValue);
-    if(foundItem)
-    {
-      retval = foundItem.description||'';
+  GetCodeValue_Description(codeValue: String, codeValueItems: CodeValuesItem[]) {
+    let retval: string = '';
+    const foundItem = codeValueItems.find(item => item.code_val === codeValue);
+    if (foundItem) {
+      retval = foundItem.description || '';
     }
 
     return retval;
   }
   displayLastUpdated(r: TariffLabourItem) {
-    var updatedt= r.update_dt;
-    if(updatedt===null)
-    {
-      updatedt= r.create_dt;
+    var updatedt = r.update_dt;
+    if (updatedt === null) {
+      updatedt = r.create_dt;
     }
     const date = new Date(updatedt! * 1000);
-    
+
     const day = String(date.getDate()).padStart(2, '0');
     const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();   
+    const year = date.getFullYear();
 
-   // Replace the '/' with '-' to get the required format
- 
+    // Replace the '/' with '-' to get the required format
+
 
     return `${day}/${month}/${year}`;
 
   }
 
-  adjustCost()
-  {
-   // if(this.selection.selected.length==0) return;
+  adjustCost() {
+    // if(this.selection.selected.length==0) return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost,{
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
       width: '700px',
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItems:this.selection.selected
+        selectedItems: this.selection.selected
       }
-        
+
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result>0) {
-          
-            this.handleSaveSuccess(result);
-            this.search();
-          
+      if (result > 0) {
+
+        this.handleSaveSuccess(result);
+        this.search();
+
       }
-      });
+    });
   }
 
-  editCallSelection()
-  {
-    if(this.selection.selected.length==0) return;
+  editCallSelection() {
+    if (this.selection.selected.length == 0) return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       width: '700px',
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItems:this.selection.selected
+        selectedItems: this.selection.selected
       }
-        
+
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result>0) {
-          
-            this.handleSaveSuccess(result);
-            this.search();
-          
+      if (result > 0) {
+
+        this.handleSaveSuccess(result);
+        this.search();
+
       }
-      });
+    });
   }
 
   editCall(row: TariffRepairItem) {
-   // this.preventDefault(event);  // Prevents the form submission
+    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -488,35 +477,34 @@ implements OnInit {
       tempDirection = 'ltr';
     }
 
-    var rows :TariffRepairItem[] =[] ;
+    var rows: TariffRepairItem[] = [];
     rows.push(row);
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       width: '700px',
       data: {
         action: 'edit',
         langText: this.langText,
-        selectedItems:rows
+        selectedItems: rows
       }
-        
+
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          //if(result.selectedValue>0)
-            //{
-              this.handleSaveSuccess(result);
-              //this.search();
-              if(this.trfRepairDS.totalCount>0)
-              {
-                this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-              }
-            //}
+      if (result) {
+        //if(result.selectedValue>0)
+        //{
+        this.handleSaveSuccess(result);
+        //this.search();
+        if (this.trfRepairDS.totalCount > 0) {
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        }
+        //}
       }
-      });
-   
+    });
+
   }
 
-  
+
 
   deleteItem(row: AdvanceTable) {
     // this.id = row.id;
@@ -565,48 +553,44 @@ implements OnInit {
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-     this.isAllSelected()
-       ? this.selection.clear()
-       : this.trfRepairItems.forEach((row) =>
-           this.selection.select(row)
-         );
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.trfRepairItems.forEach((row) =>
+        this.selection.select(row)
+      );
   }
 
 
 
-  search()
-  {
+  search() {
     const where: any = {};
 
     if (this.groupNameControl.value) {
-      if(this.groupNameControl.value.length>0)
-        {
-         
-        
-          const cdValues :CodeValuesItem[] = this.groupNameControl.value;
-          var codes = cdValues.map(cc=>cc);
-          where.group_name_cv = { in: codes };
-        }
+      if (this.groupNameControl.value.length > 0) {
+
+
+        const cdValues: CodeValuesItem[] = this.groupNameControl.value;
+        var codes = cdValues.map(cc => cc);
+        where.group_name_cv = { in: codes };
+      }
     }
 
     if (this.subGroupNameControl.value) {
-      if(this.subGroupNameControl.value.length>0)
-        {
-         
-        
-          const cdValues :CodeValuesItem[] = this.subGroupNameControl.value;
-          var codes = cdValues.map(cc=>cc);
-          where.subgroup_name_cv = { in: codes };
-        }
+      if (this.subGroupNameControl.value.length > 0) {
+
+
+        const cdValues: CodeValuesItem[] = this.subGroupNameControl.value;
+        var codes = cdValues.map(cc => cc);
+        where.subgroup_name_cv = { in: codes };
+      }
     }
 
-    if (this.pcForm!.value["part_name"])
-      {
-        const description :Text = this.pcForm!.value["part_name"];
-        where.part_name ={contains:description}
-      }
+    if (this.pcForm!.value["part_name"]) {
+      const description: Text = this.pcForm!.value["part_name"];
+      where.part_name = { contains: description }
+    }
 
-   
+
     // Handling material_cost
     if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
       const minCost: number = Number(this.pcForm!.value["min_cost"]);
@@ -645,19 +629,19 @@ implements OnInit {
       const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
       where.labour_hour = { lte: maxLabour };
     }
-      this.lastSearchCriteria=where;
-    this.subs.sink = this.trfRepairDS.SearchTariffRepair(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.trfRepairItems=data;
-       this.previous_endCursor=undefined;
-       this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
-       this.startCursor = this.trfRepairDS.pageInfo?.startCursor;
-       this.hasNextPage = this.trfRepairDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.trfRepairDS.pageInfo?.hasPreviousPage ?? false;
-       this.pageIndex=0;
-       this.paginator.pageIndex=0;
-       this.selection.clear();
-       if(!this.hasPreviousPage)
-        this.previous_endCursor=undefined;
+    this.lastSearchCriteria = where;
+    this.subs.sink = this.trfRepairDS.SearchTariffRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+      this.trfRepairItems = data;
+      this.previous_endCursor = undefined;
+      this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
+      this.startCursor = this.trfRepairDS.pageInfo?.startCursor;
+      this.hasNextPage = this.trfRepairDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.trfRepairDS.pageInfo?.hasPreviousPage ?? false;
+      this.pageIndex = 0;
+      this.paginator.pageIndex = 0;
+      this.selection.clear();
+      if (!this.hasPreviousPage)
+        this.previous_endCursor = undefined;
     });
   }
   handleSaveSuccess(count: any) {
@@ -666,23 +650,22 @@ implements OnInit {
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        
       });
     }
   }
 
   onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-    let order:any|undefined=this.lastOrderBy;
+    let order: any | undefined = this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
-      this.pageSize=pageSize;
+      this.pageSize = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
@@ -697,43 +680,35 @@ implements OnInit {
         last = pageSize;
         before = this.startCursor;
       }
-      else if (pageIndex==this.pageIndex)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursor;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndex) {
+        first = pageSize;
+        after = this.previous_endCursor;
       }
     }
 
-      this.searchData(this.lastSearchCriteria,order,first,after,last,before,pageIndex,previousPageIndex);
+    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
     //}
   }
 
-   searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
-    previousPageIndex?:number)
-    {
-      this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.trfRepairDS.SearchTariffRepair(where,order,first,after,last,before).subscribe(data => {
-        this.trfRepairItems=data;
-        this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
-        this.startCursor = this.trfRepairDS.pageInfo?.startCursor;
-        this.hasNextPage = this.trfRepairDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.trfRepairDS.pageInfo?.hasPreviousPage ?? false;
-        this.pageIndex=pageIndex;
-        this.paginator.pageIndex=this.pageIndex;
-        this.selection.clear();
-        if(!this.hasPreviousPage)
-          this.previous_endCursor=undefined;
-     });
-    }
-  
-  storeSearchCriteria(where :any, order:any, first:any, after:any, last:any,before:any, pageIndex:number,
-    previousPageIndex?:number,length?:number,hasNextPage?:boolean, hasPreviousPage?:boolean)
-  {
+  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number) {
+    this.previous_endCursor = this.endCursor;
+    this.subs.sink = this.trfRepairDS.SearchTariffRepair(where, order, first, after, last, before).subscribe(data => {
+      this.trfRepairItems = data;
+      this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
+      this.startCursor = this.trfRepairDS.pageInfo?.startCursor;
+      this.hasNextPage = this.trfRepairDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.trfRepairDS.pageInfo?.hasPreviousPage ?? false;
+      this.pageIndex = pageIndex;
+      this.paginator.pageIndex = this.pageIndex;
+      this.selection.clear();
+      if (!this.hasPreviousPage)
+        this.previous_endCursor = undefined;
+    });
+  }
+
+  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
     const sCriteria: any = {};
     sCriteria.where = where;
     sCriteria.order = order;
@@ -741,12 +716,12 @@ implements OnInit {
     sCriteria.after = after;
     sCriteria.last = last;
     sCriteria.before = before;
-    sCriteria.pageIndex= pageIndex;
-    sCriteria.previousPageIndex=previousPageIndex;
+    sCriteria.pageIndex = pageIndex;
+    sCriteria.previousPageIndex = previousPageIndex;
     sCriteria.length = length;
-    sCriteria.hasNextPage=hasNextPage;
-    sCriteria.hasPreviousPage=hasPreviousPage;
-    
+    sCriteria.hasNextPage = hasNextPage;
+    sCriteria.hasPreviousPage = hasPreviousPage;
+
     this.searchCriteriaService.setCriteria(sCriteria);
   }
 
@@ -772,40 +747,37 @@ implements OnInit {
 
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
-  //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
+      //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
       { alias: 'handledItem', codeValType: 'HANDLED_ITEM' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
 
-       const subqueries :any[]= [];
-       data.map(d=>{
-        
-         if(d.child_code)
-         {
-           let q ={alias:d.child_code,codeValType:d.child_code};
-           const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-           if(!hasMatch)
-           {
-             subqueries.push(q);
+      const subqueries: any[] = [];
+      data.map(d => {
 
-           }
-         }
-       });
-       if(subqueries.length>0)
-       {
+        if (d.child_code) {
+          let q = { alias: d.child_code, codeValType: d.child_code };
+          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+          if (!hasMatch) {
+            subqueries.push(q);
 
-       
-       this.cvDS.getCodeValuesByType(subqueries)
-       subqueries.map(s=>{
+          }
+        }
+      });
+      if (subqueries.length > 0) {
+
+
+        this.cvDS.getCodeValuesByType(subqueries)
+        subqueries.map(s => {
           this.cvDS.connectAlias(s.alias).subscribe(data => {
             this.subGroupNameCvList.push(...data);
           });
-       });
-     
+        });
+
       }
-     // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('subGroupName').subscribe(data => {
       this.subGroupNameCvList = data;
@@ -827,7 +799,7 @@ implements OnInit {
     //   // Handle value changes here
     // });
 
-  
+
   }
   showNotification(
     colorName: string,
@@ -846,7 +818,7 @@ implements OnInit {
   // export table data in excel file
   exportExcel() {
     // key name with space add in brackets
-   // const exportData: Partial<TableElement>[] =
+    // const exportData: Partial<TableElement>[] =
     //   this.dataSource.filteredData.map((x) => ({
     //     'First Name': x.fName,
     //     'Last Name': x.lName,

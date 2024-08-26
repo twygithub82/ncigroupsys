@@ -173,4 +173,8 @@ export class SchedulingSotDS extends BaseDataSource<SchedulingSotItem> {
   getSchedulingSotWithType(schedulingSot: SchedulingSotItem[] | undefined, type: string): SchedulingSotItem | undefined {
     return schedulingSot?.find(item => item.scheduling?.book_type_cv === type);
   }
+
+  canCancel(schedulingSot: SchedulingSotItem): boolean {
+    return schedulingSot && schedulingSot.status_cv === 'NEW';
+  }
 }
