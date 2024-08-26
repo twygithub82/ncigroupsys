@@ -50,6 +50,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { OutGateDS, OutGateGO, OutGateItem } from 'app/data-sources/out-gate';
 import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
 import { ReleaseOrderGO, ReleaseOrderItem } from 'app/data-sources/release-order';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-out-gate-details',
@@ -163,7 +164,8 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     EIR_FORM: 'COMMON-FORM.EIR-FORM',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     RESET: 'COMMON-FORM.RESET',
-    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION'
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET'
   }
 
   outGateForm?: UntypedFormGroup;
@@ -281,14 +283,14 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-  populateOutGateForm(sot: StoringOrderTankItem): void {
+  populateOutGateForm(sot: StoringOrderTankItem | undefined): void {
     this.outGateForm!.patchValue({
-      haulier: this.roSotDS.getReleaseOrderSotItem(sot.release_order_sot)?.release_order?.haulier,
-      vehicle_no: this.ogDS.getOutGateItem(sot.out_gate)?.vehicle_no,
-      driver_name: this.ogDS.getOutGateItem(sot.out_gate)?.driver_name,
-      eir_dt: this.ogDS.getOutGateItem(sot.out_gate)?.eir_dt ? Utility.convertDate(this.ogDS.getOutGateItem(sot.out_gate)?.eir_dt) : new Date(),
-      release_job_no: sot.release_job_no,
-      remarks: this.ogDS.getOutGateItem(sot.out_gate)?.remarks,
+      haulier: this.roSotDS.getReleaseOrderSotItem(sot?.release_order_sot)?.release_order?.haulier,
+      vehicle_no: this.ogDS.getOutGateItem(sot?.out_gate)?.vehicle_no,
+      driver_name: this.ogDS.getOutGateItem(sot?.out_gate)?.driver_name,
+      eir_dt: this.ogDS.getOutGateItem(sot?.out_gate)?.eir_dt ? Utility.convertDate(this.ogDS.getOutGateItem(sot?.out_gate)?.eir_dt) : new Date(),
+      release_job_no: sot?.release_job_no,
+      remarks: this.ogDS.getOutGateItem(sot?.out_gate)?.remarks,
       // last_cargo_guid: sot.last_cargo_guid,
       // last_cargo: this.lastCargoControl,
     });
@@ -445,27 +447,31 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
-  resetForm(event: Event) {
+  resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
-    // this.outGateForm!.patchValue({
-    //   haulier: this.storingOrderTankItem!.storing_order?.haulier,
-    //   vehicle_no: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.vehicle_no || '',
-    //   driver_name: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.driver_name || '',
-    //   eir_dt: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt ? Utility.convertDate(this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.eir_dt) : new Date(),
-    //   job_no: this.storingOrderTankItem!.job_no,
-    //   remarks: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.remarks,
-    //   purpose_storage: this.storingOrderTankItem!.purpose_storage,
-    //   open_on_gate: this.storingOrderTankItem!.tariff_cleaning?.open_on_gate_cv,
-    //   yard_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.yard_cv,
-    //   preinspection_cv: this.igDS.getInGateItem(this.storingOrderTankItem!.in_gate)?.preinspection_cv,
-    //   lolo_cv: 'BOTH' // default BOTH
-    // });
-    
-    // if (this.storingOrderTankItem!.tariff_cleaning) {
-    //   this.lastCargoControl.setValue(this.storingOrderTankItem!.tariff_cleaning);
-    // } else {
-    //   this.lastCargoControl.reset(); // Reset the control if there's no tariff_cleaning
-    // }
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.populateOutGateForm(this.storingOrderTankItem);
   }
 
   updateValidators(validOptions: any[]) {

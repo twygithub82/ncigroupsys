@@ -170,6 +170,11 @@ export class SchedulingSotDS extends BaseDataSource<SchedulingSotItem> {
     return this.getSchedulingSotWithType(schedulingSot, "RELEASE_ORDER");
   }
 
+  getSchedulingSotReleaseJobNo(schedulingSot: SchedulingSotItem[] | undefined): string | undefined {
+    const releaseScheduling = this.getSchedulingSotWithType(schedulingSot, "RELEASE_ORDER");
+    return releaseScheduling?.scheduling?.reference;
+  }
+
   getSchedulingSotWithType(schedulingSot: SchedulingSotItem[] | undefined, type: string): SchedulingSotItem | undefined {
     return schedulingSot?.find(item => item.scheduling?.book_type_cv === type);
   }

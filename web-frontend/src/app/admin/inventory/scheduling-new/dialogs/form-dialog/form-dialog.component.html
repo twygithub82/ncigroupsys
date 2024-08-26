@@ -48,7 +48,12 @@
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
+                @if (scheduling?.book_type_cv === 'RELEASE_ORDER') {
+                <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
+                }
+                @else {
                 <mat-label>{{data.translatedLangText.REFERENCE}}</mat-label>
+                }
                 <input matInput formControlName="reference">
               </mat-form-field>
             </div>

@@ -454,7 +454,8 @@
     "METHOD-NAME":"Method Name",
     "FILTER": "Filter",
     "ARE-YOU-SURE": "Are you sure?",
-    "PACKAGE-LABOUR":"Package Labour"
+    "PACKAGE-LABOUR":"Package Labour",
+    "CONFIRM-RESET":"Confirm Reset?"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

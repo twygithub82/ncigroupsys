@@ -161,7 +161,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     EIR_FORM: 'COMMON-FORM.EIR-FORM',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     RESET: 'COMMON-FORM.RESET',
-    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION'
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET'
   }
 
   inGateForm?: UntypedFormGroup;
@@ -483,7 +484,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: null,
+        headerText: this.translatedLangText.CONFIRM_RESET,
         action: 'new',
       },
       direction: tempDirection
