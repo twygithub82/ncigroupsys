@@ -354,9 +354,11 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
+        if (this.trfRepairDS.totalCount > 0) {
+           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         //this.search();
         // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-
+        }
       }
     });
   }
@@ -650,6 +652,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+       
+
       });
     }
   }
