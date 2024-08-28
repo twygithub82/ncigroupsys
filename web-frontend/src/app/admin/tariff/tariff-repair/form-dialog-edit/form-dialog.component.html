@@ -9,7 +9,7 @@
       <mat-icon>close</mat-icon>
     </button> -->
   </div>
-  <div mat-dialog-content class="auto-height">
+  <div mat-dialog-content >
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
         <div class="row">
@@ -17,7 +17,7 @@
            <!-- <mat-form-field class="example-full-width"> -->
             <mat-form-field class="example-full-width">
              <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
-             <mat-select [formControl]="groupNameControl" formControlName="group_name_cv"  [required]="isFieldRequired()">
+             <mat-select [formControl]="groupNameControl" formControlName="group_name_cv">
                <mat-option *ngFor="let t of groupNameCvList" [value]="t">
                    {{ t.description }}
                </mat-option>
@@ -32,7 +32,7 @@
            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
              <mat-form-field class="example-full-width"> 
               <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
-              <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv"  [required]="isFieldRequiredSubGroup()">
+              <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv"  >
                 <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
                     {{ t.description }}
                 </mat-option>
@@ -49,7 +49,7 @@
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-              <input matInput formControlName="part_name" type="text"  [required]="isFieldRequired()" [readonly]="!isFieldRequired()">
+              <input matInput formControlName="part_name" type="text"   [readonly]="true">
               @if (pcForm.get('part_name')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
@@ -67,7 +67,7 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width"> 
              <mat-label style="font-size: 13px;">{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
-             <input matInput formControlName="height_diameter" type="number"  >
+             <input matInput formControlName="height_diameter" type="number"  [readonly]="true">
              </mat-form-field>  
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
@@ -84,13 +84,13 @@
            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width"> 
              <mat-label style="font-size: 13px;">{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
-             <input matInput formControlName="width_diameter" type="number"  >
+             <input matInput formControlName="width_diameter" type="number"  [readonly]="true">
              </mat-form-field>  
           </div>
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label style="font-size: 13px;">{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select [formControl]="widthDiadmeterUnitControl" formControlName="width_diameter_unit_cv" > 
+              <mat-select [formControl]="widthDiameterUnitControl" formControlName="width_diameter_unit_cv"> 
                 <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                   {{ t.description }}
                </mat-option>
@@ -105,7 +105,7 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width"> 
              <mat-label style="font-size: 13px;">{{translatedLangText.THICKNESS}}</mat-label>
-             <input matInput formControlName="thickness" type="number"  >
+             <input matInput formControlName="thickness" type="number"  [readonly]="true">
              </mat-form-field>  
            </div> 
            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
@@ -122,7 +122,7 @@
            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width"> 
              <mat-label style="font-size: 13px;">{{translatedLangText.LENGTH}}</mat-label>
-             <input matInput formControlName="length" type="number"  >
+             <input matInput formControlName="length" type="number"  [readonly]="true">
              </mat-form-field>  
            </div> 
            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
@@ -175,6 +175,16 @@
                       <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.SUB_GROUP_NAME }}</mat-header-cell>
                       <mat-cell *matCellDef="let row" >
                         <span class="mobile-label">{{translatedLangText.SUB_GROUP_NAME }}:</span> {{this.getSubGroupNameCodeValue(row.subgroup_name_cv)?.description}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="gender">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.LABOUR_HOUR }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" >
+                        <span class="mobile-label">{{translatedLangText.LABOUR_HOUR }}:</span> {{row.labour_hour}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="bDate">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.MATERIAL_COST }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" >
+                        <span class="mobile-label">{{translatedLangText.MATERIAL_COST }}:</span> {{row.material_cost.toFixed(2)}}</mat-cell>
                     </ng-container>
                     
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

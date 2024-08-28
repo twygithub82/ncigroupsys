@@ -137,7 +137,7 @@
                   <ng-container matColumnDef="gender">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST }}:</span> {{row.adjusted_price}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST }}:</span> {{row.adjusted_price.toFixed(2)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="bDate">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{CLEANING_BAY | translate}}</mat-header-cell>

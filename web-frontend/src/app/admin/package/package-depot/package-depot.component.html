@@ -78,7 +78,9 @@
                             <mat-select [formControl]="customerCodeControl" formControlName="customer_code" multiple>
                                 <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
                                  
+                                  <ng-container *ngIf="cc !== null">
                                     {{ ccDS.displayName(cc) }}
+                                  </ng-container>
                                  
                                 </mat-option>
                               </mat-select>
@@ -91,8 +93,11 @@
                             <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
                             <mat-select [formControl]="profileNameControl" formControlName="profile_name" multiple>
                                 <mat-option *ngFor="let cc of tariffDepotDS.connect() | async" [value]="cc">
-                                 
+                                   
+                                  <ng-container *ngIf="cc !== null">
                                     {{ cc.profile_name }}
+                                  </ng-container>
+                                    
                                  
                                 </mat-option>
                               </mat-select>
@@ -152,7 +157,7 @@
                   <ng-container matColumnDef="email">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STORAGE_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.STORAGE_COST }}:</span> {{row.storage_cost}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.STORAGE_COST }}:</span> {{row.storage_cost.toFixed(2)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="gender">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STORAGE_CALCULATE_BY }}</mat-header-cell>

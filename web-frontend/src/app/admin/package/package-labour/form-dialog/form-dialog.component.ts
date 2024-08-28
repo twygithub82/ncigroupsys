@@ -86,7 +86,7 @@ export class FormDialogComponent {
       // 'img',
        'fName',
        'lName',
-      // 'email',
+       'email',
       // 'gender',
       // 'bDate',
       // 'mobile',
@@ -191,7 +191,8 @@ export class FormDialogComponent {
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
      EDIT_PACKAGE_CLEANING:"MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING-EDIT",
      STANDARD_COST:"COMMON-FORM.STANDARD-COST",
-     PACKAGE_LABOUR:"COMMON-FORM.PACKAGE-LABOUR"
+     PACKAGE_LABOUR:"COMMON-FORM.PACKAGE-LABOUR",
+     COST:"COMMON-FORM.COST",
   };
 
   
@@ -215,8 +216,8 @@ export class FormDialogComponent {
     if(this.selectedItems.length==1)
       this.pcForm.patchValue({
       
-        adjusted_cost:this.selectedItems[0].cost,
-        standard_cost:this.selectedItems[0].tariff_labour?.cost,
+        adjusted_cost:this.selectedItems[0].cost?.toFixed(2),
+        standard_cost:this.selectedItems[0].tariff_labour?.cost?.toFixed(2),
         remarks:this.selectedItems[0].remarks
       
         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)

@@ -86,7 +86,7 @@ export class FormDialogComponent {
        'fName',
        'lName',
        'email',
-      // 'gender',
+       'gender',
       // 'bDate',
       // 'mobile',
       // 'actions',
@@ -233,7 +233,7 @@ export class FormDialogComponent {
   createPackageCleaning(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      adjusted_cost:200,
+      adjusted_cost:200.00,
       remarks:['']
     });
   }

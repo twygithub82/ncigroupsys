@@ -90,7 +90,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
        'fName',
        'lName',
        'email',
-      // 'gender',
+       'gender',
       // 'bDate',
       // 'mobile',
       // 'actions',
@@ -312,17 +312,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       var pckDepotItm = this.selectedItems[0];
 
       this.pcForm.patchValue({
-        preinspection_cost_cust: pckDepotItm.preinspection_cost,
-        preinspection_cost_standard:pckDepotItm.tariff_depot?.preinspection_cost,
-        lolo_cost_cust:pckDepotItm.lolo_cost,
-        lolo_cost_standard: pckDepotItm.tariff_depot?.lolo_cost,
-        storage_cost_cust:pckDepotItm.storage_cost,
-        storage_cost_standard:pckDepotItm.tariff_depot?.storage_cost,
+        preinspection_cost_cust: pckDepotItm.preinspection_cost?.toFixed(2),
+        preinspection_cost_standard:pckDepotItm.tariff_depot?.preinspection_cost?.toFixed(2),
+        lolo_cost_cust:pckDepotItm.lolo_cost?.toFixed(2),
+        lolo_cost_standard: pckDepotItm.tariff_depot?.lolo_cost?.toFixed(2),
+        storage_cost_cust:pckDepotItm.storage_cost?.toFixed(2),
+        storage_cost_standard:pckDepotItm.tariff_depot?.storage_cost?.toFixed(2),
         free_storage_days:pckDepotItm.free_storage,
-        gate_in_cost_cust:pckDepotItm.gate_in_cost,
-        gate_out_cost_cust:pckDepotItm.gate_out_cost,
-        gate_in_cost_standard:pckDepotItm.tariff_depot?.gate_in_cost,
-        gate_out_cost_standard:pckDepotItm.tariff_depot?.gate_out_cost,
+        gate_in_cost_cust:pckDepotItm.gate_in_cost?.toFixed(2),
+        gate_out_cost_cust:pckDepotItm.gate_out_cost?.toFixed(2),
+        gate_in_cost_standard:pckDepotItm.tariff_depot?.gate_in_cost?.toFixed(2),
+        gate_out_cost_standard:pckDepotItm.tariff_depot?.gate_out_cost?.toFixed(2),
         remarks:pckDepotItm.remarks,
         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
       });

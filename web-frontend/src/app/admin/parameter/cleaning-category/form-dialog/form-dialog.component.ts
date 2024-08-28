@@ -240,7 +240,7 @@ export class FormDialogComponent {
   createCleaningCategory(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: this.selectedItem,
-      adjusted_cost:this.selectedItem.cost,
+      adjusted_cost:this.selectedItem.cost?.toFixed(2),
       name: this.selectedItem.name,
       description:this.selectedItem.description,
       remarks:['']

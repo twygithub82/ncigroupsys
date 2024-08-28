@@ -98,8 +98,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
        'fName',
        'lName',
        'email',
-      // 'gender',
-      // 'bDate',
+       'gender',
+        'bDate',
       // 'mobile',
       // 'actions',
     ];
@@ -130,7 +130,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   subGroupNameControl = new UntypedFormControl();
   lengthUnitControl=new UntypedFormControl();
   dimensionUnitControl=new UntypedFormControl();
-  widthDiadmeterUnitControl = new UntypedFormControl();
+  widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl =new UntypedFormControl();
 
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
@@ -275,10 +275,11 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
      this.cvDS = new CodeValuesDS(this.apollo);
      this.trfRepairDS =new TariffRepairDS(this.apollo);
      this.pcForm = this.createTarifRepair();
+    
      this.action = data.action!;
     this.translateLangText();
    this.loadData();
-
+   this.assignEditableForUI();
     if(this.selectedItems.length==1)
     {
       var rec = this.selectedItems[0];
@@ -289,18 +290,28 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
         height_diameter:rec.dimension,
         height_diameter_unit_cv:this.dimensionUnitControl,
         width_diameter:rec.width_diameter,
-        width_diameter_unit_cv: this.widthDiadmeterUnitControl,
+        width_diameter_unit_cv: this.widthDiameterUnitControl,
         thickness:rec.width_diameter,
         thickness_unit_cv:this.thicknessUnitControl,
         length:rec.length,
         length_unit_cv:this.lengthUnitControl,
         labour_hour:rec.labour_hour,
-        material_cost:rec.material_cost,
+        material_cost:rec.material_cost?.toFixed(2),
       });
 
      
     }
    
+  }
+
+  assignEditableForUI()
+  {
+    this.thicknessUnitControl.disable();
+    this.lengthUnitControl.disable();
+    this.groupNameControl.disable();
+    this.subGroupNameControl.disable();
+    this.widthDiameterUnitControl.disable();
+    this.dimensionUnitControl.disable();
   }
 
   createTarifRepair(): UntypedFormGroup {
@@ -313,7 +324,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
       height_diameter:[''],
       height_diameter_unit_cv:this.dimensionUnitControl,
       width_diameter:[''],
-      width_diameter_unit_cv: this.widthDiadmeterUnitControl,
+      width_diameter_unit_cv: this.widthDiameterUnitControl,
       thickness:[''],
       thickness_unit_cv:this.thicknessUnitControl,
       length:[''],
@@ -410,7 +421,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
         { 
           var rec=this.selectedItems[0];
           this.lengthUnitControl.setValue(this.getUnitTypeCodeValue(rec.length_unit_cv!));
-          this.widthDiadmeterUnitControl.setValue(this.getUnitTypeCodeValue(rec.width_diameter_unit_cv!));
+          this.widthDiameterUnitControl.setValue(this.getUnitTypeCodeValue(rec.width_diameter_unit_cv!));
           this.dimensionUnitControl.setValue(this.getUnitTypeCodeValue(rec.dimension_unit_cv!));
           this.thicknessUnitControl.setValue(this.getUnitTypeCodeValue(rec.thickness_unit_cv!));
         }

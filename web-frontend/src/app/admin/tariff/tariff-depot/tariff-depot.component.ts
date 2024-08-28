@@ -141,6 +141,7 @@ implements OnInit {
   //customer_companyList?: CustomerCompanyItem[];
   //cleaning_categoryList?: CleaningCategoryItem[];
   tariffDepotItems:TariffDepotItem[]=[];
+  tankItemList:TankItem[]=[];
 
   pageIndex = 0;
   pageSize = 10;
@@ -590,7 +591,10 @@ implements OnInit {
 
   public loadData() {
 
-    this.subs.sink = this.tnkDS.loadItems().subscribe(data=>{});
+    this.subs.sink = this.tnkDS.loadItems().subscribe(data=>{
+      this.tankItemList =data;
+
+    });
 
     // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
     //   this.customer_companyList = data

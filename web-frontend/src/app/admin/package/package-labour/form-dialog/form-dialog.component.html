@@ -58,11 +58,11 @@
                         <mat-cell *matCellDef="let row" >
                           <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
                       </ng-container>
-                      <!-- <ng-container matColumnDef="email">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_CATEGORY }}</mat-header-cell>
+                      <ng-container matColumnDef="email">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.COST }}</mat-header-cell>
                         <mat-cell *matCellDef="let row" >
-                          <span class="mobile-label">{{translatedLangText.CARGO_CATEGORY }}:</span> {{row.cleaning_category.name}}</mat-cell>
-                      </ng-container> -->
+                          <span class="mobile-label">{{translatedLangText.COST }}:</span> {{row.cost}}</mat-cell>
+                      </ng-container>
                       
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; columns: displayedColumns;" 

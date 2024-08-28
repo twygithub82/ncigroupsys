@@ -130,7 +130,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   subGroupNameControl = new UntypedFormControl();
   lengthUnitControl=new UntypedFormControl();
   dimensionUnitControl=new UntypedFormControl();
-  widthDiadmeterUnitControl = new UntypedFormControl();
+  widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl =new UntypedFormControl();
   
   
@@ -254,6 +254,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     COST_TYPE:"COMMON-FORM.COST-TYPE",
     REBATE_TYPE:"COMMON-FORM.REBATE-TYPE",
     JOB_TYPE:"COMMON-FORM.JOB-TYPE"
+    
   };
   unit_type_control = new UntypedFormControl();
   
@@ -295,7 +296,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       height_diameter:[''],
       height_diameter_unit_cv: this.dimensionUnitControl,
       width_diameter:[''],
-      width_diameter_unit_cv : this.widthDiadmeterUnitControl,
+      width_diameter_unit_cv : this.widthDiameterUnitControl,
       thickness:[''],
       thickness_unit_cv:this.thicknessUnitControl,
       length:[''],
@@ -413,35 +414,71 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  
+  isDimensionRequired()
+  {
+    return (
+      this.pcForm.value['height_diameter'] !== "" ||
+      this.pcForm.value['width_diameter'] !== "" ||
+      this.pcForm.value['thickness'] !== ""
+    );
+  }
 
   save() {
 
     if (!this.pcForm?.valid) return;
     
+    let newRepair = new TariffRepairItem();
+    newRepair.part_name=String(this.pcForm.value['part_name']);
+    newRepair.material_cost= Number(this.pcForm!.value['material_cost']);
+    newRepair.dimension= Number(this.pcForm.value['height_diameter']);
+    newRepair.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
+    newRepair.width_diameter= Number(this.pcForm.value['width_diameter']);
+    newRepair.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['width_diameter_unit_cv']));
+    newRepair.group_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['group_name_cv']));
+    newRepair.subgroup_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['sub_group_name_cv']));
+    newRepair.labour_hour= Number(this.pcForm.value['labour_hour']);
+    newRepair.length= Number(this.pcForm.value['length']);
+    newRepair.length_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['length_unit_cv']));
+    newRepair.thickness=Number(this.pcForm.value['thickness']);
+    newRepair.thickness_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['thickness_unit_cv']));
+
+    if(newRepair.dimension)
+    {
+      newRepair.part_name = `${newRepair.part_name} (${newRepair.dimension}${newRepair.dimension_unit_cv}x${newRepair.width_diameter}${newRepair.width_diameter_unit_cv}x${newRepair.thickness}${newRepair.thickness_unit_cv})`;
+      // this.pcForm!.patchValue({
+      //   part_name: newRepair.part_name
+      // });
+    }
+
     let where: any = {};
-    if (this.pcForm!.value['part_name']) {
-      where.part_name = { eq: this.pcForm!.value['part_name'] };
+    if (newRepair.part_name) {
+      where.part_name = { eq: newRepair.part_name };
+    }
+
+    if(newRepair.length)
+    {
+      where.length={eq:newRepair.length};
+      where.length_unit_cv={eq:newRepair.length_unit_cv};
     }
 
     this.subs.sink= this.trfRepairDS.SearchTariffRepair(where).subscribe(data=>{
         if(data.length==0)
         {
          
-          let newRepair = new TariffRepairItem();
-          newRepair.part_name=String(this.pcForm.value['part_name']);
-          newRepair.material_cost= Number(this.pcForm!.value['material_cost']);
-          newRepair.dimension= Number(this.pcForm.value['height_diameter']);
-          newRepair.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
-          newRepair.width_diameter= Number(this.pcForm.value['width_diameter']);
-          newRepair.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['width_diameter_unit_cv']));
-          newRepair.group_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['group_name_cv']));
-          newRepair.subgroup_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['sub_group_name_cv']));
-          newRepair.labour_hour= Number(this.pcForm.value['labour_hour']);
-          newRepair.length= Number(this.pcForm.value['length']);
-          newRepair.length_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['length_unit_cv']));
-          newRepair.thickness=Number(this.pcForm.value['thickness']);
-          newRepair.thickness_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['thickness_unit_cv']));
+          // let newRepair = new TariffRepairItem();
+          // newRepair.part_name=String(this.pcForm.value['part_name']);
+          // newRepair.material_cost= Number(this.pcForm!.value['material_cost']);
+          // newRepair.dimension= Number(this.pcForm.value['height_diameter']);
+          // newRepair.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
+          // newRepair.width_diameter= Number(this.pcForm.value['width_diameter']);
+          // newRepair.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['width_diameter_unit_cv']));
+          // newRepair.group_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['group_name_cv']));
+          // newRepair.subgroup_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['sub_group_name_cv']));
+          // newRepair.labour_hour= Number(this.pcForm.value['labour_hour']);
+          // newRepair.length= Number(this.pcForm.value['length']);
+          // newRepair.length_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['length_unit_cv']));
+          // newRepair.thickness=Number(this.pcForm.value['thickness']);
+          // newRepair.thickness_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['thickness_unit_cv']));
           this.trfRepairDS.addNewTariffRepair(newRepair).subscribe(result=>{
 
             this.handleSaveSuccess(result?.data?.addTariffRepair);

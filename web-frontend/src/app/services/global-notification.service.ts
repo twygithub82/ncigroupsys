@@ -30,8 +30,9 @@ const NEW_NOTIFICATION_SUBSCRIPTION = gql`
     title
     update_by
     update_dt
-   }
+    notification_uid
   }
+}
 `;
 
 const GET_NOTIFICATION_DATA = gql`
