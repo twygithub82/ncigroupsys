@@ -102,11 +102,9 @@ namespace IDMS.Models.Package.All.GqlTypes
 
             IQueryable<package_residue> query = null;
             try
-            {
-
+            { 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.package_residue.Where(i => i.delete_dt == null || i.delete_dt == 0);
-
             }
             catch(Exception ex)
             {
@@ -114,9 +112,29 @@ namespace IDMS.Models.Package.All.GqlTypes
             }
 
             return query;
-
         }
 
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<package_buffer?> QueryPackageBuffer(ApplicationPackageDBContext context,
+             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<package_buffer> query = null;
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.package_buffer.Where(i => i.delete_dt == null || i.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+
+            return query;
+        }
 
         //public async Task<List<EntityClass_CleaningProcedure>> QueryCleaningProcedures([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,EntityClass_CleaningProcedure queryCleaningProcedure,string orderby="guid",int offset = 0, int limit=10)
         //{

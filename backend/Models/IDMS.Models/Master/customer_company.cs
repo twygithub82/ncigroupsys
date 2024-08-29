@@ -35,6 +35,7 @@ namespace IDMS.Models.Master
         public IEnumerable<customer_company_contact_person>? cc_contact_person { get; set; }
         public IEnumerable<release_order>? release_order { get; set; }
         public IEnumerable<package_residue>? package_residue { get; set; }
+        public IEnumerable<package_buffer>? package_buffer { get; set; }
 
     }
 

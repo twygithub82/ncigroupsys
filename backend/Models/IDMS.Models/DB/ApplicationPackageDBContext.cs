@@ -25,13 +25,11 @@ namespace IDMS.Models.DB
         public DbSet<IDMS.Models.Parameter.cleaning_category> cleaning_category { get; set; }
         public DbSet<IDMS.Models.Package.customer_company_cleaning_category_with_customer_company> customer_company_cleaning_category { get; set; }
 
-       
-        public DbSet<IDMS.Models.Package.package_residue> package_residue { get; set; }
         public DbSet<IDMS.Models.Package.package_depot> package_depot { get; set; }
-
         public DbSet<IDMS.Models.Package.package_labour> package_labour { get; set; }
-
         public DbSet<IDMS.Models.Package.package_repair> package_repair { get; set; }
+        public DbSet<IDMS.Models.Package.package_residue> package_residue { get; set; }
+        public DbSet<IDMS.Models.Package.package_buffer> package_buffer { get; set; }
     }
 
         

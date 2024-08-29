@@ -40,14 +40,16 @@ builder.Services.AddGraphQLServer()
                .AddMutationType<IDMS.Models.Package.All.GqlTypes.PackageAll_MutationType>()
                .AddFiltering()
                .AddProjections()
-               .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions { 
-                MaxPageSize=100
+               .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
+               {
+                   MaxPageSize = 100
                })
                .AddSorting();
 
 
 
-builder.Services.AddAuthentication(options => {
+builder.Services.AddAuthentication(options =>
+{
 
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
