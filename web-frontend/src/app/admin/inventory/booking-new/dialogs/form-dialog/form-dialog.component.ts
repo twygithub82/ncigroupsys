@@ -26,7 +26,7 @@ import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { MatDividerModule } from '@angular/material/divider';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { CodeValuesDS } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { setThrowInvalidWriteToSignalError } from '@angular/core/primitives/signals';
 
 
@@ -86,9 +86,8 @@ export class FormDialogComponent {
   bookingForm: UntypedFormGroup;
   storingOrderTank: StoringOrderTankItem[];
   booking?: BookingItem;
-  last_cargoList?: TariffCleaningItem[];
   startDateToday = new Date();
-  valueChangesDisabled: boolean = false;
+  bookingTypeCvList?: CodeValuesItem[] = [];
 
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
@@ -117,6 +116,12 @@ export class FormDialogComponent {
       this.dialogTitle = 'New Booking';
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
+    const existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
+      (tank.booking || []).map(booking => booking.book_type_cv)
+    );
+    this.bookingTypeCvList = this.data.populateData.bookingTypeCvList!.filter(
+      (bookingType: CodeValuesItem) => !existingBookTypeCvs.includes(bookingType?.code_val)
+    );
     this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
     this.bookingForm = this.createStorigOrderTankForm();
     this.initializeValueChange();

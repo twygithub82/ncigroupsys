@@ -19,7 +19,7 @@
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
                 <mat-select formControlName="book_type_cv" required>
-                  @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
+                  @for (codeValue of bookingTypeCvList; track codeValue) {
                   <mat-option [value]="codeValue.code_val">
                     {{codeValue.description}}
                   </mat-option>

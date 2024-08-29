@@ -30,6 +30,7 @@ import { SchedulingDS, SchedulingGO, SchedulingItem } from 'app/data-sources/sch
 import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { SchedulingSotItem } from 'app/data-sources/scheduling-sot';
+import { CodeValuesItem } from 'app/data-sources/code-values';
 
 
 export interface DialogData {
@@ -90,6 +91,7 @@ export class FormDialogComponent {
   startDateToday = new Date();
   scheduling_guid?: string;
   scheduling?: SchedulingItem;
+  bookingTypeCvList?: CodeValuesItem[] = [];
 
   ccDS: CustomerCompanyDS;
   schedulingDS: SchedulingDS;
@@ -114,6 +116,12 @@ export class FormDialogComponent {
       this.dialogTitle = 'New Scheduling';
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
+    const existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
+      (tank.scheduling_sot || []).map(scheduling_sot => scheduling_sot.scheduling?.book_type_cv)
+    );
+    this.bookingTypeCvList = this.data.populateData.bookingTypeCvList!.filter(
+      (bookingType: CodeValuesItem) => !existingBookTypeCvs.includes(bookingType?.code_val)
+    );
     this.schedulingForm = this.createForm();
     this.initializeValueChange();
   }
