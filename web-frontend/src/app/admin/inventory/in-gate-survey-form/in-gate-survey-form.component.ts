@@ -188,6 +188,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
   }
 
   in_gate_guid: string | null | undefined;
@@ -239,9 +240,33 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   // Stepper
   isLinear = false;
 
-  rowSize = 7;
-  colSize = 9;
+  rowSize = 11;
+  colSize = 19;
+  rowSizeSquare = 11;
+  colSizeSquare = 11;
   cells: number[] = [];
+  cellsSquare: number[] = [];
+
+  // Walkway
+  outerRowSize = 10;
+  outerColSize = 19;
+  innerColSize = 4;
+  innerMiddleColSize = 12;
+  cellsOuterTopBottom: number[] = [];
+  cellsOuterLeftRight: number[] = [];
+  cellsInnerTopBottom: number[] = [];
+  cellsInnerMiddle: number[] = [];
+  highlightedCellsOuterTop: boolean[] = [];
+  highlightedCellsOuterBottom: boolean[] = [];
+  highlightedCellsOuterLeft: boolean[] = [];
+  highlightedCellsOuterRight: boolean[] = [];
+  highlightedCellsWalkwayTop: boolean[] = [];
+  highlightedCellsWalkwayMiddle: boolean[] = [];
+  highlightedCellsWalkwayBottom: boolean[] = [];
+  highlightedCellsWalkwayTopDmg: boolean[] = [];
+  highlightedCellsWalkwayMiddleDmg: boolean[] = [];
+  highlightedCellsWalkwayBottomDmg: boolean[] = [];
+
   highlightedCellsLeft: boolean[] = [];
   highlightedCellsRear: boolean[] = [];
   highlightedCellsRight: boolean[] = [];
@@ -249,6 +274,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   highlightedCellsFront: boolean[] = [];
   highlightedCellsBottom: boolean[] = [];
   isDrawing = false;
+  isMarkDmg = false;
   toggleState = true; // State to track whether to highlight or unhighlight
   currentImageIndex: number | null = null;
   imagePreviews: (string | ArrayBuffer)[] = [];
@@ -280,12 +306,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.cells = Array(this.rowSize * this.colSize).fill(0);
-    this.highlightedCellsLeft = Array(this.rowSize * this.colSize).fill(false);
-    this.highlightedCellsRear = Array(this.rowSize * this.colSize).fill(false);
-    this.highlightedCellsRight = Array(this.rowSize * this.colSize).fill(false);
-    this.highlightedCellsTop = Array(this.rowSize * this.colSize).fill(false);
-    this.highlightedCellsFront = Array(this.rowSize * this.colSize).fill(false);
-    this.highlightedCellsBottom = Array(this.rowSize * this.colSize).fill(false);
+    this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
+
+    this.cellsOuterTopBottom = Array(this.outerColSize).fill(0);
+    this.cellsOuterLeftRight = Array(this.outerRowSize).fill(0);
+    this.cellsInnerTopBottom = Array(this.innerColSize).fill(0);
+    this.cellsInnerMiddle = Array(this.innerMiddleColSize).fill(0);
     this.initForm();
     this.loadData();
   }
@@ -598,7 +624,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   populateHighlightedCells(toUpdateCells: boolean[], coordinates: { x: number; y: number }[]): boolean[] {
     toUpdateCells = Array(this.rowSize * this.colSize).fill(false);
-  
+
     coordinates.forEach(coord => {
       const index = coord.y * this.colSize + coord.x;
       toUpdateCells[index] = true;
@@ -822,9 +848,27 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
+  startDrawingWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
+    this.isDrawing = true;
+    event.preventDefault(); // Prevent default dragging behavior
+    const target = this.getEventTarget(event) as HTMLElement;
+    const dataIndex = target?.getAttribute('data-index');
+    if (dataIndex !== null) {
+      const cellIndex = +dataIndex;
+      this.toggleState = !highlightedCells[cellIndex]; // Set initial toggle state based on cell's current state
+      this.highlightCellWalkway(highlightedCells, damageCells, event);
+    }
+  }
+
   draw(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
     if (this.isDrawing) {
       this.highlightCell(highlightedCells, event);
+    }
+  }
+
+  drawWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
+    if (this.isDrawing) {
+      this.highlightCellWalkway(highlightedCells, damageCells, event);
     }
   }
 
@@ -841,6 +885,22 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
+  highlightCellWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
+    const target = this.getEventTarget(event) as HTMLElement;
+    const dataIndex = target?.getAttribute('data-index');
+    if (dataIndex !== null) {
+        const cellIndex = +dataIndex;
+        highlightedCells[cellIndex] = this.toggleState;
+        
+        // Apply damage overlay if checkbox is selected
+        if (this.isMarkDmg && this.toggleState) {
+            damageCells[cellIndex] = true;
+        } else {
+            damageCells[cellIndex] = false;
+        }
+    }
+}
+
   getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
     if (event instanceof MouseEvent) {
       return event.target;
@@ -848,6 +908,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       return document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
     }
     return null;
+  }
+
+  isDisabled(index: number): boolean {
+    return index === 4 || index === 5 || index === 9 || index === 10;
   }
 
   getHighlightedCoordinates(highlightedCells: boolean[]): { x: number, y: number }[] {
@@ -888,6 +952,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
     this.getNextTest();
     datepicker.close();
+  }
+
+  selectMarkDmg() {
+    this.isMarkDmg = !this.isMarkDmg;
   }
 
   getLastTest(): string | undefined {

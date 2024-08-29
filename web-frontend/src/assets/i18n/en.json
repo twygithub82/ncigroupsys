@@ -455,7 +455,8 @@
     "FILTER": "Filter",
     "ARE-YOU-SURE": "Are you sure?",
     "PACKAGE-LABOUR":"Package Labour",
-    "CONFIRM-RESET":"Confirm Reset?"
+    "CONFIRM-RESET":"Confirm Reset?",
+    "MARK-DAMAGE":"Mark Damaged"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

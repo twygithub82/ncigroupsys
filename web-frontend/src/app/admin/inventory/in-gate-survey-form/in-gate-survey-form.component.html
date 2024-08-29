@@ -549,12 +549,12 @@
                   @if (!(igDS.loading$ | async)) {
                   <form [formGroup]="getFrameFormGroup()">
                     <div class="row">
-                      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-6 mb-3 align-center">
+                      <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3 align-center">
                         <div>{{translatedLangText.LEFT_SIDE}}</div>
                         <div class="image-container">
-                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/left_side.png" class="img-fluid">
-                          <div class="grid-overlay"
-                            (mousedown)="startDrawing(highlightedCellsLeft, $event)"
+                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/left_side.png"
+                            class="img-fluid">
+                          <div class="grid-overlay" (mousedown)="startDrawing(highlightedCellsLeft, $event)"
                             (mousemove)="draw(highlightedCellsLeft, $event)" (mouseup)="stopDrawing()"
                             (mouseleave)="stopDrawing()" (touchstart)="startDrawing(highlightedCellsLeft, $event)"
                             (touchmove)="draw(highlightedCellsLeft, $event)" (touchend)="stopDrawing()"
@@ -567,17 +567,17 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-6 mb-3 align-center">
+                      <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3 align-center">
                         <div>{{translatedLangText.REAR_SIDE}}</div>
                         <div class="image-container">
-                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/rear_side.png" class="img-fluid">
-                          <div class="grid-overlay"
-                            (mousedown)="startDrawing(highlightedCellsRear, $event)"
+                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/rear_side.png"
+                            class="img-fluid">
+                          <div class="grid-overlay-square" (mousedown)="startDrawing(highlightedCellsRear, $event)"
                             (mousemove)="draw(highlightedCellsRear, $event)" (mouseup)="stopDrawing()"
                             (mouseleave)="stopDrawing()" (touchstart)="startDrawing(highlightedCellsRear, $event)"
                             (touchmove)="draw(highlightedCellsRear, $event)" (touchend)="stopDrawing()"
                             (touchcancel)="stopDrawing()">
-                            @for (cell of cells; track cell; let index = $index) {
+                            @for (cell of cellsSquare; track cell; let index = $index) {
                             <div [ngClass]="{ highlighted: highlightedCellsRear[index] }" [attr.data-index]="index"
                               (mousedown)="$event.preventDefault()" (touchstart)="$event.preventDefault()">
                             </div>
@@ -585,12 +585,12 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-6 mb-3 align-center">
+                      <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3 align-center">
                         <div>{{translatedLangText.RIGHT_SIDE}}</div>
                         <div class="image-container">
-                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/right_side.png" class="img-fluid">
-                          <div class="grid-overlay"
-                            (mousedown)="startDrawing(highlightedCellsRight, $event)"
+                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/right_side.png"
+                            class="img-fluid">
+                          <div class="grid-overlay" (mousedown)="startDrawing(highlightedCellsRight, $event)"
                             (mousemove)="draw(highlightedCellsRight, $event)" (mouseup)="stopDrawing()"
                             (mouseleave)="stopDrawing()" (touchstart)="startDrawing(highlightedCellsRight, $event)"
                             (touchmove)="draw(highlightedCellsRight, $event)" (touchend)="stopDrawing()"
@@ -603,36 +603,142 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-6 m-b-0 align-center">
-                        <div>{{translatedLangText.TOP_SIDE}}</div>
+                      <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0 align-center">
+                        <div>
+                          <span>{{translatedLangText.TOP_SIDE}}</span>
+                          <mat-checkbox class="m-l-10" color="primary" (change)="selectMarkDmg()">
+                            {{translatedLangText.MARK_DAMAGE}}
+                          </mat-checkbox>
+                        </div>
                         <div class="image-container">
-                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/top_side.png" class="img-fluid">
-                          <div class="grid-overlay"
-                            (mousedown)="startDrawing(highlightedCellsTop, $event)"
-                            (mousemove)="draw(highlightedCellsTop, $event)" (mouseup)="stopDrawing()"
-                            (mouseleave)="stopDrawing()" (touchstart)="startDrawing(highlightedCellsTop, $event)"
-                            (touchmove)="draw(highlightedCellsTop, $event)" (touchend)="stopDrawing()"
-                            (touchcancel)="stopDrawing()">
-                            @for (cell of cells; track cell; let index = $index) {
-                            <div [ngClass]="{ 'walkway-highlighted': highlightedCellsTop[index] }"
-                              [attr.data-index]="index" (mousedown)="$event.preventDefault()"
-                              (touchstart)="$event.preventDefault()">
+                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/top_side.png"
+                            class="img-fluid">
+                          <!-- Custom Container for Top Side -->
+                          <div class="custom-container">
+                            <!-- Outer Layer -->
+                            <div class="outer-layer">
+                              <!-- Top part of the outer layer -->
+                              <div class="outer-top" (mousedown)="startDrawing(highlightedCellsOuterTop, $event)"
+                                (mousemove)="draw(highlightedCellsOuterTop, $event)" (mouseup)="stopDrawing()"
+                                (mouseleave)="stopDrawing()"
+                                (touchstart)="startDrawing(highlightedCellsOuterTop, $event)"
+                                (touchmove)="draw(highlightedCellsOuterTop, $event)" (touchend)="stopDrawing()"
+                                (touchcancel)="stopDrawing()">
+                                @for (cell of cellsOuterTopBottom; track cell; let index = $index) {
+                                <div class="grid-cell" [ngClass]="{'damage-overlay': highlightedCellsOuterTop[index]}"
+                                  [attr.data-index]="index" (mousedown)="$event.preventDefault()"
+                                  (touchstart)="$event.preventDefault()"></div>
+                                }
+                              </div>
+
+                              <!-- Middle part with inner grid and side borders -->
+                              <div class="outer-middle">
+                                <div class="outer-left" (mousedown)="startDrawing(highlightedCellsOuterLeft, $event)"
+                                  (mousemove)="draw(highlightedCellsOuterLeft, $event)" (mouseup)="stopDrawing()"
+                                  (mouseleave)="stopDrawing()"
+                                  (touchstart)="startDrawing(highlightedCellsOuterLeft, $event)"
+                                  (touchmove)="draw(highlightedCellsOuterLeft, $event)" (touchend)="stopDrawing()"
+                                  (touchcancel)="stopDrawing()">
+                                  @for (cell of cellsOuterLeftRight; track cell; let index = $index) {
+                                  <div class="grid-cell"
+                                    [ngClass]="{'damage-overlay': highlightedCellsOuterLeft[index]}"
+                                    [attr.data-index]="index" (mousedown)="$event.preventDefault()"
+                                    (touchstart)="$event.preventDefault()"></div>
+                                  }
+                                </div>
+                                <div class="inner-grid">
+                                  <!-- Top Row with 4 Columns -->
+                                  <div class="grid-top-row"
+                                    (mousedown)="startDrawingWalkway(highlightedCellsWalkwayTop, highlightedCellsWalkwayTopDmg, $event)"
+                                    (mousemove)="drawWalkway(highlightedCellsWalkwayTop, highlightedCellsWalkwayTopDmg, $event)"
+                                    (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
+                                    (touchstart)="startDrawingWalkway(highlightedCellsWalkwayTop, highlightedCellsWalkwayTopDmg, $event)"
+                                    (touchmove)="drawWalkway(highlightedCellsWalkwayTop, highlightedCellsWalkwayTopDmg, $event)"
+                                    (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
+                                    @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
+                                    <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayTop[index],
+                                        'damage-overlay': highlightedCellsWalkwayTopDmg[index]
+                                      }" [attr.data-index]="index" (mousedown)="$event.preventDefault()"
+                                      (touchstart)="$event.preventDefault()"></div>
+                                    }
+                                  </div>
+
+                                  <!-- Middle Row (to be defined later) -->
+                                  <div class="grid-middle-row"
+                                    (mousedown)="startDrawingWalkway(highlightedCellsWalkwayMiddle, highlightedCellsWalkwayMiddleDmg, $event)"
+                                    (mousemove)="drawWalkway(highlightedCellsWalkwayMiddle, highlightedCellsWalkwayMiddleDmg, $event)"
+                                    (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
+                                    (touchstart)="startDrawingWalkway(highlightedCellsWalkwayMiddle, highlightedCellsWalkwayMiddleDmg, $event)"
+                                    (touchmove)="drawWalkway(highlightedCellsWalkwayMiddle, highlightedCellsWalkwayMiddleDmg, $event)"
+                                    (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
+                                    @for (cell of cellsInnerMiddle; track cell; let index = $index) {
+                                    <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayMiddle[index],
+                                      'damage-overlay': highlightedCellsWalkwayMiddleDmg[index],
+                                      'disabled-cell': isDisabled(index)}" [attr.data-index]="index"
+                                      (mousedown)="!isDisabled(index) && $event.preventDefault()"
+                                      (touchstart)="!isDisabled(index) && $event.preventDefault()"></div>
+                                    }
+                                  </div>
+
+                                  <!-- Bottom Row with 4 Columns -->
+                                  <div class="grid-bottom-row"
+                                    (mousedown)="startDrawingWalkway(highlightedCellsWalkwayBottom, highlightedCellsWalkwayBottomDmg, $event)"
+                                    (mousemove)="drawWalkway(highlightedCellsWalkwayBottom, highlightedCellsWalkwayBottomDmg, $event)"
+                                    (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
+                                    (touchstart)="startDrawingWalkway(highlightedCellsWalkwayBottom, highlightedCellsWalkwayBottomDmg, $event)"
+                                    (touchmove)="drawWalkway(highlightedCellsWalkwayBottom, highlightedCellsWalkwayBottomDmg, $event)"
+                                    (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
+                                    @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
+                                    <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayBottom[index],
+                                      'damage-overlay': highlightedCellsWalkwayBottomDmg[index]}"
+                                      [attr.data-index]="index" (mousedown)="$event.preventDefault()"
+                                      (touchstart)="$event.preventDefault()"></div>
+                                    }
+                                  </div>
+                                </div>
+                                <div class="outer-right" (mousedown)="startDrawing(highlightedCellsOuterRight, $event)"
+                                  (mousemove)="draw(highlightedCellsOuterRight, $event)" (mouseup)="stopDrawing()"
+                                  (mouseleave)="stopDrawing()"
+                                  (touchstart)="startDrawing(highlightedCellsOuterRight, $event)"
+                                  (touchmove)="draw(highlightedCellsOuterRight, $event)" (touchend)="stopDrawing()"
+                                  (touchcancel)="stopDrawing()">
+                                  @for (cell of cellsOuterLeftRight; track cell; let index = $index) {
+                                  <div class="grid-cell"
+                                    [ngClass]="{'damage-overlay': highlightedCellsOuterRight[index]}"
+                                    [attr.data-index]="index" (mousedown)="$event.preventDefault()"
+                                    (touchstart)="$event.preventDefault()"></div>
+                                  }
+                                </div>
+                              </div>
+                              <!-- Bottom part of the outer layer -->
+                              <div class="outer-bottom" (mousedown)="startDrawing(highlightedCellsOuterBottom, $event)"
+                                (mousemove)="draw(highlightedCellsOuterBottom, $event)" (mouseup)="stopDrawing()"
+                                (mouseleave)="stopDrawing()"
+                                (touchstart)="startDrawing(highlightedCellsOuterBottom, $event)"
+                                (touchmove)="draw(highlightedCellsOuterBottom, $event)" (touchend)="stopDrawing()"
+                                (touchcancel)="stopDrawing()">
+                                @for (cell of cellsOuterTopBottom; track cell; let index = $index) {
+                                <div class="grid-cell"
+                                  [ngClass]="{'damage-overlay': highlightedCellsOuterBottom[index]}"
+                                  [attr.data-index]="index" (mousedown)="$event.preventDefault()"
+                                  (touchstart)="$event.preventDefault()"></div>
+                                }
+                              </div>
                             </div>
-                            }
                           </div>
                         </div>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-6 m-b-0 align-center">
+                      <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0 align-center">
                         <div>{{translatedLangText.FRONT_SIDE}}</div>
                         <div class="image-container">
-                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/front_side.png" class="img-fluid">
-                          <div class="grid-overlay"
-                            (mousedown)="startDrawing(highlightedCellsFront, $event)"
+                          <img mat-card-image src="assets/images/idms/tank_frame_type/backup/front_side.png"
+                            class="img-fluid">
+                          <div class="grid-overlay-square" (mousedown)="startDrawing(highlightedCellsFront, $event)"
                             (mousemove)="draw(highlightedCellsFront, $event)" (mouseup)="stopDrawing()"
                             (mouseleave)="stopDrawing()" (touchstart)="startDrawing(highlightedCellsFront, $event)"
                             (touchmove)="draw(highlightedCellsFront, $event)" (touchend)="stopDrawing()"
                             (touchcancel)="stopDrawing()">
-                            @for (cell of cells; track cell; let index = $index) {
+                            @for (cell of cellsSquare; track cell; let index = $index) {
                             <div [ngClass]="{ highlighted: highlightedCellsFront[index] }" [attr.data-index]="index"
                               (mousedown)="$event.preventDefault()" (touchstart)="$event.preventDefault()">
                             </div>
@@ -640,13 +746,12 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-xs-6 m-b-0 align-center">
+                      <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0 align-center">
                         <div>{{translatedLangText.BOTTOM_SIDE}}</div>
                         <div class="image-container">
                           <img mat-card-image src="assets/images/idms/tank_frame_type/backup/bottom_side.png"
                             class="img-fluid">
-                          <div class="grid-overlay"
-                            (mousedown)="startDrawing(highlightedCellsBottom, $event)"
+                          <div class="grid-overlay" (mousedown)="startDrawing(highlightedCellsBottom, $event)"
                             (mousemove)="draw(highlightedCellsBottom, $event)" (mouseup)="stopDrawing()"
                             (mouseleave)="stopDrawing()" (touchstart)="startDrawing(highlightedCellsBottom, $event)"
                             (touchmove)="draw(highlightedCellsBottom, $event)" (touchend)="stopDrawing()"
