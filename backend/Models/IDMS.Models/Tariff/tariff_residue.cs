@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IDMS.Models.Package;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,5 +18,7 @@ namespace IDMS.Models.Tariff
         public double? cost { get; set; }
 
         public string? remarks { get; set; }
+
+        public IEnumerable<package_residue>? package_residue { get; set; }
     }
 }
