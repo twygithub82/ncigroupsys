@@ -67,6 +67,12 @@ export class InGateSurveyGO {
   public rear_coord?: string;
   public left_coord?: string;
   public right_coord?: string;
+  // public top_remarks?: string;
+  // public bottom_remarks?: string;
+  // public front_remarks?: string;
+  // public rear_remarks?: string;
+  // public left_remarks?: string;
+  // public right_remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -130,6 +136,12 @@ export class InGateSurveyGO {
     this.rear_coord = item.rear_coord;
     this.left_coord = item.left_coord;
     this.right_coord = item.right_coord;
+    // this.top_remarks = item.top_remarks;
+    // this.bottom_remarks = item.bottom_remarks;
+    // this.front_remarks = item.front_remarks;
+    // this.rear_remarks = item.rear_remarks;
+    // this.left_remarks = item.left_remarks;
+    // this.right_remarks = item.right_remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;

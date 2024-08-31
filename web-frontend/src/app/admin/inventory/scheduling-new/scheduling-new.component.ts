@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -47,13 +47,14 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { BookingItem } from 'app/data-sources/booking';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { SchedulingSotDS } from 'app/data-sources/scheduling-sot';
+import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 
 @Component({
   selector: 'app-scheduling-new',
   standalone: true,
   templateUrl: './scheduling-new.component.html',
   styleUrl: './scheduling-new.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -148,7 +149,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     HAULIER: 'COMMON-FORM.HAULIER',
     BOOKED: 'COMMON-FORM.BOOKED',
     SCHEDULED: 'COMMON-FORM.SCHEDULED',
-    SCHEDULING_DATE: 'COMMON-FORM.SCHEDULING-DATE'
+    SCHEDULING_DATE: 'COMMON-FORM.SCHEDULING-DATE',
+    EXISTED: 'COMMON-FORM.EXISTED'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -285,15 +287,6 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     return numSelected === numRows;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  // masterToggle() {
-  //   if (this.isAllSelected()) {
-  //     this.clearPageSelection();
-  //   } else {
-  //     this.selectAllOnPage();
-  //   }
-  // }
-
   masterToggle() {
     const selectableRows = this.sotList.filter(row => !this.checkDisable(row));
 
@@ -307,16 +300,6 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       }
     }
   }
-
-  /** Clear selection on the current page */
-  // clearPageSelection() {
-  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-  //   this.sotList.forEach(row => {
-  //     this.sotSelection.deselect(row);
-  //     selectedItems.delete(row.guid!);
-  //   });
-  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  // }
 
   clearPageSelection() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
@@ -334,16 +317,6 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
-  /** Select all items on the current page */
-  // selectAllOnPage() {
-  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-  //   this.sotList.forEach(row => {
-  //     this.sotSelection.select(row);
-  //     selectedItems.add(row.guid!);
-  //   });
-  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  // }
-
   selectAllOnPage(selectableRows: StoringOrderTankItem[]) {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
 
@@ -357,19 +330,6 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
-
-  /** Handle row selection */
-  // toggleRow(row: StoringOrderTankItem) {
-  //   this.sotSelection.toggle(row);
-  //   const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-  //   if (this.sotSelection.isSelected(row)) {
-  //     this.selectedCompany = row.storing_order?.customer_company_guid;
-  //     selectedItems.add(row.guid!);
-  //   } else {
-  //     selectedItems.delete(row.guid!);
-  //   }
-  //   this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  // }
 
   toggleRow(row: StoringOrderTankItem) {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();
@@ -621,6 +581,40 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
+  cancelItem(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
+    this.stopPropagation(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    //   data: {
+    //     action: "cancel",
+    //     sot: sot,
+    //     booking: booking,
+    //     translatedLangText: this.translatedLangText,
+    //     populateData: {
+    //       bookingTypeCvList: this.bookingTypeCvListNewBooking,
+    //       yardCvList: this.yardCvList,
+    //       tankStatusCvList: this.tankStatusCvList
+    //     }
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result?.action === 'confirmed') {
+    //     const cancelBookingReq = new BookingGO(result.booking);
+    //     this.bookingDS.cancelBooking([cancelBookingReq]).subscribe(cancelResult => {
+    //       console.log(cancelResult)
+    //       this.handleSaveSuccess(cancelResult?.data?.cancelBooking);
+    //       this.performSearch(this.pageSize, 0, this.pageSize);
+    //     });
+    //   }
+    // });
+  }
+
   checkSchedulings(): boolean {
     if (!this.sotSelection.hasValue()) return true;
 
@@ -629,19 +623,37 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     );
   }
 
-  checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
+  checkScheduling(schedulings: SchedulingSotItem[] | undefined): boolean {
     if (!schedulings || !schedulings.length) return false;
-    if (schedulings.some(schedule => schedule.status_cv === "NEW"))
+    if (schedulings.some(schedule => schedule.status_cv === "NEW" || schedule.status_cv === "MATCHED"))
       return true;
     return false;
   }
 
   checkBooking(bookings: BookingItem[] | undefined): boolean {
-
     if (!bookings || !bookings.length) return false;
-    if (bookings.some(booking => booking.status_cv === "NEW"))
+    if (bookings.some(booking => booking.status_cv === "NEW" || booking.status_cv === "MATCHED"))
       return true;
     return false;
+  }
+
+  checkMatch(schedulings: SchedulingSotItem[] | undefined, bookings: BookingItem[] | undefined): boolean {
+    if (!schedulings?.length || !bookings?.length) {
+      return false;
+    }
+
+    const isMatch = (item1: SchedulingSotItem, item2: BookingItem) => {
+      return item1.scheduling?.book_type_cv === item2.book_type_cv && item1.scheduling?.scheduling_dt === item2.booking_dt;
+    };
+
+    const allSchedulingsMatch = schedulings.every(schedulingItem =>
+      bookings.some(bookingItem => isMatch(schedulingItem, bookingItem))
+    );
+
+    const allBookingsMatch = bookings.every(bookingItem =>
+      schedulings.some(schedulingItem => isMatch(schedulingItem, bookingItem))
+    );
+    return allSchedulingsMatch && allBookingsMatch;
   }
 
   stopEventTrigger(event: Event) {
@@ -687,5 +699,9 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
 
   getBookTypeDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.bookingTypeCvList);
+  }
+
+  getBookingStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.bookingStatusCvList);
   }
 }

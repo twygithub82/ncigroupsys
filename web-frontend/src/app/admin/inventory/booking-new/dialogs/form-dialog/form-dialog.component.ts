@@ -87,7 +87,7 @@ export class FormDialogComponent {
   storingOrderTank: StoringOrderTankItem[];
   booking?: BookingItem;
   startDateToday = new Date();
-  bookingTypeCvList?: CodeValuesItem[] = [];
+  existingBookTypeCvs: (string | undefined)[] | undefined = [];
 
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
@@ -116,11 +116,8 @@ export class FormDialogComponent {
       this.dialogTitle = 'New Booking';
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
-    const existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
+    this.existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
       (tank.booking || []).map(booking => booking.book_type_cv)
-    );
-    this.bookingTypeCvList = this.data.populateData.bookingTypeCvList!.filter(
-      (bookingType: CodeValuesItem) => !existingBookTypeCvs.includes(bookingType?.code_val)
     );
     this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
     this.bookingForm = this.createStorigOrderTankForm();
@@ -191,10 +188,16 @@ export class FormDialogComponent {
       startWith(''),
       debounceTime(100),
       tap(value => {
-        if (value === 'RELEASE_ORDER') {
-          this.referenceTitle = this.data.translatedLangText.JOB_NO;
+        const control = this.bookingForm!.get('book_type_cv');
+        control?.setErrors(null);
+        if (this.action === 'edit') {
+          if (this.booking && this.booking.book_type_cv !== value && this.existingBookTypeCvs!.includes(value)) {
+            control?.setErrors({ existed: true });
+          }
         } else {
-          this.referenceTitle = this.data.translatedLangText.REFERENCE;
+          if (this.existingBookTypeCvs!.includes(value)) {
+            control?.setErrors({ existed: true });
+          }
         }
       })
     ).subscribe();

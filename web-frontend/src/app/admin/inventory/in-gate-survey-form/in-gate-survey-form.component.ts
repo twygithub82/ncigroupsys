@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -49,12 +49,14 @@ import { MatRadioModule } from '@angular/material/radio';
 import { Moment } from 'moment';
 import * as moment from 'moment';
 import { testTypeMapping } from 'environments/environment.development';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-in-gate',
   standalone: true,
   templateUrl: './in-gate-survey-form.component.html',
   styleUrl: './in-gate-survey-form.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -189,6 +191,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
+    FILL_IN_REMARKS: 'COMMON-FORM.FILL-IN-REMARKS',
+    LEFT_REMARKS: 'COMMON-FORM.LEFT-REMARKS',
+    REAR_REMARKS: 'COMMON-FORM.REAR-REMARKS',
+    RIGHT_REMARKS: 'COMMON-FORM.RIGHT-REMARKS',
+    TOP_REMARKS: 'COMMON-FORM.TOP-REMARKS',
+    FRONT_REMARKS: 'COMMON-FORM.FRONT-REMARKS',
+    BOTTOM_REMARKS: 'COMMON-FORM.BOTTOM-REMARKS'
   }
 
   in_gate_guid: string | null | undefined;
@@ -337,16 +346,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       haulier: [''],
       in_gate_remarks: [''],
       comments: [''],
-      frameFormGroup: this.fb.group({
-        left_side: [''],
-        rear_side: [''],
-        right_side: [''],
-        top_side: [''],
-        front_side: [''],
-        bottom_side: [''],
-      }),
-      damageImageFormGroup: this.fb.group({
-      }),
+      leftRemarks: [''],
+      rearRemarks: [''],
+      rightRemarks: [''],
+      topRemarks: [''],
+      frontRemarks: [''],
+      bottomRemarks: [''],
       bottomFormGroup: this.fb.group({
         btm_dis_comp_cv: [''],
         btm_dis_valve_cv: [''],
@@ -387,17 +392,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
 
     this.initValueChanges();
-
-    this.in_gate_guid = this.route.snapshot.paramMap.get('id');
-    if (this.in_gate_guid) {
-      // EDIT
-      this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
-        if (this.igDS.totalCount > 0) {
-          this.in_gate = data[0];
-          this.populateInGateForm(this.in_gate);
-        }
-      });
-    }
   }
 
   initValueChanges() {
@@ -418,14 +412,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   onTestValuesChanged(): void {
     this.lastTest = this.getLastTest();
     this.nextTest = this.getNextTest();
-  }
-
-  getFrameFormGroup(): UntypedFormGroup {
-    return this.surveyForm!.get('frameFormGroup') as UntypedFormGroup;
-  }
-
-  getDamageImageFormGroup(): UntypedFormGroup {
-    return this.surveyForm!.get('damageImageFormGroup') as UntypedFormGroup;
   }
 
   getBottomFormGroup(): UntypedFormGroup {
@@ -543,6 +529,17 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
     });
+
+    this.in_gate_guid = this.route.snapshot.paramMap.get('id');
+    if (this.in_gate_guid) {
+      // EDIT
+      this.subs.sink = this.igDS.getInGateByID(this.in_gate_guid).subscribe(data => {
+        if (this.igDS.totalCount > 0) {
+          this.in_gate = data[0];
+          this.populateInGateForm(this.in_gate);
+        }
+      });
+    }
   }
 
   populateInGateForm(ig: InGateItem): void {
@@ -567,16 +564,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       walkway_cv: ig.in_gate_survey?.walkway_cv,
       tank_comp_cv: ig.in_gate_survey?.tank_comp_cv,
       comments: ig.in_gate_survey?.comments,
-      frameFormGroup: {
-        //left_side: ig.in_gate_survey?.left_side
-        //rear_side: ig.in_gate_survey?.rear_side
-        //right_side: ig.in_gate_survey?.right_side
-        //top_side: ig.in_gate_survey?.top_side
-        //front_side: ig.in_gate_survey?.front_side
-        //bottom_side: ig.in_gate_survey?.bottom_side
-      },
-      damageImageFormGroup: {
-      },
       bottomFormGroup: {
         btm_dis_comp_cv: ig.in_gate_survey?.btm_dis_comp_cv,
         btm_dis_valve_cv: ig.in_gate_survey?.btm_dis_valve_cv,
@@ -617,7 +604,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.highlightedCellsLeft = this.populateHighlightedCells(this.highlightedCellsLeft, JSON.parse(ig.in_gate_survey?.left_coord || '[]'));
     this.highlightedCellsRear = this.populateHighlightedCells(this.highlightedCellsRear, JSON.parse(ig.in_gate_survey?.rear_coord || '[]'));
     this.highlightedCellsRight = this.populateHighlightedCells(this.highlightedCellsRight, JSON.parse(ig.in_gate_survey?.right_coord || '[]'));
-    this.highlightedCellsTop = this.populateHighlightedCells(this.highlightedCellsTop, JSON.parse(ig.in_gate_survey?.top_coord || '[]'));
+    this.populateTopSideCells(JSON.parse(ig.in_gate_survey?.top_coord || '{}'));
     this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(ig.in_gate_survey?.front_coord || '[]'));
     this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(ig.in_gate_survey?.bottom_coord || '[]'));
   }
@@ -630,6 +617,41 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       toUpdateCells[index] = true;
     });
     return toUpdateCells;
+  }
+
+  populateHighlightedCellsWithoutReset(toUpdateCells: boolean[], coordinates: { x: number; y: number }[]): boolean[] {
+    if (!Array.isArray(coordinates)) {
+      return [];
+    }
+    coordinates.forEach(coord => {
+      const index = coord.y * this.colSize + coord.x;
+      toUpdateCells[index] = true;
+    });
+    return toUpdateCells;
+  }
+
+  populateTopSideCells(topCoord: any) {
+    const outerTop = topCoord.outerTop
+    const outerBottom = topCoord.outerBottom
+    const outerLeft = topCoord.outerLeft
+    const outerRight = topCoord.outerRight
+    const walkwayTop = topCoord.walkwayTop
+    const walkwayMiddle = topCoord.walkwayMiddle
+    const walkwayBottom = topCoord.walkwayBottom
+    const dmgTop = topCoord.dmgTop
+    const dmgMiddle = topCoord.dmgMiddle
+    const dmgBottom = topCoord.dmgBottom
+
+    this.highlightedCellsOuterTop = this.populateHighlightedCellsWithoutReset(this.highlightedCellsOuterTop, outerTop);
+    this.highlightedCellsOuterBottom = this.populateHighlightedCellsWithoutReset(this.highlightedCellsOuterBottom, outerBottom);
+    this.highlightedCellsOuterLeft = this.populateHighlightedCellsWithoutReset(this.highlightedCellsOuterLeft, outerLeft);
+    this.highlightedCellsOuterRight = this.populateHighlightedCellsWithoutReset(this.highlightedCellsOuterRight, outerRight);
+    this.highlightedCellsWalkwayTop = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayTop, walkwayTop);
+    this.highlightedCellsWalkwayMiddle = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayMiddle, walkwayMiddle);
+    this.highlightedCellsWalkwayBottom = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayBottom, walkwayBottom);
+    this.highlightedCellsWalkwayTopDmg = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayTopDmg, dmgTop);
+    this.highlightedCellsWalkwayMiddleDmg = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayMiddleDmg, dmgMiddle);
+    this.highlightedCellsWalkwayBottomDmg = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayBottomDmg, dmgBottom);
   }
 
   showNotification(
@@ -734,9 +756,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.left_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsLeft));
       igs.rear_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsRear));
       igs.right_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsRight));
-      igs.top_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsTop));
+      igs.top_coord = JSON.stringify(this.getTopCoordinates());
       igs.front_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsFront));
       igs.bottom_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsBottom));
+      // igs.left_remarks = this.surveyForm.get('leftRemarks')?.value;
+      // igs.rear_remarks = this.surveyForm.get('rearRemarks')?.value;
+      // igs.right_remarks = this.surveyForm.get('rightRemarks')?.value
+      // igs.top_remarks = this.surveyForm.get('topRemarks')?.value;
+      // igs.front_remarks = this.surveyForm.get('frontRemarks')?.value;
+      // igs.bottom_remarks = this.surveyForm.get('bottomRemarks')?.value;
       console.log('igs Value', igs);
       console.log('ig Value', ig);
       if (igs.guid) {
@@ -889,17 +917,17 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
     if (dataIndex !== null) {
-        const cellIndex = +dataIndex;
-        highlightedCells[cellIndex] = this.toggleState;
-        
-        // Apply damage overlay if checkbox is selected
-        if (this.isMarkDmg && this.toggleState) {
-            damageCells[cellIndex] = true;
-        } else {
-            damageCells[cellIndex] = false;
-        }
+      const cellIndex = +dataIndex;
+      highlightedCells[cellIndex] = this.toggleState;
+
+      // Apply damage overlay if checkbox is selected
+      if (this.isMarkDmg && this.toggleState) {
+        damageCells[cellIndex] = true;
+      } else {
+        damageCells[cellIndex] = false;
+      }
     }
-}
+  }
 
   getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
     if (event instanceof MouseEvent) {
@@ -926,6 +954,32 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return coordinates;
   }
 
+  getTopCoordinates(): { x: number, y: number }[] {
+    const outerTop = this.getHighlightedCoordinates(this.highlightedCellsOuterTop);
+    const outerBottom = this.getHighlightedCoordinates(this.highlightedCellsOuterBottom);
+    const outerLeft = this.getHighlightedCoordinates(this.highlightedCellsOuterLeft);
+    const outerRight = this.getHighlightedCoordinates(this.highlightedCellsOuterRight);
+    const walkwayTop = this.getHighlightedCoordinates(this.highlightedCellsWalkwayTop);
+    const walkwayMiddle = this.getHighlightedCoordinates(this.highlightedCellsWalkwayMiddle);
+    const walkwayBottom = this.getHighlightedCoordinates(this.highlightedCellsWalkwayBottom);
+    const dmgTop = this.getHighlightedCoordinates(this.highlightedCellsWalkwayTopDmg);
+    const dmgMiddle = this.getHighlightedCoordinates(this.highlightedCellsWalkwayMiddleDmg);
+    const dmgBottom = this.getHighlightedCoordinates(this.highlightedCellsWalkwayBottomDmg);
+    const result: any = {
+      outerTop,
+      outerBottom,
+      outerLeft,
+      outerRight,
+      walkwayTop,
+      walkwayMiddle,
+      walkwayBottom,
+      dmgTop,
+      dmgMiddle,
+      dmgBottom
+    }
+    return result;
+  }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -938,6 +992,30 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         reader.readAsDataURL(file);
       });
     }
+  }
+
+  editRemarks(event: Event, remarksTitle: string, remarksValue: any) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      data: {
+        remarksTitle: remarksTitle,
+        previousRemarks: remarksValue.value,
+        action: 'edit',
+        translatedLangText: this.translatedLangText,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        remarksValue.setValue(result.remarks);
+      }
+    });
   }
 
   chosenYearHandler(normalizedYear: Moment) {
@@ -988,5 +1066,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   getTestClassDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
   }
 }

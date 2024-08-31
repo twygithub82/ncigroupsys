@@ -458,7 +458,7 @@
 
 /* Responsive custom grid classes for half-step increments at 'lg' breakpoint */
 @media (min-width: 992px) {
-  
+
   .col-lg-12 {
     width: 100%;
     /* 12/12 of the full width */
@@ -771,7 +771,7 @@ $breakpoints: (
 
   // Responsive widths for breakpoints
   @each $breakpoint, $size in $breakpoints {
-    @if $size != 0px {
+    @if $size !=0px {
       @media (min-width: $size) {
         .#{$name}-#{$breakpoint} {
           width: $width !important;
@@ -779,7 +779,9 @@ $breakpoints: (
           max-width: $width !important;
         }
       }
-    } @else {
+    }
+
+    @else {
       .#{$name} {
         width: $width !important;
         flex: 0 0 $width !important;
@@ -845,17 +847,21 @@ $breakpoints: (
 }
 
 .dark-header .mat-mdc-header-cell {
-  background-color: #dcdcdc !important; /* Darker gray for header */
-  color: #333; /* Dark text color for better contrast */
+  background-color: #dcdcdc !important;
+  /* Darker gray for header */
+  color: #333;
+  /* Dark text color for better contrast */
 }
 
 /* Class for striped rows */
 .striped-rows .mdc-data-table__row:nth-child(odd) {
-  background-color: #ececec; /* Slightly darker gray for odd rows */
+  background-color: #ececec;
+  /* Slightly darker gray for odd rows */
 }
 
 .striped-rows .mdc-data-table__row:nth-child(even) {
-  background-color: #ffffff; /* White for even rows */
+  background-color: #ffffff;
+  /* White for even rows */
 }
 
 /* Class for mouseover effect */
@@ -864,7 +870,8 @@ $breakpoints: (
 }
 
 .hover-highlight .mdc-data-table__row:hover {
-  background-color: #d4d4d4; /* Light gray color on hover */
+  background-color: #d4d4d4;
+  /* Light gray color on hover */
 }
 
 /* Ensure text color remains legible */
@@ -872,5 +879,48 @@ $breakpoints: (
 .striped-rows .mdc-data-table__row:nth-child(odd),
 .striped-rows .mdc-data-table__row:nth-child(even),
 .hover-highlight .mdc-data-table__row {
-  color: #333; /* Dark text color */
+  color: #333;
+  /* Dark text color */
+}
+
+.link-button {
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  margin: 0;
+  display: inline;
+}
+
+.link-button:hover,
+.link-button:focus {
+  text-decoration: none;
+  outline: none;
+}
+
+.image-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.image-preview {
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+}
+
+.preview-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }

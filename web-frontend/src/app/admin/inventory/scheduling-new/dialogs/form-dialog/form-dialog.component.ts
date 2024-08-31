@@ -91,7 +91,7 @@ export class FormDialogComponent {
   startDateToday = new Date();
   scheduling_guid?: string;
   scheduling?: SchedulingItem;
-  bookingTypeCvList?: CodeValuesItem[] = [];
+  existingBookTypeCvs: (string | undefined)[] | undefined = [];
 
   ccDS: CustomerCompanyDS;
   schedulingDS: SchedulingDS;
@@ -116,11 +116,8 @@ export class FormDialogComponent {
       this.dialogTitle = 'New Scheduling';
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
-    const existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
+    this.existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
       (tank.scheduling_sot || []).map(scheduling_sot => scheduling_sot.scheduling?.book_type_cv)
-    );
-    this.bookingTypeCvList = this.data.populateData.bookingTypeCvList!.filter(
-      (bookingType: CodeValuesItem) => !existingBookTypeCvs.includes(bookingType?.code_val)
     );
     this.schedulingForm = this.createForm();
     this.initializeValueChange();
@@ -147,10 +144,11 @@ export class FormDialogComponent {
           if (this.schedulingDS.totalCount > 0) {
             const scheduling = data[0];
             this.scheduling = scheduling;
+            this.startDateToday = Utility.convertDate(this.scheduling.scheduling_dt) as Date
             formGroup.patchValue({
               reference: scheduling.reference,
               book_type_cv: scheduling.book_type_cv,
-              scheduling_dt: Utility.convertDate(scheduling.scheduling_dt)
+              scheduling_dt: this.startDateToday
             });
 
             const schedulingSotArray = formGroup.get('schedulingSot') as UntypedFormArray;
@@ -261,6 +259,23 @@ export class FormDialogComponent {
   }
 
   initializeValueChange() {
+    this.schedulingForm!.get('book_type_cv')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(100),
+      tap(value => {
+        const control = this.schedulingForm!.get('book_type_cv');
+        control?.setErrors(null);
+        if (this.action === 'edit') {
+          if (this.scheduling && this.scheduling.book_type_cv !== value && this.existingBookTypeCvs!.includes(value)) {
+            control?.setErrors({ existed: true });
+          }
+        } else {
+          if (this.existingBookTypeCvs!.includes(value)) {
+            control?.setErrors({ existed: true });
+          }
+        }
+      })
+    ).subscribe();
   }
 
   findInvalidControls() {

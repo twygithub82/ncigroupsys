@@ -21,16 +21,12 @@
 
 .grid-overlay {
     grid-template-rows: repeat(11, 1fr);
-    /* Adjust the number of rows */
     grid-template-columns: repeat(19, 1fr);
-    /* Adjust the number of columns */
 }
 
 .grid-overlay-square {
     grid-template-columns: repeat(11, 1fr);
-    /* Adjust the number of columns */
     grid-template-rows: repeat(11, 1fr);
-    /* Adjust the number of rows */
 }
 
 .grid-overlay div,
@@ -42,9 +38,7 @@
 .grid-overlay div.highlighted,
 .grid-overlay-square div.highlighted {
     position: relative;
-    /* Ensure the container is positioned relative */
     background-color: transparent;
-    /* Remove the background color */
 }
 
 .grid-overlay div.highlighted::before,
@@ -56,104 +50,35 @@
     top: 50%;
     left: 50%;
     width: 140%;
-    /* Full width of the container */
     height: 4px;
-    /* Thickness of the cross lines */
     background-color: rgba(255, 0, 0, 0.7);
-    /* Color and transparency */
 }
 
 .grid-overlay div.highlighted::before,
 .grid-overlay-square div.highlighted::before {
     transform: translate(-50%, -50%) rotate(45deg);
-    /* First diagonal */
 }
 
 .grid-overlay div.highlighted::after,
 .grid-overlay-square div.highlighted::after {
     transform: translate(-50%, -50%) rotate(-45deg);
-    /* First diagonal */
 }
 
-.grid-overlay div.walkway-highlighted,
-.grid-overlay-square div.walkway-highlighted {
-    position: relative;
-    /* Ensure the container is positioned relative */
-    background-color: rgba(255, 251, 0, 0.733);
-    /* Yellow background as a fallback */
-    background-image: url('/assets/images/icons/walkway.jpg');
-    /* Path to your background image */
-    background-size: cover;
-    /* Cover the entire div with the image */
-    background-repeat: no-repeat;
-    /* Ensure the image does not repeat */
-    background-position: center;
-    /* Center the image */
-}
-
-.grid-overlay div.cross-overlay::before,
-.grid-overlay-square div.cross-overlay::before,
-.grid-overlay div.cross-overlay::after,
-.grid-overlay-square div.cross-overlay::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 140%;
-    /* Adjust the width of the cross */
-    height: 4px;
-    /* Thickness of the cross lines */
-    background-color: rgba(255, 0, 0, 0.7);
-    /* Red color with transparency */
-}
-
-.grid-overlay div.cross-overlay::before,
-.grid-overlay-square div.cross-overlay::before {
-    transform: translate(-50%, -50%) rotate(45deg);
-    /* First diagonal */
-}
-
-.grid-overlay div.cross-overlay::after,
-.grid-overlay-square div.cross-overlay::after {
-    transform: translate(-50%, -50%) rotate(-45deg);
-    /* Second diagonal */
-}
-
-.image-previews {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    /* Adjust minmax as needed */
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.image-preview {
-    width: 100%;
-    /* Take full width of grid column */
-    padding-top: 100%;
-    /* Ratio to keep square shape */
-    position: relative;
-}
-
-.preview-img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
+// .grid-overlay div.walkway-highlighted,
+// .grid-overlay-square div.walkway-highlighted {
+//     position: relative;
+//     background-image: url('/assets/images/icons/walkway.jpg');
+//     background-size: cover;
+//     background-repeat: no-repeat;
+//     background-position: center;
+// }
 
 .example-month-picker .mat-calendar {
     width: 300px;
-    /* Adjust width as needed */
 }
 
 .example-month-picker .mat-calendar-period-button {
     pointer-events: none;
-    /* Disable year selection */
 }
 
 .custom-container {
@@ -176,11 +101,8 @@
 .outer-bottom {
     display: grid;
     grid-template-columns: repeat(19, 1fr);
-    /* 19 columns */
     height: 100%;
-    /* 10% of the full height as defined by the grid-template-rows */
     background-color: rgba(0, 0, 0, 0);
-    /* Example background color */
 }
 
 .outer-top .grid-cell,
@@ -192,7 +114,6 @@
 .outer-middle {
     display: grid;
     grid-template-columns: 5% 1fr 5%;
-    /* Outer-left, inner-grid, outer-right */
     height: 100%;
 }
 
@@ -200,11 +121,8 @@
 .outer-right {
     display: grid;
     grid-template-rows: repeat(10, 1fr);
-    /* 13 rows */
     width: 100%;
-    /* Takes up the allocated width based on grid-template-columns */
     background-color: rgba(0, 0, 0, 0);
-    /* Example background color */
 }
 
 .outer-left .grid-cell,
@@ -216,52 +134,41 @@
 .inner-grid {
     display: grid;
     grid-template-rows: 25% 1fr 25%;
-    /* 25% for top, 1fr (50%) for middle, 25% for bottom */
     grid-template-columns: 1fr;
-    /* Single column to structure rows */
     height: 100%;
-    /* Full height of the middle section */
 }
 
 .grid-top-row,
 .grid-bottom-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    /* 4 columns */
     height: 100%;
-    /* Ensure the row takes up the full height allocated */
 }
 
 .grid-cell {
     border: 1px solid transparent;
     background-color: rgba(255, 255, 255, 0.3);
     height: 100%;
-    /* Ensure each cell fills the row height */
 }
 
 .grid-middle-row {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    /* 12 columns */
     height: 100%;
-    /* Ensure it takes up the remaining height allocated by the inner-grid */
 }
 
 .grid-middle-row .grid-cell {
     border: 1px solid transparent;
     background-color: rgba(255, 255, 255, 0.3);
     height: 100%;
-    /* Ensure each cell fills the row height */
 }
 
 .grid-cell {
     border: 1px solid transparent;
     background-color: rgba(255, 255, 255, 0.3);
     height: 100%;
-    /* Ensure each cell fills the row height */
     transition: background-image 0.3s ease;
     pointer-events: auto;
-    /* Allow interactions with the grid cells */
 }
 
 .grid-cell.walkway-highlighted {
@@ -273,14 +180,12 @@
 
 .disabled-cell {
     background-color: rgba(128, 128, 128, 0.3);
-    /* Example: gray out the disabled cells */
     pointer-events: none;
-    /* Prevent interactions with disabled cells */
 }
 
 .damage-overlay {
     position: relative;
-    overflow: hidden; /* Ensures the cross doesn't overflow outside the cell */
+    overflow: hidden;
 }
 
 .damage-overlay::before,
@@ -289,18 +194,16 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 20px; /* Adjusted width to fit better within the grid cell */
-    height: 4px; /* Adjusted thickness to be subtle */
-    background-color: rgba(255, 0, 0, 0.7); /* Red color with transparency */
+    width: 20px;
+    height: 4px;
+    background-color: rgba(255, 0, 0, 0.7);
     transform-origin: center;
 }
 
 .damage-overlay::before {
     transform: translate(-50%, -50%) rotate(45deg);
-    /* First diagonal */
 }
 
 .damage-overlay::after {
     transform: translate(-50%, -50%) rotate(-45deg);
-    /* Second diagonal */
 }
