@@ -704,4 +704,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   getBookingStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.bookingStatusCvList);
   }
+
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
 }

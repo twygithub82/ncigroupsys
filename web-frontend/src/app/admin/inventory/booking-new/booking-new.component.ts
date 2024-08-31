@@ -611,9 +611,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const cancelBookingReq = new BookingGO(result.booking);
-        this.bookingDS.cancelBooking([cancelBookingReq]).subscribe(cancelResult => {
-          console.log(cancelResult)
-          this.handleSaveSuccess(cancelResult?.data?.cancelBooking);
+        // this.bookingDS.cancelBooking([cancelBookingReq]).subscribe(cancelResult => {
+        //   this.handleSaveSuccess(cancelResult?.data?.cancelBooking);
+        //   this.performSearch(this.pageSize, 0, this.pageSize);
+        // });
+        this.bookingDS.deleteBooking([cancelBookingReq.guid]).subscribe(cancelResult => {
+          this.handleSaveSuccess(cancelResult?.data?.deleteBooking);
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
@@ -702,5 +705,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       schedulings.some(schedulingItem => isMatch(schedulingItem, bookingItem))
     );
     return allSchedulingsMatch && allBookingsMatch;
+  }
+
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 }
