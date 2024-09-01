@@ -30,7 +30,7 @@ namespace IDMS.Booking.GqlTypes
                 newScheduling.create_by = user;
                 newScheduling.create_dt = currentDateTime;
 
-                newScheduling.reference = scheduling.reference; 
+                newScheduling.reference = scheduling.reference;
                 newScheduling.status_cv = BookingStatus.NEW;
                 newScheduling.book_type_cv = scheduling.book_type_cv;
                 newScheduling.scheduling_dt = scheduling.scheduling_dt;
@@ -80,8 +80,8 @@ namespace IDMS.Booking.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var exScheduling =  await context.scheduling.Where(s => s.guid == scheduling.guid && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
-                if(exScheduling == null)
+                var exScheduling = await context.scheduling.Where(s => s.guid == scheduling.guid && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
+                if (exScheduling == null)
                     throw new GraphQLException(new Error($"Scheduling not found, update failed.", "ERROR"));
 
                 exScheduling.update_by = user;
@@ -102,8 +102,8 @@ namespace IDMS.Booking.GqlTypes
                     var exSch = new scheduling_sot() { guid = sch.guid };
                     context.Attach(exSch);
                     //context.Entry(exSch).Property(e=>e.status_cv).IsModified = true;
-                    
-                    if(BookingStatus.CANCELED.EqualsIgnore(sch.action))
+
+                    if (BookingStatus.CANCELED.EqualsIgnore(sch.action))
                         exSch.status_cv = BookingStatus.CANCELED;
                     else
                         exSch.status_cv = sch.status_cv;
@@ -125,39 +125,45 @@ namespace IDMS.Booking.GqlTypes
         }
 
 
-        //public async Task<int> DeleteReleaseOrder(List<string> roGuids, [Service] IHttpContextAccessor httpContextAccessor,
-        //    ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender)
-        //{
+        public async Task<int> DeleteScheduling(List<string> schedulingGuids, [Service] IHttpContextAccessor httpContextAccessor,
+            ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
+        {
 
-        //    try
-        //    {
-        //        var res = 0;
-        //        string user = "admin";
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
+            try
+            {
+                var res = 0;
+                string user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
 
-        //        var releaseOrders = context.release_order.Where(b => roGuids.Contains(b.guid) && b.delete_dt == null);
-        //        if (releaseOrders.Any())
-        //        {
-        //            foreach (var ro in releaseOrders)
-        //            {
-        //                ro.update_dt = currentDateTime;
-        //                ro.update_by = user;
-        //                ro.delete_dt = currentDateTime;
-        //            }
-        //            //context.UpdateRange(releaseOrders);
-        //            res = await context.SaveChangesAsync();
-        //        }
+                foreach (var id in schedulingGuids)
+                {
+                    var scheduling = new scheduling() { guid = id };
+                    context.Attach(scheduling);
 
-        //        //TODO
-        //        //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
-        //        //await topicEventSender.SendAsync(updateCourseTopic, course);
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-        //    }
-        //}
+                    scheduling.update_dt = currentDateTime;
+                    scheduling.update_by = user;
+                    scheduling.delete_dt = currentDateTime;
+                }
+
+                var schSots = context.scheduling_sot.Where(b => schedulingGuids.Contains(b.scheduling_guid));
+                foreach (var sch in schSots)
+                {
+                    sch.update_dt = currentDateTime;
+                    sch.update_by = user;
+                    sch.delete_dt = currentDateTime;
+                }
+
+                res = await context.SaveChangesAsync();
+                //TODO
+                //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
+                //await topicEventSender.SendAsync(updateCourseTopic, course);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
 
     }
 }
