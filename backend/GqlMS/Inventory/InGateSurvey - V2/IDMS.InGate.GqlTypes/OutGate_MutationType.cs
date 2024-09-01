@@ -121,6 +121,7 @@ namespace IDMS.InGate.GqlTypes
                     updatedOutgate.vehicle_no = OutGate.vehicle_no;
                     updatedOutgate.driver_name = OutGate.driver_name;
                     updatedOutgate.remarks = OutGate.remarks;
+                    updatedOutgate.haulier = OutGate.haulier;
 
 
                     if (OutGate.tank == null)
@@ -142,7 +143,7 @@ namespace IDMS.InGate.GqlTypes
                         RO.update_dt = currentDate;
                     }
 
-                    retval = context.SaveChanges();
+                    retval = await context.SaveChangesAsync();
                 }
             }
             catch(Exception ex)
