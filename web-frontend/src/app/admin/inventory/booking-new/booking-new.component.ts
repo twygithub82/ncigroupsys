@@ -48,6 +48,7 @@ import { SchedulingItem } from 'app/data-sources/scheduling';
 import { BookingDS, BookingGO, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 
 @Component({
   selector: 'app-booking-new',
@@ -145,7 +146,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     BOOKED: 'COMMON-FORM.BOOKED',
     SCHEDULED: 'COMMON-FORM.SCHEDULED',
     REMARKS: 'COMMON-FORM.REMARKS',
-    CONFIRM: 'COMMON-FORM.CONFIRM'
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    EXISTED: 'COMMON-FORM.EXISTED'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -609,9 +611,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const cancelBookingReq = new BookingGO(result.booking);
-        this.bookingDS.cancelBooking([cancelBookingReq]).subscribe(cancelResult => {
-          console.log(cancelResult)
-          this.handleSaveSuccess(cancelResult?.data?.cancelBooking);
+        // this.bookingDS.cancelBooking([cancelBookingReq]).subscribe(cancelResult => {
+        //   this.handleSaveSuccess(cancelResult?.data?.cancelBooking);
+        //   this.performSearch(this.pageSize, 0, this.pageSize);
+        // });
+        this.bookingDS.deleteBooking([cancelBookingReq.guid]).subscribe(cancelResult => {
+          this.handleSaveSuccess(cancelResult?.data?.deleteBooking);
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
@@ -661,6 +666,10 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     return this.cvDS.getCodeDescription(codeValType, this.bookingTypeCvList);
   }
 
+  getBookingStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.bookingStatusCvList);
+  }
+
   displayDate(input: number | null | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input as number);
   }
@@ -677,5 +686,28 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     if (bookings.some(booking => booking.status_cv === "NEW"))
       return true;
     return false;
+  }
+
+  checkMatch(schedulings: SchedulingSotItem[] | undefined, bookings: BookingItem[] | undefined): boolean {
+    if (!schedulings?.length || !bookings?.length) {
+      return false;
+    }
+
+    const isMatch = (item1: SchedulingSotItem, item2: BookingItem) => {
+      return item1.scheduling?.book_type_cv === item2.book_type_cv && item1.scheduling?.scheduling_dt === item2.booking_dt;
+    };
+
+    const allSchedulingsMatch = schedulings.every(schedulingItem =>
+      bookings.some(bookingItem => isMatch(schedulingItem, bookingItem))
+    );
+
+    const allBookingsMatch = bookings.every(bookingItem =>
+      schedulings.some(schedulingItem => isMatch(schedulingItem, bookingItem))
+    );
+    return allSchedulingsMatch && allBookingsMatch;
+  }
+
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 }

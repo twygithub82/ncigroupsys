@@ -19,7 +19,7 @@
               <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
                 <mat-select formControlName="book_type_cv" required>
-                  @for (codeValue of bookingTypeCvList; track codeValue) {
+                  @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
                   <mat-option [value]="codeValue.code_val">
                     {{codeValue.description}}
                   </mat-option>
@@ -28,6 +28,11 @@
                 @if (schedulingForm.get('book_type_cv')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+                @if (schedulingForm.get('book_type_cv')?.hasError('existed')) {
+                <mat-error>
+                  {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
                 </mat-error>
                 }
               </mat-form-field>

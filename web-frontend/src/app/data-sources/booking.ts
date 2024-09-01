@@ -121,6 +121,12 @@ export const CANCEL_BOOKING = gql`
   }
 `;
 
+export const DELETE_BOOKING = gql`
+  mutation DeleteBooking($bkGuids: [String!]!) {
+    deleteBooking(bkGuids: $bkGuids)
+  }
+`;
+
 export class BookingDS extends BaseDataSource<BookingItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -171,6 +177,15 @@ export class BookingDS extends BaseDataSource<BookingItem> {
       mutation: CANCEL_BOOKING,
       variables: {
         bookingList
+      }
+    });
+  }
+
+  deleteBooking(bkGuids: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_BOOKING,
+      variables: {
+        bkGuids
       }
     });
   }
