@@ -172,7 +172,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
-                          <input matInput formControlName="un_no" required [maxLength]="6">
+                           <input matInput formControlName="un_no" required [maxLength]="6" (blur)="onUnNoBlur()" >
                           @if (tcForm?.get('un_no')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_UN_NO | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -215,13 +215,26 @@
                     </div>
                     <div class="row">
                       <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 col-xs-12 mb-1">
-                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button">
+                        <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button" [disabled]="!isFileSelectable">
                           <i class="material-icons">attach_file</i>
                         </button>
-                        <input type="file" #fileInput class="default" (change)="onFileSelected($event)" 
-                          style="display: none;">
+                        <input type="file" #fileInput  (change)="onFileSelected($event)" 
+                          style="display: none;" acccept=".pdf">
                       </div>
-                    
+                      <!-- Display file name and preview button -->
+                      <div *ngIf="selectedFile">
+                        <p>SDS file: {{ tcForm!.get('un_no')?.value??'' }}
+                         <span *ngIf="selectedFileChanged">*</span></p>
+                        <button mat-raised-button color="primary" (click)="previewFile()"  type="button">Preview</button>
+                      </div>
+                      @if (this.selectedFileLoading | async) {
+                        <div class="tbl-spinner">
+                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                          </mat-progress-spinner>
+                        </div>
+                        }
+
+                      
                     </div>
                   
               </div>

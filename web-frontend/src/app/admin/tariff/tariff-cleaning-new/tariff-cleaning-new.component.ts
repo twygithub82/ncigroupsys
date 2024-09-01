@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders  } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild,HostListener } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl,AbstractControl,Validators } from '@angular/forms';
@@ -41,7 +41,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { Apollo } from 'apollo-angular';
 import { MatDividerModule } from '@angular/material/divider';
 import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -49,7 +49,8 @@ import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/clean
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { HttpClientModule  } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-tariff-cleaning-new',
@@ -90,9 +91,16 @@ import { HttpClientModule  } from '@angular/common/http';
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
-  ]
+    HttpClientModule
+    
+  ] 
 })
+
+
+
 export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+
+  
 
   displayedColumns = [
     'select',
@@ -227,8 +235,13 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   cCategoryDS:CleaningCategoryDS;
   cMethodDS:CleaningMethodDS;
 
-  selectedFile: File | null = null;
+  selectedFileLoading: Observable<boolean>; // Declare as Observable<boolean>
+  private loadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   
+  selectedFileChanged : boolean=false;
+  selectedFile: File | null = null;
+  exitingSDSFiles:File[]|null=null;
+
   soList: StoringOrderItem[] = [];
 
   contextMenu?: MatMenuTrigger;
@@ -254,13 +267,13 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS = new CodeValuesDS(this.apollo);
     this.cCategoryDS= new CleaningCategoryDS(this.apollo);
     this.cMethodDS= new CleaningMethodDS(this.apollo);
-
-
-  
-  
+    this.selectedFileLoading = this.loadingSubject.asObservable();
+    
+    
    
   }
 
+   
   initTcForm() {
     this.tcForm = this.fb.group({
       guid: [{value:''}],
@@ -387,6 +400,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
                 }
               }
             });
+            this.QueryAllFilesInGroup();
            // this.populateSOForm(this.storingOrderItem);
           }
         });
@@ -470,51 +484,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
                   this.handleSaveSuccess(result?.data?.addTariffCleaning);
                 });
             }
-        // this.tcDS.CheckTheExistingUnNo(String(tc.un_no)).subscribe(result=>{
-        //   if(this.tcDS.totalCount==0)
-        //   {
-        //     if (tc.guid) {
-        //       this.tcDS.updateTariffCleaning(tc).subscribe(result => {
-        //         console.log(result)
-        //         this.handleSaveSuccess(result?.data?.updateTariffClean);
-        //       });
-        //     }
-        //     else
-        //     {
-        //       this.tcDS.addNewTariffCleaning(tc).subscribe(result => {
-        //           console.log(result)
-        //           this.handleSaveSuccess(result?.data?.addTariffCleaning);
-        //         });
-        //     }
-        //   }
-        //   else
-        //   {
-        //    // let allowUpdate :boolean=true;
-        //     let allowUpdate:boolean =true;
-        //     for (let i = 0; i < result.length; i++) {
-        //       if (result[i].guid != tc.guid) {
-        //         allowUpdate = false;
-        //         break;  // Exit the loop
-        //       }
-        //     }
-        //     if(allowUpdate)
-        //     {
-
-        //       if (tc.guid) {
-        //         this.tcDS.updateTariffCleaning(tc).subscribe(result => {
-        //           console.log(result)
-        //           this.handleSaveSuccess(result?.data?.updateTariffClean);
-        //         });
-        //       }
-        //     }
-        //     else
-        //     {
-        //     this.tcForm?.get('un_no')?.setErrors({ existed: true });
-        //     }
-            
-            
-        //   }
-        // });
+      
        
         
       
@@ -524,12 +494,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
   }
 
-  handleSaveSuccess(count: any) {
+ async handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       if(this.selectedFile)
       {
         let groupGuid =this.tcForm?.value['un_no'];
-        this.onSubmit(groupGuid,'tariff_cleaning');
+         await this.onSubmit(groupGuid,'tariff_cleaning');
       }
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
@@ -574,17 +544,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.classNoControl.setValue(codeValue);
   }
 
-  // @HostListener('document:keydown.enter', ['$event'])
-  // handleEnterKey(event: KeyboardEvent) {
-  //   if (this.tcForm?.valid) {
-  //     this.onTCFormSubmit();
-  //   }
-  //   else
-  //   {
-  //    event.preventDefault();
-  //   }
-  // }
-
+ 
   addOrderDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -656,38 +616,201 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     // });
   }
 
+  previewFile() {
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const result = e.target?.result;
+        if (result) {
+          const blob = new Blob([result], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          // Open the Blob URL in a new window or tab
+          window.open(url, '_blank');
+        }
+      };
+      reader.readAsArrayBuffer(this.selectedFile); // Use readAsArrayBuffer for binary data
+    }
+  }
+
+  get isFileSelectable(): boolean {
+    return !!this.tcForm!.value["un_no"]; // File can be selected if un_no is not empty
+  }
+
+
+  onUnNoBlur(): void {
+    if (this.tcForm!.get('un_no')?.valid && this.selectedFileChanged) 
+      {
+        this.QueryAllFilesInGroup();
+        
+    }
+  }
 
   onFileSelected(event: Event): void {
+    if(this.tcForm!.value["un_no"])
+    {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
       this.tcForm?.patchValue({sds_file:this.selectedFile});
       this.tcForm?.get("sds_file")?.updateValueAndValidity();
+      this.selectedFileChanged=true;
+    }
+   }
+  }
+
+
+  async downloadFiles(urls: string[]): Promise<File[]> {
+    const filePromises = urls.map(async (url) => {
+        const response = await fetch(url);
+  
+        if (!response.ok) {
+            throw new Error(`Failed to download file from ${url}. Status: ${response.status}`);
+        }
+  
+        const blob = await response.blob();
+        const fileName = url.split('/').pop() || 'downloaded-file';
+        return new File([blob], fileName, { type: blob.type });
+    });
+  
+    // Wait for all downloads to complete
+    const files = await Promise.all(filePromises);
+  
+    return files;
+  }
+
+  async DeleteExistingSDSFiles()
+  {
+    const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/DeleteFile";
+
+    if(this.exitingSDSFiles)
+    {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+      const fileNames: string[] = Array.from(this.exitingSDSFiles).map(file => file.name.replace(/\.[^/.]+$/, ""));;
+      const body = JSON.stringify(fileNames);
+      let totalCount=await firstValueFrom( this.httpClient.delete<number>(uploadURL,{body,headers}));
+      console.log('Deleted File :'+totalCount);
+    }
+      
+  }
+  
+  async QueryAllFilesInGroup()
+  {
+    //var retval:any[]=[];
+    if(!this.tcForm!.value["un_no"]) return;
+
+    let GroupGuid:string='';
+    const unNoControl = this.tcForm!.get('un_no');
+
+        if (unNoControl) {
+          const value = unNoControl.value;
+          GroupGuid=value;
+         // console.log('UN Number on blur:', value);
+          // Additional logic can be added here
+        }
+
+    const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/GetFileUrlByGroupGuid";
+    
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    this.loadingSubject.next(true); // Set loading to true
+    const body = JSON.stringify([GroupGuid]);
+     
+    let urls = await firstValueFrom( this.httpClient.post<string[]>(uploadURL,body,{headers}));
+    if(urls.length>0)
+    {
+      let files = await this.downloadFiles(urls);
+      if(files.length>0)
+      {
+        this.selectedFile =files[0];
+        this.exitingSDSFiles=files;
+      }
+    }
+    this.loadingSubject.next(false);
+    //  this.httpClient.post<any[]>(uploadURL, body,{headers}
+    //  ).subscribe({
+    //   next: (response) => {
+    //     console.log('Read File successfully!', response);
+    //     response.forEach(d=>{
+    //       var f =this.urlToFile(d,"aff0");
+    //     });
+    //     this.loadingSubject.next(false); // Set loading to true
+    //   },
+    //   error: (err) => {
+    //     console.error('Upload error:', err);
+    //     // Handle unknown errors more gracefully
+    //     if (err.error instanceof ErrorEvent) {
+    //       // Client-side error
+    //       console.error('Client-side error:', err.error.message);
+    //     } else {
+    //       // Server-side error
+    //       console.error(`Server-side error: ${err.status} - ${err.message}`);
+    //     }
+    //   },
+    // });
+    
+    //return retval;
+
+  }
+  
+  
+ async onSubmit(groupGuid :string,tableName:string) {
+    if (this.selectedFileChanged) {
+      const formData = new FormData();
+      const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/UploadFiles";
+      const jsonObject = {
+        TableName: tableName,
+        FileType: "pdf",
+        GroupGuid: groupGuid,
+        Description: "SDS file"
+      };
+      
+      //   groupGuid :String = this.tcForm?.value["un_no"];
+         this.DeleteExistingSDSFiles();
+      
+
+
+        var metadataJsonString =JSON.stringify(jsonObject);
+       formData.append('files', this.selectedFile!, this.selectedFile?.name);
+       formData.append('metadata', metadataJsonString);
+        await firstValueFrom( this.httpClient.post(uploadURL,formData));
+      // this.httpClient.post(uploadURL, formData
+      //  ).subscribe({
+      //   next: (response) => {
+      //     console.log('File successfully uploaded!', response);
+      //   },
+      //   error: (err) => {
+      //     console.error('Upload error:', err);
+      //     // Handle unknown errors more gracefully
+      //     if (err.error instanceof ErrorEvent) {
+      //       // Client-side error
+      //       console.error('Client-side error:', err.error.message);
+      //     } else {
+      //       // Server-side error
+      //       console.error(`Server-side error: ${err.status} - ${err.message}`);
+      //     }
+      //   },
+      // });
     }
   }
 
-  onSubmit(groupGuid :string,tableName:string): void {
-    if (this.selectedFile) {
-      const formData = new FormData();
-
-      const jsonObject = {
-        TableName: `${tableName}`,
-        FileType: 'pdf',
-        GroupGuid: `${groupGuid}`,
-        Description: 'SDS file'
-      };
-      
-      formData.append('file', this.selectedFile, this.selectedFile.name);
-      formData.append('metadata', JSON.stringify(jsonObject));
-      this.httpClient.post('https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/UploadFiles', formData).subscribe({
-        next: (response) => {
-          console.log('File successfully uploaded!', response);
-        },
-        error: (err) => {
-          console.error('Upload error:', err);
-        },
+  urlToFile(url: string, fileName: string): Promise<File> {
+    return fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        return new File([blob], fileName, { type: blob.type });
+      })
+      .catch(error => {
+        console.error('Error converting URL to File:', error);
+        throw error; // Re-throw the error to handle it elsewhere if needed
       });
-    }
   }
 
 }

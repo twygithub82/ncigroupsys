@@ -60,10 +60,10 @@ import { pack } from 'd3';
 
 
 @Component({
-  selector: 'app-package-depot',
+  selector: 'app-package-repair',
   standalone: true,
-  templateUrl: './package-depot.component.html',
-  styleUrl: './package-depot.component.scss',
+  templateUrl: './package-repair.component.html',
+  styleUrl: './package-repair.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -96,7 +96,7 @@ import { pack } from 'd3';
 })
 
 
-export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
+export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
     'select',
@@ -110,7 +110,7 @@ implements OnInit {
     // 'actions',
   ];
 
-  pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT'
+  pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.PACKAGE.TEXT'

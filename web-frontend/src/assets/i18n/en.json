@@ -117,6 +117,7 @@
         "PACKAGE-DEPOT": "Depot Cost",
         "PACKAGE-REPAIR": "Repair",
         "PACKAGE-BUFFER": "Buffer Cleaning",
+        "PACKAGE-RESIDUE": "Residue Disposal",
         "PACKAGE-CLEANING-NEW": "New Package Cleaning",
         "PACKAGE-CLEANING-EDIT": "Edit Package Cleaning"
       }

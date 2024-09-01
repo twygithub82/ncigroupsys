@@ -27,6 +27,9 @@ import { OutGateComponent } from './inventory/out-gate/out-gate.component';
 import { OutGateDetailsComponent } from './inventory/out-gate-details/out-gate-details.component';
 import { PackageLabourComponent } from './package/package-labour/package-labour.component';
 import { AuthGuard } from '@core/guard/auth.guard';
+import { PackageResidueComponent } from './package/package-residue/package-residue.component';
+import { PackageRepairComponent } from './package/package-repair/package-repair.component';
+import { PackageBufferComponent } from './package/package-buffer/package-buffer.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -164,6 +167,18 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "package/package-labour",
     component: PackageLabourComponent,
+  },
+  {
+    path: "package/package-residue",
+    component: PackageResidueComponent,
+  },
+  {
+    path: "package/package-repair",
+    component: PackageRepairComponent,
+  },
+  {
+    path: "package/package-buffer",
+    component: PackageBufferComponent,
   }
 ];
 

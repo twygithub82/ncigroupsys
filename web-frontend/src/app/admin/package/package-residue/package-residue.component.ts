@@ -57,13 +57,15 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
 import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { pack } from 'd3';
+import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { PackageResidueItem,PackageResidueDS } from 'app/data-sources/package-residue';
 
 
 @Component({
-  selector: 'app-package-depot',
+  selector: 'app-package-residue',
   standalone: true,
-  templateUrl: './package-depot.component.html',
-  styleUrl: './package-depot.component.scss',
+  templateUrl: './package-residue.component.html',
+  styleUrl: './package-residue.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -96,7 +98,7 @@ import { pack } from 'd3';
 })
 
 
-export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
+export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
     'select',
@@ -110,7 +112,7 @@ implements OnInit {
     // 'actions',
   ];
 
-  pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT'
+  pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-RESIDUE'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.PACKAGE.TEXT'
@@ -135,17 +137,20 @@ implements OnInit {
 
   customerCodeControl = new UntypedFormControl();
   categoryControl= new UntypedFormControl();
-  profileNameControl = new UntypedFormControl();
+  descriptionControl = new UntypedFormControl();
+  handledItemControl = new UntypedFormControl();
 
   storageCalCvList : CodeValuesItem[]=[];
+  handledItemCvList: CodeValuesItem[] = [];
   CodeValuesDS?:CodeValuesDS;
-  packDepotDS : PackageDepotDS;
+  
   ccDS: CustomerCompanyDS;
-  tariffDepotDS:TariffDepotDS;
+  tariffResidueDS:TariffResidueDS;
+  packResidueDS:PackageResidueDS;
  // clnCatDS:CleaningCategoryDS;
   custCompDS :CustomerCompanyDS;
 
-  packDepotItems:PackageDepotItem[]=[];
+  packResidueItems:PackageResidueItem[]=[];
  
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList: CustomerCompanyItem[]=[];
@@ -164,7 +169,7 @@ implements OnInit {
   searchField: string = "";
    exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
-  selection = new SelectionModel<PackageDepotItem>(true, []);
+  selection = new SelectionModel<PackageResidueItem>(true, []);
   
   id?: number;
   advanceTable?: AdvanceTable;
@@ -239,7 +244,7 @@ implements OnInit {
     PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
     VIEW:'COMMON-FORM.VIEW',
     DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
-    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
+    
     PREINSPECTION_COST:"COMMON-FORM.PREINSPECTION-COST",
     LOLO_COST:"COMMON-FORM.LOLO-COST",
     STORAGE_COST:"COMMON-FORM.STORAGE-COST",
@@ -248,6 +253,9 @@ implements OnInit {
     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
     CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
     STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
+    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
+    COST:"COMMON-FORM.COST",
+    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
     
      }
   
@@ -265,9 +273,10 @@ implements OnInit {
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.tariffDepotDS = new TariffDepotDS(this.apollo);
+    this.tariffResidueDS = new TariffResidueDS(this.apollo);
+    this.packResidueDS= new PackageResidueDS(this.apollo);
     this.custCompDS=new CustomerCompanyDS(this.apollo);
-    this.packDepotDS = new PackageDepotDS(this.apollo);
+    
     this.CodeValuesDS=new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -285,8 +294,8 @@ implements OnInit {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
       customer_code: this.customerCodeControl,
-      profile_name: this.profileNameControl
-      
+      description: this.descriptionControl,
+      handled_item_cv : this.handledItemControl
     });
   }
 
@@ -328,7 +337,7 @@ implements OnInit {
     if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent,{
       width: '700px',
-      height:'800px',
+      height:'auto',
       data: {
         action: 'update',
         langText: this.langText,
@@ -351,7 +360,7 @@ implements OnInit {
       });
   }
   
-  editCall(row: PackageDepotItem) {
+  editCall(row: PackageResidueItem) {
    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -359,12 +368,12 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    var rows :PackageResidueItem[] =[] ;
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent,{
       
       width: '700px',
-      height:'800px',
+      height:'auto',
       data: {
         action: 'update',
         langText: this.langText,
@@ -400,7 +409,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packDepotItems.length;
+    const numRows = this.packResidueItems.length;
     return numSelected === numRows;
   }
 
@@ -412,7 +421,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.packDepotItems.forEach((row) =>
+       : this.packResidueItems.forEach((row) =>
            this.selection.select(row)
          );
   }
@@ -434,24 +443,24 @@ implements OnInit {
         }
     }
 
-    if (this.profileNameControl.value) {
-      if(this.profileNameControl.value.length>0)
+    if (this.descriptionControl.value) {
+      if(this.descriptionControl.value.length>0)
       {
-        const profileNames :TariffDepotItem[] = this.profileNameControl.value;
-        const guids = profileNames.map(cc=>cc.guid);
-        where.tariff_depot_guid = { in: guids };
+        const description :TariffResidueItem[] = this.descriptionControl.value;
+        const guids = description.map(cc=>cc.description);
+        where.tariff_residue  = {description: { in: guids }};
       }
     }
 
       this.lastSearchCriteria=where;
-    this.subs.sink = this.packDepotDS.SearchPackageDepot(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.packDepotItems=data;
+    this.subs.sink = this.packResidueDS.SearchPackageResidue(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.packResidueItems=data;
               // data[0].storage_cal_cv
        this.previous_endCursor=undefined;
-       this.endCursor = this.packDepotDS.pageInfo?.endCursor;
-       this.startCursor = this.packDepotDS.pageInfo?.startCursor;
-       this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.packResidueDS.pageInfo?.endCursor;
+       this.startCursor = this.packResidueDS.pageInfo?.startCursor;
+       this.hasNextPage = this.packResidueDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.packResidueDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -531,12 +540,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.packDepotDS.SearchPackageDepot(where,order,first,after,last,before).subscribe(data => {
-        this.packDepotItems=data;
-        this.endCursor = this.packDepotDS.pageInfo?.endCursor;
-        this.startCursor = this.packDepotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.packResidueDS.SearchPackageResidue(where,order,first,after,last,before).subscribe(data => {
+        this.packResidueItems=data;
+        this.endCursor = this.packResidueDS.pageInfo?.endCursor;
+        this.startCursor = this.packResidueDS.pageInfo?.startCursor;
+        this.hasNextPage = this.packResidueDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.packResidueDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
@@ -573,15 +582,15 @@ implements OnInit {
      // this.customer_companyList1 = data
     });
 
-    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
+    this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});
 
     const queries = [
-      { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
      
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
-    this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-      this.storageCalCvList=data;
+    this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
+      this.handledItemCvList=data;
     });
 
    
@@ -637,6 +646,24 @@ implements OnInit {
       return { 'invalidCharacter': true };
     }
     return null;
+  }
+
+  displayLastUpdated(r: PackageResidueItem) {
+    var updatedt= r.update_dt;
+    if(updatedt===null)
+    {
+      updatedt= r.create_dt;
+    }
+    const date = new Date(updatedt! * 1000);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();   
+
+   // Replace the '/' with '-' to get the required format
+ 
+
+    return `${day}/${month}/${year}`;
+
   }
 }
 

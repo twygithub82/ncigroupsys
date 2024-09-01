@@ -145,17 +145,6 @@ export const ROUTES: RouteInfo[] = [
     badgeClass: "",
     submenu: [
       {
-        path: "admin/package/package-labour",
-        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-LABOUR",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: [],
-      },
-      {
         path: "admin/package/package-cleaning",
         title: "MENUITEMS.TARIFF.LIST.TARIFF-CLEANING",
         iconType: "",
@@ -176,7 +165,53 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-      }
+      },
+      {
+        path: "admin/package/package-labour",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-LABOUR",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/package/package-repair",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+    
+      {
+        path: "admin/package/package-buffer",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-BUFFER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/package/package-residue",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-RESIDUE",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+     
     ]
   },
   {

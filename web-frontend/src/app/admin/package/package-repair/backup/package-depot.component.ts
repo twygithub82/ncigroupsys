@@ -55,9 +55,7 @@ import {SearchCriteriaService} from 'app/services/search-criteria.service';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
-import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { pack } from 'd3';
-
 
 @Component({
   selector: 'app-package-depot',
@@ -99,7 +97,7 @@ import { pack } from 'd3';
 export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
-    'select',
+    //'select',
     // 'img',
      'fName',
      'lName',
@@ -135,18 +133,14 @@ implements OnInit {
 
   customerCodeControl = new UntypedFormControl();
   categoryControl= new UntypedFormControl();
-  profileNameControl = new UntypedFormControl();
 
-  storageCalCvList : CodeValuesItem[]=[];
-  CodeValuesDS?:CodeValuesDS;
   packDepotDS : PackageDepotDS;
   ccDS: CustomerCompanyDS;
-  tariffDepotDS:TariffDepotDS;
  // clnCatDS:CleaningCategoryDS;
   custCompDS :CustomerCompanyDS;
 
   packDepotItems:PackageDepotItem[]=[];
- 
+  
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList: CustomerCompanyItem[]=[];
   cleaning_categoryList?: CleaningCategoryItem[];
@@ -154,7 +148,7 @@ implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company:{code: "ASC" }};
+  lastOrderBy: any = { code: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -164,7 +158,7 @@ implements OnInit {
   searchField: string = "";
    exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
-  selection = new SelectionModel<PackageDepotItem>(true, []);
+  selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
   
   id?: number;
   advanceTable?: AdvanceTable;
@@ -229,26 +223,30 @@ implements OnInit {
     CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
     CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
     CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST :'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
+    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL:'COMMON-FORM.EMAIL',
     PHONE:'COMMON-FORM.PHONE',
-    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
-    VIEW:'COMMON-FORM.VIEW',
-    DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
-    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
-    PREINSPECTION_COST:"COMMON-FORM.PREINSPECTION-COST",
-    LOLO_COST:"COMMON-FORM.LOLO-COST",
-    STORAGE_COST:"COMMON-FORM.STORAGE-COST",
-    FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
-    STANDARD_COST:"COMMON-FORM.STANDARD-COST",
-    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
-    STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
-    
      }
   
   constructor(
@@ -265,10 +263,9 @@ implements OnInit {
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.tariffDepotDS = new TariffDepotDS(this.apollo);
+    
     this.custCompDS=new CustomerCompanyDS(this.apollo);
     this.packDepotDS = new PackageDepotDS(this.apollo);
-    this.CodeValuesDS=new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -284,9 +281,8 @@ implements OnInit {
   initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
-      customer_code: this.customerCodeControl,
-      profile_name: this.profileNameControl
-      
+      customer_code: this.customerCodeControl
+     
     });
   }
 
@@ -317,41 +313,8 @@ implements OnInit {
     event.preventDefault(); // Prevents the form submission
   }
 
-  adjustCost()
-  {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    if(this.selection.isEmpty()) return;
-    const dialogRef = this.dialog.open(FormDialogComponent,{
-      width: '700px',
-      height:'800px',
-      data: {
-        action: 'update',
-        langText: this.langText,
-        selectedItems:this.selection.selected
-      },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-        
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result>0) {
-          //if(result.selectedValue>0)
-         // {
-            this.handleSaveSuccess(result);
-            this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-          //}
-      }
-      });
-  }
   
-  editCall(row: PackageDepotItem) {
+  editCall(row: CustomerCompanyCleaningCategoryItem) {
    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -364,11 +327,11 @@ implements OnInit {
     const dialogRef = this.dialog.open(FormDialogComponent,{
       
       width: '700px',
-      height:'800px',
+      height:'auto',
       data: {
-        action: 'update',
+        action: 'new',
         langText: this.langText,
-        selectedItems:rows
+        selectedItem:row
       },
       position: {
         top: '50px'  // Adjust this value to move the dialog down from the top of the screen
@@ -382,7 +345,7 @@ implements OnInit {
             {
               this.handleSaveSuccess(result);
               //this.search();
-              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+              //this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
             }
       //}
       });
@@ -400,7 +363,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packDepotItems.length;
+    const numRows = this.custCompClnCatItems.length;
     return numSelected === numRows;
   }
 
@@ -412,7 +375,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.packDepotItems.forEach((row) =>
+       : this.custCompClnCatItems.forEach((row) =>
            this.selection.select(row)
          );
   }
@@ -430,49 +393,42 @@ implements OnInit {
         
           const customerCodes :CustomerCompanyItem[] = this.customerCodeControl.value;
           var guids = customerCodes.map(cc=>cc.guid);
-          where.customer_company_guid = { in: guids };
+          where.guid = { in: guids };
         }
     }
 
-    if (this.profileNameControl.value) {
-      if(this.profileNameControl.value.length>0)
-      {
-        const profileNames :TariffDepotItem[] = this.profileNameControl.value;
-        const guids = profileNames.map(cc=>cc.guid);
-        where.tariff_depot_guid = { in: guids };
-      }
-    }
+    // if (this.categoryControl.value) {
+    //   if(this.categoryControl.value.length>0)
+    //   {
+    //     const guids = this.categoryControl.value;
+    //     where.cleaning_category_guid = { in: guids };
+    //   }
+    // }
 
+    // if (this.pcForm!.value["min_cost"])
+    // {
+    //   const minCost :number = Number(this.pcForm!.value["min_cost"]);
+    //   where.adjusted_price ={gte:minCost}
+    // }
+
+    // if (this.pcForm!.value["max_cost"])
+    //   {
+    //     const maxCost :number = Number(this.pcForm!.value["max_cost"]);
+    //     where.adjusted_price ={ngte:maxCost}
+    //   }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.packDepotDS.SearchPackageDepot(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.packDepotItems=data;
-              // data[0].storage_cal_cv
+    this.subs.sink = this.custCompDS.search(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.customer_companyList=data;
        this.previous_endCursor=undefined;
-       this.endCursor = this.packDepotDS.pageInfo?.endCursor;
-       this.startCursor = this.packDepotDS.pageInfo?.startCursor;
-       this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.custCompDS.pageInfo?.endCursor;
+       this.startCursor = this.custCompDS.pageInfo?.startCursor;
+       this.hasNextPage = this.custCompDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.custCompDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
-       if(!this.hasPreviousPage)
-        this.previous_endCursor=undefined;
     });
   }
-  selectStorageCalculateCV_Description(valCode?:string):string
-  {
-    let valCodeObject: CodeValuesItem = new CodeValuesItem();
-    if(this.storageCalCvList.length>0)
-    {
-      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode)|| new CodeValuesItem();
-      
-      // If no match is found, description will be undefined, so you can handle it accordingly
-      
-    }
-    return valCodeObject.description || '-';
-    
-  }
-
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
@@ -531,17 +487,15 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.packDepotDS.SearchPackageDepot(where,order,first,after,last,before).subscribe(data => {
-        this.packDepotItems=data;
-        this.endCursor = this.packDepotDS.pageInfo?.endCursor;
-        this.startCursor = this.packDepotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.custCompDS.search(where,order,first,after,last,before).subscribe(data => {
+        this.customer_companyList=data;
+        this.endCursor = this.custCompDS.pageInfo?.endCursor;
+        this.startCursor = this.custCompDS.pageInfo?.startCursor;
+        this.hasNextPage = this.custCompDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.custCompDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
-        if(!this.hasPreviousPage)
-          this.previous_endCursor=undefined;
      });
     }
   
@@ -565,7 +519,22 @@ implements OnInit {
   }
 
   removeSelectedRows() {
-   
+    // const totalSelect = this.selection.selected.length;
+    // this.selection.selected.forEach((item) => {
+    //   const index: number = this.dataSource.renderedData.findIndex(
+    //     (d) => d === item
+    //   );
+    //   // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
+    //   this.exampleDatabase?.dataChange.value.splice(index, 1);
+    //   this.refreshTable();
+    //   this.selection = new SelectionModel<AdvanceTable>(true, []);
+    // });
+    // this.showNotification(
+    //   'snackbar-danger',
+    //   totalSelect + ' Record Delete Successfully...!!!',
+    //   'bottom',
+    //   'center'
+    // );
   }
   public loadData() {
 
@@ -573,18 +542,14 @@ implements OnInit {
      // this.customer_companyList1 = data
     });
 
-    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
+    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
+    //   if(this.clnCatDS.totalCount>0)
+    //   {
+    //     this.cleaning_categoryList=data;
+    //   }
 
-    const queries = [
-      { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-     
-    ];
-    this.CodeValuesDS?.getCodeValuesByType(queries);
-    this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-      this.storageCalCvList=data;
-    });
+    // });
 
-   
   
   }
   showNotification(

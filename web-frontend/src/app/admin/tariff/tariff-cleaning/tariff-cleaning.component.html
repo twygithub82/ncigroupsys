@@ -155,10 +155,10 @@
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="desc">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{langText.CARGO_DESCRIPTION |
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CARGO_DESCRIPTION |
                       translate}}</mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" >
-                        <span class="mobile-label">{{langText.CARGO_DESCRIPTION | translate}}:</span>{{row.description}}
+                        <span class="mobile-label">{{translatedLangText.CARGO_DESCRIPTION}}:</span>{{row.description}}
                       </mat-cell>
                     <!-- <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <span class="mobile-label">{{langText.CUSTOMER_CODE |
