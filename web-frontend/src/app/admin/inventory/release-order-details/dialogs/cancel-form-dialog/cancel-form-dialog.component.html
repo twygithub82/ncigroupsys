@@ -24,7 +24,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
-            <input matInput formControlName="remarks">
+            <textarea matInput formControlName="remarks"></textarea>
             @if (roSotListForm.get('remarks')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}

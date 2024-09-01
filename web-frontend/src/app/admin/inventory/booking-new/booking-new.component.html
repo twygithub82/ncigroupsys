@@ -172,6 +172,9 @@
                       [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
                       {{translatedLangText.SELECT_ALL}}
                     </mat-checkbox>
+                    <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
+                      <mat-icon>cached</mat-icon>
+                    </button>
                   </div>
                 </div>
               </form>

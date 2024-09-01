@@ -43,6 +43,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-release-order',
@@ -199,16 +200,16 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   initSearchForm() {
     this.searchForm = this.fb.group({
-      tank_no: [''],
+      ro_no: [''],
       customer_code: this.customerCodeControl,
       last_cargo: this.lastCargoControl,
-      ro_no: [''],
-      eir_no: [''],
+      ro_status: [''],
+      tank_no: [''],
       job_no: [''],
-      purpose: [''],
+      eir_no: [''],
       etr_dt_start: [''],
       etr_dt_end: [''],
-      ro_status: [''],
+      purpose: [''],
     });
   }
 
@@ -547,5 +548,43 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   getSchedulingStatusDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.roStatusCvList);
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.searchForm?.patchValue({
+      ro_no: '',
+      ro_status: '',
+      tank_no: '',
+      job_no: '',
+      eir_no: '',
+      etr_dt_start: '',
+      etr_dt_end: '',
+      purpose: '',
+    });
+    this.customerCodeControl.reset('');
+    this.lastCargoControl.reset('');
   }
 }

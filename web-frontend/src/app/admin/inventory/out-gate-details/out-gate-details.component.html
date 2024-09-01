@@ -79,7 +79,7 @@
                         <span>{{translatedLangText.STATUS}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.status_cv}}
+                        <div class="contact-detail-info font-bold">{{getROSotStatusDescription(roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.status_cv)}}
                         </div>
                       </div>
                     </div>
@@ -134,7 +134,7 @@
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <span
-                                  [class]="'font-bold'">{{ogDS.getOutGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
+                                  [class]="'font-bold'">{{ogDS.getOutGateItem(storingOrderTankItem?.out_gate)?.eir_no}}</span>
                               </div>
                             </div>
                             <div class="row">

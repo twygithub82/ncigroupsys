@@ -464,7 +464,9 @@
     "RIGHT-REMARKS": "Right Remarks",
     "TOP-REMARKS": "Top Remarks",
     "FRONT-REMARKS": "Front Remarks",
-    "BOTTOM-REMARKS": "Bottom Remarks"
+    "BOTTOM-REMARKS": "Bottom Remarks",
+    "EIR-STATUS": "EIR Status",
+    "TANK-STATUS": "Tank Status"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -41,6 +41,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 
 @Component({
   selector: 'app-in-gate',
@@ -112,12 +114,16 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
-    SEARCH: "COMMON-FORM.SEARCH",
-    EIR_NO: "COMMON-FORM.EIR-NO",
-    EIR_DATE: "COMMON-FORM.EIR-DATE"
+    SEARCH: 'COMMON-FORM.SEARCH',
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS'
   }
 
   searchForm?: UntypedFormGroup;
+  customerCodeControl = new UntypedFormControl();
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
@@ -125,8 +131,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   cvDS: CodeValuesDS;
 
   inGateList: InGateItem[] = [];
+  customer_companyList?: CustomerCompanyItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
+  tankStatusCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -160,35 +168,59 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initSearchForm();
-    this.initializeFilterCustomerCompany();
+    this.initializeValueChanges();
     this.loadData();
   }
 
   initSearchForm() {
     this.searchForm = this.fb.group({
       so_no: [''],
-      // customer_code: this.customerCodeControl,
-      // last_cargo: this.lastCargoControl,
-      eir_status: [''],
+      customer_code: this.customerCodeControl,
       eir_no: [''],
+      eir_dt_start: [''],
+      eir_dt_end: [''],
       tank_no: [''],
       job_no: [''],
       purpose: [''],
-      //eta_dt: [''],
+      tank_status_cv: [''],
+      eir_status_cv: ['']
     });
+  }
+
+  initializeValueChanges() {
+    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+          this.updateValidators(this.customerCodeControl, this.customer_companyList);
+        });
+      })
+    ).subscribe();
   }
 
   public loadData() {
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
     this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
-      this.eirStatusCvList = data;
+      this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
+    });
+    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.search();
   }
@@ -237,45 +269,65 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   search() {
-    const where: any = {
-      //eir_status_cv: { eq: "YET_TO_SURVEY" }
+    const where: any = {};
 
-    };
-
-    if (this.searchForm!.value['eir_no']) {
+    if (this.searchForm!.get('eir_no')?.value) {
       where.eir_no = { contains: this.searchForm!.value['eir_no'] };
     }
 
-    if (this.searchForm!.value['eir_status']) {
-      //where.eir_status_cv = { contains: this.searchForm!.value['eir_status'] };
+    if (this.searchForm!.get('eir_status_cv')?.value) {
+      where.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
     }
 
-    if (this.searchForm!.value['eir_dt']) {
-      where.eir_dt = { contains: this.searchForm!.value['eir_status'] };
+    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
+      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || this.searchForm!.value['so_no']) {
+    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
       const sotSearch: any = {};
 
-      // if (this.searchForm!.value['last_cargo']) {
-      //   where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-      // }
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSearch.tank_no = { contains: this.searchForm!.value['tank_no'] };
+      if (this.searchForm!.get('tank_no')?.value) {
+        sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       }
 
-      if (this.searchForm!.value['job_no']) {
-        sotSearch.job_no = { contains: this.searchForm!.value['job_no'] };
+      if (this.searchForm!.get('tank_status_cv')?.value) {
+        sotSearch.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
       }
 
-      // if (this.searchForm!.value['customer_code']) {
-      //   where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-      // }
+      if (this.searchForm!.get('purpose')?.value) {
+        const purposes = this.searchForm!.get('purpose')?.value;
+        if (purposes.includes('STORAGE')) {
+          sotSearch.purpose_storage = { eq: true }
+        }
+        if (purposes.includes('CLEANING')) {
+          sotSearch.purpose_cleaning = { eq: true }
+        }
+        if (purposes.includes('STEAM')) {
+          sotSearch.purpose_steam = { eq: true }
+        }
 
-      if (this.searchForm!.value['so_no']) {
+        const repairPurposes = [];
+        if (purposes.includes('REPAIR')) {
+          repairPurposes.push('REPAIR');
+        }
+        if (purposes.includes('OFFHIRE')) {
+          repairPurposes.push('OFFHIRE');
+        }
+        if (repairPurposes.length > 0) {
+          sotSearch.purpose_repair_cv = { in: repairPurposes };
+        }
+      }
+
+      if (this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value) {
         const soSearch: any = {};
-        soSearch.so_no = { contains: this.searchForm!.value['so_no'] };
+
+        if (this.searchForm!.get('so_no')?.value) {
+          soSearch.so_no = { contains: this.searchForm!.get('so_no')?.value };
+        }
+
+        if (this.searchForm!.get('customer_code')?.value) {
+          soSearch.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+        }
         sotSearch.storing_order = soSearch;
       }
       where.tank = sotSearch;
@@ -362,12 +414,53 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     return Utility.convertEpochToDateStr(input);
   }
 
-  initializeFilterCustomerCompany() {
-  }
-
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
+    untypedFormControl.setValidators([
+      AutocompleteSelectionValidator(validOptions)
+    ]);
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.searchForm?.patchValue({
+      so_no: '',
+      eir_no: '',
+      eir_dt_start: '',
+      eir_dt_end: '',
+      tank_no: '',
+      job_no: '',
+      purpose: '',
+      tank_status_cv: '',
+      eir_status_cv: ''
+    });
+    this.customerCodeControl.reset('');
   }
 }

@@ -216,7 +216,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   search() {
     if (this.searchField) {
-      const searchField = this.searchField;
+      const searchField = this.searchField.trim();
       const where: any = {
         and: [
           {
@@ -241,7 +241,6 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
     this.subs.sink = this.sotDS.searchStoringOrderTanksOutGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        console.log(data)
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;

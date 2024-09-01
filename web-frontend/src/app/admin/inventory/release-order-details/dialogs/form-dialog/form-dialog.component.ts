@@ -1,5 +1,5 @@
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
@@ -50,6 +50,7 @@ export interface DialogData {
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
     MatIconModule,
@@ -189,7 +190,7 @@ export class FormDialogComponent {
   }
 
   toggleRow(row: StoringOrderTankItem) {
-    if (this.checkDisable(row.guid)) return;
+    if (this.checkDisable(row)) return;
     const selectedItems = this.selectedItemsPerPage[0] || new Set<string>();
 
     // Check if the row is already selected
@@ -220,8 +221,8 @@ export class FormDialogComponent {
     return false;
   }
 
-  checkDisable(guid: string | undefined): boolean {
-    return this.sotIdList.some(sot_guid => sot_guid === guid);
+  checkDisable(sot: any | undefined): boolean {
+    return sot.isOver3Days || sot.notStorage || this.sotIdList.some(sot_guid => sot_guid === sot.guid);
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
@@ -237,31 +238,72 @@ export class FormDialogComponent {
   }
 
   performSearch(first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    // Get the current date and set the time to the start of the day (00:00:00)
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-    const startOfTodayEpoch = Math.floor(startOfToday.getTime() / 1000); // Convert to seconds
-
-    // Calculate the end of the day 3 days from now
-    const endOfNext3Days = new Date();
-    endOfNext3Days.setDate(startOfToday.getDate() + 3);
-    endOfNext3Days.setHours(23, 59, 59, 999);
-    const endOfNext3DaysEpoch = Math.floor(endOfNext3Days.getTime() / 1000);
     const where: any = {
       and: [
-        //{ guid: { nin: this.sotIdList } },
         { status_cv: { eq: "ACCEPTED" } },
-        { tank_status_cv: { neq: "RO_GENERATED" } },
-        { in_gate: { some: { delete_dt: { eq: null } } } },
+        { tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
         { storing_order: { customer_company_guid: { eq: this.data.customer_company_guid } } },
-        { scheduling_sot: { some: { scheduling: { book_type_cv: { eq: "RELEASE_ORDER" }, scheduling_dt: { lte: endOfNext3DaysEpoch } } } } }
+        { scheduling_sot: { some: { scheduling: { book_type_cv: { eq: "RELEASE_ORDER" } } } } }
       ],
     };
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.sotList = data;
+        this.sotList = this.sort(data);
+        console.log(this.sotList)
       });
+  }
+
+  sort(sotList: any[]): any[] {
+    // Step 1: Update each item in the list using the updateAvailability method
+    sotList = sotList.map(sot => this.updateAvailability(sot));
+
+    // Step 2: Sort the list by the required criteria
+    sotList.sort((a, b) => {
+      // First criterion: notStorage is false and isOver3Days is false
+      if (a.notStorage !== b.notStorage) {
+        return a.notStorage ? 1 : -1; // Sort `notStorage: false` first
+      }
+      if (a.isOver3Days !== b.isOver3Days) {
+        return a.isOver3Days ? 1 : -1; // Sort `isOver3Days: false` first
+      }
+
+      // Second criterion: scheduling.guid (assuming it's a string or number)
+      const guidA = this.schedulingSotDS.getSchedulingSotReleaseOrder(a.scheduling_sot)?.scheduling?.guid || '';
+      const guidB = this.schedulingSotDS.getSchedulingSotReleaseOrder(b.scheduling_sot)?.scheduling?.guid || '';
+      if (guidA < guidB) return -1;
+      if (guidA > guidB) return 1;
+
+      // Third criterion: scheduling_dt (assuming it's a timestamp)
+      const schedulingDtA = this.schedulingSotDS.getSchedulingSotReleaseOrder(a.scheduling_sot)?.scheduling?.scheduling_dt || 0;
+      const schedulingDtB = this.schedulingSotDS.getSchedulingSotReleaseOrder(b.scheduling_sot)?.scheduling?.scheduling_dt || 0;
+      return schedulingDtA - schedulingDtB;
+    });
+
+    return sotList;
+  }
+
+  updateAvailability(sot: any): any {
+    // 1. scheduling_dt within 3 days
+    // 2. tank status 'STORAGE'
+
+    let isOver3Days = false;
+
+    const startOfToday = new Date();
+    const endOfNext3Days = new Date();
+    endOfNext3Days.setDate(startOfToday.getDate() + 3);
+    endOfNext3Days.setHours(23, 59, 59, 999);
+    const endOfNext3DaysEpoch = Math.floor(endOfNext3Days.getTime() / 1000);
+
+    const scheduling_dt = this.schedulingSotDS.getSchedulingSotReleaseOrder(sot.scheduling_sot)?.scheduling?.scheduling_dt;
+    if (scheduling_dt !== undefined && scheduling_dt > endOfNext3DaysEpoch) {
+      isOver3Days = true;
+    }
+    const notStorage = sot.tank_status_cv !== 'STORAGE';
+
+    sot.isOver3Days = isOver3Days;
+    sot.notStorage = notStorage;
+    return sot;
   }
 }
