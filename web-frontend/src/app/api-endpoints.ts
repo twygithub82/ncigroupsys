@@ -5,6 +5,13 @@ export const api_endpoints = {
   graphQL_link: 'YOUR_GRAPHQL_ENDPOINT'
 }
 
+export const uploadEndpoints = {
+  uploadFiles: '/api/v2/AzureBlob/UploadFiles',
+  getFileUrl: '/api/v2/AzureBlob/GetFileUrl',
+  getFileUrlByGroupGuid: '/api/v2/AzureBlob/GetFileUrlByGroupGuid',
+  deleteFiles: '/api/v2/AzureBlob/DeleteFile'
+}
+
 export const jwt_mapping = {
   'name': {
     'key': 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',

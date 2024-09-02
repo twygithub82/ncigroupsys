@@ -104,18 +104,6 @@
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
-                      <mat-select multiple formControlName="purpose">
-                        @for (codeValue of purposeOptionCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="etr_picker">
                         <input matStartDate placeholder="Start date" formControlName="etr_dt_start">
@@ -131,9 +119,24 @@
                       <input matInput formControlName="eir_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
+                      <mat-select multiple formControlName="purpose">
+                        @for (codeValue of purposeOptionCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl col-lg col-md col-sm mb-2">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
+                    </button>
+                    <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
+                      <mat-icon>cached</mat-icon>
                     </button>
                   </div>
                 </div>
@@ -199,7 +202,7 @@
                   <mat-cell *matCellDef="let row"
                     [ngClass]="'justify-content-center'">
                     <span class="mobile-label">{{translatedLangText.NO_OF_TANKS}}:</span>
-                    {{row.scheduling?.length}}
+                    {{row.release_order_sot?.length}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="status">
