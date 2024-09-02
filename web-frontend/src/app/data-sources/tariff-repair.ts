@@ -134,10 +134,10 @@ export const UPDATE_TARIFF_REPAIRS_MATERIAL_COST = gql`
 
 export const UPDATE_TARIFF_REPAIRS = gql`
   mutation updateTariffRepairs($updatedTariffRepair_guids: [String!]!,$group_name_cv:String!,$subgroup_name_cv:String!,
-    $dimension:String!,$height:Float!,$height_diameter_unit_cv:String!,$width_diameter:Float!,$width_diameter_unit_cv:String!,$labour_hour:Float!,$length:Float!,
+    $dimension:String!,$height_diameter:Float!,$height_diameter_unit_cv:String!,$width_diameter:Float!,$width_diameter_unit_cv:String!,$labour_hour:Float!,$length:Float!,
     $length_unit_cv:String!,$material_cost:Float!,$part_name:String!,$alias:String!,$thickness:Float!,$thickness_unit_cv:String!,$remarks:String!) {
     updateTariffRepairs(updatedTariffRepair_guids: $updatedTariffRepair_guids,group_name_cv:$group_name_cv,
-    subgroup_name_cv:$subgroup_name_cv,dimension:$dimension,dimension_unit_cv:$dimension_unit_cv,width_diameter:$width_diameter,
+    subgroup_name_cv:$subgroup_name_cv,dimension:$dimension,height_diameter:$height_diameter,height_diameter_unit_cv:$height_diameter_unit_cv,width_diameter:$width_diameter,
     width_diameter_unit_cv:$width_diameter_unit_cv,labour_hour:$labour_hour,length:$length,length_unit_cv:$length_unit_cv,
     material_cost:$material_cost,part_name:$part_name,alias:$alias,thickness:$thickness,thickness_unit_cv:$thickness_unit_cv,remarks:$remarks)
   }
@@ -206,7 +206,7 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     }
 
     updateTariffRepairs(updatedTariffRepair_guids: any,group_name_cv:any,subgroup_name_cv:any,
-      dimension:any,height:any,height_diameter_unit_cv:any,width_diameter:any,width_diameter_unit_cv:any,labour_hour:any,
+      dimension:any,height_diameter:any,height_diameter_unit_cv:any,width_diameter:any,width_diameter_unit_cv:any,labour_hour:any,
       length:any,length_unit_cv:any,material_cost:any,part_name:any,alias:any,thickness:any,thickness_unit_cv:any,remarks:any): Observable<any> {
       return this.apollo.mutate({
         mutation: UPDATE_TARIFF_REPAIRS,
@@ -215,7 +215,7 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
           group_name_cv,
           subgroup_name_cv,
           dimension,
-          height,
+          height_diameter,
           height_diameter_unit_cv,
           width_diameter,
           width_diameter_unit_cv,
