@@ -1,6 +1,7 @@
 ﻿using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using IDMS.Models.Package;
+using IDMS.Models.Shared;
 using IDMS.Models.Tariff;
 using Microsoft.EntityFrameworkCore;
 
@@ -84,6 +85,7 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
         public DbSet<IDMS.Models.Package.package_buffer> package_buffer { get; set; }
         public DbSet<IDMS.Models.Package.package_repair> package_repair { get; set; }
         public DbSet<IDMS.Models.Shared.tank> tank { get; set; }
+        public DbSet<un_number> un_number { get; set; }
 
     }
 }

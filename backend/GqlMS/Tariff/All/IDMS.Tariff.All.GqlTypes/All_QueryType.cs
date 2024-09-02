@@ -1,10 +1,12 @@
 ﻿using HotChocolate.Data;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
+using IDMS.Models.Shared;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics.Eventing.Reader;
 
 namespace IDMS.Models.Tariff.All.GqlTypes
 {
@@ -172,5 +174,26 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         }
 
 
+        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public async Task<un_number?> QueryUNClassByNo(ApplicationTariffDBContext context, [Service] IConfiguration config, 
+            [Service] IHttpContextAccessor httpContextAccessor, string unNo)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var query = await context.un_number.Where(u => u.un_no == unNo).FirstOrDefaultAsync();
+                if (query == null)
+                    throw new GraphQLException(new Error($"UN_No not found", "NOT FOUND"));
+                else
+                    return query;
+            }
+            catch(Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
     }
 }
