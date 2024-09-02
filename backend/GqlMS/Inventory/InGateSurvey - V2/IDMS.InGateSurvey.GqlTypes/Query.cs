@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using IDMS.InGateSurvey.Model.Request;
+using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Shared;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -29,6 +31,28 @@ namespace IDMS.InGateSurvey.GqlTypes
 
         //    return record;
 
+        //}
+
+        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        //[UseProjection]
+        //[UseFiltering]
+        //[UseSorting]
+        //public IQueryable<surveyor> QuerySurveyor(ApplicationInventoryDBContext context,
+        //   [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        //{
+        //    IQueryable<surveyor> query = null;
+        //    try
+        //    {
+
+        //        //var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        query = context.surveyor.Where(i => i.delete_dt == null || i.delete_dt == 0);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+        //    }
+
+        //    return query;
         //}
     }
 
