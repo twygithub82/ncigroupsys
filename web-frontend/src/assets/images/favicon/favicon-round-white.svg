@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
   <g id="Layer_1-2" data-name="Layer 1">
-    <rect x="0" y="0" width="60" height="60" rx="30" ry="30" fill="none" stroke-width="0"/>
+    <rect x="0" y="0" width="60" height="60" rx="30" ry="30" fill="#fff" stroke-width="0"/>
     <path d="m18.89,41.43v-24.36h24.36c1.34,0,2.01,1.62,1.06,2.57l-22.86,22.86c-.95.95-2.57.28-2.57-1.06Z" fill="#e07627" stroke-width="0"/>
   </g>
 </svg>

@@ -555,6 +555,9 @@
                           class="link-button" [matTooltip]="surveyForm?.get('leftRemarks')?.value">
                           {{translatedLangText.LEFT_SIDE}}
                         </span>
+                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsLeft, $event)">
+                          <mat-icon>cached</mat-icon>
+                        </button>
                       </div>
                       <div class="image-container">
                         <img mat-card-image src="assets/images/idms/tank_frame_type/backup/left_side.png"
@@ -570,9 +573,6 @@
                           </div>
                           }
                         </div>
-                        <span class="link-button">
-                          <mat-icon>cached</mat-icon>
-                        </span>
                       </div>
                     </div>
                     <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3 align-center">
@@ -582,6 +582,9 @@
                           class="link-button" [matTooltip]="surveyForm?.get('rearRemarks')?.value">
                           {{translatedLangText.REAR_SIDE}}
                         </span>
+                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsRear, $event)">
+                          <mat-icon>cached</mat-icon>
+                        </button>
                       </div>
                       <div class="image-container">
                         <img mat-card-image src="assets/images/idms/tank_frame_type/backup/rear_side.png"
@@ -606,6 +609,9 @@
                           class="link-button" [matTooltip]="surveyForm?.get('rightRemarks')?.value">
                           {{translatedLangText.RIGHT_SIDE}}
                         </span>
+                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsRight, $event)">
+                          <mat-icon>cached</mat-icon>
+                        </button>
                       </div>
                       <div class="image-container">
                         <img mat-card-image src="assets/images/idms/tank_frame_type/backup/right_side.png"
@@ -630,7 +636,10 @@
                           class="link-button" [matTooltip]="surveyForm?.get('topRemarks')?.value">
                           {{translatedLangText.TOP_SIDE}}
                         </span>
-                        <mat-checkbox class="m-l-10" color="primary" (change)="selectMarkDmg()">
+                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsRight, $event, true)">
+                          <mat-icon>cached</mat-icon>
+                        </button>
+                        <mat-checkbox class="m-l-5" color="primary" (change)="selectMarkDmg()">
                           {{translatedLangText.MARK_DAMAGE}}
                         </mat-checkbox>
                       </div>
@@ -755,6 +764,9 @@
                           class="link-button" [matTooltip]="surveyForm?.get('frontRemarks')?.value">
                           {{translatedLangText.FRONT_SIDE}}
                         </span>
+                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsFront, $event)">
+                          <mat-icon>cached</mat-icon>
+                        </button>
                       </div>
                       <div class="image-container">
                         <img mat-card-image src="assets/images/idms/tank_frame_type/backup/front_side.png"
@@ -779,6 +791,9 @@
                           class="link-button" [matTooltip]="surveyForm?.get('bottomRemarks')?.value">
                           {{translatedLangText.BOTTOM_SIDE}}
                         </span>
+                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsBottom, $event)">
+                          <mat-icon>cached</mat-icon>
+                        </button>
                       </div>
                       <div class="image-container">
                         <img mat-card-image src="assets/images/idms/tank_frame_type/backup/bottom_side.png"

@@ -84,7 +84,6 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
     'customer_code',
     'job_no',
     'last_cargo',
-    'ro_no',
     'eir_no',
     'eir_dt',
   ];
