@@ -21,8 +21,6 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 {
     public class TariffCleaning_MutationType
     {
-        ApplicationTariffDBContext _context;
-
         #region Tariff Depot methods
 
         public async Task<int> AddTariffDepot(ApplicationTariffDBContext context, [Service] IConfiguration config,
@@ -39,7 +37,6 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffDepot.profile_name = NewTariffDepot.profile_name;
                 newTariffDepot.gate_in_cost = NewTariffDepot.gate_in_cost;
                 newTariffDepot.gate_out_cost = NewTariffDepot.gate_out_cost;
-                // newTariffClean.cost = NewTariffClean.cost;
                 newTariffDepot.preinspection_cost = NewTariffDepot.preinspection_cost;
                 newTariffDepot.lolo_cost = NewTariffDepot.lolo_cost;
                 newTariffDepot.storage_cost = NewTariffDepot.storage_cost;
@@ -65,25 +62,26 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffDepot.create_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_depot.Add(newTariffDepot);
 
-                var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
-                foreach (var customerCompany in customerCompanies)
-                {
-                    var pack_depot = new package_depot();
-                    pack_depot.guid = Util.GenerateGUID();
-                    pack_depot.tariff_depot_guid = newTariffDepot.guid;
-                    pack_depot.customer_company_guid = customerCompany.guid;
-                    pack_depot.free_storage = newTariffDepot.free_storage;
-                    pack_depot.lolo_cost = newTariffDepot.lolo_cost;
-                    pack_depot.preinspection_cost = newTariffDepot.preinspection_cost;
-                    pack_depot.storage_cost = newTariffDepot.storage_cost;
-                    pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
-                    pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
-                    pack_depot.storage_cal_cv = "TANK_IN_DATE";
-                    pack_depot.create_by = uid;
-                    pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
-                    context.package_depot.Add(pack_depot);
-                }
-                //context.cleaning_category.Add(newCleanCategory);
+                //change this to use trigger, instead of using code to perform the insert
+                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                //foreach (var customerCompany in customerCompanies)
+                //{
+                //    var pack_depot = new package_depot();
+                //    pack_depot.guid = Util.GenerateGUID();
+                //    pack_depot.tariff_depot_guid = newTariffDepot.guid;
+                //    pack_depot.customer_company_guid = customerCompany.guid;
+                //    pack_depot.free_storage = newTariffDepot.free_storage;
+                //    pack_depot.lolo_cost = newTariffDepot.lolo_cost;
+                //    pack_depot.preinspection_cost = newTariffDepot.preinspection_cost;
+                //    pack_depot.storage_cost = newTariffDepot.storage_cost;
+                //    pack_depot.gate_in_cost = newTariffDepot.gate_in_cost;
+                //    pack_depot.gate_out_cost = newTariffDepot.gate_out_cost;
+                //    pack_depot.storage_cal_cv = "TANK_IN_DATE";
+                //    pack_depot.create_by = uid;
+                //    pack_depot.create_dt = GqlUtils.GetNowEpochInSec();
+                //    context.package_depot.Add(pack_depot);
+                //}
+
                 retval = await context.SaveChangesAsync();
             }
             catch { throw; }
@@ -338,22 +336,23 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffBuffer.create_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_buffer.Add(newTariffBuffer);
 
-                var customerCompaniesGuid = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null)
-                                                                .Select(c => c.guid).ToArray();
-                foreach (var guid in customerCompaniesGuid)
-                {
-                    var pack_buffer = new package_buffer();
-                    pack_buffer.guid = Util.GenerateGUID();
-                    pack_buffer.tariff_buffer_guid = NewTariffBuffer.guid;
-                    pack_buffer.customer_company_guid = guid;
-                    pack_buffer.remarks = NewTariffBuffer.remarks;
-                    pack_buffer.cost = NewTariffBuffer.cost;
+                //change this to use trigger, instead of using code to perform the insert
+                //var customerCompaniesGuid = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null)
+                //                                                .Select(c => c.guid).ToArray();
+                //foreach (var guid in customerCompaniesGuid)
+                //{
+                //    var pack_buffer = new package_buffer();
+                //    pack_buffer.guid = Util.GenerateGUID();
+                //    pack_buffer.tariff_buffer_guid = NewTariffBuffer.guid;
+                //    pack_buffer.customer_company_guid = guid;
+                //    pack_buffer.remarks = NewTariffBuffer.remarks;
+                //    pack_buffer.cost = NewTariffBuffer.cost;
 
-                    pack_buffer.create_by = uid;
-                    pack_buffer.create_dt = GqlUtils.GetNowEpochInSec();
-                    context.package_buffer.Add(pack_buffer);
-                }
-                //context.cleaning_category.Add(newCleanCategory);
+                //    pack_buffer.create_by = uid;
+                //    pack_buffer.create_dt = GqlUtils.GetNowEpochInSec();
+                //    context.package_buffer.Add(pack_buffer);
+                //}
+
                 retval = await context.SaveChangesAsync();
             }
             catch { throw; }
@@ -385,12 +384,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 dbTariffBuffer.update_by = uid;
                 dbTariffBuffer.update_dt = GqlUtils.GetNowEpochInSec();
 
-
-
-
-
-
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)
@@ -488,21 +482,22 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffLabour.create_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_labour.Add(newTariffLabour);
 
-                var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
-                foreach (var customerCompany in customerCompanies)
-                {
-                    var pack_labour = new package_labour();
-                    pack_labour.guid = Util.GenerateGUID();
-                    pack_labour.tariff_labour_guid = newTariffLabour.guid;
-                    pack_labour.customer_company_guid = customerCompany.guid;
-                    pack_labour.cost = newTariffLabour.cost;
-                    pack_labour.remarks = newTariffLabour.remarks;
-                    pack_labour.create_by = uid;
-                    pack_labour.create_dt = GqlUtils.GetNowEpochInSec();
-                    context.package_labour.Add(pack_labour);
-                }
-                //context.cleaning_category.Add(newCleanCategory);
-                retval = context.SaveChanges();
+                //change this to use trigger, instead of using code to perform the insert
+                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                //foreach (var customerCompany in customerCompanies)
+                //{
+                //    var pack_labour = new package_labour();
+                //    pack_labour.guid = Util.GenerateGUID();
+                //    pack_labour.tariff_labour_guid = newTariffLabour.guid;
+                //    pack_labour.customer_company_guid = customerCompany.guid;
+                //    pack_labour.cost = newTariffLabour.cost;
+                //    pack_labour.remarks = newTariffLabour.remarks;
+                //    pack_labour.create_by = uid;
+                //    pack_labour.create_dt = GqlUtils.GetNowEpochInSec();
+                //    context.package_labour.Add(pack_labour);
+                //}
+
+                retval = await context.SaveChangesAsync();
             }
             catch { throw; }
 
@@ -533,12 +528,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 dbTariffLabour.update_by = uid;
                 dbTariffLabour.update_dt = GqlUtils.GetNowEpochInSec();
 
-
-
-
-
-
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)
@@ -566,7 +556,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                     delTariffLabour.update_by = uid;
                     delTariffLabour.update_dt = GqlUtils.GetNowEpochInSec();
                 }
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)
@@ -601,7 +591,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffResidue.create_dt = curDate;
                 context.tariff_residue.Add(newTariffResidue);
 
-                //change this to use trigger, instead of using code to do
+                //change this to use trigger, instead of using code to perform the insert
                 //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
                 //foreach (var customerCompany in customerCompanies)
                 //{
@@ -622,8 +612,6 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 //Task.Run(() => AddPackageResidueTask(context, uid, NewTariffResidue.guid, NewTariffResidue.remarks, NewTariffResidue.cost, curDate));
             }
             catch { throw; }
-
-            Console.WriteLine("-----Return to graqhql-----------");
             return retval;
         }
 
@@ -689,32 +677,12 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             return retval;
         }
 
+        //This function is for testing store_procedure purpose
         private async void AddPackageResidueTask(ApplicationTariffDBContext context, string user, string guid, string remarks, double? cost, long date)
         {
-            //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
-            //Console.WriteLine("Enter Task Add--------------");
-            //List<package_residue> packResidueList = new List<package_residue>();
-            //foreach (var customerCompany in customerCompanies)
-            //{
-            //    var pack_residue = new package_residue();
-            //    pack_residue.guid = Util.GenerateGUID();
-            //    pack_residue.remarks = remarks;
-            //    pack_residue.customer_company_guid = customerCompany.guid;
-            //    pack_residue.cost = cost;
-            //    pack_residue.tariff_residue_guid = guid;
-
-            //    pack_residue.create_by = user;
-            //    pack_residue.create_dt = GqlUtils.GetNowEpochInSec();
-            //    packResidueList.Add(pack_residue);
-            //}
-            //await context.AddRangeAsync(packResidueList);
-            //await context.SaveChangesAsync();
-
-            //using (var context = new ApplicationTariffDBContext(null))
-            //{
-                await context.Database.ExecuteSqlRawAsync("CALL SP_Insert_PackageResidue(@p0, @p1, @p2, @p3, @p4)", user, guid, remarks, cost, date);
-                Console.WriteLine("-------------End Task Add--------------");
-            //}
+         
+            await context.Database.ExecuteSqlRawAsync("CALL SP_Insert_PackageResidue(@p0, @p1, @p2, @p3, @p4)", user, guid, remarks, cost, date);
+            Console.WriteLine("-------------End Task Add--------------");
         }
         #endregion Tariff Labour methods
 
@@ -735,7 +703,6 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffRepair.dimension = NewTariffRepair.dimension;
                 newTariffRepair.height_diameter = NewTariffRepair.height_diameter;
                 newTariffRepair.height_diameter_unit_cv = NewTariffRepair.height_diameter_unit_cv;
-                
                 newTariffRepair.group_name_cv = NewTariffRepair.group_name_cv;
                 newTariffRepair.subgroup_name_cv = NewTariffRepair.subgroup_name_cv;
                 newTariffRepair.width_diameter = NewTariffRepair.width_diameter;
@@ -751,20 +718,21 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffRepair.create_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_repair.Add(newTariffRepair);
 
-                var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
-                foreach (var customerCompany in customerCompanies)
-                {
-                    var pack_repair = new package_repair();
-                    pack_repair.guid = Util.GenerateGUID();
-                    pack_repair.tariff_repair_guid = newTariffRepair.guid;
-                    pack_repair.customer_company_guid = customerCompany.guid;
-                    pack_repair.material_cost = newTariffRepair.material_cost;
-                    pack_repair.labour_hour = newTariffRepair.labour_hour;
-                    pack_repair.remarks = newTariffRepair.remarks;
-                    pack_repair.create_by = uid;
-                    pack_repair.create_dt = GqlUtils.GetNowEpochInSec();
-                    context.package_repair.Add(pack_repair);
-                }
+                //change this to use trigger, instead of using code to perform the insert
+                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null).ToArray();
+                //foreach (var customerCompany in customerCompanies)
+                //{
+                //    var pack_repair = new package_repair();
+                //    pack_repair.guid = Util.GenerateGUID();
+                //    pack_repair.tariff_repair_guid = newTariffRepair.guid;
+                //    pack_repair.customer_company_guid = customerCompany.guid;
+                //    pack_repair.material_cost = newTariffRepair.material_cost;
+                //    pack_repair.labour_hour = newTariffRepair.labour_hour;
+                //    pack_repair.remarks = newTariffRepair.remarks;
+                //    pack_repair.create_by = uid;
+                //    pack_repair.create_dt = GqlUtils.GetNowEpochInSec();
+                //    context.package_repair.Add(pack_repair);
+                //}
 
                 retval = await context.SaveChangesAsync();
             }
