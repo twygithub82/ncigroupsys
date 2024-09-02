@@ -279,7 +279,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
      this.action = data.action!;
     this.translateLangText();
    this.loadData();
-   this.assignEditableForUI();
+  // this.assignEditableForUI();
     if(this.selectedItems.length==1)
     {
       var rec = this.selectedItems[0];
@@ -287,6 +287,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
         group_name_cv: this.groupNameControl ,
         sub_group_name_cv:this.subGroupNameControl,
         part_name:rec.part_name,
+        alias:rec.alias,
+        dimension:rec.dimension,
         height_diameter:rec.dimension,
         height_diameter_unit_cv:this.heightDiameterUnitControl,
         width_diameter:rec.width_diameter,

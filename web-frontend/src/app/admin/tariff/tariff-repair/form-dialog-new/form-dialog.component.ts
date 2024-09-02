@@ -432,6 +432,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     
     let newRepair = new TariffRepairItem();
     newRepair.part_name=String(this.pcForm.value['part_name']);
+    newRepair.alias=String(this.pcForm.get('alias')?.value||this.pcForm.value['part_name']);
+    newRepair.dimension=String(this.pcForm.get('dimension')?.value||'');
     newRepair.material_cost= Number(this.pcForm!.value['material_cost']);
     newRepair.height_diameter= Number(this.pcForm.value['height_diameter']);
     newRepair.height_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
@@ -445,18 +447,11 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     newRepair.thickness=Number(this.pcForm.value['thickness']);
     newRepair.thickness_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['thickness_unit_cv']));
 
-    if(newRepair.dimension)
-    {
-      newRepair.dimension=`${newRepair.height_diameter}${newRepair.height_diameter_unit_cv}x${newRepair.width_diameter}${newRepair.width_diameter_unit_cv}x${newRepair.thickness}${newRepair.thickness_unit_cv}`;
-      newRepair.alias = `${newRepair.part_name} (${newRepair.dimension})`;
-      // this.pcForm!.patchValue({
-      //   part_name: newRepair.part_name
-      // });
-    }
+    
 
     let where: any = {};
-    if (newRepair.part_name) {
-      where.part_name = { eq: newRepair.part_name };
+    if (newRepair.alias) {
+      where.alias = { eq: newRepair.alias };
     }
 
     if(newRepair.length)
@@ -475,7 +470,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         }
         else
         {
-            this.pcForm?.get('part_name')?.setErrors({ existed: true });
+            this.pcForm?.get('length')?.setErrors({ existed: true });
         }
 
 
@@ -537,18 +532,18 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.pcForm.get("part_name")?.valueChanges.subscribe(
       value=>{this.updateDimensionAndAliasName()});
     this.pcForm.get("height_diameter")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
-    this.pcForm.value["height_diameter_unit_cv"]?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.get("height_diameter_unit_cv")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
     this.pcForm.get("width_diameter")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
-    this.pcForm.value["width_diameter_unit_cv"]?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.get("width_diameter_unit_cv")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
     this.pcForm.get("thickness")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
-    this.pcForm.value["thickness_unit_cv"]?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.get("thickness_unit_cv")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
   }
 
   updateDimensionAndAliasName():void
   {
-    let heightDimension=`${this.pcForm?.get("height_diameter")?.value||''}${this.RetrieveCodeValue(this.pcForm?.value["height_diameter_unit_cv"])||''}`;
-    let widthDimension=`${this.pcForm?.get("width_diameter")?.value||''}${this.RetrieveCodeValue(this.pcForm?.value["width_diameter_unit_cv"])||''}`;
-    let thicknessDimension=`${this.pcForm?.get("thickness")?.value||''}${this.RetrieveCodeValue(this.pcForm?.value["thickness_unit_cv"])||''}`;
+    let heightDimension=`${this.pcForm?.get("height_diameter")?.value||''}${this.RetrieveCodeValue(this.heightDiameterUnitControl.value)||''}`;
+    let widthDimension=`${this.pcForm?.get("width_diameter")?.value||''}${this.RetrieveCodeValue(this.widthDiameterUnitControl.value)||''}`;
+    let thicknessDimension=`${this.pcForm?.get("thickness")?.value||''}${this.RetrieveCodeValue(this.thicknessUnitControl.value)||''}`;
     let dimension = '';
     if(heightDimension!="") dimension=`${heightDimension}`;
     if(widthDimension!="") {
