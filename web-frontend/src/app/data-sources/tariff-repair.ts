@@ -14,12 +14,14 @@ import { BaseDataSource } from './base-ds';
 import { lab } from 'd3';
 export class TariffRepairItem {
   public guid?: string;
-  
+  public alias?:string;
+
   public group_name_cv?: string;
   public subgroup_name_cv?: string;
   public part_name?: string;
-  public dimension?: number;
-  public dimension_unit_cv?: string;
+  public dimension?: string;
+  public height_diameter?:number
+  public height_diameter_unit_cv?: string;
   public width_diameter?: number;
   public width_diameter_unit_cv?: string;
   public thickness?: number;
@@ -41,8 +43,10 @@ export class TariffRepairItem {
     this.group_name_cv = item.group_name_cv;
     this.subgroup_name_cv=item.subgroup_name_cv;
     this.part_name=item.part_name;
+    this.alias=item.alias;
     this.dimension=item.dimension;
-    this.dimension_unit_cv=item.dimension_unit_cv;
+    this.height_diameter=item.height_diameter;
+    this.height_diameter_unit_cv=item.height_diameter_unit_cv;
     this.width_diameter=item.width_diameter;
     this.width_diameter_unit_cv=item.width_diameter_unit_cv;
     this.thickness=item.thickness;
@@ -71,13 +75,15 @@ export const GET_TARIFF_REPAIR_QUERY = gql`
   query queryTariffRepair($where: tariff_repairFilterInput, $order:[tariff_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     tariffRepairResult : queryTariffRepair(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-       create_by
+      alias
+      create_by
       create_dt
       delete_dt
       dimension
-      dimension_unit_cv
       group_name_cv
       guid
+      height_diameter
+      height_diameter_unit_cv
       labour_hour
       length
       length_unit_cv
@@ -128,12 +134,12 @@ export const UPDATE_TARIFF_REPAIRS_MATERIAL_COST = gql`
 
 export const UPDATE_TARIFF_REPAIRS = gql`
   mutation updateTariffRepairs($updatedTariffRepair_guids: [String!]!,$group_name_cv:String!,$subgroup_name_cv:String!,
-    $dimension:Float!,$dimension_unit_cv:String!,$width_diameter:Float!,$width_diameter_unit_cv:String!,$labour_hour:Float!,$length:Float!,
-    $length_unit_cv:String!,$material_cost:Float!,$part_name:String!,$thickness:Float!,$thickness_unit_cv:String!,$remarks:String!) {
+    $dimension:String!,$height:Float!,$height_diameter_unit_cv:String!,$width_diameter:Float!,$width_diameter_unit_cv:String!,$labour_hour:Float!,$length:Float!,
+    $length_unit_cv:String!,$material_cost:Float!,$part_name:String!,$alias:String!,$thickness:Float!,$thickness_unit_cv:String!,$remarks:String!) {
     updateTariffRepairs(updatedTariffRepair_guids: $updatedTariffRepair_guids,group_name_cv:$group_name_cv,
     subgroup_name_cv:$subgroup_name_cv,dimension:$dimension,dimension_unit_cv:$dimension_unit_cv,width_diameter:$width_diameter,
     width_diameter_unit_cv:$width_diameter_unit_cv,labour_hour:$labour_hour,length:$length,length_unit_cv:$length_unit_cv,
-    material_cost:$material_cost,part_name:$part_name,thickness:$thickness,thickness_unit_cv:$thickness_unit_cv,remarks:$remarks)
+    material_cost:$material_cost,part_name:$part_name,alias:$alias,thickness:$thickness,thickness_unit_cv:$thickness_unit_cv,remarks:$remarks)
   }
 `;
 
@@ -200,8 +206,8 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     }
 
     updateTariffRepairs(updatedTariffRepair_guids: any,group_name_cv:any,subgroup_name_cv:any,
-      dimension:any,dimension_unit_cv:any,width_diameter:any,width_diameter_unit_cv:any,labour_hour:any,
-      length:any,length_unit_cv:any,material_cost:any,part_name:any,thickness:any,thickness_unit_cv:any,remarks:any): Observable<any> {
+      dimension:any,height:any,height_diameter_unit_cv:any,width_diameter:any,width_diameter_unit_cv:any,labour_hour:any,
+      length:any,length_unit_cv:any,material_cost:any,part_name:any,alias:any,thickness:any,thickness_unit_cv:any,remarks:any): Observable<any> {
       return this.apollo.mutate({
         mutation: UPDATE_TARIFF_REPAIRS,
         variables: {
@@ -209,7 +215,8 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
           group_name_cv,
           subgroup_name_cv,
           dimension,
-          dimension_unit_cv,
+          height,
+          height_diameter_unit_cv,
           width_diameter,
           width_diameter_unit_cv,
           labour_hour,
@@ -217,6 +224,7 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
           length_unit_cv,
           material_cost,
           part_name,
+          alias,
           thickness,
           thickness_unit_cv,
           remarks

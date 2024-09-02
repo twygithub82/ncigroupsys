@@ -167,6 +167,13 @@
                     <span class="mobile-label">{{this.translatedLangText.PART_NAME
                       }}:</span>{{row.part_name}}</mat-cell>
                 </ng-container>
+                <ng-container matColumnDef="dimension">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DIMENSION
+                    }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                    <span class="mobile-label">{{this.translatedLangText.DIMENSION
+                      }}:</span>{{row.dimension}}</mat-cell>
+                </ng-container>
                 <ng-container matColumnDef="lName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LENGTH
                     }}</mat-header-cell>

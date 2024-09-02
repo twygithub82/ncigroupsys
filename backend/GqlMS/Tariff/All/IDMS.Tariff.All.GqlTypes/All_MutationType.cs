@@ -731,8 +731,11 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 var newTariffRepair = new tariff_repair();
                 newTariffRepair.guid = NewTariffRepair.guid;
                 newTariffRepair.remarks = NewTariffRepair.remarks;
+                newTariffRepair.alias = NewTariffRepair.alias;
                 newTariffRepair.dimension = NewTariffRepair.dimension;
-                newTariffRepair.dimension_unit_cv = NewTariffRepair.dimension_unit_cv;
+                newTariffRepair.height_diameter = NewTariffRepair.height_diameter;
+                newTariffRepair.height_diameter_unit_cv = NewTariffRepair.height_diameter_unit_cv;
+                
                 newTariffRepair.group_name_cv = NewTariffRepair.group_name_cv;
                 newTariffRepair.subgroup_name_cv = NewTariffRepair.subgroup_name_cv;
                 newTariffRepair.width_diameter = NewTariffRepair.width_diameter;
@@ -790,7 +793,10 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
                 dbTariffRepair.remarks = UpdateTariffRepair.remarks;
                 dbTariffRepair.dimension = UpdateTariffRepair.dimension;
-                dbTariffRepair.dimension_unit_cv = UpdateTariffRepair.dimension_unit_cv;
+                dbTariffRepair.alias = UpdateTariffRepair.alias;
+                dbTariffRepair.dimension = UpdateTariffRepair.dimension;
+                dbTariffRepair.height_diameter = UpdateTariffRepair.height_diameter;
+                dbTariffRepair.height_diameter_unit_cv = UpdateTariffRepair.height_diameter_unit_cv;
                 dbTariffRepair.group_name_cv = UpdateTariffRepair.group_name_cv;
                 dbTariffRepair.subgroup_name_cv = UpdateTariffRepair.subgroup_name_cv;
                 dbTariffRepair.width_diameter = UpdateTariffRepair.width_diameter;
@@ -819,9 +825,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
 
         public async Task<int> UpdateTariffRepairs(ApplicationTariffDBContext context, [Service] IConfiguration config,
-        [Service] IHttpContextAccessor httpContextAccessor, List<string> updatedTariffRepair_guids, string group_name_cv, string subgroup_name_cv,
-            double dimension, string dimension_unit_cv, double width_diameter, string width_diameter_unit_cv, double labour_hour, double length,
-            string length_unit_cv, double material_cost, string part_name, double thickness, string thickness_unit_cv, string remarks)
+        [Service] IHttpContextAccessor httpContextAccessor, List<string> updatedTariffRepair_guids,string group_name_cv,string subgroup_name_cv,
+            string dimension,double height_diameter, string height_diameter_unit_cv,double width_diameter, string width_diameter_unit_cv,double labour_hour,double length, 
+            string length_unit_cv, double material_cost,string part_name, string alias, double thickness, string thickness_unit_cv,string remarks)
         {
             int retval = 0;
             try
@@ -840,8 +846,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 {
                     if (!string.IsNullOrEmpty(group_name_cv)) r.group_name_cv = group_name_cv;
                     if (!string.IsNullOrEmpty(subgroup_name_cv)) r.subgroup_name_cv = subgroup_name_cv;
-                    if (dimension > 0) r.dimension = dimension;
-                    if (!string.IsNullOrEmpty(dimension_unit_cv)) r.dimension_unit_cv = dimension_unit_cv;
+                    if (!string.IsNullOrEmpty(dimension)) r.dimension = dimension;
+                    if (height_diameter > 0) r.height_diameter = height_diameter;
+                    if (!string.IsNullOrEmpty(height_diameter_unit_cv)) r.height_diameter_unit_cv = height_diameter_unit_cv;
                     if (width_diameter > 0) r.width_diameter = width_diameter;
                     if (!string.IsNullOrEmpty(width_diameter_unit_cv)) r.width_diameter_unit_cv = width_diameter_unit_cv;
                     if (labour_hour > 0) r.labour_hour = labour_hour;

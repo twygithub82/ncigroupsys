@@ -18,11 +18,11 @@
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
+                  <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                     <button mat-mini-fab color="primary" (click)="refresh()" (click)="$event.stopPropagation()">
                       <mat-icon class="col-white">refresh</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                   <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
                     <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
                       [disabled]="canCancelSelectedRows()">
@@ -129,6 +129,9 @@
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>
+                    <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
+                      <mat-icon>cached</mat-icon>
+                    </button>
                   </div>
                 </div>
               </form>
@@ -136,7 +139,8 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="soList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+              <table mat-table [dataSource]="soList" matSort
+                class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef
@@ -173,15 +177,15 @@
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
+                    <span
+                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="no_of_tanks">
                   <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'justify-content-center'">
                     {{translatedLangText.NO_OF_TANKS}}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row"
-                    [ngClass]="'justify-content-center'">
+                  <mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                     <span class="mobile-label">{{translatedLangText.NO_OF_TANKS}}:</span>
                     {{row.storing_order_tank.length}}
                   </mat-cell>
@@ -191,28 +195,32 @@
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{getSoStatusDescription(row.status_cv)}}</mat-cell>
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                    {{getSoStatusDescription(row.status_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="accept_status">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
                     {{translatedLangText.ACCEPTED}} {{translatedLangText.TANKS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{soDS.getAccepetedStatusCount(row)}}</mat-cell>
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                    {{soDS.getAccepetedStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="waiting_status">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
                     {{translatedLangText.WAITING}} {{translatedLangText.TANKS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{soDS.getWaitingStatusCount(row)}}</mat-cell>
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                    {{soDS.getWaitingStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="cancel_status">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
                     {{translatedLangText.CANCELED}} {{translatedLangText.TANKS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{soDS.getCanceledStatusCount(row)}}</mat-cell>
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                    {{soDS.getCanceledStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <!-- actions -->
                 <ng-container matColumnDef="actions">

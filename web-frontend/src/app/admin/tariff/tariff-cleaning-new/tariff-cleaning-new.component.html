@@ -220,6 +220,11 @@
                         </button>
                         <input type="file" #fileInput  (change)="onFileSelected($event)" 
                           style="display: none;" acccept=".pdf">
+                          @if (tcForm?.get('file_size')?.hasError('error')) {
+                            <mat-error>
+                              {{translatedLangText.ATTACHMENT_TOO_BIG }}
+                            </mat-error>
+                            }
                       </div>
                       <!-- Display file name and preview button -->
                       <div *ngIf="selectedFile">
@@ -252,18 +257,18 @@
                 <div class="row">
                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
-                      <mat-label>{{langText.CARGO_ALERT | translate}}</mat-label>
+                      <mat-label>{{translatedLangText.CARGO_ALERT }}</mat-label>
                       <input matInput formControlName="in_gate_alert" required>
                       @if (tcForm?.get('in_gate_alert')?.hasError('required')) {
                       <mat-error>
-                        {{langText.CARGO_ALERT | translate}} {{langText.CARGO_REQUIRED | translate}}
+                        {{translatedLangText.CARGO_ALERT }} {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
                       }
                     </mat-form-field>
                   </div>
                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
-                      <mat-label>{{langText.CARGO_NOTE | translate}}</mat-label>
+                      <mat-label>{{translatedLangText.CARGO_NOTE }}</mat-label>
                       <input matInput formControlName="depot_note">
                     </mat-form-field>
                   </div>
@@ -281,14 +286,22 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
               <button mat-flat-button aria-label="Back to previous page" (click)="$event.preventDefault();"
                [routerLink]="['/admin/tariff/tariff-cleaning']"  type="button">
-               <mat-icon>chevron_left</mat-icon>{{langText.BACK | translate}}
+               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK }}
              </button> 
            </div>
 
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
 
               <button mat-flat-button color="primary" type="submit">
-                <mat-icon>save</mat-icon>{{langText.SAVE_AND_SUBMIT | translate}}
+
+                <ng-container *ngIf="!(submitForSaving | async); else loading">
+                  <mat-icon>save</mat-icon>
+                  {{ translatedLangText.SAVE_AND_SUBMIT | translate }}
+                </ng-container>
+                <ng-template #loading>
+                  <mat-icon class="spinner">autorenew</mat-icon>
+                </ng-template>
+               
               </button>
 
             </div>

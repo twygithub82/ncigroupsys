@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl, UntypedFormArray, AbstractControl } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
@@ -61,6 +61,7 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
   standalone: true,
   templateUrl: './release-order-details.component.html',
   styleUrl: './release-order-details.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -165,7 +166,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     ADD: "COMMON-FORM.ADD",
     FILTER: "COMMON-FORM.FILTER",
     BOOKING_DATE: "COMMON-FORM.BOOKING-DATE",
-    SCHEDULING_DATE: "COMMON-FORM.SCHEDULING-DATE"
+    SCHEDULING_DATE: "COMMON-FORM.SCHEDULING-DATE",
+    TANK_STATUS: "COMMON-FORM.TANK-STATUS"
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -205,7 +207,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
     this.translateLangText();
@@ -241,6 +244,10 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       haulier: [''],
       sotList: this.fb.array([])
     });
+  }
+  
+  updateROList() {
+    this.cdr.markForCheck(); // Trigger change detection manually
   }
 
   getReleaseOrderSotArray(): UntypedFormArray {
@@ -332,6 +339,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.updateEditableField(roSotForm)
       this.subscribeToReleaseJobNoChanges(roSotForm);
     });
+    this.updateROList();
   }
 
   createRoSotFormGroup(item: ReleaseOrderSotUpdateItem): UntypedFormGroup {
@@ -346,7 +354,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       actions: [item.actions || []],
       // sot prop
       tank_no: [item.storing_order_tank?.tank_no],
-      release_job_no: [this.schedulingSotDS.getSchedulingSotReleaseJobNo(item.storing_order_tank?.scheduling_sot) || item.storing_order_tank?.release_job_no],
+      release_job_no: [item.storing_order_tank?.release_job_no],
       eir_no: [this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.eir_no],
       eir_dt: [Utility.convertEpochToDateStr(this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.eir_dt)],
       tank_status_cv: [item.storing_order_tank?.tank_status_cv],

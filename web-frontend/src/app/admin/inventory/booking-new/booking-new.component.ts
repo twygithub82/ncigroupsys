@@ -49,6 +49,7 @@ import { BookingDS, BookingGO, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { SchedulingSotItem } from 'app/data-sources/scheduling-sot';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-booking-new',
@@ -147,7 +148,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     SCHEDULED: 'COMMON-FORM.SCHEDULED',
     REMARKS: 'COMMON-FORM.REMARKS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
-    EXISTED: 'COMMON-FORM.EXISTED'
+    EXISTED: 'COMMON-FORM.EXISTED',
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -709,5 +711,49 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
 
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.searchForm?.patchValue({
+      tank_no: '',
+      clean_dt_start: '',
+      clean_dt_end: '',
+      capacity: '',
+      book_type_cv: '',
+      eir_no: '',
+      job_no: '',
+      eir_dt_start: '',
+      eir_dt_end: '',
+      repair_dt_start: '',
+      repair_dt_end: '',
+      tare_weight: '',
+      tank_status_cv: '',
+      yard_cv: ''
+    });
+    this.customerCodeControl.reset('');
+    this.lastCargoControl.reset('');
   }
 }

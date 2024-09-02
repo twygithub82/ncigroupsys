@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -330,10 +330,6 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     }
   }
 
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-  }
-
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
@@ -355,8 +351,12 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     return purposes.join('; ');
   }
 
-  getPurposeOptionDescription(codeValType: string): string | undefined {
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  getROSotStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.soStatusCvList);
   }
 
   initializeFilter() {
@@ -405,12 +405,12 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
       if (og.guid) {
         this.ogDS.updateOutGate(og, ro).subscribe(result => {
           console.log(result?.data)
-          // this.handleSaveSuccess(result?.data);
+          this.handleSaveSuccess(result?.data?.updateOutGate);
         });
       } else {
         this.ogDS.addOutGate(og, ro).subscribe(result => {
           console.log(result?.data)
-          // this.handleSaveSuccess(result?.data);
+          this.handleSaveSuccess(result?.data?.addOutGate?.affected);
         });
       }
     } else {
@@ -423,10 +423,6 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
       this.translatedLangText = translations;
     });
   }
-
-  // displayLastCargoFn(tc: TariffCleaningItem): string {
-  //   return tc && tc.cargo ? `${tc.cargo}` : '';
-  // }
 
   cleanStatusColor(clean_status_cv?: string): string {
     if (clean_status_cv === 'DIRTY') {

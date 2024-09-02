@@ -129,7 +129,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
   lengthUnitControl=new UntypedFormControl();
-  dimensionUnitControl=new UntypedFormControl();
+  heightDiameterUnitControl=new UntypedFormControl();
   widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl =new UntypedFormControl();
   
@@ -253,7 +253,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     THICKNESS:"COMMON-FORM.THICKNESS",
     COST_TYPE:"COMMON-FORM.COST-TYPE",
     REBATE_TYPE:"COMMON-FORM.REBATE-TYPE",
-    JOB_TYPE:"COMMON-FORM.JOB-TYPE"
+    JOB_TYPE:"COMMON-FORM.JOB-TYPE",
+    ALIAS_NAME:"COMMON-FORM.ALIAS-NAME"
     
   };
   unit_type_control = new UntypedFormControl();
@@ -292,9 +293,11 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       action:"new",
       group_name_cv:this.groupNameControl,
       sub_group_name_cv:this.subGroupNameControl,
+      alias:({value:'',disabled:true}),
+      dimension:({value:'',disabled:true}),
       part_name:[''],
       height_diameter:[''],
-      height_diameter_unit_cv: this.dimensionUnitControl,
+      height_diameter_unit_cv: this.heightDiameterUnitControl,
       width_diameter:[''],
       width_diameter_unit_cv : this.widthDiameterUnitControl,
       thickness:[''],
@@ -366,7 +369,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       });
       // Handle value changes here
     });
-  
+    this.listenTheValueChangesForPartNameDiameter();
   
   }
   
@@ -430,8 +433,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     let newRepair = new TariffRepairItem();
     newRepair.part_name=String(this.pcForm.value['part_name']);
     newRepair.material_cost= Number(this.pcForm!.value['material_cost']);
-    newRepair.dimension= Number(this.pcForm.value['height_diameter']);
-    newRepair.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
+    newRepair.height_diameter= Number(this.pcForm.value['height_diameter']);
+    newRepair.height_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
     newRepair.width_diameter= Number(this.pcForm.value['width_diameter']);
     newRepair.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['width_diameter_unit_cv']));
     newRepair.group_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['group_name_cv']));
@@ -444,7 +447,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     if(newRepair.dimension)
     {
-      newRepair.part_name = `${newRepair.part_name} (${newRepair.dimension}${newRepair.dimension_unit_cv}x${newRepair.width_diameter}${newRepair.width_diameter_unit_cv}x${newRepair.thickness}${newRepair.thickness_unit_cv})`;
+      newRepair.dimension=`${newRepair.height_diameter}${newRepair.height_diameter_unit_cv}x${newRepair.width_diameter}${newRepair.width_diameter_unit_cv}x${newRepair.thickness}${newRepair.thickness_unit_cv}`;
+      newRepair.alias = `${newRepair.part_name} (${newRepair.dimension})`;
       // this.pcForm!.patchValue({
       //   part_name: newRepair.part_name
       // });
@@ -464,21 +468,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.subs.sink= this.trfRepairDS.SearchTariffRepair(where).subscribe(data=>{
         if(data.length==0)
         {
-         
-          // let newRepair = new TariffRepairItem();
-          // newRepair.part_name=String(this.pcForm.value['part_name']);
-          // newRepair.material_cost= Number(this.pcForm!.value['material_cost']);
-          // newRepair.dimension= Number(this.pcForm.value['height_diameter']);
-          // newRepair.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['height_diameter_unit_cv']));
-          // newRepair.width_diameter= Number(this.pcForm.value['width_diameter']);
-          // newRepair.width_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm.value['width_diameter_unit_cv']));
-          // newRepair.group_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['group_name_cv']));
-          // newRepair.subgroup_name_cv= String(this.RetrieveCodeValue(this.pcForm.value['sub_group_name_cv']));
-          // newRepair.labour_hour= Number(this.pcForm.value['labour_hour']);
-          // newRepair.length= Number(this.pcForm.value['length']);
-          // newRepair.length_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['length_unit_cv']));
-          // newRepair.thickness=Number(this.pcForm.value['thickness']);
-          // newRepair.thickness_unit_cv= String(this.RetrieveCodeValue(this.pcForm.value['thickness_unit_cv']));
           this.trfRepairDS.addNewTariffRepair(newRepair).subscribe(result=>{
 
             this.handleSaveSuccess(result?.data?.addTariffRepair);
@@ -540,6 +529,43 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  listenTheValueChangesForPartNameDiameter():void
+  {
+
+    this.pcForm.get("part_name")?.valueChanges.subscribe(
+      value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.get("height_diameter")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.value["height_diameter_unit_cv"]?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.get("width_diameter")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.value["width_diameter_unit_cv"]?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.get("thickness")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.value["thickness_unit_cv"]?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+  }
+
+  updateDimensionAndAliasName():void
+  {
+    let heightDimension=`${this.pcForm?.get("height_diameter")?.value||''}${this.RetrieveCodeValue(this.pcForm?.value["height_diameter_unit_cv"])||''}`;
+    let widthDimension=`${this.pcForm?.get("width_diameter")?.value||''}${this.RetrieveCodeValue(this.pcForm?.value["width_diameter_unit_cv"])||''}`;
+    let thicknessDimension=`${this.pcForm?.get("thickness")?.value||''}${this.RetrieveCodeValue(this.pcForm?.value["thickness_unit_cv"])||''}`;
+    let dimension = '';
+    if(heightDimension!="") dimension=`${heightDimension}`;
+    if(widthDimension!="") {
+      if(dimension!="") dimension+="x";
+      dimension +=`${widthDimension}`;}
+
+    if(thicknessDimension!="") {
+      if(dimension!="") dimension+="x";
+      dimension +=`${thicknessDimension}`;
+    }
+
+    let aliasName = `${this.pcForm?.get("part_name")?.value}`;
+    if(dimension!="") aliasName+=`(${dimension})`
+    this.pcForm.patchValue({
+      alias:aliasName,
+      dimension:dimension
+    });
   }
   
 }

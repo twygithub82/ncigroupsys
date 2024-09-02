@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -50,6 +50,7 @@ import { Moment } from 'moment';
 import * as moment from 'moment';
 import { testTypeMapping } from 'environments/environment.development';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-in-gate',
@@ -296,7 +297,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
     this.translateLangText();
@@ -929,6 +931,23 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
+  resetHighlightedCells(highlightedCells: boolean[]): void {
+    highlightedCells.fill(false);
+  }
+
+  resetTopHighlightedCells(): void {
+    this.resetHighlightedCells(this.highlightedCellsOuterTop);
+    this.resetHighlightedCells(this.highlightedCellsOuterBottom);
+    this.resetHighlightedCells(this.highlightedCellsOuterLeft);
+    this.resetHighlightedCells(this.highlightedCellsOuterRight);
+    this.resetHighlightedCells(this.highlightedCellsWalkwayTop);
+    this.resetHighlightedCells(this.highlightedCellsWalkwayMiddle);
+    this.resetHighlightedCells(this.highlightedCellsWalkwayBottom);
+    this.resetHighlightedCells(this.highlightedCellsWalkwayTopDmg);
+    this.resetHighlightedCells(this.highlightedCellsWalkwayMiddleDmg);
+    this.resetHighlightedCells(this.highlightedCellsWalkwayBottomDmg);
+  }
+
   getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
     if (event instanceof MouseEvent) {
       return event.target;
@@ -983,11 +1002,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.imagePreviews = []; // Clear previous previews
+      //this.imagePreviews = []; // Clear previous previews
       Array.from(input.files).forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
           this.imagePreviews.push(reader.result as string | ArrayBuffer);
+          this.markForCheck();
         };
         reader.readAsDataURL(file);
       });
@@ -1014,6 +1034,34 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         remarksValue.setValue(result.remarks);
+      }
+    });
+  }
+
+  resetDialog(highlightedCells: boolean[], event: Event, isTop: boolean = false) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        if (isTop) {
+          this.resetTopHighlightedCells()
+        } else {
+          this.resetHighlightedCells(highlightedCells);
+        }
+        this.markForCheck();
       }
     });
   }
@@ -1070,5 +1118,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+  uploadImages() {
+    //environment
+  }
+
+  markForCheck() {
+    this.cdr.markForCheck(); // Trigger change detection manually
   }
 }

@@ -38,7 +38,7 @@
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                       <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
                         [matAutocomplete]="customerCode">
@@ -49,38 +49,31 @@
                         </mat-option>
                         }
                       </mat-autocomplete>
-                    </mat-form-field> -->
+                    </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                      <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
-                        formControlName="last_cargo">
-                      <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
-                        @for (tc of last_cargoList; track tc) {
-                        <mat-option [value]="tc">
-                          {{tc.cargo}}
-                        </mat-option>
-                        }
-                      </mat-autocomplete>
-                      @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
-                      <mat-error>
-                        {{translatedLangText.INVALID_SELECTION}}
-                      </mat-error>
-                      }
-                    </mat-form-field> -->
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.STATUS}}</mat-label>
-                      <mat-select formControlName="so_status">
-                        @for (codeValue of soStatusCvList; track codeValue) {
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
+                      <mat-select formControlName="tank_status_cv">
+                        @for (codeValue of tankStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
                         }
                       </mat-select>
-                    </mat-form-field> -->
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.EIR_STATUS}}</mat-label>
+                      <mat-select formControlName="eir_status_cv">
+                        @for (codeValue of eirStatusCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
                   </div>
                 </div>
                 <div class="row">
@@ -97,7 +90,18 @@
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
+                      <mat-date-range-input [rangePicker]="eta_picker">
+                        <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
+                        <input matEndDate placeholder="End date" formControlName="eir_dt_end">
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
+                      <mat-date-range-picker #eta_picker></mat-date-range-picker>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
                       <mat-select multiple formControlName="purpose">
                         @for (codeValue of purposeOptionCvList; track codeValue) {
@@ -106,19 +110,14 @@
                         </mat-option>
                         }
                       </mat-select>
-                    </mat-form-field> -->
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.ETA_DATE}}</mat-label>
-                      <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker">
-                      <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #eta_picker></mat-datepicker>
-                    </mat-form-field> -->
+                    </mat-form-field>
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
+                    </button>
+                    <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
+                      <mat-icon>cached</mat-icon>
                     </button>
                   </div>
                 </div>
@@ -127,7 +126,8 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="inGateList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+              <table mat-table [dataSource]="inGateList" matSort
+                class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
                   <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -146,7 +146,8 @@
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.tank?.storing_order?.customer_company)}}
+                    <span
+                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.tank?.storing_order?.customer_company)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_no">
@@ -170,7 +171,8 @@
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{getEirStatusDescription(row.eir_status_cv)}}
+                    <span
+                      class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{getEirStatusDescription(row.eir_status_cv)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_cargo">
@@ -178,7 +180,8 @@
                     {{translatedLangText.LAST_CARGO}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.tank?.tariff_cleaning?.cargo}}
+                    <span
+                      class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.tank?.tariff_cleaning?.cargo}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="purpose">
@@ -199,7 +202,8 @@
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/inventory/in-gate-survey/survey-form', row.guid]" [style.cursor]="'pointer'" matRipple>
+                  [routerLink]="['/admin/inventory/in-gate-survey/survey-form', row.guid]" [style.cursor]="'pointer'"
+                  matRipple>
                 </mat-row>
               </table>
             </div>

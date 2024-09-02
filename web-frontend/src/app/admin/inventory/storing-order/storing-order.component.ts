@@ -42,6 +42,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-storing-order',
@@ -326,8 +327,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-      this.soStatusCvList = data;
-      this.soStatusCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+      this.soStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
@@ -389,7 +389,11 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       where.status_cv = { contains: this.searchForm!.value['so_status'] };
     }
 
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end'])) {
+    if (this.searchForm!.value['customer_code']) {
+      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+    }
+
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
       const sotSome: any = {};
 
       if (this.searchForm!.value['last_cargo']) {
@@ -407,11 +411,31 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
         sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
       }
-      where.storing_order_tank = { some: sotSome };
-    }
 
-    if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+      if (this.searchForm!.value['purpose']) {
+        const purposes = this.searchForm!.value['purpose'];
+        if (purposes.includes('STORAGE')) {
+          sotSome.purpose_storage = { eq: true }
+        }
+        if (purposes.includes('CLEANING')) {
+          sotSome.purpose_cleaning = { eq: true }
+        }
+        if (purposes.includes('STEAM')) {
+          sotSome.purpose_steam = { eq: true }
+        }
+        
+        const repairPurposes = [];
+        if (purposes.includes('REPAIR')) {
+          repairPurposes.push('REPAIR');
+        }
+        if (purposes.includes('OFFHIRE')) {
+          repairPurposes.push('OFFHIRE');
+        }
+        if (repairPurposes.length > 0) {
+          sotSome.purpose_repair_cv = { in: repairPurposes };
+        }
+      }
+      where.storing_order_tank = { some: sotSome };
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
@@ -540,5 +564,42 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   getSoStatusDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.soStatusCvList);
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.searchForm?.patchValue({
+      so_no: '',
+      so_status: '',
+      tank_no: '',
+      job_no: '',
+      purpose: '',
+      eta_dt_start: '',
+      eta_dt_end: ''
+    });
+    this.customerCodeControl.reset('');
+    this.lastCargoControl.reset('');
   }
 }

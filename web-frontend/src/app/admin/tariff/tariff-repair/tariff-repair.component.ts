@@ -101,12 +101,14 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     'select',
     // // 'img',
     'fName',
+    'dimension',
     'lName',
     'email',
     'subgroup',
     'gender',
     'bDate',
     'mobile',
+    
   ];
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-REPAIR'
@@ -266,6 +268,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
     LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
+    DIMENSION :"COMMON-FORM.DIMENSION"
   }
 
   constructor(

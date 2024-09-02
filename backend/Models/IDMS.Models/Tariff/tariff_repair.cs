@@ -16,8 +16,11 @@ namespace IDMS.Models.Tariff
         public string? subgroup_name_cv { get; set; }
        // public string? test_type_cv { get; set; }
         public string? part_name { get; set; }
-        public double? dimension { get; set; }
-        public string? dimension_unit_cv { get; set; }
+
+        public string? alias { get; set; }
+        public string? dimension { get; set; }
+        public double? height_diameter { get; set; }
+        public string? height_diameter_unit_cv { get; set; }
         public double? width_diameter { get; set; }
         public string? width_diameter_unit_cv { get; set; }
         public double? thickness { get; set; }

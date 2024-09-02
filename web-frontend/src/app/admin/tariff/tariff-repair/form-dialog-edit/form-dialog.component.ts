@@ -129,7 +129,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
   lengthUnitControl=new UntypedFormControl();
-  dimensionUnitControl=new UntypedFormControl();
+  heightDiameterUnitControl=new UntypedFormControl();
   widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl =new UntypedFormControl();
 
@@ -288,7 +288,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
         sub_group_name_cv:this.subGroupNameControl,
         part_name:rec.part_name,
         height_diameter:rec.dimension,
-        height_diameter_unit_cv:this.dimensionUnitControl,
+        height_diameter_unit_cv:this.heightDiameterUnitControl,
         width_diameter:rec.width_diameter,
         width_diameter_unit_cv: this.widthDiameterUnitControl,
         thickness:rec.width_diameter,
@@ -311,7 +311,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     this.groupNameControl.disable();
     this.subGroupNameControl.disable();
     this.widthDiameterUnitControl.disable();
-    this.dimensionUnitControl.disable();
+    this.heightDiameterUnitControl.disable();
   }
 
   createTarifRepair(): UntypedFormGroup {
@@ -322,7 +322,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
       sub_group_name_cv:this.subGroupNameControl,
       part_name:[''],
       height_diameter:[''],
-      height_diameter_unit_cv:this.dimensionUnitControl,
+      height_diameter_unit_cv:this.heightDiameterUnitControl,
       width_diameter:[''],
       width_diameter_unit_cv: this.widthDiameterUnitControl,
       thickness:[''],
@@ -422,7 +422,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
           var rec=this.selectedItems[0];
           this.lengthUnitControl.setValue(this.getUnitTypeCodeValue(rec.length_unit_cv!));
           this.widthDiameterUnitControl.setValue(this.getUnitTypeCodeValue(rec.width_diameter_unit_cv!));
-          this.dimensionUnitControl.setValue(this.getUnitTypeCodeValue(rec.dimension_unit_cv!));
+          this.heightDiameterUnitControl.setValue(this.getUnitTypeCodeValue(rec.height_diameter_unit_cv!));
           this.thicknessUnitControl.setValue(this.getUnitTypeCodeValue(rec.thickness_unit_cv!));
         }
     });
@@ -550,8 +550,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
           {
               var trfRepairItem = new TariffRepairItem(this.selectedItems[0]);
               trfRepairItem.part_name=this.pcForm!.value['part_name'];
-              trfRepairItem.dimension=this.pcForm!.value['height_diameter'];
-              trfRepairItem.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['height_diameter_unit_cv']));
+              trfRepairItem.height_diameter=this.pcForm!.value['height_diameter'];
+              trfRepairItem.height_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['height_diameter_unit_cv']));
 
               trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
               trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
@@ -590,9 +590,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     var trfRepairItem = new TariffRepairItem();
     trfRepairItem.part_name=this.pcForm!.value['part_name'];
 
-    trfRepairItem.dimension=-1;
-    if(this.pcForm!.value['height_diameter'])trfRepairItem.dimension=this.pcForm!.value['height_diameter'];
-    trfRepairItem.dimension_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['height_diameter_unit_cv']));
+    trfRepairItem.height_diameter=-1;
+    if(this.pcForm!.value['height_diameter'])trfRepairItem.height_diameter=this.pcForm!.value['height_diameter'];
+    trfRepairItem.height_diameter_unit_cv=String(this.RetrieveCodeValue(this.pcForm!.value['height_diameter_unit_cv']));
 
     trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
     trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
@@ -627,9 +627,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
 
     trfRepairItem.remarks =String(this.RetrieveCodeValue(this.pcForm!.value['remarks']));
      
-    this.trfRepairDS.updateTariffRepairs(pd_guids,trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,trfRepairItem.dimension,
-      trfRepairItem.dimension_unit_cv,trfRepairItem.width_diameter,trfRepairItem.width_diameter_unit_cv,trfRepairItem.labour_hour,
-      trfRepairItem.length,trfRepairItem.length_unit_cv,trfRepairItem.material_cost,trfRepairItem.part_name,trfRepairItem.thickness,trfRepairItem.thickness_unit_cv,
+    this.trfRepairDS.updateTariffRepairs(pd_guids,trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,trfRepairItem.dimension, trfRepairItem.height_diameter,
+      trfRepairItem.height_diameter_unit_cv,trfRepairItem.width_diameter,trfRepairItem.width_diameter_unit_cv,trfRepairItem.labour_hour,
+      trfRepairItem.length,trfRepairItem.length_unit_cv,trfRepairItem.material_cost,trfRepairItem.part_name,trfRepairItem.alias,trfRepairItem.thickness,trfRepairItem.thickness_unit_cv,
       trfRepairItem.remarks
     ).subscribe(result=>{
       this.handleSaveSuccess(result?.data?.updateTariffRepairs);
