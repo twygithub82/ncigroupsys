@@ -121,7 +121,7 @@ namespace IDMS.InGate.GqlTypes
                     updatedOutgate.vehicle_no = OutGate.vehicle_no;
                     updatedOutgate.driver_name = OutGate.driver_name;
                     updatedOutgate.remarks = OutGate.remarks;
-                    updatedOutgate.haulier = OutGate.haulier;
+                    //updatedOutgate.haulier = OutGate.haulier;
 
 
                     if (OutGate.tank == null)
@@ -134,14 +134,14 @@ namespace IDMS.InGate.GqlTypes
                     so_tank.update_by = user;
                     so_tank.update_dt = currentDate;
 
-                    if (OutGate.haulier != ReleaseOrder.haulier)
-                    {
-                        var RO = new release_order() { guid = ReleaseOrder.guid };
-                        context.Attach(RO);
-                        RO.haulier = OutGate.haulier;
-                        RO.update_by = user;
-                        RO.update_dt = currentDate;
-                    }
+                   // if (OutGate.haulier != ReleaseOrder.haulier)
+                    //{
+                    var RO = new release_order() { guid = ReleaseOrder.guid };
+                    context.Attach(RO);
+                    RO.haulier = ReleaseOrder.haulier;
+                    RO.update_by = user;
+                    RO.update_dt = currentDate;
+                    //}
 
                     retval = await context.SaveChangesAsync();
                 }
