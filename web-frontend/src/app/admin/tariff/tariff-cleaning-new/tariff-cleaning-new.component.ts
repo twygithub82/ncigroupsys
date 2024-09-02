@@ -117,6 +117,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     // 'actions'
   ];
 
+  maxFileSizeInMB: number = 20; // Maximum file size in MB
+  fileSizeError: string | null = null;
+
+
   pageTitleNew = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING-NEW'
   pageTitleEdit = 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING-EDIT'
   breadcrumsMiddleList = [
@@ -200,7 +204,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
     CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
     CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
-    
+    ATTACHMENT_TOO_BIG:"COMMON-FORM.ATTACHMENT-TOO-BIG"
   }
 
   sdsFiles: (string | ArrayBuffer)[] = [];
@@ -235,7 +239,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   cCategoryDS:CleaningCategoryDS;
   cMethodDS:CleaningMethodDS;
 
-  selectedFileLoading: Observable<boolean>; // Declare as Observable<boolean>
+  selectedFileLoading: BehaviorSubject<boolean>; // Declare as Observable<boolean>
+  submitForSaving:BehaviorSubject<boolean>;
   private loadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   
   selectedFileChanged : boolean=false;
@@ -267,8 +272,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS = new CodeValuesDS(this.apollo);
     this.cCategoryDS= new CleaningCategoryDS(this.apollo);
     this.cMethodDS= new CleaningMethodDS(this.apollo);
-    this.selectedFileLoading = this.loadingSubject.asObservable();
-    
+    this.selectedFileLoading = new BehaviorSubject<boolean>(false);
+    this.submitForSaving= new BehaviorSubject<boolean>(false);
     
    
   }
@@ -291,7 +296,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       nature:this.natureCvList,
       in_gate_alert:[''],
       depot_note:[''],
-      sds_file:[null]
+      sds_file:[null],
+      file_size:[0, [Validators.required, this.onlyFileSizeValidator]],
     });
   }
 
@@ -330,7 +336,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       nature:{ value: tc.nature_cv, disabled: false },
       in_gate_alert:tc.in_gate_alert,
       depot_note:tc.depot_note,
-      sds_file:['']
+      sds_file:[''],
+      file_size:[0, [Validators.required, this.onlyFileSizeValidator]],
     });
    
   }
@@ -453,6 +460,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       //   this.tcForm.get('sotList')?.setErrors({ required: true });
       // } else 
      // {
+        this.submitForSaving.next(true);
         let tc: TariffCleaningItem = new TariffCleaningItem(this.tariffCleaningItem);
        // tc.guid='';
         tc.cargo=this.tcForm.value['cargo_name'];
@@ -475,6 +483,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
               this.tcDS.updateTariffCleaning(tc).subscribe(result => {
                 console.log(result)
                 this.handleSaveSuccess(result?.data?.updateTariffClean);
+                this.submitForSaving.next(false);
+        
               });
             }
             else
@@ -482,11 +492,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
               this.tcDS.addNewTariffCleaning(tc).subscribe(result => {
                   console.log(result)
                   this.handleSaveSuccess(result?.data?.addTariffCleaning);
+                  this.submitForSaving.next(false);
+        
                 });
             }
       
-       
-        
+           
       
     } 
     else {
@@ -508,6 +519,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         this.router.navigate(['/admin/tariff/tariff-cleaning']);
       });
     }
+  }
+
+  onlyFileSizeValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    //const regex = /^(UN)?[0-9-]*$/;
+    if (control.value>20) {
+      return { 'error': true };
+    }
+    return null;
   }
 
   onlyNumbersDashValidator(control: AbstractControl): { [key: string]: boolean } | null {
@@ -651,9 +670,15 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
-      this.tcForm?.patchValue({sds_file:this.selectedFile});
-      this.tcForm?.get("sds_file")?.updateValueAndValidity();
-      this.selectedFileChanged=true;
+      const fileSizeInMB = this.selectedFile.size / (1024 * 1024); // Convert bytes to MB
+      this.tcForm?.patchValue({sds_file:this.selectedFile , file_size:fileSizeInMB});
+        this.tcForm?.get("sds_file")?.updateValueAndValidity();
+      if(fileSizeInMB<=this.maxFileSizeInMB)
+      {
+        
+        this.selectedFileChanged=true;
+      }
+     
     }
    }
   }
@@ -715,7 +740,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
-    this.loadingSubject.next(true); // Set loading to true
+    this.selectedFileLoading.next(true); // Set loading to true
     const body = JSON.stringify([GroupGuid]);
      
     let urls = await firstValueFrom( this.httpClient.post<string[]>(uploadURL,body,{headers}));
@@ -728,7 +753,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         this.exitingSDSFiles=files;
       }
     }
-    this.loadingSubject.next(false);
+    this.selectedFileLoading.next(false);
     //  this.httpClient.post<any[]>(uploadURL, body,{headers}
     //  ).subscribe({
     //   next: (response) => {
@@ -752,7 +777,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     // });
     
     //return retval;
-
+``
   }
   
   

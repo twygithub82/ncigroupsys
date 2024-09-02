@@ -464,7 +464,8 @@
     "RIGHT-REMARKS": "Right Remarks",
     "TOP-REMARKS": "Top Remarks",
     "FRONT-REMARKS": "Front Remarks",
-    "BOTTOM-REMARKS": "Bottom Remarks"
+    "BOTTOM-REMARKS": "Bottom Remarks",
+    "ATTACHMENT-TOO-BIG": "Attachment size > 20 MB"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
