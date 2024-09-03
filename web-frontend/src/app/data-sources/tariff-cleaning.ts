@@ -72,6 +72,12 @@ export class TariffCleaningItem extends TariffCleaningGO {
   }
 }
 
+export class ClassNoItem{
+  public guid?: string;
+  public class?: string;
+  public un_no?: string;
+}
+
 export interface TariffCleaningResult {
   items: TariffCleaningItem[];
   totalCount: number;
@@ -168,6 +174,16 @@ export const GET_TARIFF_CLEANING_QUERY = gql`
         startCursor
       }
       totalCount
+    }
+  }
+`;
+
+export const GET_CLASS_NO_BY_UN_NO_QUERY = gql`
+  query queryUNClassByNo($unNo: String!) {
+    queryUNClassByNoResult: queryUNClassByNo(unNo: $unNo) {
+    class
+    guid
+    un_no
     }
   }
 `;
@@ -332,6 +348,29 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
           return lastCargo.nodes;
         })
       );
+  }
+
+  SearchClassNoByUnNumber(unNo?:any):Observable<ClassNoItem>{
+    this.loadingSubject.next(true);
+    return this.apollo
+    .query<any>({
+      query: GET_CLASS_NO_BY_UN_NO_QUERY,
+      variables: { unNo},
+      fetchPolicy: 'no-cache' // Ensure fresh data
+    })
+    .pipe(
+      map((result) => result.data),
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of({} as ClassNoItem); // Return an empty array on error
+      }),
+      finalize(() => this.loadingSubject.next(false)),
+      map((result) => {
+        const r = result.queryUNClassByNoResult || { nodes: [], totalCount: 0 };
+        this.dataSubject.next(r.queryUNClassByNoResult);
+        return r;
+      })
+    );
   }
 
   SearchTariffCleaning(where?: any, order?: any, first?: number , after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {

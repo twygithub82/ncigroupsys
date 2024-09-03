@@ -50,6 +50,7 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
 import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { HttpClientModule } from '@angular/common/http';
+import { UniqueFieldDefinitionNamesRule } from 'graphql';
 
 
 @Component({
@@ -236,6 +237,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
   tcDS: TariffCleaningDS;
+  tcUNDS:TariffCleaningDS;
+
   cCategoryDS:CleaningCategoryDS;
   cMethodDS:CleaningMethodDS;
 
@@ -269,6 +272,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
    this.initTcForm();
     this.soDS = new StoringOrderDS(this.apollo);
     this.tcDS=new TariffCleaningDS(this.apollo);
+    this.tcUNDS=new TariffCleaningDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.cCategoryDS= new CleaningCategoryDS(this.apollo);
     this.cMethodDS= new CleaningMethodDS(this.apollo);
@@ -304,17 +308,19 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   ngOnInit() {
     //this.initializeFilter();
     this.loadData();
-    this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
+        this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
 
-      if (value && !value.startsWith(this.prefix) && value!='-') {
-        // Remove existing prefix before adding a new one
-        const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
-        if (numericPart && !isNaN(Number(numericPart))) {
-        const newValue = this.prefix + value.replace(this.prefix, '');
-        this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
-        }
-      }
-    });
+          if (value && !value.startsWith(this.prefix) && value!='-') {
+            // Remove existing prefix before adding a new one
+            const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
+            if (numericPart && !isNaN(Number(numericPart))) {
+            const newValue = this.prefix + value.replace(this.prefix, '');
+            this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
+            }
+          }
+
+        this.CheckUnNoValidity();
+      });
   }
 
   populatetcForm(tc: TariffCleaningItem):void {
@@ -339,6 +345,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       sds_file:[''],
       file_size:[0, [Validators.required, this.onlyFileSizeValidator]],
     });
+
    
   }
 
@@ -396,30 +403,47 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           if (this.tcDS.totalCount > 0) {
             this.tariffCleaningItem = data[0];
             this.populatetcForm(this.tariffCleaningItem);
-            this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
+            
+          this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
 
-              if (value && !value.startsWith(this.prefix) && value!='-') {
-                // Remove existing prefix before adding a new one
-                const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
-                if (numericPart && !isNaN(Number(numericPart))) {
-                const newValue = this.prefix + value.replace(this.prefix, '');
-                this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
-                }
+            if (value && !value.startsWith(this.prefix) && value!='-') {
+              // Remove existing prefix before adding a new one
+              const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
+              if (numericPart && !isNaN(Number(numericPart))) {
+              const newValue = this.prefix + value.replace(this.prefix, '');
+              this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
               }
-            });
-            this.QueryAllFilesInGroup();
+            }
+
+          this.CheckUnNoValidity();
+        });
+            this.CheckUnNoValidity();
+            //this.QueryAllFilesInGroupAndClassNo();
            // this.populateSOForm(this.storingOrderItem);
           }
         });
+        
       }
 
+
     }
-    // else
-    // {
-    //   this.initTcForm();
-    // }
+
+   
   }
 
+  CheckUnNoValidity()
+  {
+    const regex = /^UN\d{4}$/;
+    let isValid = regex.test(this.tcForm!.get('un_no')?.value);
+    if(isValid)
+    {
+      this.QueryAllFilesInGroupAndClassNo();
+    }
+    else
+    {
+      this.selectedFile=null;
+    }
+  }
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
     this.preventDefault(event);
     this.contextMenuPosition.x = event.clientX + 'px';
@@ -534,6 +558,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     if (control.value && !regex.test(control.value)) {
       return { 'invalidCharacter': true };
     }
+   
     return null;
   }
 
@@ -589,50 +614,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
             });
           //this.tcForm?.setValue({"class_no":result.selectedValue});
           }
-      //     //this.updateData([...this.sotList.data, result.item]);
-      //     const data = [...this.sotList.data];
-      //     const newItem = new StoringOrderTankItem({
-      //       ...result.item,
-      //       actions: ['new']
-      //     });
-  
-      //     // Add the new item to the end of the list
-      //     data.push(newItem);
-  
-      //     this.updateData(data);
+      
       }
       });
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     item: new StoringOrderTankItem(),
-    //     action: 'new',
-    //     langText: this.langText,
-    //     populateData: {
-    //       unit_typeList: this.unit_typeList,
-    //       repairCv: this.repairCv,
-    //       clean_statusCv: this.clean_statusCv,
-    //       yesnoCv: this.yesnoCv
-    //     },
-    //     index: -1,
-    //     sotExistedList: this.sotList.data
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     //this.updateData([...this.sotList.data, result.item]);
-    //     const data = [...this.sotList.data];
-    //     const newItem = new StoringOrderTankItem({
-    //       ...result.item,
-    //       actions: ['new']
-    //     });
-
-    //     // Add the new item to the end of the list
-    //     data.push(newItem);
-
-    //     this.updateData(data);
-    //   }
-    // });
+    
   }
 
   previewFile() {
@@ -657,11 +642,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
 
   onUnNoBlur(): void {
-    if (this.tcForm!.get('un_no')?.valid && this.selectedFileChanged) 
-      {
-        this.QueryAllFilesInGroup();
+    // if (this.tcForm!.get('un_no')?.valid && this.selectedFileChanged) 
+    //   {
+    //     this.QueryAllFilesInGroupAndClassNo();
         
-    }
+    // }
   }
 
   onFileSelected(event: Event): void {
@@ -719,12 +704,32 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
       
   }
-  
+
+ async QueryClassNo()
+ {
+  let UnNumber:string='';
+  const unNoControl = this.tcForm!.get('un_no');
+
+    if (unNoControl) {
+      const value = unNoControl.value;
+      UnNumber=value;
+    // console.log('UN Number on blur:', value);
+      // Additional logic can be added here
+    }
+
+    this.tcUNDS.SearchClassNoByUnNumber(UnNumber).subscribe(result=>{
+      if(result.class)
+      {
+        this.tcForm?.patchValue({
+          class_no:result.class
+        });
+      }
+    });
+
+
+ }
   async QueryAllFilesInGroup()
   {
-    //var retval:any[]=[];
-    if(!this.tcForm!.value["un_no"]) return;
-
     let GroupGuid:string='';
     const unNoControl = this.tcForm!.get('un_no');
 
@@ -754,30 +759,14 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       }
     }
     this.selectedFileLoading.next(false);
-    //  this.httpClient.post<any[]>(uploadURL, body,{headers}
-    //  ).subscribe({
-    //   next: (response) => {
-    //     console.log('Read File successfully!', response);
-    //     response.forEach(d=>{
-    //       var f =this.urlToFile(d,"aff0");
-    //     });
-    //     this.loadingSubject.next(false); // Set loading to true
-    //   },
-    //   error: (err) => {
-    //     console.error('Upload error:', err);
-    //     // Handle unknown errors more gracefully
-    //     if (err.error instanceof ErrorEvent) {
-    //       // Client-side error
-    //       console.error('Client-side error:', err.error.message);
-    //     } else {
-    //       // Server-side error
-    //       console.error(`Server-side error: ${err.status} - ${err.message}`);
-    //     }
-    //   },
-    // });
-    
-    //return retval;
-``
+  }
+  
+  async QueryAllFilesInGroupAndClassNo()
+  {
+    //var retval:any[]=[];
+    if(!this.tcForm!.value["un_no"]) return;
+      this.QueryAllFilesInGroup();
+      this.QueryClassNo();
   }
   
   

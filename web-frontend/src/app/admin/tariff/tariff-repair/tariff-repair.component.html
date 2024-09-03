@@ -215,7 +215,18 @@
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>
                 </ng-container>
-
+                <ng-container matColumnDef="dup">
+                  <mat-header-cell
+                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                    *matHeaderCellDef></mat-header-cell>
+                  <mat-cell *matCellDef="let row; let i=index;"
+                    [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    <button mat-icon-button color="primary" (click)="$event.stopPropagation()" (click)="dupCall(row)"
+                      [matTooltip]="translatedLangText.DUPLICATE" class="tbl-action-btn">
+                      <mat-icon>add_to_photos</mat-icon>
+                    </button>
+                  </mat-cell>
+                </ng-container>
                 <!-- <ng-container matColumnDef="gender">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

@@ -108,6 +108,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     'gender',
     'bDate',
     'mobile',
+    'dup',
     
   ];
 
@@ -268,7 +269,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
     LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
-    DIMENSION :"COMMON-FORM.DIMENSION"
+    DIMENSION :"COMMON-FORM.DIMENSION",
+    
   }
 
   constructor(
@@ -332,7 +334,40 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   refresh() {
     this.loadData();
   }
+  dupCall(row: TariffRepairItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    //  rows.push(row);
+    const dialogRef = this.dialog.open(FormDialogComponent_New, {
+      width: '700px',
+      height: 'auto',
+      data: {
+        action: 'duplicate',
+        langText: this.langText,
+        selectedItem: row
+      }
 
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+        this.handleSaveSuccess(result);
+        if (this.trfRepairDS.totalCount > 0) {
+           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        //this.search();
+        // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+        }
+      }
+    });
+  }
+
+  
   addCall() {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;

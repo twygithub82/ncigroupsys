@@ -42,7 +42,7 @@ export interface DialogData {
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItems:TariffRepairItem[];
+   selectedItem:TariffRepairItem;
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -113,6 +113,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   subGroupNameCvList :CodeValuesItem[] = [];
   lengthTypeCvList :CodeValuesItem[] = [];
   unitTypeCvList : CodeValuesItem[]=[];
+  
+  selectedItem? : TariffRepairItem;
 
   tnkItems?:TankItem[];
 
@@ -279,11 +281,30 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.cvDS = new CodeValuesDS(this.apollo);
     this.pcForm = this.createTariffRepair();
    
-  
+    
    
     this.action = data.action!;
     this.translateLangText();
     this.loadData()
+
+    if(data.action=="duplicate")
+    {
+      this.selectedItem = data.selectedItem;
+      this.pcForm.patchValue({
+        part_name:this.selectedItem.part_name,
+        alias:this.selectedItem.alias,
+        dimension:this.selectedItem.dimension,
+        height_diameter:this.selectedItem.height_diameter,
+        height_diameter_unit_cv:this.heightDiameterUnitControl,
+        width_diameter:this.selectedItem.width_diameter,
+        width_diameter_unit_cv: this.widthDiameterUnitControl,
+        thickness:this.selectedItem.width_diameter,
+        thickness_unit_cv:this.thicknessUnitControl,
+        length:[''],
+        labour_hour:[''],
+        material_cost:[''],
+      });
+    }
    
   }
 
@@ -308,6 +329,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       material_cost:[''],
 
     });
+
+
   }
  
   public loadData() {
@@ -320,42 +343,27 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('groupName').subscribe(data => {
       this.groupNameCvList = data;
+      if(this.selectedItem)
+      {
+          var rec=this.selectedItem;
+          this.groupNameControl.setValue(this.GetCodeValue(rec.group_name_cv!,this.groupNameCvList));
+      }
 
-
-      //  const subqueries :any[]= [];
-      //  data.map(d=>{
-        
-      //    if(d.child_code)
-      //    {
-      //      let q ={alias:d.child_code,codeValType:d.child_code};
-      //      const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-      //      if(!hasMatch)
-      //      {
-      //        subqueries.push(q);
-
-      //      }
-      //    }
-      //  });
-      //  if(subqueries.length>0)
-      //  {
-
-       
-      //  this.cvDS.getCodeValuesByType(subqueries).subscribe({
-      //  subqueries.map(s=>{
-      //     this.cvDS.connectAlias(s.alias).subscribe(data => {
-      //        let grpNm= {name:s.alias ,codeData : data};
-      //        this.subGrpNames.push(grpNm);
-      //     });
-      //  });
-      // });
-      // }
-     // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+    
     });
     this.cvDS.connectAlias('subGroupName').subscribe(data => {
       this.subGroupNameCvList = data;
     });
     this.cvDS.connectAlias('unitType').subscribe(data => {
       this.unitTypeCvList = data;
+      if(this.selectedItem)
+        { 
+          var rec=this.selectedItem;
+          //this.lengthUnitControl.setValue(this.GetCodeValue(codeValue,this.unitTypeCvList);//this.getUnitTypeCodeValue(rec.length_unit_cv!));
+          this.widthDiameterUnitControl.setValue(this.GetCodeValue(rec.width_diameter_unit_cv!,this.unitTypeCvList));
+          this.heightDiameterUnitControl.setValue(this.GetCodeValue(rec.height_diameter_unit_cv!,this.unitTypeCvList));
+          this.thicknessUnitControl.setValue(this.GetCodeValue(rec.thickness_unit_cv!,this.unitTypeCvList));
+        }
     });
  
     this.pcForm?.get('group_name_cv')?.valueChanges.subscribe(value => {
@@ -366,9 +374,15 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       this.cvDS.getCodeValuesByType(subqueries);
       this.cvDS.connectAlias(aliasName).subscribe(data => {
         this.subGroupNameCvList = data;
+        if(this.selectedItem)
+        {
+          var rec=this.selectedItem;
+          this.subGroupNameControl.setValue(this.GetCodeValue(rec.subgroup_name_cv!,this.subGroupNameCvList));
+        }
       });
       // Handle value changes here
     });
+
     this.listenTheValueChangesForPartNameDiameter();
   
   }
@@ -561,6 +575,13 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       alias:aliasName,
       dimension:dimension
     });
+  }
+
+  GetCodeValue(codeValue:String, codeValueItems:CodeValuesItem[])
+  {
+   
+    return codeValueItems.find(item => item.code_val === codeValue);
+    
   }
   
 }

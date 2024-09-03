@@ -15,8 +15,8 @@ namespace IDMS.Models.Shared
         public string? guid { get; set; }
         public string un_no { get; set; }
 
-        [Column("class")]
+        //[Column("class")]
         [GraphQLName("class")]
-        public string? un_class { get; set; }
+        public string? class_cv { get; set; }
     }
 }

@@ -224,19 +224,7 @@
                     <!-- <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <span class="mobile-label">{{langText.STATUS | translate}}:</span> {{row.un_no}}</mat-cell> -->
                   </ng-container>
-                  <!-- actions -->
-                  <!-- <ng-container matColumnDef="actions">
-                    <mat-header-cell class="pr-0" *matHeaderCellDef></mat-header-cell>
-                    <mat-cell *matCellDef="let row; let i=index;" class="pr-0 justify-content-end">
-                       @if (soDS.canCancel(row)) {
-                      <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="cancelItem(row)" [matTooltip]="translatedLangText.CANCEL"
-                        class="tbl-action-btn">
-                        <mat-icon>cancel</mat-icon>
-                      </button>
-                      } 
-                    </mat-cell>
-                  </ng-container> -->
-                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns;"
                     [routerLink]="['/admin/tariff/tariff-cleaning/edit', row.guid]" [style.cursor]="'pointer'" matRipple>
                   </mat-row>
