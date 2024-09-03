@@ -105,11 +105,102 @@
                         </mat-form-field>
                         
                       </div> 
-                      
-                      <button mat-mini-fab color="primary" (click)="search()" style="margin-top: 10px; margin-left:15px">
-                        <mat-icon>search</mat-icon>
-                      </button>
                     
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
+                          <mat-select [formControl]="groupNameControl" formControlName="group_name_cv" multiple>
+                            @for (cn of groupNameCvList; track cn) {
+                            <mat-option [value]="cn.code_val">
+                              {{cn.description}}
+                            </mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
+                          <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv" multiple>
+                            @for (cn of subGroupNameCvList; track cn) {
+                            <mat-option [value]="cn.code_val">
+                              {{cn.description}}
+                            </mat-option>
+                            }
+                          </mat-select>
+  
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.PACKAGE_MIN_COST}}</mat-label>
+                          <input matInput formControlName="min_cost" type="number">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.PACKAGE_MAX_COST }}</mat-label>
+                          <input matInput formControlName="max_cost" type="number">
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.MIN_LENGTH}}</mat-label>
+                          <input matInput formControlName="min_len" type="number">
+  
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.MAX_LENGTH }}</mat-label>
+                          <input matInput formControlName="max_len" type="number">
+  
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.MIN_LABOUR}}</mat-label>
+                          <input matInput formControlName="min_labour" type="number">
+  
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.MAX_LABOUR }}</mat-label>
+                          <input matInput formControlName="max_labour" type="number">
+  
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm5 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                          <input matInput formControlName="part_name" type="text">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
+                          <mat-select [formControl]="handledItemControl" formControlName="handled_item_cv">
+                            <mat-option>ALL</mat-option>
+                            @for (cn of handledItemCvList; track cn) {
+                            <mat-option [value]="cn.code_val">
+                              {{cn.description}}
+                            </mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 mb-1">
+                        <button mat-mini-fab color="primary" (click)="search()">
+                          <mat-icon>search</mat-icon>
+                        </button>
+                      </div>
                     </div>
                    </form> 
                 </div>

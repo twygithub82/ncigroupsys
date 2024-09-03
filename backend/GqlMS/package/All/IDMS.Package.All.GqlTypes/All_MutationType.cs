@@ -675,6 +675,65 @@ namespace IDMS.Models.Package.All.GqlTypes
             }
             return retval;
         }
+
+
+        public async Task<int> UpdatePackageRepair_MaterialCost(ApplicationPackageDBContext context, [Service] IConfiguration config,
+      [Service] IHttpContextAccessor httpContextAccessor, List<string> updatePackageRepair_guids, double material_cost_percentage)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                
+                var currentDateTime = DateTime.Now.ToEpochTime();
+                var dbPackageRepairs = context.package_repair.Where(i => updatePackageRepair_guids.Contains(i.guid)).ToArray();
+
+                foreach (var packageRepair in dbPackageRepairs)
+                {
+                    packageRepair.material_cost = Math.Round(Convert.ToDouble(packageRepair.material_cost * material_cost_percentage), 2);
+                    packageRepair.update_dt = currentDateTime;
+                    packageRepair.update_by = uid;
+                }
+                retval = await context.SaveChangesAsync();
+
+                //var dbTariffRepairs = context.tariff_repair.Where(i => i.delete_dt == null || i.delete_dt == 0).ToArray();
+                //if (!string.IsNullOrEmpty(group_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.group_name_cv == group_name_cv).ToArray();
+                //if (!string.IsNullOrEmpty(subgroup_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.subgroup_name_cv == subgroup_name_cv).ToArray();
+                //if (!string.IsNullOrEmpty(part_name)) dbTariffRepairs = dbTariffRepairs.Where(t => t.part_name == part_name).ToArray();
+
+
+                //if (dbTariffRepairs == null)
+                //{
+                //    throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
+                //}
+
+                //foreach (var r in dbTariffRepairs)
+                //{
+                //    r.material_cost = Math.Round(Convert.ToDouble(r.material_cost.Value * material_cost_percentage), 2);
+                //    r.update_by = uid;
+                //    r.update_dt = GqlUtils.GetNowEpochInSec();
+                //}
+
+
+                //retval = await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+        public double CalculateMaterialCostRoundedUp(double materialCost, double materialCostPercentage)
+        {
+            double value = materialCost * materialCostPercentage;
+            double result = Math.Ceiling(value * 100) / 100;
+            return result;
+        }
         #endregion Package Repair methods
     }
 }

@@ -137,6 +137,16 @@ implements OnInit {
   categoryControl= new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
 
+  groupNameControl = new UntypedFormControl();
+  subGroupNameControl = new UntypedFormControl();
+  handledItemControl = new UntypedFormControl();
+
+
+  groupNameCvList: CodeValuesItem[] = [];
+  subGroupNameCvList: CodeValuesItem[] = [];
+  handledItemCvList: CodeValuesItem[] = [];
+
+
   storageCalCvList : CodeValuesItem[]=[];
   CodeValuesDS?:CodeValuesDS;
   packDepotDS : PackageDepotDS;
@@ -248,6 +258,22 @@ implements OnInit {
     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
     CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
     STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
+    COST: 'COMMON-FORM.COST',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    GROUP_NAME: "COMMON-FORM.GROUP-NAME",
+    SUB_GROUP_NAME: "COMMON-FORM.SUB-GROUP-NAME",
+    PART_NAME: "COMMON-FORM.PART-NAME",
+    MIN_COST: "COMMON-FORM.MIN-COST",
+    MAX_COST: "COMMON-FORM.MAX-COST",
+    LENGTH: "COMMON-FORM.LENGTH",
+    MIN_LENGTH: "COMMON-FORM.MIN-LENGTH",
+    MAX_LENGTH: "COMMON-FORM.MAX-LENGTH",
+    MIN_LABOUR: "COMMON-FORM.MIN-LABOUR",
+    MAX_LABOUR: "COMMON-FORM.MAX-LABOUR",
+    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
+    LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
+    MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
+    DIMENSION :"COMMON-FORM.DIMENSION",
     
      }
   
