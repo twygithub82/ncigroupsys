@@ -136,6 +136,28 @@ namespace IDMS.Models.Package.All.GqlTypes
             return query;
         }
 
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<package_repair?> QueryPackageRepair(ApplicationPackageDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<package_repair> query = null;
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.package_repair.Where(i => i.delete_dt == null || i.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+
+            return query;
+        }
         //public async Task<List<EntityClass_CleaningProcedure>> QueryCleaningProcedures([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor,EntityClass_CleaningProcedure queryCleaningProcedure,string orderby="guid",int offset = 0, int limit=10)
         //{
         //    List<EntityClass_CleaningProcedure> retval = new List<EntityClass_CleaningProcedure>();

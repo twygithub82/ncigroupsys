@@ -487,7 +487,7 @@ namespace IDMS.Models.Package.All.GqlTypes
             return retval;
         }
 
-        public async Task<int> UpdatePackage(ApplicationPackageDBContext context, [Service] IConfiguration config,
+        public async Task<int> UpdatePackageBuffer(ApplicationPackageDBContext context, [Service] IConfiguration config,
           [Service] IHttpContextAccessor httpContextAccessor, package_buffer updatePackageBuffer)
         {
             int retval = 0;
@@ -561,12 +561,12 @@ namespace IDMS.Models.Package.All.GqlTypes
 
                 foreach (var delGuid in deletePackageBuffer_guids)
                 {
-                    var packageResidue = new package_residue() { guid = delGuid };
-                    context.Attach(packageResidue);
+                    var packageBuffer = new package_buffer() { guid = delGuid };
+                    context.Attach(packageBuffer);
 
-                    packageResidue.delete_dt = currentDateTime;
-                    packageResidue.update_dt = currentDateTime;
-                    packageResidue.update_by = uid;
+                    packageBuffer.delete_dt = currentDateTime;
+                    packageBuffer.update_dt = currentDateTime;
+                    packageBuffer.update_by = uid;
                 }
                 retval = await context.SaveChangesAsync();
             }
@@ -578,6 +578,104 @@ namespace IDMS.Models.Package.All.GqlTypes
             return retval;
         }
         #endregion Package Buffer methods
+
+        #region Package Repair methods
+        public async Task<int> UpdatePackageRepairs(ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, List<string> updatePackageRepair_guids, double material_cost, double labour_hour, string remarks)
+        {
+            int retval = 0;
+            try
+            {
+                
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (string repairGuid in updatePackageRepair_guids)
+                {
+                    var packageRepair = new package_repair() { guid = repairGuid };
+                    context.Attach(packageRepair);
+                    if (material_cost > -1) packageRepair.material_cost = material_cost;
+                    if (labour_hour > -1) packageRepair.labour_hour = labour_hour;
+                    if (!string.IsNullOrEmpty(remarks)) packageRepair.remarks = remarks;
+                    packageRepair.update_dt = currentDateTime;
+                    packageRepair.update_by = uid;
+                }
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public async Task<int> UpdatePackageRepair(ApplicationPackageDBContext context, [Service] IConfiguration config,
+          [Service] IHttpContextAccessor httpContextAccessor, package_repair updatePackageRepair)
+        {
+            int retval = 0;
+            try
+            {
+
+                
+
+                if (updatePackageRepair != null)
+                {
+                    var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    var currentDateTime = DateTime.Now.ToEpochTime();
+
+                    var packageRepair = new package_repair() { guid = updatePackageRepair.guid };
+                    context.Attach(packageRepair);
+
+                    packageRepair.material_cost  = updatePackageRepair.material_cost;
+                    packageRepair.labour_hour = updatePackageRepair.labour_hour;
+                    packageRepair.remarks = updatePackageRepair.remarks;
+                    packageRepair.update_by = uid;
+                    packageRepair.update_dt = currentDateTime;
+
+                    retval = await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public async Task<int> DeletePackageRepair(ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] deletePackageRepair_guids)
+        {
+            int retval = 0;
+            try
+            {
+
+               
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var delGuid in deletePackageRepair_guids)
+                {
+                    var packageRepair = new package_repair() { guid = delGuid };
+                    context.Attach(packageRepair);
+
+                    packageRepair.delete_dt = currentDateTime;
+                    packageRepair.update_dt = currentDateTime;
+                    packageRepair.update_by = uid;
+                }
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+        #endregion Package Repair methods
     }
 }
 
