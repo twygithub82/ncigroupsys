@@ -4,6 +4,7 @@ using DWMS.User.Authentication.API.Models.RefreshToken;
 using DWMS.User.Authentication.API.Utilities;
 using DWMS.User.Authentication.Service.Models;
 using DWMS.User.Authentication.Service.Services;
+using DWMS.UserAuthentication.DB;
 using DWMS.UserAuthentication.Models;
 using DWMS.UserAuthentication.Models.Authentication.Login;
 using DWMS.UserAuthentication.Models.Authentication.SignUp;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -29,17 +31,19 @@ namespace DWMS.User.Authentication.API.Controllers
         private readonly IEmailService _emailService;
         private readonly JwtTokenService _jwtTokenService;
         private readonly IRefreshTokenStore _refreshTokenStore;
+        private readonly ApplicationDbContext _dbContext;
 
         public StaffAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, 
             SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService,
-            IRefreshTokenStore refreshTokenStore)
+            IRefreshTokenStore refreshTokenStore, ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _emailService = emailService;
             _signInManager = signInManager;
-            _jwtTokenService = new JwtTokenService(_configuration);
+            _dbContext = context;
+            _jwtTokenService = new JwtTokenService(_configuration, _dbContext);
             _refreshTokenStore= refreshTokenStore;
         }
 
@@ -85,6 +89,7 @@ namespace DWMS.User.Authentication.API.Controllers
 
                 var staffRoles = await _userManager.GetRolesAsync(staff);
 
+
                 
                 //foreach (var role in staffRoles)
                 //{
@@ -95,7 +100,7 @@ namespace DWMS.User.Authentication.API.Controllers
 
                 //generate the token with the claims
                 //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
-                var jwtToken = _jwtTokenService.GetToken(2, staff.UserName, staff.Email, staffRoles); //Utilities.utils.GetToken(_configuration,authClaims);
+                var jwtToken = _jwtTokenService.GetToken(2, staff.UserName, staff.Email, staffRoles, staff.Id); //Utilities.utils.GetToken(_configuration,authClaims);
                 var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
                 _refreshTokenStore.AddToken(refreshToken);
@@ -257,7 +262,7 @@ namespace DWMS.User.Authentication.API.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var newJwtToken = _jwtTokenService.GetToken(2, user.UserName, user.Email, userRoles);
+            var newJwtToken = _jwtTokenService.GetToken(2, user.UserName, user.Email, userRoles, user.Id);
             var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
 
             var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };

@@ -1,5 +1,11 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using DWMS.UserAuthentication.DB;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,9 +18,13 @@ namespace DWMS.User.Authentication.API.Utilities
         private readonly string _issuer;
         private readonly string _audience;
         private readonly double _duration;
+        private readonly string _roleMeta;
+
         private readonly IDictionary<string, string> _refreshTokens = new Dictionary<string, string>();
 
-        public JwtTokenService(IConfiguration config)
+        private readonly ApplicationDbContext _dbContext;
+
+        public JwtTokenService(IConfiguration config, ApplicationDbContext context)
         {
             _duration = 0.5;
             _secret = config["JWT:Secret"];
@@ -22,7 +32,7 @@ namespace DWMS.User.Authentication.API.Utilities
             _audience = config["JWT:ValidAudience"];
             string sDuration = config["JWT:duration"];
             double.TryParse(sDuration, out _duration);
-            
+            _dbContext = context;
         }
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
@@ -47,11 +57,19 @@ namespace DWMS.User.Authentication.API.Utilities
 
             return principal;
         }
-        public JwtSecurityToken GetToken(int userType, string loginId, string email, IList<string> roles)
+        public JwtSecurityToken GetToken(int userType, string loginId, string email, IList<string> roles, string userId)
         {
+            var functionNames = from f in _dbContext.functions
+                                join rf in _dbContext.role_function
+                                on f.guid equals rf.function_guid
+                                where (from r in _dbContext.UserRoles where r.UserId == userId select r.RoleId).Contains(rf.role_guid)
+                                select f.name;
+
+            JArray functionNamesArray = JArray.FromObject(functionNames);
+
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
             var exp = DateTime.Now.AddHours(_duration);
-            List<Claim> authClaims = GetClaims(userType, loginId, email, roles);
+            List<Claim> authClaims = GetClaims(userType, loginId, email, roles, functionNamesArray);
             var token = new JwtSecurityToken(
                   issuer: _issuer,
                   audience: _audience,
@@ -62,30 +80,29 @@ namespace DWMS.User.Authentication.API.Utilities
             return token;
         }
 
-         List<Claim> GetClaims(int userType, string loginId, string email, IList<string> roles)
+         List<Claim> GetClaims(int userType, string loginId, string email, IList<string> roles, JArray functionsRight)
         {
             var authClaims = new List<Claim>();
 
             authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             authClaims.Add(new Claim(ClaimTypes.Name, loginId));
             authClaims.Add(new Claim(ClaimTypes.Email, email));
+            authClaims.Add(new Claim(ClaimTypes.UserData, functionsRight.ToString()));
+
             if (userType == 1)
             {
-
                 authClaims.Add(new Claim(ClaimTypes.GroupSid, "c1"));
             }
-
             else if (userType == 2)
             {
-
                 authClaims.Add(new Claim(ClaimTypes.GroupSid, "s1"));
-
             }
-
 
 
             foreach (var role in roles)
             {
+
+                //var userRole = _dbContext.UserRoles.FindAsync()
                 authClaims.Add(new Claim(ClaimTypes.Role, role));
                 if (userType == 2)
                 {
