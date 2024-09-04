@@ -218,8 +218,8 @@
                         <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button" [disabled]="!isFileSelectable">
                           <i class="material-icons">attach_file</i>
                         </button>
-                        <input type="file" #fileInput  (change)="onFileSelected($event)" 
-                          style="display: none;" acccept=".pdf">
+                        <input type="file" #fileInput class="defaultd-none"  (change)="onFileSelected($event)" 
+                          style="display: none;" accept="application/pdf">
                           @if (tcForm?.get('file_size')?.hasError('error')) {
                             <mat-error>
                               {{translatedLangText.ATTACHMENT_TOO_BIG }}
