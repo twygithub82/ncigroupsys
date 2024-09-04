@@ -830,23 +830,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                     r.update_by = uid;
                     r.update_dt = GqlUtils.GetNowEpochInSec();
                 }
-                //dbTariffRepair.remarks = UpdateTariffRepair.remarks;
-                //dbTariffRepair.dimension = UpdateTariffRepair.dimension;
-                //dbTariffRepair.dimension_unit_cv = UpdateTariffRepair.dimension_unit_cv;
-                //dbTariffRepair.group_name_cv = UpdateTariffRepair.group_name_cv;
-                //dbTariffRepair.subgroup_name_cv = UpdateTariffRepair.subgroup_name_cv;
-                //dbTariffRepair.width_diameter = UpdateTariffRepair.width_diameter;
-                //dbTariffRepair.width_diameter_unit_cv = UpdateTariffRepair.width_diameter_unit_cv;
-                //dbTariffRepair.labour_hour = UpdateTariffRepair.labour_hour;
-                //dbTariffRepair.length = UpdateTariffRepair.length;
-                //dbTariffRepair.length_unit_cv = UpdateTariffRepair.length_unit_cv;
-                //dbTariffRepair.material_cost = UpdateTariffRepair.material_cost;
-                //dbTariffRepair.part_name = UpdateTariffRepair.part_name;
-                //dbTariffRepair.thickness = UpdateTariffRepair.thickness;
-                //dbTariffRepair.thickness_unit_cv = UpdateTariffRepair.thickness_unit_cv;
-
-                //dbTariffRepair.update_by = uid;
-                //dbTariffRepair.update_dt = GqlUtils.GetNowEpochInSec();
+              
 
 
                 retval = await context.SaveChangesAsync();

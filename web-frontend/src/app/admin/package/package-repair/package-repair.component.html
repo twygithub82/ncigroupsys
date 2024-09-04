@@ -59,8 +59,13 @@
                   <mat-panel-description>
                     
                     <div class="m-l-" [matTooltip]="translatedLangText.EDIT">
-                      <button mat-mini-fab color="primary" (click)="adjustCost()"  (click)="$event.stopPropagation()">
+                      <button mat-mini-fab color="primary" (click)="editCallSelection()"  (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">edit</mat-icon>
+                      </button>
+                    </div>
+                    <div class="m-l-10" [matTooltip]="translatedLangText.EDIT +' '+ translatedLangText.MATERIAL_COST">
+                      <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                        <mat-icon class="col-white">brush</mat-icon>
                       </button>
                     </div>
                     <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
@@ -88,7 +93,7 @@
                         </mat-form-field>
                         
                       </div>
-                      <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
+                      <!-- <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
                             <mat-select [formControl]="profileNameControl" formControlName="profile_name" multiple>
@@ -104,7 +109,7 @@
                            
                         </mat-form-field>
                         
-                      </div> 
+                      </div>  -->
                     
                     </div>
                     <div class="row">
@@ -208,7 +213,7 @@
             </mat-accordion>
             <div class="body overflow-auto">
               <div class="responsive_table">
-                <table mat-table [dataSource]="packDepotItems" matSort class="mat-cell advance-table">
+                <table mat-table [dataSource]="packRepairItems" matSort class="mat-cell advance-table">
                   <!-- Checkbox Column -->
                   <ng-container matColumnDef="select">
                     <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
@@ -223,18 +228,161 @@
                       </mat-checkbox>
                     </mat-cell>
                   </ng-container>
-                  <!-- ID Column -->
-                  <!-- <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
-                    <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
+                  <ng-container matColumnDef="custCode">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
+                      }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
+                        }}:</span>{{row.customer_company.code}}</mat-cell>
                   </ng-container>
-                  <ng-container matColumnDef="img">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef>{{PROCEDURE_NAME | translate}}</mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row"><span
-                        class="mobile-label">{{PROCEDURE_NAME | translate}}:</span>
-                      <img [src]="row.img" />
+                  <ng-container matColumnDef="custCompanyName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+                      }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+                        }}:</span>{{row.customer_company.name}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="fName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PART_NAME
+                      }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.PART_NAME
+                        }}:</span>{{row.tariff_repair.part_name}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="dimension">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DIMENSION
+                      }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.DIMENSION
+                        }}:</span>{{row.tariff_repair.dimension}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="lName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LENGTH
+                      }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.LENGTH }}:</span>{{row.tariff_repair.length}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="email">
+                    <mat-header-cell *matHeaderCellDef
+                      mat-sort-header>{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span>
+                      {{this.displayGroupNameCodeValue_Description(row.tariff_repair.group_name_cv)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="subgroup">
+                    <mat-header-cell *matHeaderCellDef
+                      mat-sort-header>{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
+                      {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair.subgroup_name_cv)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="gender">
+                    <mat-header-cell *matHeaderCellDef
+                      mat-sort-header>{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span>
+                      {{row.labour_hour}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="bDate">
+                    <mat-header-cell *matHeaderCellDef
+                      mat-sort-header>{{this.translatedLangText.MATERIAL_COST}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST}}:</span>
+                      {{row.material_cost.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="mobile">
+                    <mat-header-cell *matHeaderCellDef
+                      mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
+                      {{this.displayLastUpdated(row)}}</mat-cell>
+                  </ng-container>
+                  <!-- <ng-container matColumnDef="dup">
+                    <mat-header-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let row; let i=index;"
+                      [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      <button mat-icon-button color="primary" (click)="$event.stopPropagation()" 
+                        [matTooltip]="translatedLangText.DUPLICATE" class="tbl-action-btn">
+                        <mat-icon>add_to_photos</mat-icon>
+                      </button>
                     </mat-cell>
                   </ng-container> -->
+                  <!-- <ng-container matColumnDef="gender">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                        <span class="mobile-label">{{this.translatedLangText.PACKAGE_CLEANING_ADJUSTED_COST }}:</span> {{row.adjusted_price}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="bDate">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{CLEANING_BAY | translate}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                        <span class="mobile-label">{{CLEANING_BAY | translate}}:</span> {{row.bDate | date: 'MM/dd/yyyy' }}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="mobile">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{CLEANING_LAST_UPDATED_DT | translate}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                        <span class="mobile-label">{{CLEANING_LAST_UPDATED_DT | translate}}:</span> {{row.mobile}}</mat-cell>
+                    </ng-container> -->
+                  <!-- actions -->
+                  <ng-container matColumnDef="actions">
+                    <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
+                    <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
+                      <button mat-icon-button color="accent" (click)="$event.stopPropagation()" 
+                        class="tbl-action-btn">
+                        <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+                      </button>
+                      <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
+                        class="tbl-action-btn">
+                        <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+                      </button>
+                    </mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                    [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+              <!-- Loading spinner -->
+              @if (!(packRepairDS.loading$ | async) && !packRepairItems.length) {
+              <mat-divider></mat-divider>
+              <div class="no-results m-l-20 pt-3" [style.display]="packRepairItems.length === 0 ? '' : 'none'">
+                <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
+              </div>
+              }
+              <!-- Loading spinner -->
+              @if (packRepairDS.loading$ | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+  
+  
+  
+              <mat-paginator #paginator [length]="packRepairDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+              </mat-paginator>
+            </div>
+            <!-- <div class="body overflow-auto">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="packDepotItems" matSort class="mat-cell advance-table">
+                  
+                  <ng-container matColumnDef="select">
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+                      <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+                      <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-cell>
+                  </ng-container>
                   <ng-container matColumnDef="fName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -255,7 +403,7 @@
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <span class="mobile-label">{{this.translatedLangText.STORAGE_CALCULATE_BY}}:</span> {{this.selectStorageCalculateCV_Description(row.storage_cal_cv)}}</mat-cell>
                   </ng-container>
-                  <!-- actions -->
+                  
                   <ng-container matColumnDef="actions">
                     <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
@@ -275,14 +423,14 @@
                   </mat-row>
                 </table>
               </div>
-              <!-- Loading spinner -->
+              
               @if (!(packDepotDS.loading$ | async) && !packDepotItems.length) {
                 <mat-divider></mat-divider>
                 <div class="no-results m-l-20 pt-3" [style.display]="packDepotItems.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>
                 }
-                <!-- Loading spinner -->
+                
                 @if (packDepotDS.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
@@ -290,7 +438,7 @@
                 </div>
                 }
             
-              <!-- context menu start -->
+              
               <div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
                 [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu">
               </div>
@@ -336,12 +484,12 @@
                   <span>Item 3</span>
                 </button>
               </mat-menu>
-              <!-- context menu end -->
+              
              
               <mat-paginator #paginator [length]="packDepotDS.totalCount" [pageIndex]="0" [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
               </mat-paginator>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

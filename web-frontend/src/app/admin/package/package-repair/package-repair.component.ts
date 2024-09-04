@@ -57,7 +57,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
 import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { pack } from 'd3';
-
+import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
+import {FormDialogComponent_Edit_Cost} from './form-dialog-edit-cost/form-dialog.component';
 
 @Component({
   selector: 'app-package-repair',
@@ -100,14 +101,17 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
     'select',
-    // 'img',
-     'fName',
-     'lName',
-     'email',
-     'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
+    // // 'img',
+    'custCode',
+    'custCompanyName',
+    'fName',
+    'dimension',
+    'lName',
+    'email',
+    'subgroup',
+    'gender',
+    'bDate',
+    'mobile',
   ];
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR'
@@ -149,14 +153,16 @@ implements OnInit {
 
   storageCalCvList : CodeValuesItem[]=[];
   CodeValuesDS?:CodeValuesDS;
-  packDepotDS : PackageDepotDS;
+ // packDepotDS : PackageDepotDS;
+  packRepairDS : PackageRepairDS;
   ccDS: CustomerCompanyDS;
-  tariffDepotDS:TariffDepotDS;
+  //tariffDepotDS:TariffDepotDS;
  // clnCatDS:CleaningCategoryDS;
   custCompDS :CustomerCompanyDS;
 
-  packDepotItems:PackageDepotItem[]=[];
- 
+  //packDepotItems:PackageDepotItem[]=[];
+  packRepairItems:PackageRepairItem[]=[];
+  
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList: CustomerCompanyItem[]=[];
   cleaning_categoryList?: CleaningCategoryItem[];
@@ -291,9 +297,10 @@ implements OnInit {
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.tariffDepotDS = new TariffDepotDS(this.apollo);
+    this.packRepairDS=new PackageRepairDS(this.apollo);
+    //this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS=new CustomerCompanyDS(this.apollo);
-    this.packDepotDS = new PackageDepotDS(this.apollo);
+   // this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS=new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -311,7 +318,16 @@ implements OnInit {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
       customer_code: this.customerCodeControl,
-      profile_name: this.profileNameControl
+      group_name_cv: this.groupNameControl,
+      sub_group_name_cv: this.subGroupNameControl,
+      part_name: [''],
+      min_len: [''],
+      max_len: [''],
+      min_labour: [''],
+      max_labour: [''],
+      min_cost: [''],
+      max_cost: [''],
+      handled_item_cv: this.handledItemControl
       
     });
   }
@@ -343,6 +359,7 @@ implements OnInit {
     event.preventDefault(); // Prevents the form submission
   }
 
+
   adjustCost()
   {
     let tempDirection: Direction;
@@ -351,10 +368,9 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    if(this.selection.isEmpty()) return;
-    const dialogRef = this.dialog.open(FormDialogComponent,{
-      width: '700px',
-      height:'800px',
+    //if(this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost,{
+      width: '800px',
       data: {
         action: 'update',
         langText: this.langText,
@@ -371,13 +387,48 @@ implements OnInit {
           //if(result.selectedValue>0)
          // {
             this.handleSaveSuccess(result);
-            this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+            if(this.packRepairItems.length>1)
+                this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+          //}
+      }
+      });
+  }
+
+  editCallSelection()
+  {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    if(this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent,{
+      width: '800px',
+      data: {
+        action: 'update',
+        langText: this.langText,
+        selectedItems:this.selection.selected
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      }
+        
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         if (result>0) {
+          //if(result.selectedValue>0)
+         // {
+            this.handleSaveSuccess(result);
+            if(this.packRepairItems.length>1)
+                this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
           //}
       }
       });
   }
   
-  editCall(row: PackageDepotItem) {
+  editCall(row: PackageRepairItem) {
    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -385,12 +436,12 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    var rows :PackageRepairItem[] =[] ;
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent,{
       
-      width: '700px',
-      height:'800px',
+      width: '800px',
+     
       data: {
         action: 'update',
         langText: this.langText,
@@ -408,7 +459,8 @@ implements OnInit {
             {
               this.handleSaveSuccess(result);
               //this.search();
-              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+              if(this.packRepairItems.length>1)
+                  this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
             }
       //}
       });
@@ -426,7 +478,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packDepotItems.length;
+    const numRows = this.packRepairItems.length;
     return numSelected === numRows;
   }
 
@@ -438,7 +490,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.packDepotItems.forEach((row) =>
+       : this.packRepairItems.forEach((row) =>
            this.selection.select(row)
          );
   }
@@ -448,6 +500,7 @@ implements OnInit {
   search()
   {
     const where: any = {};
+
 
     if (this.customerCodeControl.value) {
       if(this.customerCodeControl.value.length>0)
@@ -460,24 +513,90 @@ implements OnInit {
         }
     }
 
-    if (this.profileNameControl.value) {
-      if(this.profileNameControl.value.length>0)
-      {
-        const profileNames :TariffDepotItem[] = this.profileNameControl.value;
-        const guids = profileNames.map(cc=>cc.guid);
-        where.tariff_depot_guid = { in: guids };
+    
+    if (this.groupNameControl.value) {
+      if (this.groupNameControl.value.length > 0) {
+
+
+        const cdValues: CodeValuesItem[] = this.groupNameControl.value;
+        var codes = cdValues.map(cc => cc);
+        where.tariff_repair = where.tariff_repair || {};
+        where.tariff_repair.group_name_cv = { in: codes };
       }
     }
 
+    if (this.subGroupNameControl.value) {
+      if (this.subGroupNameControl.value.length > 0) {
+
+
+        const cdValues: CodeValuesItem[] = this.subGroupNameControl.value;
+        var codes = cdValues.map(cc => cc);
+        where.tariff_repair = where.tariff_repair || {};
+        where.tariff_repair.subgroup_name_cv = { in: codes };
+      }
+    }
+
+    if (this.pcForm!.value["part_name"]) {
+      const description: Text = this.pcForm!.value["part_name"];
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.part_name = { contains: description }
+    }
+
+
+    // Handling material_cost
+    if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
+      const minCost: number = Number(this.pcForm!.value["min_cost"]);
+      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+      where.material_cost = { gte: minCost, lte: maxCost };
+    } else if (this.pcForm!.value["min_cost"]) {
+      const minCost: number = Number(this.pcForm!.value["min_cost"]);
+      where.material_cost = { gte: minCost };
+    } else if (this.pcForm!.value["max_cost"]) {
+      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+      where.material_cost = { lte: maxCost };
+    }
+
+    // Handling length
+    if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
+      const minLen: number = Number(this.pcForm!.value["min_len"]);
+      const maxLen: number = Number(this.pcForm!.value["max_len"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.length= { gte: minLen, lte: maxLen };
+    } else if (this.pcForm!.value["min_len"]) {
+      const minLen: number = Number(this.pcForm!.value["min_len"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.length = { gte: minLen };
+    } else if (this.pcForm!.value["max_len"]) {
+      const maxLen: number = Number(this.pcForm!.value["max_len"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.length = { lte: maxLen };
+    }
+
+    // Handling labour_hour
+    if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
+      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.labour_hour = { gte: minLabour, lte: maxLabour };
+    } else if (this.pcForm!.value["min_labour"]) {
+      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.labour_hour = { gte: minLabour };
+    } else if (this.pcForm!.value["max_labour"]) {
+      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+      where.tariff_repair = where.tariff_repair || {};
+      where.tariff_repair.labour_hour = { lte: maxLabour };
+    }
+
       this.lastSearchCriteria=where;
-    this.subs.sink = this.packDepotDS.SearchPackageDepot(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.packDepotItems=data;
+    this.subs.sink = this.packRepairDS.SearchPackageRepair(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.packRepairItems=data;
               // data[0].storage_cal_cv
        this.previous_endCursor=undefined;
-       this.endCursor = this.packDepotDS.pageInfo?.endCursor;
-       this.startCursor = this.packDepotDS.pageInfo?.startCursor;
-       this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.packRepairDS.pageInfo?.endCursor;
+       this.startCursor = this.packRepairDS.pageInfo?.startCursor;
+       this.hasNextPage = this.packRepairDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.packRepairDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -557,12 +676,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.packDepotDS.SearchPackageDepot(where,order,first,after,last,before).subscribe(data => {
-        this.packDepotItems=data;
-        this.endCursor = this.packDepotDS.pageInfo?.endCursor;
-        this.startCursor = this.packDepotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.packRepairDS.SearchPackageRepair(where,order,first,after,last,before).subscribe(data => {
+        this.packRepairItems=data;
+        this.endCursor = this.packRepairDS.pageInfo?.endCursor;
+        this.startCursor = this.packRepairDS.pageInfo?.startCursor;
+        this.hasNextPage = this.packRepairDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.packRepairDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
@@ -599,17 +718,56 @@ implements OnInit {
      // this.customer_companyList1 = data
     });
 
-    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
+    // this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
 
-    const queries = [
-      { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+    // const queries = [
+    //   { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
      
+    // ];
+    // this.CodeValuesDS?.getCodeValuesByType(queries);
+    // this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
+    //   this.storageCalCvList=data;
+    // });
+    const queries = [
+      { alias: 'groupName', codeValType: 'GROUP_NAME' },
+      //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
+      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' }
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
-    this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-      this.storageCalCvList=data;
-    });
+    this.CodeValuesDS?.connectAlias('groupName').subscribe(data => {
+      this.groupNameCvList = data;
 
+      const subqueries: any[] = [];
+      data.map(d => {
+
+        if (d.child_code) {
+          let q = { alias: d.child_code, codeValType: d.child_code };
+          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+          if (!hasMatch) {
+            subqueries.push(q);
+
+          }
+        }
+      });
+      if (subqueries.length > 0) {
+
+
+        this.CodeValuesDS?.getCodeValuesByType(subqueries)
+        subqueries.map(s => {
+          this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
+            this.subGroupNameCvList.push(...data);
+          });
+        });
+
+      }
+      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
+    });
+    this.CodeValuesDS?.connectAlias('subGroupName').subscribe(data => {
+      this.subGroupNameCvList = data;
+    });
+    this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
+      this.handledItemCvList = data;
+    });
    
   
   }
@@ -663,6 +821,40 @@ implements OnInit {
       return { 'invalidCharacter': true };
     }
     return null;
+  }
+  displayGroupNameCodeValue_Description(codeValue: String) {
+    return this.GetCodeValue_Description(codeValue, this.groupNameCvList);
+  }
+
+  displaySubGroupNameCodeValue_Description(codeValue: String) {
+    return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
+  }
+
+  GetCodeValue_Description(codeValue: String, codeValueItems: CodeValuesItem[]) {
+    let retval: string = '';
+    const foundItem = codeValueItems.find(item => item.code_val === codeValue);
+    if (foundItem) {
+      retval = foundItem.description || '';
+    }
+
+    return retval;
+  }
+  displayLastUpdated(r: PackageRepairItem) {
+    var updatedt = r.update_dt;
+    if (updatedt === null) {
+      updatedt = r.create_dt;
+    }
+    const date = new Date(updatedt! * 1000);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+
+    // Replace the '/' with '-' to get the required format
+
+
+    return `${day}/${month}/${year}`;
+
   }
 }
 

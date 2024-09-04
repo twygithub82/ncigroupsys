@@ -669,9 +669,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
 
-  async downloadFiles(urls: string[]): Promise<File[]> {
-    const filePromises = urls.map(async (url) => {
-        const response = await fetch(url);
+  async downloadFiles(urls: any[]): Promise<File[]> {
+    const filePromises = urls.map(async (data) => {
+        let url:String =data.url;
+        const response = await fetch(data.url);
   
         if (!response.ok) {
             throw new Error(`Failed to download file from ${url}. Status: ${response.status}`);
@@ -748,7 +749,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.selectedFileLoading.next(true); // Set loading to true
     const body = JSON.stringify([GroupGuid]);
      
-    let urls = await firstValueFrom( this.httpClient.post<string[]>(uploadURL,body,{headers}));
+    let urls = await firstValueFrom( this.httpClient.post<any[]>(uploadURL,body,{headers}));
     if(urls.length>0)
     {
       let files = await this.downloadFiles(urls);

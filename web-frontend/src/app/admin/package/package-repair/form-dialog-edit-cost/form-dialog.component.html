@@ -1,0 +1,123 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+         <h3>{{GetTitle()}}</h3> 
+      </div>
+    </div>
+    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button> -->
+  </div>
+  @if (pckRepairDS.loading$ | async) {
+    <div class="tbl-spinner">
+      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    }
+  <div mat-dialog-content class="auto-height">
+    <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
+     
+        <div class="row">
+          <div class="card info-card col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1">
+            <div class="info-box8">
+              <!-- <i class="material-icons bg-black card1-icon">assessment</i> -->
+              <i class="material-icons bg-purple card1-icon fas fa-search"></i>
+              <h5 class="col-purple font-b-500"> Condition</h5>
+           <div class="row">
+           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+
+           <!-- <mat-form-field class="example-full-width"> -->
+            <mat-form-field class="example-full-width">
+             <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
+             <mat-select [formControl]="groupNameControl" formControlName="group_name_cv"  [required]="isFieldRequired()">
+               <mat-option *ngFor="let t of groupNameCvList" [value]="t">
+                   {{ t.description }}
+               </mat-option>
+              </mat-select>
+             @if (pcForm.get('group_name_cv')?.hasError('required')) {
+               <mat-error>
+                 {{translatedLangText.GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
+               </mat-error>
+               }
+               </mat-form-field>  
+           </div> 
+           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+             <mat-form-field class="example-full-width"> 
+              <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
+              <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv"  [required]="isFieldRequired()">
+                <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
+                    {{ t.description }}
+                </mat-option>
+              </mat-select>
+              @if (pcForm.get('group_name_cv')?.hasError('required')) {
+                <mat-error>
+                  {{translatedLangText.SUB_GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
+                </mat-error>
+                }
+              </mat-form-field> 
+            </div> 
+           </div>
+           <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                <input matInput formControlName="part_name" type="text"  >
+                <!-- <mat-autocomplete #part_name="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                  @for (cc of ccDS.connect() | async; track cc) {
+                  <mat-option [value]="cc">
+                    {{ccDS.displayName(cc)}}
+                  </mat-option>
+                  }
+                </mat-autocomplete> -->
+              </mat-form-field>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
+                  <mat-select [formControl]="customerCompanyControl" formControlName="customer_code" multiple>
+                      <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
+                       
+                        <ng-container *ngIf="cc !== null">
+                          {{ ccDS.displayName(cc) }}
+                        </ng-container>
+                       
+                      </mat-option>
+                    </mat-select>
+                 
+              </mat-form-field>
+              </div>
+             </div>
+          </div>
+         </div>
+        </div> 
+       
+        <div class="row">
+         
+           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+            <mat-form-field class="example-full-width"> 
+             <mat-label>{{translatedLangText.MATERIAL_COST}} (%)</mat-label>
+             <input matInput formControlName="material_cost_percentage" type="number" min="-20" max="20" required>
+             @if (pcForm.get('material_cost_percentage')?.hasError('required')) {
+              <mat-error>
+                {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
+              </mat-error>
+              }
+             </mat-form-field>  
+           </div> 
+        </div>
+     
+      </div>
+        
+      <div class="row">
+        <div mat-dialog-actions class="mb-1 align-right">
+          @if (canEdit()) {
+            <button mat-flat-button color="primary" (click)="update()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+          }
+          <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
+        </div>
+     </div>
+    </form>
+  </div>
+</div>

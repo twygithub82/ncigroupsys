@@ -33,13 +33,14 @@ import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 
 export interface DialogData {
   action?: string;
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItems:PackageDepotItem[];
+   selectedItems:PackageRepairItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -92,7 +93,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
        'email',
        'gender',
       // 'bDate',
-      // 'mobile',
+       'mobile',
       // 'actions',
     ];
 
@@ -100,8 +101,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   index?: number;
   dialogTitle?: string;
 
-  packageDepotItems?: PackageDepotItem[]=[];
-  packageDepotDS?:PackageDepotDS;
+  //packageDepotItems?: PackageDepotItem[]=[];
+  //packageDepotDS?:PackageDepotDS;
+  packRepairDS?:PackageRepairDS;
+  packRepairItem?:PackageRepairItem[]=[];
+
   CodeValuesDS?:CodeValuesDS;
 
   storageCalCvList:CodeValuesItem[]=[];
@@ -179,7 +183,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     ALIAS_NAME:"COMMON-FORM.ALIAS-NAME",
     AGREEMENT_DUE_DATE:"COMMON-FORM.AGREEMENT-DUE-DATE",
     BILLING_PROFILE:"COMMON-FORM.BILLING-PROFILE",
-    PACKAGE_DEPOT:"MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT",
+    PACKAGE_REPAIR:"MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR",
     PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
     VIEW:'COMMON-FORM.VIEW',
     DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
@@ -188,17 +192,26 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     LOLO_COST:"COMMON-FORM.LOLO-COST",
     STORAGE_COST:"COMMON-FORM.STORAGE-COST",
     FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    GROUP_NAME: "COMMON-FORM.GROUP-NAME",
+    SUB_GROUP_NAME: "COMMON-FORM.SUB-GROUP-NAME",
+    PART_NAME: "COMMON-FORM.PART-NAME",
+    MIN_COST: "COMMON-FORM.MIN-COST",
+    MAX_COST: "COMMON-FORM.MAX-COST",
+    LENGTH: "COMMON-FORM.LENGTH",
+    MIN_LENGTH: "COMMON-FORM.MIN-LENGTH",
+    MAX_LENGTH: "COMMON-FORM.MAX-LENGTH",
+    MIN_LABOUR: "COMMON-FORM.MIN-LABOUR",
+    MAX_LABOUR: "COMMON-FORM.MAX-LABOUR",
+    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
+    LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
+    MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
+    DIMENSION :"COMMON-FORM.DIMENSION",
     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
-    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
-    STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
-    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
-    GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
   };
 
   
-  selectedItems: PackageDepotItem[];
+  selectedItems: PackageRepairItem[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -213,8 +226,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     // Set the defaults
     super();
     this.selectedItems = data.selectedItems;
-    this.pcForm = this.createPackageCleaning();
-    this.packageDepotDS = new PackageDepotDS(this.apollo);
+    this.pcForm = this.createPackageRepair();
+    this.packRepairDS = new PackageRepairDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.action = data.action!;
@@ -222,50 +235,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.loadData();
   }
 
-  createPackageCleaning(): UntypedFormGroup {
+  createPackageRepair(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      preinspection_cost_cust:[],
-      lolo_cost_cust:[],
-      lolo_cost_standard:['-'],
-      storage_cal_cv:this.storageCalControl,
-      storage_cost_cust:[],
-      storage_cost_standard:['-'],
-      free_storage_days:[],
+      material_cost:[],
+      labour_hour:[],
       remarks:[''],
-      preinspection_cost_standard:['-'],
-      gate_in_cost_cust:[''],
-      gate_in_cost_standard:['-'],
-      gate_out_cost_cust:[''],
-      gate_out_cost_standard:['-'],
-      
-      profile_name:this.profileNameControl,
 
     });
   }
-  profileChanged()
-  {
-    if(this.profileNameControl.value)
-    {
-      const selectedProfile:PackageDepotItem= this.profileNameControl.value;
-      this.pcForm.patchValue({
-        preinspection_cost_cust: selectedProfile.preinspection_cost,
-        preinspection_cost_standard:selectedProfile.preinspection_cost,
-        lolo_cost_cust:selectedProfile.lolo_cost,
-        lolo_cost_standard: selectedProfile.tariff_depot?.lolo_cost,
-        storage_cost_cust:selectedProfile.storage_cost,
-        storage_cost_standard:selectedProfile.tariff_depot?.storage_cost,
-        free_storage_days:selectedProfile.free_storage,
-        gate_in_cost:selectedProfile.gate_in_cost,
-        gate_out_cost:selectedProfile.gate_out_cost,
-        remarks:selectedProfile.remarks,
-        //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
-      });
-      this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
-    
-
-    }
-  }
+  
+ 
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
 }
@@ -296,40 +276,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   loadData()
   {
-    this.queryDepotCost();
-
-    const queries = [
-      { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-     
-    ];
-    this.CodeValuesDS?.getCodeValuesByType(queries);
-    this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-      this.storageCalCvList=data;
-   
-
+    
     if(this.selectedItems.length==1)
     {
-      var pckDepotItm = this.selectedItems[0];
+      var pckRepairItem = this.selectedItems[0];
 
       this.pcForm.patchValue({
-        preinspection_cost_cust: pckDepotItm.preinspection_cost?.toFixed(2),
-        preinspection_cost_standard:pckDepotItm.tariff_depot?.preinspection_cost?.toFixed(2),
-        lolo_cost_cust:pckDepotItm.lolo_cost?.toFixed(2),
-        lolo_cost_standard: pckDepotItm.tariff_depot?.lolo_cost?.toFixed(2),
-        storage_cost_cust:pckDepotItm.storage_cost?.toFixed(2),
-        storage_cost_standard:pckDepotItm.tariff_depot?.storage_cost?.toFixed(2),
-        free_storage_days:pckDepotItm.free_storage,
-        gate_in_cost_cust:pckDepotItm.gate_in_cost?.toFixed(2),
-        gate_out_cost_cust:pckDepotItm.gate_out_cost?.toFixed(2),
-        gate_in_cost_standard:pckDepotItm.tariff_depot?.gate_in_cost?.toFixed(2),
-        gate_out_cost_standard:pckDepotItm.tariff_depot?.gate_out_cost?.toFixed(2),
-        remarks:pckDepotItm.remarks,
+        material_cost: pckRepairItem.material_cost?.toFixed(2),
+        labour_hour:pckRepairItem.labour_hour,
+        remarks:pckRepairItem.remarks
         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
       });
-      this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
+
 
     }
-  });
+
 
     
     
@@ -389,53 +350,53 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
 
-    let pd_guids:string[] = this.selectedItems
-    .map(cc => cc.guid)
-    .filter((guid): guid is string => guid !== undefined);
-
-    var lolo_cost = -1;
-    if (this.pcForm!.value["lolo_cost_cust"]) lolo_cost=Number(this.pcForm!.value["lolo_cost_cust"]);
-
-    var preinspection_cost =-1;
-    if (this.pcForm!.value["preinspection_cost_cust"]) preinspection_cost= Number(this.pcForm!.value["preinspection_cost_cust"]);
-    var free_storage = -1;
-    if(this.pcForm!.value["free_storage_days"]) free_storage= Number(this.pcForm!.value["free_storage_days"]);
-
-    
-    var storage_cost =-1;
-    if(this.pcForm!.value["storage_cost_cust"]) storage_cost=Number(this.pcForm!.value["storage_cost_cust"]);
-
-    var gate_in_cost=-1;
-    if(this.pcForm!.value["gate_in_cost_cust"]) gate_in_cost=Number(this.pcForm!.value["gate_in_cost_cust"]);
-
-    var gate_out_cost=-1;
-    if(this.pcForm!.value["gate_out_cost_cust"]) gate_out_cost=Number(this.pcForm!.value["gate_out_cost_cust"]);
-
-    var storageCalValue:String="";
-    if(this.storageCalControl.value)
+    if(this.selectedItems.length>1)
     {
-        const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-        storageCalValue = storage_calCv.code_val||"";
-    }
+      let pd_guids:string[] = this.selectedItems
+      .map(cc => cc.guid)
+      .filter((guid): guid is string => guid !== undefined);
 
-    var storage_cal_cv = storageCalValue;
-    var remarks = this.pcForm!.value["remarks"]||"";
-     if(pd_guids.length==1)
-     {
-       if(!remarks)
-       {
-          remarks="--";
-       }
-     }
-      this.packageDepotDS?.updatePackageDepots(pd_guids,free_storage,lolo_cost,preinspection_cost,storage_cost,gate_in_cost, gate_out_cost,remarks,storage_cal_cv).subscribe(result=>{
-      if(result.data.updatePackageDepots>0)
+      var material_cost = -1;
+      if (this.pcForm!.value["material_cost"]) material_cost=Number(this.pcForm!.value["material_cost"]);
+
+      var labour_hour =-1;
+      if (this.pcForm!.value["labour_hour"]) labour_hour= Number(this.pcForm!.value["labour_hour"]);
+      
+      var remarks = this.pcForm!.value["remarks"]||"";
+      if(pd_guids.length==1)
       {
-       
-                console.log('valid');
-                this.dialogRef.close(result.data.updatePackageDepots);
-
+        if(!remarks)
+        {
+            remarks="--";
+        }
       }
-    });
+        this.packRepairDS?.updatePackageRepairs(pd_guids,material_cost,labour_hour,remarks).subscribe(result=>{
+        if(result.data.updatePackageRepairs>0)
+        {
+        
+                  console.log('valid');
+                  this.dialogRef.close(result.data.updatePackageRepairs);
+
+        }
+      });
+    }
+    else
+    {
+      var packRepairItm = new PackageRepairItem(this.selectedItems[0]);
+      packRepairItm.tariff_repair=undefined; packRepairItm.customer_company=undefined;
+      packRepairItm.material_cost=Number(this.pcForm!.value["material_cost"]);
+      packRepairItm.labour_hour=Number(this.pcForm!.value["labour_hour"]);
+      packRepairItm.remarks=this.pcForm!.value["remarks"];
+      this.packRepairDS?.updatePackageRepair(packRepairItm).subscribe(result=>{
+        if(result.data.updatePackageRepair>0)
+        {
+        
+                  console.log('valid');
+                  this.dialogRef.close(result.data.updatePackageRepair);
+
+        }
+      });
+    }
 
     // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
     // // tc.guid='';

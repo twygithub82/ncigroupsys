@@ -5,6 +5,7 @@ using IDMS.Models.Package;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using System;
@@ -336,7 +337,7 @@ namespace IDMS.Models.Package.All.GqlTypes
                     context.Attach(packageResidue);
 
                     if (cost > -1) packageResidue.cost = cost;
-                    if (!string.IsNullOrEmpty(remarks)) packageResidue.remarks = remarks;
+                    if (!string.IsNullOrEmpty(remarks)) packageResidue.remarks = remarks.Replace("--", "");
                     packageResidue.update_dt = currentDateTime;
                     packageResidue.update_by = uid;
                 }
@@ -473,7 +474,7 @@ namespace IDMS.Models.Package.All.GqlTypes
                     context.Attach(packageBuffer);
 
                     if (cost > -1) packageBuffer.cost = cost;
-                    if (!string.IsNullOrEmpty(remarks)) packageBuffer.remarks = remarks;
+                    if (!string.IsNullOrEmpty(remarks)) packageBuffer.remarks = remarks.Replace("--", "");
                     packageBuffer.update_dt = currentDateTime;
                     packageBuffer.update_by = uid;
                 }
@@ -597,7 +598,8 @@ namespace IDMS.Models.Package.All.GqlTypes
                     context.Attach(packageRepair);
                     if (material_cost > -1) packageRepair.material_cost = material_cost;
                     if (labour_hour > -1) packageRepair.labour_hour = labour_hour;
-                    if (!string.IsNullOrEmpty(remarks)) packageRepair.remarks = remarks;
+                    if (!string.IsNullOrEmpty(remarks)) packageRepair.remarks = remarks.Replace("--","");
+
                     packageRepair.update_dt = currentDateTime;
                     packageRepair.update_by = uid;
                 }
@@ -678,7 +680,7 @@ namespace IDMS.Models.Package.All.GqlTypes
 
 
         public async Task<int> UpdatePackageRepair_MaterialCost(ApplicationPackageDBContext context, [Service] IConfiguration config,
-      [Service] IHttpContextAccessor httpContextAccessor, List<string> updatePackageRepair_guids, double material_cost_percentage)
+      [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string[]? customer_company_guids, double material_cost_percentage)
         {
             int retval = 0;
             try
@@ -688,9 +690,16 @@ namespace IDMS.Models.Package.All.GqlTypes
 
                 
                 var currentDateTime = DateTime.Now.ToEpochTime();
-                var dbPackageRepairs = context.package_repair.Where(i => updatePackageRepair_guids.Contains(i.guid)).ToArray();
+                var dbPackRepairs = context.package_repair.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                    .Include(t=>t.tariff_repair)
+                    .ToArray();
+                if (customer_company_guids?.Length > 0) { dbPackRepairs = dbPackRepairs.Where(t => customer_company_guids.Contains(t.customer_company_guid)).ToArray(); }
+                if (!string.IsNullOrEmpty(group_name_cv)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.group_name_cv == group_name_cv).ToArray();
+                if (!string.IsNullOrEmpty(subgroup_name_cv)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.subgroup_name_cv == subgroup_name_cv).ToArray();
+                if (!string.IsNullOrEmpty(part_name)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.part_name == part_name).ToArray();
+                
 
-                foreach (var packageRepair in dbPackageRepairs)
+                foreach (var packageRepair in dbPackRepairs)
                 {
                     packageRepair.material_cost = Math.Round(Convert.ToDouble(packageRepair.material_cost * material_cost_percentage), 2);
                     packageRepair.update_dt = currentDateTime;

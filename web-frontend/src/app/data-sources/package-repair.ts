@@ -60,7 +60,7 @@ export interface TariffRepairResult {
 
 
 
-export const GET_Package_REPAIR_QUERY = gql`
+export const GET_PACKAGE_REPAIR_QUERY = gql`
   query queryParkageRepair($where: package_repairFilterInput, $order:[package_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     packageRepairResult : queryPackageRepair(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -139,8 +139,8 @@ export const GET_Package_REPAIR_QUERY = gql`
 `;
 
 export const UPDATE_PACKAGE_REPAIRS = gql`
-  mutation updatePackageRepairs($guid: [String!]!,$material_cost:Float!,$labour_hour:Float!,$remarks:String!) {
-    updateTariffRepairs(updatePackageRepair_guids: $guid,material_cost:$material_cost,labour_hour:$labour_hour,remarks:$remarks)
+  mutation updatePackageRepairs($updatePackageRepair_guids: [String!]!,$material_cost:Float!,$labour_hour:Float!,$remarks:String!) {
+    updatePackageRepairs(updatePackageRepair_guids: $updatePackageRepair_guids,material_cost:$material_cost,labour_hour:$labour_hour,remarks:$remarks)
   }
 `;
 
@@ -150,28 +150,32 @@ export const UPDATE_PACKAGE_REPAIR = gql`
   }
 `;
 
+
+
 export const UPDATE_PACKAGE_REPAIRS_MATERIAL_COST = gql`
-  mutation updatePackageRepair_MaterialCost($guid: [String!]!,$material_cost_percentage:Float!) {
-    updateTariffRepair_MaterialCost(updatePackageRepair_guids:$guid,material_cost_percentage:$material_cost_percentage)
+  mutation updatePackageRepair_MaterialCost($group_name_cv:String,$subgroup_name_cv:String,
+    $part_name:String,$customer_company_guids: [String!],$material_cost_percentage:Float!) {
+    updatePackageRepair_MaterialCost(group_name_cv:$group_name_cv,subgroup_name_cv:$subgroup_name_cv,
+    part_name:$part_name,customer_company_guids:$customer_company_guids,material_cost_percentage:$material_cost_percentage)
   }
 `;
 
 
 
 
-export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
+export class PackageRepairDS extends BaseDataSource<PackageRepairItem> {
   constructor(private apollo: Apollo) {
     super();
   }
   
-  SearchTariffRepair(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffRepairItem[]> {
+  SearchPackageRepair(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<PackageRepairItem[]> {
     this.loadingSubject.next(true);
     if (!last)
       if (!first)
         first = 10;
     return this.apollo
       .query<any>({
-        query: GET_TARIFF_REPAIR_QUERY,
+        query: GET_PACKAGE_REPAIR_QUERY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -183,33 +187,21 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const tariffRepairResult = result.tariffRepairResult || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(tariffRepairResult.nodes);
-          this.pageInfo = tariffRepairResult.pageInfo;
-          this.totalCount = tariffRepairResult.totalCount;
-          return tariffRepairResult.nodes;
+          const packRepairResult = result.packageRepairResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(packRepairResult.nodes);
+          this.pageInfo = packRepairResult.pageInfo;
+          this.totalCount = packRepairResult.totalCount;
+          return packRepairResult.nodes;
         })
       );
   }
 
 
-  addNewTariffRepair(td: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: ADD_TARIFF_REPAIR,
-      variables: {
-        td
-      }
-    }).pipe(
-      catchError((error: ApolloError) => {
-        console.error('GraphQL Error:', error);
-        return of(0); // Return an empty array on error
-      }),
-    );
-  }
+  
 
-    updateTariffRepair(td: any): Observable<any> {
+    updatePackageRepair(td: any): Observable<any> {
       return this.apollo.mutate({
-        mutation: UPDATE_TARIFF_REPAIR,
+        mutation: UPDATE_PACKAGE_REPAIR,
         variables: {
           td
         }
@@ -221,28 +213,14 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
     }
 
-    updateTariffRepairs(updatedTariffRepair_guids: any,group_name_cv:any,subgroup_name_cv:any,
-      dimension:any,height_diameter:any,height_diameter_unit_cv:any,width_diameter:any,width_diameter_unit_cv:any,labour_hour:any,
-      length:any,length_unit_cv:any,material_cost:any,part_name:any,alias:any,thickness:any,thickness_unit_cv:any,remarks:any): Observable<any> {
+    updatePackageRepairs(updatePackageRepair_guids: any,material_cost:any,labour_hour:any,
+      remarks:any): Observable<any> {
       return this.apollo.mutate({
-        mutation: UPDATE_TARIFF_REPAIRS,
+        mutation: UPDATE_PACKAGE_REPAIRS,
         variables: {
-          updatedTariffRepair_guids,
-          group_name_cv,
-          subgroup_name_cv,
-          dimension,
-          height_diameter,
-          height_diameter_unit_cv,
-          width_diameter,
-          width_diameter_unit_cv,
-          labour_hour,
-          length,
-          length_unit_cv,
+          updatePackageRepair_guids,
           material_cost,
-          part_name,
-          alias,
-          thickness,
-          thickness_unit_cv,
+          labour_hour,
           remarks
         }
       }).pipe(
@@ -253,13 +231,15 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
     }
 
-    updateTariffRepairs_MaterialCost(group_name_cv:any,subgroup_name_cv:any,part_name:any,material_cost_percentage:any): Observable<any> {
+    updatePackageRepairs_MaterialCost(group_name_cv:any,subgroup_name_cv:any,part_name:any,
+      customer_company_guids:any,material_cost_percentage:any): Observable<any> {
       return this.apollo.mutate({
-        mutation: UPDATE_TARIFF_REPAIRS_MATERIAL_COST,
+        mutation: UPDATE_PACKAGE_REPAIRS_MATERIAL_COST,
         variables: {
           group_name_cv,
           subgroup_name_cv,
           part_name,
+          customer_company_guids,
           material_cost_percentage
         }
       }).pipe(
