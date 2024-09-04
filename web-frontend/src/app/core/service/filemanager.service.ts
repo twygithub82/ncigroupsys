@@ -33,4 +33,21 @@ export class FileManagerService {
         })
       );
   }
+
+  getFileUrlByGroupGuid(groupGuids: string[]): Observable<any> {
+    // Create a new FormData object
+    const requestBody = groupGuids;
+  
+    // Make the POST request with application/json content type
+    return this.http.post<any>(`${environment.fileManagerURL}${uploadEndpoints.getFileUrlByGroupGuid}`, requestBody, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    }).pipe(
+      map(response => {
+        // Process the response if necessary
+        return response;
+      })
+    );
+  }
 }

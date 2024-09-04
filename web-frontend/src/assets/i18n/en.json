@@ -467,7 +467,11 @@
     "BOTTOM-REMARKS": "Bottom Remarks",
     "EIR-STATUS": "EIR Status",
     "TANK-STATUS": "Tank Status",   
-    "ATTACHMENT-TOO-BIG": "Attachment size > 20 MB"
+    "ATTACHMENT-TOO-BIG": "Attachment size > 20 MB",
+    "SIDES": "Sides",
+    "DAMAGE-PHOTOS": "Damage Photos",
+    "PREVIEW": "Preview",
+    "CONFIRM-DELETE": "Confirm Delete?"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

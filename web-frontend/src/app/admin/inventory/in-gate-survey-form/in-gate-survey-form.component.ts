@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, UntypedFormArray } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -51,6 +51,8 @@ import * as moment from 'moment';
 import { testTypeMapping } from 'environments/environment.development';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { FileManagerService } from '@core/service/filemanager.service';
+import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
 
 @Component({
   selector: 'app-in-gate',
@@ -198,7 +200,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     RIGHT_REMARKS: 'COMMON-FORM.RIGHT-REMARKS',
     TOP_REMARKS: 'COMMON-FORM.TOP-REMARKS',
     FRONT_REMARKS: 'COMMON-FORM.FRONT-REMARKS',
-    BOTTOM_REMARKS: 'COMMON-FORM.BOTTOM-REMARKS'
+    BOTTOM_REMARKS: 'COMMON-FORM.BOTTOM-REMARKS',
+    SIDES: 'COMMON-FORM.SIDES',
+    SAVE_ERROR: 'COMMON-FORM.SAVE-ERROR',
+    DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
+    PREVIEW: 'COMMON-FORM.PREVIEW',
+    DELETE: 'COMMON-FORM.DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
   }
 
   in_gate_guid: string | null | undefined;
@@ -237,12 +245,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   thermometerCvList: CodeValuesItem[] = [];
   tankCompTypeCvList: CodeValuesItem[] = [];
   valveBrandCvList: CodeValuesItem[] = [];
+  tankSideCvList: CodeValuesItem[] = [];
 
   unit_typeList: TankItem[] = []
 
   dateOfInspection: Date = new Date();
   startDateTest: Date = new Date();
   maxManuDOMDt: Date = new Date();
+  defaultImg: string = '/assets/images/no_image.svg';
 
   lastTest?: string = "";
   nextTest?: string = "";
@@ -287,7 +297,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   isMarkDmg = false;
   toggleState = true; // State to track whether to highlight or unhighlight
   currentImageIndex: number | null = null;
-  imagePreviews: (string | ArrayBuffer)[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -298,7 +307,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private fileManagerService: FileManagerService
   ) {
     super();
     this.translateLangText();
@@ -354,6 +364,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       topRemarks: [''],
       frontRemarks: [''],
       bottomRemarks: [''],
+      leftImage: this.createImageForm('LEFT_SIDE', '', undefined),
+      rearImage: this.createImageForm('REAR_SIDE', '', undefined),
+      rightImage: this.createImageForm('RIGHT_SIDE', '', undefined),
+      topImage: this.createImageForm('TOP_SIDE', '', undefined),
+      frontImage: this.createImageForm('FRONT_SIDE', '', undefined),
+      bottomImage: this.createImageForm('BOTTOM_SIDE', '', undefined),
+      dmgImages: this.fb.array([]),
       bottomFormGroup: this.fb.group({
         btm_dis_comp_cv: [''],
         btm_dis_valve_cv: [''],
@@ -411,6 +428,32 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
+  images(): UntypedFormArray {
+    return this.surveyForm?.get('dmgImages') as UntypedFormArray;
+  }
+
+  createImageForm(side: string, preview: string | ArrayBuffer, file: File | undefined): UntypedFormGroup {
+    return this.fb.group({
+      file: [file],
+      preview: [preview],
+      side: [side],
+    })
+  }
+
+  patchImageForm(imgForm: any, side: string, preview: string | ArrayBuffer, file: File | undefined): UntypedFormGroup {
+    return imgForm.patchValue({
+      file: file,
+      preview: preview,
+      side: side,
+    })
+  }
+
+  patchOrCreateImageForm(side: string, imgList: any[], formControl: any): UntypedFormGroup {
+    return imgList?.length
+      ? this.patchImageForm(formControl, side, imgList[0].url, undefined)
+      : this.createImageForm(side, '', undefined);
+  }
+
   onTestValuesChanged(): void {
     this.lastTest = this.getLastTest();
     this.nextTest = this.getNextTest();
@@ -457,6 +500,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       { alias: 'thermometerCv', codeValType: 'THERMOMETER' },
       { alias: 'tankCompTypeCv', codeValType: 'TANK_COMP_TYPE' },
       { alias: 'valveBrandCv', codeValType: 'VALVE_BRAND' },
+      { alias: 'tankSideCv', codeValType: 'TANK_SIDE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -528,6 +572,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
       this.valveBrandCvList = data;
     });
+    this.cvDS.connectAlias('tankSideCv').subscribe(data => {
+      this.tankSideCvList = data;
+    });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
     });
@@ -539,6 +586,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
           this.populateInGateForm(this.in_gate);
+          if (this.in_gate!.in_gate_survey?.guid) {
+            this.fileManagerService.getFileUrlByGroupGuid([this.in_gate!.in_gate_survey?.guid]).subscribe({
+              next: (response) => {
+                console.log('Files retrieved successfully:', response);
+                this.populateImages(response)
+              },
+              error: (error) => {
+                console.error('Error retrieving files:', error);
+              },
+              complete: () => {
+                console.log('File retrieval process completed.');
+              }
+            });
+          }
         }
       });
     }
@@ -656,18 +717,26 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.highlightedCellsWalkwayBottomDmg = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayBottomDmg, dmgBottom);
   }
 
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
+  populateImages(files: any[]) {
+    const dmgImg = files.filter(file => file.description.includes("DMG"));
+    const leftImg = files.filter(file => file.description === 'LEFT_SIDE');
+    const rearImg = files.filter(file => file.description === 'REAR_SIDE');
+    const rightImg = files.filter(file => file.description === 'RIGHT_SIDE');
+    const topImg = files.filter(file => file.description === 'TOP_SIDE');
+    const frontImg = files.filter(file => file.description === 'FRONT_SIDE');
+    const bottomImg = files.filter(file => file.description === 'BOTTOM_SIDE');
+    dmgImg.forEach(dmgFile => {
+      this.images().push(this.createImageForm(dmgFile.description.replace('_DMG', ''), dmgFile.url, undefined));
     });
+    this.surveyForm!.patchValue({
+      leftImage: this.patchOrCreateImageForm('LEFT_SIDE', leftImg, this.surveyForm?.get('leftImage')),
+      rearImage: this.patchOrCreateImageForm('REAR_SIDE', rearImg, this.surveyForm?.get('rearImage')),
+      rightImage: this.patchOrCreateImageForm('RIGHT_SIDE', rightImg, this.surveyForm?.get('rightImage')),
+      topImage: this.patchOrCreateImageForm('TOP_SIDE', topImg, this.surveyForm?.get('topImage')),
+      frontImage: this.patchOrCreateImageForm('FRONT_SIDE', frontImg, this.surveyForm?.get('frontImage')),
+      bottomImage: this.patchOrCreateImageForm('BOTTOM_SIDE', bottomImg, this.surveyForm?.get('bottomImage'))
+    });
+    this.markForCheck();
   }
 
   // export table data in excel file
@@ -772,7 +841,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       if (igs.guid) {
         this.igsDS.updateInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)
-          this.handleSaveSuccess(result?.data?.updateInGateSurvey);
+          if (result?.data?.updateInGateSurvey) {
+            this.uploadImages(igs.guid!);
+          }
         });
       } else {
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
@@ -807,8 +878,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/inventory/in-gate-survey']);
     }
+  }
+
+  handleSaveError() {
+    let successMsg = this.translatedLangText.SAVE_ERROR;
+    ComponentUtil.showNotification('snackbar-error', successMsg, 'top', 'center', this.snackBar);
   }
 
   // context menu
@@ -999,14 +1074,30 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return result;
   }
 
-  onFileSelected(event: Event): void {
+  onFileSelectedTankSide(event: Event, tankSideForm: any): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      //this.imagePreviews = []; // Clear previous previews
       Array.from(input.files).forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
-          this.imagePreviews.push(reader.result as string | ArrayBuffer);
+          const preview = reader.result as string | ArrayBuffer;
+          tankSideForm.get('file')?.setValue(file);
+          tankSideForm.get('preview')?.setValue(preview);
+          this.markForCheck();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const preview = reader.result as string | ArrayBuffer;
+          this.images().push(this.createImageForm('', preview, file));
           this.markForCheck();
         };
         reader.readAsDataURL(file);
@@ -1038,6 +1129,49 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
+  deleteDialog(imgForm: any, event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+      }
+    });
+  }
+
+  previewImageDialog(previewImage: any, event: Event, isDmg: any = false) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const headerText = this.getTankSideDescription(previewImage.get('side')?.value);
+    const dialogRef = this.dialog.open(PreviewImageDialogComponent, {
+      data: {
+        headerText: isDmg ? `${this.translatedLangText.DAMAGE_PHOTOS} - ${headerText}` : `${this.translatedLangText.TANK_PHOTOS} - ${headerText}`,
+        previewImage: previewImage.get('preview')?.value,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
   resetDialog(highlightedCells: boolean[], event: Event, isTop: boolean = false) {
     event.preventDefault(); // Prevents the form submission
 
@@ -1062,6 +1196,61 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           this.resetHighlightedCells(highlightedCells);
         }
         this.markForCheck();
+      }
+    });
+  }
+
+  uploadImages(guid: string) {
+    const leftImg = this.surveyForm?.get('leftImage')?.value;
+    const rearImg = this.surveyForm?.get('rearImage')?.value;
+    const rightImg = this.surveyForm?.get('rightImage')?.value;
+    const topImg = this.surveyForm?.get('topImage')?.value;
+    const frontImg = this.surveyForm?.get('frontImage')?.value;
+    const bottomImg = this.surveyForm?.get('bottomImage')?.value;
+
+    const additionalImages = [leftImg, rearImg, rightImg, topImg, frontImg, bottomImg].filter(image => image.file);
+
+    const additionalMetadata = additionalImages.map(image => {
+      return {
+        file: image.file, // The actual file object
+        metadata: {
+          TableName: 'in_gate_survey',
+          FileType: 'img',
+          GroupGuid: guid,
+          Description: image.side // Use the side as description
+        }
+      };
+    });
+
+    const dmgImages = this.images().controls.map(preview => {
+      const file = preview.get('file')?.value;
+      const side = preview.get('side')?.value;
+      return {
+        file: file, // The actual file object
+        metadata: {
+          TableName: 'in_gate_survey',
+          FileType: 'img',
+          GroupGuid: guid,
+          Description: side + '_DMG' // Use the file name or custom description
+        }
+      };
+    });
+    const allImages = dmgImages.concat(additionalMetadata);
+
+    console.log(allImages);
+    // Call the FileManagerService to upload files
+    this.fileManagerService.uploadFiles(allImages).subscribe({
+      next: (response) => {
+        console.log('Files uploaded successfully:', response);
+        this.handleSaveSuccess(response?.affected);
+      },
+      error: (error) => {
+        console.error('Error uploading files:', error);
+        this.handleSaveError();
+      },
+      complete: () => {
+        console.log('Upload process completed.');
+        this.router.navigate(['/admin/inventory/in-gate-survey']);
       }
     });
   }
@@ -1116,12 +1305,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
   }
 
-  preventDefault(event: Event) {
-    event.preventDefault(); // Prevents the form submission
+  getTankSideDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankSideCvList);
   }
 
-  uploadImages() {
-    //environment
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
   }
 
   markForCheck() {

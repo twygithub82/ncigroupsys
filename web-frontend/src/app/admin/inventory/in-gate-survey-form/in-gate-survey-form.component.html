@@ -609,7 +609,8 @@
                           class="link-button" [matTooltip]="surveyForm?.get('rightRemarks')?.value">
                           {{translatedLangText.RIGHT_SIDE}}
                         </span>
-                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsRight, $event)">
+                        <button mat-icon-button class="link-button"
+                          (click)="resetDialog(highlightedCellsRight, $event)">
                           <mat-icon>cached</mat-icon>
                         </button>
                       </div>
@@ -636,7 +637,8 @@
                           class="link-button" [matTooltip]="surveyForm?.get('topRemarks')?.value">
                           {{translatedLangText.TOP_SIDE}}
                         </span>
-                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsRight, $event, true)">
+                        <button mat-icon-button class="link-button"
+                          (click)="resetDialog(highlightedCellsRight, $event, true)">
                           <mat-icon>cached</mat-icon>
                         </button>
                         <mat-checkbox class="m-l-5" color="primary" (change)="selectMarkDmg()">
@@ -764,7 +766,8 @@
                           class="link-button" [matTooltip]="surveyForm?.get('frontRemarks')?.value">
                           {{translatedLangText.FRONT_SIDE}}
                         </span>
-                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsFront, $event)">
+                        <button mat-icon-button class="link-button"
+                          (click)="resetDialog(highlightedCellsFront, $event)">
                           <mat-icon>cached</mat-icon>
                         </button>
                       </div>
@@ -791,7 +794,8 @@
                           class="link-button" [matTooltip]="surveyForm?.get('bottomRemarks')?.value">
                           {{translatedLangText.BOTTOM_SIDE}}
                         </span>
-                        <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsBottom, $event)">
+                        <button mat-icon-button class="link-button"
+                          (click)="resetDialog(highlightedCellsBottom, $event)">
                           <mat-icon>cached</mat-icon>
                         </button>
                       </div>
@@ -818,40 +822,278 @@
             </div>
             <div class="row">
               <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="header">
-                  <h2>
-                    {{translatedLangText.TANK_PHOTOS}}
-                  </h2>
-                </div>
-                <div class="body">
-                  @if (igDS.loading$ | async) {
-                  <div class="tbl-spinner">
-                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                    </mat-progress-spinner>
-                  </div>
-                  }
-                  @if (!(igDS.loading$ | async)) {
-                  <div class="row">
-                    <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 col-xs-12 mb-1">
-                      <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()">
-                        <i class="material-icons">attach_file</i>
-                      </button>
-                      <input type="file" #fileInput class="default" multiple (change)="onFileSelected($event)"
-                        style="display: none;">
+                <div class="row">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="header">
+                      <h2>
+                        {{translatedLangText.TANK_PHOTOS}}
+                      </h2>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
-                      <div class="image-previews">
-                        @for (imgPrev of imagePreviews; track imgPrev) {
-                        <div class="image-preview">
-                          <img [src]="imgPrev" alt="Image Preview" class="preview-img">
-                        </div>
-                        }
+                    <div class="body">
+                      @if (igDS.loading$ | async) {
+                      <div class="tbl-spinner">
+                        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                        </mat-progress-spinner>
                       </div>
+                      }
+                      @if (!(igDS.loading$ | async)) {
+                      <div class="row">
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
+                          <div class="image-previews-tank">
+                            <div>
+                              <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
+                                  {{translatedLangText.LEFT_SIDE}}
+                                </div>
+                              </div>
+                              <div class="image-preview" (click)="fileInputLeft.click()">
+                                <input type="file" #fileInputLeft class="default d-none" multiple accept="image/*"
+                                  (change)="onFileSelectedTankSide($event, surveyForm?.get('leftImage'))">
+                                <img [src]="surveyForm?.get('leftImage')?.get('preview')?.value || defaultImg"
+                                  alt="Image Preview" class="preview-img border-0">
+                                @if (surveyForm?.get('leftImage')?.get('preview')?.value) {
+                                <button [matMenuTriggerFor]="menu" class="link-button menu-button"
+                                  (click)="$event.stopPropagation()">
+                                  <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                  <button mat-menu-item
+                                    (click)="previewImageDialog(surveyForm?.get('leftImage'), $event)">
+                                    <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
+                                  </button>
+                                  <button mat-menu-item
+                                    (click)="deleteDialog(surveyForm?.get('leftImage')?.get('preview'), $event)">
+                                    <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
+                                  </button>
+                                </mat-menu>
+                                }
+                              </div>
+                            </div>
+                            <div>
+                              <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
+                                  {{translatedLangText.REAR_SIDE}}
+                                </div>
+                              </div>
+                              <div class="image-preview" (click)="fileInputRear.click()">
+                                <input type="file" #fileInputRear class="default d-none" multiple accept="image/*"
+                                  (change)="onFileSelectedTankSide($event, surveyForm?.get('rearImage'))">
+                                <img [src]="surveyForm?.get('rearImage')?.get('preview')?.value || defaultImg"
+                                  alt="Image Preview" class="preview-img border-0">
+                                @if (surveyForm?.get('rearImage')?.get('preview')?.value) {
+                                <button [matMenuTriggerFor]="menu" class="link-button menu-button"
+                                  (click)="$event.stopPropagation()">
+                                  <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                  <button mat-menu-item
+                                    (click)="previewImageDialog(surveyForm?.get('rearImage'), $event)">
+                                    <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
+                                  </button>
+                                  <button mat-menu-item
+                                    (click)="deleteDialog(surveyForm?.get('rearImage')?.get('preview'), $event)">
+                                    <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
+                                  </button>
+                                </mat-menu>
+                                }
+                              </div>
+                            </div>
+                            <div>
+                              <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
+                                  {{translatedLangText.RIGHT_SIDE}}
+                                </div>
+                              </div>
+                              <div class="image-preview" (click)="fileInputRight.click()">
+                                <input type="file" #fileInputRight class="default d-none" multiple accept="image/*"
+                                  (change)="onFileSelectedTankSide($event, surveyForm?.get('rightImage'))">
+                                <img [src]="surveyForm?.get('rightImage')?.get('preview')?.value || defaultImg"
+                                  alt="Image Preview" class="preview-img border-0">
+                                @if (surveyForm?.get('rightImage')?.get('preview')?.value) {
+                                <button [matMenuTriggerFor]="menu" class="link-button menu-button"
+                                  (click)="$event.stopPropagation()">
+                                  <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                  <button mat-menu-item
+                                    (click)="previewImageDialog(surveyForm?.get('rightImage'), $event)">
+                                    <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
+                                  </button>
+                                  <button mat-menu-item
+                                    (click)="deleteDialog(surveyForm?.get('rightImage')?.get('preview'), $event)">
+                                    <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
+                                  </button>
+                                </mat-menu>
+                                }
+                              </div>
+                            </div>
+                            <div>
+                              <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
+                                  {{translatedLangText.TOP_SIDE}}
+                                </div>
+                              </div>
+                              <div class="image-preview" (click)="fileInputTop.click()">
+                                <input type="file" #fileInputTop class="default d-none" multiple accept="image/*"
+                                  (change)="onFileSelectedTankSide($event, surveyForm?.get('topImage'))">
+                                <img [src]="surveyForm?.get('topImage')?.get('preview')?.value || defaultImg"
+                                  alt="Image Preview" class="preview-img border-0">
+                                @if (surveyForm?.get('topImage')?.get('preview')?.value) {
+                                <button [matMenuTriggerFor]="menu" class="link-button menu-button"
+                                  (click)="$event.stopPropagation()">
+                                  <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                  <button mat-menu-item
+                                    (click)="previewImageDialog(surveyForm?.get('topImage'), $event)">
+                                    <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
+                                  </button>
+                                  <button mat-menu-item
+                                    (click)="deleteDialog(surveyForm?.get('topImage')?.get('preview'), $event)">
+                                    <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
+                                  </button>
+                                </mat-menu>
+                                }
+                              </div>
+                            </div>
+                            <div>
+                              <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
+                                  {{translatedLangText.FRONT_SIDE}}
+                                </div>
+                              </div>
+                              <div class="image-preview" (click)="fileInputFront.click()">
+                                <input type="file" #fileInputFront class="default d-none" multiple accept="image/*"
+                                  (change)="onFileSelectedTankSide($event, surveyForm?.get('frontImage'))">
+                                <img [src]="surveyForm?.get('frontImage')?.get('preview')?.value || defaultImg"
+                                  alt="Image Preview" class="preview-img border-0">
+                                @if (surveyForm?.get('frontImage')?.get('preview')?.value) {
+                                <button [matMenuTriggerFor]="menu" class="link-button menu-button"
+                                  (click)="$event.stopPropagation()">
+                                  <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                  <button mat-menu-item
+                                    (click)="previewImageDialog(surveyForm?.get('frontImage'), $event)">
+                                    <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
+                                  </button>
+                                  <button mat-menu-item
+                                    (click)="deleteDialog(surveyForm?.get('frontImage')?.get('preview'), $event)">
+                                    <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
+                                  </button>
+                                </mat-menu>
+                                }
+                              </div>
+                            </div>
+                            <div>
+                              <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
+                                  {{translatedLangText.BOTTOM_SIDE}}
+                                </div>
+                              </div>
+                              <div class="image-preview" (click)="fileInputBottom.click()">
+                                <input type="file" #fileInputBottom class="default d-none" multiple accept="image/*"
+                                  (change)="onFileSelectedTankSide($event, surveyForm?.get('bottomImage'))">
+                                <img [src]="surveyForm?.get('bottomImage')?.get('preview')?.value || defaultImg"
+                                  alt="Image Preview" class="preview-img border-0">
+                                @if (surveyForm?.get('bottomImage')?.get('preview')?.value) {
+                                <button [matMenuTriggerFor]="menu" class="link-button menu-button"
+                                  (click)="$event.stopPropagation()">
+                                  <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                  <button mat-menu-item
+                                    (click)="previewImageDialog(surveyForm?.get('bottomImage'), $event)">
+                                    <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
+                                  </button>
+                                  <button mat-menu-item
+                                    (click)="deleteDialog(surveyForm?.get('bottomImage')?.get('preview'), $event)">
+                                    <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
+                                  </button>
+                                </mat-menu>
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      }
                     </div>
                   </div>
-                  }
+                </div>
+                <div class="row">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="header">
+                      <h2 class="d-flex">
+                        {{translatedLangText.DAMAGE_PHOTOS}}
+                        <div class="m-l-10">
+                          <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()">
+                            <i class="material-icons">attach_file</i>
+                          </button>
+                          <input type="file" #fileInput class="default d-none" multiple accept="image/*"
+                            (change)="onFileSelected($event)">
+                        </div>
+                      </h2>
+                    </div>
+                    <div class="body">
+                      @if (igDS.loading$ | async) {
+                      <div class="tbl-spinner">
+                        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                        </mat-progress-spinner>
+                      </div>
+                      }
+                      @if (!(igDS.loading$ | async)) {
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
+                          <div class="image-previews" formArrayName="dmgImages">
+                            @for (img of images().controls; track img; let index = $index) {
+                            <div [formGroupName]="index">
+                              <div class="image-preview">
+                                <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img">
+                                @if (img.get('preview')?.value) {
+                                <button [matMenuTriggerFor]="menu" class="link-button menu-button"
+                                  (click)="$event.stopPropagation()">
+                                  <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                  <button mat-menu-item
+                                    (click)="previewImageDialog(img, $event, true)">
+                                    <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
+                                  </button>
+                                  <button mat-menu-item
+                                    (click)="deleteDialog(img, $event)">
+                                    <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
+                                  </button>
+                                </mat-menu>
+                                }
+                              </div>
+                              <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                  <mat-form-field class="example-full-width mt-1">
+                                    <mat-label>{{translatedLangText.SIDES}}</mat-label>
+                                    <mat-select formControlName="side" required>
+                                      @for (codeValue of tankSideCvList; track codeValue) {
+                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                                      }
+                                    </mat-select>
+                                    @if (img.get('side')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.SIDES}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                              </div>
+                            </div>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                      }
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12">
