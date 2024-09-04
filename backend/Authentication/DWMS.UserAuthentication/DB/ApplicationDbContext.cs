@@ -1,4 +1,5 @@
-﻿using DWMS.UserAuthentication.Models;
+﻿using DWMS.User.Authentication.API.Models.Authentication;
+using DWMS.UserAuthentication.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,10 @@ namespace DWMS.UserAuthentication.DB
         {
 
         }
+
+        public DbSet<functions> functions { get; set; }
+        public DbSet<role_function> role_function { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

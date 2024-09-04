@@ -4,6 +4,7 @@ using DWMS.User.Authentication.API.Models.RefreshToken;
 using DWMS.User.Authentication.API.Utilities;
 using DWMS.User.Authentication.Service.Models;
 using DWMS.User.Authentication.Service.Services;
+using DWMS.UserAuthentication.DB;
 using DWMS.UserAuthentication.Models;
 using DWMS.UserAuthentication.Models.Authentication.Login;
 using DWMS.UserAuthentication.Models.Authentication.SignUp;
@@ -32,16 +33,19 @@ namespace DWMS.UserAuthentication.Controllers
         private readonly IEmailService _emailService;
         private readonly JwtTokenService _jwtTokenService;
         private readonly IRefreshTokenStore _refreshTokenStore;
+        private readonly ApplicationDbContext _dbContext;
 
         public UserAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, 
-            SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService, IRefreshTokenStore refreshTokenStore)
+            SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService,
+            IRefreshTokenStore refreshTokenStore, ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _emailService = emailService;
             _signInManager = signInManager;
-            _jwtTokenService = new JwtTokenService(_configuration);
+            _dbContext = context;
+            _jwtTokenService = new JwtTokenService(_configuration, _dbContext);
             _refreshTokenStore = refreshTokenStore;
 
 
@@ -115,7 +119,7 @@ namespace DWMS.UserAuthentication.Controllers
                 // var authClaims = DWMS.User.Authentication.API.Utilities.utils.GetClaims(1, user.UserName, user.Email, userRoles);
                 //generate the token with the claims
 
-                var jwtToken = _jwtTokenService.GetToken(1, user.UserName, user.Email, userRoles); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
+                var jwtToken = _jwtTokenService.GetToken(1, user.UserName, user.Email, userRoles, user.Id); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
                 var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = user.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
                 _refreshTokenStore.AddToken(refreshToken);
@@ -141,7 +145,7 @@ namespace DWMS.UserAuthentication.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var newJwtToken = _jwtTokenService.GetToken(1, user.UserName, user.Email, userRoles);
+            var newJwtToken = _jwtTokenService.GetToken(1, user.UserName, user.Email, userRoles, user.Id);
             var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
 
             var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
