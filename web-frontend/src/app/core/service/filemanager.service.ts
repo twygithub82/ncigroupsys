@@ -37,9 +37,30 @@ export class FileManagerService {
   getFileUrlByGroupGuid(groupGuids: string[]): Observable<any> {
     // Create a new FormData object
     const requestBody = groupGuids;
-  
+
     // Make the POST request with application/json content type
     return this.http.post<any>(`${environment.fileManagerURL}${uploadEndpoints.getFileUrlByGroupGuid}`, requestBody, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    }).pipe(
+      map(response => {
+        // Process the response if necessary
+        return response;
+      })
+    );
+  }
+
+  deleteFile(imageUrls: string[]): Observable<any> {
+    // Create a new FormData object
+    const filenames = imageUrls.map(url => {
+      const filenameWithExtension = url.split('/').pop(); // Extract the filename with extension
+      return filenameWithExtension?.split('.').slice(0, -1).join('.'); // Remove the extension
+    });
+    const requestBody = filenames;
+    // Make the POST request with application/json content type
+    return this.http.request<any>('DELETE', `${environment.fileManagerURL}${uploadEndpoints.deleteFile}`, {
+      body: requestBody,
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })

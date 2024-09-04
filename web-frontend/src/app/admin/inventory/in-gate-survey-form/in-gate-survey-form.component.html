@@ -849,7 +849,7 @@
                                 </div>
                               </div>
                               <div class="image-preview" (click)="fileInputLeft.click()">
-                                <input type="file" #fileInputLeft class="default d-none" multiple accept="image/*"
+                                <input type="file" #fileInputLeft class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('leftImage'))">
                                 <img [src]="surveyForm?.get('leftImage')?.get('preview')?.value || defaultImg"
                                   alt="Image Preview" class="preview-img border-0">
@@ -864,7 +864,7 @@
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item
-                                    (click)="deleteDialog(surveyForm?.get('leftImage')?.get('preview'), $event)">
+                                    (click)="deleteDialog(surveyForm?.get('leftImage'), $event)">
                                     <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
                                   </button>
                                 </mat-menu>
@@ -878,7 +878,7 @@
                                 </div>
                               </div>
                               <div class="image-preview" (click)="fileInputRear.click()">
-                                <input type="file" #fileInputRear class="default d-none" multiple accept="image/*"
+                                <input type="file" #fileInputRear class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('rearImage'))">
                                 <img [src]="surveyForm?.get('rearImage')?.get('preview')?.value || defaultImg"
                                   alt="Image Preview" class="preview-img border-0">
@@ -893,7 +893,7 @@
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item
-                                    (click)="deleteDialog(surveyForm?.get('rearImage')?.get('preview'), $event)">
+                                    (click)="deleteDialog(surveyForm?.get('rearImage'), $event)">
                                     <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
                                   </button>
                                 </mat-menu>
@@ -907,7 +907,7 @@
                                 </div>
                               </div>
                               <div class="image-preview" (click)="fileInputRight.click()">
-                                <input type="file" #fileInputRight class="default d-none" multiple accept="image/*"
+                                <input type="file" #fileInputRight class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('rightImage'))">
                                 <img [src]="surveyForm?.get('rightImage')?.get('preview')?.value || defaultImg"
                                   alt="Image Preview" class="preview-img border-0">
@@ -922,7 +922,7 @@
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item
-                                    (click)="deleteDialog(surveyForm?.get('rightImage')?.get('preview'), $event)">
+                                    (click)="deleteDialog(surveyForm?.get('rightImage'), $event)">
                                     <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
                                   </button>
                                 </mat-menu>
@@ -936,7 +936,7 @@
                                 </div>
                               </div>
                               <div class="image-preview" (click)="fileInputTop.click()">
-                                <input type="file" #fileInputTop class="default d-none" multiple accept="image/*"
+                                <input type="file" #fileInputTop class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('topImage'))">
                                 <img [src]="surveyForm?.get('topImage')?.get('preview')?.value || defaultImg"
                                   alt="Image Preview" class="preview-img border-0">
@@ -951,7 +951,7 @@
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item
-                                    (click)="deleteDialog(surveyForm?.get('topImage')?.get('preview'), $event)">
+                                    (click)="deleteDialog(surveyForm?.get('topImage'), $event)">
                                     <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
                                   </button>
                                 </mat-menu>
@@ -965,7 +965,7 @@
                                 </div>
                               </div>
                               <div class="image-preview" (click)="fileInputFront.click()">
-                                <input type="file" #fileInputFront class="default d-none" multiple accept="image/*"
+                                <input type="file" #fileInputFront class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('frontImage'))">
                                 <img [src]="surveyForm?.get('frontImage')?.get('preview')?.value || defaultImg"
                                   alt="Image Preview" class="preview-img border-0">
@@ -980,7 +980,7 @@
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item
-                                    (click)="deleteDialog(surveyForm?.get('frontImage')?.get('preview'), $event)">
+                                    (click)="deleteDialog(surveyForm?.get('frontImage'), $event)">
                                     <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
                                   </button>
                                 </mat-menu>
@@ -994,7 +994,7 @@
                                 </div>
                               </div>
                               <div class="image-preview" (click)="fileInputBottom.click()">
-                                <input type="file" #fileInputBottom class="default d-none" multiple accept="image/*"
+                                <input type="file" #fileInputBottom class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('bottomImage'))">
                                 <img [src]="surveyForm?.get('bottomImage')?.get('preview')?.value || defaultImg"
                                   alt="Image Preview" class="preview-img border-0">
@@ -1009,7 +1009,7 @@
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item
-                                    (click)="deleteDialog(surveyForm?.get('bottomImage')?.get('preview'), $event)">
+                                    (click)="deleteDialog(surveyForm?.get('bottomImage'), $event)">
                                     <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
                                   </button>
                                 </mat-menu>
@@ -1063,7 +1063,7 @@
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item
-                                    (click)="deleteDialog(img, $event)">
+                                    (click)="deleteDialogDmgImg(img, index, $event)">
                                     <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
                                   </button>
                                 </mat-menu>

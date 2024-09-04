@@ -232,8 +232,8 @@
     "UPDATE": "Update",
     "CANCEL": "Cancel",
     "NO-RESULT": "No results",
-    "SAVE-SUCCESS": "Saved successfully.",
-    "CANCELED-SUCCESS": "Canceled successfully.",
+    "SAVE-SUCCESS": "Saved Successfully.",
+    "CANCELED-SUCCESS": "Canceled Successfully.",
     "BACK": "Back",
     "SAVE-AND-SUBMIT": "Save & Submit",
     "ARE-YOU-SURE-DELETE": "Are you sure to delete?",
@@ -471,7 +471,8 @@
     "SIDES": "Sides",
     "DAMAGE-PHOTOS": "Damage Photos",
     "PREVIEW": "Preview",
-    "CONFIRM-DELETE": "Confirm Delete?"
+    "CONFIRM-DELETE": "Confirm Delete?",
+    "DELETE-SUCCESS": "Delete Successfully"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

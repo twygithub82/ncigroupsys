@@ -207,6 +207,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     PREVIEW: 'COMMON-FORM.PREVIEW',
     DELETE: 'COMMON-FORM.DELETE',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
+    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
   }
 
   in_gate_guid: string | null | undefined;
@@ -850,8 +851,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           console.log(result)
           const record = result.data.record
           if (record?.affected) {
-            // TODO :: use new guid to upload images
-            this.handleSaveSuccess(record?.affected);
+            this.uploadImages(record.guid[0]);
           }
         });
       }
@@ -884,6 +884,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   handleSaveError() {
     let successMsg = this.translatedLangText.SAVE_ERROR;
     ComponentUtil.showNotification('snackbar-error', successMsg, 'top', 'center', this.snackBar);
+  }
+
+  handleDeleteSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.DELETE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    }
   }
 
   // context menu
@@ -1132,6 +1139,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   deleteDialog(imgForm: any, event: Event) {
     event.preventDefault(); // Prevents the form submission
 
+    const url = imgForm.get('preview')?.value;
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1147,6 +1156,80 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
+        if (Utility.isBase64Url(url)) {
+          imgForm.patchValue({
+            preview: ''
+          });
+          this.markForCheck();
+          this.handleDeleteSuccess(1);
+        } else if (Utility.isUrl(url)) {
+          this.fileManagerService.deleteFile([url]).subscribe({
+            next: (response) => {
+              console.log('Files delete successfully:', response);
+              imgForm.patchValue({
+                preview: ''
+              });
+              this.markForCheck();
+              this.handleDeleteSuccess(response);
+            },
+            error: (error) => {
+              console.error('Error delete files:', error);
+              this.handleSaveError();
+            },
+            complete: () => {
+              console.log('Delete process completed.');
+            }
+          });
+        } else {
+          console.log('Unknown format');
+        }
+      }
+    });
+  }
+
+  deleteDialogDmgImg(imgForm: any, index: number, event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    const url = imgForm.get('preview')?.value;
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        if (Utility.isBase64Url(url)) {
+          this.images().removeAt(index);
+          this.markForCheck();
+          this.handleDeleteSuccess(1);
+        } else if (Utility.isUrl(url)) {
+          this.fileManagerService.deleteFile([url]).subscribe({
+            next: (response) => {
+              console.log('Files delete successfully:', response);
+              this.images().removeAt(index);
+              this.markForCheck();
+              this.handleDeleteSuccess(response);
+            },
+            error: (error) => {
+              console.error('Error delete files:', error);
+              this.handleSaveError();
+            },
+            complete: () => {
+              console.log('Delete process completed.');
+            }
+          });
+        } else {
+          console.log('Unknown format');
+        }
       }
     });
   }
@@ -1222,37 +1305,42 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       };
     });
 
-    const dmgImages = this.images().controls.map(preview => {
-      const file = preview.get('file')?.value;
-      const side = preview.get('side')?.value;
-      return {
-        file: file, // The actual file object
-        metadata: {
-          TableName: 'in_gate_survey',
-          FileType: 'img',
-          GroupGuid: guid,
-          Description: side + '_DMG' // Use the file name or custom description
-        }
-      };
-    });
+    const dmgImages = this.images().controls
+      .filter(preview => preview.get('file')?.value)
+      .map(preview => {
+        const file = preview.get('file')?.value;
+        const side = preview.get('side')?.value;
+        return {
+          file: file, // The actual file object
+          metadata: {
+            TableName: 'in_gate_survey',
+            FileType: 'img',
+            GroupGuid: guid,
+            Description: side + '_DMG' // Use the file name or custom description
+          }
+        };
+      });
     const allImages = dmgImages.concat(additionalMetadata);
-
-    console.log(allImages);
     // Call the FileManagerService to upload files
-    this.fileManagerService.uploadFiles(allImages).subscribe({
-      next: (response) => {
-        console.log('Files uploaded successfully:', response);
-        this.handleSaveSuccess(response?.affected);
-      },
-      error: (error) => {
-        console.error('Error uploading files:', error);
-        this.handleSaveError();
-      },
-      complete: () => {
-        console.log('Upload process completed.');
-        this.router.navigate(['/admin/inventory/in-gate-survey']);
-      }
-    });
+    if (allImages.length) {
+      this.fileManagerService.uploadFiles(allImages).subscribe({
+        next: (response) => {
+          console.log('Files uploaded successfully:', response);
+          this.handleSaveSuccess(response?.affected);
+        },
+        error: (error) => {
+          console.error('Error uploading files:', error);
+          this.handleSaveError();
+        },
+        complete: () => {
+          console.log('Upload process completed.');
+          this.router.navigate(['/admin/inventory/in-gate-survey']);
+        }
+      });
+    } else {
+      this.handleSaveSuccess(1);
+      this.router.navigate(['/admin/inventory/in-gate-survey']);
+    }
   }
 
   chosenYearHandler(normalizedYear: Moment) {

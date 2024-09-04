@@ -9,7 +9,7 @@ export const uploadEndpoints = {
   uploadFiles: '/api/v2/AzureBlob/UploadFiles',
   getFileUrl: '/api/v2/AzureBlob/GetFileUrl',
   getFileUrlByGroupGuid: '/api/v2/AzureBlob/GetFileUrlByGroupGuid',
-  deleteFiles: '/api/v2/AzureBlob/DeleteFile'
+  deleteFile: '/api/v2/AzureBlob/DeleteFile'
 }
 
 export const jwt_mapping = {
