@@ -42,7 +42,7 @@ namespace IDMS.MasterMS
                        //.AddTypeExtension<SchedulingQuery>()
                        //.AddTypeExtension<ReleaseOrderQuery>()
                        //.AddSubscriptionType<BookingSubscription>()
-                       //.AddMutationType<BookingMutation>()
+                       .AddMutationType<TemplateEstMutation>()
                        //.AddTypeExtension<ReleaseOrderMutation>()
                        //.AddTypeExtension<SchedulingMutation>()
                        .AddFiltering()

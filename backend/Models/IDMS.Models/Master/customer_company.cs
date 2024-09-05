@@ -36,7 +36,7 @@ namespace IDMS.Models.Master
         public IEnumerable<release_order>? release_order { get; set; }
         public IEnumerable<package_residue>? package_residue { get; set; }
         public IEnumerable<package_buffer>? package_buffer { get; set; }
-
+        public IEnumerable<template_est_customer>? template_est_cutomer { get; set; }
     }
 
 
