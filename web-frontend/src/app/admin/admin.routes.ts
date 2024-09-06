@@ -30,6 +30,7 @@ import { AuthGuard } from '@core/guard/auth.guard';
 import { PackageResidueComponent } from './package/package-residue/package-residue.component';
 import { PackageRepairComponent } from './package/package-repair/package-repair.component';
 import { PackageBufferComponent } from './package/package-buffer/package-buffer.component';
+import { EstimateTemplateComponent } from './master/estimate-template/estimate-template.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -179,6 +180,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "package/package-buffer",
     component: PackageBufferComponent,
+  },
+  {
+    path:"master/estimate-template",
+    component:EstimateTemplateComponent,
   }
 ];
 
