@@ -30,6 +30,8 @@ import { AuthGuard } from '@core/guard/auth.guard';
 import { PackageResidueComponent } from './package/package-residue/package-residue.component';
 import { PackageRepairComponent } from './package/package-repair/package-repair.component';
 import { PackageBufferComponent } from './package/package-buffer/package-buffer.component';
+import { EstimateComponent } from './repair/estimate/estimate.component';
+import { EstimateNewComponent } from './repair/estimate-new/estimate-new.component';
 import { EstimateTemplateComponent } from './master/estimate-template/estimate-template.component';
 export const ADMIN_ROUTE: Routes = [
   {
@@ -180,6 +182,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "package/package-buffer",
     component: PackageBufferComponent,
+  },
+  {
+    path: "repair/estimate",
+    component: EstimateComponent,
+  },
+  {
+    path: "repair/estimate/new/:id",
+    component: EstimateNewComponent,
   },
   {
     path:"master/estimate-template",

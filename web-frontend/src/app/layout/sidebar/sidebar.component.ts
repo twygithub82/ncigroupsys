@@ -45,7 +45,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   langText = {
     SOFTWARE_NAME: 'SOFTWARE-NAME.TEXT'
   }
-  
+
   listMaxHeight?: string;
   listMaxWidth?: string;
   userFullName?: string;
@@ -55,6 +55,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   currentRoute?: string;
   routerObj;
   menuIcon = 'radio_button_checked';
+  isHovered = false;
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2,
@@ -104,6 +105,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     // this.sidebarItems = ROUTES.filter((sidebarItem) => sidebarItem);
+    this.checkScreenSizeAndCollapse();
     this.initLeftSidebar();
     this.bodyTag = this.document.body;
   }
@@ -134,6 +136,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
   }
   mouseHover() {
+    this.isHovered = true;
     const body = this.elementRef.nativeElement.closest('body');
     if (body.classList.contains('submenu-closed')) {
       this.renderer.addClass(this.document.body, 'side-closed-hover');
@@ -141,6 +144,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
   }
   mouseOut() {
+    this.isHovered = false;
     const body = this.elementRef.nativeElement.closest('body');
     if (body.classList.contains('side-closed-hover')) {
       this.renderer.removeClass(this.document.body, 'side-closed-hover');
@@ -181,6 +185,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.router.navigate(['/authentication/signin']);
       }
     });
+  }
+  checkScreenSizeAndCollapse() {
+    const screenWidth = window.innerWidth;
+    if (screenWidth <= 1366) { // Tablet width or smaller
+      this.callSidemenuCollapse();
+    }
   }
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
