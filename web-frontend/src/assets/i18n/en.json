@@ -165,6 +165,14 @@
         "OUT-GATE-SURVEY": "Out Gate Survey",
         "OUT-GATE-SURVEY-FORM": "Out Gate Survey Form"
       }
+    },
+    "REPAIR": {
+      "TEXT": "Repair",
+      "LIST": {
+        "ESTIMATE": "Estimate",
+        "ESTIMATE-NEW": "New Estimate",
+        "ESTIMATE-EDIT": "Edit Estimate"
+      }
     }
   },
   "LANDING-SIGNIN": {
@@ -482,7 +490,20 @@
     "DELETE-SUCCESS": "Delete Successfully",
     "ESTIMATE-TEMPLATE":"Estimate Template",
     "ASSIGN-TEMPLATE":"Assign Template",
-    "TEMPLATE-NAME":"Template Name"
+    "TEMPLATE-NAME":"Template Name",
+    "BILL-COMPLETED": "Bill Completed",
+    "REPAIR-JOB-NO": "Repair Job No.",
+    "REPAIR-TYPE": "Repair Type",
+    "ESTIMATE-DATE": "Estimate Date",
+    "APPROVAL-DATE": "Approval Date",
+    "ESTIMATE-STATUS": "Estimate Status",
+    "GROUP": "Group",
+    "SUBGROUP": "Sub Group",
+    "DAMAGE": "Damage",
+    "QTY": "Qty",
+    "HOUR": "Hour",
+    "PRICE": "Price",
+    "MATERIAL": "Material"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

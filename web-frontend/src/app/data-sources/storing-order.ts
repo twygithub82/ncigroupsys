@@ -260,10 +260,6 @@ export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
         catchError(() => of({ soList: [] })),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          // const soList = result.soList;
-          // this.soItemsSubject.next(soList);
-          // this.totalCount = soList.length;
-          // return soList;
           const soList = result.soList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(soList.nodes);
           this.totalCount = soList.totalCount;

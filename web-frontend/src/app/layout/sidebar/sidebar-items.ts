@@ -465,6 +465,29 @@ export const ROUTES: RouteInfo[] = [
       },
     ]
   },
+  {
+    path: "admin/repair",
+    title: "MENUITEMS.REPAIR.TEXT",
+    iconType: "material",
+    icon: "build",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/repair/estimate",
+        title: "MENUITEMS.REPAIR.LIST.ESTIMATE",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      }
+    ]
+  },
   // {
   //   path: "advance-table",
   //   title: "MENUITEMS.ADVANCE-TABLE.TEXT",
