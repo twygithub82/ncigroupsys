@@ -51,6 +51,7 @@ import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/m
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { HttpClientModule } from '@angular/common/http';
 import { UniqueFieldDefinitionNamesRule } from 'graphql';
+import { FileManagerService } from '@core/service/filemanager.service';
 
 
 @Component({
@@ -248,9 +249,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   
   selectedFileChanged : boolean=false;
   selectedFile: File | null = null;
-  exitingSDSFiles:File[]|null=null;
+  existingSDSFiles:File[]|null=null;
+  existingSDSFilesUrls:any[]|null=null;
 
-  soList: StoringOrderItem[] = [];
+  
 
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
@@ -264,7 +266,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private fileManagerService: FileManagerService
   ) {
     super();
     this.translateLangText();
@@ -418,8 +421,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.CheckUnNoValidity();
         });
             this.CheckUnNoValidity();
-            //this.QueryAllFilesInGroupAndClassNo();
-           // this.populateSOForm(this.storingOrderItem);
           }
         });
         
@@ -691,17 +692,22 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   async DeleteExistingSDSFiles()
   {
+
+    
     const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/DeleteFile";
 
-    if(this.exitingSDSFiles)
+    if(this.existingSDSFilesUrls)
     {
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json'
-      });
-      const fileNames: string[] = Array.from(this.exitingSDSFiles).map(file => file.name.replace(/\.[^/.]+$/, ""));;
-      const body = JSON.stringify(fileNames);
-      let totalCount=await firstValueFrom( this.httpClient.delete<number>(uploadURL,{body,headers}));
-      console.log('Deleted File :'+totalCount);
+      const urls: string[] = this.existingSDSFilesUrls.map(item => item.url);
+      await firstValueFrom(this.fileManagerService.deleteFile(urls));
+      //this.fileManagerService.deleteFile(urls);
+      // const headers = new HttpHeaders({
+      //   'Content-Type': 'application/json'
+      // });
+      // const fileNames: string[] = Array.from(this.existingSDSFiles).map(file => file.name.replace(/\.[^/.]+$/, ""));;
+      // const body = JSON.stringify(fileNames);
+      // let totalCount=await firstValueFrom( this.httpClient.delete<number>(uploadURL,{body,headers}));
+      // console.log('Deleted File :'+totalCount);
     }
       
   }
@@ -731,6 +737,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
  }
   async QueryAllFilesInGroup()
   {
+    this.selectedFileLoading.next(true); // Set loading to true
     let GroupGuid:string='';
     const unNoControl = this.tcForm!.get('un_no');
 
@@ -741,25 +748,49 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           // Additional logic can be added here
         }
 
-    const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/GetFileUrlByGroupGuid";
-    
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-    this.selectedFileLoading.next(true); // Set loading to true
-    const body = JSON.stringify([GroupGuid]);
-     
-    let urls = await firstValueFrom( this.httpClient.post<any[]>(uploadURL,body,{headers}));
-    if(urls.length>0)
-    {
-      let files = await this.downloadFiles(urls);
-      if(files.length>0)
+   this.fileManagerService.getFileUrlByGroupGuid([GroupGuid]).subscribe({
+    next: async (response) => {
+      console.log('Files retrieved successfully:', response);
+       if(response.length>0)
       {
-        this.selectedFile =files[0];
-        this.exitingSDSFiles=files;
+        let files = await this.downloadFiles(response);
+        if(files.length>0)
+        {
+          this.selectedFile =files[0];
+          this.existingSDSFiles=files;
+          this.existingSDSFilesUrls=response;
+        }
       }
+      this.selectedFileLoading.next(false);
+    },
+    error: (error) => {
+      console.error('Error retrieving files:', error);
+      this.selectedFileLoading.next(false);
+    },
+    complete: () => {
+      console.log('File retrieval process completed.');
+      this.selectedFileLoading.next(false);
     }
-    this.selectedFileLoading.next(false);
+  });
+    // const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/GetFileUrlByGroupGuid";
+    
+    // const headers = new HttpHeaders({
+    //   'Content-Type': 'application/json'
+    // });
+   
+    // const body = JSON.stringify([GroupGuid]);
+     
+    // let urls = await firstValueFrom( this.httpClient.post<any[]>(uploadURL,body,{headers}));
+    // if(urls.length>0)
+    // {
+    //   let files = await this.downloadFiles(urls);
+    //   if(files.length>0)
+    //   {
+    //     this.selectedFile =files[0];
+    //     this.exitingSDSFiles=files;
+    //   }
+    // }
+   
   }
   
   async QueryAllFilesInGroupAndClassNo()
