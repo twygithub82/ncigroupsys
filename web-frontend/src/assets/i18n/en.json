@@ -133,6 +133,13 @@
         "CLEAN-GROUPS": "Cleaning Groups"
       }
     },
+    "MASTER": {
+      "TEXT": "Master",
+      "LIST":{
+        "ESTIMATE-TEMPLATE":"Estimate Template",
+        "ASSIGN-ESTIMATE-TEMPLATE":"Assign Template"
+      }
+    },
     "NEW": {
       "TEXT": "New"
     },
@@ -472,7 +479,10 @@
     "DAMAGE-PHOTOS": "Damage Photos",
     "PREVIEW": "Preview",
     "CONFIRM-DELETE": "Confirm Delete?",
-    "DELETE-SUCCESS": "Delete Successfully"
+    "DELETE-SUCCESS": "Delete Successfully",
+    "ESTIMATE-TEMPLATE":"Estimate Template",
+    "ASSIGN-TEMPLATE":"Assign Template",
+    "TEMPLATE-NAME":"Template Name"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
