@@ -17,18 +17,6 @@ namespace IDMS.Models.Master.GqlTypes.DB
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<template_est_part>()
-                       .HasOne(p => p.tep_damage_repair)
-                       .WithMany() // Assuming `tep_damage_repair` does not have a collection navigation property
-                       .HasForeignKey(p => p.damage_code_guid);
-            //.OnDelete(DeleteBehavior.Restrict); // Adjust delete behavior as needed
-
-            modelBuilder.Entity<template_est_part>()
-                .HasOne(p => p.tep_damage_repair)
-                .WithMany() // Assuming `tep_damage_repair` does not have a collection navigation property
-                .HasForeignKey(p => p.repair_code_guid);
-                //.OnDelete(DeleteBehavior.Restrict); // Adjust delete behavior as needed
         }
 
         //public DbSet<IDMS.Models.Tariff.tariff_cleaning> tariff_cleaning { get; set; }
@@ -61,6 +49,9 @@ namespace IDMS.Models.Master.GqlTypes.DB
         //public DbSet<IDMS.Models.Package.package_repair> package_repair { get; set; }
         //public DbSet<IDMS.Models.Shared.tank> tank { get; set; }
         public DbSet<template_est> template_est { get; set; }
+        public DbSet<template_est_customer> template_est_customer { get; set; }
+        public DbSet<template_est_part> template_est_part { get; set; }
+        public DbSet<tep_damage_repair> tep_damage_repair { get; set; }
 
     }
 }

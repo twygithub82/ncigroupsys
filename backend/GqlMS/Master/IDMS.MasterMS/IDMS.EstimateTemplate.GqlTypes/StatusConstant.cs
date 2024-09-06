@@ -15,4 +15,10 @@ namespace IDMS.EstimateTemplate
    
         }
     }
+
+    public enum CodeTyp
+    {
+        damage = 0,
+        repair = 1
+    }
 }
