@@ -503,7 +503,9 @@
     "QTY": "Qty",
     "HOUR": "Hour",
     "PRICE": "Price",
-    "MATERIAL": "Material"
+    "MATERIAL": "Material",
+    "TEMPLATE": "Template",
+    "PART-DETAILS": "Part Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

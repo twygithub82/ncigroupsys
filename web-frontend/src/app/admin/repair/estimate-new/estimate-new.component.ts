@@ -92,7 +92,7 @@ import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 })
 export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    // 'group_name_cv',
+    'group_name_cv',
     'subgroup_name_cv',
     'damange',
     'repair',
@@ -177,7 +177,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     QTY: 'COMMON-FORM.QTY',
     HOUR: 'COMMON-FORM.HOUR',
     PRICE: 'COMMON-FORM.PRICE',
-    MATERIAL: 'COMMON-FORM.MATERIAL'
+    MATERIAL: 'COMMON-FORM.MATERIAL',
+    TEMPLATE: 'COMMON-FORM.TEMPLATE',
+    PART_DETAILS: 'COMMON-FORM.PART-DETAILS'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -344,7 +346,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  addOrderDetails(event: Event, row?: StoringOrderTankItem) {
+  addPartDetails(event: Event, row?: StoringOrderTankItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -687,7 +689,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     newSot.so_guid = row.so_guid;
     newSot.eta_dt = row.eta_dt;
     newSot.etr_dt = row.etr_dt;
-    this.addOrderDetails(event, newSot);
+    this.addPartDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {
