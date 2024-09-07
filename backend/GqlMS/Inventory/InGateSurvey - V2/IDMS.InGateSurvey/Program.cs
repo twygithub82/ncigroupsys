@@ -51,14 +51,12 @@ builder.Services.AddGraphQLServer()
                .AddTypeExtension<InGate_MutationType>()
                .AddTypeExtension<OutGate_MutationType>()
                .AddMutationType<IGSurveyMutation>()
+               .AddTypeExtension<OGSurveyMutationType>()
                .AddFiltering()
                .AddProjections()
                .AddSorting();
 
 // .AddMutationType<InGate_MutationType>();
-
-
-
 //builder.Services.AddAuthentication(options => {
 
 //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
