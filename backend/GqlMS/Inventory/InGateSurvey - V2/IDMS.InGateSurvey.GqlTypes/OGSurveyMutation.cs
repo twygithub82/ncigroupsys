@@ -10,16 +10,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace IDMS.InGateSurvey.GqlTypes
 {
-    public class IGSurveyMutation
+    public class OGSurveyMutation
     {
         //[Authorize]
-        public async Task<Record> AddInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<Record> AddOutGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
-            InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
+            OutGateSurveyRequest outGateSurveyRequest, OutGateRequest outGateRequest)
         {
             int retval = 0;
             List<string> retGuids = new List<string>();
@@ -32,29 +31,29 @@ namespace IDMS.InGateSurvey.GqlTypes
                 //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                in_gate_survey ingateSurvey = new();
-                mapper.Map(inGateSurveyRequest, ingateSurvey);
+                out_gate_survey outgateSurvey = new();
+                mapper.Map(outGateSurveyRequest, outgateSurvey);
 
-                ingateSurvey.guid = Util.GenerateGUID();
-                ingateSurvey.create_by = user;
-                ingateSurvey.create_dt = currentDateTime;
-                context.in_gate_survey.Add(ingateSurvey);
+                outgateSurvey.guid = Util.GenerateGUID();
+                outgateSurvey.create_by = user;
+                outgateSurvey.create_dt = currentDateTime;
+                context.out_gate_survey.Add(outgateSurvey);
 
-                var igWithTank = inGateWithTankRequest;
-                var ingate = context.in_gate.Where(i => i.guid == igWithTank.guid).FirstOrDefault();
-                if (ingate != null)
+                //var igWithTank = inGateWithTankRequest;
+                var outgate = context.out_gate.Where(i => i.guid == outGateRequest.guid).FirstOrDefault();
+                if (outgate != null)
                 {
-                    ingate.remarks = igWithTank.remarks;
-                    ingate.vehicle_no = igWithTank.vehicle_no;
-                    ingate.driver_name = igWithTank.driver_name;
-                    ingate.haulier = igWithTank.haulier;
+                    outgate.remarks = outGateRequest.remarks;
+                    outgate.vehicle_no = outGateRequest.vehicle_no;
+                    outgate.driver_name = outGateRequest.driver_name;
+                    outgate.haulier = outGateRequest.haulier;
                     //yet to survey --> pending
-                    ingate.eir_status_cv = EirStatus.PENDING;
-                    ingate.update_by = user;
-                    ingate.update_dt = currentDateTime;
+                    outgate.eir_status_cv = EirStatus.PENDING;
+                    outgate.update_by = user;
+                    outgate.update_dt = currentDateTime;
                 }
 
-                var tnk = inGateWithTankRequest.tank;
+                var tnk = outGateRequest.tank;
                 //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
                 //if (sot != null)
                 //{
@@ -71,12 +70,12 @@ namespace IDMS.InGateSurvey.GqlTypes
                 sot.update_dt = currentDateTime;
 
                 //Add the newly created guid into list for return
-                retGuids.Add(ingateSurvey.guid);
+                retGuids.Add(outgateSurvey.guid);
 
                 retval = await context.SaveChangesAsync();
                 //TODO
-                string evtId = EventId.NEW_INGATE;
-                string evtName = EventName.NEW_INGATE;
+                string evtId = EventId.NEW_OUTGATE;
+                string evtName = EventName.NEW_OUTGATE;
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
 
                 //Bundle the retVal and retGuid return as record object
@@ -90,55 +89,55 @@ namespace IDMS.InGateSurvey.GqlTypes
         }
 
         //[Authorize]
-        public async Task<int> UpdateInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<int> UpdateOutGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
-            InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
+            OutGateSurveyRequest outGateSurveyRequest, OutGateRequest outGateRequest)
         {
             int retval = 0;
 
             try
             {
-                in_gate_survey? ingateSurvey = await context.in_gate_survey.Where(i => i.guid == inGateSurveyRequest.guid &&
+                out_gate_survey? outgateSurvey = await context.out_gate_survey.Where(i => i.guid == outGateSurveyRequest.guid &&
                                                                                  (i.delete_dt == null || i.delete_dt == 0)).FirstOrDefaultAsync();
-                if (ingateSurvey == null)
-                    throw new GraphQLException(new Error("Ingate survey not found.", "NOT_FOUND"));
+                if (outgateSurvey == null)
+                    throw new GraphQLException(new Error("Outgate survey not found.", "NOT_FOUND"));
 
-                if (ingateSurvey.in_gate_guid == null)
-                    throw new GraphQLException(new Error("Ingate guid cant be null.", "Error"));
+                if (outgateSurvey.out_gate_guid == null)
+                    throw new GraphQLException(new Error("Outgate guid cant be null.", "Error"));
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
-                mapper.Map(inGateSurveyRequest, ingateSurvey);
+                mapper.Map(outGateSurveyRequest, outgateSurvey);
 
-                if (string.IsNullOrEmpty(inGateSurveyRequest.guid))
+                if (string.IsNullOrEmpty(outGateSurveyRequest.guid))
                 {
-                    ingateSurvey.guid = Util.GenerateGUID();
-                    ingateSurvey.create_by = user;
-                    ingateSurvey.create_dt = currentDateTime;
-                    context.in_gate_survey.Add(ingateSurvey);
+                    outgateSurvey.guid = Util.GenerateGUID();
+                    outgateSurvey.create_by = user;
+                    outgateSurvey.create_dt = currentDateTime;
+                    context.out_gate_survey.Add(outgateSurvey);
                 }
                 else
                 {
-                    ingateSurvey.update_by = user;
-                    ingateSurvey.update_dt = currentDateTime;
+                    outgateSurvey.update_by = user;
+                    outgateSurvey.update_dt = currentDateTime;
                 }
 
-                var igWithTank = inGateWithTankRequest;
-                var ingate = context.in_gate.Where(i => i.guid == igWithTank.guid).FirstOrDefault();
-                if (ingate != null)
+                //var igWithTank = inGateWithTankRequest;
+                var outgate = context.out_gate.Where(i => i.guid == outGateRequest.guid).FirstOrDefault();
+                if (outgate != null)
                 {
-                    ingate.remarks = igWithTank.remarks;
-                    ingate.vehicle_no = igWithTank.vehicle_no;
-                    ingate.driver_name = igWithTank.driver_name;
-                    ingate.haulier = igWithTank.haulier;
+                    outgate.remarks = outGateRequest.remarks;
+                    outgate.vehicle_no = outGateRequest.vehicle_no;
+                    outgate.driver_name = outGateRequest.driver_name;
+                    outgate.haulier = outGateRequest.haulier;
                     //yet to survey --> pending
-                    ingate.eir_status_cv = EirStatus.PENDING;
-                    ingate.update_by = user;
-                    ingate.update_dt = currentDateTime;
+                    outgate.eir_status_cv = EirStatus.PENDING;
+                    outgate.update_by = user;
+                    outgate.update_dt = currentDateTime;
                 }
 
-                var tnk = inGateWithTankRequest.tank;
+                var tnk = outGateRequest.tank;
                 //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
                 //if (sot != null)
                 //{
@@ -155,8 +154,8 @@ namespace IDMS.InGateSurvey.GqlTypes
 
                 retval = await context.SaveChangesAsync();
                 //TODO
-                string evtId = EventId.NEW_INGATE;
-                string evtName = EventName.NEW_INGATE;
+                string evtId = EventId.NEW_OUTGATE;
+                string evtName = EventName.NEW_OUTGATE;
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
             }
             catch (Exception ex)
@@ -166,8 +165,8 @@ namespace IDMS.InGateSurvey.GqlTypes
             return retval;
         }
 
-        public async Task<int> DeleteInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string IGSurvey_guid)
+        public async Task<int> DeleteOutGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string OGSurvey_guid)
         {
             int retval = 0;
             try
@@ -177,14 +176,14 @@ namespace IDMS.InGateSurvey.GqlTypes
                 //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var query = context.in_gate_survey.Where(i => i.guid == $"{IGSurvey_guid}");
+                var query = context.out_gate_survey.Where(i => i.guid == $"{OGSurvey_guid}");
                 if (query.Any())
                 {
-                    var delInGateSurvey = query.FirstOrDefault();
+                    var delOutGateSurvey = query.FirstOrDefault();
 
-                    delInGateSurvey.delete_dt = currentDateTime;
-                    delInGateSurvey.update_by = user;
-                    delInGateSurvey.update_dt = currentDateTime;
+                    delOutGateSurvey.delete_dt = currentDateTime;
+                    delOutGateSurvey.update_by = user;
+                    delOutGateSurvey.update_dt = currentDateTime;
 
                     retval = await context.SaveChangesAsync(true);
                 }
@@ -197,23 +196,23 @@ namespace IDMS.InGateSurvey.GqlTypes
         }
 
 
-        public async Task<int> PublishIngateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-                [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
+        public async Task<int> PublishOutgateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+                [Service] IHttpContextAccessor httpContextAccessor, string OutGate_guid)
         {
             int retval = 0;
             try
             {
+
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
+                var outgate = new out_gate() { guid = OutGate_guid };
+                context.Attach(outgate);
 
-                var ingate = new in_gate() { guid = InGate_guid };
-                context.Attach(ingate);
-
-                ingate.eir_status_cv = EirStatus.PUBLISHED;
-                ingate.update_by = user;
-                ingate.update_dt = currentDateTime;
+                outgate.eir_status_cv = EirStatus.PUBLISHED;
+                outgate.update_by = user;
+                outgate.update_dt = currentDateTime;
 
                 retval = await context.SaveChangesAsync(true);
 

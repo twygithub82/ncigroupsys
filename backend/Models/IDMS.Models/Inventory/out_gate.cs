@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace IDMS.Models.Inventory
 {
 
-    public class out_gate:Dates
+    public class out_gate : Dates
     {
         [Key]
         public string? guid { get; set; } = "";
@@ -14,7 +14,7 @@ namespace IDMS.Models.Inventory
         [IsProjected(true)]
         [ForeignKey("tank")]
         public string? so_tank_guid { get; set; } = "";
-        
+
         [NotMapped]
         public string? haulier { get; set; } = "";
         public string? eir_no { get; set; } = "";
@@ -24,6 +24,6 @@ namespace IDMS.Models.Inventory
         public string? driver_name { get; set; } = "";
         public string? remarks { get; set; }
         public storing_order_tank? tank { get; set; } = null;
-        //public in_gate_survey? in_gate_survey { get; set; }
+        public out_gate_survey? out_gate_survey { get; set; }
     }
 }

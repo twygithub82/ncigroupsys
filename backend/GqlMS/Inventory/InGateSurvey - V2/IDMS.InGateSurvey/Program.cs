@@ -28,7 +28,10 @@ var mappingConfig = new MapperConfiguration(cfg =>
 {
 
     cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
-        .ForMember(dest => dest.guid, opt => opt.Ignore()); // Ignore the primary key
+        .ForMember(dest => dest.guid, opt => opt.Ignore());
+
+    cfg.CreateMap<OutGateSurveyRequest, out_gate_survey>()
+        .ForMember(dest => dest.guid, opt => opt.Ignore());
     //cfg.CreateMap<StoringOrderRequest, storing_order>();
 });
 
@@ -42,7 +45,7 @@ builder.Services.AddGraphQLServer()
                .InitializeOnStartup()
                .RegisterDbContext<ApplicationInventoryDBContext>(DbContextKind.Pooled)
                .AddQueryType<Query>()
-               .AddTypeExtension<IGSurveyQuery>()
+               .AddTypeExtension<SurveyQuery>()
                .AddTypeExtension<InGate_QueryType>()
                .AddTypeExtension<OutGate_QueryType>()
                .AddTypeExtension<InGate_MutationType>()
