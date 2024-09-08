@@ -195,5 +195,42 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
+
+        public async Task<List<string>> QueryDistinctPartName(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string groupName, string subgroupName)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                var query = context.tariff_repair.AsQueryable();
+
+                // Apply filters conditionally
+                if (!string.IsNullOrEmpty(groupName))
+                {
+                    query = query.Where(tr => tr.group_name_cv == groupName);
+                }
+
+                if (!string.IsNullOrEmpty(subgroupName))
+                {
+                    query = query.Where(tr => tr.subgroup_name_cv == subgroupName);
+                }
+
+                // Select distinct part names
+                var distinctPartNames = await query
+                    .Select(tr => tr.part_name)
+                    .Distinct()
+                    .ToListAsync();
+
+                return distinctPartNames;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+               
+            
+        }
+
     }
 }

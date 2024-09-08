@@ -251,7 +251,7 @@
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{row.tank?.tank_status_cv}}
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row?.tank_status_cv)}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

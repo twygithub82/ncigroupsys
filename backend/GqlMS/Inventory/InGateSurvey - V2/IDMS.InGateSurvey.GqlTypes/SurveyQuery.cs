@@ -17,7 +17,7 @@ using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 namespace IDMS.InGateSurvey.GqlTypes
 {
     [ExtendObjectType(typeof(Query))]
-    public class IGSurveyQuery
+    public class SurveyQuery
     {
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
@@ -33,6 +33,29 @@ namespace IDMS.InGateSurvey.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.in_gate_survey.Where(i => i.delete_dt == null || i.delete_dt == 0)
                                                 .Include(i => i.in_gate);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+
+            return query;
+        }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<out_gate_survey> QueryOutGateSurvey(ApplicationInventoryDBContext context,
+           [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            IQueryable<out_gate_survey> query = null;
+            try
+            {
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.out_gate_survey.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                                                .Include(i => i.out_gate);
             }
             catch (Exception ex)
             {

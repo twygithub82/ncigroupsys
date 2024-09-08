@@ -86,7 +86,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     'customer',
     'eir_no',
     'eir_dt',
-    'last_cargo'
+    'last_cargo',
+    'tank_status_cv'
   ];
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.ESTIMATE'
@@ -147,6 +148,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
+  tankStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -326,12 +328,12 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   public loadData() {
-    this.lastSearchCriteria = this.soDS.addDeleteDtCriteria({});
     this.search();
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' }
+      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -339,6 +341,9 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
+    });
+    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvList = data;
     });
   }
 
@@ -552,6 +557,10 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {

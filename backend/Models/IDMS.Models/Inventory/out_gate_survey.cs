@@ -11,15 +11,14 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Inventory
 {
-    public class in_gate_survey: Dates
+    public class out_gate_survey: Dates
     {
         [Key]
         [IsProjected(true)]
         public string? guid { get; set; }
 
-        [ForeignKey("in_gate")]
-        public string in_gate_guid { get; set; }
-        //public string? periodic_test_guid { get; set; }
+        [ForeignKey("out_gate")]
+        public string? out_gate_guid { get; set; }
         public int? capacity { get; set; }
         public int? tare_weight { get; set; }
         public string? take_in_reference { get; set; }
@@ -36,7 +35,6 @@ namespace IDMS.Models.Inventory
         public string? height_cv { get; set; }
         public string? walkway_cv { get; set; }
         public string? tank_comp_cv { get; set; }
-        //public string? take_in_status_cv { get; set; }
         public string? btm_dis_comp_cv { get; set; }
         public string? btm_dis_valve_cv { get; set; }
         public string? btm_dis_valve_spec_cv { get; set; }
@@ -81,7 +79,7 @@ namespace IDMS.Models.Inventory
         public string? rear_remarks { get; set; }
         public string? left_remarks { get; set; }
         public string? right_remarks { get; set; }
-        public InGateWithTank? in_gate { get; set; }
+        public out_gate? out_gate { get; set; }
 
     }
 }

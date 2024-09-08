@@ -14,13 +14,13 @@ import { BaseDataSource } from './base-ds';
 import { lab } from 'd3';
 export class TariffRepairItem {
   public guid?: string;
-  public alias?:string;
+  public alias?: string;
 
   public group_name_cv?: string;
   public subgroup_name_cv?: string;
   public part_name?: string;
   public dimension?: string;
-  public height_diameter?:number
+  public height_diameter?: number
   public height_diameter_unit_cv?: string;
   public width_diameter?: number;
   public width_diameter_unit_cv?: string;
@@ -28,34 +28,34 @@ export class TariffRepairItem {
   public thickness_unit_cv?: string;
   public length?: number;
   public length_unit_cv?: string;
-  public labour_hour?:number;
+  public labour_hour?: number;
   public material_cost?: number;
-  public remarks?:string;
+  public remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  
+
   constructor(item: Partial<TariffRepairItem> = {}) {
     this.guid = item.guid;
     if (!this.guid) this.guid = '';
     this.group_name_cv = item.group_name_cv;
-    this.subgroup_name_cv=item.subgroup_name_cv;
-    this.part_name=item.part_name;
-    this.alias=item.alias;
-    this.dimension=item.dimension;
-    this.height_diameter=item.height_diameter;
-    this.height_diameter_unit_cv=item.height_diameter_unit_cv;
-    this.width_diameter=item.width_diameter;
-    this.width_diameter_unit_cv=item.width_diameter_unit_cv;
-    this.thickness=item.thickness;
-    this.thickness_unit_cv=item.thickness_unit_cv;
-    this.length=item.length;
-    this.length_unit_cv=item.length_unit_cv;
-    this.labour_hour=item.labour_hour;
-    this.material_cost=item.material_cost;
-    this.remarks=item.remarks;
+    this.subgroup_name_cv = item.subgroup_name_cv;
+    this.part_name = item.part_name;
+    this.alias = item.alias;
+    this.dimension = item.dimension;
+    this.height_diameter = item.height_diameter;
+    this.height_diameter_unit_cv = item.height_diameter_unit_cv;
+    this.width_diameter = item.width_diameter;
+    this.width_diameter_unit_cv = item.width_diameter_unit_cv;
+    this.thickness = item.thickness;
+    this.thickness_unit_cv = item.thickness_unit_cv;
+    this.length = item.length;
+    this.length_unit_cv = item.length_unit_cv;
+    this.labour_hour = item.labour_hour;
+    this.material_cost = item.material_cost;
+    this.remarks = item.remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -68,8 +68,6 @@ export interface TariffLabourResult {
   items: TariffRepairItem[];
   totalCount: number;
 }
-
-
 
 export const GET_TARIFF_REPAIR_QUERY = gql`
   query queryTariffRepair($where: tariff_repairFilterInput, $order:[tariff_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
@@ -107,7 +105,12 @@ export const GET_TARIFF_REPAIR_QUERY = gql`
       totalCount
     }
   }
+`;
 
+export const GET_DISTINCT_TARIFF_REPAIR = gql`
+  query queryDistinctPartName($groupName: String!, $subgroupName: String!) {
+    resultList : queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName)
+  }
 `;
 
 
@@ -147,7 +150,7 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  
+
   SearchTariffRepair(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffRepairItem[]> {
     this.loadingSubject.next(true);
     if (!last)
@@ -176,6 +179,52 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
   }
 
+  searchDistinctPartName(groupName?: string, subgroupName?: string): Observable<string[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_DISTINCT_TARIFF_REPAIR,
+        variables: { groupName, subgroupName },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffRepairItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList;
+          return resultList;
+        })
+      );
+  }
+
+  searchDimentionByPartName(partName?: string): Observable<string[]> {
+    this.loadingSubject.next(true);
+    const where = {
+
+    }
+    return this.apollo
+      .query<any>({
+        query: GET_DISTINCT_TARIFF_REPAIR,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffRepairItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList;
+          return resultList;
+        })
+      );
+  }
 
   addNewTariffRepair(td: any): Observable<any> {
     return this.apollo.mutate({
@@ -191,68 +240,68 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     );
   }
 
-    updateTariffRepair(td: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_TARIFF_REPAIR,
-        variables: {
-          td
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  updateTariffRepair(td: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_TARIFF_REPAIR,
+      variables: {
+        td
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
-    updateTariffRepairs(updatedTariffRepair_guids: any,group_name_cv:any,subgroup_name_cv:any,
-      dimension:any,height_diameter:any,height_diameter_unit_cv:any,width_diameter:any,width_diameter_unit_cv:any,labour_hour:any,
-      length:any,length_unit_cv:any,material_cost:any,part_name:any,alias:any,thickness:any,thickness_unit_cv:any,remarks:any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_TARIFF_REPAIRS,
-        variables: {
-          updatedTariffRepair_guids,
-          group_name_cv,
-          subgroup_name_cv,
-          dimension,
-          height_diameter,
-          height_diameter_unit_cv,
-          width_diameter,
-          width_diameter_unit_cv,
-          labour_hour,
-          length,
-          length_unit_cv,
-          material_cost,
-          part_name,
-          alias,
-          thickness,
-          thickness_unit_cv,
-          remarks
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  updateTariffRepairs(updatedTariffRepair_guids: any, group_name_cv: any, subgroup_name_cv: any,
+    dimension: any, height_diameter: any, height_diameter_unit_cv: any, width_diameter: any, width_diameter_unit_cv: any, labour_hour: any,
+    length: any, length_unit_cv: any, material_cost: any, part_name: any, alias: any, thickness: any, thickness_unit_cv: any, remarks: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_TARIFF_REPAIRS,
+      variables: {
+        updatedTariffRepair_guids,
+        group_name_cv,
+        subgroup_name_cv,
+        dimension,
+        height_diameter,
+        height_diameter_unit_cv,
+        width_diameter,
+        width_diameter_unit_cv,
+        labour_hour,
+        length,
+        length_unit_cv,
+        material_cost,
+        part_name,
+        alias,
+        thickness,
+        thickness_unit_cv,
+        remarks
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
-    updateTariffRepairs_MaterialCost(group_name_cv:any,subgroup_name_cv:any,part_name:any,material_cost_percentage:any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_TARIFF_REPAIRS_MATERIAL_COST,
-        variables: {
-          group_name_cv,
-          subgroup_name_cv,
-          part_name,
-          material_cost_percentage
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  updateTariffRepairs_MaterialCost(group_name_cv: any, subgroup_name_cv: any, part_name: any, material_cost_percentage: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_TARIFF_REPAIRS_MATERIAL_COST,
+      variables: {
+        group_name_cv,
+        subgroup_name_cv,
+        part_name,
+        material_cost_percentage
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
-    
+
 }

@@ -1,25 +1,12 @@
-﻿using HotChocolate;
-using IDMS.Models.Master;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IDMS.Models;
+using IDMS.Models.Inventory;
 
-namespace IDMS.Models.Inventory
+namespace IDMS.InGateSurvey.Model.Request
 {
-    public class in_gate_survey: Dates
+    public class OutGateSurveyRequest: Dates
     {
-        [Key]
-        [IsProjected(true)]
         public string? guid { get; set; }
-
-        [ForeignKey("in_gate")]
         public string in_gate_guid { get; set; }
-        //public string? periodic_test_guid { get; set; }
         public int? capacity { get; set; }
         public int? tare_weight { get; set; }
         public string? take_in_reference { get; set; }
@@ -36,7 +23,6 @@ namespace IDMS.Models.Inventory
         public string? height_cv { get; set; }
         public string? walkway_cv { get; set; }
         public string? tank_comp_cv { get; set; }
-        //public string? take_in_status_cv { get; set; }
         public string? btm_dis_comp_cv { get; set; }
         public string? btm_dis_valve_cv { get; set; }
         public string? btm_dis_valve_spec_cv { get; set; }
@@ -81,7 +67,5 @@ namespace IDMS.Models.Inventory
         public string? rear_remarks { get; set; }
         public string? left_remarks { get; set; }
         public string? right_remarks { get; set; }
-        public InGateWithTank? in_gate { get; set; }
-
     }
 }

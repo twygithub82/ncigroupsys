@@ -92,7 +92,7 @@ import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 })
 export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    // 'group_name_cv',
+    'group_name_cv',
     'subgroup_name_cv',
     'damange',
     'repair',
@@ -177,7 +177,19 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     QTY: 'COMMON-FORM.QTY',
     HOUR: 'COMMON-FORM.HOUR',
     PRICE: 'COMMON-FORM.PRICE',
-    MATERIAL: 'COMMON-FORM.MATERIAL'
+    MATERIAL: 'COMMON-FORM.MATERIAL',
+    TEMPLATE: 'COMMON-FORM.TEMPLATE',
+    PART_DETAILS: 'COMMON-FORM.PART-DETAILS',
+    GROUP_NAME: 'COMMON-FORM.GROUP-NAME',
+    SUBGROUP_NAME: 'COMMON-FORM.SUBGROUP-NAME',
+    LOCATION: 'COMMON-FORM.LOCATION',
+    PART_NAME: 'COMMON-FORM.PART-NAME',
+    DIMENSION: 'COMMON-FORM.DIMENSION',
+    LENGTH: 'COMMON-FORM.LENGTH',
+    PREFIX_DESC: 'COMMON-FORM.PREFIX-DESC',
+    ADDITIONAL_DIMENSION_AND_LENGTH: 'COMMON-FORM.ADDITIONAL-DIMENSION-AND-LENGTH',
+    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
+    IQ: 'COMMON-FORM.IQ'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -192,14 +204,16 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   sotList = new MatTableDataSource<StoringOrderTankItem>();
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
-  unit_typeList: TankItem[] = []
-  clean_statusCv: CodeValuesItem[] = []
-  repairCv: CodeValuesItem[] = []
-  yesnoCv: CodeValuesItem[] = []
+  groupNameCvList: CodeValuesItem[] = []
+  subgroupNameCvList: CodeValuesItem[] = []
+  yesnoCvList: CodeValuesItem[] = []
   soTankStatusCvList: CodeValuesItem[] = []
   purposeOptionCvList: CodeValuesItem[] = []
   testTypeCvList: CodeValuesItem[] = []
   testClassCvList: CodeValuesItem[] = []
+  partLocationCvList: CodeValuesItem[] = []
+  damageCodeCvList: CodeValuesItem[] = []
+  repairCodeCvList: CodeValuesItem[] = []
 
   customerCodeControl = new UntypedFormControl();
 
@@ -269,27 +283,23 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       });
     }
     const queries = [
-      { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
-      { alias: 'repairCv', codeValType: 'REPAIR_OPTION' },
+      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
       { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
+      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.subs.sink = this.tDS.loadItems().subscribe(data => {
-      this.unit_typeList = data
-    });
 
-    this.cvDS.connectAlias('repairCv').subscribe(data => {
-      this.repairCv = addDefaultSelectOption(data, "No Repair");
-    });
-    this.cvDS.connectAlias('clean_statusCv').subscribe(data => {
-      this.clean_statusCv = addDefaultSelectOption(data, "Unknown");;
+    this.cvDS.connectAlias('groupNameCv').subscribe(data => {
+      this.groupNameCvList = data;
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
-      this.yesnoCv = data;
+      this.yesnoCvList = data;
     });
     this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
       this.soTankStatusCvList = data;
@@ -302,6 +312,15 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = data;
+    });
+    this.cvDS.connectAlias('partLocationCv').subscribe(data => {
+      this.partLocationCvList = data;
+    });
+    this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
+      this.damageCodeCvList = data;
+    });
+    this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
+      this.repairCodeCvList = data;
     });
   }
 
@@ -344,7 +363,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  addOrderDetails(event: Event, row?: StoringOrderTankItem) {
+  addPartDetails(event: Event, row?: StoringOrderTankItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -360,10 +379,12 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          unit_typeList: this.unit_typeList,
-          repairCv: this.repairCv,
-          clean_statusCv: this.clean_statusCv,
-          yesnoCv: this.yesnoCv
+          groupNameCvList: this.groupNameCvList,
+          subgroupNameCvList: [],
+          yesnoCvList: this.yesnoCvList,
+          partLocationCvList: this.partLocationCvList,
+          damageCodeCvList: this.damageCodeCvList,
+          repairCodeCvList: this.repairCodeCvList
         },
         index: -1,
         sotExistedList: this.sotList.data
@@ -400,10 +421,12 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         action: 'edit',
         translatedLangText: this.translatedLangText,
         populateData: {
-          unit_typeList: this.unit_typeList,
-          repairCv: this.repairCv,
-          clean_statusCv: this.clean_statusCv,
-          yesnoCv: this.yesnoCv
+          groupNameCvList: this.groupNameCvList,
+          subgroupNameCvList: [],
+          yesnoCvList: this.yesnoCvList,
+          partLocationCvList: this.partLocationCvList,
+          damageCodeCvList: this.damageCodeCvList,
+          repairCodeCvList: this.repairCodeCvList
         },
         index: index,
         sotExistedList: this.sotList.data
@@ -687,7 +710,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     newSot.so_guid = row.so_guid;
     newSot.eta_dt = row.eta_dt;
     newSot.etr_dt = row.etr_dt;
-    this.addOrderDetails(event, newSot);
+    this.addPartDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {
@@ -746,11 +769,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   getYesNoDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.yesnoCv);
-  }
-
-  getRepairDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.repairCv);
+    return this.cvDS.getCodeDescription(codeValType, this.yesnoCvList);
   }
 
   getSoStatusDescription(codeValType: string): string | undefined {

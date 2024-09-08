@@ -61,5 +61,11 @@ namespace IDMS.InGateSurvey.Model.Request
         public string? rear_coord { get; set; }
         public string? left_coord { get; set; }
         public string? right_coord { get; set; }
+        public string? top_remarks { get; set; }
+        public string? bottom_remarks { get; set; }
+        public string? front_remarks { get; set; }
+        public string? rear_remarks { get; set; }
+        public string? left_remarks { get; set; }
+        public string? right_remarks { get; set; }
     }
 }

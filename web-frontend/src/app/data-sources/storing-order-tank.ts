@@ -586,6 +586,7 @@ const GET_STORING_ORDER_TANKS_ESTIMATE = gql`
         guid
         tank_no
         so_guid
+        tank_status_cv
         tariff_cleaning {
           guid
           open_on_gate_cv
