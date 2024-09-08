@@ -120,16 +120,40 @@
                       <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.DIMENSION}}</mat-label>
+                          <mat-select [formControl]="dimensionControl" formControlName="dimension" multiple>
+                            @for (cn of dimensionItems; track cn) {
+                              <ng-container *ngIf="cn !== null&& cn !== ''">
+                                <mat-option [value]="cn">
+                                  {{cn}}
+                                </mat-option>
+                              </ng-container>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                        <!-- <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.DIMENSION}}</mat-label>
                           <input matInput formControlName="dimension" type="number">
   
-                        </mat-form-field>
+                        </mat-form-field> -->
                       </div>
                       <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.LENGTH}}</mat-label>
+                          <mat-select [formControl]="lengthControl" formControlName="len" multiple>
+                            @for (cn of lengthItems; track cn) {
+                              <ng-container *ngIf="cn !== null&& cn.ToString() !== ''">
+                                <mat-option [value]="cn">
+                                  {{cn.ToString()}}
+                                </mat-option>
+                              </ng-container>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                        <!-- <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.LENGTH }}</mat-label>
                           <input matInput formControlName="len" type="number">
   
-                        </mat-form-field>
+                        </mat-form-field> -->
                       </div>
                       <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">

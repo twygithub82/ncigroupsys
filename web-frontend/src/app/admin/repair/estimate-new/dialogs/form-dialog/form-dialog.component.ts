@@ -294,7 +294,7 @@ export class FormDialogComponent {
       console.log(isValid);
       if (isValid) {
         // Only search if the value exists in the partNameList
-        this.trDS.searchDistinctDimention(value).subscribe(data => {
+        this.trDS.searchDistinctDimension(value).subscribe(data => {
           this.dimensionList = data;
         });
       }

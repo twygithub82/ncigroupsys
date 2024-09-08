@@ -195,6 +195,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
+    TITLE : 'MENUITEMS.PACKAGE.LIST.PACKAGE-BUFFER'
   };
 
   

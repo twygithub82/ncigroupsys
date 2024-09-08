@@ -113,8 +113,8 @@
       "TEXT": "Package",
       "LIST": {
         "PACKAGE-CLEANING": "Cleaning",
-        "PACKAGE-LABOUR": "Labour Cost $",
-        "PACKAGE-DEPOT": "Depot Cost $",
+        "PACKAGE-LABOUR": "Labour Cost",
+        "PACKAGE-DEPOT": "Depot Cost",
         "PACKAGE-REPAIR": "Repair",
         "PACKAGE-BUFFER": "Buffer Cleaning",
         "PACKAGE-RESIDUE": "Residue Disposal",

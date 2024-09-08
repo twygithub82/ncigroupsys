@@ -70,11 +70,13 @@ export class TemplateEstimateCustomerItem{
   update_dt?: string | null;
   customer_company?: CustomerCompanyItem | null;
   
+  
 }
 export class MasterTemplateItem extends MasterTemplateGo {
   public template_est_customer?: TemplateEstimateCustomerItem[] | null;
   public template_est_part?: TemplateEstPartItem[] | null;
   public totalMaterialCost: number = 0;
+  
 
   constructor(item: Partial<MasterTemplateItem> = {}) {
     super(item);

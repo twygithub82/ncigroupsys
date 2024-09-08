@@ -59,6 +59,7 @@ import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { pack } from 'd3';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import {FormDialogComponent_Edit_Cost} from './form-dialog-edit-cost/form-dialog.component';
+import { TariffRepairDS,TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 
 @Component({
   selector: 'app-package-repair',
@@ -147,10 +148,13 @@ implements OnInit {
   lengthControl= new UntypedFormControl();
   dimensionControl = new UntypedFormControl();
 
+
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
   handledItemControl = new UntypedFormControl();
 
+  lengthItems : TariffRepairLengthItem[]=[];
+  dimensionItems:string[]=[];
 
   groupNameCvList: CodeValuesItem[] = [];
   subGroupNameCvList: CodeValuesItem[] = [];
@@ -160,6 +164,7 @@ implements OnInit {
   storageCalCvList : CodeValuesItem[]=[];
   CodeValuesDS?:CodeValuesDS;
  // packDepotDS : PackageDepotDS;
+  trfRepairDS : TariffRepairDS;
   packRepairDS : PackageRepairDS;
   ccDS: CustomerCompanyDS;
   //tariffDepotDS:TariffDepotDS;
@@ -304,6 +309,7 @@ implements OnInit {
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.trfRepairDS=new TariffRepairDS(this.apollo);
     this.packRepairDS=new PackageRepairDS(this.apollo);
     //this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS=new CustomerCompanyDS(this.apollo);
@@ -565,6 +571,71 @@ implements OnInit {
       where.material_cost = { lte: maxCost };
     }
 
+    const unifiedConditions: any[] = [];
+
+// Handling Dimension
+if (this.pcForm!.value["dimension"]) {
+  let dimensionConditions: any = {};
+  let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
+  
+  // Initialize tariff_repair if it doesn't exist
+  where.tariff_repair = where.tariff_repair || {};
+  where.tariff_repair.and = where.tariff_repair.and || [];
+  
+  dimensionConditions.or = [];
+  selectedTarifRepairDimensionItems.forEach((item) => {
+    const condition: any = {};
+    
+    // Only add condition if item is defined (non-undefined)
+    if (item !== undefined && item !== null && item !== '') {
+      condition.dimension = { eq: item };
+    }
+
+    if (Object.keys(condition).length > 0) {
+      dimensionConditions.or.push(condition);
+    }
+  });
+
+  // Push condition to 'and' if it has valid properties
+  if (dimensionConditions.or.length > 0) {
+    where.tariff_repair.and.push(dimensionConditions);
+  }
+}
+
+// Handling Length
+if (this.pcForm!.value["len"]) {
+  let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
+  
+  // Initialize tariff_repair if it doesn't exist
+  where.tariff_repair = where.tariff_repair || {};
+  where.tariff_repair.and = where.tariff_repair.and || [];
+  
+  const lengthConditions: any = {};
+  lengthConditions.or = [];
+  selectedTarifRepairLengthItems.forEach((item) => {
+    const condition: any = {};
+    
+    // Add condition for length if defined
+    if (item.length !== undefined) {
+      condition.length = { eq: item.length };
+    }
+    
+    // Add condition for length_unit_cv if it exists
+    if (item.length_unit_cv) {
+      condition.length_unit_cv = { eq: item.length_unit_cv };
+    }
+    
+    // Push condition to 'or' if it has valid properties
+    if (Object.keys(condition).length > 0) {
+      lengthConditions.or.push(condition);
+    }
+  });
+
+  // Push length conditions to 'and' if it has valid properties
+  if (lengthConditions.or.length > 0) {
+    where.tariff_repair.and.push(lengthConditions);
+  }
+}
     // Handling length
     if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
       const minLen: number = Number(this.pcForm!.value["min_len"]);
@@ -722,6 +793,14 @@ implements OnInit {
    
   }
   public loadData() {
+
+    this.trfRepairDS.searchDistinctLength(undefined,undefined).subscribe(data=>{
+      this.lengthItems=data;
+    });
+
+    this.trfRepairDS.searchDistinctDimension(undefined).subscribe(data=>{
+      this.dimensionItems=data;
+    });
 
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
      // this.customer_companyList1 = data

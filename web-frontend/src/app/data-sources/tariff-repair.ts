@@ -64,9 +64,23 @@ export class TariffRepairItem {
   }
 }
 
-export interface TariffRepairLengthItem {
-  length: number;
-  length_unit_cv: string;
+export class TariffRepairLengthItem {
+  public length?: number;
+  public length_unit_cv?: string;
+  constructor(item: Partial<TariffRepairItem> = {}) {
+    Object.assign(this, {...item });
+  }
+
+   public ToString(): any {
+    let ret ='';
+    if(this.length_unit_cv)
+    {
+      ret = `${this.length}${this.length_unit_cv}`;
+    }
+    return ret;
+  }
+ 
+  
 }
 
 export interface TariffLabourResult {
@@ -74,26 +88,26 @@ export interface TariffLabourResult {
   totalCount: number;
 }
 
-export const GET_DISTINCT_PART_NAME=gql`
-query {
-  queryDistinctPartNameResult:queryDistinctPartName
-}
-`;
+// export const GET_DISTINCT_PART_NAME=gql`
+// query {
+//   queryDistinctPartNameResult:queryDistinctPartName
+// }
+// `;
 
-export const GET_DISTINCT_DIMENSION=gql`
-query {
-  queryDistinctDimensionResult:queryDistinctDimension
-}
-`;
+// export const GET_DISTINCT_DIMENSION=gql`
+// query {
+//   queryDistinctDimensionResult:queryDistinctDimension
+// }
+// `;
 
-export const GET_DISTINCT_LENGTH=gql`
- query {
-  queryDistinctLengthResult:queryDistinctLength {
-    length
-    length_unit_cv
-  }
-}
-`;
+// export const GET_DISTINCT_LENGTH=gql`
+//  query {
+//   queryDistinctLengthResult:queryDistinctLength {
+//     length
+//     length_unit_cv
+//   }
+// }
+// `;
 
 export const GET_TARIFF_REPAIR_QUERY = gql`
   query queryTariffRepair($where: tariff_repairFilterInput, $order:[tariff_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
@@ -134,19 +148,19 @@ export const GET_TARIFF_REPAIR_QUERY = gql`
 `;
 
 export const GET_DISTINCT_PART_NAME = gql`
-  query queryDistinctPartName($groupName: String!, $subgroupName: String!) {
+  query queryDistinctPartName($groupName: String, $subgroupName: String) {
     resultList : queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName)
   }
 `;
 
 export const GET_DISTINCT_DIMENSION = gql`
-  query queryDistinctDimension($partName: String!) {
+  query queryDistinctDimension($partName: String) {
     resultList : queryDistinctDimension(partName: $partName)
   }
 `;
 
 export const GET_DISTINCT_LENGTH = gql`
-  query queryDistinctLength($partName: String!, $dimension: String!) {
+  query queryDistinctLength($partName: String, $dimension: String) {
     resultList : queryDistinctLength(partName: $partName, dimension: $dimension) {
       length
       length_unit_cv
@@ -241,7 +255,7 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
   }
 
-  searchDistinctDimention(partName?: string): Observable<string[]> {
+  searchDistinctDimension(partName?: string): Observable<string[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
@@ -263,7 +277,7 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
   }
 
-  searchDistinctLength(partName?: string, dimension?: string): Observable<string[]> {
+  searchDistinctLength(partName?: string, dimension?: string): Observable<TariffRepairLengthItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
@@ -280,7 +294,8 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const resultList = result.resultList;
-          return resultList;
+          const tariffRepairLengthItems: TariffRepairLengthItem[] = resultList.map((node: any) => new TariffRepairLengthItem(node));
+          return tariffRepairLengthItems;
         })
       );
   }

@@ -58,7 +58,7 @@ import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dial
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
-import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
+import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 
 
 @Component({
@@ -154,6 +154,13 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   subGroupNameCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
 
+  lengthControl= new UntypedFormControl();
+  dimensionControl = new UntypedFormControl();
+
+
+  lengthItems : TariffRepairLengthItem[]=[];
+  dimensionItems:string[]=[];
+  
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -317,6 +324,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       // cleaning_category:this.categoryControl,
       group_name_cv: this.groupNameControl,
       sub_group_name_cv: this.subGroupNameControl,
+      len:this.lengthControl,
+      dimension:this.dimensionControl,
       part_name: [''],
       min_len: [''],
       max_len: [''],
@@ -631,7 +640,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       where.part_name = { contains: description }
     }
 
-
+ 
     // Handling material_cost
     if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
       const minCost: number = Number(this.pcForm!.value["min_cost"]);
@@ -644,6 +653,72 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       const maxCost: number = Number(this.pcForm!.value["max_cost"]);
       where.material_cost = { lte: maxCost };
     }
+
+
+    // Handling Dimension
+if (this.pcForm!.value["dimension"]) {
+  let dimensionConditions: any = {};
+  let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
+  
+  // Initialize tariff_repair if it doesn't exist
+ // where.tariff_repair = where.tariff_repair || {};
+  where.and = where.and || [];
+  
+  dimensionConditions.or = [];
+  selectedTarifRepairDimensionItems.forEach((item) => {
+    const condition: any = {};
+    
+    // Only add condition if item is defined (non-undefined)
+    if (item !== undefined && item !== null && item !== '') {
+      condition.dimension = { eq: item };
+    }
+
+    if (Object.keys(condition).length > 0) {
+      dimensionConditions.or.push(condition);
+    }
+  });
+
+  // Push condition to 'and' if it has valid properties
+  if (dimensionConditions.or.length > 0) {
+    where.and.push(dimensionConditions);
+  }
+}
+
+// Handling Length
+if (this.pcForm!.value["len"]) {
+  let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
+  
+  // Initialize tariff_repair if it doesn't exist
+//  where.tariff_repair = where.tariff_repair || {};
+  where.and = where.and || [];
+  
+  const lengthConditions: any = {};
+  lengthConditions.or = [];
+  selectedTarifRepairLengthItems.forEach((item) => {
+    const condition: any = {};
+    
+    // Add condition for length if defined
+    if (item.length !== undefined) {
+      condition.length = { eq: item.length };
+    }
+    
+    // Add condition for length_unit_cv if it exists
+    if (item.length_unit_cv) {
+      condition.length_unit_cv = { eq: item.length_unit_cv };
+    }
+    
+    // Push condition to 'or' if it has valid properties
+    if (Object.keys(condition).length > 0) {
+      lengthConditions.or.push(condition);
+    }
+  });
+
+  // Push length conditions to 'and' if it has valid properties
+  if (lengthConditions.or.length > 0) {
+    where.and.push(lengthConditions);
+  }
+}
+
 
     // Handling length
     if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
@@ -787,6 +862,14 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     // );
   }
   public loadData() {
+
+    this.trfRepairDS.searchDistinctLength(undefined,undefined).subscribe(data=>{
+      this.lengthItems=data;
+    });
+
+    this.trfRepairDS.searchDistinctDimension(undefined).subscribe(data=>{
+      this.dimensionItems=data;
+    });
 
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
