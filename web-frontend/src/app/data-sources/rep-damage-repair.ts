@@ -13,33 +13,24 @@ import { StoringOrderTankItem } from './storing-order-tank';
 import { ReleaseOrderItem } from './release-order';
 import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
+import { RepairEstPartItem } from './repair-est-part';
 
-export class RepairEstPartGO {
+export class REPDamageRepairGO {
   public guid?: string;
-  public tariff_repair_guid?: string;
-  public repair_est_guid?: string;
-  public description?: string;
-  public location_cv?: string;
-  public remarks?: string;
-  public qty?: number;
-  public hour?: number;
-  public material_cost?: number;
+  public rep_guid?: string;
+  public code_cv?: string;
+  public code_type?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<RepairEstPartGO> = {}) {
+  constructor(item: Partial<REPDamageRepairGO> = {}) {
     this.guid = item.guid;
-    this.tariff_repair_guid = item.tariff_repair_guid;
-    this.repair_est_guid = item.repair_est_guid;
-    this.description = item.description;
-    this.location_cv = item.location_cv;
-    this.remarks = item.remarks;
-    this.qty = item.qty;
-    this.hour = item.hour;
-    this.material_cost = item.material_cost;
+    this.rep_guid = item.rep_guid;
+    this.code_cv = item.code_cv;
+    this.code_type = item.code_type;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -48,18 +39,12 @@ export class RepairEstPartGO {
   }
 }
 
-export class RepairEstPartItem extends RepairEstPartGO {
-  public tariff_repair?: TariffRepairItem;
-  public repair_est?: StoringOrderTankItem;
-  public damage?: any;
-  public repair?: any;
+export class REPDamageRepairItem extends REPDamageRepairGO {
+  public repair_est_part?: RepairEstPartItem;
   public actions?: string[]
-  constructor(item: Partial<RepairEstPartItem> = {}) {
+  constructor(item: Partial<REPDamageRepairItem> = {}) {
     super(item)
-    this.tariff_repair = item.tariff_repair;
-    this.repair_est = item.repair_est;
-    this.damage = item.damage;
-    this.repair = item.repair;
+    this.repair_est_part = item.repair_est_part;
     this.actions = item.actions;
   }
 }

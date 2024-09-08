@@ -87,8 +87,8 @@
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.DIMENSION}}</mat-label>
             <mat-select formControlName="dimension" required>
-              @for (option of data.populateData.unit_typeList; track option) {
-              <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
+              @for (dim of dimensionList; track dim) {
+              <mat-option [value]="dim">{{dim}}</mat-option>
               }
             </mat-select>
             @if (repairPartForm.get('dimension')?.hasError('required')) {
@@ -102,8 +102,8 @@
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.LENGTH}}</mat-label>
             <mat-select formControlName="length" required>
-              @for (option of data.populateData.unit_typeList; track option) {
-              <mat-option [value]="option.guid">{{option.unit_type}}</mat-option>
+              @for (length of lengthList; track length) {
+              <mat-option [value]="length.length">{{length.length + '' + length.length_unit_cv}}</mat-option>
               }
             </mat-select>
             @if (repairPartForm.get('length')?.hasError('required')) {
@@ -115,13 +115,13 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.DAMAGE}}</mat-label>
-            <mat-select multiple formControlName="damage">
+            <mat-select multiple formControlName="damage" required>
               @for (codeValue of data.populateData.damageCodeCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">
-                {{codeValue.description}}
+                {{'(' + codeValue.code_val + ')' + codeValue.description}}
               </mat-option>
               }
             </mat-select>
@@ -132,13 +132,13 @@
             }
           </mat-form-field>
         </div>
-        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
-            <mat-select multiple formControlName="repair">
+            <mat-select multiple formControlName="repair" required>
               @for (codeValue of data.populateData.repairCodeCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">
-                {{codeValue.description}}
+                {{'(' + codeValue.code_val + ')' + codeValue.description}}
               </mat-option>
               }
             </mat-select>
@@ -149,18 +149,10 @@
             }
           </mat-form-field>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.PREFIX_DESC}}</mat-label>
-            <input matInput formControlName="prefix_desc">
-          </mat-form-field>
-        </div>
-        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.ADDITIONAL_DIMENSION_AND_LENGTH}}</mat-label>
-            <input matInput formControlName="additional_dim">
+            <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+            <input matInput formControlName="remarks">
           </mat-form-field>
         </div>
       </div>
@@ -168,19 +160,19 @@
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.QTY}}</mat-label>
-            <input matInput formControlName="qty" type="number">
+            <input matInput formControlName="qty" type="number" required>
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.HOUR}}</mat-label>
-            <input matInput formControlName="hour" type="number">
+            <input matInput formControlName="hour" type="number" required>
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.MATERIAL_COST}}</mat-label>
-            <input matInput formControlName="mat_cost" type="number">
+            <input matInput formControlName="material_cost" type="number" required>
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">

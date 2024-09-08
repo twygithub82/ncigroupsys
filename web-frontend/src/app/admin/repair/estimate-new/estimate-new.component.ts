@@ -51,6 +51,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { MatCardModule } from '@angular/material/card';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
+import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 
 @Component({
   selector: 'app-estimate-new',
@@ -187,7 +188,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     DIMENSION: 'COMMON-FORM.DIMENSION',
     LENGTH: 'COMMON-FORM.LENGTH',
     PREFIX_DESC: 'COMMON-FORM.PREFIX-DESC',
-    ADDITIONAL_DIMENSION_AND_LENGTH: 'COMMON-FORM.ADDITIONAL-DIMENSION-AND-LENGTH',
     MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
     IQ: 'COMMON-FORM.IQ'
   }
@@ -363,7 +363,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  addPartDetails(event: Event, row?: StoringOrderTankItem) {
+  addPartDetails(event: Event, row?: RepairEstPartItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -371,8 +371,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     } else {
       tempDirection = 'ltr';
     }
-    const addSot = row ?? new StoringOrderTankItem();
-    addSot.so_guid = addSot.so_guid ?? this.sot_guid;
+    const addSot = row ?? new RepairEstPartItem();
+    addSot.repair_est_guid = addSot.repair_est_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
         item: row ? row : addSot,
