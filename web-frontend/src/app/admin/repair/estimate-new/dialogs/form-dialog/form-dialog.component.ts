@@ -23,15 +23,15 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { CodeValuesDS } from 'app/data-sources/code-values';
+import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 
 
 export interface DialogData {
   action?: string;
-  item?: StoringOrderTankItem;
+  item?: RepairEstPartItem;
   translatedLangText?: any;
   populateData?: any;
   index: number;
-  sotExistedList?: StoringOrderTankItem[]
 }
 
 @Component({
@@ -67,10 +67,12 @@ export class FormDialogComponent {
   index: number;
   dialogTitle: string;
   repairPartForm: UntypedFormGroup;
-  repairPart: any;
-  sotExistedList?: StoringOrderTankItem[];
+  repairPart: RepairEstPartItem;
+  selectedTariffRepair?: TariffRepairItem;
   partNameList?: string[];
   partNameFilteredList?: string[];
+  dimensionList?: string[];
+  lengthList?: any[];
   startDateETA = new Date();
   startDateETR = new Date();
   valueChangesDisabled: boolean = false;
@@ -95,14 +97,12 @@ export class FormDialogComponent {
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
     this.action = data.action!;
-    this.sotExistedList = data.sotExistedList;
     if (this.action === 'edit') {
-      this.dialogTitle = 'Edit ' + data.item?.tank_no;
-      this.repairPart = data.item;
+      this.dialogTitle = 'Edit Part Details';
     } else {
-      this.dialogTitle = 'New Record';
-      this.repairPart = data.item ? data.item : new StoringOrderTankItem();
+      this.dialogTitle = 'New Part Details';
     }
+    this.repairPart = data.item ? data.item : new RepairEstPartItem();
     this.index = data.index;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
     this.repairPartForm = this.createForm();
@@ -119,72 +119,58 @@ export class FormDialogComponent {
       tariff_repair_guid: [this.repairPart.tariff_repair_guid],
       part_name: this.partNameControl,
       repair_est_guid: [this.repairPart.repair_est_guid],
-      description: [{ value: this.repairPart.description, disabled: !this.canEdit() }, [Validators.required]],
+      description: [{ value: this.repairPart.description, disabled: !this.canEdit() }],
       location_cv: [{ value: this.repairPart.location_cv, disabled: !this.canEdit() }, [Validators.required]],
       remarks: [{ value: this.repairPart.remarks, disabled: !this.canEdit() }, [Validators.required]],
       qty: [{ value: this.repairPart.qty, disabled: !this.canEdit() }, [Validators.required]],
       hour: [{ value: this.repairPart.hour, disabled: !this.canEdit() }],
-      group_name_cv: [{ value: this.repairPart.group_name, disabled: !this.canEdit() }],
-      subgroup_name_cv: [{ value: this.repairPart.subgroup_name, disabled: !this.canEdit() }],
+      group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.canEdit() }],
+      subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
       dimension: [''],
       length: [''],
       damage: [''],
       repair: [''],
-      prefix_desc: [''],
-      additional_dim: [''],
-      mat_cost: [''],
+      material_cost: [''],
       iq: ['']
     });
   }
 
   submit() {
     if (this.repairPartForm?.valid) {
-      if (!this.validatePurpose()) {
-        this.repairPartForm.get('purpose')?.setErrors({ required: true });
+      if (!this.validateLength()) {
+        this.repairPartForm.get('remarks')?.setErrors({ required: true });
       } else {
-        this.repairPartForm.get('purpose')?.setErrors(null);
-        // let actions = Array.isArray(this.storingOrderTank.actions!) ? [...this.storingOrderTank.actions!] : [];
-        // if (this.isPreOrder) {
-        //   if (!actions.includes('preorder')) {
-        //     actions = [...new Set([...actions, 'preorder'])];
-        //   }
-        // } else {
-        //   // remove preorder action
-        //   actions = actions.filter(action => action !== 'preorder');
-        //   if (this.action === 'new') {
-        //     if (!actions.includes('new')) {
-        //       actions = [...new Set([...actions, 'new'])];
-        //     }
-        //   } else {
-        //     if (!actions.includes('new')) {
-        //       actions = [...new Set([...actions, 'edit'])];
-        //     }
-        //   }
-        // }
-        // var sot: StoringOrderTankItem = {
-        //   ...this.storingOrderTank,
-        //   unit_type_guid: this.repairPartForm.value['unit_type_guid'],
-        //   tank_no: Utility.formatContainerNumber(this.repairPartForm.value['tank_no']),
-        //   last_cargo_guid: this.repairPartForm.value['last_cargo_guid'],
-        //   tariff_cleaning: this.lastCargoControl.value,
-        //   job_no: this.repairPartForm.value['job_no'],
-        //   eta_dt: Utility.convertDate(this.repairPartForm.value['eta_dt']),
-        //   purpose_storage: this.repairPartForm.value['purpose_storage'],
-        //   purpose_steam: this.repairPartForm.value['purpose_steam'],
-        //   purpose_cleaning: this.repairPartForm.value['purpose_cleaning'],
-        //   purpose_repair_cv: this.repairPartForm.value['purpose_repair_cv'],
-        //   clean_status_cv: this.repairPartForm.value['clean_status_cv'],
-        //   certificate_cv: this.repairPartForm.value['certificate_cv'],
-        //   required_temp: this.repairPartForm.value['required_temp'],
-        //   etr_dt: Utility.convertDate(this.repairPartForm.value['etr_dt']),
-        //   remarks: this.repairPartForm.value['remarks'],
-        //   actions
-        // }
-        const returnDialog: DialogData = {
-          //item: sot,
-          index: this.index
+        this.repairPartForm.get('remarks')?.setErrors(null);
+        let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
+        if (this.action === 'new') {
+          if (!actions.includes('new')) {
+            actions = [...new Set([...actions, 'new'])];
+          }
+        } else {
+          if (!actions.includes('new')) {
+            actions = [...new Set([...actions, 'edit'])];
+          }
         }
-        this.dialogRef.close(returnDialog);
+        var rep: RepairEstPartItem = {
+          ...this.repairPart,
+          location_cv: this.repairPartForm.get('location_cv')?.value,
+          tariff_repair_guid: this.selectedTariffRepair?.guid,
+          tariff_repair: this.selectedTariffRepair,
+          damage: this.repairPartForm.get('damage')?.value,
+          repair: this.repairPartForm.get('repair')?.value,
+          qty: this.repairPartForm.get('qty')?.value,
+          hour: this.repairPartForm.get('qty')?.value,
+          material_cost: this.repairPartForm.get('qty')?.value,
+          remarks: this.repairPartForm.get('remarks')?.value,
+          actions
+        }
+        rep.description = `${rep.tariff_repair?.part_name} ${rep.location_cv} ${rep.remarks}`
+        console.log(rep)
+        // const returnDialog: DialogData = {
+        //   //item: sot,
+        //   index: this.index
+        // }
+        // this.dialogRef.close(returnDialog);
       }
     } else {
       this.findInvalidControls();
@@ -245,6 +231,57 @@ export class FormDialogComponent {
         this.handleValueChange(value);
       }
     });
+
+    // this.partNameControl.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     debugger
+    //     if (!this.valueChangesDisabled) {
+    //       this.handleValueChange(value); // Call the filter function for local filtering
+    //     }
+
+    //     // Check if the entered value is valid (exists in the partNameList)
+    //     const isValid = this.partNameList?.some(item => item === value);
+
+    //     if (isValid) {
+    //       // Only search if the value exists in the partNameList
+    //       this.trDS.searchDistinctDimention(value).subscribe(data => {
+    //         this.dimensionList = data;
+    //       });
+    //     }
+    //   })
+    // );
+
+    this.repairPartForm?.get('dimension')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          const partName = this.partNameControl.value;
+          this.trDS.searchDistinctLength(partName, value).subscribe(data => {
+            this.lengthList = data;
+            console.log(this.lengthList)
+          });
+        }
+      })
+    ).subscribe();
+
+    this.repairPartForm?.get('length')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          const partName = this.partNameControl.value;
+          const dimension = this.repairPartForm?.get('dimension')?.value;
+          this.trDS.searchTariffRepairByPartNameDimLength(partName, dimension, value).subscribe(data => {
+            if (data.length) {
+              this.selectedTariffRepair = data[0];
+            }
+          });
+        }
+      })
+    ).subscribe();
   }
 
   handleValueChange(value: any) {
@@ -253,6 +290,14 @@ export class FormDialogComponent {
       this.partNameFilteredList = this.partNameList?.filter(item =>
         item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
       );
+      const isValid = this.partNameList?.some(item => item === value);
+      console.log(isValid);
+      if (isValid) {
+        // Only search if the value exists in the partNameList
+        this.trDS.searchDistinctDimention(value).subscribe(data => {
+          this.dimensionList = data;
+        });
+      }
     } else {
       // If no value is entered, reset the filtered list to the full list
       this.partNameFilteredList = this.partNameList;
@@ -273,31 +318,22 @@ export class FormDialogComponent {
     return tr;
   }
 
-  validatePurpose(): boolean {
+  validateLength(): boolean {
     let isValid = true;
-    const purposeStorage = this.repairPartForm.get('purpose_storage')?.value;
-    const purposeSteam = this.repairPartForm.get('purpose_steam')?.value;
-    const purposeCleaning = this.repairPartForm.get('purpose_cleaning')?.value;
-    const purposeRepairCV = this.repairPartForm.get('purpose_repair_cv')?.value;
-    const requiredTemp = this.repairPartForm.get('required_temp')?.value;
+    const length = this.repairPartForm.get('length')?.value;
+    const remarks = this.repairPartForm.get('remarks')?.value;
 
     // Validate that at least one of the purpose checkboxes is checked
-    if (!purposeStorage && !purposeSteam && !purposeCleaning && !purposeRepairCV) {
+    if (!length && !remarks) {
       isValid = false; // At least one purpose must be selected
-      this.repairPartForm.get('purpose')?.setErrors({ required: true });
-    }
-
-    // Validate that required_temp is filled in if purpose_steam is checked
-    if (purposeSteam && !requiredTemp) {
-      isValid = false; // required_temp must be filled if purpose_steam is checked
-      this.repairPartForm.get('required_temp')?.setErrors({ required: true });
+      this.repairPartForm.get('remarks')?.setErrors({ required: true });
     }
 
     return isValid;
   }
 
   canEdit(): boolean {
-    return !this.sotDS.canRollbackStatus(this.repairPart) && !this.repairPart.actions!.includes('cancel') && !this.repairPart.actions!.includes('rollback');
+    return true;
   }
 
   updateValidators(validOptions: any[]) {
@@ -305,5 +341,9 @@ export class FormDialogComponent {
       Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  getLocationDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.data.populateData?.partLocationCvList);
   }
 }

@@ -133,12 +133,26 @@ export const GET_TARIFF_REPAIR_QUERY = gql`
   }
 `;
 
-export const GET_DISTINCT_TARIFF_REPAIR = gql`
+export const GET_DISTINCT_PART_NAME = gql`
   query queryDistinctPartName($groupName: String!, $subgroupName: String!) {
     resultList : queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName)
   }
 `;
 
+export const GET_DISTINCT_DIMENSION = gql`
+  query queryDistinctDimension($partName: String!) {
+    resultList : queryDistinctDimension(partName: $partName)
+  }
+`;
+
+export const GET_DISTINCT_LENGTH = gql`
+  query queryDistinctLength($partName: String!, $dimension: String!) {
+    resultList : queryDistinctLength(partName: $partName, dimension: $dimension) {
+      length
+      length_unit_cv
+    }
+  }
+`;
 
 export const ADD_TARIFF_REPAIR = gql`
   mutation addTariffRepair($td: tariff_repairInput!) {
@@ -209,7 +223,7 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
-        query: GET_DISTINCT_TARIFF_REPAIR,
+        query: GET_DISTINCT_PART_NAME,
         variables: { groupName, subgroupName },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -227,15 +241,12 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
   }
 
-  searchDimentionByPartName(partName?: string): Observable<string[]> {
+  searchDistinctDimention(partName?: string): Observable<string[]> {
     this.loadingSubject.next(true);
-    const where = {
-
-    }
     return this.apollo
       .query<any>({
-        query: GET_DISTINCT_TARIFF_REPAIR,
-        variables: { where },
+        query: GET_DISTINCT_DIMENSION,
+        variables: { partName },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -248,6 +259,55 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
         map((result) => {
           const resultList = result.resultList;
           return resultList;
+        })
+      );
+  }
+
+  searchDistinctLength(partName?: string, dimension?: string): Observable<string[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_DISTINCT_LENGTH,
+        variables: { partName, dimension },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffRepairItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList;
+          return resultList;
+        })
+      );
+  }
+
+  searchTariffRepairByPartNameDimLength(partName?: string, dimension?: string, length?: string): Observable<string[]> {
+    this.loadingSubject.next(true);
+    const where = {
+      part_name: { eq: partName },
+      dimension: { eq: dimension },
+      length: { eq: length }
+    }
+    return this.apollo
+      .query<any>({
+        query: GET_TARIFF_REPAIR_QUERY,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffRepairItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const tariffRepairResult = result.tariffRepairResult || { nodes: [], totalCount: 0 };
+          return tariffRepairResult.nodes;
         })
       );
   }
