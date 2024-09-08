@@ -196,8 +196,8 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             }
         }
 
-        public async Task<List<string>> QueryDistinctPartName(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string groupName, string subgroupName)
+        public async Task<List<string?>> QueryDistinctPartName(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string? groupName, string? subgroupName)
         {
             try
             {
@@ -228,9 +228,113 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
-               
-            
         }
+
+        public async Task<List<string?>> QueryDistinctDimension(ApplicationTariffDBContext context, [Service] IConfiguration config,
+          [Service] IHttpContextAccessor httpContextAccessor, string? partName)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                var query = context.tariff_repair.AsQueryable();
+
+                // Apply filters conditionally
+                if (!string.IsNullOrEmpty(partName))
+                {
+                    query = query.Where(tr => tr.part_name == partName);
+                }
+
+                // Select distinct part names
+                var distinctDimension = await query
+                    .Select(tr => tr.dimension)
+                    .Distinct()
+                    .ToListAsync();
+
+                return distinctDimension;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<List<LengthWithUnit>> QueryDistinctLength(ApplicationTariffDBContext context, [Service] IConfiguration config,
+             [Service] IHttpContextAccessor httpContextAccessor, string? partName, string? dimension)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                var query = context.tariff_repair.AsQueryable();
+
+                // Apply filters conditionally
+                if (!string.IsNullOrEmpty(partName))
+                {
+                    query = query.Where(tr => tr.part_name == partName);
+                }
+
+
+                // Apply filters conditionally
+                if (!string.IsNullOrEmpty(partName))
+                {
+                    query = query.Where(tr => tr.dimension == dimension);
+                }
+
+                // Select distinct part names
+                var distinctLength = await query
+                    .Select(tr => new { tr.length, tr.length_unit_cv })
+                    .Distinct()
+                    .ToListAsync();
+
+                //return distinctLength;
+
+                return distinctLength
+                   .Select(x => new LengthWithUnit
+                   {
+                       length = x.length,
+                       length_unit_cv = x.length_unit_cv
+                   })
+                   .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        //[UseProjection()]
+        //[UseFiltering()]
+        //[UseSorting]
+        //public IQueryable<tariff_repair?> QueryDistinctValue(ApplicationTariffDBContext context, [Service] IConfiguration config,
+        //    [Service] IHttpContextAccessor httpContextAccessor, string? partName)
+        //{
+        //    try
+        //    {
+        //        GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+        //        //var query = context.tariff_repair.AsQueryable();
+
+        //        // Apply filters conditionally
+        //        //if (!string.IsNullOrEmpty(partName))
+        //        //{
+        //        //    query = query.Where(tr => tr.part_name == partName);
+        //        //}
+
+        //        // Select distinct part names
+        //        var distinctDimension = context.tariff_repair;
+        //        //distinctDimension.Distinct();
+
+        //        return distinctDimension;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+        //    }
+
+
+        //}
 
     }
 }

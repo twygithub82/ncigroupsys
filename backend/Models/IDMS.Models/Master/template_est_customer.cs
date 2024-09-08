@@ -20,6 +20,9 @@ namespace IDMS.Models.Master
         [ForeignKey("customer_company")]
         public string? customer_company_guid { get; set; }
 
+        [NotMapped]
+        public string? action { get; set; }
+
         public template_est? template_est { get; set; }
         public customer_company? customer_company { get; set; }
     }
