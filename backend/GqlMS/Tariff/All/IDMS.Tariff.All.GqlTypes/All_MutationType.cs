@@ -846,8 +846,8 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
 
         public async Task<int> UpdateTariffRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config,
-       [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name,
-           double material_cost_percentage)
+       [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
+      int? length,string? guid, double material_cost_percentage)
         {
             int retval = 0;
             try
@@ -856,9 +856,24 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
 
                 var dbTariffRepairs = context.tariff_repair.Where(i => i.delete_dt == null || i.delete_dt == 0).ToArray();
-                if (!string.IsNullOrEmpty(group_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.group_name_cv == group_name_cv).ToArray();
-                if (!string.IsNullOrEmpty(subgroup_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.subgroup_name_cv == subgroup_name_cv).ToArray();
-                if (!string.IsNullOrEmpty(part_name)) dbTariffRepairs = dbTariffRepairs.Where(t => t.part_name == part_name).ToArray();
+                if (!string.IsNullOrEmpty(guid))
+                {
+                    dbTariffRepairs = dbTariffRepairs.Where(t => t.guid == guid).ToArray();
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(group_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.group_name_cv == group_name_cv).ToArray();
+                    if (!string.IsNullOrEmpty(subgroup_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.subgroup_name_cv == subgroup_name_cv).ToArray();
+                    if (!string.IsNullOrEmpty(part_name)) dbTariffRepairs = dbTariffRepairs.Where(t => t.part_name == part_name).ToArray();
+                    if (!string.IsNullOrEmpty(dimension)) dbTariffRepairs = dbTariffRepairs.Where(t => t.dimension == dimension).ToArray();
+                    if (length != null)
+                    {
+                        if (length > 0)
+                        {
+                            dbTariffRepairs = dbTariffRepairs.Where(t => t.length == length).ToArray();
+                        }
+                    }
+                }
 
 
                 if (dbTariffRepairs == null)

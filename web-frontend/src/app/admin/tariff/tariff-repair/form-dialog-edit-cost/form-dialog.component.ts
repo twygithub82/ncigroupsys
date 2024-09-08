@@ -34,7 +34,7 @@ import {TariffDepotItem,TariffDepotDS} from 'app/data-sources/tariff-depot';
 import { elements } from 'chart.js';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { TariffRepairDS,TariffRepairItem } from 'app/data-sources/tariff-repair';
+import { TariffRepairDS,TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { stringifyForDisplay } from '@apollo/client/utilities';
@@ -125,7 +125,15 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
   
   trfRepairDS: TariffRepairDS;
   tnkItems?:TankItem[]=[];
-  
+
+  partNameFilteredList?: string[];
+  partNameList?: string[];
+  dimensionList?:string[];
+  lengthList?:TariffRepairLengthItem[];
+  selectedTariffRepair?:TariffRepairItem;
+
+  valueChangesDisabled:Boolean=false;
+
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -133,10 +141,11 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
 
+  partNameControl= new UntypedFormControl();
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
-  lengthUnitControl=new UntypedFormControl();
-  dimensionUnitControl=new UntypedFormControl();
+  lengthControl=new UntypedFormControl();
+  dimensionControl=new UntypedFormControl();
   widthDiadmeterUnitControl = new UntypedFormControl();
   thicknessUnitControl =new UntypedFormControl();
 
@@ -317,7 +326,9 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
       action:this.action,
       group_name_cv:this.groupNameControl,
       sub_group_name_cv:this.subGroupNameControl,
-      part_name:[''],
+      part_name:this.partNameControl,
+      dimension:this.dimensionControl,
+      length:this.lengthControl,
       material_cost_percentage:[''],
      
     });
@@ -411,7 +422,82 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
       });
       // Handle value changes here
     });
+    this.pcForm?.get('sub_group_name_cv')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        const codeValue=value.code_val;
+        if (value) {
+          const groupName = this.pcForm?.get('group_name_cv')?.value;
+          this.trfRepairDS.searchDistinctPartName(groupName.code_val, codeValue).subscribe(data => {
+            this.partNameControl.reset('');
+            this.partNameList = data;
+            this.partNameFilteredList = data
+            this.updateValidators(this.partNameControl, this.partNameList);
+          });
+        }
+      })
+    ).subscribe();
   
+
+    this.partNameControl.valueChanges.subscribe(value => {
+      if (!this.valueChangesDisabled) {
+        this.handleValueChange(value);
+      }
+    });
+
+    this.pcForm?.get('dimension')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+
+          const partName = this.partNameControl.value;
+          this.trfRepairDS.searchDistinctLength(partName, value).subscribe(data => {
+            this.lengthList = data;
+            console.log(this.lengthList)
+          });
+        }
+      })
+    ).subscribe();
+
+    this.pcForm?.get('length')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          const partName = this.partNameControl.value;
+          const dimension = this.pcForm?.get('dimension')?.value;
+          this.trfRepairDS.searchTariffRepairByPartNameDimLength(partName, dimension, value).subscribe(data => {
+            if (data.length) {
+              this.selectedTariffRepair = data[0];
+            }
+          });
+        }
+      })
+    ).subscribe();
+
+  }
+
+  handleValueChange(value: any) {
+    this.valueChangesDisabled = true;
+    if (value) {
+      this.partNameFilteredList = this.partNameList?.filter(item =>
+        item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
+      );
+      const isValid = this.partNameList?.some(item => item === value);
+      console.log(isValid);
+      if (isValid) {
+        // Only search if the value exists in the partNameList
+        this.trfRepairDS.searchDistinctDimension(value).subscribe(data => {
+          this.dimensionList = data;
+        });
+      }
+    } else {
+      // If no value is entered, reset the filtered list to the full list
+      this.partNameFilteredList = this.partNameList;
+    }
+    this.valueChangesDisabled = false;
   }
 
    isFieldRequired()
@@ -488,9 +574,13 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
     trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
     trfRepairItem.material_cost=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
+    trfRepairItem.dimension=String(this.pcForm!.value['dimension']||'');
+    trfRepairItem.length=Number(this.pcForm!.value['length']||-1);
+    if(this.selectedTariffRepair) trfRepairItem.guid=this.selectedTariffRepair?.guid;
     //var material_cost_percentage=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
   
-    this.trfRepairDS.updateTariffRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,trfRepairItem.part_name,trfRepairItem.material_cost).subscribe(result=>{
+    this.trfRepairDS.updateTariffRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,
+      trfRepairItem.part_name,trfRepairItem.dimension,trfRepairItem.length,trfRepairItem.guid,trfRepairItem.material_cost).subscribe(result=>{
       this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
 
     });
@@ -535,6 +625,16 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
   }
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  updateValidators(control:UntypedFormControl, validOptions: any[]) {
+    control.setValidators([
+      AutocompleteSelectionValidator(validOptions)
+    ]);
+  }
+
+  displayPartNameFn(tr: string): string {
+    return tr;
   }
   
 }

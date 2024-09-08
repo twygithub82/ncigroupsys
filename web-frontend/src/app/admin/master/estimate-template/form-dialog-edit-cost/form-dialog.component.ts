@@ -506,10 +506,11 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
 
     //var material_cost_percentage=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
   
-    this.pckRepairDS.updatePackageRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,trfRepairItem.part_name,guids,trfRepairItem.material_cost).subscribe(result=>{
-      this.handleSaveSuccess(result?.data?.updatePackageRepair_MaterialCost);
+    // this.pckRepairDS.updatePackageRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,
+    //   trfRepairItem.part_name,guids,trfRepairItem.material_cost).subscribe(result=>{
+    //   this.handleSaveSuccess(result?.data?.updatePackageRepair_MaterialCost);
 
-    });
+    // });
 
     
 

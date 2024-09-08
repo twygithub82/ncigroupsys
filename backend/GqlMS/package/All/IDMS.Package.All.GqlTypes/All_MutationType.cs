@@ -680,7 +680,8 @@ namespace IDMS.Models.Package.All.GqlTypes
 
 
         public async Task<int> UpdatePackageRepair_MaterialCost(ApplicationPackageDBContext context, [Service] IConfiguration config,
-      [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string[]? customer_company_guids, double material_cost_percentage)
+      [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension, 
+      int? length, string? tariff_repair_guid,string[]? customer_company_guids, double material_cost_percentage)
         {
             int retval = 0;
             try
@@ -694,9 +695,24 @@ namespace IDMS.Models.Package.All.GqlTypes
                     .Include(t=>t.tariff_repair)
                     .ToArray();
                 if (customer_company_guids?.Length > 0) { dbPackRepairs = dbPackRepairs.Where(t => customer_company_guids.Contains(t.customer_company_guid)).ToArray(); }
-                if (!string.IsNullOrEmpty(group_name_cv)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.group_name_cv == group_name_cv).ToArray();
-                if (!string.IsNullOrEmpty(subgroup_name_cv)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.subgroup_name_cv == subgroup_name_cv).ToArray();
-                if (!string.IsNullOrEmpty(part_name)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.part_name == part_name).ToArray();
+                if (!string.IsNullOrEmpty(tariff_repair_guid))
+                {
+                    dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.guid == tariff_repair_guid).ToArray();
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(group_name_cv)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.group_name_cv == group_name_cv).ToArray();
+                    if (!string.IsNullOrEmpty(subgroup_name_cv)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.subgroup_name_cv == subgroup_name_cv).ToArray();
+                    if (!string.IsNullOrEmpty(part_name)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.part_name == part_name).ToArray();
+                    if(!string.IsNullOrEmpty(dimension)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.dimension == dimension).ToArray();
+                    if(length!=null)
+                    {
+                        if(length>0)
+                        {
+                            dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.length == length ).ToArray();
+                        }
+                    }
+                }
                 
 
                 foreach (var packageRepair in dbPackRepairs)

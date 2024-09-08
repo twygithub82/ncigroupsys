@@ -182,9 +182,9 @@ export const UPDATE_TARIFF_REPAIR = gql`
 
 export const UPDATE_TARIFF_REPAIRS_MATERIAL_COST = gql`
   mutation updateTariffRepair_MaterialCost($group_name_cv:String,$subgroup_name_cv:String,
-    $part_name:String,$material_cost_percentage:Float!) {
+    $part_name:String,$dimension:String,$length:Int,$guid:String,$material_cost_percentage:Float!) {
     updateTariffRepair_MaterialCost(group_name_cv:$group_name_cv,subgroup_name_cv:$subgroup_name_cv,
-    part_name:$part_name,material_cost_percentage:$material_cost_percentage)
+    part_name:$part_name,dimension:$dimension,length:$length,guid:$guid,material_cost_percentage:$material_cost_percentage)
   }
 `;
 
@@ -387,13 +387,17 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     );
   }
 
-  updateTariffRepairs_MaterialCost(group_name_cv: any, subgroup_name_cv: any, part_name: any, material_cost_percentage: any): Observable<any> {
+  updateTariffRepairs_MaterialCost(group_name_cv: any, subgroup_name_cv: any, part_name: any,dimension:any,length:any,
+    guid:any, material_cost_percentage: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_TARIFF_REPAIRS_MATERIAL_COST,
       variables: {
         group_name_cv,
         subgroup_name_cv,
         part_name,
+        dimension,
+        length,
+        guid,
         material_cost_percentage
       }
     }).pipe(

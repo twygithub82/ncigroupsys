@@ -62,14 +62,39 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                <input matInput formControlName="part_name" type="text"  >
-                <!-- <mat-autocomplete #part_name="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                  @for (cc of ccDS.connect() | async; track cc) {
-                  <mat-option [value]="cc">
-                    {{ccDS.displayName(cc)}}
-                  </mat-option>
+                <!-- <input matInput formControlName="part_name" type="text"  > -->
+                <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
+                formControlName="part_name">
+              <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
+                @for (name of partNameFilteredList; track name) {
+                <mat-option [value]="name">
+                  {{name}}
+                </mat-option>
+                }
+              </mat-autocomplete>
+              </mat-form-field>
+            </div>
+           </div>
+           <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{this.translatedLangText.DIMENSION}}</mat-label>
+                <mat-select formControlName="dimension">
+                  @for (dim of dimensionList; track dim) {
+                  <mat-option [value]="dim">{{dim}}</mat-option>
                   }
-                </mat-autocomplete> -->
+                </mat-select>
+              
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{this.translatedLangText.LENGTH}}</mat-label>
+                <mat-select formControlName="length">
+                  @for (length of lengthList; track length) {
+                  <mat-option [value]="length.length">{{length.ToString()}}</mat-option>
+                  }
+                </mat-select>
               </mat-form-field>
             </div>
           </div>
