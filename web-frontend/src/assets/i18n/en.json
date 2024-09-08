@@ -512,6 +512,8 @@
     "ADDITIONAL-DIMENSION-AND-LENGTH": "Additional Dimension & Length",
     "IQ": "IQ",
     "SUBGROUP-NAME": "Subgroup Name",
+    "ESTIMATE-DETAILS": "Estimate Details",
+    "ESTIMATE-SUMMARY": "Estimate Summary",
     "CANNOT-EXCEED":"cannot exceed",
     "CANNOT-SMALLER":"cannot be smaller than"
   },

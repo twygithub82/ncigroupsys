@@ -132,7 +132,7 @@ export const GET_SCHEDULING_SOT = gql`
   }
 `;
 
-export class RepairEstPartDS extends BaseDataSource<RepairEstPartItem> {
+export class REPDamageRepairDS extends BaseDataSource<REPDamageRepairItem> {
   constructor(private apollo: Apollo) {
     super();
   }
@@ -157,5 +157,13 @@ export class RepairEstPartDS extends BaseDataSource<RepairEstPartItem> {
           return resultList.nodes;
         })
       );
+  }
+
+  createREPDamage(guid: string | undefined, rep_guid: string | undefined, code_val: string): REPDamageRepairItem {
+    return new REPDamageRepairItem({guid: guid, rep_guid: rep_guid, code_cv: code_val, code_type: 0})
+  }
+
+  createREPRepair(guid: string | undefined, rep_guid: string | undefined, code_val: string): REPDamageRepairItem {
+    return new REPDamageRepairItem({guid: guid, rep_guid: rep_guid, code_cv: code_val, code_type: 1})
   }
 }

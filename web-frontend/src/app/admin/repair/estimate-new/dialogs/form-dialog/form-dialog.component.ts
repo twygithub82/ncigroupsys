@@ -24,6 +24,8 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
+import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 
 
 export interface DialogData {
@@ -32,6 +34,7 @@ export interface DialogData {
   translatedLangText?: any;
   populateData?: any;
   index: number;
+  customer_company_guid?: string;
 }
 
 @Component({
@@ -66,24 +69,24 @@ export class FormDialogComponent {
   action: string;
   index: number;
   dialogTitle: string;
+  customer_company_guid: string;
+
   repairPartForm: UntypedFormGroup;
   repairPart: RepairEstPartItem;
-  selectedTariffRepair?: TariffRepairItem;
+  selectedPackageRepair?: PackageRepairItem;
+  partNameControl: UntypedFormControl;
   partNameList?: string[];
   partNameFilteredList?: string[];
   dimensionList?: string[];
   lengthList?: any[];
-  startDateETA = new Date();
-  startDateETR = new Date();
   valueChangesDisabled: boolean = false;
-
-  isPreOrder = false;
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
-  partNameControl: UntypedFormControl;
+  repDrDS: REPDamageRepairDS;
+  prDS: PackageRepairDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -96,11 +99,14 @@ export class FormDialogComponent {
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
+    this.repDrDS = new REPDamageRepairDS(this.apollo);
+    this.prDS = new PackageRepairDS(this.apollo);
     this.action = data.action!;
+    this.customer_company_guid = data.customer_company_guid!;
     if (this.action === 'edit') {
-      this.dialogTitle = 'Edit Part Details';
+      this.dialogTitle = `${data.translatedLangText.EDIT} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     } else {
-      this.dialogTitle = 'New Part Details';
+      this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     }
     this.repairPart = data.item ? data.item : new RepairEstPartItem();
     this.index = data.index;
@@ -120,9 +126,9 @@ export class FormDialogComponent {
       part_name: this.partNameControl,
       repair_est_guid: [this.repairPart.repair_est_guid],
       description: [{ value: this.repairPart.description, disabled: !this.canEdit() }],
-      location_cv: [{ value: this.repairPart.location_cv, disabled: !this.canEdit() }, [Validators.required]],
-      remarks: [{ value: this.repairPart.remarks, disabled: !this.canEdit() }, [Validators.required]],
-      qty: [{ value: this.repairPart.qty, disabled: !this.canEdit() }, [Validators.required]],
+      location_cv: [{ value: this.repairPart.location_cv, disabled: !this.canEdit() }],
+      remarks: [{ value: this.repairPart.remarks, disabled: !this.canEdit() }],
+      qty: [{ value: this.repairPart.qty, disabled: !this.canEdit() }],
       hour: [{ value: this.repairPart.hour, disabled: !this.canEdit() }],
       group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.canEdit() }],
       subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
@@ -130,7 +136,7 @@ export class FormDialogComponent {
       length: [''],
       damage: [''],
       repair: [''],
-      material_cost: [''],
+      material_cost: [{value: '', disabled: true}],
       iq: ['']
     });
   }
@@ -154,23 +160,23 @@ export class FormDialogComponent {
         var rep: RepairEstPartItem = {
           ...this.repairPart,
           location_cv: this.repairPartForm.get('location_cv')?.value,
-          tariff_repair_guid: this.selectedTariffRepair?.guid,
-          tariff_repair: this.selectedTariffRepair,
-          damage: this.repairPartForm.get('damage')?.value,
-          repair: this.repairPartForm.get('repair')?.value,
+          tariff_repair_guid: this.selectedPackageRepair?.tariff_repair_guid,
+          tariff_repair: this.selectedPackageRepair?.tariff_repair,
+          damage: this.REPDamage(this.repairPartForm.get('damage')?.value),
+          repair: this.REPRepair(this.repairPartForm.get('repair')?.value),
           qty: this.repairPartForm.get('qty')?.value,
-          hour: this.repairPartForm.get('qty')?.value,
-          material_cost: this.repairPartForm.get('qty')?.value,
+          hour: this.repairPartForm.get('hour')?.value,
+          material_cost: this.repairPartForm.get('material_cost')?.value,
           remarks: this.repairPartForm.get('remarks')?.value,
           actions
         }
-        rep.description = `${rep.tariff_repair?.part_name} ${rep.location_cv} ${rep.remarks}`
+        rep.description = `${rep.tariff_repair?.part_name} ${this.getLocationDescription(rep.location_cv)} ${rep.remarks ?? ''}`.trim();
         console.log(rep)
-        // const returnDialog: DialogData = {
-        //   //item: sot,
-        //   index: this.index
-        // }
-        // this.dialogRef.close(returnDialog);
+        const returnDialog: DialogData = {
+          item: rep,
+          index: this.index
+        }
+        this.dialogRef.close(returnDialog);
       }
     } else {
       this.findInvalidControls();
@@ -232,27 +238,6 @@ export class FormDialogComponent {
       }
     });
 
-    // this.partNameControl.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     debugger
-    //     if (!this.valueChangesDisabled) {
-    //       this.handleValueChange(value); // Call the filter function for local filtering
-    //     }
-
-    //     // Check if the entered value is valid (exists in the partNameList)
-    //     const isValid = this.partNameList?.some(item => item === value);
-
-    //     if (isValid) {
-    //       // Only search if the value exists in the partNameList
-    //       this.trDS.searchDistinctDimention(value).subscribe(data => {
-    //         this.dimensionList = data;
-    //       });
-    //     }
-    //   })
-    // );
-
     this.repairPartForm?.get('dimension')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -261,7 +246,13 @@ export class FormDialogComponent {
           const partName = this.partNameControl.value;
           this.trDS.searchDistinctLength(partName, value).subscribe(data => {
             this.lengthList = data;
-            console.log(this.lengthList)
+            this.repairPartForm?.get('length')?.setValue('');
+            if (!this.lengthList.length) {
+              this.repairPartForm?.get('length')?.disable();
+              this.getCustomerCost(partName, value, undefined);
+            } else {
+              this.repairPartForm?.get('length')?.enable();
+            }
           });
         }
       })
@@ -274,11 +265,7 @@ export class FormDialogComponent {
         if (value) {
           const partName = this.partNameControl.value;
           const dimension = this.repairPartForm?.get('dimension')?.value;
-          this.trDS.searchTariffRepairByPartNameDimLength(partName, dimension, value).subscribe(data => {
-            if (data.length) {
-              this.selectedTariffRepair = data[0];
-            }
-          });
+          this.getCustomerCost(partName, dimension, value);
         }
       })
     ).subscribe();
@@ -291,11 +278,17 @@ export class FormDialogComponent {
         item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
       );
       const isValid = this.partNameList?.some(item => item === value);
-      console.log(isValid);
       if (isValid) {
         // Only search if the value exists in the partNameList
         this.trDS.searchDistinctDimension(value).subscribe(data => {
           this.dimensionList = data;
+          this.repairPartForm?.get('dimension')?.setValue('');
+          if (!this.dimensionList.length) {
+            this.repairPartForm?.get('dimension')?.disable();
+            this.getCustomerCost(value, undefined, undefined);
+          } else {
+            this.repairPartForm?.get('dimension')?.enable();
+          }
         });
       }
     } else {
@@ -312,6 +305,14 @@ export class FormDialogComponent {
         console.log(name);
       }
     }
+  }
+
+  REPDamage(damages: any[]): REPDamageRepairItem[] {
+    return damages.map(dmg => this.repDrDS.createREPDamage(undefined, undefined, dmg));
+  }
+
+  REPRepair(damages: any[]): REPDamageRepairItem[] {
+    return damages.map(dmg => this.repDrDS.createREPRepair(undefined, undefined, dmg));
   }
 
   displayPartNameFn(tr: string): string {
@@ -343,7 +344,43 @@ export class FormDialogComponent {
     ]);
   }
 
-  getLocationDescription(codeValType: string): string | undefined {
+  getLocationDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData?.partLocationCvList);
+  }
+
+  getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {
+    // this.trDS.searchTariffRepairByPartNameDimLength(partName, dimension, length).subscribe(data => {
+    //   if (data.length) {
+    //     this.selectedTariffRepair = data[0];
+    //   }
+    // });
+    const group_name_cv = this.repairPartForm.get('group_name_cv')?.value
+    const subgroup_name_cv = this.repairPartForm.get('subgroup_name_cv')?.value
+    const where = {
+      and: [
+        { customer_company_guid: { eq: this.customer_company_guid } },
+        {
+          or: [
+            { tariff_repair_guid: { eq: null } },
+            {
+              tariff_repair: {
+                group_name_cv: { eq: group_name_cv.code_val },
+                subgroup_name_cv: { eq: subgroup_name_cv },
+                part_name: { eq: partName },
+                dimension: { eq: dimension },
+                length: { eq: length }
+              }
+            }
+          ]
+        }
+      ]
+    }
+    console.log(where);
+    this.prDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data.length) {
+        this.selectedPackageRepair = data[0];
+        this.repairPartForm.get('material_cost')?.setValue(this.selectedPackageRepair?.material_cost!.toFixed(2));
+      }
+    });
   }
 }
