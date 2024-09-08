@@ -503,7 +503,11 @@
     "QTY": "Qty",
     "HOUR": "Hour",
     "PRICE": "Price",
-    "MATERIAL": "Material"
+    "MATERIAL": "Material",
+    "TEMPLATE-TYPE":"Template Type",
+    "TEMPLATE-TYPE-GENERAL":"General",
+    "TEMPLATE-TYPE-EXCLUSIVE":"Exclusive",
+    "TOTAL-MATERIAL-COST":"Total Material Cost [SGD]"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

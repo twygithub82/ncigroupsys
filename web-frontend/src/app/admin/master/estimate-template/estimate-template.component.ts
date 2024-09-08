@@ -59,6 +59,7 @@ import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { pack } from 'd3';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import {FormDialogComponent_Edit_Cost} from './form-dialog-edit-cost/form-dialog.component';
+import { MasterEstimateTemplateDS,MasterTemplateItem } from 'app/data-sources/master-template';
 
 @Component({
   selector: 'app-package-repair',
@@ -100,18 +101,19 @@ import {FormDialogComponent_Edit_Cost} from './form-dialog-edit-cost/form-dialog
 export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
-    'select',
+   // 'select',
     // // 'img',
-    'custCode',
-    'custCompanyName',
+    
     'fName',
     'dimension',
     'lName',
-    'email',
-    'subgroup',
-    'gender',
-    'bDate',
-    'mobile',
+    // 'custCode',
+    // 'custCompanyName',
+     'email',
+    // 'subgroup',
+    // 'gender',
+    // 'bDate',
+    // 'mobile',
   ];
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR'
@@ -138,30 +140,31 @@ implements OnInit {
   CLEANING_LAST_UPDATED_DT = 'COMMON-FORM.LAST-UPDATED'
 
   customerCodeControl = new UntypedFormControl();
-  categoryControl= new UntypedFormControl();
-  profileNameControl = new UntypedFormControl();
+  templateNameControl= new UntypedFormControl();
+  
 
-  groupNameControl = new UntypedFormControl();
-  subGroupNameControl = new UntypedFormControl();
-  handledItemControl = new UntypedFormControl();
-
-
-  groupNameCvList: CodeValuesItem[] = [];
-  subGroupNameCvList: CodeValuesItem[] = [];
-  handledItemCvList: CodeValuesItem[] = [];
+  // groupNameControl = new UntypedFormControl();
+  // subGroupNameControl = new UntypedFormControl();
+  // handledItemControl = new UntypedFormControl();
 
 
-  storageCalCvList : CodeValuesItem[]=[];
+  // groupNameCvList: CodeValuesItem[] = [];
+  // subGroupNameCvList: CodeValuesItem[] = [];
+  // handledItemCvList: CodeValuesItem[] = [];
+
+
+  // storageCalCvList : CodeValuesItem[]=[];
   CodeValuesDS?:CodeValuesDS;
  // packDepotDS : PackageDepotDS;
-  packRepairDS : PackageRepairDS;
+  masterEstTempDS : MasterEstimateTemplateDS;
   ccDS: CustomerCompanyDS;
   //tariffDepotDS:TariffDepotDS;
  // clnCatDS:CleaningCategoryDS;
   custCompDS :CustomerCompanyDS;
 
   //packDepotItems:PackageDepotItem[]=[];
-  packRepairItems:PackageRepairItem[]=[];
+  masterTemplateItem:MasterTemplateItem[]=[];
+  masterTempItemOnly:MasterTemplateItem[]=[];
   
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList: CustomerCompanyItem[]=[];
@@ -170,7 +173,7 @@ implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company:{code: "ASC" }};
+  lastOrderBy: any = { template_name: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -184,7 +187,7 @@ implements OnInit {
   
   id?: number;
   advanceTable?: AdvanceTable;
-  pcForm?: UntypedFormGroup;
+  mtForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -280,7 +283,11 @@ implements OnInit {
     LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     DIMENSION :"COMMON-FORM.DIMENSION",
-    TEMPLATE_NAME:"COMMON-FORM.TEMPLATE-NAME"
+    TEMPLATE_NAME:"COMMON-FORM.TEMPLATE-NAME",
+    TEMPLATE_TYPE:"COMMON-FORM.TEMPLATE-TYPE",
+    TEMPLATE_TYPE_GENERAL:"COMMON-FORM.TEMPLATE-TYPE-GENERAL",
+    TEMPLATE_TYPE_EXCLUSIVE:"COMMON-FORM.TEMPLATE-TYPE-EXCLUSIVE",
+    TOTAL_MATERIAL_COST:"COMMON-FORM.TOTAL-MATERIAL-COST"
     
      }
   
@@ -296,9 +303,9 @@ implements OnInit {
 
   ) {
     super();
-    this.initPcForm();
+    this.initMtForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.packRepairDS=new PackageRepairDS(this.apollo);
+    this.masterEstTempDS=new MasterEstimateTemplateDS(this.apollo);
     //this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS=new CustomerCompanyDS(this.apollo);
    // this.packDepotDS = new PackageDepotDS(this.apollo);
@@ -315,20 +322,12 @@ implements OnInit {
     this.translateLangText();
   }
 
-  initPcForm() {
-    this.pcForm = this.fb.group({
-      guid: [{value:''}],
+  initMtForm() {
+    this.mtForm = this.fb.group({
       customer_code: this.customerCodeControl,
-      group_name_cv: this.groupNameControl,
-      sub_group_name_cv: this.subGroupNameControl,
-      part_name: [''],
-      min_len: [''],
-      max_len: [''],
-      min_labour: [''],
-      max_labour: [''],
-      min_cost: [''],
-      max_cost: [''],
-      handled_item_cv: this.handledItemControl
+      template_name: this.templateNameControl,
+      part_name: ['']
+
       
     });
   }
@@ -388,7 +387,7 @@ implements OnInit {
           //if(result.selectedValue>0)
          // {
             this.handleSaveSuccess(result);
-            if(this.packRepairItems.length>1)
+            if(this.masterTemplateItem.length>1)
                 this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
           //}
       }
@@ -422,7 +421,7 @@ implements OnInit {
           //if(result.selectedValue>0)
          // {
             this.handleSaveSuccess(result);
-            if(this.packRepairItems.length>1)
+            if(this.masterTemplateItem.length>1)
                 this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
           //}
       }
@@ -460,7 +459,7 @@ implements OnInit {
             {
               this.handleSaveSuccess(result);
               //this.search();
-              if(this.packRepairItems.length>1)
+              if(this.masterTemplateItem.length>1)
                   this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
             }
       //}
@@ -479,7 +478,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packRepairItems.length;
+    const numRows = this.masterTemplateItem.length;
     return numSelected === numRows;
   }
 
@@ -491,7 +490,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.packRepairItems.forEach((row) =>
+       : this.masterTemplateItem.forEach((row) =>
            this.selection.select(row)
          );
   }
@@ -510,94 +509,44 @@ implements OnInit {
         
           const customerCodes :CustomerCompanyItem[] = this.customerCodeControl.value;
           var guids = customerCodes.map(cc=>cc.guid);
-          where.customer_company_guid = { in: guids };
+          where.template_est_customer = where.template_est_customer || {};
+          where.template_est_customer.customer_company_guid = { in: guids };
         }
     }
 
+    if (this.templateNameControl.value) {
+      if(this.templateNameControl.value.length>0)
+        {
+          const template_names :string[] = this.templateNameControl.value;
+          where.template_name = { in: template_names };
+        }
+    }
+
+    if ( this.mtForm?.get('part_name')?.value) {
+         const partNameValue = this.mtForm.get('part_name')?.value;
+
+ 
+          where.template_est_part = {
+            ...where.template_est_part,
+            some: { 
+              description: { contains: partNameValue } 
+            }
+          };
+        
+    }
     
-    if (this.groupNameControl.value) {
-      if (this.groupNameControl.value.length > 0) {
-
-
-        const cdValues: CodeValuesItem[] = this.groupNameControl.value;
-        var codes = cdValues.map(cc => cc);
-        where.tariff_repair = where.tariff_repair || {};
-        where.tariff_repair.group_name_cv = { in: codes };
-      }
-    }
-
-    if (this.subGroupNameControl.value) {
-      if (this.subGroupNameControl.value.length > 0) {
-
-
-        const cdValues: CodeValuesItem[] = this.subGroupNameControl.value;
-        var codes = cdValues.map(cc => cc);
-        where.tariff_repair = where.tariff_repair || {};
-        where.tariff_repair.subgroup_name_cv = { in: codes };
-      }
-    }
-
-    if (this.pcForm!.value["part_name"]) {
-      const description: Text = this.pcForm!.value["part_name"];
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.part_name = { contains: description }
-    }
-
-
-    // Handling material_cost
-    if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.material_cost = { gte: minCost, lte: maxCost };
-    } else if (this.pcForm!.value["min_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.material_cost = { gte: minCost };
-    } else if (this.pcForm!.value["max_cost"]) {
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.material_cost = { lte: maxCost };
-    }
-
-    // Handling length
-    if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
-      const minLen: number = Number(this.pcForm!.value["min_len"]);
-      const maxLen: number = Number(this.pcForm!.value["max_len"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.length= { gte: minLen, lte: maxLen };
-    } else if (this.pcForm!.value["min_len"]) {
-      const minLen: number = Number(this.pcForm!.value["min_len"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.length = { gte: minLen };
-    } else if (this.pcForm!.value["max_len"]) {
-      const maxLen: number = Number(this.pcForm!.value["max_len"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.length = { lte: maxLen };
-    }
-
-    // Handling labour_hour
-    if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.labour_hour = { gte: minLabour, lte: maxLabour };
-    } else if (this.pcForm!.value["min_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.labour_hour = { gte: minLabour };
-    } else if (this.pcForm!.value["max_labour"]) {
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.labour_hour = { lte: maxLabour };
-    }
+    
 
       this.lastSearchCriteria=where;
-    this.subs.sink = this.packRepairDS.SearchPackageRepair(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.packRepairItems=data;
+    this.subs.sink = this.masterEstTempDS.SearchEstimateTemplate(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.masterTemplateItem=data;
+       let a = this.masterTemplateItem[0].getTotalMaterialCost();
               // data[0].storage_cal_cv
        this.previous_endCursor=undefined;
-       this.endCursor = this.packRepairDS.pageInfo?.endCursor;
-       this.startCursor = this.packRepairDS.pageInfo?.startCursor;
-       this.hasNextPage = this.packRepairDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.packRepairDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.masterEstTempDS.pageInfo?.endCursor;
+       this.startCursor = this.masterEstTempDS.pageInfo?.startCursor;
+       this.hasNextPage = this.masterEstTempDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.masterEstTempDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -605,19 +554,19 @@ implements OnInit {
         this.previous_endCursor=undefined;
     });
   }
-  selectStorageCalculateCV_Description(valCode?:string):string
-  {
-    let valCodeObject: CodeValuesItem = new CodeValuesItem();
-    if(this.storageCalCvList.length>0)
-    {
-      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode)|| new CodeValuesItem();
+  // selectStorageCalculateCV_Description(valCode?:string):string
+  // {
+  //   let valCodeObject: CodeValuesItem = new CodeValuesItem();
+  //   if(this.storageCalCvList.length>0)
+  //   {
+  //     valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode)|| new CodeValuesItem();
       
-      // If no match is found, description will be undefined, so you can handle it accordingly
+  //     // If no match is found, description will be undefined, so you can handle it accordingly
       
-    }
-    return valCodeObject.description || '-';
+  //   }
+  //   return valCodeObject.description || '-';
     
-  }
+  // }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -677,12 +626,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.packRepairDS.SearchPackageRepair(where,order,first,after,last,before).subscribe(data => {
-        this.packRepairItems=data;
-        this.endCursor = this.packRepairDS.pageInfo?.endCursor;
-        this.startCursor = this.packRepairDS.pageInfo?.startCursor;
-        this.hasNextPage = this.packRepairDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.packRepairDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.masterEstTempDS.SearchEstimateTemplate(where,order,first,after,last,before).subscribe(data => {
+        this.masterTemplateItem=data;
+        this.endCursor = this.masterEstTempDS.pageInfo?.endCursor;
+        this.startCursor = this.masterEstTempDS.pageInfo?.startCursor;
+        this.hasNextPage = this.masterEstTempDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.masterEstTempDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
@@ -719,56 +668,10 @@ implements OnInit {
      // this.customer_companyList1 = data
     });
 
-    // this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
+     this.masterEstTempDS.SearchEstimateTemplateOnly({},{template_name:'ASC'}).subscribe(data=>{
+        this.masterTempItemOnly=data;
+     })
 
-    // const queries = [
-    //   { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-     
-    // ];
-    // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-    //   this.storageCalCvList=data;
-    // });
-    const queries = [
-      { alias: 'groupName', codeValType: 'GROUP_NAME' },
-      //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
-      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' }
-    ];
-    this.CodeValuesDS?.getCodeValuesByType(queries);
-    this.CodeValuesDS?.connectAlias('groupName').subscribe(data => {
-      this.groupNameCvList = data;
-
-      const subqueries: any[] = [];
-      data.map(d => {
-
-        if (d.child_code) {
-          let q = { alias: d.child_code, codeValType: d.child_code };
-          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-          if (!hasMatch) {
-            subqueries.push(q);
-
-          }
-        }
-      });
-      if (subqueries.length > 0) {
-
-
-        this.CodeValuesDS?.getCodeValuesByType(subqueries)
-        subqueries.map(s => {
-          this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
-            this.subGroupNameCvList.push(...data);
-          });
-        });
-
-      }
-      // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
-    });
-    this.CodeValuesDS?.connectAlias('subGroupName').subscribe(data => {
-      this.subGroupNameCvList = data;
-    });
-    this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
-      this.handledItemCvList = data;
-    });
    
   
   }
@@ -823,13 +726,13 @@ implements OnInit {
     }
     return null;
   }
-  displayGroupNameCodeValue_Description(codeValue: String) {
-    return this.GetCodeValue_Description(codeValue, this.groupNameCvList);
-  }
+  // displayGroupNameCodeValue_Description(codeValue: String) {
+  //   return this.GetCodeValue_Description(codeValue, this.groupNameCvList);
+  // }
 
-  displaySubGroupNameCodeValue_Description(codeValue: String) {
-    return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
-  }
+  // displaySubGroupNameCodeValue_Description(codeValue: String) {
+  //   return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
+  // }
 
   GetCodeValue_Description(codeValue: String, codeValueItems: CodeValuesItem[]) {
     let retval: string = '';
@@ -840,7 +743,7 @@ implements OnInit {
 
     return retval;
   }
-  displayLastUpdated(r: PackageRepairItem) {
+  displayLastUpdated(r: MasterTemplateItem) {
     var updatedt = r.update_dt;
     if (updatedt === null) {
       updatedt = r.create_dt;
@@ -856,6 +759,15 @@ implements OnInit {
 
     return `${day}/${month}/${year}`;
 
+  }
+
+  displayTemplateType(r:MasterTemplateItem){
+    let tempType = `${this.translatedLangText.TEMPLATE_TYPE_GENERAL}`;
+    if(r.type_cv=="EXCLUSIVE")
+    {
+      tempType=this.translatedLangText.TEMPLATE_TYPE_EXCLUSIVE
+    }
+   return tempType;
   }
 }
 

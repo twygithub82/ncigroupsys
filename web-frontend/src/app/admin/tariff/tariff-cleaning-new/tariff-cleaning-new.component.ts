@@ -694,20 +694,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   {
 
     
-    const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/DeleteFile";
 
     if(this.existingSDSFilesUrls)
     {
       const urls: string[] = this.existingSDSFilesUrls.map(item => item.url);
       await firstValueFrom(this.fileManagerService.deleteFile(urls));
-      //this.fileManagerService.deleteFile(urls);
-      // const headers = new HttpHeaders({
-      //   'Content-Type': 'application/json'
-      // });
-      // const fileNames: string[] = Array.from(this.existingSDSFiles).map(file => file.name.replace(/\.[^/.]+$/, ""));;
-      // const body = JSON.stringify(fileNames);
-      // let totalCount=await firstValueFrom( this.httpClient.delete<number>(uploadURL,{body,headers}));
-      // console.log('Deleted File :'+totalCount);
     }
       
   }
@@ -772,24 +763,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.selectedFileLoading.next(false);
     }
   });
-    // const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/GetFileUrlByGroupGuid";
-    
-    // const headers = new HttpHeaders({
-    //   'Content-Type': 'application/json'
-    // });
    
-    // const body = JSON.stringify([GroupGuid]);
-     
-    // let urls = await firstValueFrom( this.httpClient.post<any[]>(uploadURL,body,{headers}));
-    // if(urls.length>0)
-    // {
-    //   let files = await this.downloadFiles(urls);
-    //   if(files.length>0)
-    //   {
-    //     this.selectedFile =files[0];
-    //     this.exitingSDSFiles=files;
-    //   }
-    // }
    
   }
   
@@ -804,24 +778,33 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   
  async onSubmit(groupGuid :string,tableName:string) {
     if (this.selectedFileChanged) {
-      const formData = new FormData();
-      const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/UploadFiles";
-      const jsonObject = {
-        TableName: tableName,
-        FileType: "pdf",
-        GroupGuid: groupGuid,
-        Description: "SDS file"
-      };
+      // const formData = new FormData();
+      // const uploadURL ="https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/api/v2/AzureBlob/UploadFiles";
+      // const jsonObject = {
+      //   TableName: tableName,
+      //   FileType: "pdf",
+      //   GroupGuid: groupGuid,
+      //   Description: "SDS file"
+      // };
       
       //   groupGuid :String = this.tcForm?.value["un_no"];
          this.DeleteExistingSDSFiles();
       
+       const uploadMeta ={
+         file:this.selectedFile!,
+         metadata:{
+          TableName: tableName,
+          FileType: "pdf",
+          GroupGuid: groupGuid,
+          Description: "SDS file"
+         }
+       }
 
-
-        var metadataJsonString =JSON.stringify(jsonObject);
-       formData.append('files', this.selectedFile!, this.selectedFile?.name);
-       formData.append('metadata', metadataJsonString);
-        await firstValueFrom( this.httpClient.post(uploadURL,formData));
+      //   var metadataJsonString =JSON.stringify(jsonObject);
+      //  formData.append('files', this.selectedFile!, this.selectedFile?.name);
+      //  formData.append('metadata', metadataJsonString);
+       await (firstValueFrom( this.fileManagerService.uploadFiles([uploadMeta])));
+       // await firstValueFrom( this.httpClient.post(uploadURL,formData));
       // this.httpClient.post(uploadURL, formData
       //  ).subscribe({
       //   next: (response) => {

@@ -220,12 +220,13 @@
                         </button>
                         <input type="file" #fileInput class="defaultd-none"  (change)="onFileSelected($event)" 
                           style="display: none;" accept="application/pdf">
-                          @if (tcForm?.get('file_size')?.hasError('error')) {
-                            <mat-error>
-                              {{translatedLangText.ATTACHMENT_TOO_BIG }}
-                            </mat-error>
-                            }
+                          
                       </div>
+                      @if (tcForm?.get('file_size')?.hasError('error')) {
+                        <mat-error  >
+                          {{translatedLangText.ATTACHMENT_TOO_BIG }}
+                        </mat-error>
+                        }
                       <!-- Display file name and preview button -->
                       <div *ngIf="selectedFile">
                         <p>SDS file: {{ tcForm!.get('un_no')?.value??'' }}
