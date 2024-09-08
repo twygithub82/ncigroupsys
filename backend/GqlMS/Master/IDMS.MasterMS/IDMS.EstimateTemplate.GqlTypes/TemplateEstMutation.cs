@@ -1,8 +1,11 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate;
+using IDMS.EstimateTemplate.GqlTypes.LocalModel;
 using IDMS.Models.Master;
 using IDMS.Models.Master.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
 using static IDMS.EstimateTemplate.StatusConstant;
 
@@ -11,7 +14,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
     public class TemplateEstMutation
     {
         public async Task<int> AddTemplateEstimation(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, template_est newTemplateEst, List<string> customerGuid)
+            [Service] IConfiguration config, template_est newTemplateEstimate)
         {
             try
             {
@@ -23,22 +26,22 @@ namespace IDMS.EstimateTemplate.GqlTypes
                 template.create_by = user;
                 template.create_dt = currentDateTime;
 
-                template.template_name = newTemplateEst.template_name;
-                template.type_cv = newTemplateEst.type_cv;
-                template.labour_cost_discount = newTemplateEst.labour_cost_discount;
-                template.material_cost_discount = newTemplateEst.material_cost_discount;
+                template.template_name = newTemplateEstimate.template_name;
+                template.type_cv = newTemplateEstimate.type_cv;
+                template.labour_cost_discount = newTemplateEstimate.labour_cost_discount;
+                template.material_cost_discount = newTemplateEstimate.material_cost_discount;
                 await context.template_est.AddAsync(template);
 
-                if (TemplateType.EXCLUSIVE.EqualsIgnore(newTemplateEst.type_cv))
+                if (TemplateType.EXCLUSIVE.EqualsIgnore(newTemplateEstimate.type_cv))
                 {
-                    if (!customerGuid.Any())
-                        throw new GraphQLException(new Error($"Customer guid cannot be null or empty", "ERROR"));
+                    if (newTemplateEstimate.template_est_customer == null)
+                        throw new GraphQLException(new Error($"Template_estimate_customer object cannot be null", "ERROR"));
 
-                    UpdateCustomer(context, customerGuid, user, currentDateTime, template.guid);
+                    UpdateCustomer(context, newTemplateEstimate.template_est_customer, user, currentDateTime, template);
                 }
 
                 IList<template_est_part> partList = new List<template_est_part>();
-                foreach (var newPart in newTemplateEst.template_est_part)
+                foreach (var newPart in newTemplateEstimate.template_est_part)
                 {
                     newPart.guid = Util.GenerateGUID();
                     newPart.create_by = user;
@@ -48,7 +51,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
 
                     UpdateRepairDamageCode(context, user, currentDateTime, newPart);
                 }
-                await context.AddRangeAsync(partList);
+                await context.template_est_part.AddRangeAsync(partList);
 
                 var res = await context.SaveChangesAsync();
 
@@ -64,29 +67,91 @@ namespace IDMS.EstimateTemplate.GqlTypes
         }
 
         public async Task<int> UpdateTemplateEstimation(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-           [Service] IConfiguration config, template_est updateTemplateEst, List<string> customerGuid)
+           [Service] IConfiguration config, template_est editTemplateEsimate)
         {
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                //IList<template_est> tempEstList = new List<template_est>();
-                //foreach (var est in updteTemplateEst)
-                //{
-                //    var template = new template_est() { guid = est.guid };
-                //    context.Attach(template);
+                //if (string.IsNullOrEmpty(templateEstimate.guid))
+                //throw new GraphQLException(new Error($"Template_estimate guid used for update cannot be null or empty", "ERROR"));
 
-                //    template.update_by = user;
-                //    template.update_dt = currentDateTime;
-                //    template.type_cv = est.type_cv;
-                //    template.template_name = est.template_name;
-                //    template.labour_cost_discount = est.labour_cost_discount;
-                //    template.material_cost_discount = est.material_cost_discount;
-                //    tempEstList.Add(template);
+                //var template = templateEstimate; //new template_est() { guid = templateEstimate.guid };
+                //context.Attach(template);
 
-                //}
-                //context.template_est.UpdateRange(tempEstList);
+                var template = await context.template_est.Where(t => t.guid == editTemplateEsimate.guid && (t.delete_dt == null || t.delete_dt == 0))
+                                                        .Include(t => t.template_est_customer)
+                                                        .Include(t => t.template_est_part)
+                                                            .ThenInclude(tp => tp.tep_damage_repair)
+                                                        .FirstOrDefaultAsync();
+
+                if (template == null)
+                    throw new GraphQLException(new Error($"Template_estimate not found", "ERROR"));
+
+                template.update_by = user;
+                template.update_dt = currentDateTime;
+                template.labour_cost_discount = editTemplateEsimate.labour_cost_discount;
+                template.material_cost_discount = editTemplateEsimate.material_cost_discount;
+                template.template_name = editTemplateEsimate.template_name;
+
+                if (editTemplateEsimate.template_est_part != null)
+                {
+                    foreach (var part in editTemplateEsimate.template_est_part)
+                    {
+                        if (ObjectAction.NEW.EqualsIgnore(part.action))
+                        {
+                            var newEstPart = part;
+                            newEstPart.guid = Util.GenerateGUID();
+                            newEstPart.create_by = user;
+                            newEstPart.create_dt = currentDateTime;
+                            newEstPart.template_est_guid = template.guid;
+                            UpdateRepairDamageCode(context, user, currentDateTime, part);
+                            await context.template_est_part.AddAsync(newEstPart);
+                            continue;
+                        }
+
+
+                        var existingPart = template.template_est_part?.Where(p => p.guid == part.guid && (p.delete_dt == null || p.delete_dt == 0)).FirstOrDefault();
+                        if (existingPart == null)
+                            throw new GraphQLException(new Error($"Template_part guid used for update cannot be null or empty", "ERROR"));
+
+                        if (ObjectAction.EDIT.EqualsIgnore(part.action))
+                        {
+                            //var updatePart = new template_est_part() { guid = part.guid };
+                            //context.Attach(updatePart);
+                            existingPart.update_by = user;
+                            existingPart.update_dt = currentDateTime;
+                            existingPart.quantity = part.quantity;
+                            existingPart.location_cv = part.location_cv;
+                            existingPart.hour = part.hour;
+                            existingPart.remarks = part.remarks;
+                            UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
+                            continue;
+                        }
+
+                        if (ObjectAction.CANCEL.EqualsIgnore(part.action))
+                        {
+                            //var delPart = new template_est_part() { guid = part.guid };
+                            //context.Attach(delPart);
+                            existingPart.delete_dt = currentDateTime;
+                            existingPart.update_dt = currentDateTime;
+                            existingPart.update_by = user;
+                            UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
+                            continue;
+                        }
+                    }
+                }
+
+                if (TemplateType.EXCLUSIVE.EqualsIgnore(editTemplateEsimate.type_cv))
+                {
+                    if (editTemplateEsimate.template_est_customer == null)
+                        throw new GraphQLException(new Error($"Template_customer object cannot be null", "ERROR"));
+
+                    UpdateCustomer(context, editTemplateEsimate.template_est_customer, user, currentDateTime, template);
+                }
+
+
                 var res = await context.SaveChangesAsync();
 
                 //TODO
@@ -101,23 +166,42 @@ namespace IDMS.EstimateTemplate.GqlTypes
         }
 
         #region private function
-        private async void UpdateCustomer(ApplicationMasterDBContext context, List<string> customerGuid, string user, long currentDateTime, string templateGuid)
+        private async void UpdateCustomer(ApplicationMasterDBContext context, IEnumerable<template_est_customer> templateCustomers, string user, long currentDateTime, string templateGuid)
         {
             try
             {
-                IList<template_est_customer> tempEstCustomerList = new List<template_est_customer>();
-                foreach (var id in customerGuid)
+                //IList<template_est_customer> tempEstCustomerList = new List<template_est_customer>();
+                foreach (var cus in templateCustomers)
                 {
-                    var templateEstCustomer = new template_est_customer();
-                    templateEstCustomer.guid = Util.GenerateGUID();
-                    templateEstCustomer.create_by = user;
-                    templateEstCustomer.create_dt = currentDateTime;
+                    if (string.IsNullOrEmpty(cus.customer_company_guid))
+                        throw new GraphQLException(new Error($"Customer_company guid cannot null or empty", "ERROR"));
 
-                    templateEstCustomer.template_est_guid = templateGuid;
-                    templateEstCustomer.customer_company_guid = id;
-                    tempEstCustomerList.Add(templateEstCustomer);
+                    if (ObjectAction.NEW.EqualsIgnore(cus.action) || (string.IsNullOrEmpty(cus.action) && string.IsNullOrEmpty(cus.guid)))
+                    {
+                        var templateEstCustomer = cus;//new template_est_customer();
+                        templateEstCustomer.guid = Util.GenerateGUID();
+                        templateEstCustomer.create_by = user;
+                        templateEstCustomer.create_dt = currentDateTime;
+
+                        templateEstCustomer.template_est_guid = templateGuid;
+                        templateEstCustomer.customer_company_guid = cus.customer_company_guid;
+                        await context.AddAsync(templateEstCustomer);
+                    }
+                    else if (ObjectAction.CANCEL.EqualsIgnore(cus.action))
+                    {
+                        if (string.IsNullOrEmpty(cus.guid))
+                            throw new GraphQLException(new Error($"Template_estimate_customer guid cannot null or empty for cancel", "ERROR"));
+
+                        var customer = cus;//new template_est_customer() { guid = cus.guid };
+                        //context.Attach(customer);
+
+                        customer.update_dt = currentDateTime;
+                        customer.delete_dt = currentDateTime;
+                        customer.update_by = user;
+                        context.Update(customer);
+                    }
                 }
-                context.AddRangeAsync(tempEstCustomerList);
+                //context.AddRangeAsync(tempEstCustomerList);
             }
             catch (Exception ex)
             {
@@ -125,39 +209,121 @@ namespace IDMS.EstimateTemplate.GqlTypes
             }
         }
 
-        private async void UpdateRepairDamageCode(ApplicationMasterDBContext context, string user, long currentDateTime, template_est_part newPart)
+        private async void UpdateCustomer(ApplicationMasterDBContext context, IEnumerable<template_est_customer> templateCustomers,
+                                            string user, long currentDateTime, template_est templateEst)
         {
             try
             {
-                if (newPart != null)
+                //IList<template_est_customer> tempEstCustomerList = new List<template_est_customer>();
+                foreach (var cus in templateCustomers)
                 {
-                    IList<tep_damage_repair> tepDamageRepairList = new List<tep_damage_repair>();
-                    foreach (var dmg in newPart.damage_code)
+                    if (string.IsNullOrEmpty(cus.action) && !string.IsNullOrEmpty(cus.guid))
+                        continue;
+                        //throw new GraphQLException(new Error($"Template_estimate_customer action cannot be null for update", "ERROR"));
+
+                    if (ObjectAction.NEW.EqualsIgnore(cus.action) || (string.IsNullOrEmpty(cus.action) && string.IsNullOrEmpty(cus.guid)))
                     {
-                        var tepDamage = new tep_damage_repair();
-                        tepDamage.guid = Util.GenerateGUID();
-                        tepDamage.create_by = user;
-                        tepDamage.create_dt = currentDateTime;
+                        if (string.IsNullOrEmpty(cus.customer_company_guid))
+                            throw new GraphQLException(new Error($"Customer_company guid cannot null or empty", "ERROR"));
 
-                        tepDamage.tep_guid = newPart.guid;
-                        tepDamage.code_type = (int)CodeTyp.damage;
-                        tepDamage.code_cv = dmg;
-                        tepDamageRepairList.Add(tepDamage);
+                        var templateEstCustomer = cus;//new template_est_customer();
+                        templateEstCustomer.guid = Util.GenerateGUID();
+                        templateEstCustomer.create_by = user;
+                        templateEstCustomer.create_dt = currentDateTime;
+
+                        templateEstCustomer.template_est_guid = templateEst.guid;
+                        templateEstCustomer.customer_company_guid = cus.customer_company_guid;
+                        await context.template_est_customer.AddAsync(templateEstCustomer);
                     }
-
-                    foreach (var rep in newPart.repair_code)
+                    else if (ObjectAction.CANCEL.EqualsIgnore(cus.action))
                     {
-                        var tepRepair = new tep_damage_repair();
-                        tepRepair.guid = Util.GenerateGUID();
-                        tepRepair.create_by = user;
-                        tepRepair.create_dt = currentDateTime;
+                        if (string.IsNullOrEmpty(cus.guid))
+                            throw new GraphQLException(new Error($"Template_estimate_customer guid cannot null or empty for cancel", "ERROR"));
 
-                        tepRepair.tep_guid = newPart.guid;
-                        tepRepair.code_type = (int)CodeTyp.repair;
-                        tepRepair.code_cv = rep;
-                        tepDamageRepairList.Add(tepRepair);
+                        var customer = templateEst.template_est_customer.FirstOrDefault(c => c.guid == cus.guid); //cus;//new template_est_customer() { guid = cus.guid };
+                        //context.Attach(customer);
+                        if (customer != null)
+                        {
+                            customer.update_dt = currentDateTime;
+                            customer.delete_dt = currentDateTime;
+                            customer.update_by = user;
+                            //context.Update(customer);
+                        }
                     }
-                    await context.AddRangeAsync(tepDamageRepairList);
+                }
+                //context.AddRangeAsync(tempEstCustomerList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private async void UpdateRepairDamageCode(ApplicationMasterDBContext context, string user, long currentDateTime,
+                                            template_est_part estPart, IEnumerable<tep_damage_repair>? tepDamageRepair = null)
+        {
+            try
+            {
+                if (estPart.tep_damage_repair != null)
+                {
+                    foreach (var item in estPart.tep_damage_repair)
+                    {
+
+                        if (string.IsNullOrEmpty(item.action) && !string.IsNullOrEmpty(item.guid))
+                            throw new GraphQLException(new Error($"Tep_damage_repair action cannot be null for update", "ERROR"));
+
+
+                        if (string.IsNullOrEmpty(item.guid) && (ObjectAction.NEW.EqualsIgnore(item.action) || string.IsNullOrEmpty(item.action)))
+                        {
+                            var tepDamage = item;//new tep_damage_repair();
+                            tepDamage.guid = Util.GenerateGUID();
+                            tepDamage.create_by = user;
+                            tepDamage.create_dt = currentDateTime;
+
+                            tepDamage.tep_guid = estPart.guid;
+                            tepDamage.code_type = item.code_type;
+                            tepDamage.code_cv = item.code_cv;
+                            await context.tep_damage_repair.AddAsync(tepDamage);
+                            continue;
+                        }
+
+                        if (ObjectAction.EDIT.EqualsIgnore(item.action))
+                        {
+                            if (string.IsNullOrEmpty(item.guid))
+                                throw new GraphQLException(new Error($"Template_part_damage_repair guid cannot null or empty for update", "ERROR"));
+
+                            //var tepDamage = new tep_damage_repair() { guid = item.guid };
+                            var tepDamage = tepDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            //context.Attach(tepDamage);
+                            if (tepDamage != null)
+                            {
+                                tepDamage.update_dt = currentDateTime;
+                                tepDamage.update_by = user;
+                                tepDamage.code_cv = item.code_cv;
+                                tepDamage.code_type = item.code_type;
+                                //await context.AddAsync(tepDamage)
+                            }
+                            continue;
+                        }
+
+                        if (ObjectAction.CANCEL.EqualsIgnore(item.action))
+                        {
+                            if (string.IsNullOrEmpty(item.guid))
+                                throw new GraphQLException(new Error($"Template_part_damage_repair guid cannot null or empty for cancel", "ERROR"));
+
+                            //var tepDamage = new tep_damage_repair() { guid = item.guid };
+                            //context.Attach(tepDamage);
+                            var tepDamage = tepDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            if (tepDamage != null)
+                            {
+                                tepDamage.delete_dt = currentDateTime;
+                                tepDamage.update_by = user;
+                                tepDamage.update_dt = currentDateTime;
+                            }
+                            continue;
+                        }
+
+                    }
                 }
             }
             catch (Exception ex)
@@ -166,5 +332,91 @@ namespace IDMS.EstimateTemplate.GqlTypes
             }
         }
         #endregion
+
+        //private async void UpdateRepairDamageCodeOld(ApplicationMasterDBContext context, string user, long currentDateTime, template_est_part estPart)
+        //{
+        //    try
+        //    {
+        //        if (estPart != null)
+        //        {
+        //            IList<tep_damage_repair> tepDamageRepairList = new List<tep_damage_repair>();
+        //            if (ObjectAction.NEW.EqualsIgnore(estPart.action))
+        //            {
+        //                foreach (var dmg in estPart.damage_code)
+        //                {
+        //                    var tepDamage = new tep_damage_repair();
+        //                    tepDamage.guid = Util.GenerateGUID();
+        //                    tepDamage.create_by = user;
+        //                    tepDamage.create_dt = currentDateTime;
+
+        //                    tepDamage.tep_guid = estPart.guid;
+        //                    tepDamage.code_type = (int)CodeTyp.damage;
+        //                    tepDamage.code_cv = dmg;
+        //                    tepDamageRepairList.Add(tepDamage);
+        //                }
+
+        //                foreach (var rep in estPart.repair_code)
+        //                {
+        //                    var tepRepair = new tep_damage_repair();
+        //                    tepRepair.guid = Util.GenerateGUID();
+        //                    tepRepair.create_by = user;
+        //                    tepRepair.create_dt = currentDateTime;
+
+        //                    tepRepair.tep_guid = estPart.guid;
+        //                    tepRepair.code_type = (int)CodeTyp.repair;
+        //                    tepRepair.code_cv = rep;
+        //                    tepDamageRepairList.Add(tepRepair);
+        //                }
+        //                await context.AddRangeAsync(tepDamageRepairList);
+        //            }
+
+        //            if (ObjectAction.EDIT.EqualsIgnore(estPart.action))
+        //            {
+        //                foreach (var dmg in estPart.damage_code)
+        //                {
+        //                    var tepDamage = new tep_damage_repair();
+        //                    context.Attach(tepDamage);
+        //                    tepDamage.code_cv = dmg;
+        //                    tepDamage.update_by = user;
+        //                    tepDamage.update_dt = currentDateTime;
+        //                }
+        //                foreach (var rep in estPart.repair_code)
+        //                {
+        //                    var tepDamage = new tep_damage_repair();
+        //                    context.Attach(tepDamage);
+        //                    tepDamage.code_cv = rep;
+        //                    tepDamage.update_by = user;
+        //                    tepDamage.update_dt = currentDateTime;
+        //                }
+        //            }
+
+        //            if (ObjectAction.CANCEL.EqualsIgnore(estPart.action))
+        //            {
+        //                foreach (var dmg in estPart.damage_code)
+        //                {
+        //                    var tepDamage = new tep_damage_repair();
+        //                    context.Attach(tepDamage);
+        //                    tepDamage.delete_dt = currentDateTime;
+        //                    tepDamage.update_by = user;
+        //                    tepDamage.update_dt = currentDateTime;
+        //                }
+        //                foreach (var rep in estPart.repair_code)
+        //                {
+        //                    var tepDamage = new tep_damage_repair();
+        //                    context.Attach(tepDamage);
+        //                    tepDamage.delete_dt = currentDateTime;
+        //                    tepDamage.update_by = user;
+        //                    tepDamage.update_dt = currentDateTime;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+
+        //   
+        //}
     }
 }

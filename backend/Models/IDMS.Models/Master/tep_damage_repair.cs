@@ -13,12 +13,15 @@ namespace IDMS.Models.Master
     public class tep_damage_repair : Dates
     {
         [Key]
-        public string guid { get; set; }
+        public string? guid { get; set; }
 
         [ForeignKey("template_est_part")]
-        public string tep_guid { get; set; }
+        public string? tep_guid { get; set; }
         public string code_cv { get; set; }
         public int code_type { get; set; }
-        public template_est_part template_est_part { get; set; }
+
+        [NotMapped]
+        public string? action { get; set; }
+        public template_est_part? template_est_part { get; set; }
     }
 }

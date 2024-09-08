@@ -14,6 +14,15 @@ namespace IDMS.EstimateTemplate
             public const string EXCLUSIVE = "EXCLUSIVE";
    
         }
+
+        public static class ObjectAction
+        {
+            public const string NEW = "NEW";
+            public const string EDIT = "EDIT";
+            //public const string ROLLBACK = "ROLLBACK";
+            public const string CANCEL = "CANCEL";
+            //public const string PREORDER = "PREORDER";
+        }
     }
 
     public enum CodeTyp

@@ -26,10 +26,12 @@ namespace IDMS.Models.Master
         public int? quantity { get; set; }
         public double? hour { get; set; }
 
+        //[NotMapped]
+        //public List<string> damage_code { get; set; }
+        //[NotMapped]
+        //public List<string> repair_code { get; set; }
         [NotMapped]
-        public List<string> damage_code { get; set; }
-        [NotMapped]
-        public List<string> repair_code { get; set; }
+        public string? action {  get; set; }
 
         public template_est? template_est { get; set; }
         public tariff_repair? tariff_repair { get; set; }
