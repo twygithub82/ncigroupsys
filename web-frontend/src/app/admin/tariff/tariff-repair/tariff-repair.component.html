@@ -203,9 +203,9 @@
                 </ng-container>
                 <ng-container matColumnDef="bDate">
                   <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.MATERIAL_COST}}</mat-header-cell>
+                    mat-sort-header>{{this.translatedLangText.MATERIAL_COST$}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST}}:</span>
+                    <span class="mobile-label">{{this.translatedLangText.MATERIAL_COST$}}:</span>
                     {{row.material_cost.toFixed(2)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="mobile">

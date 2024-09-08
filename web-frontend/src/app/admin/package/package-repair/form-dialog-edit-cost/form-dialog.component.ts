@@ -113,7 +113,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
   action: string;
   index?: number;
   dialogTitle?: string;
-
+  minMaterialCost:number=-20;
+  maxMaterialCost:number=20;
   ccDS: CustomerCompanyDS;
   cvDS :CodeValuesDS;
   groupNameCvList :CodeValuesItem[] = [];
@@ -259,7 +260,9 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     THICKNESS:"COMMON-FORM.THICKNESS",
     COST_TYPE:"COMMON-FORM.COST-TYPE",
     REBATE_TYPE:"COMMON-FORM.REBATE-TYPE",
-    JOB_TYPE:"COMMON-FORM.JOB-TYPE"
+    JOB_TYPE:"COMMON-FORM.JOB-TYPE",
+    CANNOT_EXCEED:"COMMON-FORM.CANNOT-EXCEED",
+    CANNOT_SMALLER:"COMMON-FORM.CANNOT-SMALLER",
   };
   unit_type_control = new UntypedFormControl();
   
@@ -287,25 +290,6 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     this.translateLangText();
     this.loadData();
 
-    // if(this.selectedItems.length==1)
-    // {
-    //   var rec = this.selectedItems[0];
-    //   this.pcForm.patchValue({
-    //     group_name_cv: this.groupNameControl ,
-    //     sub_group_name_cv:this.subGroupNameControl,
-    //     part_name:rec.part_name,
-    //     height_diameter:rec.dimension,
-    //     height_diameter_unit_cv:this.dimensionUnitControl,
-    //     width_diameter:rec.width_diameter,
-    //     width_diameter_unit_cv: this.widthDiadmeterUnitControl,
-    //     thickness:rec.width_diameter,
-    //     thickness_unit_cv:this.thicknessUnitControl,
-    //     length:rec.length,
-    //     length_unit_cv:this.lengthUnitControl,
-    //     labour_hour:rec.labour_hour,
-    //     material_cost:rec.material_cost,
-    //   });
-    //}
    
   }
 

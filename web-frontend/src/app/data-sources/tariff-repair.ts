@@ -64,10 +64,36 @@ export class TariffRepairItem {
   }
 }
 
+export interface TariffRepairLengthItem {
+  length: number;
+  length_unit_cv: string;
+}
+
 export interface TariffLabourResult {
   items: TariffRepairItem[];
   totalCount: number;
 }
+
+export const GET_DISTINCT_PART_NAME=gql`
+query {
+  queryDistinctPartNameResult:queryDistinctPartName
+}
+`;
+
+export const GET_DISTINCT_DIMENSION=gql`
+query {
+  queryDistinctDimensionResult:queryDistinctDimension
+}
+`;
+
+export const GET_DISTINCT_LENGTH=gql`
+ query {
+  queryDistinctLengthResult:queryDistinctLength {
+    length
+    length_unit_cv
+  }
+}
+`;
 
 export const GET_TARIFF_REPAIR_QUERY = gql`
   query queryTariffRepair($where: tariff_repairFilterInput, $order:[tariff_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {

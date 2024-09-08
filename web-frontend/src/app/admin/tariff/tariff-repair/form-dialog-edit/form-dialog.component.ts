@@ -729,18 +729,18 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
 
   updateDimensionAndAliasName():void
   {
-    let heightDimension=`${this.pcForm?.get("height_diameter")?.value||''}${this.RetrieveCodeValue(this.heightDiameterUnitControl.value)||''}`;
-    let widthDimension=`${this.pcForm?.get("width_diameter")?.value||''}${this.RetrieveCodeValue(this.widthDiameterUnitControl.value)||''}`;
-    let thicknessDimension=`${this.pcForm?.get("thickness")?.value||''}${this.RetrieveCodeValue(this.thicknessUnitControl.value)||''}`;
+    let heightDimension=`${this.pcForm?.get("height_diameter")?.value||''}`;
+    let widthDimension=`${this.pcForm?.get("width_diameter")?.value||''}`;
+    let thicknessDimension=`${this.pcForm?.get("thickness")?.value||''}`;
     let dimension = '';
-    if(heightDimension!="") dimension=`${heightDimension}`;
+    if(heightDimension!="") dimension=`${heightDimension}${this.RetrieveCodeValue(this.heightDiameterUnitControl.value)||''}`;
     if(widthDimension!="") {
       if(dimension!="") dimension+="x";
-      dimension +=`${widthDimension}`;}
+      dimension +=`${widthDimension}${this.RetrieveCodeValue(this.widthDiameterUnitControl.value)||''}`;}
 
     if(thicknessDimension!="") {
       if(dimension!="") dimension+="x";
-      dimension +=`${thicknessDimension}`;
+      dimension +=`${thicknessDimension}${this.RetrieveCodeValue(this.thicknessUnitControl.value)||''}`;
     }
 
     let aliasName = `${this.pcForm?.get("part_name")?.value}`;

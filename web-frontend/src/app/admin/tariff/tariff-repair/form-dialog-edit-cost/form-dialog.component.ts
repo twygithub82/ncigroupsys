@@ -113,6 +113,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
   index?: number;
   dialogTitle?: string;
 
+  minMaterialCost:number=-20;
+  maxMaterialCost:number=20;
 
   cvDS :CodeValuesDS;
   groupNameCvList :CodeValuesItem[] = [];
@@ -257,7 +259,9 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     THICKNESS:"COMMON-FORM.THICKNESS",
     COST_TYPE:"COMMON-FORM.COST-TYPE",
     REBATE_TYPE:"COMMON-FORM.REBATE-TYPE",
-    JOB_TYPE:"COMMON-FORM.JOB-TYPE"
+    JOB_TYPE:"COMMON-FORM.JOB-TYPE",
+    CANNOT_EXCEED:"COMMON-FORM.CANNOT-EXCEED",
+    CANNOT_SMALLER:"COMMON-FORM.CANNOT-SMALLER",
   };
   unit_type_control = new UntypedFormControl();
   

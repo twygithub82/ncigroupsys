@@ -270,6 +270,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     DIMENSION :"COMMON-FORM.DIMENSION",
+    MATERIAL_COST$:"COMMON-FORM.MATERIAL-COST$",
     
   }
 

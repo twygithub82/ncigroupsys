@@ -443,6 +443,9 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     else
     {
       this.selectedFile=null;
+      this.tcForm!.patchValue({
+        class_no: '',
+      });
     }
   }
   onContextMenu(event: MouseEvent, item: AdvanceTable) {

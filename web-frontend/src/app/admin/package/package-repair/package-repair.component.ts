@@ -137,9 +137,15 @@ implements OnInit {
   
   CLEANING_LAST_UPDATED_DT = 'COMMON-FORM.LAST-UPDATED'
 
+  minMaterialCost:number=-20;
+  maxMaterialCost:number=20;
+
   customerCodeControl = new UntypedFormControl();
   categoryControl= new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
+
+  lengthControl= new UntypedFormControl();
+  dimensionControl = new UntypedFormControl();
 
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
@@ -279,6 +285,7 @@ implements OnInit {
     HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
     LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
+    MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
     DIMENSION :"COMMON-FORM.DIMENSION",
     
      }
@@ -321,6 +328,8 @@ implements OnInit {
       group_name_cv: this.groupNameControl,
       sub_group_name_cv: this.subGroupNameControl,
       part_name: [''],
+      len:this.lengthControl,
+      dimension:this.dimensionControl,
       min_len: [''],
       max_len: [''],
       min_labour: [''],

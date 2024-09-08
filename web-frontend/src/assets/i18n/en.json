@@ -93,8 +93,8 @@
       "TEXT": "Tariff",
       "LIST": {
         "TARIFF-CLEANING": "Cleaning",
-        "TARIFF-LABOUR": "Labour Cost $",
-        "TARIFF-DEPOT": "Depot Cost $",
+        "TARIFF-LABOUR": "Labour Cost",
+        "TARIFF-DEPOT": "Depot Cost",
         "TARIFF-REPAIR": "Repair",
         "TARIFF-BUFFER": "Buffer Cleaning",
         "TARIFF-RESIDUE": "Residue Disposal",
@@ -266,7 +266,7 @@
     "REFRESH": "Refresh",
     "EXPORT": "Export",
     "SELECT-ATLEAST-ONE": "Please select at least one.",
-    "ADD-ATLEAST-ONE": "Please add atleast one.",
+    "ADD-ATLEAST-ONE": "Please add at least one.",
     "CUSTOMER": "Customer",
     "ALIAS-NAME": "Alias Name",
     "SO-DATE": "SO Date",
@@ -456,7 +456,8 @@
     "MAX-LABOUR": "Maxmum Labour",
     "HANDLED-ITEM": "Handled Item",
     "LENGTH": "Length",
-    "MATERIAL-COST": "Material Cost $",
+    "MATERIAL-COST": "Material Cost",
+    "MATERIAL-COST$": "Material Cost $",
     "LABOUR-HOUR": "Labour Hour",
     "SCHEDULING-DATE": "Scheduling Date",
     "DIMENSION": "Dimension",
@@ -510,7 +511,9 @@
     "PREFIX-DESC": "Prefix Description",
     "ADDITIONAL-DIMENSION-AND-LENGTH": "Additional Dimension & Length",
     "IQ": "IQ",
-    "SUBGROUP-NAME": "Subgroup Name"
+    "SUBGROUP-NAME": "Subgroup Name",
+    "CANNOT-EXCEED":"cannot exceed",
+    "CANNOT-SMALLER":"cannot be smaller than"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
