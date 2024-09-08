@@ -189,7 +189,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     LENGTH: 'COMMON-FORM.LENGTH',
     PREFIX_DESC: 'COMMON-FORM.PREFIX-DESC',
     MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
-    IQ: 'COMMON-FORM.IQ'
+    IQ: 'COMMON-FORM.IQ',
+    ESTIMATE_DETAILS: 'COMMON-FORM.ESTIMATE-DETAILS',
+    ESTIMATE_SUMMARY: 'COMMON-FORM.ESTIMATE-SUMMARY'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -201,8 +203,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   sotItem?: StoringOrderTankItem;
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  sotList = new MatTableDataSource<StoringOrderTankItem>();
-  sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
+  repList = new MatTableDataSource<RepairEstPartItem>();
+  sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
@@ -338,10 +340,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
   }
 
-  populateSOT(sot: StoringOrderTankItem[]) {
-    if (sot?.length) {
-      const sotList: StoringOrderTankItem[] = sot.map((item: Partial<StoringOrderTankItem> | undefined) => new StoringOrderTankItem(item));
-      this.updateData(sotList);
+  populateSOT(rep: RepairEstPartItem[]) {
+    if (rep?.length) {
+      const repList: RepairEstPartItem[] = rep.map((item: Partial<RepairEstPartItem> | undefined) => new RepairEstPartItem(item));
+      this.updateData(repList);
     }
   }
 
@@ -387,16 +389,15 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           repairCodeCvList: this.repairCodeCvList
         },
         index: -1,
-        sotExistedList: this.sotList.data
+        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const data = [...this.sotList.data];
-        const newItem = new StoringOrderTankItem({
+        const data = [...this.repList.data];
+        const newItem = new RepairEstPartItem({
           ...result.item,
-          //actions: ['new']
         });
 
         // Add the new item to the end of the list
@@ -429,26 +430,26 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           repairCodeCvList: this.repairCodeCvList
         },
         index: index,
-        sotExistedList: this.sotList.data
+        sotExistedList: this.repList.data
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         if (result.index >= 0) {
-          const data = [...this.sotList.data];
+          const data = [...this.repList.data];
           // let actions = Array.isArray(data[index].actions!) ? [...data[index].actions!] : [];
           // if (!actions.includes('new')) {
           //   actions = [...new Set([...actions, 'edit'])];
           // }
-          const updatedItem = new StoringOrderTankItem({
+          const updatedItem = new RepairEstPartItem({
             ...result.item,
             //actions: actions
           });
           data[result.index] = updatedItem;
           this.updateData(data);
         } else {
-          this.updateData([...this.sotList.data, result.item]);
+          this.updateData([...this.repList.data, result.item]);
         }
       }
     });
@@ -472,7 +473,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         if (result.item.guid) {
-          const data = [...this.sotList.data];
+          const data = [...this.repList.data];
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
@@ -483,7 +484,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
         } else {
-          const data = [...this.sotList.data];
+          const data = [...this.repList.data];
           data.splice(index, 1);
           this.updateData(data); // Refresh the data source
         }
@@ -491,7 +492,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  cancelSelectedRows(row: StoringOrderTankItem[]) {
+  cancelSelectedRows(row: RepairEstPartItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -509,8 +510,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data = [...this.sotList.data];
-        result.item.forEach((newItem: StoringOrderTankItem) => {
+        const data = [...this.repList.data];
+        result.item.forEach((newItem: RepairEstPartItem) => {
           // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
@@ -530,7 +531,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  rollbackSelectedRows(row: StoringOrderTankItem[]) {
+  rollbackSelectedRows(row: RepairEstPartItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -548,8 +549,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data = [...this.sotList.data];
-        result.item.forEach((newItem: StoringOrderTankItem) => {
+        const data = [...this.repList.data];
+        result.item.forEach((newItem: RepairEstPartItem) => {
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
           if (index !== -1) {
@@ -567,9 +568,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  undoTempAction(row: StoringOrderTankItem[], actionToBeRemove: string) {
-    const data = [...this.sotList.data];
-    row.forEach((newItem: StoringOrderTankItem) => {
+  undoTempAction(row: RepairEstPartItem[], actionToBeRemove: string) {
+    const data = [...this.repList.data];
+    row.forEach((newItem: RepairEstPartItem) => {
       const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
       if (index !== -1) {
@@ -595,7 +596,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   masterToggle() {
     this.isAllSelected()
       ? this.sotSelection.clear()
-      : this.sotList.data?.forEach((row) =>
+      : this.repList.data?.forEach((row) =>
         this.sotSelection.select(row)
       );
   }
@@ -620,7 +621,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   onSOFormSubmit() {
     this.soForm!.get('sotList')?.setErrors(null);
     if (this.soForm?.valid) {
-      if (!this.sotList.data.length) {
+      if (!this.repList.data.length) {
         this.soForm.get('sotList')?.setErrors({ required: true });
       } else {
         let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
@@ -628,7 +629,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         so.haulier = this.soForm.value['haulier'];
         so.so_notes = this.soForm.value['so_notes'];
 
-        const sot: StoringOrderTankGO[] = this.sotList.data.map((item: Partial<StoringOrderTankItem>) => {
+        const sot: StoringOrderTankGO[] = this.repList.data.map((item: Partial<StoringOrderTankItem>) => {
           // Ensure action is an array and take the last action only
           const actions = Array.isArray(item!.actions) ? item!.actions : [];
           const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
@@ -657,8 +658,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
   }
 
-  updateData(newData: StoringOrderTankItem[]): void {
-    this.sotList.data = [...newData];
+  updateData(newData: RepairEstPartItem[]): void {
+    this.repList.data = [...newData];
     this.sotSelection.clear();
   }
 
@@ -666,7 +667,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.deleteItem(row, index);
   }
 
-  cancelItem(event: Event, row: StoringOrderTankItem) {
+  cancelItem(event: Event, row: RepairEstPartItem) {
     // this.id = row.id;
     if (this.sotSelection.hasValue()) {
       this.cancelSelectedRows(this.sotSelection.selected)
@@ -803,6 +804,28 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   getTestClassDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
+  }
+
+  getDamageCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.damageCodeCvList);
+  }
+
+  getRepairCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.repairCodeCvList);
+  }
+
+  displayDamageRepairCode(damageRepair: any[]): string {
+    return damageRepair.map(item => {
+      return item.code_cv;
+    }).join('/');
+  }
+
+  displayDamageRepairCodeDescription(damageRepair: any[]): string {
+    return damageRepair.map(item => {
+      const codeCv = item.code_cv;
+      const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
+      return description ? description : '';
+    }).join('/');
   }
 
   displayDateTime(input: number | undefined): string | undefined {
