@@ -51,7 +51,7 @@ namespace IDMS.BatchJob.Service
                 // Deserialize the JSON string into an object
                 //var configuration = JToken.Parse("");
                 dbConnection = $"{configuration?.SelectToken("ConnectionStrings.DefaultConnection")?.ToString()}";
-                await CheckSchedulingDescrepancy(configuration, dbConnection);
+                await CheckDescrepancy(configuration, dbConnection);
                 //await CheckBookingDescrepancy(configuration, dbConnection);
 
             }
@@ -74,7 +74,7 @@ namespace IDMS.BatchJob.Service
                 // Deserialize the JSON string into an object
                 //var configuration = JToken.Parse("");
                 dbConnection = $"{configuration?.SelectToken("ConnectionStrings.DefaultConnection")?.ToString()}";
-                await CheckSchedulingDescrepancy(configuration, dbConnection, dateInput);
+                await CheckDescrepancy(configuration, dbConnection, dateInput);
                 //await CheckBookingDescrepancy(configuration, dbConnection, dateInput);
 
             }
@@ -85,7 +85,7 @@ namespace IDMS.BatchJob.Service
             }
         }
 
-        private static async Task<List<JToken>> CheckSchedulingDescrepancy(JToken config, string dbConnection, string date = "")
+        private static async Task<List<JToken>> CheckDescrepancy(JToken config, string dbConnection, string date = "")
         {
             Console.WriteLine("Booking_Scheduling_CrossCheck...");
 
@@ -260,7 +260,7 @@ namespace IDMS.BatchJob.Service
                     var tankNo = item.SelectToken("tank_no");
                     Console.WriteLine($"Commercial forgot to book : {tankNo} for {item.SelectToken("book_type_cv")}");
                     string notification_uid = $"cc-booking-{tankNo}";
-                    //await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", $"Commercial forgot to book:{tankNo}", notification_uid);
+                    await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", $"Commercial forgot to book:{tankNo}", notification_uid);
                 }
 
                 foreach (var item in missingInScheduling)
@@ -268,7 +268,7 @@ namespace IDMS.BatchJob.Service
                     var tankNo = item.SelectToken("tank_no");
                     Console.WriteLine($"Operation forgot to schedule : {tankNo} for {item.SelectToken("book_type_cv")}");
                     string notification_uid = $"cc-scheduling-{tankNo}";
-                    //await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", $"Operation forgot to schedule:{tankNo}", notification_uid);
+                    await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", $"Operation forgot to schedule:{tankNo}", notification_uid);
                 }
 
                 MatchCheck(sortedBookingList, sortedSchedulingList, oriBookingList, oriSchedulingList, url);
@@ -354,11 +354,11 @@ namespace IDMS.BatchJob.Service
 
                         var sch = schedulingCommonList.Where(obj => ContainsPartial((JObject)obj, checkItem)).FirstOrDefault();
                         Console.WriteLine($"Record in scheduling {sch.SelectToken("tank_no")} -- {sch.SelectToken("book_type_cv")} -- Date {sch.SelectToken("scheduling_dt")}");
-                        //string notification_uid = $"cc-scheduling-{tankNo}";
-                        //Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", $"scheduling record for {tankNo} not tally with booking", notification_uid);
+                        string notification_uid = $"cc-scheduling-{tankNo}";
+                        Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", $"scheduling record for {tankNo} not tally with booking", notification_uid);
 
                         string notification_uid_bk = $"cc-booking-{tankNo}";
-                        //Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", $"booking record for {tankNo} not tally with scheduling", notification_uid_bk);
+                        Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", $"booking record for {tankNo} not tally with scheduling", notification_uid_bk);
                     }
                 }
 
