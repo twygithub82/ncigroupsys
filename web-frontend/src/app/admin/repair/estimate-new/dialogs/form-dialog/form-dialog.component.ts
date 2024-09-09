@@ -105,6 +105,7 @@ export class FormDialogComponent {
     this.customer_company_guid = data.customer_company_guid!;
     if (this.action === 'edit') {
       this.dialogTitle = `${data.translatedLangText.EDIT} ${data.translatedLangText.ESTIMATE_DETAILS}`;
+      console.log(data.item)
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     }
@@ -113,7 +114,7 @@ export class FormDialogComponent {
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
     this.repairPartForm = this.createForm();
     this.initializeValueChange();
-
+    this.patchForm();
     // if (this.repairPart.tariff_cleaning) {
     //   this.lastCargoControl.setValue(this.storingOrderTank.tariff_cleaning);
     // }
@@ -136,8 +137,32 @@ export class FormDialogComponent {
       length: [''],
       damage: [''],
       repair: [''],
-      material_cost: [{value: '', disabled: true}],
+      material_cost: [{ value: '', disabled: true }],
       iq: ['']
+    });
+  }
+
+  patchForm() {
+    const selectedCodeValue = this.data.populateData.groupNameCvList.find(
+      (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
+    );
+    this.repairPartForm.patchValue({
+      guid: this.repairPart.guid,
+      tariff_repair_guid: this.repairPart.tariff_repair_guid,
+      repair_est_guid: this.repairPart.repair_est_guid,
+      description: this.repairPart.description,
+      location_cv: this.repairPart.location_cv,
+      remarks: this.repairPart.remarks,
+      qty: this.repairPart.qty,
+      hour: this.repairPart.hour,
+      group_name_cv: selectedCodeValue,
+      subgroup_name_cv: this.repairPart.tariff_repair?.subgroup_name_cv,
+      part_name: this.repairPart.tariff_repair?.part_name,
+      dimension: this.repairPart.tariff_repair?.dimension,
+      length: this.repairPart.tariff_repair?.length,
+      damage: this.REPDamageRepairToCV(this.repairPart.damage),
+      repair: this.REPDamageRepairToCV(this.repairPart.repair),
+      material_cost: this.repairPart.tariff_repair?.material_cost
     });
   }
 
@@ -208,7 +233,6 @@ export class FormDialogComponent {
             { alias: 'subgroupNameCv', codeValType: value.child_code },
           ];
           this.cvDS.getCodeValuesByType(queries);
-
           this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
             this.data.populateData.subgroupNameCvList = data;
           });
@@ -223,10 +247,12 @@ export class FormDialogComponent {
         if (value) {
           const groupName = this.repairPartForm?.get('group_name_cv')?.value;
           this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
-            this.partNameControl.reset('');
             this.partNameList = data;
             this.partNameFilteredList = data
             this.updateValidators(this.partNameList);
+            if (this.partNameControl.value) {
+              this.handleValueChange(this.partNameControl.value)
+            }
           });
         }
       })
@@ -246,7 +272,6 @@ export class FormDialogComponent {
           const partName = this.partNameControl.value;
           this.trDS.searchDistinctLength(partName, value).subscribe(data => {
             this.lengthList = data;
-            this.repairPartForm?.get('length')?.setValue('');
             if (!this.lengthList.length) {
               this.repairPartForm?.get('length')?.disable();
               this.getCustomerCost(partName, value, undefined);
@@ -282,7 +307,6 @@ export class FormDialogComponent {
         // Only search if the value exists in the partNameList
         this.trDS.searchDistinctDimension(value).subscribe(data => {
           this.dimensionList = data;
-          this.repairPartForm?.get('dimension')?.setValue('');
           if (!this.dimensionList.length) {
             this.repairPartForm?.get('dimension')?.disable();
             this.getCustomerCost(value, undefined, undefined);
@@ -311,8 +335,12 @@ export class FormDialogComponent {
     return damages.map(dmg => this.repDrDS.createREPDamage(undefined, undefined, dmg));
   }
 
-  REPRepair(damages: any[]): REPDamageRepairItem[] {
-    return damages.map(dmg => this.repDrDS.createREPRepair(undefined, undefined, dmg));
+  REPRepair(repairs: any[]): REPDamageRepairItem[] {
+    return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
+  }
+
+  REPDamageRepairToCV(damagesRepair: any[]): REPDamageRepairItem[] {
+    return damagesRepair?.map(dmgRp => dmgRp.code_cv) || [];
   }
 
   displayPartNameFn(tr: string): string {
@@ -375,7 +403,6 @@ export class FormDialogComponent {
         }
       ]
     }
-    console.log(where);
     this.prDS.getCustomerPackageCost(where).subscribe(data => {
       if (data.length) {
         this.selectedPackageRepair = data[0];

@@ -365,7 +365,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  addPartDetails(event: Event, row?: RepairEstPartItem) {
+  addEstDetails(event: Event, row?: RepairEstPartItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -399,8 +399,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         const newItem = new RepairEstPartItem({
           ...result.item,
         });
-
-        // Add the new item to the end of the list
         data.push(newItem);
 
         this.updateData(data);
@@ -408,7 +406,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
+  editEstDetails(event: Event, row: RepairEstPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -430,22 +428,17 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           repairCodeCvList: this.repairCodeCvList
         },
         index: index,
-        sotExistedList: this.repList.data
+        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
+        const data = [...this.repList.data];
+        const updatedItem = new RepairEstPartItem({
+          ...result.item,
+        });
         if (result.index >= 0) {
-          const data = [...this.repList.data];
-          // let actions = Array.isArray(data[index].actions!) ? [...data[index].actions!] : [];
-          // if (!actions.includes('new')) {
-          //   actions = [...new Set([...actions, 'edit'])];
-          // }
-          const updatedItem = new RepairEstPartItem({
-            ...result.item,
-            //actions: actions
-          });
           data[result.index] = updatedItem;
           this.updateData(data);
         } else {
@@ -711,7 +704,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     newSot.so_guid = row.so_guid;
     newSot.eta_dt = row.eta_dt;
     newSot.etr_dt = row.etr_dt;
-    this.addPartDetails(event, newSot);
+    this.addEstDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {

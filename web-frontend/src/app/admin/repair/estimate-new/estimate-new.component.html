@@ -138,6 +138,14 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  @if (soDS.canAdd(storingOrderItem)) {
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addEstDetails($event)">
+                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ESTIMATE_DETAILS}}
+                  </button>
+                  }
+                </div>
               </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
@@ -328,7 +336,7 @@
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.delete_dt, 'edited-row': row.guid && !row.delete_dt && row.edited}"
-                        (click)="editOrderDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
+                        (click)="editEstDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                     </table>
                   </div>
@@ -382,12 +390,6 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (soDS.canAdd(storingOrderItem)) {
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addPartDetails($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.PART_DETAILS}}
-                  </button>
-                  }
                   @if (isAnyItemEdited()) {
                   <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)">
                     <mat-icon>
