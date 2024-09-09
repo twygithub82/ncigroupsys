@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CommonUtil.Core.Service;
 using HotChocolate.Authorization;
+using HotChocolate.Data.Projections;
 using IDMS.InGateSurvey.Model;
 using IDMS.InGateSurvey.Model.Request;
 using IDMS.Models;
@@ -69,6 +70,8 @@ namespace IDMS.InGateSurvey.GqlTypes
                 sot.unit_type_guid = tnk.unit_type_guid;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
+
+                
 
                 //Add the newly created guid into list for return
                 retGuids.Add(ingateSurvey.guid);
@@ -152,6 +155,13 @@ namespace IDMS.InGateSurvey.GqlTypes
                 sot.unit_type_guid = tnk.unit_type_guid;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
+
+                sot.tank_status_cv = TankMovementStatus.STORAGE;
+                if ((tnk.purpose_cleaning ?? false) || (tnk.purpose_steam ?? false))
+                {
+                    sot.tank_status_cv = TankMovementStatus.CLEANING;
+                }
+
 
                 retval = await context.SaveChangesAsync();
                 //TODO
