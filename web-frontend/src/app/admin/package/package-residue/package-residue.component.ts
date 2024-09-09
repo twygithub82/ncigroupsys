@@ -102,13 +102,14 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
     'select',
-    // 'img',
+     'desc',
      'fName',
      'lName',
-     'email',
+     'mobile',
      'gender',
     // 'bDate',
-    // 'mobile',
+     
+     'email',
     // 'actions',
   ];
 
@@ -256,6 +257,11 @@ implements OnInit {
     HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
     COST:"COMMON-FORM.COST",
     DESCRIPTION:'COMMON-FORM.DESCRIPTION',
+    ALIAS_NAME:'COMMON-FORM.ALIAS-NAME',
+    CONTACT_PERSON:"COMMON-FORM.CONTACT-PERSON",
+    MOBILE_NO:"COMMON-FORM.MOBILE-NO",
+    COUNTRY:"COMMON-FORM.COUNTRY",
+    FAX_NO:"COMMON-FORM.FAX-NO",
     
      }
   
@@ -294,6 +300,13 @@ implements OnInit {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
       customer_code: this.customerCodeControl,
+      alias_name:[''],
+      phone:[''],
+      fax_no:[''],
+      email:[''],
+      country:[''],
+      contact_person:[''],
+      mobile_no:[''],
       description: this.descriptionControl,
       handled_item_cv : this.handledItemControl
     });
@@ -443,14 +456,37 @@ implements OnInit {
         }
     }
 
-    if (this.descriptionControl.value) {
-      if(this.descriptionControl.value.length>0)
-      {
-        const description :TariffResidueItem[] = this.descriptionControl.value;
-        const guids = description.map(cc=>cc.description);
-        where.tariff_residue  = {description: { in: guids }};
-      }
+    if (this.pcForm!.value["alias"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {alias: { contains: this.pcForm!.value["alias"] }};
     }
+
+    if (this.pcForm!.value["fax_no"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
+    }
+
+    if (this.pcForm!.value["phone"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
+    }
+
+
+    if (this.pcForm!.value["email"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
+    }
+
+    if (this.pcForm!.value["country"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {country: { eq: this.pcForm!.value["country"] }};
+    }
+
+    if (this.pcForm!.value["contact_person"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = { cc_contact_person: { some: { name: { eq:  this.pcForm!.value["contact_person"] } } } } ;
+    }
+
 
       this.lastSearchCriteria=where;
     this.subs.sink = this.packResidueDS.SearchPackageResidue(where,this.lastOrderBy,this.pageSize).subscribe(data => {

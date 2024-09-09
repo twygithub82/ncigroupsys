@@ -99,6 +99,7 @@ implements OnInit {
      'lName',
      'email',
      'gender',
+     'cost',
     // 'bDate',
     // 'mobile',
     // 'actions',
@@ -129,14 +130,21 @@ implements OnInit {
 
   customerCodeControl = new UntypedFormControl();
   categoryControl= new UntypedFormControl();
+  hazardLevelControl=new UntypedFormControl();
+  handledItemControl=new UntypedFormControl();
+  classNoControl= new UntypedFormControl();
 
   ccDS: CustomerCompanyDS;
+  CodeValuesDS:CodeValuesDS;
   clnCatDS:CleaningCategoryDS;
   custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
 
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList1?: CustomerCompanyItem[];
   cleaning_categoryList?: CleaningCategoryItem[];
+  handledItemCvList?: CodeValuesItem[];
+  hazardLevelCvList?:CodeValuesItem[];
+  classNoList?:string[];
 
   pageIndex = 0;
   pageSize = 10;
@@ -238,6 +246,8 @@ implements OnInit {
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
+    STANDARD_COST:"COMMON-FORM.STANDARD-COST",
      }
   
   constructor(
@@ -254,6 +264,7 @@ implements OnInit {
     super();
     this.initTcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.CodeValuesDS= new CodeValuesDS(this.apollo);
     this.clnCatDS= new CleaningCategoryDS(this.apollo);
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
   }
@@ -280,7 +291,12 @@ implements OnInit {
       customer_code: this.customerCodeControl,
       cleaning_category:this.categoryControl,
       min_cost:[''],
-      max_cost:['']
+      max_cost:[''],
+      cargo_name:[''],
+      hazard_level:this.hazardLevelControl,
+      handled_item:this.handledItemControl,
+      class_no:this.classNoControl,
+      un_no:[''],
     });
   }
 
@@ -367,7 +383,7 @@ implements OnInit {
     var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent,{
-      width: '600px',
+      width: '700px',
       data: {
         action: 'new',
         langText: this.langText,
@@ -615,6 +631,27 @@ implements OnInit {
 
     });
 
+    this.custCompClnCatDS.queryDistinctClassNo().subscribe(data=>{
+      if(data.length>0)
+      {
+        this.classNoList=data;
+      }
+
+    });
+
+    const queries = [
+      { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
+      {alias:'hazardLevel',codeValType:'HAZARD_LEVEL'}
+     
+    ];
+    this.CodeValuesDS?.getCodeValuesByType(queries);
+    this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
+      this.handledItemCvList=data;
+    });
+
+    this.CodeValuesDS?.connectAlias('hazardLevel').subscribe(data => {
+      this.hazardLevelCvList=data;
+    });
   
   }
   showNotification(

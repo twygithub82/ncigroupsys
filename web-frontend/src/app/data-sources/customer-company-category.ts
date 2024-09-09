@@ -55,6 +55,12 @@ export const UPDATE_PACKAGE_CLEANINGS = gql`
     updatePackageCleans(updatePackageClean_guids: $guids,remarks:$remarks,adjusted_price:$adjusted_price)
   }
 `;
+
+export const GET_DISTINCT_CLASS_NO =gql`
+query {
+  queryDistinctClassNo
+}`;
+
 export const GET_COMPANY_CATEGORY_QUERY = gql`
   query  queryPackageCleaning($where: customer_company_cleaning_category_with_customer_companyFilterInput, $order: [customer_company_cleaning_category_with_customer_companySortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     companycategoryList:  queryPackageCleaning(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -162,6 +168,32 @@ export class CustomerCompanyCleaningCategoryDS extends BaseDataSource<CustomerCo
         return of(0); // Return an empty array on error
       }),
     );
+  }
+
+  queryDistinctClassNo():Observable<string[]>{
+    this.loadingSubject.next(true);
+    
+    return this.apollo
+      .query<any>({
+        query: GET_DISTINCT_CLASS_NO,
+        variables: {},
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CustomerCompanyCleaningCategoryItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const list = result.queryDistinctClassNo || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(list);
+          this.pageInfo = list.pageInfo;
+          this.totalCount = list.totalCount;
+          return list;
+        })
+      );
   }
 
 }

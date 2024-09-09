@@ -100,14 +100,14 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
     'select',
-    // 'img',
-     'fName',
-     'lName',
-     'email',
-     'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
+    'profile',
+    'fName',
+    'lName',
+    'mobile',
+    'gender',
+   // 'bDate',
+    
+    'email',
   ];
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-BUFFER'
@@ -248,7 +248,11 @@ implements OnInit {
     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
     CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
     STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
-    
+    ALIAS_NAME:'COMMON-FORM.ALIAS-NAME',
+    CONTACT_PERSON:"COMMON-FORM.CONTACT-PERSON",
+    MOBILE_NO:"COMMON-FORM.MOBILE-NO",
+    COUNTRY:"COMMON-FORM.COUNTRY",
+    FAX_NO:"COMMON-FORM.FAX-NO",
      }
   
   constructor(
@@ -285,6 +289,13 @@ implements OnInit {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
       customer_code: this.customerCodeControl,
+      alias_name:[''],
+      phone:[''],
+      fax_no:[''],
+      email:[''],
+      country:[''],
+      contact_person:[''],
+      mobile_no:[''],
       profile_name: this.profileNameControl
       
     });
@@ -441,6 +452,37 @@ implements OnInit {
         const guids = profileNames.map(cc=>cc.guid);
         where.tariff_depot_guid = { in: guids };
       }
+    }
+
+    if (this.pcForm!.value["alias"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {alias: { contains: this.pcForm!.value["alias"] }};
+    }
+
+    if (this.pcForm!.value["fax_no"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
+    }
+
+    if (this.pcForm!.value["phone"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
+    }
+
+
+    if (this.pcForm!.value["email"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
+    }
+
+    if (this.pcForm!.value["country"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = {country: { eq: this.pcForm!.value["country"] }};
+    }
+
+    if (this.pcForm!.value["contact_person"]) {
+      where.customer_company = where.customer_company || {};
+       where.customer_company  = { cc_contact_person: { some: { name: { eq:  this.pcForm!.value["contact_person"] } } } } ;
     }
 
       this.lastSearchCriteria=where;
