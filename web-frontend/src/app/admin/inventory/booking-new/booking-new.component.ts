@@ -48,7 +48,7 @@ import { SchedulingItem } from 'app/data-sources/scheduling';
 import { BookingDS, BookingGO, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { SchedulingSotItem } from 'app/data-sources/scheduling-sot';
+import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
@@ -164,6 +164,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
   bookingDS: BookingDS;
+  schedulingSotDS: SchedulingSotDS;
 
   sotList: StoringOrderTankItem[] = [];
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
@@ -203,6 +204,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.bookingDS = new BookingDS(this.apollo);
+    this.schedulingSotDS = new SchedulingSotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -684,18 +686,12 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     return Utility.convertEpochToDateStr(input as number);
   }
 
-  checkScheduling(schedulings: SchedulingItem[] | undefined): boolean {
-    if (!schedulings || !schedulings.length) return false;
-    if (schedulings.some(schedule => schedule.status_cv === "NEW"))
-      return true;
-    return false;
+  checkScheduling(schedulingSot: SchedulingSotItem[] | undefined): boolean {
+    return this.schedulingSotDS.checkScheduling(schedulingSot);
   }
 
   checkBooking(bookings: BookingItem[] | undefined): boolean {
-    if (!bookings || !bookings.length) return false;
-    if (bookings.some(booking => booking.status_cv === "NEW"))
-      return true;
-    return false;
+    return this.bookingDS.checkBooking(bookings);
   }
 
   checkMatch(schedulings: SchedulingSotItem[] | undefined, bookings: BookingItem[] | undefined): boolean {

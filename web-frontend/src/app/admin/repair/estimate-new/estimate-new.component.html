@@ -110,7 +110,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="soForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="repairEstForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -356,7 +356,7 @@
               </div>
               }
               <mat-divider></mat-divider>
-              @if (soForm?.get('sotList')?.hasError('required')) {
+              @if (repairEstForm?.get('sotList')?.hasError('required')) {
               <mat-error class="ps-3">
                 {{translatedLangText.ADD_ATLEAST_ONE}}
               </mat-error>
@@ -385,12 +385,49 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      {{translatedLangText.REMARKS}}
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.REMARKS}}</mat-label>
                         <textarea matInput formControlName="remarks"></textarea>
                       </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.SURVEYOR_NAME}}</mat-label>
+                        <mat-select formControlName="surveyor_name_cv" required>
+                          @for (codeValue of groupNameCvList; track codeValue) {
+                          <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
+                          }
+                        </mat-select>
+                        @if (repairEstForm?.get('surveyor_name_cv')?.hasError('required')) {
+                        <mat-error>
+                          {{translatedLangText.SURVEYOR_NAME}} {{translatedLangText.SO_REQUIRED}}
+                        </mat-error>
+                        }
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.INTERNAL_QC_BY}}</mat-label>
+                        <mat-select formControlName="internal_qc_by" required>
+                          @for (codeValue of groupNameCvList; track codeValue) {
+                          <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
+                          }
+                        </mat-select>
+                        @if (repairEstForm?.get('internal_qc_by')?.hasError('required')) {
+                        <mat-error>
+                          {{translatedLangText.INTERNAL_QC_BY}} {{translatedLangText.SO_REQUIRED}}
+                        </mat-error>
+                        }
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      {{translatedLangText.ESTIMATE_NO}}
                     </div>
                   </div>
                 </div>
@@ -399,39 +436,42 @@
                     <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 m-b-0">
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          {{translatedLangText.DESCRIPTION}}
+                          <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                           {{translatedLangText.LABOUR}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                           {{translatedLangText.MATERIAL_COST}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                           {{translatedLangText.TOTAL_COST}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                           {{translatedLangText.LABOUR_DISCOUNT}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                          {{translatedLangText.MATERIAL_DISCOUNT}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                           {{translatedLangText.NET_COST}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                           {{translatedLangText.CONVERTED_TO}}
                         </div>
                       </div>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
-                      {{translatedLangText.RATE}}
+                      <span class="font-bold">{{translatedLangText.RATE}}</span>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
-                      {{translatedLangText.OWNER}}
+                      <span class="font-bold">{{translatedLangText.OWNER}}</span>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
-                      {{translatedLangText.LESSEE}}
+                      <span class="font-bold">{{translatedLangText.LESSEE}}</span>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
-                      {{translatedLangText.TOTAL}}
+                      <span class="font-bold">{{translatedLangText.TOTAL}}</span>
                     </div>
                   </div>
                 </div>

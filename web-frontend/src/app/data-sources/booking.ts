@@ -191,6 +191,7 @@ export class BookingDS extends BaseDataSource<BookingItem> {
   }
 
   canCancel(booking: BookingItem): boolean {
+    return true;
     return booking && booking.status_cv === 'NEW';
   }
 
@@ -204,5 +205,12 @@ export class BookingDS extends BaseDataSource<BookingItem> {
 
   getBookingWithType(booking: BookingItem[] | undefined, type: string): BookingItem | undefined {
     return booking?.find(item => item.book_type_cv === type);
+  }
+  
+  checkBooking(bookings: BookingItem[] | undefined): boolean {
+    if (!bookings || !bookings.length) return false;
+    if (bookings.some(booking => booking.status_cv === "NEW" || booking.status_cv === "MATCH"))
+      return true;
+    return false;
   }
 }

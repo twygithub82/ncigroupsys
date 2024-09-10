@@ -155,8 +155,9 @@ export class FormDialogComponent {
 
             const schedulingSotArray = formGroup.get('schedulingSot') as UntypedFormArray;
             schedulingSotArray.clear();
-            scheduling.scheduling_sot!.forEach((schedulingTank: any) => {
-              schedulingSotArray.push(this.createScheduleTankGroup(schedulingTank));
+            console.log(scheduling.scheduling_sot)
+            scheduling.scheduling_sot!.filter(schedulingSot => schedulingSot.delete_dt === null)!.forEach((schedulingSot: any) => {
+              schedulingSotArray.push(this.createScheduleTankGroup(schedulingSot));
             });
           }
         });
