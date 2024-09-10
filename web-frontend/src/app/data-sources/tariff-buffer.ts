@@ -11,6 +11,7 @@ import { TankItem } from './tank';
 import { CLEANING_CATEGORY_FRAGMENT, CLEANING_METHOD_FRAGMENT } from './fragments';
 import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
+import { PackageBufferItem } from './package-buffer';
 export class TariffBufferItem {
   public guid?: string;
   
@@ -22,8 +23,13 @@ export class TariffBufferItem {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+  public package_buffer?:PackageBufferItem;
+
+  constructor(item: Partial<TariffBufferItem> = {}) 
+  {
+    //Object.assign(this, { guid: '', ...item });
   
-  constructor(item: Partial<TariffBufferItem> = {}) {
+  // {
     this.guid = item.guid;
     if (!this.guid) this.guid = '';
     this.buffer_type = item.buffer_type;
@@ -34,6 +40,7 @@ export class TariffBufferItem {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+  // }
   }
 }
 
@@ -70,6 +77,11 @@ export const GET_TARIFF_BUFFER_QUERY = gql`
 
 `;
 
+export const UPDATE_TARIFF_BUFFER = gql`
+   mutation updateTariffBuffer($td: tariff_bufferInput!) {
+    updateTariffBuffer(updateTariffBuffer: $td)
+  }
+`;
 
 export const ADD_TARIFF_BUFFER = gql`
   mutation addTariffBuffer($td: tariff_bufferInput!) {
@@ -77,11 +89,7 @@ export const ADD_TARIFF_BUFFER = gql`
   }
 `;
 
-export const UPDATE_TARIFF_BUFFER = gql`
-  mutation updateTariffBuffer($td: tariff_bufferInput!) {
-    updateTariffBuffer(updateTariffBuffer: $td)
-  }
-`;
+
 
 
 export class TariffBufferDS extends BaseDataSource<TariffBufferItem> {

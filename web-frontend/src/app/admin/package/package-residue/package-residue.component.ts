@@ -59,6 +59,7 @@ import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { pack } from 'd3';
 import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { PackageResidueItem,PackageResidueDS } from 'app/data-sources/package-residue';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 
 @Component({
@@ -262,6 +263,7 @@ implements OnInit {
     MOBILE_NO:"COMMON-FORM.MOBILE-NO",
     COUNTRY:"COMMON-FORM.COUNTRY",
     FAX_NO:"COMMON-FORM.FAX-NO",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     
      }
   
@@ -701,5 +703,35 @@ implements OnInit {
     return `${day}/${month}/${year}`;
 
   }
+
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initPcForm();
+    this.customerCodeControl.reset('');
+  }
+
 }
 

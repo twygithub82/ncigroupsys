@@ -131,6 +131,9 @@
                       <button mat-mini-fab color="primary" (click)="search()">
                           <mat-icon>search</mat-icon>
                         </button>
+                        <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)" style="margin-top: 10px; margin-left:15px">
+                          <mat-icon>cached</mat-icon>
+                        </button>
                       </div>
                   </div>
                   </form>
@@ -190,6 +193,19 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STANDARD_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <span class="mobile-label">{{this.translatedLangText.STANDARD_COST }}:</span> {{row.cleaning_category.cost.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="tariff_cleanings">
+                    <mat-header-cell *matHeaderCellDef>Tariff Cleanings</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                      <div *ngFor="let cleaning of row.cleaning_category.tariff_cleanings" class="tariff-cleaning-item">
+                        <strong>Cargo:</strong>
+                        <ul class="listview">
+                          <li>{{cleaning.cargo}}</li>
+                        </ul>
+                        <br>
+                        
+                      </div>
+                    </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="bDate">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{CLEANING_BAY | translate}}</mat-header-cell>

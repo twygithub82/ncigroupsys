@@ -53,9 +53,11 @@ import { AdvanceTableService } from 'app/advance-table/advance-table.service';
 import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import {SearchCriteriaService} from 'app/services/search-criteria.service';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
 import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { PackageBufferDS,PackageBufferItem } from 'app/data-sources/package-buffer';
 import { pack } from 'd3';
 
 
@@ -139,13 +141,15 @@ implements OnInit {
 
   storageCalCvList : CodeValuesItem[]=[];
   CodeValuesDS?:CodeValuesDS;
-  packDepotDS : PackageDepotDS;
+  
   ccDS: CustomerCompanyDS;
-  tariffDepotDS:TariffDepotDS;
+  
+  packBuffDS:PackageBufferDS;
  // clnCatDS:CleaningCategoryDS;
   custCompDS :CustomerCompanyDS;
 
-  packDepotItems:PackageDepotItem[]=[];
+ // packDepotItems:PackageDepotItem[]=[];
+  packBufferItems:PackageBufferItem[]=[]
  
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList: CustomerCompanyItem[]=[];
@@ -253,6 +257,7 @@ implements OnInit {
     MOBILE_NO:"COMMON-FORM.MOBILE-NO",
     COUNTRY:"COMMON-FORM.COUNTRY",
     FAX_NO:"COMMON-FORM.FAX-NO",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
      }
   
   constructor(
@@ -269,9 +274,10 @@ implements OnInit {
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.tariffDepotDS = new TariffDepotDS(this.apollo);
+    this.packBuffDS= new PackageBufferDS(this.apollo)
+    //this.tariffDepotDS = new TariffDepotDS(this.apollo);
     this.custCompDS=new CustomerCompanyDS(this.apollo);
-    this.packDepotDS = new PackageDepotDS(this.apollo);
+    //this.packDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS=new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -339,7 +345,6 @@ implements OnInit {
     if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent,{
       width: '700px',
-      height:'800px',
       data: {
         action: 'update',
         langText: this.langText,
@@ -375,7 +380,6 @@ implements OnInit {
     const dialogRef = this.dialog.open(FormDialogComponent,{
       
       width: '700px',
-      height:'800px',
       data: {
         action: 'update',
         langText: this.langText,
@@ -411,7 +415,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packDepotItems.length;
+    const numRows = this.packBufferItems.length;
     return numSelected === numRows;
   }
 
@@ -423,7 +427,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.packDepotItems.forEach((row) =>
+       : this.packBufferItems.forEach((row) =>
            this.selection.select(row)
          );
   }
@@ -486,14 +490,14 @@ implements OnInit {
     }
 
       this.lastSearchCriteria=where;
-    this.subs.sink = this.packDepotDS.SearchPackageDepot(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.packDepotItems=data;
+    this.subs.sink = this.packBuffDS.SearchPackageBuffer(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.packBufferItems=data;
               // data[0].storage_cal_cv
        this.previous_endCursor=undefined;
-       this.endCursor = this.packDepotDS.pageInfo?.endCursor;
-       this.startCursor = this.packDepotDS.pageInfo?.startCursor;
-       this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.packBuffDS.pageInfo?.endCursor;
+       this.startCursor = this.packBuffDS.pageInfo?.startCursor;
+       this.hasNextPage = this.packBuffDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.packBuffDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -573,12 +577,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.packDepotDS.SearchPackageDepot(where,order,first,after,last,before).subscribe(data => {
-        this.packDepotItems=data;
-        this.endCursor = this.packDepotDS.pageInfo?.endCursor;
-        this.startCursor = this.packDepotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.packDepotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.packDepotDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.packBuffDS.SearchPackageBuffer(where,order,first,after,last,before).subscribe(data => {
+        this.packBufferItems=data;
+        this.endCursor = this.packBuffDS.pageInfo?.endCursor;
+        this.startCursor = this.packBuffDS.pageInfo?.startCursor;
+        this.hasNextPage = this.packBuffDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.packBuffDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
@@ -615,16 +619,16 @@ implements OnInit {
      // this.customer_companyList1 = data
     });
 
-    this.subs.sink = this.tariffDepotDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
+    // this.subs.sink = this.packBuffDS.SearchTariffDepot({},{profile_name:'ASC'}).subscribe(data=>{});
 
-    const queries = [
-      { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+    // const queries = [
+    //   { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
      
-    ];
-    this.CodeValuesDS?.getCodeValuesByType(queries);
-    this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-      this.storageCalCvList=data;
-    });
+    // ];
+    // this.CodeValuesDS?.getCodeValuesByType(queries);
+    // this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
+    //   this.storageCalCvList=data;
+    // });
 
    
   
@@ -680,5 +684,36 @@ implements OnInit {
     }
     return null;
   }
+
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initPcForm();
+    this.customerCodeControl.reset('');
+  }
 }
+
+
 

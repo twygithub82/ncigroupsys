@@ -293,7 +293,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
         height_diameter_unit_cv:this.heightDiameterUnitControl,
         width_diameter:rec.width_diameter,
         width_diameter_unit_cv: this.widthDiameterUnitControl,
-        thickness:rec.width_diameter,
+        thickness:rec.thickness,
         thickness_unit_cv:this.thicknessUnitControl,
         length:rec.length,
         length_unit_cv:this.lengthUnitControl,

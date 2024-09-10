@@ -60,6 +60,7 @@ import { pack } from 'd3';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import {FormDialogComponent_Edit_Cost} from './form-dialog-edit-cost/form-dialog.component';
 import { TariffRepairDS,TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-package-repair',
@@ -292,6 +293,7 @@ implements OnInit {
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
     MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
     DIMENSION :"COMMON-FORM.DIMENSION",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     
      }
   
@@ -854,7 +856,8 @@ if (this.pcForm!.value["len"]) {
       this.subGroupNameCvList = data;
     });
     this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
-      this.handledItemCvList = data;
+     
+      this.handledItemCvList =  addDefaultSelectOption(data, 'All');
     });
    
   
@@ -944,5 +947,51 @@ if (this.pcForm!.value["len"]) {
     return `${day}/${month}/${year}`;
 
   }
-}
 
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initPcForm();
+    
+    this.customerCodeControl.reset('');
+    this.groupNameControl.reset('');
+    this.subGroupNameControl.reset('');
+    this.lengthControl.reset('');
+    this.dimensionControl.reset('');
+    this.handledItemControl.reset('');
+  }
+  
+}
+// export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
+//   // Check if the list already contains the default value
+//   const containsDefault = list.some(item => item.code_val === val);
+
+//   // If the default value is not present, add it to the list
+//   if (!containsDefault) {
+//     // Create a new array with the default option added at the beginning
+//     return [{ code_val: val, description: desc }, ...list];
+//   }
+
+//   return list;
+// }

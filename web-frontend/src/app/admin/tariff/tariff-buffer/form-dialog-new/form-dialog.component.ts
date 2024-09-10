@@ -34,6 +34,7 @@ import { TankDS,TankItem } from 'app/data-sources/tank';
 import { elements } from 'chart.js';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { TariffBufferDS,TariffBufferItem } from 'app/data-sources/tariff-buffer';
+import { PackageBufferItem } from 'app/data-sources/package-buffer';
 
 export interface DialogData {
   action?: string;
@@ -347,7 +348,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
             newBuffer.buffer_type= String(this.pcForm!.value['buffer_type']);
             newBuffer.remarks= String(this.pcForm.value['remarks']);
             newBuffer.cost= Number(this.pcForm.value['cost']);
-            
+            newBuffer.package_buffer= new PackageBufferItem();
             this.trfBufferDS.addNewTariffBuffer(newBuffer).subscribe(result=>{
 
               this.handleSaveSuccess(result?.data?.addTariffBuffer);

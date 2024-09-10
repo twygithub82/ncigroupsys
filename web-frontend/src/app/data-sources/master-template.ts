@@ -27,7 +27,18 @@ export class MasterTemplateGo {
   public delete_dt?: number;
   
   constructor(item: Partial<MasterTemplateGo> = {}) {
-    Object.assign(this, { guid: '', ...item });
+   // Object.assign(this, { guid: '', ...item });
+   this.guid = item.guid;
+   if (!this.guid) this.guid = '';
+   this.template_name = item.template_name;
+   this.type_cv=item.type_cv;
+   this.labour_cost_discount=item.labour_cost_discount;
+   this.material_cost_discount=item.material_cost_discount;
+   this.create_dt = item.create_dt;
+   this.create_by = item.create_by;
+   this.update_dt = item.update_dt;
+   this.update_by = item.update_by;
+   this.delete_dt = item.delete_dt;
   }
 }
 

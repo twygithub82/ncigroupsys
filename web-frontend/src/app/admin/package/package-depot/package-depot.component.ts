@@ -57,6 +57,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
 import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { pack } from 'd3';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 
 @Component({
@@ -254,7 +255,7 @@ implements OnInit {
     MOBILE_NO:"COMMON-FORM.MOBILE-NO",
     COUNTRY:"COMMON-FORM.COUNTRY",
     FAX_NO:"COMMON-FORM.FAX-NO",
-    
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
      }
   
   constructor(
@@ -487,7 +488,7 @@ implements OnInit {
       where.customer_company = where.customer_company || {};
        where.customer_company  = { cc_contact_person: { some: { name: { eq:  this.pcForm!.value["contact_person"] } } } } ;
     }
-    
+
 
       this.lastSearchCriteria=where;
     this.subs.sink = this.packDepotDS.SearchPackageDepot(where,this.lastOrderBy,this.pageSize).subscribe(data => {
@@ -683,6 +684,35 @@ implements OnInit {
       return { 'invalidCharacter': true };
     }
     return null;
+  }
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initPcForm();
+    
+    this.customerCodeControl.reset('');
+   
   }
 }
 

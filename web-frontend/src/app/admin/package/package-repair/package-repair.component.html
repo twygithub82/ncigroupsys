@@ -189,7 +189,6 @@
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
                           <mat-select [formControl]="handledItemControl" formControlName="handled_item_cv">
-                            <mat-option>ALL</mat-option>
                             @for (cn of handledItemCvList; track cn) {
                             <mat-option [value]="cn.code_val">
                               {{cn.description}}
@@ -201,6 +200,9 @@
                       <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 mb-1">
                         <button mat-mini-fab color="primary" (click)="search()">
                           <mat-icon>search</mat-icon>
+                        </button>
+                        <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)" style="margin-top: 10px; margin-left:15px">
+                          <mat-icon>cached</mat-icon>
                         </button>
                       </div>
                     </div>

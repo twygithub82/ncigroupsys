@@ -35,6 +35,7 @@ import { elements } from 'chart.js';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TariffBufferDS,TariffBufferItem } from 'app/data-sources/tariff-buffer';
+import { PackageBufferItem } from 'app/data-sources/package-buffer';
 
 export interface DialogData {
   action?: string;
@@ -267,6 +268,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   }
  
 
+  removeTypename(obj: any): any {
+    return JSON.parse(JSON.stringify(obj), (key, value) => 
+      key === '__typename' ? undefined : value
+    );
+  }
+
   GetButtonCaption()
   {
     // if(this.pcForm!.value['action']== "view")
@@ -335,11 +342,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
        }
        if(update)
        {
-          var updatedTD = new TariffBufferItem(this.selectedItem);
-          updatedTD.buffer_type= this.pcForm!.value['buffer_type'];
-          updatedTD.cost= Number(this.pcForm!.value['cost']);
-          updatedTD.remarks= this.pcForm!.value['remarks'];
-          this.trfBufferDS.updateTariffBuffer(updatedTD).subscribe(result=>{
+          var td = new TariffBufferItem(this.selectedItem);
+          td.buffer_type= this.pcForm!.value['buffer_type'];
+          td.cost= Number(this.pcForm!.value['cost']);
+          td.remarks= this.pcForm!.value['remarks'];
+         // td.package_buffer=new PackageBufferItem();
+          this.trfBufferDS.updateTariffBuffer(td).subscribe(result=>{
                       this.handleSaveSuccess(result?.data?.updateTariffBuffer);
   
                     });

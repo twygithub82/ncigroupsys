@@ -54,6 +54,7 @@ import { CustomerCompanyCleaningCategoryDS,CustomerCompanyCleaningCategoryItem }
 import {SearchCriteriaService} from 'app/services/search-criteria.service';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-package-cleaning',
@@ -100,7 +101,7 @@ implements OnInit {
      'email',
      'gender',
      'cost',
-    // 'bDate',
+    //'tariff_cleanings',
     // 'mobile',
     // 'actions',
   ];
@@ -248,6 +249,7 @@ implements OnInit {
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
      }
   
   constructor(
@@ -314,29 +316,7 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: this.advanceTable,
-    //     action: 'add',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // After dialog is closed we're doing frontend updates
-    //     // For add we're just pushing a new row inside DataService
-    //     this.exampleDatabase?.dataChange.value.unshift(
-    //       this.advanceTableService.getDialogData()
-    //     );
-    //     this.refreshTable();
-    //     this.showNotification(
-    //       'snackbar-success',
-    //       'Add Record Successfully...!!!',
-    //       'bottom',
-    //       'center'
-    //     );
-    //   }
-    // });
+    
   }
 
   preventDefault(event: Event) {
@@ -704,5 +684,35 @@ implements OnInit {
       return { 'invalidCharacter': true };
     }
     return null;
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initTcForm();
+    
+    this.customerCodeControl.reset('');
+    this.categoryControl.reset('')
   }
 }

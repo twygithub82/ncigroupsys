@@ -55,6 +55,7 @@ import {SearchCriteriaService} from 'app/services/search-criteria.service';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-package-labour',
@@ -243,7 +244,8 @@ implements OnInit {
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     COST:"COMMON-FORM.COST",
     CLEANING_LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
-    PACKAGE_LABOUR:"COMMON-FORM.PACKAGE-LABOUR"
+    PACKAGE_LABOUR:"COMMON-FORM.PACKAGE-LABOUR",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
      }
   
   constructor(
@@ -670,5 +672,35 @@ implements OnInit {
 
     return `${day}/${month}/${year}`;
 
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initPlForm();
+    
+    this.customerCodeControl.reset('');
+   
   }
 }

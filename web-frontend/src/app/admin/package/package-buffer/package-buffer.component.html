@@ -175,6 +175,9 @@
                       <button mat-mini-fab color="primary" (click)="search()" style="margin-top: 10px; margin-left:15px">
                         <mat-icon>search</mat-icon>
                       </button>
+                      <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)" style="margin-top: 10px; margin-left:15px">
+                        <mat-icon>cached</mat-icon>
+                      </button>
                     </div>
                  
                   </form> 
@@ -183,7 +186,7 @@
             </mat-accordion>
             <div class="body overflow-auto">
               <div class="responsive_table">
-                <table mat-table [dataSource]="packDepotItems" matSort class="mat-cell advance-table">
+                <table mat-table [dataSource]="packBufferItems" matSort class="mat-cell advance-table">
                   <!-- Checkbox Column -->
                   <ng-container matColumnDef="select">
                     <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
@@ -214,7 +217,7 @@
                   <ng-container matColumnDef="profile">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PROFILE_NAME }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME }}:</span>{{row.tariff_depot.profile_name}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME }}:</span>{{row.tariff_buffer.buffer_type}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="fName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
@@ -262,14 +265,14 @@
                 </table>
               </div>
               <!-- Loading spinner -->
-              @if (!(packDepotDS.loading$ | async) && !packDepotItems.length) {
+              @if (!(packBuffDS.loading$ | async) && !packBufferItems.length) {
                 <mat-divider></mat-divider>
-                <div class="no-results m-l-20 pt-3" [style.display]="packDepotItems.length === 0 ? '' : 'none'">
+                <div class="no-results m-l-20 pt-3" [style.display]="packBufferItems.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>
                 }
                 <!-- Loading spinner -->
-                @if (packDepotDS.loading$ | async) {
+                @if (packBuffDS.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                   </mat-progress-spinner>
@@ -324,7 +327,7 @@
               </mat-menu>
               <!-- context menu end -->
              
-              <mat-paginator #paginator [length]="packDepotDS.totalCount" [pageIndex]="0" [pageSize]="10"
+              <mat-paginator #paginator [length]="packBuffDS.totalCount" [pageIndex]="0" [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
               </mat-paginator>
             </div>
