@@ -24,9 +24,9 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<out_gate> out_gate { get; set; }
         public DbSet<out_gate_survey> out_gate_survey { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
-        public DbSet<CleaningMethodWithTariff> cleaning_method { get; set; }
-        public DbSet<CleaningCategoryWithTariff> cleaning_category { get; set; }
-
+        public DbSet<cleaning_method> cleaning_method { get; set; }
+        //public DbSet<CleaningCategoryWithTariff> cleaning_category { get; set; }
+        public DbSet<cleaning_category> cleaning_category { get; set; }
 
         public DbSet<booking> booking { get; set; }
         public DbSet<release_order> release_order { get; set; } 

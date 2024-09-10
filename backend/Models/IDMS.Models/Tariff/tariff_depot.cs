@@ -31,7 +31,7 @@ namespace IDMS.Models.Tariff
 
         public int? free_storage {  get; set; }
 
-        public IEnumerable<tank>? tanks { get; set; }
+        public IEnumerable<tank?>? tanks { get; set; }
 
     }
 }

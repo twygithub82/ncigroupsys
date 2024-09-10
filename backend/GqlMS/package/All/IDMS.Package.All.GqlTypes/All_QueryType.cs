@@ -17,7 +17,7 @@ namespace IDMS.Models.Package.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<package_depot?> QueryPackageDepot( ApplicationPackageDBContext context,
+        public IQueryable<package_depot?> QueryPackageDepot(ApplicationPackageDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -42,7 +42,7 @@ namespace IDMS.Models.Package.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public  IQueryable<customer_company_cleaning_category_with_customer_company ?> QueryPackageCleaning( ApplicationPackageDBContext context,
+        public IQueryable<customer_company_cleaning_category_with_customer_company?> QueryPackageCleaning(ApplicationPackageDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -53,16 +53,17 @@ namespace IDMS.Models.Package.All.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.customer_company_cleaning_category.Where(i => i.delete_dt == null || i.delete_dt == 0)
                       .Include(pc => pc.customer_company)
-                      .Include(pc => pc.cleaning_category);
-                      
+                      .Include(pc => pc.cleaning_category)
+                        .ThenInclude(t => t.tariff_cleanings);
+
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
 
             return query;
-           
+
         }
 
         // [Authorize]
@@ -102,11 +103,11 @@ namespace IDMS.Models.Package.All.GqlTypes
 
             IQueryable<package_residue> query = null;
             try
-            { 
+            {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.package_residue.Where(i => i.delete_dt == null || i.delete_dt == 0);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }

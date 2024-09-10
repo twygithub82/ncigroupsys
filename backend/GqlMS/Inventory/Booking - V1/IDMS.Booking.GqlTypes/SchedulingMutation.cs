@@ -165,5 +165,37 @@ namespace IDMS.Booking.GqlTypes
             }
         }
 
+        public async Task<int> DeleteSchedulingSOT(List<string> schedulingSOTGuids, [Service] IHttpContextAccessor httpContextAccessor,
+          ApplicationInventoryDBContext context, [Service] ITopicEventSender topicEventSender, [Service] IConfiguration config)
+        {
+
+            try
+            {
+                var res = 0;
+                string user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var id in schedulingSOTGuids)
+                {
+                    var schedulingSOT = new scheduling_sot() { guid = id };
+                    context.Attach(schedulingSOT);
+
+                    schedulingSOT.update_dt = currentDateTime;
+                    schedulingSOT.update_by = user;
+                    schedulingSOT.delete_dt = currentDateTime;
+                }
+
+                res = await context.SaveChangesAsync();
+                //TODO
+                //string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
+                //await topicEventSender.SendAsync(updateCourseTopic, course);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
     }
 }

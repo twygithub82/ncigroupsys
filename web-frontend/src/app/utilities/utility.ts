@@ -119,6 +119,10 @@ export class Utility {
     return `${month}/${day}/${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
   }
 
+  static getEarlierDate(date1: Date, date2: Date): Date {
+    return date1 < date2 ? date1 : date2;
+  }
+
   static verifyIsoContainerCheckDigit(containerNumber: string): boolean {
     // Regular expression to validate container number format:
     const containerNumberRegex = /^[A-Z]{4}[0-9]{7}$/;

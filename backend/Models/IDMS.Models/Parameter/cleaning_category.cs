@@ -27,7 +27,7 @@ namespace IDMS.Models.Parameter
 
         // public string? cleaning_group_cv { get; set; }
 
-         public double? cost { get; set; }
+        public double? cost { get; set; }
         public IEnumerable<tariff_cleaning>? tariff_cleanings { get; set; }
 
     }

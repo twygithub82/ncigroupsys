@@ -269,9 +269,11 @@ namespace IDMS.EstimateTemplate.GqlTypes
                     foreach (var item in estPart.tep_damage_repair)
                     {
 
-                        if (string.IsNullOrEmpty(item.action) && !string.IsNullOrEmpty(item.guid))
-                            throw new GraphQLException(new Error($"Tep_damage_repair action cannot be null for update", "ERROR"));
+                        //if (string.IsNullOrEmpty(item.action) && !string.IsNullOrEmpty(item.guid))
+                        //   throw new GraphQLException(new Error($"Tep_damage_repair action cannot be null for update", "ERROR"));
 
+                        if (string.IsNullOrEmpty(item.action))
+                            continue;
 
                         if (string.IsNullOrEmpty(item.guid) && (ObjectAction.NEW.EqualsIgnore(item.action) || string.IsNullOrEmpty(item.action)))
                         {

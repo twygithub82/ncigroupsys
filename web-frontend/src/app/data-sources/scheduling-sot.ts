@@ -18,6 +18,7 @@ export class SchedulingSotGO {
   public sot_guid?: string;
   public scheduling_guid?: string;
   public status_cv?: string;
+  public remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -29,6 +30,7 @@ export class SchedulingSotGO {
     this.sot_guid = item.sot_guid;
     this.scheduling_guid = item.scheduling_guid;
     this.status_cv = item.status_cv;
+    this.remarks = item.remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -139,6 +141,12 @@ export const GET_SCHEDULING_SOT = gql`
   }
 `;
 
+export const DELETE_SCHEDULING_SOT = gql`
+  mutation DeleteSchedulingSOT($schedulingSOTGuids: [String!]!) {
+    deleteSchedulingSOT(schedulingSOTGuids: $schedulingSOTGuids)
+  }
+`;
+
 export class SchedulingSotDS extends BaseDataSource<SchedulingSotItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -164,6 +172,15 @@ export class SchedulingSotDS extends BaseDataSource<SchedulingSotItem> {
           return resultList.nodes;
         })
       );
+  }
+
+  deleteScheduleSOT(schedulingSOTGuids: string[]): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_SCHEDULING_SOT,
+      variables: {
+        schedulingSOTGuids
+      }
+    });
   }
 
   getSchedulingSotReleaseOrder(schedulingSot: SchedulingSotItem[] | undefined): SchedulingSotItem | undefined {

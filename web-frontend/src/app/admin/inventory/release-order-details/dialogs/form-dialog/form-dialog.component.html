@@ -27,7 +27,7 @@
           (click)="toggleRow(row)">
           <mat-card-title [ngClass]="{'pt-1': true}">
             <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
-              class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkDisable(row.guid)">
+              class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkDisable(row)">
             </mat-checkbox>
             {{row.tank_no}}
           </mat-card-title>

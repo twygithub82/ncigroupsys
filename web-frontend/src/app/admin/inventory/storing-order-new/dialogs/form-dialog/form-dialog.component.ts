@@ -113,8 +113,8 @@ export class FormDialogComponent {
     } else {
       this.lastCargoControl.enable();
     }
-    this.startDateETA = this.storingOrderTank.eta_dt ? (Utility.convertDate(this.storingOrderTank.eta_dt) as Date) : this.startDateETA;
-    this.startDateETR = this.storingOrderTank.etr_dt ? (Utility.convertDate(this.storingOrderTank.etr_dt) as Date) : this.startDateETR;
+    this.startDateETA = Utility.getEarlierDate((Utility.convertDate(this.storingOrderTank.eta_dt) as Date), this.startDateETA);
+    this.startDateETR = Utility.getEarlierDate((Utility.convertDate(this.storingOrderTank.etr_dt) as Date), this.startDateETR);
     return this.fb.group({
       guid: [this.storingOrderTank.guid],
       so_guid: [this.storingOrderTank.so_guid],

@@ -149,7 +149,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     REMARKS: 'COMMON-FORM.REMARKS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     EXISTED: 'COMMON-FORM.EXISTED',
-    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET'
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -618,7 +619,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         //   this.performSearch(this.pageSize, 0, this.pageSize);
         // });
         this.bookingDS.deleteBooking([cancelBookingReq.guid]).subscribe(cancelResult => {
-          this.handleSaveSuccess(cancelResult?.data?.deleteBooking);
+          this.handleDeleteSuccess(cancelResult?.data?.deleteBooking);
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
@@ -628,6 +629,13 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    }
+  }
+
+  handleDeleteSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.DELETE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
     }
   }
