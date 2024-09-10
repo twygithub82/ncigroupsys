@@ -19,6 +19,6 @@ namespace IDMS.Models.Tariff
 
         public string? remarks { get; set; }
 
-        public IEnumerable<package_buffer> package_buffer { get; set; }
+        public IEnumerable<package_buffer?>? package_buffer { get; set; }
     }
 }
