@@ -191,7 +191,16 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
     IQ: 'COMMON-FORM.IQ',
     ESTIMATE_DETAILS: 'COMMON-FORM.ESTIMATE-DETAILS',
-    ESTIMATE_SUMMARY: 'COMMON-FORM.ESTIMATE-SUMMARY'
+    ESTIMATE_SUMMARY: 'COMMON-FORM.ESTIMATE-SUMMARY',
+    LABOUR: 'COMMON-FORM.LABOUR',
+    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
+    LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
+    MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
+    NET_COST: 'COMMON-FORM.NET-COST',
+    CONVERTED_TO: 'COMMON-FORM.CONVERTED-TO',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    SURVEYOR_NAME: 'COMMON-FORM.SURVEYOR-NAME',
+    INTERNAL_QC_BY: 'COMMON-FORM.INTERNAL-QC-BY'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -262,7 +271,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       guid: [''],
       customer_company_guid: [''],
       customer_code: this.customerCodeControl,
-      est_template: ['']
+      est_template: [''],
+      remarks: ['']
     });
   }
 

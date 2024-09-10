@@ -111,13 +111,13 @@ export class FormDialogComponent {
       this.storingOrderTank = data.item;
       this.booking = data.booking;
       this.dialogTitle = 'Edit Booking';
-      this.startDateToday = Utility.convertDate(this.booking.booking_dt) as Date;
+      this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.booking.booking_dt) as Date, this.startDateToday);
     } else {
       this.dialogTitle = 'New Booking';
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
     this.existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
-      (tank.booking || []).map(booking => booking.book_type_cv)
+      (tank.booking || []).filter(booking => booking.delete_dt === null).map(booking => booking.book_type_cv)
     );
     this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
     this.bookingForm = this.createStorigOrderTankForm();

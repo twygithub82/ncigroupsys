@@ -381,8 +381,63 @@
               </div>
               }
               @if (!(soDS.loadingSubject | async)) {
+              <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      {{translatedLangText.REMARKS}}
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <mat-form-field class="example-full-width">
+                        <textarea matInput formControlName="remarks"></textarea>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 m-b-0">
+                  <div class="row">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          {{translatedLangText.DESCRIPTION}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          {{translatedLangText.LABOUR}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          {{translatedLangText.MATERIAL_COST}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          {{translatedLangText.TOTAL_COST}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          {{translatedLangText.LABOUR_DISCOUNT}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          {{translatedLangText.NET_COST}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          {{translatedLangText.CONVERTED_TO}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl col-lg col-md col-sm m-b-0">
+                      {{translatedLangText.RATE}}
+                    </div>
+                    <div class="col-xl col-lg col-md col-sm m-b-0">
+                      {{translatedLangText.OWNER}}
+                    </div>
+                    <div class="col-xl col-lg col-md col-sm m-b-0">
+                      {{translatedLangText.LESSEE}}
+                    </div>
+                    <div class="col-xl col-lg col-md col-sm m-b-0">
+                      {{translatedLangText.TOTAL}}
+                    </div>
+                  </div>
+                </div>
+              </div>
               }
-              <div class="row m-t-10">
+              <div class="row m-t-5">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
                     (click)="$event.preventDefault();" [routerLink]="['/admin/repair/estimate']">

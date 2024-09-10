@@ -47,8 +47,9 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { BookingItem } from 'app/data-sources/booking';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
+import { SchedulingSotDS, SchedulingSotGO, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -151,7 +152,10 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     BOOKED: 'COMMON-FORM.BOOKED',
     SCHEDULED: 'COMMON-FORM.SCHEDULED',
     SCHEDULING_DATE: 'COMMON-FORM.SCHEDULING-DATE',
-    EXISTED: 'COMMON-FORM.EXISTED'
+    EXISTED: 'COMMON-FORM.EXISTED',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    CONFIRM: 'COMMON-FORM.CONFIRM'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -582,7 +586,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
-  cancelItem(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
+  cancelItem(sot: StoringOrderTankItem, schedulingSot: SchedulingSotItem, event: Event) {
     this.stopPropagation(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -590,30 +594,31 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     } else {
       tempDirection = 'ltr';
     }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     action: "cancel",
-    //     sot: sot,
-    //     booking: booking,
-    //     translatedLangText: this.translatedLangText,
-    //     populateData: {
-    //       bookingTypeCvList: this.bookingTypeCvListNewBooking,
-    //       yardCvList: this.yardCvList,
-    //       tankStatusCvList: this.tankStatusCvList
-    //     }
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const cancelBookingReq = new BookingGO(result.booking);
-    //     this.bookingDS.cancelBooking([cancelBookingReq]).subscribe(cancelResult => {
-    //       console.log(cancelResult)
-    //       this.handleSaveSuccess(cancelResult?.data?.cancelBooking);
-    //       this.performSearch(this.pageSize, 0, this.pageSize);
-    //     });
-    //   }
-    // });
+    console.log(schedulingSot);
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      data: {
+        action: "cancel",
+        sot: sot,
+        schedulingSot: schedulingSot,
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          bookingTypeCvList: this.bookingTypeCvListNewBooking,
+          yardCvList: this.yardCvList,
+          tankStatusCvList: this.tankStatusCvList
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const cancelSchedulingSotReq = new SchedulingSotGO(result.schedulingSot);
+        this.schedulingSotDS.deleteScheduleSOT([cancelSchedulingSotReq.guid!]).subscribe(cancelResult => {
+          console.log(cancelResult)
+          this.handleDeleteSuccess(cancelResult?.data?.deleteSchedulingSOT);
+          this.performSearch(this.pageSize, 0, this.pageSize);
+        });
+      }
+    });
   }
 
   checkSchedulings(): boolean {
@@ -674,6 +679,13 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  handleDeleteSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.DELETE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    }
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {

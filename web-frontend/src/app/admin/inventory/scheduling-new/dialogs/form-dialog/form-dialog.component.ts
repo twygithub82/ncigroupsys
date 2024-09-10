@@ -117,7 +117,9 @@ export class FormDialogComponent {
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
     this.existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
-      (tank.scheduling_sot || []).map(scheduling_sot => scheduling_sot.scheduling?.book_type_cv)
+      (tank.scheduling_sot || [])
+        .filter(scheduling_sot => scheduling_sot.delete_dt === null)
+        .map(scheduling_sot => scheduling_sot.scheduling?.book_type_cv)
     );
     this.schedulingForm = this.createForm();
     this.initializeValueChange();
@@ -144,11 +146,11 @@ export class FormDialogComponent {
           if (this.schedulingDS.totalCount > 0) {
             const scheduling = data[0];
             this.scheduling = scheduling;
-            this.startDateToday = Utility.convertDate(this.scheduling.scheduling_dt) as Date
+            this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.scheduling.scheduling_dt) as Date, this.startDateToday);
             formGroup.patchValue({
               reference: scheduling.reference,
               book_type_cv: scheduling.book_type_cv,
-              scheduling_dt: this.startDateToday
+              scheduling_dt: Utility.convertDate(this.scheduling.scheduling_dt) as Date
             });
 
             const schedulingSotArray = formGroup.get('schedulingSot') as UntypedFormArray;
