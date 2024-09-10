@@ -58,9 +58,9 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
 
         public DbSet<IDMS.Models.Tariff.tariff_cleaning> tariff_cleaning { get; set; }
 
-        public DbSet<IDMS.Models.Parameter.CleaningMethodWithTariff> cleaning_method { get; set; }
+        public DbSet<IDMS.Models.Parameter.cleaning_method> cleaning_method { get; set; }
 
-        public DbSet<IDMS.Models.Parameter.CleaningCategoryWithTariff> cleaning_category { get; set; }
+        public DbSet<IDMS.Models.Parameter.cleaning_category> cleaning_category { get; set; }
         
         public DbSet<IDMS.Models.Package.customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
         public DbSet<IDMS.Models.Master.customer_company> customer_company { get; set; }
