@@ -1,6 +1,7 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=tlx-idms.mysql.database.azure.com;Database=idms;Uid=idms_admin;Pwd=P@ssw0rd;" //"Server=127.0.0.1;Database=idms;Uid=root;Pwd=P@ssw0rd;"
+    //"DefaultConnection": "Server=tlx-idms.mysql.database.azure.com;Database=idms;Uid=idms_admin;Pwd=P@ssw0rd;",
+    "DefaultConnection": "Server=127.0.0.1;Database=idms;Uid=root;Pwd=P@ssw0rd;"
   },
   "Setting": {
     "notificationUrl": "https://tlx-idms-global-notification.azurewebsites.net/graphql/"
