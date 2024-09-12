@@ -44,7 +44,7 @@ import { MatCardModule } from '@angular/material/card';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { BookingItem } from 'app/data-sources/booking';
+import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { SchedulingSotDS, SchedulingSotGO, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
@@ -169,6 +169,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   tcDS: TariffCleaningDS;
   schedulingDS: SchedulingDS;
   schedulingSotDS: SchedulingSotDS;
+  bookingDS: BookingDS;
   igDS: InGateDS;
 
   sotList: StoringOrderTankItem[] = [];
@@ -210,6 +211,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
     this.schedulingSotDS = new SchedulingSotDS(this.apollo);
+    this.bookingDS = new BookingDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -411,7 +413,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     const where: any = {
       and: [
         { status_cv: { eq: "ACCEPTED" } },
-        { tank_status_cv: { neq: "RO_GENERATED" } },
+        { tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
         { in_gate: { some: { delete_dt: { eq: null } } } }
       ]
     };
@@ -629,18 +631,12 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     );
   }
 
-  checkScheduling(schedulings: SchedulingSotItem[] | undefined): boolean {
-    if (!schedulings || !schedulings.length) return false;
-    if (schedulings.some(schedule => schedule.status_cv === "NEW" || schedule.status_cv === "MATCHED"))
-      return true;
-    return false;
+  checkScheduling(schedulingSot: SchedulingSotItem[] | undefined): boolean {
+    return this.schedulingSotDS.checkScheduling(schedulingSot);
   }
 
   checkBooking(bookings: BookingItem[] | undefined): boolean {
-    if (!bookings || !bookings.length) return false;
-    if (bookings.some(booking => booking.status_cv === "NEW" || booking.status_cv === "MATCHED"))
-      return true;
-    return false;
+    return this.bookingDS.checkBooking(bookings);
   }
 
   checkMatch(schedulings: SchedulingSotItem[] | undefined, bookings: BookingItem[] | undefined): boolean {

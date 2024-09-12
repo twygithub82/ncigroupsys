@@ -47,10 +47,10 @@ namespace IDMS.BatchJob.Service
 
                     using (var httpClient = new HttpClient())
                     {
-                        Console.WriteLine($"Send Notification: {jsonPayload}");
+                        //Console.WriteLine($"Send Notification: {jsonPayload}");
                         var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                         var data = await httpClient.PostAsync(httpURL, content);
-                        Console.WriteLine(data);
+                        //Console.WriteLine(data);
                     }
 
                     //HttpClient _httpClient = new();

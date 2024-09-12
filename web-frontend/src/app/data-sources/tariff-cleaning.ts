@@ -116,7 +116,7 @@ const QUERY_TARIFF_CLEAN_UN_NO = gql`
 `;
 
 export const TARIFF_CLEANING_FRAGMENT = gql`
-  fragment TariffCleaningFields on tariff_cleaning {
+  fragment TariffCleaningFields on master_tariff_cleaning {
     alias
     ban_type_cv
     cargo

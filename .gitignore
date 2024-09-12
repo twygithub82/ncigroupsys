@@ -24,3 +24,5 @@ backend/GqlMS/Inventory/InGateSurvey - V2/IDMS.InGateSurvey/appsettings.json
 /backend/GqlMS/Inventory/StoringOrder - V4/IDMS.StoringOrder/Properties/PublishProfiles/tlx-idms-app - ReadOnly - FTP3.pubxml
 /backend/GqlMS/Inventory/StoringOrder - V4/IDMS.StoringOrder/Properties/PublishProfiles/tlx-idms-app - Zip Deploy3.pubxml
 backend/GqlMS/Inventory/StoringOrder - V4/IDMS.StoringOrder/Properties/PublishProfiles/tlx-idms-app - Zip Deploy3.pubxml.user
+/backend/FileManagement/IDMS.FileManagement.API/IDMS.FileManagement.API/appsettings.json
+/backend/GqlMS/Master/IDMS.MasterMS/IDMS.MasterMS/appsettings.Development.json

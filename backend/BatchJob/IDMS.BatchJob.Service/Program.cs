@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Configuration;
 using System.Data.Common;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 
 namespace IDMS.BatchJob.Service
@@ -10,12 +11,14 @@ namespace IDMS.BatchJob.Service
     {
         static string filePath = "./Config/app_config.json";
         static string dbConnection;
-        static MySqlConnection? conn;
+        static MySqlConnection? conn1;
 
         static async Task Main(string[] args)
         {
             var input = args.Any() ? args[0] : "";
             Console.WriteLine($"Start Batch Job.... input: {input}");
+            //Logger.Instance.Information($"Start Batch Job.... input: {input}");
+            Logger.Instance.Information("--------------- Cross Check Summary ----------------");
 
             if (string.IsNullOrEmpty(input))
                 await Start();
@@ -27,9 +30,10 @@ namespace IDMS.BatchJob.Service
                     Console.WriteLine("Invalid Input -- {yyyy-MM-dd}");
             }
 
+            //Logger.CloseAndFlush();
 
             // Access the configuration values
-            Console.WriteLine("Done. Press any key to exit");
+            //Console.WriteLine("Done. Press any key to exit");
             Console.ReadLine();
         }
 
@@ -87,9 +91,9 @@ namespace IDMS.BatchJob.Service
 
         private static async Task<List<JToken>> CheckDescrepancy(JToken config, string dbConnection, string date = "")
         {
-            Console.WriteLine("Booking_Scheduling_CrossCheck...");
+            //Console.WriteLine("Booking_Scheduling_CrossCheck...");
 
-            conn = new MySqlConnection(dbConnection);
+            var conn = new MySqlConnection(dbConnection);
             await conn.OpenAsync();
 
             string BOOKTYPE = "RELEASE_ORDER";
@@ -161,14 +165,19 @@ namespace IDMS.BatchJob.Service
                 }
             }
 
-            Console.WriteLine($"{bookingList.Count} new record from booking");
-            Console.WriteLine($"{schedulingList.Count} new record from scheduling");
+            //Console.WriteLine($"{bookingList.Count} new record from booking");
+            //Console.WriteLine($"{schedulingList.Count} new record from scheduling");
+            Logger.Instance.Information($"{bookingList.Count} new records from booking");
+            Logger.Instance.Information($"{schedulingList.Count} new records from scheduling");
 
-            if(bookingList.Count > 0 || schedulingList.Count > 0)
+
+            if (bookingList.Count > 0 || schedulingList.Count > 0)
             {
                 RecordDescrepancyCheck(bookingList, schedulingList, bookDupList, schedulingDupList, config);
+                conn.Close();
                 return bookingList;
             }
+            conn.Close();
             return new List<JToken>();
         }
 
@@ -253,22 +262,29 @@ namespace IDMS.BatchJob.Service
                 var missingInBooking = sortedSchedulingList.Except(sortedBookingList, new JTokenEqualityComparer()).ToList();
 
                 if (missingInBooking.Any() || missingInScheduling.Any())
-                    Console.WriteLine("----Missing Records-----");
+                    //Console.WriteLine("----Missing Records-----");
+                    Logger.Instance.Information("-------------- Missing Records --------------");
 
                 foreach (var item in missingInBooking)
                 {
                     var tankNo = item.SelectToken("tank_no");
-                    Console.WriteLine($"Commercial forgot to book : {tankNo} for {item.SelectToken("book_type_cv")}");
+
                     string notification_uid = $"cc-booking-{tankNo}";
                     await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", $"Commercial forgot to book:{tankNo}", notification_uid);
+
+                    //Console.WriteLine($"Commercial forgot to book : {tankNo} for {item.SelectToken("book_type_cv")}");
+                    Logger.Instance.Information($"Commercial forgot to book : {tankNo} for {item.SelectToken("book_type_cv")}");
                 }
 
                 foreach (var item in missingInScheduling)
                 {
                     var tankNo = item.SelectToken("tank_no");
-                    Console.WriteLine($"Operation forgot to schedule : {tankNo} for {item.SelectToken("book_type_cv")}");
+                   
                     string notification_uid = $"cc-scheduling-{tankNo}";
                     await Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", $"Operation forgot to schedule:{tankNo}", notification_uid);
+
+                    //Console.WriteLine($"Operation forgot to schedule : {tankNo} for {item.SelectToken("book_type_cv")}");
+                    Logger.Instance.Information($"Operation forgot to schedule : {tankNo} for {item.SelectToken("book_type_cv")}");
                 }
 
                 MatchCheck(sortedBookingList, sortedSchedulingList, oriBookingList, oriSchedulingList, url);
@@ -277,7 +293,7 @@ namespace IDMS.BatchJob.Service
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
        
         }
@@ -304,6 +320,7 @@ namespace IDMS.BatchJob.Service
             {
                 List<JToken> bookingCommonList = new List<JToken>();
                 List<JToken> schedulingCommonList = new List<JToken>();
+                List<JToken> schedulingSOTList = new List<JToken>();    
 
                 var commonInList = sortedBookingList.Intersect(sortedSchedulingList, new JTokenEqualityComparer()).ToList();
                 foreach (var item in commonInList)
@@ -336,140 +353,179 @@ namespace IDMS.BatchJob.Service
                     if (result != null)
                     {
                         //Found Matched
-                        Console.WriteLine($"---record tally---");
-                        Console.WriteLine($"Set Matched for booking {tankNo} -- {bookType} -- Date {dateTime}");
-                        Console.WriteLine($"Set Matched for scheduling {result.SelectToken("tank_no")} -- {item.SelectToken("book_type_cv")} -- Date {item.SelectToken("scheduling_dt")}");
                         bookingMatchedGuid.Add(item.SelectToken("guid").ToString());
                         schedulingMatchedGuid.Add(result.SelectToken("guid").ToString());
+                        schedulingSOTList.Add(result);
+
+                        //Console.WriteLine($"---record tally---");
+                        //Console.WriteLine($"Set Matched for booking {tankNo} -- {bookType} -- Date {dateTime}");
+                        //Console.WriteLine($"Set Matched for scheduling {result.SelectToken("tank_no")} -- {item.SelectToken("book_type_cv")} -- Date {item.SelectToken("scheduling_dt")}");
+
+                        Logger.Instance.Information($"-------------- record tally ---------------");
+                        Logger.Instance.Information($"Set Matched for booking {tankNo} -- {bookType} -- Date {dateTime}");
+                        Logger.Instance.Information($"Set Matched for scheduling {result.SelectToken("tank_no")} -- {item.SelectToken("book_type_cv")} -- Date {item.SelectToken("scheduling_dt")}");
+
                     }
                     else
                     {
-                        //Not Tally found
-                        Console.WriteLine($"---record not tally---");
-                        Console.WriteLine($"Record in booking {tankNo} -- {bookType} -- Date {dateTime}");
-
                         JObject checkItem = (JObject)item;
                         checkItem.Remove("guid");
                         checkItem.Remove("scheduling_dt");
 
-                        var sch = schedulingCommonList.Where(obj => ContainsPartial((JObject)obj, checkItem)).FirstOrDefault();
-                        Console.WriteLine($"Record in scheduling {sch.SelectToken("tank_no")} -- {sch.SelectToken("book_type_cv")} -- Date {sch.SelectToken("scheduling_dt")}");
+                        var sch = schedulingCommonList.Where(obj => ContainsPartial((JObject)obj, checkItem)).FirstOrDefault();                       
                         string notification_uid = $"cc-scheduling-{tankNo}";
                         Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", $"scheduling record for {tankNo} not tally with booking", notification_uid);
 
                         string notification_uid_bk = $"cc-booking-{tankNo}";
                         Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", $"booking record for {tankNo} not tally with scheduling", notification_uid_bk);
+
+                        //Not Tally found
+                        //Console.WriteLine($"---record not tally---");
+                        //Console.WriteLine($"Record in booking {tankNo} -- {bookType} -- Date {dateTime}");
+                        //Console.WriteLine($"Record in scheduling {sch.SelectToken("tank_no")} -- {sch.SelectToken("book_type_cv")} -- Date {sch.SelectToken("scheduling_dt")}");
+
+                        Logger.Instance.Information($"-------------- record not tally --------------");
+                        Logger.Instance.Information($"Record in booking {tankNo} -- {bookType} -- Date {dateTime}");
+                        Logger.Instance.Information($"Record in scheduling {sch.SelectToken("tank_no")} -- {sch.SelectToken("book_type_cv")} -- Date {sch.SelectToken("scheduling_dt")}");
                     }
                 }
 
                 if (bookingMatchedGuid.Count > 0)
                     UpdateRecord(bookingMatchedGuid, "booking");
 
-                if (schedulingMatchedGuid.Count > 0)
-                    UpdateRecord(schedulingMatchedGuid, "scheduling");
-
-                //List<string> schedulingMatchedGuid = new List<string>();
-                //foreach (var item in schedulingCommonList)
-                //{
-                //    var tankNo = item.SelectToken("tank_no");
-                //    var sotGuid = item.SelectToken("sot_guid");
-                //    var bookType = item.SelectToken("book_type_cv");
-                //    var dateTime = item.SelectToken("scheduling_dt");
-
-                //    var result = bookingCommonList.Where(s => s.SelectToken("sot_guid").Equals(sotGuid) &&
-                //                (s.SelectToken("book_type_cv").Equals(bookType)) &&
-                //                (s.SelectToken("scheduling_dt").Equals(dateTime))).FirstOrDefault();
-
-                //    if (result != null)
-                //    {
-                //        //Found Matched
-                //        Console.WriteLine($"---record tally---");
-                //        Console.WriteLine($"Set Matched for scheduling {tankNo} -- {bookType} -- Date{dateTime}");
-                //        //Console.WriteLine($"Set Matched for scheduling {result.SelectToken("tank_no")} -- {item.SelectToken("book_type_cv")} -- Date{item.SelectToken("scheduling_dt")}");
-                //        schedulingMatchedGuid.Add(result.SelectToken("guid").ToString());
-                //    }
-                //    else
-                //    {
-                //        //Not Tally found
-                //        Console.WriteLine($"---record not tally---");
-                //        //Console.WriteLine($"booking record for {tankNo} not tally with scheduling");
-                //        Console.WriteLine($"scheduling record for {tankNo} not tally with booking");
-
-                //        string notification_uid = $"cc-scheduling-{tankNo}";
-                //        //Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-scheduling", $"scheduling record for {tankNo} not tally with booking", notification_uid);
-
-                //        //string notification_uid_bk = $"cc-booking-{tankNo}";
-                //        //Utils.AddAndTriggerStaffNotification(url, 3, "cross-check-booking", $"booking record for {tankNo} not tally with scheduling", notification_uid_bk);
-                //    }
-                //}
+                if (schedulingSOTList.Count > 0)
+                    UpdateRecordSchedulingSOT(schedulingSOTList, "scheduling_sot");
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 
-        private static async void UpdateRecord(List<string> guids, string tableName)
+        private static void UpdateRecord(List<string> guids, string tableName)
         {
             try
             {
                 string idsList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
-                string MATCHED_STATUS = "MATCHED";
+                string MATCHED_STATUS = "MATCH";
                 string USER = "system";
                 DateTimeOffset now = DateTimeOffset.UtcNow;
                 // Get the epoch time
                 long currentDateTime = now.ToUnixTimeSeconds();
 
                 string sql = $"UPDATE {tableName} SET status_cv = '{MATCHED_STATUS}', update_dt = {currentDateTime}, update_by = '{USER}' WHERE guid in ({idsList})";
-                conn = new MySqlConnection(dbConnection);
-                await conn.OpenAsync();
+                var conn = new MySqlConnection(dbConnection);
+                conn.Open();
 
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
-                    var res = await cmd.ExecuteNonQueryAsync();
+                    var res = cmd.ExecuteNonQuery();
                 }
+                conn.Close();
             }
-            catch (Exception ex) {
-                throw;
-            }
-
-        }
-        private static async void DataTallyCheck(List<JToken> bookingList, List<JToken> schedulingList)
-        {
-            string BOOKTYPE = "RELEASE_ORDER";
-
-
-            IEnumerable<JToken> result;
-            foreach (var booking in bookingList)
+            catch (Exception ex) 
             {
-                if (booking.SelectToken("book_type_cv").ToString().Equals(BOOKTYPE))
-                {
-                    result = schedulingList.Where(s => s.SelectToken("sot_guid").Equals(booking.SelectToken("sot_guid")) &&
-                                        (s.SelectToken("book_type_cv").Equals(booking.SelectToken("book_type_cv"))) &&
-                                         (s.SelectToken("scheduling_dt").Equals(booking.SelectToken("scheduling_dt"))) &&
-                                         (s.SelectToken("reference").Equals(booking.SelectToken("reference"))));
-                }
-                else
-                {
-                    result = schedulingList.Where(s => s.SelectToken("sot_guid").Equals(booking.SelectToken("sot_guid")) &&
-                                        (s.SelectToken("book_type_cv").Equals(booking.SelectToken("book_type_cv"))) &&
-                                         (s.SelectToken("scheduling_dt").Equals(booking.SelectToken("scheduling_dt"))));
-                }
-                if (!result.Any())
-                {
-                    //If here, scheduling record not tally with booking
-                    Console.WriteLine($"record not tally : {result}");
-                }
-                else
-                    Console.WriteLine("scheduling record matched");
-
-                //Console.WriteLine(scheduling.First().ToString());
-                //var e = schedulingList.Contains(booking);
-                await Task.Delay(1);
-
+                //conn?.Close();
+                throw ex;
             }
+
         }
+
+
+        private async static void UpdateRecordSchedulingSOT(List<JToken> items, string tableName)
+        {
+            try 
+            {
+                List<JToken> schedulingSot = new List<JToken>();
+             
+                var conn = new MySqlConnection(dbConnection);
+                await conn.OpenAsync();
+
+                var schGuids = items.Select(i => i.SelectToken("guid")).DistinctBy(i => i.SelectToken("guid")).ToList();
+
+                foreach(JToken itm in schGuids)
+                {
+                    string sqlSelect = $"SELECT * FROM scheduling_sot WHERE scheduling_guid = '{itm?.ToString()}' AND (delete_dt is null OR delete_dt = 0)";
+                    using (var cmd = new MySqlCommand(sqlSelect, conn))
+                    {
+                        using (var reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                var row = new JObject();
+                                for (var i = 0; i < reader.FieldCount; i++)
+                                {
+                                    row[reader.GetName(i)] = JToken.FromObject(reader.GetValue(i));
+                                }
+                                schedulingSot.Add(row);
+                                //bookDupList.Add(row.DeepClone());
+                            }
+                        }
+                    }
+
+                    int count = 0;
+                    List<string> guidToBeUpdated = new List<string>();
+                    foreach (JToken item in items)
+                    {
+                        var guid = item.SelectToken("guid").ToString();
+                        var sot_guid = item.SelectToken("sot_guid").ToString();
+                        var res = schedulingSot.Where(s => s.SelectToken("sot_guid").ToString() == sot_guid & s.SelectToken("scheduling_guid").ToString() == guid).FirstOrDefault();
+                        if (res != null)
+                        {
+                            count++;
+                            guidToBeUpdated.Add(res.SelectToken("guid").ToString());
+                        }
+                    }
+
+                    string MATCHED_STATUS = "MATCH";
+                    string USER = "system";
+                    DateTimeOffset now = DateTimeOffset.UtcNow;
+                    long currentDateTime = now.ToUnixTimeSeconds();
+                    if (guidToBeUpdated.Count > 0)
+                    {
+                        string idsList = string.Join(", ", guidToBeUpdated.ConvertAll(id => $"'{id}'"));
+                        string sql = $"UPDATE scheduling_sot SET status_cv = '{MATCHED_STATUS}', update_dt = {currentDateTime}, update_by = '{USER}' WHERE guid in ({idsList})";
+                        using (var cmd = new MySqlCommand(sql, conn))
+                        {
+                            var res = cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    if (count == schedulingSot.Count)
+                    {
+                        //All member of the same scheduling guid group have been matched
+                        string sql = $"UPDATE scheduling_sot SET status_cv = '{MATCHED_STATUS}', update_dt = {currentDateTime}, update_by = '{USER}' WHERE guid = '{itm?.ToString()}'";
+                        using (var cmd = new MySqlCommand(sql, conn))
+                        {
+                            var res = cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                //string MATCHED_STATUS = "MATCHED";
+                //string USER = "system";
+                //DateTimeOffset now = DateTimeOffset.UtcNow;
+                //// Get the epoch time
+                //long currentDateTime = now.ToUnixTimeSeconds();
+
+                //string sql = $"UPDATE {tableName} SET status_cv = '{MATCHED_STATUS}', update_dt = {currentDateTime}, update_by = '{USER}' WHERE guid in ({idsList})";
+                //conn = new MySqlConnection(dbConnection);
+                //conn.Open();
+
+                //using (var cmd = new MySqlCommand(sql, conn))
+                //{
+                //    var res = cmd.ExecuteNonQuery();
+                //}
+            }
+            catch (Exception ex)
+            {
+                //conn?.Close();
+                throw ex;
+            }
+
+        }
+
+
+
     }
-
-
 }

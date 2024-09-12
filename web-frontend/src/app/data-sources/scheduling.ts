@@ -77,6 +77,7 @@ export const GET_SCHEDULING = gql`
           scheduling_guid
           sot_guid
           status_cv
+          delete_dt
           storing_order_tank {
             certificate_cv
             clean_status_cv

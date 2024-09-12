@@ -52,6 +52,7 @@ import { MatCardModule } from '@angular/material/card';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -89,6 +90,7 @@ import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
+    TlxFormFieldComponent
   ]
 })
 export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -200,14 +202,17 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     CONVERTED_TO: 'COMMON-FORM.CONVERTED-TO',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
     SURVEYOR_NAME: 'COMMON-FORM.SURVEYOR-NAME',
-    INTERNAL_QC_BY: 'COMMON-FORM.INTERNAL-QC-BY'
+    INTERNAL_QC_BY: 'COMMON-FORM.INTERNAL-QC-BY',
+    RATE: 'COMMON-FORM.RATE',
+    LESSEE: 'COMMON-FORM.LESSEE',
+    TOTAL: 'COMMON-FORM.TOTAL'
   }
 
   clean_statusList: CodeValuesItem[] = [];
 
   sot_guid?: string | null;
 
-  soForm?: UntypedFormGroup;
+  repairEstForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
@@ -247,7 +252,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   ) {
     super();
     this.translateLangText();
-    this.initSOForm();
+    this.initForm();
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -266,13 +271,15 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.loadData();
   }
 
-  initSOForm() {
-    this.soForm = this.fb.group({
+  initForm() {
+    this.repairEstForm = this.fb.group({
       guid: [''],
       customer_company_guid: [''],
       customer_code: this.customerCodeControl,
       est_template: [''],
-      remarks: ['']
+      remarks: [''],
+      surveyor_name_cv: [''],
+      internal_qc_by: ['']
     });
   }
 
@@ -286,7 +293,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.sotItem = data[0];
-          this.populateSOForm(this.storingOrderItem);
+          this.populateForm(this.storingOrderItem);
         }
       });
     } else {
@@ -336,8 +343,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  populateSOForm(so: StoringOrderItem): void {
-    this.soForm!.patchValue({
+  populateForm(so: StoringOrderItem): void {
+    this.repairEstForm!.patchValue({
       guid: so.guid,
       customer_code: so.customer_company,
       customer_company_guid: so.customer_company_guid,
@@ -622,15 +629,15 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   onSOFormSubmit() {
-    this.soForm!.get('sotList')?.setErrors(null);
-    if (this.soForm?.valid) {
+    this.repairEstForm!.get('sotList')?.setErrors(null);
+    if (this.repairEstForm?.valid) {
       if (!this.repList.data.length) {
-        this.soForm.get('sotList')?.setErrors({ required: true });
+        this.repairEstForm.get('sotList')?.setErrors({ required: true });
       } else {
         let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
-        so.customer_company_guid = this.soForm.value['customer_company_guid'];
-        so.haulier = this.soForm.value['haulier'];
-        so.so_notes = this.soForm.value['so_notes'];
+        so.customer_company_guid = this.repairEstForm.value['customer_company_guid'];
+        so.haulier = this.repairEstForm.value['haulier'];
+        so.so_notes = this.repairEstForm.value['so_notes'];
 
         const sot: StoringOrderTankGO[] = this.repList.data.map((item: Partial<StoringOrderTankItem>) => {
           // Ensure action is an array and take the last action only
@@ -657,7 +664,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         }
       }
     } else {
-      console.log('Invalid soForm', this.soForm?.value);
+      console.log('Invalid repairEstForm', this.repairEstForm?.value);
     }
   }
 

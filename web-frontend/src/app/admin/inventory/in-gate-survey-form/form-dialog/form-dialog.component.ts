@@ -98,7 +98,7 @@ export class FormDialogComponent {
 
   createForm(): UntypedFormGroup {
     const formGroup = this.fb.group({
-      remarks: [''],
+      remarks: [this.previousRemarks],
     });
     return formGroup;
   }

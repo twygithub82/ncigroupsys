@@ -135,9 +135,9 @@
     },
     "MASTER": {
       "TEXT": "Master",
-      "LIST":{
-        "ESTIMATE-TEMPLATE":"Estimate Template",
-        "ASSIGN-ESTIMATE-TEMPLATE":"Assign Template"
+      "LIST": {
+        "ESTIMATE-TEMPLATE": "Estimate Template",
+        "ASSIGN-ESTIMATE-TEMPLATE": "Assign Template"
       }
     },
     "NEW": {
@@ -437,8 +437,8 @@
     "ADD-TANK": "Add Tank",
     "CONTACT-PERSON": "Contact Person",
     "MOBILE-NO": "Mobile No.",
-    "COUNTRY":"Country",
-    "FAX-NO":"Fax No.",
+    "COUNTRY": "Country",
+    "FAX-NO": "Fax No.",
     "EMAIL": "Email",
     "PHONE": "Phone",
     "AGREEMENT-DUE-DATE": "Agreement Due Date",
@@ -485,16 +485,16 @@
     "FRONT-REMARKS": "Front Remarks",
     "BOTTOM-REMARKS": "Bottom Remarks",
     "EIR-STATUS": "EIR Status",
-    "TANK-STATUS": "Tank Status",   
+    "TANK-STATUS": "Tank Status",
     "ATTACHMENT-TOO-BIG": "Attachment size > 20 MB",
     "SIDES": "Sides",
     "DAMAGE-PHOTOS": "Damage Photos",
     "PREVIEW": "Preview",
     "CONFIRM-DELETE": "Confirm Delete?",
     "DELETE-SUCCESS": "Delete Successfully",
-    "ESTIMATE-TEMPLATE":"Estimate Template",
-    "ASSIGN-TEMPLATE":"Assign Template",
-    "TEMPLATE-NAME":"Template Name",
+    "ESTIMATE-TEMPLATE": "Estimate Template",
+    "ASSIGN-TEMPLATE": "Assign Template",
+    "TEMPLATE-NAME": "Template Name",
     "BILL-COMPLETED": "Bill Completed",
     "REPAIR-JOB-NO": "Repair Job No.",
     "REPAIR-TYPE": "Repair Type",
@@ -517,19 +517,29 @@
     "SUBGROUP-NAME": "Subgroup Name",
     "ESTIMATE-DETAILS": "Estimate Details",
     "ESTIMATE-SUMMARY": "Estimate Summary",
-    "CANNOT-EXCEED":"cannot exceed",
-    "CANNOT-SMALLER":"cannot be smaller than",
-    "TOTAL-MATERIAL-COST":"Total Material Cost",
+    "CANNOT-EXCEED": "cannot exceed",
+    "CANNOT-SMALLER": "cannot be smaller than",
+    "LABOUR": "Labour",
+    "TOTAL-COST": "Total Cost $",
+    "LABOUR-DISCOUNT": "Labour Discount",
+    "MATERIAL-DISCOUNT": "Material Discount",
+    "NET-COST": "Net Cost $",
+    "CONVERTED-TO": "Converted To",
+    "RATE": "Rate",
+    "LESSEE": "Lessee",
+    "TOTAL": "Total",
+    "ESTIMATE-NO": "Estimate No.",
+    "SURVEYOR-NAME": "Surveyor Name",
+    "INTERNAL-QC-BY": "Internal QC By",
+        "TOTAL-MATERIAL-COST":"Total Material Cost",
     "TEMPLATE-TYPE":"Template Type",
     "TEMPLATE-TYPE-GENERAL":"General",
     "TEMPLATE-TYPE-EXCLUSIVE":"Exclusive",
-    "RATE":"Rate",
+    
     "LABOUR":"Labour",
-    "TOTAL":"Total",
-    "TOTAL-COST":"Total Cost",
-    "LABOUR-DISCOUNT":"Labour Discount",
-    "MATERIAL-DISCOUNT":"Material Discount",
-    "NET-COST":"Net Cost",
+    
+    
+    
     "NO-PARTS":"No Parts"
 
   },

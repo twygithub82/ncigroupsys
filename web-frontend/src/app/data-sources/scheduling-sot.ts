@@ -197,6 +197,14 @@ export class SchedulingSotDS extends BaseDataSource<SchedulingSotItem> {
   }
 
   canCancel(schedulingSot: SchedulingSotItem): boolean {
+    return true;
     return schedulingSot && schedulingSot.status_cv === 'NEW';
+  }
+  
+  checkScheduling(schedulingSot: SchedulingSotItem[] | undefined): boolean {
+    if (!schedulingSot || !schedulingSot.length) return false;
+    if (schedulingSot.some(schedulingSot => schedulingSot.status_cv === "NEW" || schedulingSot.status_cv === "MATCH"))
+      return true;
+    return false;
   }
 }
