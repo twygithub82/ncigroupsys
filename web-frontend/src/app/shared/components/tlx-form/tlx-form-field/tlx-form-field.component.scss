@@ -1,0 +1,85 @@
+// .tlx-form-field {
+//     display: flex;
+//     flex-direction: column;
+//     background-color: var(--mdc-filled-text-field-container-color);
+//     border-radius: 4px;
+//     padding: 2px 16px;
+//     position: relative;
+
+//     &.example-full-width {
+//         width: 100%;
+//     }
+
+//     mat-select,
+//     input[matInput],
+//     textarea[matInput] {
+//         font-size: 16px;
+//         padding: 8px;
+//         border: none;
+//         box-shadow: none;
+//         background-color: transparent;
+//         width: 100%;
+//         outline: none;
+//         transition: border-color 0.3s ease;
+//     }
+
+//     mat-form-field {
+//         width: 100%;
+//     }
+
+//     mat-error {
+//         color: red;
+//         font-size: 10px;
+//         margin-top: 4px;
+//     }
+
+//     .mat-select-panel {
+//         font-size: 14px;
+//     }
+// }
+
+.tlx-mat-form-field {
+
+    /* Remove space reserved for the label */
+    .mat-form-field-wrapper {
+        padding-top: 0;
+    }
+
+    /* Adjust height and padding */
+    .mat-form-field-infix {
+        height: 40px;
+        /* Set your custom height */
+        padding: 0 12px;
+        /* Adjust padding inside the input area */
+    }
+
+    /* Optional: Adjust margins if needed */
+    margin-bottom: 12px;
+    /* Adjust the margin below the field */
+
+    /* Customize background, border-radius, or shadow as needed */
+    background-color: var(--mdc-filled-text-field-container-color);
+    border-radius: 4px;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-flex {
+    background-color: transparent;
+    /* Set input background transparent */
+}
+
+.mat-form-field-appearance-fill .mat-input-element {
+    padding: 0;
+    /* Remove extra padding */
+}
+
+.mat-form-field {
+    width: 100%;
+    /* Ensure it takes up the full width */
+}
+
+/* Style the error message if needed */
+mat-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+}
