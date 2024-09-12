@@ -518,7 +518,20 @@
     "ESTIMATE-DETAILS": "Estimate Details",
     "ESTIMATE-SUMMARY": "Estimate Summary",
     "CANNOT-EXCEED":"cannot exceed",
-    "CANNOT-SMALLER":"cannot be smaller than"
+    "CANNOT-SMALLER":"cannot be smaller than",
+    "TOTAL-MATERIAL-COST":"Total Material Cost",
+    "TEMPLATE-TYPE":"Template Type",
+    "TEMPLATE-TYPE-GENERAL":"General",
+    "TEMPLATE-TYPE-EXCLUSIVE":"Exclusive",
+    "RATE":"Rate",
+    "LABOUR":"Labour",
+    "TOTAL":"Total",
+    "TOTAL-COST":"Total Cost",
+    "LABOUR-DISCOUNT":"Labour Discount",
+    "MATERIAL-DISCOUNT":"Material Discount",
+    "NET-COST":"Net Cost",
+    "NO-PARTS":"No Parts"
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

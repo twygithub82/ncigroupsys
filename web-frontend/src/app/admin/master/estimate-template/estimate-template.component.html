@@ -16,8 +16,8 @@
                   </mat-panel-title>
                   <mat-panel-description>
                     
-                    <div class="m-l-" [matTooltip]="translatedLangText.EDIT">
-                      <button mat-mini-fab color="primary" (click)="editCallSelection()"  (click)="$event.stopPropagation()">
+                    <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                      <button mat-mini-fab color="primary" (click)="editCallSelection()"  (click)="$event.stopPropagation()" [routerLink]="['/admin/master/estimate-template/new/ ']">
                         <mat-icon class="col-white">add</mat-icon>
                       </button>
                     </div>
