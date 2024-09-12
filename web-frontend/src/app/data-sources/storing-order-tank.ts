@@ -407,7 +407,6 @@ const RELOAD_STORING_ORDER_TANKS = gql`
 `;
 
 const GET_STORING_ORDER_TANK_BY_ID = gql`
-  ${TARIFF_CLEANING_FRAGMENT}
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
       nodes {
@@ -458,7 +457,27 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
           yard_cv
         }
         tariff_cleaning {
-          ...TariffCleaningFields
+          alias
+          ban_type_cv
+          cargo
+          class_cv
+          cleaning_category_guid
+          cleaning_method_guid
+          create_by
+          create_dt
+          delete_dt
+          depot_note
+          description
+          flash_point
+          guid
+          hazard_level_cv
+          in_gate_alert
+          nature_cv
+          open_on_gate_cv
+          remarks
+          un_no
+          update_by
+          update_dt
         }
         storing_order {
           so_no
@@ -481,7 +500,6 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
 `;
 
 const GET_STORING_ORDER_TANK_BY_ID_OUT_GATE = gql`
-  ${TARIFF_CLEANING_FRAGMENT}
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
       nodes {
@@ -531,7 +549,27 @@ const GET_STORING_ORDER_TANK_BY_ID_OUT_GATE = gql`
           vehicle_no
         }
         tariff_cleaning {
-          ...TariffCleaningFields
+          alias
+          ban_type_cv
+          cargo
+          class_cv
+          cleaning_category_guid
+          cleaning_method_guid
+          create_by
+          create_dt
+          delete_dt
+          depot_note
+          description
+          flash_point
+          guid
+          hazard_level_cv
+          in_gate_alert
+          nature_cv
+          open_on_gate_cv
+          remarks
+          un_no
+          update_by
+          update_dt
         }
         release_order_sot {
           create_by
@@ -615,7 +653,6 @@ const GET_STORING_ORDER_TANKS_ESTIMATE = gql`
 `;
 
 const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
-  ${TARIFF_CLEANING_FRAGMENT}
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
       nodes {
