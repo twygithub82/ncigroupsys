@@ -462,7 +462,52 @@
                       </div>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
-                      <span class="font-bold">{{translatedLangText.RATE}}</span>
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <span class="font-bold">{{translatedLangText.RATE}}</span>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                          {{translatedLangText.LABOUR}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                          {{translatedLangText.MATERIAL_COST}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                          {{translatedLangText.TOTAL_COST}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                          <tlx-form-field customClass="example-full-width">
+                            <input tlxFormInput matInput formControlName="internal_qc_by" placeholder="Enter QC Name"
+                              required>
+                            @if (repairEstForm?.get('internal_qc_by')?.hasError('required')) {
+                            <mat-error>
+                              {{translatedLangText.INTERNAL_QC_BY}} {{translatedLangText.SO_REQUIRED}}
+                            </mat-error>
+                            }
+                          </tlx-form-field>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                          <tlx-form-field customClass="example-full-width">
+                            <mat-select tlxFormInput formControlName="internal_qc_by" placeholder="Select QC Name"
+                              required>
+                              @for (codeValue of groupNameCvList; track codeValue) {
+                              <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
+                              }
+                            </mat-select>
+                            @if (repairEstForm?.get('internal_qc_by')?.hasError('required')) {
+                            <mat-error>
+                              {{translatedLangText.INTERNAL_QC_BY}} {{translatedLangText.SO_REQUIRED}}
+                            </mat-error>
+                            }
+                          </tlx-form-field>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                          {{translatedLangText.NET_COST}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                          {{translatedLangText.CONVERTED_TO}}
+                        </div>
+                      </div>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <span class="font-bold">{{translatedLangText.OWNER}}</span>

@@ -334,6 +334,12 @@ export const GET_IN_GATE_BY_ID = gql`
           rear_coord
           left_coord
           right_coord
+          top_remarks
+          bottom_remarks
+          front_remarks
+          rear_remarks
+          left_remarks
+          right_remarks
         }
       }
     }

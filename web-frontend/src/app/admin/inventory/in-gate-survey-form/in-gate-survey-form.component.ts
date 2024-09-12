@@ -628,6 +628,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       walkway_cv: ig.in_gate_survey?.walkway_cv,
       tank_comp_cv: ig.in_gate_survey?.tank_comp_cv,
       comments: ig.in_gate_survey?.comments,
+      leftRemarks: ig.in_gate_survey?.left_remarks,
+      rearRemarks: ig.in_gate_survey?.rear_remarks,
+      rightRemarks: ig.in_gate_survey?.right_remarks,
+      topRemarks: ig.in_gate_survey?.top_remarks,
+      frontRemarks: ig.in_gate_survey?.front_remarks,
+      bottomRemarks: ig.in_gate_survey?.bottom_remarks,
       bottomFormGroup: {
         btm_dis_comp_cv: ig.in_gate_survey?.btm_dis_comp_cv,
         btm_dis_valve_cv: ig.in_gate_survey?.btm_dis_valve_cv,
@@ -831,12 +837,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.top_coord = JSON.stringify(this.getTopCoordinates());
       igs.front_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsFront));
       igs.bottom_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsBottom));
-      // igs.left_remarks = this.surveyForm.get('leftRemarks')?.value;
-      // igs.rear_remarks = this.surveyForm.get('rearRemarks')?.value;
-      // igs.right_remarks = this.surveyForm.get('rightRemarks')?.value
-      // igs.top_remarks = this.surveyForm.get('topRemarks')?.value;
-      // igs.front_remarks = this.surveyForm.get('frontRemarks')?.value;
-      // igs.bottom_remarks = this.surveyForm.get('bottomRemarks')?.value;
+      igs.left_remarks = this.surveyForm.get('leftRemarks')?.value;
+      igs.rear_remarks = this.surveyForm.get('rearRemarks')?.value;
+      igs.right_remarks = this.surveyForm.get('rightRemarks')?.value
+      igs.top_remarks = this.surveyForm.get('topRemarks')?.value;
+      igs.front_remarks = this.surveyForm.get('frontRemarks')?.value;
+      igs.bottom_remarks = this.surveyForm.get('bottomRemarks')?.value;
       console.log('igs Value', igs);
       console.log('ig Value', ig);
       if (igs.guid) {

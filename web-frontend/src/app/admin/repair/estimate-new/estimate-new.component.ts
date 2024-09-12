@@ -52,6 +52,7 @@ import { MatCardModule } from '@angular/material/card';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -89,6 +90,7 @@ import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
+    TlxFormFieldComponent
   ]
 })
 export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
