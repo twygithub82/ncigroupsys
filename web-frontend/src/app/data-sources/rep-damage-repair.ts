@@ -1,18 +1,9 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, merge, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { StoringOrderItem } from './storing-order';
-import { TARIFF_CLEANING_FRAGMENT, TariffCleaningItem } from './tariff-cleaning';
 import { BaseDataSource } from './base-ds';
-import { InGateItem } from './in-gate';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { ReleaseOrderItem } from './release-order';
 import { SchedulingItem } from './scheduling';
-import { TariffRepairItem } from './tariff-repair';
 import { RepairEstPartItem } from './repair-est-part';
 
 export class REPDamageRepairGO {

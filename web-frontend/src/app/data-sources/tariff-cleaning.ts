@@ -72,7 +72,7 @@ export class TariffCleaningItem extends TariffCleaningGO {
   }
 }
 
-export class ClassNoItem{
+export class ClassNoItem {
   public guid?: string;
   public class?: string;
   public un_no?: string;
@@ -181,9 +181,9 @@ export const GET_TARIFF_CLEANING_QUERY = gql`
 export const GET_CLASS_NO_BY_UN_NO_QUERY = gql`
   query queryUNClassByNo($unNo: String!) {
     queryUNClassByNoResult: queryUNClassByNo(unNo: $unNo) {
-    class
-    guid
-    un_no
+      class
+      guid
+      un_no
     }
   }
 `;
@@ -350,34 +350,34 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       );
   }
 
-  SearchClassNoByUnNumber(unNo?:any):Observable<ClassNoItem>{
+  SearchClassNoByUnNumber(unNo?: any): Observable<ClassNoItem> {
     this.loadingSubject.next(true);
     return this.apollo
-    .query<any>({
-      query: GET_CLASS_NO_BY_UN_NO_QUERY,
-      variables: { unNo},
-      fetchPolicy: 'no-cache' // Ensure fresh data
-    })
-    .pipe(
-      map((result) => result.data),
-      catchError((error: ApolloError) => {
-        console.error('GraphQL Error:', error);
-        return of({} as ClassNoItem); // Return an empty array on error
-      }),
-      finalize(() => this.loadingSubject.next(false)),
-      map((result) => {
-        const r = result.queryUNClassByNoResult || { nodes: [], totalCount: 0 };
-        this.dataSubject.next(r.queryUNClassByNoResult);
-        return r;
+      .query<any>({
+        query: GET_CLASS_NO_BY_UN_NO_QUERY,
+        variables: { unNo },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
-    );
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({} as ClassNoItem); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const r = result.queryUNClassByNoResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(r.queryUNClassByNoResult);
+          return r;
+        })
+      );
   }
 
-  SearchTariffCleaning(where?: any, order?: any, first?: number , after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
+  SearchTariffCleaning(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
-    if(!last) 
-      if(!first)
-          first=10;
+    if (!last)
+      if (!first)
+        first = 10;
     return this.apollo
       .query<any>({
         query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION,
@@ -434,7 +434,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     });
   }
 
-  CheckTheExistingUnNo(un_no_value:string):Observable<TariffCleaningItem[]>{
+  CheckTheExistingUnNo(un_no_value: string): Observable<TariffCleaningItem[]> {
     let where: any = { un_no: { eq: un_no_value } }
     return this.apollo
       .query<any>({
@@ -451,7 +451,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const retResult = result.lastCargo || { nodes: [], totalCount: 0 };
-          this.totalCount=retResult.totalCount;
+          this.totalCount = retResult.totalCount;
           return retResult.nodes;
         })
       );
