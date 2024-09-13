@@ -896,7 +896,6 @@ $breakpoints: (
   display: inline;
   justify-content: center;
   align-items: center;
-  display: flex;
 }
 
 .link-button:hover,
@@ -932,6 +931,7 @@ $breakpoints: (
   right: 10px;
   background-color: #ffffffbd;
   border-radius: 25%;
+  display: flex;
 }
 
 .menu-button:hover {
