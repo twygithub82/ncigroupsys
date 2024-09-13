@@ -11,31 +11,30 @@ import { jwt_mapping } from 'app/api-endpoints';
   providedIn: 'root',
 })
 export class FileManagerService {
+  public loadingSubject = new BehaviorSubject<boolean>(false);
+  public loading$ = this.loadingSubject.asObservable();
+
   constructor(private http: HttpClient) {
   }
 
   uploadFiles(filesWithMetadata: { file: File, metadata: any }[]): Observable<any> {
-    // Create a new FormData object
     const formData = new FormData();
 
-    // Append each file and its corresponding metadata to the FormData object
-    filesWithMetadata.forEach((item, index) => {
-      formData.append(`files`, item.file, item.file.name); // Append file with a unique key
-      formData.append(`metadata`, JSON.stringify(item.metadata)); // Append corresponding metadata with the same key index
+    filesWithMetadata.forEach((item) => {
+      formData.append(`files`, item.file, item.file.name);
+      formData.append(`metadata`, JSON.stringify(item.metadata));
     });
 
-    // Make the POST request to upload the files
     return this.http.post<any>(`${environment.fileManagerURL}${uploadEndpoints.uploadFiles}`, formData)
       .pipe(
         map(response => {
-          // Process the response if necessary
           return response;
         })
       );
   }
 
   getFileUrlByGroupGuid(groupGuids: string[]): Observable<any> {
-    // Create a new FormData object
+    this.loadingSubject.next(true);
     const requestBody = groupGuids;
 
     // Make the POST request with application/json content type
@@ -45,7 +44,7 @@ export class FileManagerService {
       })
     }).pipe(
       map(response => {
-        // Process the response if necessary
+        this.loadingSubject.next(false);
         return response;
       })
     );

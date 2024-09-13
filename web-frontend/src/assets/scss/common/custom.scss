@@ -891,9 +891,12 @@ $breakpoints: (
   border: none;
   color: inherit;
   font: inherit;
-  padding: 0;
+  padding: 2px 0;
   margin: 0;
   display: inline;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 .link-button:hover,
@@ -927,6 +930,14 @@ $breakpoints: (
   position: absolute;
   top: 10px;
   right: 10px;
+  background-color: #ffffffbd;
+  border-radius: 25%;
+}
+
+.menu-button:hover {
+  background-color: #ffffff; /* Make the background fully opaque */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+  transform: scale(1.1); /* Slightly enlarge the button */
 }
 
 .preview-img {
@@ -948,4 +959,17 @@ $breakpoints: (
   display: flex;
   justify-content: space-between;
   width: 100%;
+}
+
+.image-preview .tbl-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  margin-top: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.0); /* Optional: adds semi-transparent background */
 }
