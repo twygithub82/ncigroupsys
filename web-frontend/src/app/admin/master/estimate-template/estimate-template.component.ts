@@ -292,6 +292,7 @@ implements OnInit {
      }
   
   constructor(
+    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
@@ -320,6 +321,26 @@ implements OnInit {
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    var state = history.state;
+    if(state.type=="estimate-template")
+    {
+      let showResult = state.pagination.showResult;
+      if(showResult)
+      {
+      this.searchCriteriaService=state.pagination.where;
+      this.pageIndex=state.pagination.pageIndex;
+      this.pageSize= state.pagination.pageSize;
+      this.hasPreviousPage=state.pagination.hasPreviousPage;
+      this.startCursor=state.pagination.startCursor;
+      this.endCursor=state.pagination.endCursor;
+      this.previous_endCursor=state.pagination.previous_endCursor;
+      this.paginator.pageSize=this.pageSize;
+      this.paginator.pageIndex=this.pageIndex;
+      this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+    }
+
+    }
+    
   }
 
   initMtForm() {
@@ -394,38 +415,27 @@ implements OnInit {
       });
   }
 
-  editCallSelection()
+  addCallSelection(event: Event)
   {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    if(this.selection.isEmpty()) return;
-    const dialogRef = this.dialog.open(FormDialogComponent,{
-      width: '800px',
-      data: {
-        action: 'update',
-        langText: this.langText,
-        selectedItems:this.selection.selected
-      },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+    event.stopPropagation(); // Stop the click event from propagating
+ // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/master/estimate-template/new/ '], {
+      state: { id: '' ,
+        type:'estimate-template',
+        pagination:{
+          where :this.lastSearchCriteria,
+          pageSize:this.pageSize,
+          pageIndex:this.pageIndex,
+          hasPreviousPage:this.hasPreviousPage,
+          startCursor:this.startCursor,
+          endCursor:this.endCursor,
+          previous_endCursor:this.previous_endCursor,
+          
+          showResult: this.masterEstTempDS.totalCount>0
+          
+        }
       }
-        
     });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result>0) {
-          //if(result.selectedValue>0)
-         // {
-            this.handleSaveSuccess(result);
-            if(this.masterTemplateItem.length>1)
-                this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-          //}
-      }
-      });
   }
   
   editCall(row: PackageRepairItem) {
@@ -763,7 +773,7 @@ implements OnInit {
 
   displayTemplateType(r:MasterTemplateItem){
     let tempType = `${this.translatedLangText.TEMPLATE_TYPE_GENERAL}`;
-    if(r.type_cv=="EXCLUSIVE")
+    if(r.type_cv?.toUpperCase()=="EXCLUSIVE")
     {
       tempType=this.translatedLangText.TEMPLATE_TYPE_EXCLUSIVE
     }

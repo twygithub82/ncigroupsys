@@ -14,11 +14,11 @@
                 </mat-panel-title>
                 <mat-panel-description>
                   <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                    <button mat-mini-fab color="primary" [routerLink]="['repair/estimate/new/']">
+                    <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/storing-order/new']">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
-                  </div> -->
-                  <div class="m-l-" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
                     <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
                       [disabled]="canCancelSelectedRows()">
                       <mat-icon class="col-white">cancel</mat-icon>
