@@ -175,6 +175,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
     LAST_TEST: 'COMMON-FORM.LAST-TEST',
+    NEXT_TEST: 'COMMON-FORM.NEXT-TEST',
     GROUP: 'COMMON-FORM.GROUP',
     SUBGROUP: 'COMMON-FORM.SUBGROUP',
     DAMAGE: 'COMMON-FORM.DAMAGE',

@@ -885,7 +885,7 @@
                                   {{translatedLangText.REAR_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputRear.click()">
+                              <div class="image-preview" (click)="!surveyForm?.get('rearImage')?.get('preview')?.value && fileInputRear.click()">
                                 <input type="file" #fileInputRear class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('rearImage'))">
                                 @if (!(isImageLoading$ | async)) {
@@ -921,7 +921,7 @@
                                   {{translatedLangText.RIGHT_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputRight.click()">
+                              <div class="image-preview" (click)="!surveyForm?.get('rightImage')?.get('preview')?.value && fileInputRight.click()">
                                 <input type="file" #fileInputRight class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('rightImage'))">
                                 @if (!(isImageLoading$ | async)) {
@@ -957,7 +957,7 @@
                                   {{translatedLangText.TOP_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputTop.click()">
+                              <div class="image-preview" (click)="!surveyForm?.get('topImage')?.get('preview')?.value && fileInputTop.click()">
                                 <input type="file" #fileInputTop class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('topImage'))">
                                 @if (!(isImageLoading$ | async)) {
@@ -993,7 +993,7 @@
                                   {{translatedLangText.FRONT_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputFront.click()">
+                              <div class="image-preview" (click)="!surveyForm?.get('frontImage')?.get('preview')?.value && fileInputFront.click()">
                                 <input type="file" #fileInputFront class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('frontImage'))">
                                 @if (!(isImageLoading$ | async)) {
@@ -1029,7 +1029,7 @@
                                   {{translatedLangText.BOTTOM_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputBottom.click()">
+                              <div class="image-preview" (click)="!surveyForm?.get('bottomImage')?.get('preview')?.value && fileInputBottom.click()">
                                 <input type="file" #fileInputBottom class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('bottomImage'))">
                                 @if (!(isImageLoading$ | async)) {
