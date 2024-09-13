@@ -939,3 +939,13 @@ $breakpoints: (
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
+.table-label {
+  min-height: 21px;
+}
+
+.cost-label {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}

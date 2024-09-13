@@ -1,9 +1,3 @@
-<!-- <div class="tlx-form-field" [ngClass]="customClass">
-  <ng-content select="[tlxFormInput]"></ng-content>
-  <ng-content select="[tlxFormError]"></ng-content>
-</div> -->
-
-<mat-form-field class="tlx-mat-form-field" [ngClass]="customClass" appearance="fill">
-  <ng-content select="[tlxFormInput]"></ng-content>
-  <ng-content select="[tlxFormError]"></ng-content>
-</mat-form-field>
+<div class="tlx-form-field" [ngClass]="customClass">
+  <ng-content select="mat-form-field"></ng-content>
+</div>

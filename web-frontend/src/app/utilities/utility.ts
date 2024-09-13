@@ -254,4 +254,9 @@ export class Utility {
   static isBase64Url(url: string): boolean {
     return (url.startsWith('data:image/'));
   }
+  
+  static selectText(event: FocusEvent) {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.select();
+  }
 }

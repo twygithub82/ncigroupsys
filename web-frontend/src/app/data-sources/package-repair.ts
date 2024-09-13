@@ -289,27 +289,27 @@ export class PackageRepairDS extends BaseDataSource<PackageRepairItem> {
     );
   }
 
-    updatePackageRepairs_MaterialCost(group_name_cv:any,subgroup_name_cv:any,part_name:any,dimension:any,length:any,
-      tariff_repair_guid:any,customer_company_guids:any,material_cost_percentage:any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_PACKAGE_REPAIRS_MATERIAL_COST,
-        variables: {
-          group_name_cv,
-          subgroup_name_cv,
-          part_name,
-          dimension,
-          length,
-          tariff_repair_guid,
-          customer_company_guids,
-          material_cost_percentage
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  updatePackageRepairs_MaterialCost(group_name_cv: any, subgroup_name_cv: any, part_name: any, dimension: any, length: any,
+    tariff_repair_guid: any, customer_company_guids: any, material_cost_percentage: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_PACKAGE_REPAIRS_MATERIAL_COST,
+      variables: {
+        group_name_cv,
+        subgroup_name_cv,
+        part_name,
+        dimension,
+        length,
+        tariff_repair_guid,
+        customer_company_guids,
+        material_cost_percentage
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
 
 }

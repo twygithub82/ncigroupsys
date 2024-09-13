@@ -702,7 +702,27 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
           vehicle_no
         }
         tariff_cleaning {
-          ...TariffCleaningFields
+          alias
+          ban_type_cv
+          cargo
+          class_cv
+          cleaning_category_guid
+          cleaning_method_guid
+          create_by
+          create_dt
+          delete_dt
+          depot_note
+          description
+          flash_point
+          guid
+          hazard_level_cv
+          in_gate_alert
+          nature_cv
+          open_on_gate_cv
+          remarks
+          un_no
+          update_by
+          update_dt
         }
         storing_order {
           create_by
