@@ -35,7 +35,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
@@ -51,8 +51,10 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { MatCardModule } from '@angular/material/card';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
-//import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { RepairEstPartDS, RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { RepairEstDS } from 'app/data-sources/repair-est';
 
 @Component({
   selector: 'app-estimate-new',
@@ -173,6 +175,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
     LAST_TEST: 'COMMON-FORM.LAST-TEST',
+    NEXT_TEST: 'COMMON-FORM.NEXT-TEST',
     GROUP: 'COMMON-FORM.GROUP',
     SUBGROUP: 'COMMON-FORM.SUBGROUP',
     DAMAGE: 'COMMON-FORM.DAMAGE',
@@ -190,7 +193,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     DIMENSION: 'COMMON-FORM.DIMENSION',
     LENGTH: 'COMMON-FORM.LENGTH',
     PREFIX_DESC: 'COMMON-FORM.PREFIX-DESC',
-    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
+    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST$',
     IQ: 'COMMON-FORM.IQ',
     ESTIMATE_DETAILS: 'COMMON-FORM.ESTIMATE-DETAILS',
     ESTIMATE_SUMMARY: 'COMMON-FORM.ESTIMATE-SUMMARY',
@@ -216,10 +219,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
-  storingOrderItem: StoringOrderItem = new StoringOrderItem();
+  packageLabourItem?: PackageLabourItem;
   repList = new MatTableDataSource<RepairEstPartItem>();
   sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
-  customer_companyList?: CustomerCompanyItem[];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
   yesnoCvList: CodeValuesItem[] = []
@@ -237,8 +239,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
-  tDS: TankDS;
   igDS: InGateDS;
+  plDS: PackageLabourDS;
+  repairEstDS: RepairEstDS;
+  repairEstPartDS: RepairEstPartDS;
 
   constructor(
     public httpClient: HttpClient,
@@ -257,8 +261,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.tDS = new TankDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
+    this.plDS = new PackageLabourDS(this.apollo);
+    this.repairEstDS = new RepairEstDS(this.apollo);
+    this.repairEstPartDS = new RepairEstPartDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -279,7 +285,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       est_template: [''],
       remarks: [''],
       surveyor_name_cv: [''],
-      internal_qc_by: ['']
+      internal_qc_by: [''],
+      labour_disc: [0],
+      material_disc: [0]
     });
   }
 
@@ -289,16 +297,11 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   public loadData() {
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
-      // EDIT
       this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.sotItem = data[0];
-          this.populateForm(this.storingOrderItem);
+          this.getCustomerLaboutPackage(this.sotItem.storing_order?.customer_company_guid!);
         }
-      });
-    } else {
-      this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-        this.customer_companyList = data
       });
     }
     const queries = [
@@ -340,6 +343,19 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
       this.repairCodeCvList = data;
+    });
+  }
+
+  getCustomerLaboutPackage(customer_company_guid: string) {
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    }
+    this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data?.length > 0) {
+        this.packageLabourItem = data[0];
+      }
     });
   }
 
@@ -596,21 +612,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.updateData(data);
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.sotSelection.selected.length;
-    const numRows = this.storingOrderItem.storing_order_tank?.length;
-    return numSelected === numRows;
-  }
-
-  masterToggle() {
-    this.isAllSelected()
-      ? this.sotSelection.clear()
-      : this.repList.data?.forEach((row) =>
-        this.sotSelection.select(row)
-      );
-  }
-
   // context menu
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
     this.preventDefault(event);
@@ -628,41 +629,41 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     // Add any additional logic if needed
   }
 
-  onSOFormSubmit() {
-    this.repairEstForm!.get('sotList')?.setErrors(null);
+  onFormSubmit() {
+    // this.repairEstForm!.get('sotList')?.setErrors(null);
     if (this.repairEstForm?.valid) {
-      if (!this.repList.data.length) {
-        this.repairEstForm.get('sotList')?.setErrors({ required: true });
-      } else {
-        let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
-        so.customer_company_guid = this.repairEstForm.value['customer_company_guid'];
-        so.haulier = this.repairEstForm.value['haulier'];
-        so.so_notes = this.repairEstForm.value['so_notes'];
+      // if (!this.repList.data.length) {
+      //   this.repairEstForm.get('sotList')?.setErrors({ required: true });
+      // } else {
+      //   let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
+      //   so.customer_company_guid = this.repairEstForm.value['customer_company_guid'];
+      //   so.haulier = this.repairEstForm.value['haulier'];
+      //   so.so_notes = this.repairEstForm.value['so_notes'];
 
-        const sot: StoringOrderTankGO[] = this.repList.data.map((item: Partial<StoringOrderTankItem>) => {
-          // Ensure action is an array and take the last action only
-          const actions = Array.isArray(item!.actions) ? item!.actions : [];
-          const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
+      //   const sot: StoringOrderTankGO[] = this.repList.data.map((item: Partial<StoringOrderTankItem>) => {
+      //     // Ensure action is an array and take the last action only
+      //     const actions = Array.isArray(item!.actions) ? item!.actions : [];
+      //     const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
 
-          return new StoringOrderTankUpdateSO({
-            ...item,
-            action: latestAction // Set the latest action as the single action
-          });
-        });
-        console.log('so Value', so);
-        console.log('sot Value', sot);
-        if (so.guid) {
-          this.soDS.updateStoringOrder(so, sot).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.updateStoringOrder);
-          });
-        } else {
-          this.soDS.addStoringOrder(so, sot).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.addStoringOrder);
-          });
-        }
-      }
+      //     return new StoringOrderTankUpdateSO({
+      //       ...item,
+      //       action: latestAction // Set the latest action as the single action
+      //     });
+      //   });
+      //   console.log('so Value', so);
+      //   console.log('sot Value', sot);
+      //   if (so.guid) {
+      //     this.soDS.updateStoringOrder(so, sot).subscribe(result => {
+      //       console.log(result)
+      //       this.handleSaveSuccess(result?.data?.updateStoringOrder);
+      //     });
+      //   } else {
+      //     this.soDS.addStoringOrder(so, sot).subscribe(result => {
+      //       console.log(result)
+      //       this.handleSaveSuccess(result?.data?.addStoringOrder);
+      //     });
+      //   }
+      // }
     } else {
       console.log('Invalid repairEstForm', this.repairEstForm?.value);
     }
@@ -854,5 +855,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
     return "";
+  }
+  
+  selectText(event: FocusEvent) {
+    Utility.selectText(event)
   }
 }

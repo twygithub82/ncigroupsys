@@ -1,0 +1,25 @@
+.tlx-form-field {
+    ::ng-deep .mat-mdc-form-field-infix {
+        min-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+        display: none !important;
+    }
+
+    ::ng-deep input[matInput].text-end {
+        text-align: right;
+    }
+
+    ::ng-deep input[type="number"]::-webkit-outer-spin-button,
+    ::ng-deep input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    ::ng-deep mat-form-field {
+        width: 100% !important;
+    }
+}

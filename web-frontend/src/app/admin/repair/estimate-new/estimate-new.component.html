@@ -102,6 +102,16 @@
                       </div>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.NEXT_TEST}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </mat-card-content>
@@ -110,7 +120,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="repairEstForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="repairEstForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -139,19 +149,23 @@
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                  @if (soDS.canAdd(storingOrderItem)) {
+                  <!-- @if (repairEstDS.canAdd(row)) {
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                     (click)="addEstDetails($event)">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ESTIMATE_DETAILS}}
                   </button>
-                  }
+                  } -->
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addEstDetails($event)">
+                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ESTIMATE_DETAILS}}
+                  </button>
                 </div>
               </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
                     <table mat-table [dataSource]="repList" matSort
-                      class="mat-cell advance-table striped-rows hover-highlight">
+                      class="mat-cell advance-table striped-rows hover-highlight dark-header">
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
@@ -292,12 +306,6 @@
                             <mat-icon>more_vert</mat-icon>
                           </button>
                           <mat-menu #menu="matMenu">
-                            @if (soDS.canAdd(storingOrderItem)) {
-                            <button mat-menu-item (click)="handleDuplicateRow($event, row)">
-                              <mat-icon>add_to_photos</mat-icon>
-                              <span>{{translatedLangText.DUPLICATE}}</span>
-                            </button>
-                            }
                             @if (sotDS.canAddRemove(row)) {
                             <button mat-menu-item (click)="handleDelete($event, row, i)">
                               <mat-icon>delete_forever</mat-icon>
@@ -382,7 +390,7 @@
               }
               @if (!(soDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
+                <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <mat-form-field class="example-full-width">
@@ -431,92 +439,362 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 m-b-0">
+                <div class="col-xl-8-5 col-lg-8-5 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 m-b-0">
+                    <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border">
                           <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.LABOUR}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.MATERIAL_COST}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.TOTAL_COST}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.LABOUR_DISCOUNT}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                          {{translatedLangText.MATERIAL_DISCOUNT}}
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                          {{translatedLangText.MATERIAL_DISCOUNT}}s
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.NET_COST}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.CONVERTED_TO}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                          <span class="font-bold">{{translatedLangText.RATE}}</span>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{packageLabourItem?.cost | number: '1.2-2'}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
+                          <tlx-form-field customClass="example-full-width">
+                            <mat-form-field>
+                              <input class="text-end" tlxFormInput matInput formControlName="labour_disc"
+                                (focus)="selectText($event)" [placeholder]="translatedLangText.LABOUR_DISCOUNT"
+                                type="number" min="0" required>
+                              @if (repairEstForm?.get('labour_disc')?.hasError('required')) {
+                              <mat-error>
+                                {{translatedLangText.LABOUR_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
+                              </mat-error>
+                              }
+                            </mat-form-field>
+                          </tlx-form-field>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
+                          <tlx-form-field customClass="example-full-width">
+                            <mat-form-field>
+                              <input class="text-end" tlxFormInput matInput formControlName="material_disc"
+                                (focus)="selectText($event)" [placeholder]="translatedLangText.MATERIAL_DISCOUNT"
+                                type="number" required>
+                              @if (repairEstForm?.get('material_disc')?.hasError('required')) {
+                              <mat-error>
+                                {{translatedLangText.MATERIAL_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
+                              </mat-error>
+                              }
+                            </mat-form-field>
+                          </tlx-form-field>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label font-bold">
+                            <span>$</span><span>{{translatedLangText.CONVERTED_TO}}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                          <span class="font-bold">{{translatedLangText.OWNER}}</span>
+                        </div>
+                      </div>
+                      <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <span class="font-bold">{{translatedLangText.RATE}}</span>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                          {{translatedLangText.LABOUR}}
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                          {{translatedLangText.MATERIAL_COST}}
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                          {{translatedLangText.TOTAL_COST}}
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                          <mat-form-field customClass="example-full-width">
-                            <input tlxFormInput matInput formControlName="internal_qc_by" placeholder="Enter QC Name"
-                              required>
-                            @if (repairEstForm?.get('internal_qc_by')?.hasError('required')) {
-                            <mat-error>
-                              {{translatedLangText.INTERNAL_QC_BY}} {{translatedLangText.SO_REQUIRED}}
-                            </mat-error>
-                            }
-                          </mat-form-field>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                          <mat-form-field customClass="example-full-width">
-                            <mat-select tlxFormInput formControlName="internal_qc_by" placeholder="Select QC Name"
-                              required>
-                              @for (codeValue of groupNameCvList; track codeValue) {
-                              <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
-                              }
-                            </mat-select>
-                            @if (repairEstForm?.get('internal_qc_by')?.hasError('required')) {
-                            <mat-error>
-                              {{translatedLangText.INTERNAL_QC_BY}} {{translatedLangText.SO_REQUIRED}}
-                            </mat-error>
-                            }
-                          </mat-form-field>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                          {{translatedLangText.NET_COST}}
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                          {{translatedLangText.CONVERTED_TO}}
+                          <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                              <div class="row">
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                              <div class="row">
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label font-bold">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
-                      <span class="font-bold">{{translatedLangText.OWNER}}</span>
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                          <span class="font-bold">{{translatedLangText.LESSEE}}</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                              <div class="row">
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                              <div class="row">
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label font-bold">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
-                      <span class="font-bold">{{translatedLangText.LESSEE}}</span>
-                    </div>
-                    <div class="col-xl col-lg col-md col-sm m-b-0">
-                      <span class="font-bold">{{translatedLangText.TOTAL}}</span>
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                          <span class="font-bold">{{translatedLangText.TOTAL}}</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                              <div class="row">
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label"></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                              <div class="row">
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label font-bold">
+                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

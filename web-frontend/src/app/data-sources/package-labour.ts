@@ -127,6 +127,70 @@ export const GET_PACKAGE_LABOUR_QUERY = gql`
   }
 `;
 
+
+export const GET_CUSTOMER_COST = gql`
+  query  queryPackageLabour($where: package_labourFilterInput) {
+   resultList: queryPackageLabour(where: $where) {
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      nodes {
+        cost
+        create_by
+        create_dt
+        customer_company_guid
+        delete_dt
+        guid
+        remarks
+        tariff_labour_guid
+        update_by
+        update_dt
+        tariff_labour {
+          cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          remarks
+          update_by
+          update_dt
+        }
+        customer_company {
+          address_line1
+          address_line2
+          agreement_due_dt
+          alias
+          city
+          code
+          country
+          create_by
+          create_dt
+          currency_cv
+          delete_dt
+          description
+          effective_dt
+          email
+          fax
+          guid
+          name
+          phone
+          postal
+          tariff_depot_guid
+          type_cv
+          update_by
+          update_dt
+          website
+        }
+      }
+    }
+  }
+`;
+
 export class PackageLabourDS extends BaseDataSource<PackageLabourItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -159,7 +223,31 @@ export class PackageLabourDS extends BaseDataSource<PackageLabourItem> {
       );
   }
 
-  updatePackageLabours(guids: string[],  cost: number,remarks: string): Observable<any> {
+  getCustomerPackageCost(where: any) {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_CUSTOMER_COST,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as PackageLabourItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  updatePackageLabours(guids: string[], cost: number, remarks: string): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_PACKAGE_LABOURS,
       variables: {
@@ -175,7 +263,7 @@ export class PackageLabourDS extends BaseDataSource<PackageLabourItem> {
     );
   }
 
-  updatePackageLabour(updatePackLabour:PackageLabourItem): Observable<any> {
+  updatePackageLabour(updatePackLabour: PackageLabourItem): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_PACKAGE_LABOUR,
       variables: {

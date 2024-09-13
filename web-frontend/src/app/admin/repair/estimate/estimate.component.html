@@ -13,8 +13,8 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                    <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/storing-order/new']">
+                  <!-- <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                    <button mat-mini-fab color="primary" [routerLink]="['repair/estimate/new/']">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
@@ -234,7 +234,8 @@
                     {{translatedLangText.EIR_DATE}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
+                    <span
+                      class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_cargo">
@@ -242,8 +243,7 @@
                     {{translatedLangText.LAST_CARGO}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span
-                      class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row?.tariff_cleaning?.cargo}}
+                    <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row?.tariff_cleaning?.cargo}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="tank_status_cv">
@@ -251,13 +251,13 @@
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row?.tank_status_cv)}}
+                    <span
+                      class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row?.tank_status_cv)}}
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/repair/estimate/new', row.guid]" [style.cursor]="'pointer'"
-                  matRipple>
+                  [routerLink]="['/admin/repair/estimate/new', row.guid]" [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>

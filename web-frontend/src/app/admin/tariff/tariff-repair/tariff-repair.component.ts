@@ -88,6 +88,7 @@ import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/da
     MatInputModule,
     MatDatepickerModule,
     MatSelectModule,
+    MatOptionModule,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
@@ -109,7 +110,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     'bDate',
     'mobile',
     'dup',
-    
+
   ];
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-REPAIR'
@@ -135,10 +136,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   CLEANING_LAST_UPDATED_DT = 'COMMON-FORM.LAST-UPDATED'
 
-  groupNameControl = new UntypedFormControl();
-  subGroupNameControl = new UntypedFormControl();
-  handledItemControl = new UntypedFormControl();
-
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
@@ -154,13 +151,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   subGroupNameCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
 
-  lengthControl= new UntypedFormControl();
-  dimensionControl = new UntypedFormControl();
+  lengthItems: TariffRepairLengthItem[] = [];
+  dimensionItems: string[] = [];
 
-
-  lengthItems : TariffRepairLengthItem[]=[];
-  dimensionItems:string[]=[];
-  
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
@@ -276,9 +269,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
     LABOUR_HOUR: "COMMON-FORM.LABOUR-HOUR",
     MATERIAL_COST: "COMMON-FORM.MATERIAL-COST",
-    DIMENSION :"COMMON-FORM.DIMENSION",
-    MATERIAL_COST$:"COMMON-FORM.MATERIAL-COST$",
-    
+    DIMENSION: "COMMON-FORM.DIMENSION",
+    MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
+
   }
 
   constructor(
@@ -322,10 +315,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       // guid: [{value:''}],
       // customer_code: this.customerCodeControl,
       // cleaning_category:this.categoryControl,
-      group_name_cv: this.groupNameControl,
-      sub_group_name_cv: this.subGroupNameControl,
-      len:this.lengthControl,
-      dimension:this.dimensionControl,
+      group_name_cv: [''],
+      sub_group_name_cv: [''],
+      len: [''],
+      dimension: [''],
       part_name: [''],
       min_len: [''],
       max_len: [''],
@@ -333,7 +326,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       max_labour: [''],
       min_cost: [''],
       max_cost: [''],
-      handled_item_cv: this.handledItemControl
+      handled_item_cv: ['']
     });
   }
 
@@ -369,15 +362,15 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       if (result > 0) {
         this.handleSaveSuccess(result);
         if (this.trfRepairDS.totalCount > 0) {
-           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        //this.search();
-        // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+          //this.search();
+          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
         }
       }
     });
   }
 
-  
+
   addCall() {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -403,9 +396,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       if (result > 0) {
         this.handleSaveSuccess(result);
         if (this.trfRepairDS.totalCount > 0) {
-           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        //this.search();
-        // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+          //this.search();
+          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
         }
       }
     });
@@ -615,23 +608,17 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
-    if (this.groupNameControl.value) {
-      if (this.groupNameControl.value.length > 0) {
-
-
-        const cdValues: CodeValuesItem[] = this.groupNameControl.value;
-        var codes = cdValues.map(cc => cc);
-        where.group_name_cv = { in: codes };
+    if (this.pcForm.get('group_name_cv')?.value) {
+      if (this.pcForm.get('group_name_cv')?.value?.length > 0) {
+        const cdValues: string[] = this.pcForm.get('group_name_cv')?.value;
+        where.group_name_cv = { in: cdValues };
       }
     }
 
-    if (this.subGroupNameControl.value) {
-      if (this.subGroupNameControl.value.length > 0) {
-
-
-        const cdValues: CodeValuesItem[] = this.subGroupNameControl.value;
-        var codes = cdValues.map(cc => cc);
-        where.subgroup_name_cv = { in: codes };
+    if (this.pcForm.get('sub_group_name_cv')?.value) {
+      if (this.pcForm.get('sub_group_name_cv')?.value?.length > 0) {
+        const cdValues: CodeValuesItem[] = this.pcForm.get('sub_group_name_cv')?.value;
+        where.subgroup_name_cv = { in: cdValues };
       }
     }
 
@@ -640,7 +627,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       where.part_name = { contains: description }
     }
 
- 
     // Handling material_cost
     if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
       const minCost: number = Number(this.pcForm!.value["min_cost"]);
@@ -656,68 +642,68 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
 
     // Handling Dimension
-if (this.pcForm!.value["dimension"]) {
-  let dimensionConditions: any = {};
-  let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
-  
-  // Initialize tariff_repair if it doesn't exist
- // where.tariff_repair = where.tariff_repair || {};
-  where.and = where.and || [];
-  
-  dimensionConditions.or = [];
-  selectedTarifRepairDimensionItems.forEach((item) => {
-    const condition: any = {};
-    
-    // Only add condition if item is defined (non-undefined)
-    if (item !== undefined && item !== null && item !== '') {
-      condition.dimension = { eq: item };
+    if (this.pcForm!.value["dimension"]) {
+      let dimensionConditions: any = {};
+      let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
+
+      // Initialize tariff_repair if it doesn't exist
+      // where.tariff_repair = where.tariff_repair || {};
+      where.and = where.and || [];
+
+      dimensionConditions.or = [];
+      selectedTarifRepairDimensionItems.forEach((item) => {
+        const condition: any = {};
+
+        // Only add condition if item is defined (non-undefined)
+        if (item !== undefined && item !== null && item !== '') {
+          condition.dimension = { eq: item };
+        }
+
+        if (Object.keys(condition).length > 0) {
+          dimensionConditions.or.push(condition);
+        }
+      });
+
+      // Push condition to 'and' if it has valid properties
+      if (dimensionConditions.or.length > 0) {
+        where.and.push(dimensionConditions);
+      }
     }
 
-    if (Object.keys(condition).length > 0) {
-      dimensionConditions.or.push(condition);
-    }
-  });
+    // Handling Length
+    if (this.pcForm!.value["len"]) {
+      let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
 
-  // Push condition to 'and' if it has valid properties
-  if (dimensionConditions.or.length > 0) {
-    where.and.push(dimensionConditions);
-  }
-}
+      // Initialize tariff_repair if it doesn't exist
+      //  where.tariff_repair = where.tariff_repair || {};
+      where.and = where.and || [];
 
-// Handling Length
-if (this.pcForm!.value["len"]) {
-  let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
-  
-  // Initialize tariff_repair if it doesn't exist
-//  where.tariff_repair = where.tariff_repair || {};
-  where.and = where.and || [];
-  
-  const lengthConditions: any = {};
-  lengthConditions.or = [];
-  selectedTarifRepairLengthItems.forEach((item) => {
-    const condition: any = {};
-    
-    // Add condition for length if defined
-    if (item.length !== undefined) {
-      condition.length = { eq: item.length };
-    }
-    
-    // Add condition for length_unit_cv if it exists
-    if (item.length_unit_cv) {
-      condition.length_unit_cv = { eq: item.length_unit_cv };
-    }
-    
-    // Push condition to 'or' if it has valid properties
-    if (Object.keys(condition).length > 0) {
-      lengthConditions.or.push(condition);
-    }
-  });
+      const lengthConditions: any = {};
+      lengthConditions.or = [];
+      selectedTarifRepairLengthItems.forEach((item) => {
+        const condition: any = {};
 
-  // Push length conditions to 'and' if it has valid properties
-  if (lengthConditions.or.length > 0) {
-    where.and.push(lengthConditions);
-  }
-}
+        // Add condition for length if defined
+        if (item.length !== undefined) {
+          condition.length = { eq: item.length };
+        }
+
+        // Add condition for length_unit_cv if it exists
+        if (item.length_unit_cv) {
+          condition.length_unit_cv = { eq: item.length_unit_cv };
+        }
+
+        // Push condition to 'or' if it has valid properties
+        if (Object.keys(condition).length > 0) {
+          lengthConditions.or.push(condition);
+        }
+      });
+
+      // Push length conditions to 'and' if it has valid properties
+      if (lengthConditions.or.length > 0) {
+        where.and.push(lengthConditions);
+      }
+    }
 
 
     // Handling length
@@ -766,7 +752,7 @@ if (this.pcForm!.value["len"]) {
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-       
+
 
       });
     }
@@ -863,12 +849,12 @@ if (this.pcForm!.value["len"]) {
   }
   public loadData() {
 
-    this.trfRepairDS.searchDistinctLength(undefined,undefined).subscribe(data=>{
-      this.lengthItems=data;
+    this.trfRepairDS.searchDistinctLength(undefined, undefined).subscribe(data => {
+      this.lengthItems = data;
     });
 
-    this.trfRepairDS.searchDistinctDimension(undefined).subscribe(data=>{
-      this.dimensionItems=data;
+    this.trfRepairDS.searchDistinctDimension(undefined).subscribe(data => {
+      this.dimensionItems = data;
     });
 
     const queries = [

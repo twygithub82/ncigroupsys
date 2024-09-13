@@ -241,12 +241,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   public loadData() {
-    // this.igDS.getInGateByID('140ca688ba104671b05d137e0d8a285f').subscribe(data=>{
-    //   if(this.igDS.totalCount>0)
-    //   {
-
-    //   }
-    // })
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
@@ -386,21 +380,23 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       startWith(''),
       debounceTime(300),
       tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-          this.inGateForm!.get('last_cargo_guid')!.setValue(value.guid);
-          this.cargoDetails = value;
-        }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          if (JSON.stringify(data) !== JSON.stringify(this.last_cargoList)) {
-            this.last_cargoList = data;
-            this.updateValidators(this.last_cargoList);
-            this.lastCargoControl.updateValueAndValidity();
+        if (value) {
+          var searchCriteria = '';
+          if (typeof value === 'string') {
+            searchCriteria = value;
+          } else {
+            searchCriteria = value.cargo;
+            this.inGateForm!.get('last_cargo_guid')!.setValue(value.guid);
+            this.cargoDetails = value;
           }
-        });
+          this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+            if (JSON.stringify(data) !== JSON.stringify(this.last_cargoList)) {
+              this.last_cargoList = data;
+              this.updateValidators(this.last_cargoList);
+              this.lastCargoControl.updateValueAndValidity();
+            }
+          });
+        }
       })
     ).subscribe();
   }

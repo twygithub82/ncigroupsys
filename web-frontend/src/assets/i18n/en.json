@@ -530,12 +530,12 @@
     "ESTIMATE-NO": "Estimate No.",
     "SURVEYOR-NAME": "Surveyor Name",
     "INTERNAL-QC-BY": "Internal QC By",
-   "TOTAL-MATERIAL-COST":"Total Material Cost",
-    "TEMPLATE-TYPE":"Template Type",
-    "TEMPLATE-TYPE-GENERAL":"General",
-    "TEMPLATE-TYPE-EXCLUSIVE":"Exclusive",
-    "LABOUR":"Labour",
-    "NO-PARTS":"No Parts"
+    "TOTAL-MATERIAL-COST": "Total Material Cost $",
+    "TEMPLATE-TYPE": "Template Type",
+    "TEMPLATE-TYPE-GENERAL": "General",
+    "TEMPLATE-TYPE-EXCLUSIVE": "Exclusive",
+    "LABOUR": "Labour",
+    "NO-PARTS": "No Parts"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

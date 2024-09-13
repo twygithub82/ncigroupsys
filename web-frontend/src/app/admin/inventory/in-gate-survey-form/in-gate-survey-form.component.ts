@@ -298,6 +298,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   isMarkDmg = false;
   toggleState = true; // State to track whether to highlight or unhighlight
   currentImageIndex: number | null = null;
+  isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
 
   constructor(
     public httpClient: HttpClient,
@@ -327,6 +328,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.isImageLoading$ = this.fileManagerService.loading$;
     this.cells = Array(this.rowSize * this.colSize).fill(0);
     this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
 
@@ -1101,6 +1103,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         reader.readAsDataURL(file);
       });
     }
+    input.value = '';
   }
 
   onFileSelected(event: Event): void {
@@ -1116,6 +1119,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         reader.readAsDataURL(file);
       });
     }
+    input.value = '';
   }
 
   editRemarks(event: Event, remarksTitle: string, remarksValue: any) {

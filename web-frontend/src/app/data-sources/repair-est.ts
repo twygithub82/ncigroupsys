@@ -5,25 +5,34 @@ import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { SchedulingItem } from './scheduling';
+import { TariffRepairItem } from './tariff-repair';
 
-export class SchedulingSotGO {
+export class RepairEstGO {
   public guid?: string;
-  public sot_guid?: string;
-  public scheduling_guid?: string;
-  public status_cv?: string;
+  public tariff_repair_guid?: string;
+  public repair_est_guid?: string;
+  public description?: string;
+  public location_cv?: string;
   public remarks?: string;
+  public qty?: number;
+  public hour?: number;
+  public material_cost?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<SchedulingSotGO> = {}) {
+  constructor(item: Partial<RepairEstGO> = {}) {
     this.guid = item.guid;
-    this.sot_guid = item.sot_guid;
-    this.scheduling_guid = item.scheduling_guid;
-    this.status_cv = item.status_cv;
+    this.tariff_repair_guid = item.tariff_repair_guid;
+    this.repair_est_guid = item.repair_est_guid;
+    this.description = item.description;
+    this.location_cv = item.location_cv;
     this.remarks = item.remarks;
+    this.qty = item.qty;
+    this.hour = item.hour;
+    this.material_cost = item.material_cost;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -32,22 +41,19 @@ export class SchedulingSotGO {
   }
 }
 
-export class SchedulingSotItem extends SchedulingSotGO {
-  public scheduling?: SchedulingItem;
-  public storing_order_tank?: StoringOrderTankItem;
-  constructor(item: Partial<SchedulingSotItem> = {}) {
+export class RepairEstItem extends RepairEstGO {
+  public tariff_repair?: TariffRepairItem;
+  public repair_est?: StoringOrderTankItem;
+  public damage?: any;
+  public repair?: any;
+  public actions?: string[]
+  constructor(item: Partial<RepairEstItem> = {}) {
     super(item)
-    this.scheduling = item.scheduling;
-    this.storing_order_tank = item.storing_order_tank;
-  }
-}
-
-export class SchedulingSotUpdateItem extends SchedulingSotItem {
-  public action?: string
-
-  constructor(item: Partial<SchedulingSotUpdateItem> = {}) {
-    super(item)
-    this.action = item.action || undefined;
+    this.tariff_repair = item.tariff_repair;
+    this.repair_est = item.repair_est;
+    this.damage = item.damage;
+    this.repair = item.repair;
+    this.actions = item.actions;
   }
 }
 
@@ -134,13 +140,7 @@ export const GET_SCHEDULING_SOT = gql`
   }
 `;
 
-export const DELETE_SCHEDULING_SOT = gql`
-  mutation DeleteSchedulingSOT($schedulingSOTGuids: [String!]!) {
-    deleteSchedulingSOT(schedulingSOTGuids: $schedulingSOTGuids)
-  }
-`;
-
-export class SchedulingSotDS extends BaseDataSource<SchedulingSotItem> {
+export class RepairEstDS extends BaseDataSource<RepairEstItem> {
   constructor(private apollo: Apollo) {
     super();
   }
@@ -167,37 +167,7 @@ export class SchedulingSotDS extends BaseDataSource<SchedulingSotItem> {
       );
   }
 
-  deleteScheduleSOT(schedulingSOTGuids: string[]): Observable<any> {
-    return this.apollo.mutate({
-      mutation: DELETE_SCHEDULING_SOT,
-      variables: {
-        schedulingSOTGuids
-      }
-    });
-  }
-
-  getSchedulingSotReleaseOrder(schedulingSot: SchedulingSotItem[] | undefined): SchedulingSotItem | undefined {
-    return this.getSchedulingSotWithType(schedulingSot, "RELEASE_ORDER");
-  }
-
-  getSchedulingSotReleaseJobNo(schedulingSot: SchedulingSotItem[] | undefined): string | undefined {
-    const releaseScheduling = this.getSchedulingSotWithType(schedulingSot, "RELEASE_ORDER");
-    return releaseScheduling?.scheduling?.reference;
-  }
-
-  getSchedulingSotWithType(schedulingSot: SchedulingSotItem[] | undefined, type: string): SchedulingSotItem | undefined {
-    return schedulingSot?.find(item => item.scheduling?.book_type_cv === type);
-  }
-
-  canCancel(schedulingSot: SchedulingSotItem): boolean {
+  canAdd(re: RepairEstItem): boolean {
     return true;
-    return schedulingSot && schedulingSot.status_cv === 'NEW';
-  }
-  
-  checkScheduling(schedulingSot: SchedulingSotItem[] | undefined): boolean {
-    if (!schedulingSot || !schedulingSot.length) return false;
-    if (schedulingSot.some(schedulingSot => schedulingSot.status_cv === "NEW" || schedulingSot.status_cv === "MATCH"))
-      return true;
-    return false;
   }
 }
