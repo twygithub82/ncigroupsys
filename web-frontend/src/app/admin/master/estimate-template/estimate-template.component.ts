@@ -520,7 +520,7 @@ implements OnInit {
           const customerCodes :CustomerCompanyItem[] = this.customerCodeControl.value;
           var guids = customerCodes.map(cc=>cc.guid);
           where.template_est_customer = where.template_est_customer || {};
-          where.template_est_customer.customer_company_guid = { in: guids };
+          where.template_est_customer={some:{customer_company_guid : { in: guids }}};
         }
     }
 
