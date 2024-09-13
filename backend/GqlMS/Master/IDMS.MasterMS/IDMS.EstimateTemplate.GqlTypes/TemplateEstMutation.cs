@@ -37,7 +37,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                     if (newTemplateEstimate.template_est_customer == null)
                         throw new GraphQLException(new Error($"Template_estimate_customer object cannot be null", "ERROR"));
 
-                    UpdateCustomer(context, newTemplateEstimate.template_est_customer, user, currentDateTime, template);
+                     await UpdateCustomer(context, newTemplateEstimate.template_est_customer, user, currentDateTime, template);
                 }
 
                 IList<template_est_part> partList = new List<template_est_part>();
@@ -49,7 +49,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                     newPart.template_est_guid = template.guid;
                     partList.Add(newPart);
 
-                    UpdateRepairDamageCode(context, user, currentDateTime, newPart);
+                    await UpdateRepairDamageCode(context, user, currentDateTime, newPart);
                 }
                 await context.template_est_part.AddRangeAsync(partList);
 
@@ -60,10 +60,15 @@ namespace IDMS.EstimateTemplate.GqlTypes
                 return res;
 
             }
+            //catch (GraphQLException gex)
+            //{
+            //    throw new GraphQLException(new Error($"{gex.Message}--{gex.InnerException}", "ERROR"));
+            //}
             catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
+
         }
 
         public async Task<int> UpdateTemplateEstimation(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -106,7 +111,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                             newEstPart.create_by = user;
                             newEstPart.create_dt = currentDateTime;
                             newEstPart.template_est_guid = template.guid;
-                            UpdateRepairDamageCode(context, user, currentDateTime, part);
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part);
                             await context.template_est_part.AddAsync(newEstPart);
                             continue;
                         }
@@ -126,7 +131,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                             existingPart.location_cv = part.location_cv;
                             existingPart.hour = part.hour;
                             existingPart.remarks = part.remarks;
-                            UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
                             continue;
                         }
 
@@ -137,7 +142,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                             existingPart.delete_dt = currentDateTime;
                             existingPart.update_dt = currentDateTime;
                             existingPart.update_by = user;
-                            UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
                             continue;
                         }
                     }
@@ -148,7 +153,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                     if (editTemplateEsimate.template_est_customer == null)
                         throw new GraphQLException(new Error($"Template_customer object cannot be null", "ERROR"));
 
-                    UpdateCustomer(context, editTemplateEsimate.template_est_customer, user, currentDateTime, template);
+                    await UpdateCustomer(context, editTemplateEsimate.template_est_customer, user, currentDateTime, template);
                 }
 
 
@@ -205,11 +210,11 @@ namespace IDMS.EstimateTemplate.GqlTypes
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new GraphQLException(new Error(ex.Message, "ERROR"));
             }
         }
 
-        private async void UpdateCustomer(ApplicationMasterDBContext context, IEnumerable<template_est_customer> templateCustomers,
+        private async Task UpdateCustomer(ApplicationMasterDBContext context, IEnumerable<template_est_customer> templateCustomers,
                                             string user, long currentDateTime, template_est templateEst)
         {
             try
@@ -233,7 +238,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
 
                         templateEstCustomer.template_est_guid = templateEst.guid;
                         templateEstCustomer.customer_company_guid = cus.customer_company_guid;
-                        await context.template_est_customer.AddAsync(templateEstCustomer);
+                        context.template_est_customer.AddAsync(templateEstCustomer);
                     }
                     else if (ObjectAction.CANCEL.EqualsIgnore(cus.action))
                     {
@@ -255,11 +260,11 @@ namespace IDMS.EstimateTemplate.GqlTypes
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw; //new GraphQLException(new Error(ex.Message, "ERROR"));
             }
         }
 
-        private async void UpdateRepairDamageCode(ApplicationMasterDBContext context, string user, long currentDateTime,
+        private async Task UpdateRepairDamageCode(ApplicationMasterDBContext context, string user, long currentDateTime,
                                             template_est_part estPart, IEnumerable<tep_damage_repair>? tepDamageRepair = null)
         {
             try
@@ -330,7 +335,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
