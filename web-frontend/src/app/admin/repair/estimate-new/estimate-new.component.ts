@@ -92,7 +92,7 @@ import { RepairEstDS } from 'app/data-sources/repair-est';
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    //TlxFormFieldComponent
+    TlxFormFieldComponent
   ]
 })
 export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
