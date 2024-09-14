@@ -43,8 +43,9 @@ export class MasterTemplateGo {
 }
 
 export class TepDamageRepairItem {
+  action?:string;
   code_cv?: string;
-  code_type?: string;
+  code_type?: number;
   create_by?: string | null;
   create_dt?: string | null;
   delete_dt?: string | null;
@@ -55,6 +56,7 @@ export class TepDamageRepairItem {
 }
 
 export class TemplateEstPartItem {
+  action?:string='NEW';
   guid?: string | null;
   description?: string;
   delete_dt?: string | null;
@@ -64,14 +66,16 @@ export class TemplateEstPartItem {
   quantity?: number;
   location_cv?: string | null;
   remarks?: string | null;
+  tariff_repair_guid?:string|null;
   tariff_repair?:TariffRepairItem|null;
-  tep_damage_repair?: TepDamageRepairItem | null;
+  tep_damage_repair?: TepDamageRepairItem[] | null;
   update_by?: string | null;
   update_dt?: string | null;
 }
 
 export class TemplateEstimateCustomerItem{
 
+  action?:string='NEW';
   create_by?: string | null;
   create_dt?: string | null;
   delete_dt?: string | null;
@@ -80,13 +84,13 @@ export class TemplateEstimateCustomerItem{
   update_by?: string | null;
   update_dt?: string | null;
   customer_company?: CustomerCompanyItem | null;
-  
+  customer_company_guid?:string |null;
   
 }
 export class MasterTemplateItem extends MasterTemplateGo {
   public template_est_customer?: TemplateEstimateCustomerItem[] | null;
   public template_est_part?: TemplateEstPartItem[] | null;
-  public totalMaterialCost: number = 0;
+  public totalMaterialCost?: number = 0;
   
 
   constructor(item: Partial<MasterTemplateItem> = {}) {
@@ -232,8 +236,8 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
 `;
 
 export const ADD_MASTER_TEMPLATE_ESTIMATION = gql`
-  mutation addTemplateEstimation($newTemplateEst:template_estInput!, $customerGuid: [String!]!) {
-    addTemplateEstimation(newTemplateEst: $newTemplateEst,customerGuid:$customerGuid)
+  mutation addTemplateEstimation($newTemplateEstimate:template_estInput!) {
+    addTemplateEstimation(newTemplateEstimate: $newTemplateEstimate)
   }
 `;
 
@@ -307,11 +311,11 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
 
   
 
-    AddMasterTemplate(td: any): Observable<any> {
+    AddMasterTemplate(newTemplateEstimate: any): Observable<any> {
       return this.apollo.mutate({
         mutation: ADD_MASTER_TEMPLATE_ESTIMATION,
         variables: {
-          td
+          newTemplateEstimate
         }
       }).pipe(
         catchError((error: ApolloError) => {

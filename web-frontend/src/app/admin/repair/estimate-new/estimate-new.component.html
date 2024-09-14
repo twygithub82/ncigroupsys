@@ -102,6 +102,16 @@
                       </div>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.NEXT_TEST}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </mat-card-content>
@@ -512,7 +522,7 @@
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div><!-- test -->
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">

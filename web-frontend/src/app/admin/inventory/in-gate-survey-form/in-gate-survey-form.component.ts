@@ -269,24 +269,17 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   cellsSquare: number[] = [];
 
   // Walkway
-  outerRowSize = 10;
-  outerColSize = 19;
+  // outerRowSize = 10;
+  // outerColSize = 19;
   innerColSize = 4;
   innerMiddleColSize = 12;
   cellsOuterTopBottom: number[] = [];
   cellsOuterLeftRight: number[] = [];
   cellsInnerTopBottom: number[] = [];
   cellsInnerMiddle: number[] = [];
-  highlightedCellsOuterTop: boolean[] = [];
-  highlightedCellsOuterBottom: boolean[] = [];
-  highlightedCellsOuterLeft: boolean[] = [];
-  highlightedCellsOuterRight: boolean[] = [];
   highlightedCellsWalkwayTop: boolean[] = [];
   highlightedCellsWalkwayMiddle: boolean[] = [];
   highlightedCellsWalkwayBottom: boolean[] = [];
-  highlightedCellsWalkwayTopDmg: boolean[] = [];
-  highlightedCellsWalkwayMiddleDmg: boolean[] = [];
-  highlightedCellsWalkwayBottomDmg: boolean[] = [];
 
   highlightedCellsLeft: boolean[] = [];
   highlightedCellsRear: boolean[] = [];
@@ -332,8 +325,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cells = Array(this.rowSize * this.colSize).fill(0);
     this.cellsSquare = Array(this.rowSizeSquare * this.colSizeSquare).fill(0);
 
-    this.cellsOuterTopBottom = Array(this.outerColSize).fill(0);
-    this.cellsOuterLeftRight = Array(this.outerRowSize).fill(0);
     this.cellsInnerTopBottom = Array(this.innerColSize).fill(0);
     this.cellsInnerMiddle = Array(this.innerMiddleColSize).fill(0);
     this.initForm();
@@ -682,6 +673,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   populateHighlightedCells(toUpdateCells: boolean[], coordinates: { x: number; y: number }[]): boolean[] {
+    if (!Array.isArray(coordinates)) {
+      return [];
+    }
     toUpdateCells = Array(this.rowSize * this.colSize).fill(false);
 
     coordinates.forEach(coord => {
@@ -703,27 +697,16 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   populateTopSideCells(topCoord: any) {
-    const outerTop = topCoord.outerTop
-    const outerBottom = topCoord.outerBottom
-    const outerLeft = topCoord.outerLeft
-    const outerRight = topCoord.outerRight
+    const dmg = topCoord.dmg
     const walkwayTop = topCoord.walkwayTop
     const walkwayMiddle = topCoord.walkwayMiddle
     const walkwayBottom = topCoord.walkwayBottom
-    const dmgTop = topCoord.dmgTop
-    const dmgMiddle = topCoord.dmgMiddle
-    const dmgBottom = topCoord.dmgBottom
 
-    this.highlightedCellsOuterTop = this.populateHighlightedCellsWithoutReset(this.highlightedCellsOuterTop, outerTop);
-    this.highlightedCellsOuterBottom = this.populateHighlightedCellsWithoutReset(this.highlightedCellsOuterBottom, outerBottom);
-    this.highlightedCellsOuterLeft = this.populateHighlightedCellsWithoutReset(this.highlightedCellsOuterLeft, outerLeft);
-    this.highlightedCellsOuterRight = this.populateHighlightedCellsWithoutReset(this.highlightedCellsOuterRight, outerRight);
+    this.highlightedCellsTop = this.populateHighlightedCells(this.highlightedCellsTop, dmg);
+
     this.highlightedCellsWalkwayTop = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayTop, walkwayTop);
     this.highlightedCellsWalkwayMiddle = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayMiddle, walkwayMiddle);
     this.highlightedCellsWalkwayBottom = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayBottom, walkwayBottom);
-    this.highlightedCellsWalkwayTopDmg = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayTopDmg, dmgTop);
-    this.highlightedCellsWalkwayMiddleDmg = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayMiddleDmg, dmgMiddle);
-    this.highlightedCellsWalkwayBottomDmg = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayBottomDmg, dmgBottom);
   }
 
   populateImages(files: any[]) {
@@ -1026,16 +1009,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   resetTopHighlightedCells(): void {
-    this.resetHighlightedCells(this.highlightedCellsOuterTop);
-    this.resetHighlightedCells(this.highlightedCellsOuterBottom);
-    this.resetHighlightedCells(this.highlightedCellsOuterLeft);
-    this.resetHighlightedCells(this.highlightedCellsOuterRight);
+    this.resetHighlightedCells(this.highlightedCellsTop);
     this.resetHighlightedCells(this.highlightedCellsWalkwayTop);
     this.resetHighlightedCells(this.highlightedCellsWalkwayMiddle);
     this.resetHighlightedCells(this.highlightedCellsWalkwayBottom);
-    this.resetHighlightedCells(this.highlightedCellsWalkwayTopDmg);
-    this.resetHighlightedCells(this.highlightedCellsWalkwayMiddleDmg);
-    this.resetHighlightedCells(this.highlightedCellsWalkwayBottomDmg);
   }
 
   getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
@@ -1064,27 +1041,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   getTopCoordinates(): { x: number, y: number }[] {
-    const outerTop = this.getHighlightedCoordinates(this.highlightedCellsOuterTop);
-    const outerBottom = this.getHighlightedCoordinates(this.highlightedCellsOuterBottom);
-    const outerLeft = this.getHighlightedCoordinates(this.highlightedCellsOuterLeft);
-    const outerRight = this.getHighlightedCoordinates(this.highlightedCellsOuterRight);
+    const dmg = this.getHighlightedCoordinates(this.highlightedCellsTop);
     const walkwayTop = this.getHighlightedCoordinates(this.highlightedCellsWalkwayTop);
     const walkwayMiddle = this.getHighlightedCoordinates(this.highlightedCellsWalkwayMiddle);
     const walkwayBottom = this.getHighlightedCoordinates(this.highlightedCellsWalkwayBottom);
-    const dmgTop = this.getHighlightedCoordinates(this.highlightedCellsWalkwayTopDmg);
-    const dmgMiddle = this.getHighlightedCoordinates(this.highlightedCellsWalkwayMiddleDmg);
-    const dmgBottom = this.getHighlightedCoordinates(this.highlightedCellsWalkwayBottomDmg);
     const result: any = {
-      outerTop,
-      outerBottom,
-      outerLeft,
-      outerRight,
+      dmg,
       walkwayTop,
       walkwayMiddle,
       walkwayBottom,
-      dmgTop,
-      dmgMiddle,
-      dmgBottom
     }
     return result;
   }
@@ -1319,14 +1284,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       .filter(preview => preview.get('file')?.value)
       .map(preview => {
         const file = preview.get('file')?.value;
-        const side = preview.get('side')?.value;
         return {
           file: file, // The actual file object
           metadata: {
             TableName: 'in_gate_survey',
             FileType: 'img',
             GroupGuid: guid,
-            Description: side + '_DMG' // Use the file name or custom description
+            Description: 'DMG' // Use the file name or custom description
           }
         };
       });

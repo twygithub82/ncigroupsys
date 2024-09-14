@@ -648,49 +648,37 @@
                       <div class="image-container">
                         <img mat-card-image src="assets/images/idms/tank_frame_type/backup/top_side.png"
                           class="img-fluid">
-                        <!-- Custom Container for Top Side -->
-                        <div class="custom-container">
-                          <!-- Outer Layer -->
+                        <div [ngClass]="{'grid-overlay': true, 'to-mark': isMarkDmg}" (mousedown)="startDrawing(highlightedCellsTop, $event)"
+                          (mousemove)="draw(highlightedCellsTop, $event)" (mouseup)="stopDrawing()"
+                          (mouseleave)="stopDrawing()" (touchstart)="startDrawing(highlightedCellsTop, $event)"
+                          (touchmove)="draw(highlightedCellsTop, $event)" (touchend)="stopDrawing()"
+                          (touchcancel)="stopDrawing()">
+                          @for (cell of cells; track cell; let index = $index) {
+                          <div [ngClass]="{ highlighted: highlightedCellsTop[index] }" [attr.data-index]="index"
+                            (mousedown)="$event.preventDefault()" (touchstart)="$event.preventDefault()">
+                          </div>
+                          }
+                        </div>
+                        <div [ngClass]="{'custom-container': true, 'to-mark opacity-75': !isMarkDmg}">
                           <div class="outer-layer">
-                            <!-- Top part of the outer layer -->
-                            <div class="outer-top" (mousedown)="startDrawing(highlightedCellsOuterTop, $event)"
-                              (mousemove)="draw(highlightedCellsOuterTop, $event)" (mouseup)="stopDrawing()"
-                              (mouseleave)="stopDrawing()" (touchstart)="startDrawing(highlightedCellsOuterTop, $event)"
-                              (touchmove)="draw(highlightedCellsOuterTop, $event)" (touchend)="stopDrawing()"
-                              (touchcancel)="stopDrawing()">
-                              @for (cell of cellsOuterTopBottom; track cell; let index = $index) {
-                              <div class="grid-cell" [ngClass]="{'damage-overlay': highlightedCellsOuterTop[index]}"
-                                [attr.data-index]="index" (mousedown)="$event.preventDefault()"
-                                (touchstart)="$event.preventDefault()"></div>
-                              }
+                            <div class="outer-top">
                             </div>
 
                             <!-- Middle part with inner grid and side borders -->
                             <div class="outer-middle">
-                              <div class="outer-left" (mousedown)="startDrawing(highlightedCellsOuterLeft, $event)"
-                                (mousemove)="draw(highlightedCellsOuterLeft, $event)" (mouseup)="stopDrawing()"
-                                (mouseleave)="stopDrawing()"
-                                (touchstart)="startDrawing(highlightedCellsOuterLeft, $event)"
-                                (touchmove)="draw(highlightedCellsOuterLeft, $event)" (touchend)="stopDrawing()"
-                                (touchcancel)="stopDrawing()">
-                                @for (cell of cellsOuterLeftRight; track cell; let index = $index) {
-                                <div class="grid-cell" [ngClass]="{'damage-overlay': highlightedCellsOuterLeft[index]}"
-                                  [attr.data-index]="index" (mousedown)="$event.preventDefault()"
-                                  (touchstart)="$event.preventDefault()"></div>
-                                }
+                              <div class="outer-left">
                               </div>
                               <div class="inner-grid">
                                 <!-- Top Row with 4 Columns -->
                                 <div class="grid-top-row"
-                                  (mousedown)="startDrawingWalkway(highlightedCellsWalkwayTop, highlightedCellsWalkwayTopDmg, $event)"
-                                  (mousemove)="drawWalkway(highlightedCellsWalkwayTop, highlightedCellsWalkwayTopDmg, $event)"
+                                  (mousedown)="startDrawing(highlightedCellsWalkwayTop, $event)"
+                                  (mousemove)="draw(highlightedCellsWalkwayTop, $event)"
                                   (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
-                                  (touchstart)="startDrawingWalkway(highlightedCellsWalkwayTop, highlightedCellsWalkwayTopDmg, $event)"
-                                  (touchmove)="drawWalkway(highlightedCellsWalkwayTop, highlightedCellsWalkwayTopDmg, $event)"
+                                  (touchstart)="startDrawing(highlightedCellsWalkwayTop, $event)"
+                                  (touchmove)="draw(highlightedCellsWalkwayTop, $event)"
                                   (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
                                   @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
                                   <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayTop[index],
-                                        'damage-overlay': highlightedCellsWalkwayTopDmg[index]
                                       }" [attr.data-index]="index" (mousedown)="$event.preventDefault()"
                                     (touchstart)="$event.preventDefault()"></div>
                                   }
@@ -698,15 +686,14 @@
 
                                 <!-- Middle Row (to be defined later) -->
                                 <div class="grid-middle-row"
-                                  (mousedown)="startDrawingWalkway(highlightedCellsWalkwayMiddle, highlightedCellsWalkwayMiddleDmg, $event)"
-                                  (mousemove)="drawWalkway(highlightedCellsWalkwayMiddle, highlightedCellsWalkwayMiddleDmg, $event)"
+                                  (mousedown)="startDrawing(highlightedCellsWalkwayMiddle, $event)"
+                                  (mousemove)="draw(highlightedCellsWalkwayMiddle, $event)"
                                   (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
-                                  (touchstart)="startDrawingWalkway(highlightedCellsWalkwayMiddle, highlightedCellsWalkwayMiddleDmg, $event)"
-                                  (touchmove)="drawWalkway(highlightedCellsWalkwayMiddle, highlightedCellsWalkwayMiddleDmg, $event)"
+                                  (touchstart)="startDrawing(highlightedCellsWalkwayMiddle, $event)"
+                                  (touchmove)="draw(highlightedCellsWalkwayMiddle, $event)"
                                   (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
                                   @for (cell of cellsInnerMiddle; track cell; let index = $index) {
                                   <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayMiddle[index],
-                                      'damage-overlay': highlightedCellsWalkwayMiddleDmg[index],
                                       'disabled-cell': isDisabled(index)}" [attr.data-index]="index"
                                     (mousedown)="!isDisabled(index) && $event.preventDefault()"
                                     (touchstart)="!isDisabled(index) && $event.preventDefault()"></div>
@@ -715,45 +702,24 @@
 
                                 <!-- Bottom Row with 4 Columns -->
                                 <div class="grid-bottom-row"
-                                  (mousedown)="startDrawingWalkway(highlightedCellsWalkwayBottom, highlightedCellsWalkwayBottomDmg, $event)"
-                                  (mousemove)="drawWalkway(highlightedCellsWalkwayBottom, highlightedCellsWalkwayBottomDmg, $event)"
+                                  (mousedown)="startDrawing(highlightedCellsWalkwayBottom, $event)"
+                                  (mousemove)="draw(highlightedCellsWalkwayBottom, $event)"
                                   (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
-                                  (touchstart)="startDrawingWalkway(highlightedCellsWalkwayBottom, highlightedCellsWalkwayBottomDmg, $event)"
-                                  (touchmove)="drawWalkway(highlightedCellsWalkwayBottom, highlightedCellsWalkwayBottomDmg, $event)"
+                                  (touchstart)="startDrawing(highlightedCellsWalkwayBottom, $event)"
+                                  (touchmove)="draw(highlightedCellsWalkwayBottom, $event)"
                                   (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
                                   @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
-                                  <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayBottom[index],
-                                      'damage-overlay': highlightedCellsWalkwayBottomDmg[index]}"
+                                  <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayBottom[index]}"
                                     [attr.data-index]="index" (mousedown)="$event.preventDefault()"
                                     (touchstart)="$event.preventDefault()"></div>
                                   }
                                 </div>
                               </div>
-                              <div class="outer-right" (mousedown)="startDrawing(highlightedCellsOuterRight, $event)"
-                                (mousemove)="draw(highlightedCellsOuterRight, $event)" (mouseup)="stopDrawing()"
-                                (mouseleave)="stopDrawing()"
-                                (touchstart)="startDrawing(highlightedCellsOuterRight, $event)"
-                                (touchmove)="draw(highlightedCellsOuterRight, $event)" (touchend)="stopDrawing()"
-                                (touchcancel)="stopDrawing()">
-                                @for (cell of cellsOuterLeftRight; track cell; let index = $index) {
-                                <div class="grid-cell" [ngClass]="{'damage-overlay': highlightedCellsOuterRight[index]}"
-                                  [attr.data-index]="index" (mousedown)="$event.preventDefault()"
-                                  (touchstart)="$event.preventDefault()"></div>
-                                }
+                              <div class="outer-right">
                               </div>
                             </div>
                             <!-- Bottom part of the outer layer -->
-                            <div class="outer-bottom" (mousedown)="startDrawing(highlightedCellsOuterBottom, $event)"
-                              (mousemove)="draw(highlightedCellsOuterBottom, $event)" (mouseup)="stopDrawing()"
-                              (mouseleave)="stopDrawing()"
-                              (touchstart)="startDrawing(highlightedCellsOuterBottom, $event)"
-                              (touchmove)="draw(highlightedCellsOuterBottom, $event)" (touchend)="stopDrawing()"
-                              (touchcancel)="stopDrawing()">
-                              @for (cell of cellsOuterTopBottom; track cell; let index = $index) {
-                              <div class="grid-cell" [ngClass]="{'damage-overlay': highlightedCellsOuterBottom[index]}"
-                                [attr.data-index]="index" (mousedown)="$event.preventDefault()"
-                                (touchstart)="$event.preventDefault()"></div>
-                              }
+                            <div class="outer-bottom">
                             </div>
                           </div>
                         </div>
@@ -885,7 +851,8 @@
                                   {{translatedLangText.REAR_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputRear.click()">
+                              <div class="image-preview"
+                                (click)="!surveyForm?.get('rearImage')?.get('preview')?.value && fileInputRear.click()">
                                 <input type="file" #fileInputRear class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('rearImage'))">
                                 @if (!(isImageLoading$ | async)) {
@@ -921,7 +888,8 @@
                                   {{translatedLangText.RIGHT_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputRight.click()">
+                              <div class="image-preview"
+                                (click)="!surveyForm?.get('rightImage')?.get('preview')?.value && fileInputRight.click()">
                                 <input type="file" #fileInputRight class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('rightImage'))">
                                 @if (!(isImageLoading$ | async)) {
@@ -957,7 +925,8 @@
                                   {{translatedLangText.TOP_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputTop.click()">
+                              <div class="image-preview"
+                                (click)="!surveyForm?.get('topImage')?.get('preview')?.value && fileInputTop.click()">
                                 <input type="file" #fileInputTop class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('topImage'))">
                                 @if (!(isImageLoading$ | async)) {
@@ -993,7 +962,8 @@
                                   {{translatedLangText.FRONT_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputFront.click()">
+                              <div class="image-preview"
+                                (click)="!surveyForm?.get('frontImage')?.get('preview')?.value && fileInputFront.click()">
                                 <input type="file" #fileInputFront class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('frontImage'))">
                                 @if (!(isImageLoading$ | async)) {
@@ -1029,7 +999,8 @@
                                   {{translatedLangText.BOTTOM_SIDE}}
                                 </div>
                               </div>
-                              <div class="image-preview" (click)="fileInputBottom.click()">
+                              <div class="image-preview"
+                                (click)="!surveyForm?.get('bottomImage')?.get('preview')?.value && fileInputBottom.click()">
                                 <input type="file" #fileInputBottom class="default d-none" accept="image/*"
                                   (change)="onFileSelectedTankSide($event, surveyForm?.get('bottomImage'))">
                                 @if (!(isImageLoading$ | async)) {
@@ -1109,23 +1080,6 @@
                                   </button>
                                 </mat-menu>
                                 }
-                              </div>
-                              <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                  <mat-form-field class="example-full-width mt-1">
-                                    <mat-label>{{translatedLangText.SIDES}}</mat-label>
-                                    <mat-select formControlName="side" required>
-                                      @for (codeValue of tankSideCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                    @if (img.get('side')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.SIDES}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    }
-                                  </mat-form-field>
-                                </div>
                               </div>
                             </div>
                             }

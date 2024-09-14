@@ -52,7 +52,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             {
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                query = context.tariff_cleaning.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                2query = context.tariff_cleaning.Where(i => i.delete_dt == null || i.delete_dt == 0)
                       .Include(tc => tc.cleaning_method)
                       .Include(tc => tc.cleaning_category)
                       .Where(tc => (tc.cleaning_method.delete_dt == null || tc.cleaning_method.delete_dt == 0) &&

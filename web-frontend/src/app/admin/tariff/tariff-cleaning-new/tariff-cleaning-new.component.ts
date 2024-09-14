@@ -506,7 +506,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         tc.flash_point= Number(this.tcForm.value['flash_point']);
         tc.un_no=this.tcForm.value['un_no'];
         tc.nature_cv=this.tcForm.value['nature'];
-        
+        tc.cleaning_category=undefined;
+        tc.cleaning_method=undefined;
               if (tc.guid) {
               this.tcDS.updateTariffCleaning(tc).subscribe(result => {
                 console.log(result)

@@ -117,7 +117,7 @@
              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <!-- <mat-form-field class="example-full-width"> -->
                 <mat-label>{{langText.UNIT_TYPE | translate}}</mat-label>
-                <mat-select [formControl]="unit_type_control" formControlName="unit_types" multiple>
+                <mat-select formControlName="unit_types" multiple>
                   <mat-option *ngFor="let t of tnkItems" [value]="t">
                    
                       {{ t.unit_type }}

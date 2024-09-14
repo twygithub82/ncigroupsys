@@ -248,8 +248,20 @@ export class FormDialogComponent {
         if (value) {
           const groupName = this.repairPartForm?.get('group_name_cv')?.value;
           this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
+            //this.partNameControl.setValue('');
+            this.repairPartForm?.patchValue({
+              part_name: '',
+              dimension:'',
+              length: '',
+            });
+            this.dimensionList=[];
+            this.lengthList=[];
             this.partNameList = data;
             this.partNameFilteredList = data
+            // this.repairPartForm?.get('dimension')?.clearValidators();
+            // this.repairPartForm?.get('dimension')?.updateValueAndValidity();
+            // this.repairPartForm?.get('length')?.clearValidators();
+            // this.repairPartForm?.get('length')?.updateValueAndValidity();
             this.updateValidators(this.partNameList);
             if (this.partNameControl.value) {
               this.handleValueChange(this.partNameControl.value)
@@ -260,7 +272,7 @@ export class FormDialogComponent {
     ).subscribe();
 
     this.partNameControl.valueChanges.subscribe(value => {
-      if (!this.valueChangesDisabled) {
+      if (!this.valueChangesDisabled ) {
         this.handleValueChange(value);
       }
     });
@@ -301,8 +313,12 @@ export class FormDialogComponent {
   handleValueChange(value: any) {
     this.valueChangesDisabled = true;
     if (value) {
+      
       this.partNameFilteredList = this.partNameList?.filter(item =>
-        item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
+        
+        
+         item.trim().length > 0 && item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
+        
       );
       const isValid = this.partNameList?.some(item => item === value);
       if (isValid) {
@@ -399,6 +415,14 @@ export class FormDialogComponent {
         this.repairPartForm.get('material_cost')?.setValue(this.selectedTariffRepair?.material_cost!.toFixed(2));
       }
     });
+  }
+  trackByFn(index: number, item: string): any {
+    return item;
+  }
+
+  calculateCostSummary()
+  {
+    
   }
   // getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {
   //   // this.trDS.searchTariffRepairByPartNameDimLength(partName, dimension, length).subscribe(data => {

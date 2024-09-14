@@ -65,11 +65,15 @@
             <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
               formControlName="part_name" required>
             <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
-              @for (name of partNameFilteredList; track name) {
+              <mat-option *ngFor="let name of partNameFilteredList; trackBy: trackByFn" [value]="name" >
+                {{name}}
+              </mat-option>
+              <!-- @for (name of partNameFilteredList; track name) {
+
               <mat-option [value]="name">
                 {{name}}
               </mat-option>
-              }
+              } -->
             </mat-autocomplete>
             @if (partNameControl.get('part_name')?.hasError('required')) {
             <mat-error>
