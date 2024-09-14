@@ -1,0 +1,15 @@
+.responsive-image {
+    max-width: 480px;
+    /* Maximum width for the image */
+    max-height: 480px;
+    /* Maximum height for the image */
+    width: auto;
+    /* Let the width scale automatically */
+    height: auto;
+    /* Let the height scale automatically */
+    object-fit: contain;
+    /* Ensures the image fits inside the container while maintaining aspect ratio */
+    display: block;
+    margin: 0 auto;
+    /* Center the image horizontally */
+}
