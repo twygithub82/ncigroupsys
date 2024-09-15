@@ -12,6 +12,8 @@ export class SchedulingSotGO {
   public scheduling_guid?: string;
   public status_cv?: string;
   public remarks?: string;
+  public reference?: string;
+  public scheduling_dt?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -24,6 +26,8 @@ export class SchedulingSotGO {
     this.scheduling_guid = item.scheduling_guid;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
+    this.reference = item.reference;
+    this.scheduling_dt = item.scheduling_dt;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;

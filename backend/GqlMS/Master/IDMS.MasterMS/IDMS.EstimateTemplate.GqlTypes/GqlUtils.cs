@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace IDMS.EstimateTemplate.GqlTypes
 {
-    internal class GqlUtils
+    public static class GqlUtils
     {
         public static string IsAuthorize([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {

@@ -1,13 +1,12 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate;
-using IDMS.EstimateTemplate.GqlTypes.LocalModel;
 using IDMS.Models.Master;
 using IDMS.Models.Master.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
-using static IDMS.EstimateTemplate.StatusConstant;
+using static IDMS.EstimateTemplate.GqlTypes.LocalModel.StatusConstant;
 
 namespace IDMS.EstimateTemplate.GqlTypes
 {

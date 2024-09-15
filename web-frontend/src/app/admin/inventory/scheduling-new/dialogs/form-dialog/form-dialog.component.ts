@@ -29,7 +29,7 @@ import { MatCardModule } from '@angular/material/card';
 import { SchedulingDS, SchedulingGO, SchedulingItem } from 'app/data-sources/scheduling';
 import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { SchedulingSotItem } from 'app/data-sources/scheduling-sot';
+import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { CodeValuesItem } from 'app/data-sources/code-values';
 
 
@@ -95,6 +95,7 @@ export class FormDialogComponent {
 
   ccDS: CustomerCompanyDS;
   schedulingDS: SchedulingDS;
+  schedulingSotDS: SchedulingSotDS;
   igDS: InGateDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -106,6 +107,7 @@ export class FormDialogComponent {
     // Set the defaults
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
+    this.schedulingSotDS = new SchedulingSotDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.action = data.action!;
     if (this.action === 'edit') {
@@ -178,6 +180,8 @@ export class FormDialogComponent {
       tare_weight: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.tare_weight],
       tank_status_cv: [tank.tank_status_cv],
       yard_cv: [this.igDS.getInGateItem(tank.in_gate)?.yard_cv],
+      reference: [''],
+      scheduling_dt: [''],
       booked: [this.checkBooking(tank.booking)],
       scheduled: [this.checkScheduling(tank.scheduling)],
     });
@@ -196,7 +200,9 @@ export class FormDialogComponent {
       capacity: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.in_gate_survey?.capacity],
       tare_weight: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.in_gate_survey?.tare_weight],
       tank_status_cv: [schedulingTank.storing_order_tank?.tank_status_cv],
-      yard_cv: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.yard_cv]
+      yard_cv: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.yard_cv],
+      reference: [schedulingTank.reference],
+      scheduling_dt: [Utility.convertDate(schedulingTank.scheduling_dt) as Date],
     });
   }
 
@@ -306,6 +312,10 @@ export class FormDialogComponent {
     if (bookings.some(booking => booking.book_type_cv === "RELEASE_ORDER" && booking.status_cv !== "CANCELED"))
       return true;
     return false;
+  }
+
+  getStartDate(incoming_dt?: number) {
+    return Utility.getEarlierDate(Utility.convertDate(incoming_dt) as Date, new Date());
   }
 
   canEdit(): boolean {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Shared
 {
-    public class un_number
+    public class un_number: Dates
     {
         [Key]
         public string? guid { get; set; }
