@@ -57,6 +57,7 @@ import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour'
 import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstimateCustomerItem, TemplateEstPartItem, TepDamageRepairItem } from 'app/data-sources/master-template';
 import { EstimateComponent } from 'app/admin/repair/estimate/estimate.component';
 import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -94,6 +95,7 @@ import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
+    TlxFormFieldComponent,
   ]
 })
 export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -280,9 +282,10 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeFilter();
+    this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
-    this.initializeValueChange();
+    
   }
 
   SetCostDecimal()
@@ -348,63 +351,65 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
        });
     });
 
-    combineLatest([
-      this.tempForm?.get('labour_discount_amount')!.valueChanges || of(null),
-      this.tempForm?.get('material_discount_amount')!.valueChanges || of(null)
-    ]).subscribe(([labourDiscountValue, materialDiscountValue]) => {
-      // Update the net_cost when either value changes
-      this.tempForm?.patchValue({
-        net_cost: this.GetNetCost()
-      }, { emitEvent: false }); // Prevent re-triggering the valueChanges
-    });
+    // combineLatest([
+    //   this.tempForm?.get('labour_discount_amount')!.valueChanges || of(null),
+    //   this.tempForm?.get('material_discount_amount')!.valueChanges || of(null)
+    // ]).subscribe(([labourDiscountValue, materialDiscountValue]) => {
+    //   // Update the net_cost when either value changes
+    //   this.tempForm?.patchValue({
+    //     net_cost: this.GetNetCost()
+    //   }, { emitEvent: false }); // Prevent re-triggering the valueChanges
+    // });
 
-    combineLatest([
-      this.tempForm?.get('labour_rate')!.valueChanges || of(null),
-      this.tempForm?.get('labour_additional')!.valueChanges || of(null)
-    ]).subscribe(([labour_rateValue, labour_additionalValue]) => {
-      // Update the net_cost when either value changes
-      this.tempForm?.patchValue({
+    
 
-        labour_total : (Number(this.tempForm?.get('labour_rate')?.value)+Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
-        
-       }, { emitEvent: false }); // Prevent re-triggering the valueChanges
-    });
-
-    // this.tempForm?.get('labour_rate')!.valueChanges.subscribe(value=>{
-
+    // combineLatest([
+    //   this.tempForm?.get('labour_rate')!.valueChanges || of(null),
+    //   this.tempForm?.get('labour_additional')!.valueChanges || of(null)
+    // ]).subscribe(([labour_rateValue, labour_additionalValue]) => {
+    //   // Update the net_cost when either value changes
     //   this.tempForm?.patchValue({
 
     //     labour_total : (Number(this.tempForm?.get('labour_rate')?.value)+Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
         
-    //    });
+    //    }, { emitEvent: false }); // Prevent re-triggering the valueChanges
     // });
-    // this.tempForm?.get('labour_additional')!.valueChanges.subscribe(value=>{
 
-    //   this.tempForm?.patchValue({
-    //     labour_total :  (Number(this.tempForm?.get('labour_rate')?.value)+Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
+    this.tempForm?.get('labour_rate')!.valueChanges.subscribe(value=>{
+
+      this.tempForm?.patchValue({
+
+        labour_total : (Number(this.tempForm?.get('labour_rate')?.value)+Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
         
-    //    });
-    // });
+       });
+    });
+    this.tempForm?.get('labour_additional')!.valueChanges.subscribe(value=>{
 
-    // this.tempForm?.get('labour_discount_amount')!.valueChanges.subscribe(value=>{
+      this.tempForm?.patchValue({
+        labour_total :  (Number(this.tempForm?.get('labour_rate')?.value)+Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
+        
+       });
+    });
+
+    this.tempForm?.get('labour_discount_amount')!.valueChanges.subscribe(value=>{
 
      
-    //   this.tempForm?.patchValue({
-    //     net_cost:this.GetNetCost()
+      this.tempForm?.patchValue({
+        net_cost:this.GetNetCost()
        
         
-    //    });
-    // });
+       });
+    });
 
-    // this.tempForm?.get('material_discount_amount')!.valueChanges.subscribe(value=>{
+    this.tempForm?.get('material_discount_amount')!.valueChanges.subscribe(value=>{
 
      
-    //   this.tempForm?.patchValue({
-    //     net_cost:this.GetNetCost()
+      this.tempForm?.patchValue({
+        net_cost:this.GetNetCost()
        
         
-    //    });
-    // });
+       });
+    });
 
 
 
@@ -459,6 +464,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       template_name: [''],
       remarks: [''],
       repList:[''],
+      labour_hour:['0'],
       labour_rate:['0.00'],
       labour_additional:['0.00'],
       labour_total:['0.00'],

@@ -535,7 +535,8 @@
     "TEMPLATE-TYPE-GENERAL": "General",
     "TEMPLATE-TYPE-EXCLUSIVE": "Exclusive",
     "LABOUR": "Labour",
-    "NO-PARTS": "No Parts"
+    "NO-PARTS": "No Parts",
+    "SDS-FILE":"sds file:"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

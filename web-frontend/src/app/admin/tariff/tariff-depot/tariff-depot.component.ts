@@ -363,7 +363,7 @@ implements OnInit {
   }
   
 
-  displayLastUpdated(r: TariffDepotItem) {
+  displayLastUpdated(r: any) {
     var updatedt= r.update_dt;
     if(updatedt===null)
     {

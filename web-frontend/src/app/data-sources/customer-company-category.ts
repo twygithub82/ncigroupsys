@@ -72,12 +72,17 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
         startCursor
       }
       nodes {
-        guid
-        customer_company_guid
-        cleaning_category_guid
-        initial_price
         adjusted_price
-        remarks
+      cleaning_category_guid
+      create_by
+      create_dt
+      customer_company_guid
+      delete_dt
+      guid
+      initial_price
+      remarks
+      update_by
+      update_dt
         cleaning_category {
         cost
         create_by
@@ -124,7 +129,6 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
             country
             create_by
             create_dt
-            currency_cv
             delete_dt
             description
             effective_dt
@@ -134,7 +138,6 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
             name
             phone
             postal
-            tariff_depot_guid
             type_cv
             update_by
             update_dt

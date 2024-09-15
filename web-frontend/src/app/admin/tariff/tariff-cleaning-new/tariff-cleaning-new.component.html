@@ -172,7 +172,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
-                           <input matInput formControlName="un_no" required [maxLength]="6" (blur)="onUnNoBlur()" >
+                           <input matInput formControlName="un_no" required [maxLength]="6" (blur)="onUnNoBlur()" [ngStyle]="{ 'color': this.newUNNo ? '#FF8C00' : 'black' }" >
                           @if (tcForm?.get('un_no')?.hasError('required')) {
                           <mat-error>
                             {{langText.CARGO_UN_NO | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -215,6 +215,7 @@
                     </div>
                     <div class="row">
                       <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 col-xs-12 mb-1">
+                        <mat-label>{{translatedLangText.SDS_FILE }}</mat-label>
                         <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button" [disabled]="!isFileSelectable">
                           <i class="material-icons">attach_file</i>
                         </button>
@@ -222,6 +223,11 @@
                           style="display: none;" accept="application/pdf">
                           
                       </div>
+                      @if (tcForm?.get('file_size')?.hasError('required')) {
+                        <mat-error  >
+                          {{translatedLangText.ATTACHMENT_TOO_BIG }}
+                        </mat-error>
+                        }
                       @if (tcForm?.get('file_size')?.hasError('error')) {
                         <mat-error  >
                           {{translatedLangText.ATTACHMENT_TOO_BIG }}
@@ -229,7 +235,7 @@
                         }
                       <!-- Display file name and preview button -->
                       <div *ngIf="selectedFile">
-                        <p>SDS file: {{ tcForm!.get('un_no')?.value??'' }}
+                        <p>{{ tcForm!.get('cargo_name')?.value??'' }}
                          <span *ngIf="selectedFileChanged">*</span></p>
                         <button mat-raised-button color="primary" (click)="previewFile()"  type="button">Preview</button>
                       </div>

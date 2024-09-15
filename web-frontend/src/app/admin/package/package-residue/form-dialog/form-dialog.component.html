@@ -212,9 +212,14 @@
                       <span class="mobile-label">{{translatedLangText.DESCRIPTION }}:</span>{{row.tariff_residue?.description}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="gender">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.COST }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" >
                       <span class="mobile-label">{{translatedLangText.COST }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="bDate">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.STANDARD_COST }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.COST }}:</span>{{row.tariff_residue.cost.toFixed(2)}}</mat-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns;" 

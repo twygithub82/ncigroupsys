@@ -256,6 +256,7 @@ implements OnInit {
     COUNTRY:"COMMON-FORM.COUNTRY",
     FAX_NO:"COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
      }
   
   constructor(
@@ -713,6 +714,23 @@ implements OnInit {
     
     this.customerCodeControl.reset('');
    
+  }
+  displayLastUpdated(r: any) {
+    var updatedt= r.update_dt;
+    if(updatedt===null)
+    {
+      updatedt= r.create_dt;
+    }
+    const date = new Date(updatedt! * 1000);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();   
+
+   // Replace the '/' with '-' to get the required format
+ 
+
+    return `${day}/${month}/${year}`;
+
   }
 }
 
