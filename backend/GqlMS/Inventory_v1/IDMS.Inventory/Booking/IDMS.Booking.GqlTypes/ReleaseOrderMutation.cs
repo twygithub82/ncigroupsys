@@ -3,15 +3,14 @@ using CommonUtil.Core.Service;
 using HotChocolate;
 using HotChocolate.Subscriptions;
 using HotChocolate.Types;
-using IDMS.Booking.Model.Request;
+using IDMS.Booking.GqlTypes.LocaModel;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using static IDMS.Booking.Model.StatusConstant;
+using static IDMS.Booking.GqlTypes.LocaModel.StatusConstant;
 
 namespace IDMS.Booking.GqlTypes
 {

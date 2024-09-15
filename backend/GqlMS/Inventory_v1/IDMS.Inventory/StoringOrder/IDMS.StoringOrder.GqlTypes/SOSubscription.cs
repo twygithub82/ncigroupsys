@@ -1,9 +1,7 @@
-﻿using IDMS.StoringOrder.Model;
-using HotChocolate;
+﻿using HotChocolate;
 using HotChocolate.Execution;
 using HotChocolate.Subscriptions;
 using HotChocolate.Types;
-using IDMS.StoringOrder.Model.Request;
 
 namespace IDMS.StoringOrder.GqlTypes
 {

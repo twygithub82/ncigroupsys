@@ -4,14 +4,13 @@ using HotChocolate.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using IDMS.Models.Inventory;
-using IDMS.StoringOrder.Model.Request;
-using IDMS.StoringOrder.Model;
 using HotChocolate.Utilities;
 using Microsoft.Extensions.Configuration;
 using IDMS.Models;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using HotChocolate.Types;
 using IDMS.Inventory.GqlTypes;
+using IDMS.StoringOrder.GqlTypes.LocalModel;
 
 namespace IDMS.StoringOrder.GqlTypes
 {

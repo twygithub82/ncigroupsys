@@ -5,14 +5,13 @@ using IDMS.Models.Inventory;
 using HotChocolate.Execution.Processing;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using IDMS.Booking.Model.Request;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
-using IDMS.Booking.Model;
 using HotChocolate.Types;
 using Microsoft.Extensions.Configuration;
-using static IDMS.Booking.Model.StatusConstant;
 using IDMS.Inventory.GqlTypes;
+using IDMS.Booking.GqlTypes.LocaModel;
+using static IDMS.Booking.GqlTypes.LocaModel.StatusConstant;
 
 namespace IDMS.Booking.GqlTypes
 {

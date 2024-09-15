@@ -19,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
     <ProjectReference Include="..\..\IDMS.Inventory.GqlTypes\IDMS.Inventory.GqlTypes.csproj" />
-    <ProjectReference Include="..\IDMS.StoringOrder.Model\IDMS.StoringOrder.Model.csproj" />
   </ItemGroup>
 
   <ItemGroup>

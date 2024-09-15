@@ -36,7 +36,6 @@
     <ProjectReference Include="..\Booking\IDMS.Booking.GqlTypes\IDMS.Booking.GqlTypes.csproj" />
     <ProjectReference Include="..\Booking\IDMS.Booking.Model\IDMS.Booking.Model.csproj" />
     <ProjectReference Include="..\StoringOrder\IDMS.StoringOrder.GqlTypes\IDMS.StoringOrder.GqlTypes.csproj" />
-    <ProjectReference Include="..\StoringOrder\IDMS.StoringOrder.Model\IDMS.StoringOrder.Model.csproj" />
   </ItemGroup>
 
 </Project>

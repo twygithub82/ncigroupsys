@@ -3,7 +3,7 @@ using HotChocolate.Types;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.StoringOrder.Model.CustomSorter;
+using IDMS.StoringOrder.GqlTypes.CustomSorter;
 //using IDMS.StoringOrder.Model.Domain.StoringOrder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

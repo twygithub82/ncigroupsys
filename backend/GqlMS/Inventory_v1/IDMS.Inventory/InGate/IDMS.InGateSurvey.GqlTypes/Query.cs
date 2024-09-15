@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using IDMS.InGateSurvey.Model.Request;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Shared;

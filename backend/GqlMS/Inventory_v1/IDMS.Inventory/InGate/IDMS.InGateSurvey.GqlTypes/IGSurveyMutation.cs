@@ -2,14 +2,12 @@
 using CommonUtil.Core.Service;
 using HotChocolate.Authorization;
 using HotChocolate.Data.Projections;
-using IDMS.InGateSurvey.Model;
-using IDMS.InGateSurvey.Model.Request;
+using IDMS.InGateSurvey.GqlTypes.LocalModel;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

@@ -2,7 +2,7 @@
 using IDMS.Models.Inventory;
 
 
-namespace IDMS.StoringOrder.Model.CustomSorter
+namespace IDMS.StoringOrder.GqlTypes.CustomSorter
 {
     public class SOSorter: SortInputType<IDMS.Models.Inventory.storing_order>
     {

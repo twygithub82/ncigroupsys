@@ -3,7 +3,7 @@ using IDMS.Models.Inventory;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 
-namespace IDMS.Booking.Model.Request
+namespace IDMS.Booking.GqlTypes.LocaModel
 {
     public class SchedulingRequest : Dates
     {

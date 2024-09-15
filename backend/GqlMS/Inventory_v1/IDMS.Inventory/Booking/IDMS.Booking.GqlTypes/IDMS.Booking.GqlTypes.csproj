@@ -20,11 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
     <ProjectReference Include="..\..\StoringOrder\IDMS.StoringOrder.GqlTypes\IDMS.StoringOrder.GqlTypes.csproj" />
-    <ProjectReference Include="..\IDMS.Booking.Model\IDMS.Booking.Model.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Repo\" />
   </ItemGroup>
 
   <ItemGroup>

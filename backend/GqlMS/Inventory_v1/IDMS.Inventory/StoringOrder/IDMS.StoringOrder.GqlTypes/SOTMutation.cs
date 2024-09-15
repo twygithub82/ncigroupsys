@@ -5,8 +5,9 @@ using HotChocolate.Subscriptions;
 using HotChocolate.Types;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.StoringOrder.Model;
-using IDMS.StoringOrder.Model.Request;
+using IDMS.StoringOrder.GqlTypes.LocalModel;
+
+
 
 //using IDMS.StoringOrder.Model.Domain.StoringOrder;
 using Microsoft.AspNetCore.Http;

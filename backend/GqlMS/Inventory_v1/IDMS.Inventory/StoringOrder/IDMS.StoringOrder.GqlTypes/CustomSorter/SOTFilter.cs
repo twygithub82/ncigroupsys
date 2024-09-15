@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IDMS.Models.Inventory;
 
-namespace IDMS.StoringOrder.Model.CustomSorter
+namespace IDMS.StoringOrder.GqlTypes.CustomSorter
 { 
     //[ExtendObjectType(typeof(storing_order_tank),
     //IgnoreProperties = new[] { nameof(storing_order_tank.storing_order), nameof(storing_order_tank.tariff_cleaning) })]

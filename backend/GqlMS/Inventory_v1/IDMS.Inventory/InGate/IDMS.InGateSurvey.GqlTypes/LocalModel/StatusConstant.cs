@@ -4,22 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.StoringOrder.Model
+namespace IDMS.InGateSurvey.GqlTypes.LocalModel
 {
-    public static class SOStatus
+    public static class EirStatus
     {
-        public const string COMPLETED = "COMPLETED";
+        public const string YET_TO_SURVEY = "YET_TO_SURVEY";
         public const string PENDING = "PENDING";
-        public const string PROCESSING = "PROCESSING";
+        public const string PUBLISHED = "PUBLISHED";
         public const string CANCELED = "CANCELED";
-    }
-
-    public static class SOTankStatus
-    {
-        public const string CANCELED = "CANCELED";
-        public const string WAITING = "WAITING";
-        public const string ACCEPTED = "ACCEPTED";
-        public const string PREORDER = "PREORDER";
     }
 
     public static class TankMovementStatus
@@ -36,12 +28,12 @@ namespace IDMS.StoringOrder.Model
         public const string RO = "RO_GENERATED";
     }
 
-    public static class SOTankAction
+    public static class ROStatus
     {
-        public const string NEW = "NEW";
-        public const string EDIT = "EDIT";
-        public const string ROLLBACK = "ROLLBACK";
-        public const string CANCEL = "CANCEL";
-        public const string PREORDER = "PREORDER";
+        public const string CANCELED = "CANCELED";
+        public const string DELETED = "DELETED";
+        public const string PENDING = "PENDING";
+        public const string PROCESSING = "PROCESSING";
+        public const string COMPLETED = "COMPLETED";
     }
 }

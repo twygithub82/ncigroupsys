@@ -1,6 +1,6 @@
 ﻿using IDMS.Models;
 
-namespace IDMS.Booking.Model.Request
+namespace IDMS.Booking.GqlTypes.LocaModel
 {
     public class BookingRequest: Dates
     {

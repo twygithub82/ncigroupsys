@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IDMS.Models;
 
-namespace IDMS.StoringOrder.Model.Request
+namespace IDMS.StoringOrder.GqlTypes.LocalModel
 {
-    public class CustomerCompanyRequest : Base
+    public class CustomerCompanyRequest : Dates
     {
         public string guid { get; set; }
         public string name { get; set; }

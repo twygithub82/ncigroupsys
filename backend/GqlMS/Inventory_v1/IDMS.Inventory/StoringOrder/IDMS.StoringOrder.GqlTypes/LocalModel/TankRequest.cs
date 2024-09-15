@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.StoringOrder.Model.Request
+namespace IDMS.StoringOrder.GqlTypes.LocalModel
 {
     [Table("tank")]
     public class TankRequest

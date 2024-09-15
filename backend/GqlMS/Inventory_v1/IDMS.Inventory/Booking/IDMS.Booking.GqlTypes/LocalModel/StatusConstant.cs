@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.Booking.Model
+namespace IDMS.Booking.GqlTypes.LocaModel
 {
     public class StatusConstant
     {

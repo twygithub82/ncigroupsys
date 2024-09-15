@@ -1,6 +1,6 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate.Authorization;
-using IDMS.InGateSurvey.Model;
+using IDMS.InGateSurvey.GqlTypes.LocalModel;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models;
 using IDMS.Models.Inventory;

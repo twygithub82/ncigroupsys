@@ -3,10 +3,8 @@ using HotChocolate.Types;
 using Microsoft.AspNetCore.Http;
 using IDMS.Models.Master;
 using IDMS.Models.Shared;
-using IDMS.StoringOrder.Model.Request;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.Inventory.GqlTypes.LocalModel;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -21,7 +19,7 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
-                return context.customer_company.Where(d => d.delete_dt == null);
+                return context.customer_company.Where(d => d.delete_dt == null || d.delete_dt == 0);
             }
             catch (Exception ex)
             {
@@ -38,7 +36,7 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
-                return context.customer_company_contact_person.Where(d => d.delete_dt == null);
+                return context.customer_company_contact_person.Where(d => d.delete_dt == null || d.delete_dt == 0);
             }
             catch (Exception ex)
             {
@@ -69,7 +67,7 @@ namespace IDMS.Inventory.GqlTypes
             ApplicationInventoryDBContext context)
         {
             try
-            {
+            { 
                 var retCodeValues = context.code_values.Where(c => c.code_val_type.Equals(codeValuesType.code_val_type) &&
                                                               (c.delete_dt == null || c.delete_dt == 0));
                 if (retCodeValues.Count() <= 0)

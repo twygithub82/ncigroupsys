@@ -1,12 +1,7 @@
-﻿using CommonUtil.Core.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace IDMS.StoringOrder.Model.Request
+﻿
+namespace IDMS.Inventory.GqlTypes.LocalModel
 {
+
     public class CodeValuesRequest
     {
         public string? guid { get; set; }
@@ -14,7 +9,7 @@ namespace IDMS.StoringOrder.Model.Request
         public string code_val_type { get; set; }
         public string? code_val { get; set; }
         public string? child_code { get; set; }
-        public int? sequence { get; set; }  
-
+        public int? sequence { get; set; }
     }
+    
 }

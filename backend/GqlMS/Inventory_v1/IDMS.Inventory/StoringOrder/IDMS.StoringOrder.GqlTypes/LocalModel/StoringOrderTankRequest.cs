@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using IDMS.Models;
 
 
-namespace IDMS.StoringOrder.Model.Request
+namespace IDMS.StoringOrder.GqlTypes.LocalModel
 {
-    public class StoringOrderTankRequest : Base
+    public class StoringOrderTankRequest : Dates
     {
         public string? guid { get; set; }
 

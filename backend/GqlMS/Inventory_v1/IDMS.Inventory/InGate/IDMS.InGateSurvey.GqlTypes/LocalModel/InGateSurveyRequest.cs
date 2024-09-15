@@ -1,7 +1,7 @@
 ﻿using IDMS.Models;
 using IDMS.Models.Inventory;
 
-namespace IDMS.InGateSurvey.Model.Request
+namespace IDMS.InGateSurvey.GqlTypes.LocalModel
 {
     public class InGateSurveyRequest: Dates
     {

@@ -19,6 +19,11 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
-	  <ProjectReference Include="..\StoringOrder\IDMS.StoringOrder.Model\IDMS.StoringOrder.Model.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="CommonUtil.Core.Service">
+	    <HintPath>..\..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 </Project>

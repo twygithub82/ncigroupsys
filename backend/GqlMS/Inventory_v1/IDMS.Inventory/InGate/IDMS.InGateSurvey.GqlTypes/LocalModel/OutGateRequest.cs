@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.InGateSurvey.Model.Request
+namespace IDMS.InGateSurvey.GqlTypes.LocalModel
 {
     public class OutGateRequest: Dates
     {

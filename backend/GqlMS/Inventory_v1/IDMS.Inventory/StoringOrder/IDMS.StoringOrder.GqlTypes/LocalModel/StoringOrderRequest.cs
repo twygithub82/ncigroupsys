@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IDMS.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.StoringOrder.Model.Request
+namespace IDMS.StoringOrder.GqlTypes.LocalModel
 {
-    public class StoringOrderRequest : Base
+    public class StoringOrderRequest : Dates
     {
         public string? guid { get; set; }
         public string customer_company_guid { get; set; }

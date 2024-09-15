@@ -4,6 +4,7 @@ using IDMS.Models.DB;
 using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
+using IDMS.Models.Shared;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -580,7 +581,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             {
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var curDate = GqlUtils.GetNowEpochInSec();
-               
+
                 NewTariffResidue.guid = (string.IsNullOrEmpty(NewTariffResidue.guid) ? Util.GenerateGUID() : NewTariffResidue.guid);
                 var newTariffResidue = new tariff_residue();
                 newTariffResidue.guid = NewTariffResidue.guid;
@@ -680,7 +681,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         //This function is for testing store_procedure purpose
         private async void AddPackageResidueTask(ApplicationTariffDBContext context, string user, string guid, string remarks, double? cost, long date)
         {
-         
+
             await context.Database.ExecuteSqlRawAsync("CALL SP_Insert_PackageResidue(@p0, @p1, @p2, @p3, @p4)", user, guid, remarks, cost, date);
             Console.WriteLine("-------------End Task Add--------------");
         }
@@ -793,9 +794,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
 
         public async Task<int> UpdateTariffRepairs(ApplicationTariffDBContext context, [Service] IConfiguration config,
-        [Service] IHttpContextAccessor httpContextAccessor, List<string> updatedTariffRepair_guids,string group_name_cv,string subgroup_name_cv,
-            string dimension,double height_diameter, string height_diameter_unit_cv,double width_diameter, string width_diameter_unit_cv,double labour_hour,double length, 
-            string length_unit_cv, double material_cost,string part_name, string alias, double thickness, string thickness_unit_cv,string remarks)
+        [Service] IHttpContextAccessor httpContextAccessor, List<string> updatedTariffRepair_guids, string group_name_cv, string subgroup_name_cv,
+            string dimension, double height_diameter, string height_diameter_unit_cv, double width_diameter, string width_diameter_unit_cv, double labour_hour, double length,
+            string length_unit_cv, double material_cost, string part_name, string alias, double thickness, string thickness_unit_cv, string remarks)
         {
             int retval = 0;
             try
@@ -830,7 +831,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                     r.update_by = uid;
                     r.update_dt = GqlUtils.GetNowEpochInSec();
                 }
-              
+
 
 
                 retval = await context.SaveChangesAsync();
@@ -847,7 +848,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
         public async Task<int> UpdateTariffRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config,
        [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
-      int? length,string? guid, double material_cost_percentage)
+      int? length, string? guid, double material_cost_percentage)
         {
             int retval = 0;
             try
@@ -935,6 +936,40 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             return retval;
         }
         #endregion Tariff Repair methods
+
+        #region AddUnNO&Class
+
+        public async Task<int> AddUN_Number(ApplicationTariffDBContext context, [Service] IConfiguration config,
+        [Service] IHttpContextAccessor httpContextAccessor, un_number unNumber)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                var res = await context.un_number.Where(u => u.un_no.EqualsIgnore(unNumber.un_no) & (u.class_cv.EqualsIgnore(unNumber.class_cv))).FirstOrDefaultAsync();
+                if (res != null)
+                    throw new GraphQLException(new Error("Duplicate UN_No & class not allowed", "Error"));
+
+                var newUnNo = new un_number();
+                newUnNo.guid = (string.IsNullOrEmpty(unNumber.guid) ? Util.GenerateGUID() : unNumber.guid);
+
+                newUnNo.class_cv = unNumber.class_cv;
+                newUnNo.create_by = uid;
+                newUnNo.create_dt = GqlUtils.GetNowEpochInSec();
+                context.un_number.Add(newUnNo);
+
+                retval = await context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+
+            return retval;
+        }
+
+        #endregion
     }
 
 }
