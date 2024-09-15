@@ -19,6 +19,8 @@ namespace IDMS.Models.Inventory
 
         [ForeignKey("scheduling")]
         public string? scheduling_guid { get; set; }
+        public long? scheduling_dt { get; set; }
+        public string? reference { get; set; }
         public string? status_cv { get; set; }
         public string? remarks { get; set; }
         public storing_order_tank? storing_order_tank { get; set; }

@@ -13,6 +13,8 @@ namespace IDMS.Models.Inventory
         public string? guid { get; set; }
         public string? sot_guid { get; set; }
         public string? scheduling_guid { get; set; }
+        public long? scheduling_dt { get; set; }
+        public string? reference { get; set; }
         public string? status_cv { get; set; }
         public string? remarks { get; set; }
 

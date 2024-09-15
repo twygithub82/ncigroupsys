@@ -30,15 +30,12 @@ namespace IDMS.Booking.GqlTypes
                 newScheduling.create_by = user;
                 newScheduling.create_dt = currentDateTime;
 
-                newScheduling.reference = scheduling.reference;
+                //newScheduling.reference = scheduling.reference;
                 newScheduling.status_cv = BookingStatus.NEW;
                 newScheduling.book_type_cv = scheduling.book_type_cv;
-                newScheduling.scheduling_dt = scheduling.scheduling_dt;
+                //newScheduling.scheduling_dt = scheduling.scheduling_dt;
 
                 IList<scheduling_sot> schedulingsSOTList = new List<scheduling_sot>();
-                //string[] sotGuids = schedulings.Select(s => s.sot_guid).ToArray();
-                //List<storing_order_tank> sotLists = context.storing_order_tank.Where(s => sotGuids.Contains(s.guid) && (s.delete_dt == null || s.delete_dt == 0)).ToList();
-
                 foreach (var sch_sot in scheduling_SotList)
                 {
                     var newSchedulingSOT = new scheduling_sot();
@@ -49,6 +46,8 @@ namespace IDMS.Booking.GqlTypes
                     newSchedulingSOT.sot_guid = sch_sot.sot_guid;
                     newSchedulingSOT.scheduling_guid = newScheduling.guid;
                     newSchedulingSOT.status_cv = BookingStatus.NEW;
+                    newSchedulingSOT.reference = sch_sot.reference;
+                    newSchedulingSOT.scheduling_dt = sch_sot.scheduling_dt;
 
                     schedulingsSOTList.Add(newSchedulingSOT);
 
@@ -80,36 +79,42 @@ namespace IDMS.Booking.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var exScheduling = await context.scheduling.Where(s => s.guid == scheduling.guid && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
-                if (exScheduling == null)
-                    throw new GraphQLException(new Error($"Scheduling not found, update failed.", "ERROR"));
+                //var exScheduling = await context.scheduling.Where(s => s.guid == scheduling.guid && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
+                //if (exScheduling == null)
+                //    throw new GraphQLException(new Error($"Scheduling not found, update failed.", "ERROR"));
 
+
+                var exScheduling = new scheduling() { guid =  scheduling.guid };   
+                context.Attach(exScheduling);
                 exScheduling.update_by = user;
                 exScheduling.update_dt = currentDateTime;
 
-                exScheduling.reference = scheduling.reference;
-                if (BookingStatus.CANCELED.EqualsIgnore(scheduling.action))
-                    exScheduling.status_cv = BookingStatus.CANCELED;
-                else
-                    exScheduling.status_cv = scheduling.status_cv;
+                //exScheduling.reference = scheduling.reference;
+                //exScheduling.scheduling_dt = scheduling.scheduling_dt;
+                //if (BookingStatus.CANCELED.EqualsIgnore(scheduling.action))
+                //    exScheduling.status_cv = BookingStatus.CANCELED;
+                //else
+                //    exScheduling.status_cv = scheduling.status_cv;
                 exScheduling.book_type_cv = scheduling.book_type_cv;
-                exScheduling.scheduling_dt = scheduling.scheduling_dt;
                 exScheduling.remarks = scheduling.remarks;
 
                 IList<scheduling_sot> schedulingsSOTList = new List<scheduling_sot>();
-                foreach (var sch in scheduling_SotList)
+                foreach (var schSOT in scheduling_SotList)
                 {
-                    var exSch = new scheduling_sot() { guid = sch.guid };
+                    var exSch = new scheduling_sot() { guid = schSOT.guid };
                     context.Attach(exSch);
                     //context.Entry(exSch).Property(e=>e.status_cv).IsModified = true;
 
-                    if (BookingStatus.CANCELED.EqualsIgnore(sch.action))
-                        exSch.status_cv = BookingStatus.CANCELED;
-                    else
-                        exSch.status_cv = sch.status_cv;
+                    //if (BookingStatus.CANCELED.EqualsIgnore(sch.action))
+                    //    exSch.status_cv = BookingStatus.CANCELED;
+                    //else
+                    //    exSch.status_cv = sch.status_cv;
+
                     exSch.update_by = user;
                     exSch.update_dt = currentDateTime;
-                    exSch.remarks = sch.remarks;
+                    exSch.remarks = schSOT.remarks;
+                    exSch.reference = schSOT.reference;
+                    exSch.scheduling_dt = schSOT.scheduling_dt;
                 }
 
                 var res = await context.SaveChangesAsync();
