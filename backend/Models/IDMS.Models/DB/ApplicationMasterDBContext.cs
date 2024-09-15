@@ -36,6 +36,7 @@ namespace IDMS.Models.Master.GqlTypes.DB
         //public DbSet<IDMS.Models.Package.package_repair> package_repair { get; set; }
         //public DbSet<IDMS.Models.Shared.tank> tank { get; set; }
 
+        public DbSet<currency> currency { get; set; }   
         public DbSet<customer_company> customer_company { get; set; }
         public DbSet<customer_company_contact_person> customer_company_contact_person { get; set; }
         public DbSet<template_est> template_est { get; set; }
