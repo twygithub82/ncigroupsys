@@ -1,10 +1,13 @@
-
+using AutoMapper;
 using HotChocolate.Data;
 using HotChocolate.Types.Pagination;
 using IDMS.Booking.GqlTypes;
+using IDMS.InGateSurvey.GqlTypes.LocalModel;
 using IDMS.Inventory.GqlTypes;
+using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.StoringOrder.GqlTypes;
+using IDMS.StoringOrder.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Inventory
@@ -30,7 +33,21 @@ namespace IDMS.Inventory
                 o.EnableSensitiveDataLogging(false);
             });
 
+            var mappingConfig = new MapperConfiguration(cfg =>
+            {
 
+                cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
+                    .ForMember(dest => dest.guid, opt => opt.Ignore());
+
+                cfg.CreateMap<OutGateSurveyRequest, out_gate_survey>()
+                    .ForMember(dest => dest.guid, opt => opt.Ignore());
+
+                cfg.CreateMap<StoringOrderTankRequest, storing_order_tank>();
+                cfg.CreateMap<StoringOrderRequest, storing_order>();
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
             //builder.Services.AddControllers();
             //// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             //builder.Services.AddEndpointsApiExplorer();
