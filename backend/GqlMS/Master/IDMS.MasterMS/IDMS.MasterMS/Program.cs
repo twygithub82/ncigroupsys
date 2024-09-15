@@ -1,11 +1,15 @@
+using AutoMapper;
 using HotChocolate.Data;
 using HotChocolate.Types.Pagination;
+using IDMS.Customer.GqlTypes;
+using IDMS.Customer.GqlTypes.LocalModel;
 using IDMS.EstimateTemplate.GqlTypes;
+using IDMS.Models.Master;
 using IDMS.Models.Master.GqlTypes.DB;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace IDMS.MasterMS
+namespace IDMS.Master.Application
 {
     public class Program
     {
@@ -29,6 +33,22 @@ namespace IDMS.MasterMS
             });
 
 
+            var mappingConfig = new MapperConfiguration(cfg =>
+            {
+
+                //cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
+                //    .ForMember(dest => dest.guid, opt => opt.Ignore());
+
+                //cfg.CreateMap<OutGateSurveyRequest, out_gate_survey>()
+                //    .ForMember(dest => dest.guid, opt => opt.Ignore());
+
+                cfg.CreateMap<CustomerRequest, customer_company>();
+                //cfg.CreateMap<StoringOrderRequest, storing_order>();
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
+
             //builder.Services.AddControllers();
             //// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             //builder.Services.AddEndpointsApiExplorer();
@@ -38,7 +58,7 @@ namespace IDMS.MasterMS
                        .InitializeOnStartup()
                        .RegisterDbContext<ApplicationMasterDBContext>(DbContextKind.Pooled)
                        .AddQueryType<TemplateEstQuery>()
-                       //.AddTypeExtension<BookingQuery>()
+                       .AddTypeExtension<CustomerQuery>()
                        //.AddTypeExtension<SchedulingQuery>()
                        //.AddTypeExtension<ReleaseOrderQuery>()
                        //.AddSubscriptionType<BookingSubscription>()

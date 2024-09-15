@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
-namespace IDMS.EstimateTemplate.GqlTypes
+namespace IDMS.Customer.GqlTypes
 {
     public static class GqlUtils
     {
