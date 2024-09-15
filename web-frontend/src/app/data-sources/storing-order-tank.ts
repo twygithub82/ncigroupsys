@@ -39,6 +39,7 @@ export class StoringOrderTank {
   public etr_dt?: number | Date;
   public status_cv?: string;
   public tank_status_cv?: string;
+  public owner_guid?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -69,6 +70,7 @@ export class StoringOrderTank {
     this.etr_dt = item.etr_dt || undefined;
     this.status_cv = item.status_cv || '';
     this.tank_status_cv = item.tank_status_cv || '';
+    this.owner_guid = item.owner_guid || '';
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;

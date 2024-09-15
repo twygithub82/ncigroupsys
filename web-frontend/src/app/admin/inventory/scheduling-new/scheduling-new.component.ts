@@ -542,6 +542,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: selectedItems,
         action: 'new',
@@ -550,7 +551,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
           bookingTypeCvList: this.bookingTypeCvListNewBooking
         }
       },
-      direction: tempDirection
+      direction: tempDirection,
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && result.savedSuccess) {
@@ -561,7 +562,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   editSchedulingDetails(row: StoringOrderTankItem, scheduling_guid: string | undefined, event: Event) {
-    this.preventDefault(event);  // Prevents the form submission
+    this.preventDefault(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -569,6 +570,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: [row],
         scheduling_guid: scheduling_guid,
