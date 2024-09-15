@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.EstimateTemplate
+namespace IDMS.EstimateTemplate.GqlTypes.LocalModel
 {
     public class StatusConstant
     {
@@ -12,7 +12,7 @@ namespace IDMS.EstimateTemplate
         {
             public const string GENERAL = "GENERAL";
             public const string EXCLUSIVE = "EXCLUSIVE";
-   
+
         }
 
         public static class ObjectAction
