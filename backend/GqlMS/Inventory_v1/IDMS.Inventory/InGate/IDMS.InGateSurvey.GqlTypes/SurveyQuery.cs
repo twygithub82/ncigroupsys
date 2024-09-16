@@ -12,6 +12,7 @@ using System.Diagnostics.Metrics;
 using IDMS.Models.Inventory;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.Inventory.GqlTypes;
 
 
 namespace IDMS.InGateSurvey.GqlTypes

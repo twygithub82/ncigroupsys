@@ -14,7 +14,7 @@ using Microsoft.Extensions.Configuration;
 namespace IDMS.InGateSurvey.GqlTypes
 {
     [ExtendObjectType(typeof(Mutation))]
-    public class OGSurveyMutationType
+    public class OGSurveyMutation
     {
         //[Authorize]
         public async Task<Record> AddOutGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,

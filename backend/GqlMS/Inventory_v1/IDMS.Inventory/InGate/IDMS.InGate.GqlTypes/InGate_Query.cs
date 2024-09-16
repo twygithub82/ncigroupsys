@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using IDMS.Models.Inventory;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.InGateSurvey.GqlTypes;
+using IDMS.Inventory.GqlTypes;
 
 namespace IDMS.InGate.GqlTypes
 {
