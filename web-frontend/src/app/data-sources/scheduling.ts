@@ -7,9 +7,7 @@ import { SchedulingSotItem } from './scheduling-sot';
 
 export class SchedulingGO {
   public guid?: string;
-  public reference?: string;
   public book_type_cv?: string;
-  public scheduling_dt?: number;
   public status_cv?: string;
   public create_dt?: number;
   public create_by?: string;
@@ -19,9 +17,7 @@ export class SchedulingGO {
 
   constructor(item: Partial<SchedulingGO> = {}) {
     this.guid = item.guid;
-    this.reference = item.reference;
     this.book_type_cv = item.book_type_cv;
-    this.scheduling_dt = item.scheduling_dt;
     this.status_cv = item.status_cv;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
@@ -59,8 +55,6 @@ export const GET_SCHEDULING = gql`
         create_dt
         delete_dt
         guid
-        reference
-        scheduling_dt
         status_cv
         update_by
         update_dt
@@ -69,6 +63,8 @@ export const GET_SCHEDULING = gql`
           scheduling_guid
           sot_guid
           status_cv
+          reference
+          scheduling_dt
           delete_dt
           storing_order_tank {
             certificate_cv

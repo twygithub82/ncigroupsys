@@ -336,6 +336,8 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
           scheduling_guid
           sot_guid
           status_cv
+          reference
+          scheduling_dt
           update_by
           update_dt
           scheduling {
@@ -344,8 +346,6 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
             create_dt
             delete_dt
             guid
-            reference
-            scheduling_dt
             status_cv
             update_by
             update_dt

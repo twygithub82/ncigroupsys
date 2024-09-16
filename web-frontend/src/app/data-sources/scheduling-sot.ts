@@ -73,6 +73,8 @@ export const GET_SCHEDULING_SOT = gql`
         scheduling_guid
         sot_guid
         status_cv
+        reference
+        scheduling_dt
         update_by
         update_dt
         scheduling {
@@ -81,8 +83,6 @@ export const GET_SCHEDULING_SOT = gql`
           create_dt
           delete_dt
           guid
-          reference
-          scheduling_dt
           status_cv
           update_by
           update_dt
@@ -184,10 +184,10 @@ export class SchedulingSotDS extends BaseDataSource<SchedulingSotItem> {
     return this.getSchedulingSotWithType(schedulingSot, "RELEASE_ORDER");
   }
 
-  getSchedulingSotReleaseJobNo(schedulingSot: SchedulingSotItem[] | undefined): string | undefined {
-    const releaseScheduling = this.getSchedulingSotWithType(schedulingSot, "RELEASE_ORDER");
-    return releaseScheduling?.scheduling?.reference;
-  }
+  // getSchedulingSotReleaseJobNo(schedulingSot: SchedulingSotItem[] | undefined): string | undefined {
+  //   const releaseScheduling = this.getSchedulingSotWithType(schedulingSot, "RELEASE_ORDER");
+  //   return releaseScheduling?.scheduling?.reference;
+  // }
 
   getSchedulingSotWithType(schedulingSot: SchedulingSotItem[] | undefined, type: string): SchedulingSotItem | undefined {
     return schedulingSot?.find(item => item.scheduling?.book_type_cv === type);
