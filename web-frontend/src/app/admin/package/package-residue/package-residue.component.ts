@@ -262,6 +262,7 @@ implements OnInit {
     CONTACT_PERSON:"COMMON-FORM.CONTACT-PERSON",
     MOBILE_NO:"COMMON-FORM.MOBILE-NO",
     COUNTRY:"COMMON-FORM.COUNTRY",
+    LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
     FAX_NO:"COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     
@@ -351,7 +352,7 @@ implements OnInit {
     }
     if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent,{
-      width: '700px',
+      width: '720px',
       height:'auto',
       data: {
         action: 'update',
@@ -387,7 +388,7 @@ implements OnInit {
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent,{
       
-      width: '700px',
+      width: '720px',
       height:'auto',
       data: {
         action: 'update',
@@ -732,6 +733,8 @@ implements OnInit {
     this.initPcForm();
     this.customerCodeControl.reset('');
   }
+
+ 
 
 }
 

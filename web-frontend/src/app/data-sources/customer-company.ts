@@ -87,37 +87,37 @@ export const SEARCH_COMPANY_QUERY = gql`
     companyList: queryCustomerCompany(where: $where, order: $order,first: $first, after: $after, last: $last, before: $before) {
       nodes {
         address_line1
-      address_line2
-      agreement_due_dt
-      alias
-      city
-      code
-      country
-      create_by
-      create_dt
-      currency_cv
-      delete_dt
-      description
-      effective_dt
-      email
-      fax
-      guid
-      name
-      phone
-      postal
-      tariff_depot_guid
-      type_cv
-      update_by
-      update_dt
-      website
+        address_line2
+        agreement_due_dt
+        alias
+        city
+        code
+        country
+        create_by
+        create_dt
+        currency_cv
+        delete_dt
+        description
+        effective_dt
+        email
+        fax
+        guid
+        name
+        phone
+        postal
+        tariff_depot_guid
+        type_cv
+        update_by
+        update_dt
+        website
       }
       pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
       }
-       totalCount
+      totalCount
     }
   }
 `;
@@ -126,12 +126,12 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     constructor(private apollo: Apollo) {
         super();
     }
-    loadItems(where?: any, order?: any,first?:any,after?:any,last?:any,before?:any): Observable<CustomerCompanyItem[]> {
+    loadItems(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
         this.loadingSubject.next(true);
         return this.apollo
             .watchQuery<any>({
                 query: GET_COMPANY_QUERY,
-                variables: { where, order,first,after,last,before },
+                variables: { where, order, first, after, last, before },
                 fetchPolicy: 'no-cache' // Ensure fresh data
             })
             .valueChanges
@@ -141,28 +141,62 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
                     console.error('GraphQL Error:', error);
                     return of([] as CustomerCompanyItem[]); // Return an empty array on error
                 }),
-                finalize(() => 
+                finalize(() =>
                     this.loadingSubject.next(false)
-            ),
+                ),
                 map((result) => {
                     const list = result.companyList || { nodes: [], totalCount: 0 };
                     this.dataSubject.next(list.nodes);
-                   
+
                     this.totalCount = list.totalCount;
                     return list.nodes;
                 })
             );
     }
 
-    search(where?: any, order?: any,first?:any,after?:any,last?:any,before?:any): Observable<CustomerCompanyItem[]> {
+    getOwnerList(owner_guid?: string): Observable<CustomerCompanyItem[]> {
+        this.loadingSubject.next(true);
+        const where = {
+            type_cv: { in: [ "OWNER", "LEESSEE" ] }
+        }
+        const order = {
+
+        }
+        return this.apollo
+            .watchQuery<any>({
+                query: GET_COMPANY_QUERY,
+                variables: { where, order },
+                fetchPolicy: 'no-cache' // Ensure fresh data
+            })
+            .valueChanges
+            .pipe(
+                map((result) => result.data),
+                catchError((error: ApolloError) => {
+                    console.error('GraphQL Error:', error);
+                    return of([] as CustomerCompanyItem[]); // Return an empty array on error
+                }),
+                finalize(() =>
+                    this.loadingSubject.next(false)
+                ),
+                map((result) => {
+                    const list = result.companyList || { nodes: [], totalCount: 0 };
+                    this.dataSubject.next(list.nodes);
+
+                    this.totalCount = list.totalCount;
+                    return list.nodes;
+                })
+            );
+    }
+
+    search(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
         this.loadingSubject.next(true);
         if (!last)
             if (!first)
-            first = 10;
+                first = 10;
         return this.apollo
             .query<any>({
                 query: SEARCH_COMPANY_QUERY,
-                variables: { where, order,first,after,last,before },
+                variables: { where, order, first, after, last, before },
                 fetchPolicy: 'no-cache' // Ensure fresh data
             })
             .pipe(
@@ -171,13 +205,13 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
                     console.error('GraphQL Error:', error);
                     return of([] as CustomerCompanyItem[]); // Return an empty array on error
                 }),
-                finalize(() => 
+                finalize(() =>
                     this.loadingSubject.next(false)
                 ),
                 map((result) => {
                     const list = result.companyList || { nodes: [], totalCount: 0 };
                     this.dataSubject.next(list.nodes);
-                    this.pageInfo=list.pageInfo;
+                    this.pageInfo = list.pageInfo;
                     this.totalCount = list.totalCount;
                     return list.nodes;
                 })

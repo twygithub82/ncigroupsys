@@ -73,7 +73,7 @@
                       <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-                            <mat-select [formControl]="customerCodeControl" formControlName="customer_code" multiple>
+                            <mat-select formControlName="customer_code" multiple>
                                 <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
                                  
                                   <ng-container *ngIf="cc !== null">
@@ -93,35 +93,15 @@
                         </mat-form-field>
                         
                       </div>
+                    
+                    </div>
+                    <div class="row">
                       <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.COUNTRY}}</mat-label>
                             <input matInput formControlName="country" type="text">
                         </mat-form-field>
                       </div>  
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-2">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.PHONE }}</mat-label>
-                            <input matInput formControlName="phone" type="text">
-                           
-                        </mat-form-field>
-                        
-                      </div>
-                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-2">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.FAX_NO }}</mat-label>
-                            <input matInput formControlName="fax_no" type="text">
-                        </mat-form-field>
-                        
-                      </div>
-                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-2">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.EMAIL}}</mat-label>
-                            <input matInput formControlName="email" type="text">
-                        </mat-form-field>
-                      </div> 
                       <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.CONTACT_PERSON }}</mat-label>
@@ -189,19 +169,19 @@
                       <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="mobile">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PHONE }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PREINSPECTION_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.PHONE }}:</span> {{row.customer_company.phone}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.PREINSPECTION_COST }}:</span> {{row.preinspection_cost.toFixed(2)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="gender">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.FAX_NO }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STORAGE_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.FAX_NO}}:</span> {{row.customer_company.fax}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.storage_cost.toFixed(2)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="email">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.EMAIL }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.EMAIL}}:</span> {{row.customer_company.email}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span> {{this.displayLastUpdated(row)}}</mat-cell>
                   </ng-container>
                   <!-- actions -->
                   <ng-container matColumnDef="actions">

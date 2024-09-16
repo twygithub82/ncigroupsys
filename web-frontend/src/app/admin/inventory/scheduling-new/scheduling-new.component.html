@@ -247,7 +247,7 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let schedulingSotRow" class="">
                         <span
-                          class="mobile-label">{{translatedLangText.SCHEDULING_DATE}}:</span>{{displayDate(schedulingSotRow.scheduling?.scheduling_dt)}}
+                          class="mobile-label">{{translatedLangText.SCHEDULING_DATE}}:</span>{{displayDate(schedulingSotRow?.scheduling_dt)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="book_type_cv">
@@ -265,7 +265,7 @@
                       </mat-header-cell>
                       <mat-cell *matCellDef="let schedulingSotRow">
                         <span
-                          class="mobile-label">{{translatedLangText.REFERENCE}}:</span>{{schedulingSotRow?.scheduling?.reference}}
+                          class="mobile-label">{{translatedLangText.REFERENCE}}:</span>{{schedulingSotRow?.reference}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="status_cv">

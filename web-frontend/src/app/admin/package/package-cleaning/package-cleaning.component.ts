@@ -102,7 +102,7 @@ implements OnInit {
      'gender',
      'cost',
     //'tariff_cleanings',
-    // 'mobile',
+     'updateddt',
     // 'actions',
   ];
 
@@ -250,6 +250,7 @@ implements OnInit {
     CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
      }
   
   constructor(
@@ -714,5 +715,23 @@ implements OnInit {
     
     this.customerCodeControl.reset('');
     this.categoryControl.reset('')
+  }
+
+  displayLastUpdated(r: any) {
+    var updatedt= r.update_dt;
+    if(updatedt===null)
+    {
+      updatedt= r.create_dt;
+    }
+    const date = new Date(updatedt! * 1000);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();   
+
+   // Replace the '/' with '-' to get the required format
+ 
+
+    return `${day}/${month}/${year}`;
+
   }
 }

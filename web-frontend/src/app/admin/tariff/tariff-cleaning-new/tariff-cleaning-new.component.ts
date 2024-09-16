@@ -206,7 +206,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
     CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
     CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
-    ATTACHMENT_TOO_BIG:"COMMON-FORM.ATTACHMENT-TOO-BIG"
+    ATTACHMENT_TOO_BIG:"COMMON-FORM.ATTACHMENT-TOO-BIG",
+    SDS_FILE :"COMMON-FORM.SDS-FILE"
   }
 
   sdsFiles: (string | ArrayBuffer)[] = [];
@@ -248,6 +249,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   private loadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   
   selectedFileChanged : boolean=false;
+  newUNNo:boolean=true;
   selectedFile: File | null = null;
   existingSDSFiles:File[]|null=null;
   existingSDSFilesUrls:any[]|null=null;
@@ -257,6 +259,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   prefix = 'UN';
+  sdsFileLoading:boolean=false;
+  trfCleaningSubmitting:boolean=false;
 
   constructor(
     public httpClient: HttpClient,
@@ -310,7 +314,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   ngOnInit() {
     //this.initializeFilter();
-    this.loadData();
+  
         this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
 
           if (value && !value.startsWith(this.prefix) && value!='-') {
@@ -324,6 +328,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
         this.CheckUnNoValidity();
       });
+      this.loadData();
   }
 
   populatetcForm(tc: TariffCleaningItem):void {
@@ -348,7 +353,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       sds_file:[''],
       file_size:[0, [Validators.required, this.onlyFileSizeValidator]],
     });
-
+    
    
   }
 
@@ -406,6 +411,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           if (this.tcDS.totalCount > 0) {
             this.tariffCleaningItem = data[0];
             this.populatetcForm(this.tariffCleaningItem);
+            this.QueryAllFilesInGroup(this.tariffCleaningItem.guid!);
             
           this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
 
@@ -442,7 +448,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
     else
     {
-      this.selectedFile=null;
+      
       this.tcForm!.patchValue({
         class_no: '',
       });
@@ -488,7 +494,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       //   this.tcForm.get('sotList')?.setErrors({ required: true });
       // } else 
      // {
-        this.submitForSaving.next(true);
+        this.trfCleaningSubmitting=true;
+        this.submitForSaving.next( this.trfCleaningSubmitting);
+        this.submitForSaving.subscribe(value=>{
+          if(value!=this.trfCleaningSubmitting)  this.submitForSaving.next( this.trfCleaningSubmitting);
+        });
         let tc: TariffCleaningItem = new TariffCleaningItem(this.tariffCleaningItem);
        // tc.guid='';
         tc.cargo=this.tcForm.value['cargo_name'];
@@ -509,19 +519,24 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         tc.cleaning_category=undefined;
         tc.cleaning_method=undefined;
               if (tc.guid) {
-              this.tcDS.updateTariffCleaning(tc).subscribe(result => {
+              this.tcDS.updateTariffCleaning(tc).subscribe(async result => {
                 console.log(result)
-                this.handleSaveSuccess(result?.data?.updateTariffClean);
-                this.submitForSaving.next(false);
+                var guid = tc.guid;
+                await this.handleSaveSuccess(result?.data?.updateTariffClean,guid!);
+                this.trfCleaningSubmitting=false;
+                this.submitForSaving.next( this.trfCleaningSubmitting);
         
               });
             }
             else
             {
-              this.tcDS.addNewTariffCleaning(tc).subscribe(result => {
-                  console.log(result)
-                  this.handleSaveSuccess(result?.data?.addTariffCleaning);
-                  this.submitForSaving.next(false);
+              this.tcDS.addNewTariffCleaning(tc).subscribe(async result => {
+                  console.log(result);
+                  var cargo_name = tc.cargo;
+                  var guid=await this.getTariffCleaningGuid(cargo_name!);
+                 await this.handleSaveSuccess(result?.data?.addTariffCleaning,guid!);
+                  this.trfCleaningSubmitting=false;
+                  this.submitForSaving.next( this.trfCleaningSubmitting);
         
                 });
             }
@@ -534,11 +549,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
   }
 
- async handleSaveSuccess(count: any) {
+ async handleSaveSuccess(count: any, trfCleaning_guid:String) {
     if ((count ?? 0) > 0) {
+
       if(this.selectedFile)
       {
-        let groupGuid =this.tcForm?.value['un_no'];
+        var groupGuid:string =String(trfCleaning_guid);
          await this.onSubmit(groupGuid,'tariff_cleaning');
       }
       let successMsg = this.langText.SAVE_SUCCESS;
@@ -550,6 +566,26 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
   }
 
+  async getTariffCleaningGuid(cargo_name: string): Promise<string> {
+    let retval: string = "";
+    const where: any = {};
+  
+    where.cargo = { eq: cargo_name };
+  
+    try {
+      // Use firstValueFrom to convert Observable to Promise
+      const result = await firstValueFrom(this.tcDS.SearchTariffCleaning(where, {}));
+  
+      if (result.length > 0) {
+        const r = result[0];
+        retval = r.guid!;
+      }
+    } catch (error) {
+      console.error("Error fetching tariff cleaning guid:", error);
+    }
+  
+    return retval;
+  }
   onlyFileSizeValidator(control: AbstractControl): { [key: string]: boolean } | null {
     //const regex = /^(UN)?[0-9-]*$/;
     if (control.value>20) {
@@ -655,7 +691,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   onFileSelected(event: Event): void {
-    if(this.tcForm!.value["un_no"])
+    if(this.tcForm!.value["guid"])
     {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -673,9 +709,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
    }
   }
 
+  
 
   async downloadFiles(urls: any[]): Promise<File[]> {
+   
     const filePromises = urls.map(async (data) => {
+     
         let url:String =data.url;
         const response = await fetch(data.url);
   
@@ -690,7 +729,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   
     // Wait for all downloads to complete
     const files = await Promise.all(filePromises);
-  
+    
     return files;
   }
 
@@ -720,28 +759,36 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
 
     this.tcUNDS.SearchClassNoByUnNumber(UnNumber).subscribe(result=>{
+      this.newUNNo=true;
       if(result.class)
       {
+        this.newUNNo=false;
         this.tcForm?.patchValue({
           class_no:result.class
         });
       }
+      
     });
 
 
  }
-  async QueryAllFilesInGroup()
+  async QueryAllFilesInGroup(groupguid:string)
   {
-    this.selectedFileLoading.next(true); // Set loading to true
-    let GroupGuid:string='';
-    const unNoControl = this.tcForm!.get('un_no');
+    this.sdsFileLoading=true;
+    this.selectedFileLoading.next(this.sdsFileLoading); // Set loading to true
+    let GroupGuid:string=groupguid;
+    this.selectedFileLoading.subscribe(value => {
+      if(value!=this.sdsFileLoading) this.selectedFileLoading.next(this.sdsFileLoading);
+      console.log('Subject Value:', value); // This should not reset to false after await
+    });
+    // const unNoControl = this.tcForm!.get('un_no');
 
-        if (unNoControl) {
-          const value = unNoControl.value;
-          GroupGuid=value;
-         // console.log('UN Number on blur:', value);
-          // Additional logic can be added here
-        }
+    //     if (unNoControl) {
+    //       const value = unNoControl.value;
+    //       GroupGuid=value;
+    //      // console.log('UN Number on blur:', value);
+    //       // Additional logic can be added here
+    //     }
 
    this.fileManagerService.getFileUrlByGroupGuid([GroupGuid]).subscribe({
     next: async (response) => {
@@ -756,7 +803,9 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.existingSDSFilesUrls=response;
         }
       }
-      this.selectedFileLoading.next(false);
+      this.sdsFileLoading=false;
+      this.selectedFileLoading.next(this.sdsFileLoading); // Set loading to true
+      
     },
     error: (error) => {
       console.error('Error retrieving files:', error);
@@ -775,7 +824,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   {
     //var retval:any[]=[];
     if(!this.tcForm!.value["un_no"]) return;
-      this.QueryAllFilesInGroup();
+      //this.QueryAllFilesInGroup();
       this.QueryClassNo();
   }
   

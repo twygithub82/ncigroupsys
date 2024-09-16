@@ -154,12 +154,7 @@
                       </div>
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                            <span>{{translatedLangText.OWNER}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">
-                            </div>
+                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right">
                           </div>
                         </div>
                       </div>
@@ -197,6 +192,25 @@
                           @if (surveyForm?.get('unit_type_guid')?.hasError('required')) {
                           <mat-error>
                             {{translatedLangText.UNIT_TYPE}} {{translatedLangText.SO_REQUIRED}}
+                          </mat-error>
+                          }
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.OWNER}}</mat-label>
+                          <input type="text" matInput [formControl]="ownerControl" [matAutocomplete]="ownerCode"
+                            formControlName="owner_guid" required>
+                          <mat-autocomplete #ownerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                            @for (cc of ownerList; track cc) {
+                            <mat-option [value]="cc">
+                              {{ccDS.displayName(cc)}}
+                            </mat-option>
+                            }
+                          </mat-autocomplete>
+                          @if (surveyForm?.get('owner_guid')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.CUSTOMER}} {{translatedLangText.SO_REQUIRED}}
                           </mat-error>
                           }
                         </mat-form-field>
@@ -648,7 +662,8 @@
                       <div class="image-container">
                         <img mat-card-image src="assets/images/idms/tank_frame_type/backup/top_side.png"
                           class="img-fluid">
-                        <div [ngClass]="{'grid-overlay': true, 'to-mark': isMarkDmg}" (mousedown)="startDrawing(highlightedCellsTop, $event)"
+                        <div [ngClass]="{'grid-overlay': true, 'to-mark': isMarkDmg}"
+                          (mousedown)="startDrawing(highlightedCellsTop, $event)"
                           (mousemove)="draw(highlightedCellsTop, $event)" (mouseup)="stopDrawing()"
                           (mouseleave)="stopDrawing()" (touchstart)="startDrawing(highlightedCellsTop, $event)"
                           (touchmove)="draw(highlightedCellsTop, $event)" (touchend)="stopDrawing()"
@@ -670,13 +685,12 @@
                               </div>
                               <div class="inner-grid">
                                 <!-- Top Row with 4 Columns -->
-                                <div class="grid-top-row"
-                                  (mousedown)="startDrawing(highlightedCellsWalkwayTop, $event)"
-                                  (mousemove)="draw(highlightedCellsWalkwayTop, $event)"
-                                  (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
+                                <div class="grid-top-row" (mousedown)="startDrawing(highlightedCellsWalkwayTop, $event)"
+                                  (mousemove)="draw(highlightedCellsWalkwayTop, $event)" (mouseup)="stopDrawing()"
+                                  (mouseleave)="stopDrawing()"
                                   (touchstart)="startDrawing(highlightedCellsWalkwayTop, $event)"
-                                  (touchmove)="draw(highlightedCellsWalkwayTop, $event)"
-                                  (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
+                                  (touchmove)="draw(highlightedCellsWalkwayTop, $event)" (touchend)="stopDrawing()"
+                                  (touchcancel)="stopDrawing()">
                                   @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
                                   <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayTop[index],
                                       }" [attr.data-index]="index" (mousedown)="$event.preventDefault()"
@@ -687,11 +701,11 @@
                                 <!-- Middle Row (to be defined later) -->
                                 <div class="grid-middle-row"
                                   (mousedown)="startDrawing(highlightedCellsWalkwayMiddle, $event)"
-                                  (mousemove)="draw(highlightedCellsWalkwayMiddle, $event)"
-                                  (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
+                                  (mousemove)="draw(highlightedCellsWalkwayMiddle, $event)" (mouseup)="stopDrawing()"
+                                  (mouseleave)="stopDrawing()"
                                   (touchstart)="startDrawing(highlightedCellsWalkwayMiddle, $event)"
-                                  (touchmove)="draw(highlightedCellsWalkwayMiddle, $event)"
-                                  (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
+                                  (touchmove)="draw(highlightedCellsWalkwayMiddle, $event)" (touchend)="stopDrawing()"
+                                  (touchcancel)="stopDrawing()">
                                   @for (cell of cellsInnerMiddle; track cell; let index = $index) {
                                   <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayMiddle[index],
                                       'disabled-cell': isDisabled(index)}" [attr.data-index]="index"
@@ -703,13 +717,14 @@
                                 <!-- Bottom Row with 4 Columns -->
                                 <div class="grid-bottom-row"
                                   (mousedown)="startDrawing(highlightedCellsWalkwayBottom, $event)"
-                                  (mousemove)="draw(highlightedCellsWalkwayBottom, $event)"
-                                  (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
+                                  (mousemove)="draw(highlightedCellsWalkwayBottom, $event)" (mouseup)="stopDrawing()"
+                                  (mouseleave)="stopDrawing()"
                                   (touchstart)="startDrawing(highlightedCellsWalkwayBottom, $event)"
-                                  (touchmove)="draw(highlightedCellsWalkwayBottom, $event)"
-                                  (touchend)="stopDrawing()" (touchcancel)="stopDrawing()">
+                                  (touchmove)="draw(highlightedCellsWalkwayBottom, $event)" (touchend)="stopDrawing()"
+                                  (touchcancel)="stopDrawing()">
                                   @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
-                                  <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayBottom[index]}"
+                                  <div class="grid-cell"
+                                    [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayBottom[index]}"
                                     [attr.data-index]="index" (mousedown)="$event.preventDefault()"
                                     (touchstart)="$event.preventDefault()"></div>
                                   }

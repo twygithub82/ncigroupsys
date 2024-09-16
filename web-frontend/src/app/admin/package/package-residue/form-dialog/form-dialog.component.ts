@@ -91,7 +91,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
        'lName',
        'email',
        'gender',
-      // 'bDate',
+       'bDate',
       // 'mobile',
       // 'actions',
     ];
@@ -228,7 +228,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.fb.group({
       selectedItems: this.selectedItems,
       cost_cust:[''],
-      cost_standard:[''],
+      cost_standard:['-'],
       remarks:[''],
 
     });

@@ -222,7 +222,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   cvDS: CodeValuesDS;
   tDS: TankDS;
 
-  inGateList: InGateItem[] = [];
+  customerCodeControl = new UntypedFormControl();
+  ownerControl = new UntypedFormControl();
+  ownerList?: CustomerCompanyItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   cleanStatusCvList: CodeValuesItem[] = [];
   testTypeCvList: CodeValuesItem[] = [];
@@ -333,6 +335,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   initForm() {
     this.surveyForm = this.fb.group({
+      owner_guid: [''],
       last_test_cv: [''],
       next_test_cv: [''],
       test_class_cv: [''],
@@ -580,6 +583,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
           this.populateInGateForm(this.in_gate);
+          this.ccDS.getOwnerList().subscribe(data => {
+            this.ownerList = data;
+          });
           if (this.in_gate!.in_gate_survey?.guid) {
             this.fileManagerService.getFileUrlByGroupGuid([this.in_gate!.in_gate_survey?.guid]).subscribe({
               next: (response) => {

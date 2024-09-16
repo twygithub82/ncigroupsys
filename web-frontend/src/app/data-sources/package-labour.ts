@@ -96,30 +96,24 @@ export const GET_PACKAGE_LABOUR_QUERY = gql`
           update_dt
         }
         customer_company {
-            address_line1
-            address_line2
-            agreement_due_dt
-            alias
-            city
-            code
-            country
-            create_by
-            create_dt
-            currency_cv
-            delete_dt
-            description
-            effective_dt
-            email
-            fax
-            guid
-            name
-            phone
-            postal
-            tariff_depot_guid
-            type_cv
-            update_by
-            update_dt
-            website
+          alias
+          city
+          code
+          country
+          create_by
+          create_dt
+          delete_dt
+          description
+          effective_dt
+          email
+          fax
+          guid
+          name
+          phone
+          postal
+          type_cv
+          update_by
+          update_dt
         }
       }
     totalCount

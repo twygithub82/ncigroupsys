@@ -647,7 +647,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
     const isMatch = (item1: SchedulingSotItem, item2: BookingItem) => {
-      return item1.scheduling?.book_type_cv === item2.book_type_cv && item1.scheduling?.scheduling_dt === item2.booking_dt;
+      return item1.scheduling?.book_type_cv === item2.book_type_cv && item1?.scheduling_dt === item2.booking_dt;
     };
 
     const allSchedulingsMatch = schedulings.every(schedulingItem =>

@@ -276,8 +276,8 @@ export class FormDialogComponent {
       if (guidA > guidB) return 1;
 
       // Third criterion: scheduling_dt (assuming it's a timestamp)
-      const schedulingDtA = this.schedulingSotDS.getSchedulingSotReleaseOrder(a.scheduling_sot)?.scheduling?.scheduling_dt || 0;
-      const schedulingDtB = this.schedulingSotDS.getSchedulingSotReleaseOrder(b.scheduling_sot)?.scheduling?.scheduling_dt || 0;
+      const schedulingDtA = this.schedulingSotDS.getSchedulingSotReleaseOrder(a.scheduling_sot)?.scheduling_dt || 0;
+      const schedulingDtB = this.schedulingSotDS.getSchedulingSotReleaseOrder(b.scheduling_sot)?.scheduling_dt || 0;
       return schedulingDtA - schedulingDtB;
     });
 
@@ -296,7 +296,7 @@ export class FormDialogComponent {
     endOfNext3Days.setHours(23, 59, 59, 999);
     const endOfNext3DaysEpoch = Math.floor(endOfNext3Days.getTime() / 1000);
 
-    const scheduling_dt = this.schedulingSotDS.getSchedulingSotReleaseOrder(sot.scheduling_sot)?.scheduling?.scheduling_dt;
+    const scheduling_dt = this.schedulingSotDS.getSchedulingSotReleaseOrder(sot.scheduling_sot)?.scheduling_dt;
     if (scheduling_dt !== undefined && scheduling_dt > endOfNext3DaysEpoch) {
       isOver3Days = true;
     }
