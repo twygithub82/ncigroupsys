@@ -53,6 +53,7 @@ namespace IDMS.StoringOrder.GqlTypes
                     newTank.lifton_job_no = tnk.job_no;
                     newTank.takein_job_no = tnk.job_no;
                     newTank.release_job_no = tnk.job_no;
+                    newTank.owner_guid = tnk.owner_guid;
                     //context.storing_order_tank.Add(newTank);
                     newTankList.Add(newTank);
                 }

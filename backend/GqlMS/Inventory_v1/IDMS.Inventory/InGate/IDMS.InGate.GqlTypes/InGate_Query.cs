@@ -15,13 +15,14 @@ namespace IDMS.InGate.GqlTypes
     [ExtendObjectType(typeof(Query))]
     public class InGate_Query
     {
-        public void Ping(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        private void Ping(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             if (context != null)
             {
                 context.in_gate.First();
             }
         }
+
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         // [UseProjection]
