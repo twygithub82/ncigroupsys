@@ -118,8 +118,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
-    TANK_STATUS: 'COMMON-FORM.TANK-STATUS'
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
   searchForm?: UntypedFormGroup;
@@ -437,7 +439,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
+        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
         action: 'new',
       },
       direction: tempDirection

@@ -132,7 +132,9 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     RO_NO: 'COMMON-FORM.RO-NO',
     RO_DATE: 'COMMON-FORM.RO-DATE',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
-    EIR_NO: 'COMMON-FORM.EIR-NO'
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
   searchForm?: UntypedFormGroup;
@@ -561,7 +563,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
+        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
         action: 'new',
       },
       direction: tempDirection

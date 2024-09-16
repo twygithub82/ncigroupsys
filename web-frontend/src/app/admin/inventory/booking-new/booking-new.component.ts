@@ -150,7 +150,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     CONFIRM: 'COMMON-FORM.CONFIRM',
     EXISTED: 'COMMON-FORM.EXISTED',
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -728,7 +730,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
+        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
         action: 'new',
       },
       direction: tempDirection

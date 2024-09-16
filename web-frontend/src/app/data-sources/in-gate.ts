@@ -365,7 +365,6 @@ export class InGateDS extends BaseDataSource<InGateItem> {
 
   searchInGateForSurvey(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<InGateItem[]> {
     this.loadingSubject.next(true);
-    debugger
     return this.apollo
       .query<any>({
         query: SEARCH_IN_GATE_FOR_SURVEY_QUERY,

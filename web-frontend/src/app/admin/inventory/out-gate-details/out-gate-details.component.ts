@@ -165,7 +165,9 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     RESET: 'COMMON-FORM.RESET',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
-    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET'
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
   outGateForm?: UntypedFormGroup;
@@ -454,7 +456,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
+        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
         action: 'new',
       },
       direction: tempDirection
