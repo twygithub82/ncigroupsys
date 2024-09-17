@@ -55,6 +55,7 @@ import { RepairEstPartDS, RepairEstPartItem } from 'app/data-sources/repair-est-
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { RepairEstDS } from 'app/data-sources/repair-est';
+import { testTypeMapping } from 'environments/environment.development';
 
 @Component({
   selector: 'app-estimate-new',
@@ -287,7 +288,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       surveyor_name_cv: [''],
       internal_qc_by: [''],
       labour_disc: [0],
-      material_disc: [0]
+      material_disc: [0],
+      last_test: [''],
+      next_test: [''],
     });
   }
 
@@ -856,7 +859,18 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
     return "";
   }
-  
+
+  getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
+    if (igs && igs.next_test_cv && igs.test_dt) {
+      const test_type = igs.last_test_cv;
+      const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
+      const yearCount = parseFloat(match ? match[0] : "0");
+      const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
+      return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    }
+    return "";
+  }
+
   selectText(event: FocusEvent) {
     Utility.selectText(event)
   }

@@ -754,6 +754,14 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
           update_by
           update_dt
           vehicle_no
+          in_gate_survey {
+            next_test_cv
+            last_test_cv
+            test_class_cv
+            test_dt
+            update_by
+            update_dt
+          }
         }
         tariff_cleaning {
           alias
@@ -797,6 +805,12 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
             name
             alias
           }
+        }
+        customer_company {
+          code
+          guid
+          name
+          alias
         }
       }
       totalCount
