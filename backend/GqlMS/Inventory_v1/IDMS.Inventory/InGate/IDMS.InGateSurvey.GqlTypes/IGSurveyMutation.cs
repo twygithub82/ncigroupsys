@@ -68,6 +68,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                 storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
                 context.Attach(sot);
                 sot.unit_type_guid = tnk.unit_type_guid;
+                sot.owner_guid = tnk.owner_guid;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
 
@@ -153,6 +154,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                 storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
                 context.Attach(sot);
                 sot.unit_type_guid = tnk.unit_type_guid;
+                sot.owner_guid = tnk.owner_guid;    
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
 
