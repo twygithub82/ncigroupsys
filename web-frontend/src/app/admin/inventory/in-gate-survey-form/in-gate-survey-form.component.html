@@ -48,6 +48,7 @@
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
+                        {{ccDS.displayName(in_gate?.tank?.customer_company)}}
                       </div>
                     </div>
                   </div>
@@ -200,7 +201,7 @@
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.OWNER}}</mat-label>
                           <input type="text" matInput [formControl]="ownerControl" [matAutocomplete]="ownerCode"
-                            formControlName="owner_guid" required>
+                            formControlName="owner" required>
                           <mat-autocomplete #ownerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                             @for (cc of ownerList; track cc) {
                             <mat-option [value]="cc">
@@ -208,7 +209,7 @@
                             </mat-option>
                             }
                           </mat-autocomplete>
-                          @if (surveyForm?.get('owner_guid')?.hasError('required')) {
+                          @if (surveyForm?.get('owner')?.hasError('required')) {
                           <mat-error>
                             {{translatedLangText.CUSTOMER}} {{translatedLangText.SO_REQUIRED}}
                           </mat-error>

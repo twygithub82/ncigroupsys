@@ -28,6 +28,10 @@ export abstract class BaseDataSource<T> extends DataSource<T> {
       };
     }
 
+    public filterDeleted(resultList: any[] | undefined): any {
+      return (resultList || []).filter((row: any) => !row.delete_dt);
+    }
+
     // public addCreateDtDescOrder(order: any) {
     //   return {
     //     ...order,

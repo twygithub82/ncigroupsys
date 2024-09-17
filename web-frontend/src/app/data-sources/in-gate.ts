@@ -222,6 +222,7 @@ export const GET_IN_GATE_BY_ID = gql`
           last_test_guid
           liftoff_job_no
           lifton_job_no
+          owner_guid
           preinspect_job_no
           purpose_cleaning
           purpose_repair_cv
@@ -238,6 +239,12 @@ export const GET_IN_GATE_BY_ID = gql`
           unit_type_guid
           update_by
           update_dt
+          customer_company {
+            code
+            guid
+            name
+            alias
+          }
           tariff_cleaning {
             alias
             ban_type_cv
@@ -390,7 +397,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
 
   getInGateByID(id: string): Observable<InGateItem[]> {
     this.loadingSubject.next(true);
-    let where: any = { guid: { eq: id } }
+    let where = this.addDeleteDtCriteria({ guid: { eq: id } });
     return this.apollo
       .query<any>({
         query: GET_IN_GATE_BY_ID,

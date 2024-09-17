@@ -157,7 +157,8 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     getOwnerList(owner_guid?: string): Observable<CustomerCompanyItem[]> {
         this.loadingSubject.next(true);
         const where = {
-            type_cv: { in: [ "OWNER", "LEESSEE" ] }
+            guid: { eq: owner_guid },
+            type_cv: { in: ["OWNER", "LEESSEE"] }
         }
         const order = {
 

@@ -300,7 +300,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.sotItem = data[0];
-          this.getCustomerLaboutPackage(this.sotItem.storing_order?.customer_company_guid!);
+          this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
         }
       });
     }
@@ -346,7 +346,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  getCustomerLaboutPackage(customer_company_guid: string) {
+  getCustomerLabourPackage(customer_company_guid: string) {
     const where = {
       and: [
         { customer_company_guid: { eq: customer_company_guid } }

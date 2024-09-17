@@ -70,6 +70,11 @@ export const GET_STORING_ORDERS = gql`
           tank_no
           tank_status_cv
           status_cv
+          owner_guid
+          customer_company {
+            code
+            name
+          }
         }
         status_cv
       }
@@ -117,6 +122,7 @@ export const SEARCH_STORING_ORDER_BY_ID = gql`
           guid
           job_no
           last_cargo_guid
+          owner_guid
           purpose_cleaning
           purpose_repair_cv
           purpose_steam
