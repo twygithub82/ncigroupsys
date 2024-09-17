@@ -21,7 +21,7 @@ import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
+import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
@@ -110,7 +110,13 @@ export class FormDialogComponent {
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     }
+   
     this.repairPart = data.item ? data.item : new RepairEstPartItem();
+    this.selectedTariffRepair= new TariffRepairItem(this.repairPart.tariff_repair);
+
+
+    
+
     this.index = data.index;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
     this.repairPartForm = this.createForm();
@@ -266,6 +272,15 @@ export class FormDialogComponent {
             if (this.partNameControl.value) {
               this.handleValueChange(this.partNameControl.value)
             }
+            else if(this.repairPart.tariff_repair?.part_name)
+            {
+              
+              
+                this.partNameControl.setValue(this.repairPart.tariff_repair?.part_name);
+                this.handleValueChange(this.partNameControl.value);
+                this.repairPart.tariff_repair?.part_name!='';
+
+            }
           });
         }
       })
@@ -291,6 +306,17 @@ export class FormDialogComponent {
               this.getTariffRepairCost(partName, value, undefined);
             } else {
               this.repairPartForm?.get('length')?.enable();
+              if(this.repairPart.tariff_repair?.length)
+              {
+                this.repairPartForm.patchValue({
+                     length:this.repairPart.tariff_repair?.length
+                   });
+                   this.repairPart.tariff_repair?.length!=0;
+                // const index = this.lengthList.findIndex(item => item.length === this.repairPart.tariff_repair?.length && item.length_unit_cv === this.repairPart.tariff_repair?.length_unit_cv);
+                // this.repairPartForm.patchValue({
+                //   length:index
+                // });
+              }
             }
           });
         }
@@ -302,9 +328,11 @@ export class FormDialogComponent {
       debounceTime(300),
       tap(value => {
         if (value) {
-          const partName = this.partNameControl.value;
-          const dimension = this.repairPartForm?.get('dimension')?.value;
-          this.getTariffRepairCost(partName, dimension, value);
+         
+            const partName = this.partNameControl.value;
+            const dimension = this.repairPartForm?.get('dimension')?.value;
+            this.getTariffRepairCost(partName, dimension, value);
+          
         }
       })
     ).subscribe();
@@ -334,6 +362,12 @@ export class FormDialogComponent {
             this.repairPartForm?.get('dimension')?.enable();
             this.repairPartForm?.get('dimension')?.setValidators([Validators.required]);
             this.repairPartForm?.get('dimension')?.updateValueAndValidity();
+            if(this.repairPart.tariff_repair?.dimension)
+            {
+              this.repairPartForm?.patchValue({
+                dimension:this.repairPart.tariff_repair?.dimension
+              });
+            }
           }
         });
       }
@@ -420,10 +454,7 @@ export class FormDialogComponent {
     return item;
   }
 
-  calculateCostSummary()
-  {
-    
-  }
+
   // getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {
   //   // this.trDS.searchTariffRepairByPartNameDimLength(partName, dimension, length).subscribe(data => {
   //   //   if (data.length) {

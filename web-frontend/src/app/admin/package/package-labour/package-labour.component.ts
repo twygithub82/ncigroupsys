@@ -100,8 +100,9 @@ implements OnInit {
      'fName',
      'lName',
      'email',
+     'bDate',
      'gender',
-    // 'bDate',
+     
     // 'mobile',
     // 'actions',
   ];
@@ -246,6 +247,10 @@ implements OnInit {
     CLEANING_LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
     PACKAGE_LABOUR:"COMMON-FORM.PACKAGE-LABOUR",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
+    STANDARD_COST:"COMMON-FORM.STANDARD-COST",
+   
+    LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
      }
   
   constructor(

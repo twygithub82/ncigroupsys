@@ -71,8 +71,8 @@ export interface CustomerCompanyResult {
 }
 
 export const GET_COMPANY_QUERY = gql`
-  query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!]) {
-    companyList: queryCustomerCompany(where: $where, order: $order) {
+  query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int) {
+    companyList: queryCustomerCompany(where: $where, order: $order,first: $first) {
       nodes {
         code
         name

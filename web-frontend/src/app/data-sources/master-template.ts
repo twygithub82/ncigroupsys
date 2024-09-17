@@ -25,6 +25,7 @@ export class MasterTemplateGo {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+  public remarks?:string|null;
   
   constructor(item: Partial<MasterTemplateGo> = {}) {
    // Object.assign(this, { guid: '', ...item });
@@ -34,6 +35,7 @@ export class MasterTemplateGo {
    this.type_cv=item.type_cv;
    this.labour_cost_discount=item.labour_cost_discount;
    this.material_cost_discount=item.material_cost_discount;
+   this.remarks=item.remarks;
    this.create_dt = item.create_dt;
    this.create_by = item.create_by;
    this.update_dt = item.update_dt;
@@ -71,6 +73,29 @@ export class TemplateEstPartItem {
   tep_damage_repair?: TepDamageRepairItem[] | null;
   update_by?: string | null;
   update_dt?: string | null;
+  public actions?: string[]
+
+  constructor(item: Partial<TemplateEstPartItem> = {}) {
+    // Object.assign(this, { guid: '', ...item });
+    this.actions=item.actions;
+    this.action=item.action;
+    this.guid=item.guid;
+    this.description=item.description;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+    this.hour=item.hour;
+    this.quantity=item.quantity;
+    this.location_cv=item.location_cv;
+    this.remarks=item.remarks;
+    this.tariff_repair_guid=item.tariff_repair_guid;
+    this.tariff_repair=item.tariff_repair;
+    this.tep_damage_repair=item.tep_damage_repair;
+
+    
+   }
 }
 
 export class TemplateEstimateCustomerItem{
@@ -83,6 +108,7 @@ export class TemplateEstimateCustomerItem{
   template_est_guid?: string | null;
   update_by?: string | null;
   update_dt?: string | null;
+ 
   customer_company?: CustomerCompanyItem | null;
   customer_company_guid?:string |null;
   
@@ -127,6 +153,7 @@ export const GET_ESTIMATE_TEMPLATE_ONLY_QUERY = gql`
       create_dt
       delete_dt
       guid
+      remarks
       labour_cost_discount
       material_cost_discount
       template_name
@@ -157,6 +184,7 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
       labour_cost_discount
       material_cost_discount
       template_name
+      remarks
       type_cv
       update_by
       update_dt
@@ -170,6 +198,7 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
         update_by
         update_dt
         customer_company {
+          guid
           code
           name
         }

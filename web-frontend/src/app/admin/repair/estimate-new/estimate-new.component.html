@@ -288,19 +288,6 @@
                       <ng-container matColumnDef="actions">
                         <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                         </mat-header-cell>
-                        <!-- <mat-cell *matCellDef="let row; let i=index;" class="pr-0"
-                          [ngClass]="'tbl-col-width-per-10 justify-content-end'">
-                          <button mat-icon-button color="primary" (click)="handleDuplicateRow($event, row)"
-                            [matTooltip]="translatedLangText.DUPLICATE" class="tbl-action-btn">
-                            <mat-icon [class]="''">add_to_photos</mat-icon>
-                          </button>
-                          @if (row.status_cv === "WAITING" || !row.status_cv) {
-                          <button mat-icon-button color="accent" (click)="handleDelete($event, row, i)"
-                            [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
-                            <mat-icon [class]="'tbl-fav-delete'">delete_forever</mat-icon>
-                          </button>
-                          }
-                        </mat-cell> -->
                         <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>

@@ -87,7 +87,7 @@ export class FormDialogComponent {
        'fName',
        'lName',
        'email',
-      // 'gender',
+       'gender',
       // 'bDate',
       // 'mobile',
       // 'actions',
@@ -193,6 +193,10 @@ export class FormDialogComponent {
      STANDARD_COST:"COMMON-FORM.STANDARD-COST",
      PACKAGE_LABOUR:"COMMON-FORM.PACKAGE-LABOUR",
      COST:"COMMON-FORM.COST",
+     CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
+     
+     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+     LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
   };
 
   

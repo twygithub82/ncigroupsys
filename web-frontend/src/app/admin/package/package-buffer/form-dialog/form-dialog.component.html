@@ -59,9 +59,15 @@
                           <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="email">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.COST }}</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COST }}</mat-header-cell>
                         <mat-cell *matCellDef="let row" >
-                          <span class="mobile-label">{{translatedLangText.COST }}:</span> {{row.cost}}</mat-cell>
+                          <span class="mobile-label">{{translatedLangText.COST }}:</span> {{row.cost.toFixed(2)}}
+                      </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="gender">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.STANDARD_COST }}</mat-header-cell>
+                        <mat-cell *matCellDef="let row" >
+                          <span class="mobile-label">{{translatedLangText.COST }}:</span> {{row.tariff_buffer.cost.toFixed(2)}}</mat-cell>
                       </ng-container>
                       
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

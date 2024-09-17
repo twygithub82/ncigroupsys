@@ -232,19 +232,19 @@
                       <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="mobile">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PHONE }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.PHONE }}:</span> {{row.customer_company.phone}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="gender">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.FAX_NO }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STANDARD_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.FAX_NO}}:</span> {{row.customer_company.fax}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.tariff_buffer.cost.toFixed(2)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="email">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.EMAIL }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.EMAIL}}:</span> {{row.customer_company.email}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span> {{this.displayLastUpdated(row)}}</mat-cell>
                   </ng-container>
                   <!-- actions -->
                   <ng-container matColumnDef="actions">
