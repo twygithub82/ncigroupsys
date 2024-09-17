@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO.Pipes;
 using IDMS.Models;
 
 
@@ -14,6 +15,7 @@ namespace IDMS.StoringOrder.GqlTypes.LocalModel
         public string? unit_type_guid { get; set; }
         public string? last_cargo_guid { get; set; }
         public string? last_test_guid { get; set; }
+        public string? owner_guid { get; set; }
         public string? tank_no { get; set; }
         public string? job_no { get; set; }
 

@@ -1,7 +1,10 @@
 $colors: (
   "red": #f44336,
   "pink": #e91e63,
-  "purple": #6f42c1,
+  "purple": #6C4890,
+  "light-purple": #9B76B0,  // Lightened by 20%
+  "lighter-purple": #B78BC5,  // Lightened by 30%
+  "lightest-purple": #D1A7DB,  // Lightened by 40%
   "indigo": #3f51b5,
   "blue": #2196f3,
   "light-blue": #82c7ff,
@@ -17,6 +20,7 @@ $colors: (
   "light-grey": #c2c2c2,
   "black": #000000,
   "white": #ffffff,
+  "light-gold": #FFD700,
 ) !default;
 
 $linear-colors: (

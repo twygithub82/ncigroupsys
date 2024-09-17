@@ -599,6 +599,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
           return new StoringOrderTankUpdateSO({
             ...item,
+            owner_guid: item.owner_guid || so.customer_company_guid,
             action: latestAction // Set the latest action as the single action
           });
         });

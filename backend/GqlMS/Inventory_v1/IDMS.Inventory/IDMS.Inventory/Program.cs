@@ -2,6 +2,8 @@ using AutoMapper;
 using HotChocolate.Data;
 using HotChocolate.Types.Pagination;
 using IDMS.Booking.GqlTypes;
+using IDMS.InGate.GqlTypes;
+using IDMS.InGateSurvey.GqlTypes;
 using IDMS.InGateSurvey.GqlTypes.LocalModel;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models.Inventory;
@@ -62,11 +64,18 @@ namespace IDMS.Inventory
                        .AddTypeExtension<ReleaseOrderQuery>()
                        .AddTypeExtension<SchedulingQuery>()
                        .AddTypeExtension<BookingQuery>()
+                       .AddTypeExtension<InGate_Query>()
+                       .AddTypeExtension<OutGate_Query>()
+                       .AddTypeExtension<SurveyQuery>()
                        .AddTypeExtension<SOMutation>()
                        .AddTypeExtension<SOTMutation>()
                        .AddTypeExtension<SchedulingMutation>()
                        .AddTypeExtension<ReleaseOrderMutation>()
                        .AddTypeExtension<BookingMutation>()
+                       .AddTypeExtension<InGate_Mutation>()
+                       .AddTypeExtension<OutGate_Mutation>()
+                       .AddTypeExtension<IGSurveyMutation>()
+                       .AddTypeExtension<OGSurveyMutation>()
                        .AddFiltering()
                        .AddSorting()
                        .AddProjections()

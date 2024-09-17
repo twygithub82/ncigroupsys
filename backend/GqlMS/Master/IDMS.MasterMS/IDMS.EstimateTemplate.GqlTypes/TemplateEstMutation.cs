@@ -29,6 +29,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                 template.type_cv = newTemplateEstimate.type_cv;
                 template.labour_cost_discount = newTemplateEstimate.labour_cost_discount;
                 template.material_cost_discount = newTemplateEstimate.material_cost_discount;
+                template.remarks = newTemplateEstimate.remarks;
                 await context.template_est.AddAsync(template);
 
                 if (TemplateType.EXCLUSIVE.EqualsIgnore(newTemplateEstimate.type_cv))
@@ -98,6 +99,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                 template.labour_cost_discount = editTemplateEsimate.labour_cost_discount;
                 template.material_cost_discount = editTemplateEsimate.material_cost_discount;
                 template.template_name = editTemplateEsimate.template_name;
+                template.remarks = editTemplateEsimate.remarks;
 
                 if (editTemplateEsimate.template_est_part != null)
                 {

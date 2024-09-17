@@ -127,11 +127,11 @@ export const GET_RELEASE_ORDERS = gql`
               scheduling_guid
               sot_guid
               status_cv
+              reference
+              scheduling_dt
               scheduling {
                 book_type_cv
                 guid
-                reference
-                scheduling_dt
                 status_cv
               }
             }
@@ -228,11 +228,11 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
               scheduling_guid
               sot_guid
               status_cv
+              reference
+              scheduling_dt
               scheduling {
                 book_type_cv
                 guid
-                reference
-                scheduling_dt
                 status_cv
               }
             }

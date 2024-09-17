@@ -753,7 +753,7 @@ namespace IDMS.Models.Package.All.GqlTypes
             return retval;
         }
 
-        public double CalculateMaterialCostRoundedUp(double materialCost, double materialCostPercentage)
+        private double CalculateMaterialCostRoundedUp(double materialCost, double materialCostPercentage)
         {
             double value = materialCost * materialCostPercentage;
             double result = Math.Ceiling(value * 100) / 100;

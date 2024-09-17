@@ -360,7 +360,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tank_status_cv: [item.storing_order_tank?.tank_status_cv],
       yard_cv: [this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.yard_cv],
       booking_dt: [Utility.convertEpochToDateStr(this.bookingDS.getBookingReleaseOrder(item.storing_order_tank?.booking)?.booking_dt)],
-      schedule_dt: [Utility.convertEpochToDateStr(this.schedulingSotDS.getSchedulingSotReleaseOrder(item.storing_order_tank?.scheduling_sot)?.scheduling?.scheduling_dt)],
+      schedule_dt: [Utility.convertEpochToDateStr(this.schedulingSotDS.getSchedulingSotReleaseOrder(item.storing_order_tank?.scheduling_sot)?.scheduling_dt)],
     });
   }
 

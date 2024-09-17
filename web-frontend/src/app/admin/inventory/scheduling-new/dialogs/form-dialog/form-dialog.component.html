@@ -40,8 +40,7 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.SCHEDULING_DATE}}</mat-label>
-                <input matInput formControlName="scheduling_dt" [matDatepicker]="scheduling_dt_picker" [min]="startDateToday"
-                  required>
+                <input matInput formControlName="scheduling_dt" [matDatepicker]="scheduling_dt_picker" [min]="startDateToday">
                 <mat-datepicker-toggle matSuffix [for]="scheduling_dt_picker"></mat-datepicker-toggle>
                 <mat-datepicker #scheduling_dt_picker [startAt]="startDateToday"></mat-datepicker>
                 @if (schedulingForm.get('scheduling_dt')?.hasError('required')) {
@@ -49,12 +48,6 @@
                   {{data.translatedLangText.SCHEDULING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
                 }
-              </mat-form-field>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.translatedLangText.REFERENCE}}</mat-label>
-                <input matInput formControlName="reference">
               </mat-form-field>
             </div>
           </div>

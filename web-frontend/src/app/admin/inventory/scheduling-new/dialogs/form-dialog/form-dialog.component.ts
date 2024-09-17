@@ -148,16 +148,13 @@ export class FormDialogComponent {
           if (this.schedulingDS.totalCount > 0) {
             const scheduling = data[0];
             this.scheduling = scheduling;
-            this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.scheduling.scheduling_dt) as Date, this.startDateToday);
             formGroup.patchValue({
-              reference: scheduling.reference,
               book_type_cv: scheduling.book_type_cv,
-              scheduling_dt: Utility.convertDate(this.scheduling.scheduling_dt) as Date
+              scheduling_dt: ''
             });
 
             const schedulingSotArray = formGroup.get('schedulingSot') as UntypedFormArray;
             schedulingSotArray.clear();
-            console.log(scheduling.scheduling_sot)
             scheduling.scheduling_sot!.filter(schedulingSot => schedulingSot.delete_dt === null)!.forEach((schedulingSot: any) => {
               schedulingSotArray.push(this.createScheduleTankGroup(schedulingSot));
             });
@@ -187,22 +184,23 @@ export class FormDialogComponent {
     });
   }
 
-  createScheduleTankGroup(schedulingTank: SchedulingSotItem): UntypedFormGroup {
+  createScheduleTankGroup(schedulingSot: SchedulingSotItem): UntypedFormGroup {
     return this.fb.group({
-      guid: [schedulingTank.guid],
-      scheduling_guid: [schedulingTank.scheduling_guid],
-      sot_guid: [schedulingTank.storing_order_tank?.guid],
-      tank_no: [schedulingTank.storing_order_tank?.tank_no],
-      status_cv: [schedulingTank.status_cv],
-      customer_company: [this.ccDS.displayName(schedulingTank.storing_order_tank?.storing_order?.customer_company)],
-      eir_no: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.eir_no],
-      eir_dt: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.eir_dt],
-      capacity: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.in_gate_survey?.capacity],
-      tare_weight: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.in_gate_survey?.tare_weight],
-      tank_status_cv: [schedulingTank.storing_order_tank?.tank_status_cv],
-      yard_cv: [this.igDS.getInGateItem(schedulingTank.storing_order_tank?.in_gate)?.yard_cv],
-      reference: [schedulingTank.reference],
-      scheduling_dt: [Utility.convertDate(schedulingTank.scheduling_dt) as Date],
+      guid: [schedulingSot.guid],
+      scheduling_guid: [schedulingSot.scheduling_guid],
+      sot_guid: [schedulingSot.storing_order_tank?.guid],
+      tank_no: [schedulingSot.storing_order_tank?.tank_no],
+      status_cv: [schedulingSot.status_cv],
+      customer_company: [this.ccDS.displayName(schedulingSot.storing_order_tank?.storing_order?.customer_company)],
+      eir_no: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.eir_no],
+      eir_dt: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.eir_dt],
+      capacity: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.in_gate_survey?.capacity],
+      tare_weight: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.in_gate_survey?.tare_weight],
+      tank_status_cv: [schedulingSot.storing_order_tank?.tank_status_cv],
+      yard_cv: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.yard_cv],
+      reference: [schedulingSot.reference],
+      scheduling_dt: [Utility.convertDate(schedulingSot.scheduling_dt) as Date],
+      startDate: [Utility.getEarlierDate(Utility.convertDate(schedulingSot.scheduling_dt) as Date, this.startDateToday)]
     });
   }
 
@@ -213,10 +211,8 @@ export class FormDialogComponent {
   submit() {
     if (this.schedulingForm?.valid) {
       let scheduling = new SchedulingGO(this.scheduling);
-      scheduling.reference = this.schedulingForm.value['reference'];
       //scheduling.status_cv = this.schedulingForm.value['status_cv'];
       scheduling.book_type_cv = this.schedulingForm.value['book_type_cv'];
-      scheduling.scheduling_dt = Utility.convertDate(this.schedulingForm.value['scheduling_dt']) as number;
 
       let schedulingSot: SchedulingSotItem[] = [];
       const schedulingSotForm = this.schedulingForm.value['schedulingSot']
@@ -225,7 +221,9 @@ export class FormDialogComponent {
           guid: s.guid,
           scheduling_guid: s.scheduling_guid,
           sot_guid: s.sot_guid,
-          status_cv: s.status_cv
+          status_cv: s.status_cv,
+          reference: s.reference,
+          scheduling_dt: Utility.convertDate(s.scheduling_dt) as number
         }))
       });
 
@@ -282,6 +280,21 @@ export class FormDialogComponent {
           if (this.existingBookTypeCvs!.includes(value)) {
             control?.setErrors({ existed: true });
           }
+        }
+      })
+    ).subscribe();
+
+    this.schedulingForm?.get('scheduling_dt')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(100),
+      tap(value => {
+        if (value) {
+          const schedulingSotForm = this.schedulingForm.get('schedulingSot') as UntypedFormArray
+          schedulingSotForm.controls?.forEach((s: any) => {
+            s.patchValue({
+              scheduling_dt: value
+            });
+          });
         }
       })
     ).subscribe();

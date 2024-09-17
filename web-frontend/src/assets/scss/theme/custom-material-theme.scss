@@ -4,90 +4,78 @@
 @import "_theme-color-variables";
 
 // Define a complete custom color palette
-$custom-primary: mat.define-palette(
-  (
-    50: lighten($purple, 40%),
-    100: lighten($purple, 30%),
-    200: lighten($purple, 20%),
-    300: lighten($purple, 10%),
-    400: lighten($purple, 5%),
-    500: $purple,
-    600: darken($purple, 10%),
-    700: darken($purple, 20%),
-    800: darken($purple, 30%),
-    900: darken($purple, 40%),
-    A100: lighten($purple, 50%),
-    A200: lighten($purple, 40%),
-    A400: lighten($purple, 30%),
-    A700: lighten($purple, 20%),
-    contrast: (
-      50: #000000,
-      100: #000000,
-      200: #000000,
-      300: #000000,
-      400: #000000,
-      500: #ffffff,
-      600: #ffffff,
-      700: #ffffff,
-      800: #ffffff,
-      900: #ffffff,
-      A100: #000000,
-      A200: #000000,
-      A400: #000000,
-      A700: #000000,
-    ),
-  )
-);
+$custom-primary: mat.define-palette((50: lighten($purple, 40%),
+      100: lighten($purple, 30%),
+      200: lighten($purple, 20%),
+      300: lighten($purple, 10%),
+      400: lighten($purple, 5%),
+      500: $purple,
+      600: darken($purple, 10%),
+      700: darken($purple, 20%),
+      800: darken($purple, 30%),
+      900: darken($purple, 40%),
+      A100: lighten($purple, 50%),
+      A200: lighten($purple, 40%),
+      A400: lighten($purple, 30%),
+      A700: lighten($purple, 20%),
+      contrast: (50: #000000,
+        100: #000000,
+        200: #000000,
+        300: #000000,
+        400: #000000,
+        500: #ffffff,
+        600: #ffffff,
+        700: #ffffff,
+        800: #ffffff,
+        900: #ffffff,
+        A100: #000000,
+        A200: #000000,
+        A400: #000000,
+        A700: #000000,
+      ),
+    ));
 
-$custom-accent: mat.define-palette(
-  (
-    50: lighten($gold, 40%),
-    100: lighten($gold, 30%),
-    200: lighten($gold, 20%),
-    300: lighten($gold, 10%),
-    400: lighten($gold, 5%),
-    500: $gold,
-    600: darken($gold, 10%),
-    700: darken($gold, 20%),
-    800: darken($gold, 30%),
-    900: darken($gold, 40%),
-    A100: lighten($gold, 50%),
-    A200: lighten($gold, 40%),
-    A400: lighten($gold, 30%),
-    A700: lighten($gold, 20%),
-    contrast: (
-      50: #000000,
-      100: #000000,
-      200: #000000,
-      300: #000000,
-      400: #000000,
-      500: #ffffff,
-      600: #ffffff,
-      700: #ffffff,
-      800: #ffffff,
-      900: #ffffff,
-      A100: #000000,
-      A200: #000000,
-      A400: #000000,
-      A700: #000000,
-    ),
-  )
-);
+$custom-accent: mat.define-palette((50: lighten($gold, 40%),
+      100: lighten($gold, 30%),
+      200: lighten($gold, 20%),
+      300: lighten($gold, 10%),
+      400: lighten($gold, 5%),
+      500: $gold,
+      600: darken($gold, 10%),
+      700: darken($gold, 20%),
+      800: darken($gold, 30%),
+      900: darken($gold, 40%),
+      A100: lighten($gold, 50%),
+      A200: lighten($gold, 40%),
+      A400: lighten($gold, 30%),
+      A700: lighten($gold, 20%),
+      contrast: (50: #000000,
+        100: #000000,
+        200: #000000,
+        300: #000000,
+        400: #000000,
+        500: #ffffff,
+        600: #ffffff,
+        700: #ffffff,
+        800: #ffffff,
+        900: #ffffff,
+        A100: #000000,
+        A200: #000000,
+        A400: #000000,
+        A700: #000000,
+      ),
+    ));
 
 // Fallback for undefined colors in the theme
 $custom-warn: mat.define-palette(mat.$red-palette);
 
 // Create the theme object
-$custom-theme: mat.define-light-theme(
-  (
-    color: (
-      primary: $custom-primary,
-      accent: $custom-accent,
-      warn: $custom-warn,
-    ),
-    typography: mat.define-typography-config(),
-  )
-);
+$custom-theme: mat.define-light-theme((color: (primary: $custom-primary,
+        accent: $custom-accent,
+        warn: $custom-warn,
+      ),
+      typography: mat.define-typography-config(),
+    ));
 
 // Include the theme styles
 @include mat.all-component-themes($custom-theme);

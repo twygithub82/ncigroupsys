@@ -35,6 +35,7 @@
     <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
     <ProjectReference Include="..\Booking\IDMS.Booking.GqlTypes\IDMS.Booking.GqlTypes.csproj" />
     <ProjectReference Include="..\Booking\IDMS.Booking.Model\IDMS.Booking.Model.csproj" />
+    <ProjectReference Include="..\InGate\IDMS.InGate.GqlTypes\IDMS.InGate.GqlTypes.csproj" />
     <ProjectReference Include="..\InGate\IDMS.InGateSurvey.GqlTypes\IDMS.InGateSurvey.GqlTypes.csproj" />
     <ProjectReference Include="..\StoringOrder\IDMS.StoringOrder.GqlTypes\IDMS.StoringOrder.GqlTypes.csproj" />
   </ItemGroup>

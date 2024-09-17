@@ -150,7 +150,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     CONFIRM: 'COMMON-FORM.CONFIRM',
     EXISTED: 'COMMON-FORM.EXISTED',
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -700,7 +702,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     }
 
     const isMatch = (item1: SchedulingSotItem, item2: BookingItem) => {
-      return item1.scheduling?.book_type_cv === item2.book_type_cv && item1.scheduling?.scheduling_dt === item2.booking_dt;
+      return item1.scheduling?.book_type_cv === item2.book_type_cv && item1.scheduling_dt === item2.booking_dt;
     };
 
     const allSchedulingsMatch = schedulings.every(schedulingItem =>
@@ -728,7 +730,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
+        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
         action: 'new',
       },
       direction: tempDirection

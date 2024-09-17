@@ -126,7 +126,9 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     WAITING: 'COMMON-FORM.WAITING',
     CANCELED: 'COMMON-FORM.CANCELED',
     TANKS: 'COMMON-FORM.TANKS',
-    CONFIRM: 'COMMON-FORM.CONFIRM'
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
   searchForm?: UntypedFormGroup;
@@ -577,7 +579,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
+        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
         action: 'new',
       },
       direction: tempDirection
