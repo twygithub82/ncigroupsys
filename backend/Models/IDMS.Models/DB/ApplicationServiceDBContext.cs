@@ -18,6 +18,20 @@ namespace IDMS.Models.Service.GqlTypes.DB
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<aspnetuserroles>()
+            .HasKey(sc => new { sc.userID, sc.roleID });
+
+            modelBuilder.Entity<aspnetuserroles>()
+                .HasOne(sc => sc.aspnetusers)
+                .WithMany(s => s.aspnetuserroles)
+                .HasForeignKey(sc => sc.userID);
+
+            modelBuilder.Entity<aspnetuserroles>()
+                .HasOne(sc => sc.aspnetroles)
+                .WithMany(c => c.aspnetuserroles)
+                .HasForeignKey(sc => sc.roleID);
+
         }
 
         //public DbSet<IDMS.Models.Tariff.tariff_cleaning> tariff_cleaning { get; set; }
@@ -38,6 +52,8 @@ namespace IDMS.Models.Service.GqlTypes.DB
         //public DbSet<IDMS.Models.Shared.tank> tank { get; set; }
 
         public DbSet<aspnetusers> aspnetusers { get; set; }
+        public DbSet<aspnetroles> aspnetroles { get; set; }
+        public DbSet<aspnetuserroles> aspnetuserroles { get; set; }
         //public DbSet<currency> currency { get; set; }   
         //public DbSet<customer_company> customer_company { get; set; }
         //public DbSet<customer_company_contact_person> customer_company_contact_person { get; set; }
