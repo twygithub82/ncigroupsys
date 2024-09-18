@@ -34,11 +34,11 @@ namespace IDMS.Repair
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<aspnetusers> QueryInternalSurveyor(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<aspnetusers> QueryUsers(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
-                var user = context.aspnetusers;
+                var user = context.aspnetusers.Include(a => a.aspnetuserroles);
                 return user;
             }
             catch (Exception ex)
