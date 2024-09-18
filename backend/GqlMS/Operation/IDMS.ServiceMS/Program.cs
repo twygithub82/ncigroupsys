@@ -1,11 +1,12 @@
-using HotChocolate.Data;
 using AutoMapper;
 using HotChocolate.Types.Pagination;
-using IDMS.Models.Master.GqlTypes.DB;
 using Microsoft.EntityFrameworkCore;
 using System.Net.NetworkInformation;
+using IDMS.Models.Service.GqlTypes.DB;
+using HotChocolate.Data;
+using IDMS.Repair;
 
-namespace IDMS.OperationMS
+namespace IDMS.ServiceMS
 {
     public class Program
     {
@@ -22,7 +23,7 @@ namespace IDMS.OperationMS
 
             string connectionString = builder.Configuration.GetConnectionString("default");
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
-            builder.Services.AddPooledDbContextFactory<ApplicationOperationDBContext>(o =>
+            builder.Services.AddPooledDbContextFactory<ApplicationServiceDBContext>(o =>
             {
                 o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
                 o.EnableSensitiveDataLogging(false);
@@ -52,7 +53,8 @@ namespace IDMS.OperationMS
 
             builder.Services.AddGraphQLServer()
                        .InitializeOnStartup()
-                       //.RegisterDbContext<ApplicationOperationDBContext>(DbContextKind.Pooled)
+                       .RegisterDbContext<ApplicationServiceDBContext>(DbContextKind.Pooled)
+                       .AddQueryType<RepairEstQuery>()
                        //.AddQueryType<TemplateEstQuery>()
                        //.AddTypeExtension<CustomerQuery>()
                        //.AddTypeExtension<SchedulingQuery>()

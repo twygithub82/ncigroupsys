@@ -28,7 +28,10 @@ namespace IDMS.Models.Service
         public int quantity { get; set; }
         public double hour { get; set; }
         public bool owner { get; set; } = false;
-        
+
+        [NotMapped]
+        public string? action { get; set; }
+
         public tariff_repair? tariff_repair { get; set; }
         public repair_est? repair_est { get; set; }
         public IEnumerable<rep_damage_repair>? rep_damage_repair { get; set; }

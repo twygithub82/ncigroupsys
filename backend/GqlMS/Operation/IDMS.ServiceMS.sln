@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Operation.Application", "IDMS.OperationMS\IDMS.Operation.Application.csproj", "{9B377F58-80EA-42B6-9BC3-D98FE7598492}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Service.Application", "IDMS.ServiceMS\IDMS.Service.Application.csproj", "{9B377F58-80EA-42B6-9BC3-D98FE7598492}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Models", "..\..\Models\IDMS.Models\IDMS.Models.csproj", "{E72F9978-A824-4715-A40E-F8AC44227CB2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repair", "Repair", "{87557716-A479-4FA1-B6CE-B3CCF7F3B86E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDMS.Repair.GqlTypes", "Repair\IDMS.Repair\IDMS.Repair.GqlTypes.csproj", "{A5464503-5F1B-4AB5-A557-77495333AD48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +25,16 @@ Global
 		{E72F9978-A824-4715-A40E-F8AC44227CB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E72F9978-A824-4715-A40E-F8AC44227CB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E72F9978-A824-4715-A40E-F8AC44227CB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5464503-5F1B-4AB5-A557-77495333AD48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5464503-5F1B-4AB5-A557-77495333AD48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5464503-5F1B-4AB5-A557-77495333AD48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5464503-5F1B-4AB5-A557-77495333AD48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A5464503-5F1B-4AB5-A557-77495333AD48} = {87557716-A479-4FA1-B6CE-B3CCF7F3B86E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B3E01EFC-801F-48D2-8D8D-F3825CB6CF1D}

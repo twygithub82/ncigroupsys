@@ -17,7 +17,9 @@ namespace IDMS.Models.Service
 
         [ForeignKey("storing_order_tank")]
         public string sot_guid { get; set; }
-        public string? surveyor_guid { get; set; }
+
+        [ForeignKey("aspnetsuser")]
+        public string? aspnetusers_guid { get; set; }
         public string? estimate_no { get; set; }
         public double labour_cost_discount { get; set; }
         public double material_cost_discount { get; set; }
@@ -25,7 +27,7 @@ namespace IDMS.Models.Service
         public string? remarks { get; set; }   
         public bool? owner_enable { get; set; }
         public storing_order_tank? storing_order_tank { get; set; }
-        //public surveyor surveyor { get; set; }
+        public aspnetusers? aspnetsuser { get; set; }
         //public IEnumerable<template_est_customer>? template_est_customer { get; set; }
         public IEnumerable<repair_est_part>? repair_est_part { get; set; }
     }

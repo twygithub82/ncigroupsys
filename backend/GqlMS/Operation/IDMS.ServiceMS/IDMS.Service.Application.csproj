@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
+    <ProjectReference Include="..\Repair\IDMS.Repair\IDMS.Repair.GqlTypes.csproj" />
   </ItemGroup>
 
 </Project>
