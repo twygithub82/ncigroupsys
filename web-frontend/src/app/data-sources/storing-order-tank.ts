@@ -14,6 +14,7 @@ import { SchedulingItem } from './scheduling';
 import { SchedulingSotItem } from './scheduling-sot';
 import { ReleaseOrderSotItem } from './release-order-sot';
 import { OutGateItem } from './out-gate';
+import { CustomerCompanyItem } from './customer-company';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -95,6 +96,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public scheduling_sot?: SchedulingSotItem[];
   public release_order_sot?: ReleaseOrderSotItem[];
   public out_gate?: OutGateItem[];
+  public customer_company?: CustomerCompanyItem;
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -105,6 +107,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.scheduling_sot = item.scheduling_sot;
     this.release_order_sot = item.release_order_sot;
     this.out_gate = item.out_gate;
+    this.customer_company = item.customer_company;
     this.actions = item.actions || [];
   }
 }
@@ -175,23 +178,69 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
+        certificate_cv
+        clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        eta_dt
+        etr_dt
+        guid
         job_no
+        owner_guid
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
         takein_job_no
         release_job_no
-        guid
-        tank_no
+        last_cargo_guid
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        remarks
+        required_temp
         so_guid
-        tariff_cleaning {
+        status_cv
+        tank_no
+        tank_status_cv
+        unit_type_guid
+        update_by
+        update_dt
+        customer_company {
+          code
           guid
-          open_on_gate_cv
+          name
+          alias
+        }
+        tariff_cleaning {
+          alias
+          ban_type_cv
           cargo
+          class_cv
+          cleaning_category_guid
+          cleaning_method_guid
+          create_by
+          create_dt
+          delete_dt
+          depot_note
+          description
+          flash_point
+          guid
+          hazard_level_cv
+          in_gate_alert
+          nature_cv
+          open_on_gate_cv
+          remarks
+          un_no
+          update_by
+          update_dt
         }
         storing_order {
           so_no
           so_notes
+          haulier
           customer_company {
             code
             guid
@@ -203,6 +252,7 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
           eir_no
           eir_dt
           guid
+          delete_dt
         }
       }
       pageInfo {
@@ -422,6 +472,7 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
         etr_dt
         guid
         job_no
+        owner_guid
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
@@ -668,6 +719,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
         etr_dt
         guid
         job_no
+        owner_guid
         preinspect_job_no
         liftoff_job_no
         lifton_job_no
@@ -702,6 +754,14 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
           update_by
           update_dt
           vehicle_no
+          in_gate_survey {
+            next_test_cv
+            last_test_cv
+            test_class_cv
+            test_dt
+            update_by
+            update_dt
+          }
         }
         tariff_cleaning {
           alias
@@ -745,6 +805,12 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
             name
             alias
           }
+        }
+        customer_company {
+          code
+          guid
+          name
+          alias
         }
       }
       totalCount
@@ -903,6 +969,29 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANK_BY_ID,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTankByIDForInGate(id: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = { guid: { eq: id } }
+    where = this.addDeleteDtCriteria(where)
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_IN_GATE,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

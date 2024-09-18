@@ -596,7 +596,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
           // Ensure action is an array and take the last action only
           const actions = Array.isArray(item!.actions) ? item!.actions : [];
           const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
-
+          debugger
           return new StoringOrderTankUpdateSO({
             ...item,
             owner_guid: item.owner_guid || so.customer_company_guid,

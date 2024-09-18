@@ -100,16 +100,16 @@ import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-fiel
 })
 export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'group_name_cv',
-    'subgroup_name_cv',
-    'damange',
+     'group_name_cv',
+     'subgroup_name_cv',
+     'damage',
     'repair',
     'description',
     'qty',
     'hour',
     'price',
-    'material',
-    'actions'
+     'material',
+     'actions'
   ];
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
@@ -220,7 +220,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   tempForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
-
+  selectedTempEst?:MasterTemplateItem;
   sotItem?: StoringOrderTankItem;
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
   repList = new MatTableDataSource<RepairEstPartItem>();
@@ -304,7 +304,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   {
     var totalMaterialCost:number=0;
     this.repList.data.forEach(data => {
-      totalMaterialCost +=Number(data.material_cost??0);
+      totalMaterialCost +=Number(data.tariff_repair?.material_cost??0);
     });
 
     this.tempForm?.patchValue({
@@ -350,30 +350,6 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
         
        });
     });
-
-    // combineLatest([
-    //   this.tempForm?.get('labour_discount_amount')!.valueChanges || of(null),
-    //   this.tempForm?.get('material_discount_amount')!.valueChanges || of(null)
-    // ]).subscribe(([labourDiscountValue, materialDiscountValue]) => {
-    //   // Update the net_cost when either value changes
-    //   this.tempForm?.patchValue({
-    //     net_cost: this.GetNetCost()
-    //   }, { emitEvent: false }); // Prevent re-triggering the valueChanges
-    // });
-
-    
-
-    // combineLatest([
-    //   this.tempForm?.get('labour_rate')!.valueChanges || of(null),
-    //   this.tempForm?.get('labour_additional')!.valueChanges || of(null)
-    // ]).subscribe(([labour_rateValue, labour_additionalValue]) => {
-    //   // Update the net_cost when either value changes
-    //   this.tempForm?.patchValue({
-
-    //     labour_total : (Number(this.tempForm?.get('labour_rate')?.value)+Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
-        
-    //    }, { emitEvent: false }); // Prevent re-triggering the valueChanges
-    // });
 
     this.tempForm?.get('labour_rate')!.valueChanges.subscribe(value=>{
 
@@ -484,10 +460,68 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   public loadData() {
     this.historyState=history.state;
    
+    if(this.historyState!=null)
+    {
+     
+      this.selectedTempEst = this.historyState.selectedRow;
+      this.tempForm?.patchValue({
+        guid: this.selectedTempEst?.guid,
+       // customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
+        template_name: this.selectedTempEst?.template_name,
+        remarks: this.selectedTempEst?.remarks,
+      });
+      var repairEstPartItem:RepairEstPartItem[]=[];
+      repairEstPartItem = this.selectedTempEst?.template_est_part
+    ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
+    .map((item: Partial<TemplateEstPartItem>) => {
+        // Transform the Partial<TemplateEstPartItem> into a RepairEstPartItem
+        return {
+            // Assuming the RepairEstPartItem structure, map fields accordingly:
+            actions: [],  // Use default values if fields are missing
+            create_by:item.create_by,
+            create_dt:item.create_dt,
+            description:item.description,
+            guid:item.guid,
+            hour:item.hour,
+            location_cv:item.location_cv,
+            material_cost:item.tariff_repair?.material_cost,
+            qty:item.quantity,
+            remarks:item.remarks,
+            repair_est:undefined,
+            repair_est_guid:undefined,
+            tariff_repair:item.tariff_repair,
+            tariff_repair_guid:item.tariff_repair_guid,
+            update_by:item.update_by,
+            update_dt:item.update_dt,
+            repair:this.GetRepairOrDamage(item.tep_damage_repair!,0),
+            damage:this.GetRepairOrDamage(item.tep_damage_repair!,1),
+            // Map other fields as needed
+        } as RepairEstPartItem;
+    }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
+      this.populateSOT(repairEstPartItem!)
+    }
 
     this.temp_guid = this.route.snapshot.paramMap.get('id');
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+    if (this.temp_guid?.trim()=='') {
+      this.temp_guid = undefined;
+    }
+
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' },20).subscribe(data => {
       this.customer_companyList = data
+      if(data.length)
+      {
+        const selectedCustomerGuids = this.selectedTempEst?.template_est_customer?.map(customer => customer.customer_company_guid);
+        const selectedCustomers = data.filter(customer =>
+          selectedCustomerGuids?.includes(customer.guid)
+        );
+
+        this.tempForm?.patchValue({
+          customer_code: selectedCustomers
+        });
+        // this.tempForm?.patchValue({
+        //   customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
+        // });
+      }
     });
 
     this.trLabourDS.SearchTariffLabour({},{create_dt:'ASC'}).subscribe(data=>{
@@ -500,19 +534,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       }
     })
 
-    // if (this.temp_guid) {
-    //   // EDIT
-    //   // this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.temp_guid).subscribe(data => {
-    //   //   if (this.sotDS.totalCount > 0) {
-    //   //     this.sotItem = data[0];
-    //   //     this.populateSOForm(this.storingOrderItem);
-    //   //   }
-    //   // });
-    // } else {
-    //   this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-    //     this.customer_companyList = data
-    //   });
-    // }
+ 
     const queries = [
       { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
@@ -555,21 +577,58 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  populateSOForm(so: StoringOrderItem): void {
-    this.tempForm!.patchValue({
-      guid: so.guid,
-      customer_code: so.customer_company,
-      customer_company_guid: so.customer_company_guid,
-      so_no: so.so_no,
-      so_notes: so.so_notes,
-      haulier: so.haulier
-    });
-    if (so.storing_order_tank) {
-      this.populateSOT(so.storing_order_tank);
-    }
-  }
+  // GetCustomerCompanyForDownDrop(customerCompanyList:TemplateEstimateCustomerItem[]):any[]
+  // {
+  //   var result :any =customerCompanyList?.filter((item: Partial<TemplateEstimateCustomerItem> | undefined): item is Partial<TemplateEstimateCustomerItem> => item !== undefined)
+  //   .map((item: Partial<TemplateEstimateCustomerItem>) => {
+  //       // Transform the Partial<TemplateEstPartItem> into a RepairEstPartItem
+  //       return {
+  //         guid : item.customer_company?.guid,
+  //         code : item.customer_company?.code,
+  //         name : item.customer_company?.name,
+  //       } as any;
+  //   }) ?? [];
 
-  populateSOT(rep: RepairEstPartItem[]) {
+  //   return result;
+  // }
+  GetRepairOrDamage(repairDamageList:TepDamageRepairItem[],codeType:Number):any[]
+  {
+    var retval:any[]=[];
+
+    var result=repairDamageList.filter( (item)=>item.code_type==codeType)
+    retval = result?.filter((item: Partial<TepDamageRepairItem> | undefined): item is Partial<TepDamageRepairItem> => item !== undefined)
+    .map((item: Partial<TepDamageRepairItem>) => {
+        // Transform the Partial<TemplateEstPartItem> into a RepairEstPartItem
+        return {
+          guid : item.guid,
+          rep_guid : item.tep_guid,
+          code_cv : item.code_cv,
+          create_dt : item.create_dt,
+          code_type : item.code_type,
+          create_by : item.create_by,
+          update_dt : item.update_dt,
+          update_by : item.update_by,
+          delete_dt : item.delete_dt,
+        } as RepairEstPartItem;
+    }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
+    return retval;
+
+  }
+  // populateSOForm(so: StoringOrderItem): void {
+  //   this.tempForm!.patchValue({
+  //     guid: so.guid,
+  //     customer_code: so.customer_company,
+  //     customer_company_guid: '',//so.customer_company_guid,
+  //     so_no: so.so_no,
+  //     so_notes: so.so_notes,
+  //     haulier: so.haulier
+  //   });
+  //   if (so.storing_order_tank) {
+  //     this.populateSOT(so.storing_order_tank);
+  //   }
+  // }
+
+  populateSOT(rep: any[]) {
     if (rep?.length) {
       const repList: RepairEstPartItem[] = rep.map((item: Partial<RepairEstPartItem> | undefined) => new RepairEstPartItem(item));
       this.updateData(repList);
@@ -618,7 +677,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
           repairCodeCvList: this.repairCodeCvList
         },
         index: -1,
-        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
+        customer_company_guid: '' //this.sotItem?.storing_order?.customer_company_guid
       },
       direction: tempDirection
     });
@@ -675,6 +734,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
         } else {
           this.updateData([...this.repList.data, result.item]);
         }
+        this.calculateCostSummary();
 
       }
     });
@@ -713,6 +773,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
           data.splice(index, 1);
           this.updateData(data); // Refresh the data source
         }
+        this.calculateCostSummary();
       }
     });
   }
@@ -855,7 +916,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
             where.template_name={eq:tempName};
             this.estTempDS.SearchEstimateTemplateOnly(where).subscribe(result=>{
 
-            if(result.length==0 &&  this.temp_guid?.trim()=="")
+            if(result.length==0 &&  this.temp_guid==undefined)
             {
               let temp: MasterTemplateItem = new MasterTemplateItem();
               temp.labour_cost_discount=this.tempForm?.get("labour_discount")?.value;
@@ -863,7 +924,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
               temp.template_name=this.tempForm?.get("template_name")?.value;
               delete temp.totalMaterialCost;
               temp.type_cv="general";
-              if(this.tempForm?.get("customer_code")?.value.length>0)
+              if(this.tempForm?.get("customer_code")?.value?.length>0)
               {
                 
                 temp.type_cv="exclusive";
@@ -984,7 +1045,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  rollbackItem(event: Event, row: StoringOrderTankItem) {
+  rollbackItem(event: Event, row: RepairEstPartItem) {
     // this.id = row.id;
     if (this.sotSelection.hasValue()) {
       this.rollbackSelectedRows(this.sotSelection.selected)
@@ -993,7 +1054,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  undoAction(event: Event, row: StoringOrderTankItem, action: string) {
+  undoAction(event: Event, row: RepairEstPartItem, action: string) {
     // this.id = row.id;
     this.stopPropagation(event);
     if (this.sotSelection.hasValue()) {

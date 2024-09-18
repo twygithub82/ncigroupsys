@@ -59,7 +59,7 @@ import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { pack } from 'd3';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import {FormDialogComponent_Edit_Cost} from './form-dialog-edit-cost/form-dialog.component';
-import { MasterEstimateTemplateDS,MasterTemplateItem } from 'app/data-sources/master-template';
+import { MasterEstimateTemplateDS,MasterTemplateItem, TemplateEstPartItem } from 'app/data-sources/master-template';
 
 @Component({
   selector: 'app-package-repair',
@@ -116,10 +116,10 @@ implements OnInit {
     // 'mobile',
   ];
 
-  pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-REPAIR'
+  pageTitle = 'MENUITEMS.MASTER.LIST.ESTIMATE-TEMPLATE'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.PACKAGE.TEXT'
+    'MENUITEMS.MASTER.TEXT'
   ]
 
   PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
@@ -183,7 +183,7 @@ implements OnInit {
   searchField: string = "";
    exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
-  selection = new SelectionModel<PackageDepotItem>(true, []);
+  selection = new SelectionModel<MasterTemplateItem>(true, []);
   
   id?: number;
   advanceTable?: AdvanceTable;
@@ -438,42 +438,63 @@ implements OnInit {
     });
   }
   
-  editCall(row: PackageRepairItem) {
-   // this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    var rows :PackageRepairItem[] =[] ;
-    rows.push(row);
-    const dialogRef = this.dialog.open(FormDialogComponent,{
-      
-      width: '800px',
-     
-      data: {
-        action: 'update',
-        langText: this.langText,
-        selectedItems:rows
-      },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-        
-    });
+  editCall(row: TemplateEstPartItem) {
 
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         //if (result) {
-          if(result>0)
-            {
-              this.handleSaveSuccess(result);
-              //this.search();
-              if(this.masterTemplateItem.length>1)
-                  this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-            }
-      //}
-      });
+    
+    // Navigate to the route and pass the JSON object
+       this.router.navigate(['/admin/master/estimate-template/new/'+row.guid], {
+         state: { id: row.guid ,
+           type:'estimate-template',
+           selectedRow:row,
+           pagination:{
+             where :this.lastSearchCriteria,
+             pageSize:this.pageSize,
+             pageIndex:this.pageIndex,
+             hasPreviousPage:this.hasPreviousPage,
+             startCursor:this.startCursor,
+             endCursor:this.endCursor,
+             previous_endCursor:this.previous_endCursor,
+             
+             showResult: this.masterEstTempDS.totalCount>0
+             
+           }
+         }
+       });
+  //  // this.preventDefault(event);  // Prevents the form submission
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   var rows :PackageRepairItem[] =[] ;
+  //   rows.push(row);
+  //   const dialogRef = this.dialog.open(FormDialogComponent,{
+      
+  //     width: '800px',
+     
+  //     data: {
+  //       action: 'update',
+  //       langText: this.langText,
+  //       selectedItems:rows
+  //     },
+  //     position: {
+  //       top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+  //     }
+        
+    // });
+
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //      //if (result) {
+    //       if(result>0)
+    //         {
+    //           this.handleSaveSuccess(result);
+    //           //this.search();
+    //           if(this.masterTemplateItem.length>1)
+    //               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+    //         }
+    //   //}
+    //   });
    
   }
 

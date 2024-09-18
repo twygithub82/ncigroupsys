@@ -175,10 +175,6 @@
                     <table mat-table [dataSource]="repList" matSort
                       class="mat-cell advance-table striped-rows hover-highlight">
                       <!-- ID Column -->
-                      <ng-container matColumnDef="id">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
-                        <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                      </ng-container>
                       <ng-container matColumnDef="group_name_cv">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -202,7 +198,7 @@
                           {{row.tariff_repair?.subgroup_name_cv}}
                         </mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="damange">
+                      <ng-container matColumnDef="damage">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
@@ -309,18 +305,18 @@
                           </button>
                           }
                         </mat-cell> -->
-                        <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
+                         <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
                           </button>
                           <mat-menu #menu="matMenu">
-                            @if (soDS.canAdd(storingOrderItem)) {
+                            <!-- @if (soDS.canAdd(storingOrderItem)) {
                             <button mat-menu-item (click)="handleDuplicateRow($event, row)">
                               <mat-icon>add_to_photos</mat-icon>
                               <span>{{translatedLangText.DUPLICATE}}</span>
                             </button>
-                            }
-                            @if (sotDS.canAddRemove(row)) {
+                            } -->
+                             @if (sotDS.canAddRemove(row)) { 
                             <button mat-menu-item (click)="handleDelete($event, row, i)">
                               <mat-icon>delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
@@ -353,7 +349,7 @@
                             </button>
                             }
                           </mat-menu>
-                        </mat-cell>
+                        </mat-cell> 
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
@@ -762,31 +758,31 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{tempForm!.get('total_material_cost')?.value | number: '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{tempForm!.get('total_cost')?.value | number: '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span style="color: #af0404;">{{tempForm!.get('labour_discount_amount')?.value | number: '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span style="color:  #af0404;">{{tempForm!.get('material_discount_amount')?.value | number: '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{tempForm!.get('net_cost')?.value | number: '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 
@@ -802,8 +798,7 @@
               }
               <div class="row m-t-5">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                  <button mat-flat-button type="button" aria-label="Back to previous page"
-                    (click)="$event.preventDefault();" [routerLink]="['/admin/repair/estimate']">
+                  <button mat-flat-button type="button" aria-label="Back to previous page"  (click)="GoBackPrevious($event)">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>

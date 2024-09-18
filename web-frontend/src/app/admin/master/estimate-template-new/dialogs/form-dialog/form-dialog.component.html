@@ -65,15 +65,12 @@
             <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
               formControlName="part_name" required>
             <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
-              <mat-option *ngFor="let name of partNameFilteredList; trackBy: trackByFn" [value]="name" >
-                {{name}}
-              </mat-option>
-              <!-- @for (name of partNameFilteredList; track name) {
+              @for (name of partNameFilteredList; track name) {
 
               <mat-option [value]="name">
                 {{name}}
               </mat-option>
-              } -->
+              }
             </mat-autocomplete>
             @if (partNameControl.get('part_name')?.hasError('required')) {
             <mat-error>
@@ -179,11 +176,11 @@
             <input matInput formControlName="material_cost" type="number" required>
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+        <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-checkbox formControlName="iq" class="m-r-5" color="primary">
             {{data.translatedLangText.IQ}}
           </mat-checkbox>
-        </div>
+        </div> -->
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {

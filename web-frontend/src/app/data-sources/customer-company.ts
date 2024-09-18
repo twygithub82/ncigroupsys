@@ -71,8 +71,8 @@ export interface CustomerCompanyResult {
 }
 
 export const GET_COMPANY_QUERY = gql`
-  query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!]) {
-    companyList: queryCustomerCompany(where: $where, order: $order) {
+  query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int) {
+    companyList: queryCustomerCompany(where: $where, order: $order,first: $first) {
       nodes {
         code
         name
@@ -157,7 +157,8 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     getOwnerList(owner_guid?: string): Observable<CustomerCompanyItem[]> {
         this.loadingSubject.next(true);
         const where = {
-            type_cv: { in: [ "OWNER", "LEESSEE" ] }
+            guid: { eq: owner_guid },
+            type_cv: { in: ["OWNER", "LEESSEE"] }
         }
         const order = {
 
