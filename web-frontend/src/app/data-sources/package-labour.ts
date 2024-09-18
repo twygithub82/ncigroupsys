@@ -164,7 +164,7 @@ export const GET_CUSTOMER_COST = gql`
           country
           create_by
           create_dt
-          currency_cv
+          currency_guid
           delete_dt
           description
           effective_dt
@@ -174,11 +174,15 @@ export const GET_CUSTOMER_COST = gql`
           name
           phone
           postal
-          tariff_depot_guid
           type_cv
           update_by
           update_dt
           website
+          currency {
+            is_active
+            rate
+            delete_dt
+          }
         }
       }
     }

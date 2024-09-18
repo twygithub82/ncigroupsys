@@ -59,7 +59,7 @@ import { PreviewImageDialogComponent } from '@shared/components/preview-image-di
   standalone: true,
   templateUrl: './in-gate-survey-form.component.html',
   styleUrl: './in-gate-survey-form.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -335,6 +335,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   initForm() {
     this.surveyForm = this.fb.group({
+      owner: this.ownerControl,
       owner_guid: [''],
       last_test_cv: [''],
       next_test_cv: [''],
@@ -423,6 +424,24 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.surveyForm!.get('test_class_cv')?.valueChanges.subscribe(() => {
       this.onTestValuesChanged();
     });
+
+    this.surveyForm!.get('owner')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+          this.surveyForm!.get('owner_guid')!.setValue(value.guid);
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }], type_cv: { in: ["OWNER", "LEESSEE"] } }, { code: 'ASC' }).subscribe(data => {
+          this.ownerList = data;
+          // this.markForCheck();
+        });
+      })
+    ).subscribe();
   }
 
   images(): UntypedFormArray {
@@ -583,9 +602,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         if (this.igDS.totalCount > 0) {
           this.in_gate = data[0];
           this.populateInGateForm(this.in_gate);
-          this.ccDS.getOwnerList().subscribe(data => {
-            this.ownerList = data;
-          });
+          // this.ccDS.getOwnerList().subscribe(data => {
+          //   this.ownerList = data;
+          // });
           if (this.in_gate!.in_gate_survey?.guid) {
             this.fileManagerService.getFileUrlByGroupGuid([this.in_gate!.in_gate_survey?.guid]).subscribe({
               next: (response) => {
@@ -608,6 +627,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   populateInGateForm(ig: InGateItem): void {
     this.surveyForm!.patchValue({
       guid: ig.guid,
+      owner: ig.tank?.customer_company,
+      owner_guid: ig.tank?.owner_guid,
       unit_type_guid: ig?.tank?.unit_type_guid,
       vehicle_no: ig.vehicle_no,
       driver_name: ig.driver_name,
@@ -676,6 +697,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.populateTopSideCells(JSON.parse(ig.in_gate_survey?.top_coord || '{}'));
     this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(ig.in_gate_survey?.front_coord || '[]'));
     this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(ig.in_gate_survey?.bottom_coord || '[]'));
+    // this.markForCheck();
   }
 
   populateHighlightedCells(toUpdateCells: boolean[], coordinates: { x: number; y: number }[]): boolean[] {
@@ -734,7 +756,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       frontImage: this.patchOrCreateImageForm('FRONT_SIDE', frontImg, this.surveyForm?.get('frontImage')),
       bottomImage: this.patchOrCreateImageForm('BOTTOM_SIDE', bottomImg, this.surveyForm?.get('bottomImage'))
     });
-    this.markForCheck();
+    // this.markForCheck();
   }
 
   // export table data in excel file
@@ -759,6 +781,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.surveyForm?.valid) {
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
       sot.unit_type_guid = this.surveyForm.get('unit_type_guid')?.value;
+      sot.owner_guid = this.surveyForm.get('owner_guid')?.value;
 
       let ig: InGateGO = new InGateGO(this.in_gate!);
       ig.vehicle_no = this.surveyForm.get('vehicle_no')?.value;
@@ -1069,7 +1092,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           const preview = reader.result as string | ArrayBuffer;
           tankSideForm.get('file')?.setValue(file);
           tankSideForm.get('preview')?.setValue(preview);
-          this.markForCheck();
+          // this.markForCheck();
         };
         reader.readAsDataURL(file);
       });
@@ -1085,7 +1108,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         reader.onload = () => {
           const preview = reader.result as string | ArrayBuffer;
           this.images().push(this.createImageForm('', preview, file));
-          this.markForCheck();
+          // this.markForCheck();
         };
         reader.readAsDataURL(file);
       });
@@ -1141,7 +1164,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           imgForm.patchValue({
             preview: ''
           });
-          this.markForCheck();
+          // this.markForCheck();
           this.handleDeleteSuccess(1);
         } else if (Utility.isUrl(url)) {
           this.fileManagerService.deleteFile([url]).subscribe({
@@ -1150,7 +1173,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
               imgForm.patchValue({
                 preview: ''
               });
-              this.markForCheck();
+              // this.markForCheck();
               this.handleDeleteSuccess(response);
             },
             error: (error) => {
@@ -1190,14 +1213,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       if (result.action === 'confirmed') {
         if (Utility.isBase64Url(url)) {
           this.images().removeAt(index);
-          this.markForCheck();
+          // this.markForCheck();
           this.handleDeleteSuccess(1);
         } else if (Utility.isUrl(url)) {
           this.fileManagerService.deleteFile([url]).subscribe({
             next: (response) => {
               console.log('Files delete successfully:', response);
               this.images().removeAt(index);
-              this.markForCheck();
+              // this.markForCheck();
               this.handleDeleteSuccess(response);
             },
             error: (error) => {
@@ -1259,7 +1282,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         } else {
           this.resetHighlightedCells(highlightedCells);
         }
-        this.markForCheck();
+        // this.markForCheck();
       }
     });
   }
@@ -1381,7 +1404,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     event.preventDefault(); // Prevents the form submission
   }
 
-  markForCheck() {
-    this.cdr.markForCheck(); // Trigger change detection manually
-  }
+  // markForCheck() {
+  //   this.cdr.markForCheck(); // Trigger change detection manually
+  // }
 }

@@ -177,13 +177,32 @@
                         <div class="row">
                           <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                              <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                                   <input matInput formControlName="haulier" required>
                                   @if (inGateForm?.get('haulier')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.HAULIER}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  }
+                                </mat-form-field>
+                              </div>
+                              <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>{{translatedLangText.OWNER}}</mat-label>
+                                  <input type="text" matInput [formControl]="ownerControl" [matAutocomplete]="ownerCode"
+                                    formControlName="owner" required>
+                                  <mat-autocomplete #ownerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                                    @for (cc of ownerList; track cc) {
+                                    <mat-option [value]="cc">
+                                      {{ccDS.displayName(cc)}}
+                                    </mat-option>
+                                    }
+                                  </mat-autocomplete>
+                                  @if (inGateForm?.get('owner')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.CUSTOMER}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
                                   }
                                 </mat-form-field>

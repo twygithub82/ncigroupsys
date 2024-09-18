@@ -164,7 +164,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    OWNER: 'COMMON-FORM.OWNER'
   }
 
   inGateForm?: UntypedFormGroup;
@@ -179,6 +180,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
   sot_guid?: string | null;
 
+  ownerControl = new UntypedFormControl();
+  ownerList?: CustomerCompanyItem[];
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   yesnoCv: CodeValuesItem[] = [];
@@ -229,6 +232,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       eir_dt: [{ value: new Date(), disabled: true }],
       job_no: [''],
       haulier: [''],
+      owner: this.ownerControl,
+      owner_guid: [''],
       vehicle_no: [''],
       driver_name: [''],
       remarks: [''],
@@ -246,7 +251,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
-      this.subs.sink = this.sotDS.getStoringOrderTankByID(this.sot_guid).subscribe(data => {
+      this.subs.sink = this.sotDS.getStoringOrderTankByIDForInGate(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.storingOrderTankItem = data[0];
           this.populateInGateForm(this.storingOrderTankItem);
@@ -281,23 +286,11 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
-  }
-
   populateInGateForm(sot: StoringOrderTankItem): void {
     this.inGateForm!.patchValue({
       haulier: sot.storing_order?.haulier,
+      owner: sot.customer_company,
+      owner_guid: sot.owner_guid,
       vehicle_no: this.igDS.getInGateItem(sot.in_gate)?.vehicle_no,
       driver_name: this.igDS.getInGateItem(sot.in_gate)?.driver_name,
       eir_dt: this.igDS.getInGateItem(sot.in_gate)?.eir_dt ? Utility.convertDate(this.igDS.getInGateItem(sot.in_gate)?.eir_dt) : new Date(),
@@ -401,12 +394,30 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         }
       })
     ).subscribe();
+
+    this.inGateForm!.get('owner')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+          this.inGateForm!.get('owner_guid')!.setValue(value.guid);
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }], type_cv: { in: ["OWNER", "LEESSEE"] } }, { code: 'ASC' }).subscribe(data => {
+          this.ownerList = data
+        });
+      })
+    ).subscribe();
   }
 
   onInGateFormSubmit() {
     if (this.inGateForm?.valid) {
       console.log('Valid inGateForm', this.inGateForm?.value);
       this.storingOrderTankItem!.storing_order!.haulier = this.inGateForm.get('haulier')?.value;
+      this.storingOrderTankItem!.owner_guid = this.inGateForm.get('owner_guid')?.value;
       this.storingOrderTankItem!.job_no = this.inGateForm.get('job_no')?.value;
       this.storingOrderTankItem!.purpose_storage = this.inGateForm.get('purpose_storage')?.value;
       this.storingOrderTankItem!.last_cargo_guid = this.inGateForm.get('last_cargo_guid')?.value;
