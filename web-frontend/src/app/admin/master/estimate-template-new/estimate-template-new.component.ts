@@ -1030,6 +1030,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   {
     
     const tempEstimateCustomerItems: TemplateEstimateCustomerItem[] = this.selectedTempEst!.template_est_customer!.map((node: any) => new TemplateEstimateCustomerItem(node));
+    this.selectedTempEst!.labour_cost_discount=this.tempForm?.get("labour_discount")?.value;
+    this.selectedTempEst!.material_cost_discount=this.tempForm?.get("material_discount")?.value;
     this.selectedTempEst!.template_est_customer=tempEstimateCustomerItems;
     var existdata_cust=this.selectedTempEst!.template_est_customer;
     existdata_cust?.forEach(value=>{value.action="CANCEL";value.customer_company=undefined;});
