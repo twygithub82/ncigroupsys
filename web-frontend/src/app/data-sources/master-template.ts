@@ -245,6 +245,7 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
         quantity
         location_cv
         remarks
+        tariff_repair_guid
         tariff_repair {
           alias
           create_by
