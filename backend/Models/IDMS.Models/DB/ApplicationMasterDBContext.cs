@@ -17,6 +17,19 @@ namespace IDMS.Models.Master.GqlTypes.DB
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            //modelBuilder.Entity<aspnetuserroles>()
+            //.HasKey(sc => new { sc.userID, sc.roleID });
+
+            //modelBuilder.Entity<aspnetuserroles>()
+            //    .HasOne(sc => sc.aspnetusers)
+            //    .WithMany(s => s.aspnetuserroles)
+            //    .HasForeignKey(sc => sc.userID);
+
+            //modelBuilder.Entity<aspnetuserroles>()
+            //    .HasOne(sc => sc.aspnetroles)
+            //    .WithMany(c => c.aspnetuserroles)
+            //    .HasForeignKey(sc => sc.roleID);
         }
 
         //public DbSet<IDMS.Models.Tariff.tariff_cleaning> tariff_cleaning { get; set; }

@@ -18,7 +18,7 @@ namespace IDMS.Models.Service
         public string? guid { get; set; }
 
         [ForeignKey("tariff_repair")]
-        public string? tariff_repair_guid { get; set; }
+        public string tariff_repair_guid { get; set; }
 
         [ForeignKey("repair_est")]
         public string? repair_est_guid { get; set; }
@@ -28,6 +28,7 @@ namespace IDMS.Models.Service
         public int quantity { get; set; }
         public double hour { get; set; }
         public bool owner { get; set; } = false;
+        public string? status_cv { get; set; }
 
         [NotMapped]
         public string? action { get; set; }

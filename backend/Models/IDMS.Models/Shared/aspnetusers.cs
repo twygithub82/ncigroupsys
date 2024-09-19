@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,7 +20,7 @@ namespace IDMS.Models.Shared
         public string? UserName { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
-        public IEnumerable<aspnetuserroles> aspnetuserroles { get; set; }
+        public IEnumerable<aspnetuserroles?>? aspnetuserroles { get; set; }
     }
 
     public class aspnetroles
@@ -29,11 +30,12 @@ namespace IDMS.Models.Shared
         [GraphQLName("Role")]
         public string? Name { get; set; }
 
-        public IEnumerable<aspnetuserroles> aspnetuserroles { get; set; }
+        public IEnumerable<aspnetuserroles?>? aspnetuserroles { get; set; }
     }
 
+    [PrimaryKey("userID", "roleID")]
     public class aspnetuserroles
-    { 
+    {
         public string userID { get; set; }
         public string roleID { get; set; }
 

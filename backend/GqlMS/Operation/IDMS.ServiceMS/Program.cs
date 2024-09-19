@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 using IDMS.Models.Service.GqlTypes.DB;
 using HotChocolate.Data;
 using IDMS.Repair;
+using IDMS.Repair.GqlTypes;
 
 namespace IDMS.ServiceMS
 {
@@ -55,7 +56,7 @@ namespace IDMS.ServiceMS
                        .InitializeOnStartup()
                        .RegisterDbContext<ApplicationServiceDBContext>(DbContextKind.Pooled)
                        .AddQueryType<RepairEstQuery>()
-                       //.AddQueryType<TemplateEstQuery>()
+                       .AddMutationType<RepairEstMutation>()
                        //.AddTypeExtension<CustomerQuery>()
                        //.AddTypeExtension<SchedulingQuery>()
                        //.AddTypeExtension<ReleaseOrderQuery>()

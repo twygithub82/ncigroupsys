@@ -13,7 +13,7 @@ namespace IDMS.Repair.GqlTypes
     public class RepairEstMutation
     {
         public async Task<int> AddRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, repair_est newRepairEstimate)
+            [Service] IConfiguration config, repair_est RepairEstimate)
         {
             try
             {
@@ -25,14 +25,14 @@ namespace IDMS.Repair.GqlTypes
                 repEstimate.create_by = user;
                 repEstimate.create_dt = currentDateTime;
 
-                repEstimate.sot_guid = newRepairEstimate.sot_guid;
-                repEstimate.aspnetusers_guid = newRepairEstimate.aspnetusers_guid;  
-                repEstimate.estimate_no = newRepairEstimate.estimate_no;
-                repEstimate.labour_cost_discount = newRepairEstimate.labour_cost_discount;
-                repEstimate.material_cost_discount = newRepairEstimate.material_cost_discount;
-                repEstimate.total_cost = newRepairEstimate.total_cost;
-                repEstimate.owner_enable = newRepairEstimate.owner_enable;
-                repEstimate.remarks = newRepairEstimate.remarks;
+                repEstimate.sot_guid = RepairEstimate.sot_guid;
+                repEstimate.aspnetusers_guid = RepairEstimate.aspnetusers_guid;  
+                repEstimate.estimate_no = RepairEstimate.estimate_no;
+                repEstimate.labour_cost_discount = RepairEstimate.labour_cost_discount;
+                repEstimate.material_cost_discount = RepairEstimate.material_cost_discount;
+                repEstimate.total_cost = RepairEstimate.total_cost;
+                repEstimate.owner_enable = RepairEstimate.owner_enable;
+                repEstimate.remarks = RepairEstimate.remarks;
                 await context.repair_est.AddAsync(repEstimate);
 
                 //if (TemplateType.EXCLUSIVE.EqualsIgnore(newRepairEstimate.type_cv))
@@ -44,7 +44,7 @@ namespace IDMS.Repair.GqlTypes
                 //}
 
                 IList<repair_est_part> partList = new List<repair_est_part>();
-                foreach (var newPart in newRepairEstimate.repair_est_part)
+                foreach (var newPart in RepairEstimate.repair_est_part)
                 {
                     newPart.guid = Util.GenerateGUID();
                     newPart.create_by = user;
@@ -70,106 +70,110 @@ namespace IDMS.Repair.GqlTypes
         }
 
 
-        //public async Task<int> UpdateRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        //    [Service] IConfiguration config, repair_est editRepairEsimate)
-        //{
-        //    try
-        //    {
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
+        public async Task<int> UpdateRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, repair_est RepairEsimate)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
 
-        //        //if (string.IsNullOrEmpty(templateEstimate.guid))
-        //        //throw new GraphQLException(new Error($"Template_estimate guid used for update cannot be null or empty", "ERROR"));
+                if (string.IsNullOrEmpty(RepairEsimate.guid))
+                    throw new GraphQLException(new Error($"Template_estimate guid used for update cannot be null or empty", "ERROR"));
 
-        //        var repTemplate = new repair_est() { guid = editRepairEsimate.guid };
-        //        context.Attach(repTemplate);
+                var repTemplate = new repair_est() { guid = RepairEsimate.guid };
+                context.Attach(repTemplate);
 
-        //        //var repTemplate = await context.repair_est.Where(t => t.guid == editRepairEsimate.guid && (t.delete_dt == null || t.delete_dt == 0))
-        //        //                                        .Include(t => t.repair_est_part)
-        //        //                                            .ThenInclude(tp => tp.rep_damage_repair)
-        //        //                                        .FirstOrDefaultAsync();
+                //var repTemplate = await context.repair_est.Where(t => t.guid == editRepairEsimate.guid && (t.delete_dt == null || t.delete_dt == 0))
+                //                                        .Include(t => t.repair_est_part)
+                //                                            .ThenInclude(tp => tp.rep_damage_repair)
+                //                                        .FirstOrDefaultAsync();
 
-        //        if (repTemplate == null)
-        //            throw new GraphQLException(new Error($"Repair_estimate not found", "ERROR"));
+                if (repTemplate == null)
+                    throw new GraphQLException(new Error($"Repair_estimate not found", "ERROR"));
 
-        //        repTemplate.update_by = user;
-        //        repTemplate.update_dt = currentDateTime;
-        //        repTemplate.sot_guid = editRepairEsimate.sot_guid;
-        //        repTemplate.aspnetusers_guid = editRepairEsimate.aspnetusers_guid;
-        //        repTemplate.labour_cost_discount = editRepairEsimate.labour_cost_discount;
-        //        repTemplate.material_cost_discount = editRepairEsimate.material_cost_discount;
-        //        repTemplate.total_cost = editRepairEsimate.total_cost;
-        //        repTemplate.remarks = editRepairEsimate.remarks;
+                repTemplate.update_by = user;
+                repTemplate.update_dt = currentDateTime;
+                repTemplate.sot_guid = RepairEsimate.sot_guid;
+                repTemplate.aspnetusers_guid = RepairEsimate.aspnetusers_guid;
+                repTemplate.labour_cost_discount = RepairEsimate.labour_cost_discount;
+                repTemplate.material_cost_discount = RepairEsimate.material_cost_discount;
+                repTemplate.total_cost = RepairEsimate.total_cost;
+                repTemplate.remarks = RepairEsimate.remarks;
 
-        //        if (editRepairEsimate.repair_est_part != null)
-        //        {
-        //            foreach (var part in editRepairEsimate.repair_est_part)
-        //            {
-        //                if (ObjectAction.NEW.EqualsIgnore(part.action))
-        //                {
-        //                    var newEstPart = part;
-        //                    newEstPart.guid = Util.GenerateGUID();
-        //                    newEstPart.create_by = user;
-        //                    newEstPart.create_dt = currentDateTime;
-        //                    newEstPart.template_est_guid = repTemplate.guid;
-        //                    await UpdateRepairDamageCode(context, user, currentDateTime, part);
-        //                    await context.template_est_part.AddAsync(newEstPart);
-        //                    continue;
-        //                }
-
-
-        //                var existingPart = repTemplate.template_est_part?.Where(p => p.guid == part.guid && (p.delete_dt == null || p.delete_dt == 0)).FirstOrDefault();
-        //                if (existingPart == null)
-        //                    throw new GraphQLException(new Error($"Template_part guid used for update cannot be null or empty", "ERROR"));
-
-        //                if (ObjectAction.EDIT.EqualsIgnore(part.action))
-        //                {
-        //                    //var updatePart = new template_est_part() { guid = part.guid };
-        //                    //context.Attach(updatePart);
-        //                    existingPart.update_by = user;
-        //                    existingPart.update_dt = currentDateTime;
-        //                    existingPart.quantity = part.quantity;
-        //                    existingPart.location_cv = part.location_cv;
-        //                    existingPart.hour = part.hour;
-        //                    existingPart.remarks = part.remarks;
-        //                    await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
-        //                    continue;
-        //                }
-
-        //                if (ObjectAction.CANCEL.EqualsIgnore(part.action))
-        //                {
-        //                    //var delPart = new template_est_part() { guid = part.guid };
-        //                    //context.Attach(delPart);
-        //                    existingPart.delete_dt = currentDateTime;
-        //                    existingPart.update_dt = currentDateTime;
-        //                    existingPart.update_by = user;
-        //                    await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
-        //                    continue;
-        //                }
-        //            }
-        //        }
-
-        //        if (TemplateType.EXCLUSIVE.EqualsIgnore(editRepairEsimate.type_cv))
-        //        {
-        //            if (editRepairEsimate.template_est_customer == null)
-        //                throw new GraphQLException(new Error($"Template_customer object cannot be null", "ERROR"));
-
-        //            await UpdateCustomer(context, editRepairEsimate.template_est_customer, user, currentDateTime, repTemplate);
-        //        }
+                if (RepairEsimate.repair_est_part != null)
+                {
+                    foreach (var part in RepairEsimate.repair_est_part)
+                    {
+                        if (ObjectAction.NEW.EqualsIgnore(part.action))
+                        {
+                            var newRepairPart = part;
+                            newRepairPart.guid = Util.GenerateGUID();
+                            newRepairPart.create_by = user;
+                            newRepairPart.create_dt = currentDateTime;
+                            newRepairPart.repair_est_guid = repTemplate.guid;
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part);
+                            await context.repair_est_part.AddAsync(newRepairPart);
+                            continue;
+                        }
 
 
-        //        var res = await context.SaveChangesAsync();
+                        //var existingPart = repTemplate.repair_est_part?.Where(p => p.guid == part.guid && (p.delete_dt == null || p.delete_dt == 0)).FirstOrDefault();
+                        //if (existingPart == null)
+                        //    throw new GraphQLException(new Error($"Repair_est_part guid used for update cannot be null or empty", "ERROR"));
 
-        //        //TODO
-        //        //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
-        //        return res;
+                        if (ObjectAction.EDIT.EqualsIgnore(part.action))
+                        {
+                            var existingPart = new repair_est_part() { guid = part.guid };
+                            context.Attach(existingPart);
+                            existingPart.update_by = user;
+                            existingPart.update_dt = currentDateTime;
+                            existingPart.description = part.description;
+                            existingPart.owner = part.owner;
+                            existingPart.quantity = part.quantity;
+                            existingPart.location_cv = part.location_cv;
+                            existingPart.hour = part.hour;
+                            existingPart.remarks = part.remarks;
+                            existingPart.status_cv = part.status_cv;
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            continue;
+                        }
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //}
+                        if (ObjectAction.CANCEL.EqualsIgnore(part.action))
+                        {
+                            var existingPart = new repair_est_part() { guid = part.guid };
+                            context.Attach(existingPart);
+
+                            existingPart.delete_dt = currentDateTime;
+                            existingPart.update_dt = currentDateTime;
+                            existingPart.update_by = user;
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            continue;
+                        }
+                    }
+                }
+
+                //if (TemplateType.EXCLUSIVE.EqualsIgnore(editRepairEsimate.type_cv))
+                //{
+                //    if (editRepairEsimate.template_est_customer == null)
+                //        throw new GraphQLException(new Error($"Template_customer object cannot be null", "ERROR"));
+
+                //    await UpdateCustomer(context, editRepairEsimate.template_est_customer, user, currentDateTime, repTemplate);
+                //}
+
+
+                var res = await context.SaveChangesAsync();
+
+                //TODO
+                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                return res;
+
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
 
 
         private async Task UpdateRepairDamageCode(ApplicationServiceDBContext context, string user, long currentDateTime,
@@ -207,9 +211,9 @@ namespace IDMS.Repair.GqlTypes
                             if (string.IsNullOrEmpty(item.guid))
                                 throw new GraphQLException(new Error($"Rep_damage_repair guid cannot null or empty for update", "ERROR"));
 
-                            //var tepDamage = new tep_damage_repair() { guid = item.guid };
-                            var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
-                            //context.Attach(tepDamage);
+                            //var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            var repDamage = new rep_damage_repair() { guid = item.guid };
+                            context.Attach(repDamage);
                             if (repDamage != null)
                             {
                                 repDamage.update_dt = currentDateTime;
@@ -226,9 +230,9 @@ namespace IDMS.Repair.GqlTypes
                             if (string.IsNullOrEmpty(item.guid))
                                 throw new GraphQLException(new Error($"Rep_damage_repair guid cannot null or empty for cancel", "ERROR"));
 
-                            //var tepDamage = new tep_damage_repair() { guid = item.guid };
-                            //context.Attach(tepDamage);
-                            var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            var repDamage = new rep_damage_repair() { guid = item.guid };
+                            context.Attach(repDamage);
+                            //var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
                             if (repDamage != null)
                             {
                                 repDamage.delete_dt = currentDateTime;
@@ -237,7 +241,6 @@ namespace IDMS.Repair.GqlTypes
                             }
                             continue;
                         }
-
                     }
                 }
             }
