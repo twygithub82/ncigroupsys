@@ -55,6 +55,20 @@ export class TepDamageRepairItem {
   tep_guid?: string | null;
   update_by?: string | null;
   update_dt?: string | null;
+  constructor(item: Partial<TepDamageRepairItem> = {}) {
+    // Object.assign(this, { guid: '', ...item });
+    
+    this.action=item.action;
+    this.guid=item.guid;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+    this.code_cv=item.code_cv;
+    this.code_type=item.code_type;
+    this.tep_guid=item.tep_guid;
+   }
 }
 
 export class TemplateEstPartItem {
@@ -111,6 +125,22 @@ export class TemplateEstimateCustomerItem{
  
   customer_company?: CustomerCompanyItem | null;
   customer_company_guid?:string |null;
+
+  constructor(item: Partial<TemplateEstimateCustomerItem> = {}) {
+    // Object.assign(this, { guid: '', ...item });
+    
+    this.action=item.action;
+    this.guid=item.guid;
+    this.template_est_guid=item.template_est_guid;
+    this.customer_company_guid=item.customer_company_guid
+    this.customer_company=item.customer_company;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+    
+   }
   
 }
 export class MasterTemplateItem extends MasterTemplateGo {
@@ -270,6 +300,12 @@ export const ADD_MASTER_TEMPLATE_ESTIMATION = gql`
   }
 `;
 
+export const UPDATE_MASTER_TEMPLATE_ESTIMATION = gql`
+  mutation updateTemplateEstimation($editTemplateEstimate:template_estInput!) {
+    updateTemplateEstimation(editTemplateEsimate: $editTemplateEstimate)
+  }
+`;
+
 
 
 
@@ -345,6 +381,20 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
         mutation: ADD_MASTER_TEMPLATE_ESTIMATION,
         variables: {
           newTemplateEstimate
+        }
+      }).pipe(
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+      );
+    }
+
+    UpdateMasterTemplate(editTemplateEstimate: any): Observable<any> {
+      return this.apollo.mutate({
+        mutation: UPDATE_MASTER_TEMPLATE_ESTIMATION,
+        variables: {
+          editTemplateEstimate
         }
       }).pipe(
         catchError((error: ApolloError) => {

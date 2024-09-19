@@ -695,7 +695,7 @@ implements OnInit {
   }
   public loadData() {
 
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' },50).subscribe(data => {
      // this.customer_companyList1 = data
     });
 
