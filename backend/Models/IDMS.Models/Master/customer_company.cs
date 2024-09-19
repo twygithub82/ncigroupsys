@@ -36,7 +36,7 @@ namespace IDMS.Models.Master
         //public string? tariff_depot_guid { get; set; }
 
         public currency? currency { get; set; }
-
+        public IEnumerable<storing_order_tank>? storing_order_tank { get; set; }
         public IEnumerable<storing_order>? storing_orders { get; set; }
         public IEnumerable<customer_company_contact_person>? cc_contact_person { get; set; }
         public IEnumerable<release_order>? release_order { get; set; }

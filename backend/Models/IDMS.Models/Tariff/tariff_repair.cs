@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Master;
+using IDMS.Models.Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,5 +31,6 @@ namespace IDMS.Models.Tariff
         public string? remarks { get; set; }
 
        public IEnumerable<template_est_part>? template_est_part { get; set; }    
+       public IEnumerable<repair_est_part>? repair_est_part { get; set; }
     }
 }

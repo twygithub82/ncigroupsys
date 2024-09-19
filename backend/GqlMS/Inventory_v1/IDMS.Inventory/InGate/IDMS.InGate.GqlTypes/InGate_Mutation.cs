@@ -71,7 +71,7 @@ namespace IDMS.InGate.GqlTypes
                 {
                     so.haulier = InGate.haulier;
                     so.update_by = uid;
-                    so.update_dt = GqlUtils.GetNowEpochInSec();
+                    so.update_dt = currentDate;
                 }
 
                 if (InGate.tank != null)
@@ -86,10 +86,11 @@ namespace IDMS.InGate.GqlTypes
                     so_tank.tank_status_cv = GqlUtils.GetCodeValue(context, tankStatusGuid);
                     //   so_tank.purpose_cleaning = InGate.tank.purpose_cleaning;
                     //   so_tank.purpose_steam= InGate.tank.purpose_steam;
+                    so_tank.owner_guid = InGate.tank.owner_guid;
                     so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
                     so_tank.purpose_storage = InGate.tank.purpose_storage;
                     so_tank.update_by = uid;
-                    so_tank.update_dt = GqlUtils.GetNowEpochInSec();
+                    so_tank.update_dt = currentDate;
                     so_guid = so_tank.so_guid;
                 }
                 newInGate.eir_no = $"{so.so_no}";
@@ -186,6 +187,7 @@ namespace IDMS.InGate.GqlTypes
                         //  so_tank.purpose_steam = InGate.tank.purpose_steam;
                         so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
                         so_tank.purpose_storage = InGate.tank.purpose_storage;
+                        so_tank.owner_guid = InGate.tank.owner_guid;
                         so_tank.update_by = uid;
                         so_tank.update_dt = epochNow;
                         so_guid = so_tank.so_guid;

@@ -19,7 +19,7 @@ namespace IDMS.Models.Master
         public string? template_est_guid { get; set; }
 
         [ForeignKey("tariff_repair")]
-        public string? tariff_repair_guid { get; set; }
+        public string tariff_repair_guid { get; set; }
         public string? description { get; set; }
         public string? location_cv { get; set; }
         public string? remarks {  get; set; }

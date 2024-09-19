@@ -1,4 +1,5 @@
 ﻿using HotChocolate;
+using IDMS.Models.Master;
 using IDMS.Models.Tariff;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace IDMS.Models.Inventory
         public string? last_cargo_guid { get; set; }
         public string? last_test_guid { get; set; }
 
+        [ForeignKey("customer_company")]
         public string? owner_guid { get; set; } 
         public string? tank_no { get; set; }
         public string? job_no { get; set; }
@@ -49,6 +51,7 @@ namespace IDMS.Models.Inventory
         public string? tank_status_cv { get; set; }
         public storing_order? storing_order { get; set; }
         public tariff_cleaning? tariff_cleaning { get; set; }
+        public customer_company? customer_company { get; set; }
         public IEnumerable<InGateWithTank>? in_gate { get; set; }
         public IEnumerable<out_gate>? out_gate { get; set; }
         public IEnumerable<booking>? booking { get; set; }

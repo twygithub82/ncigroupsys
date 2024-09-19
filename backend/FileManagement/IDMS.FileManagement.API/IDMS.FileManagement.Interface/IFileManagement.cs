@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs.Models;
+using IDMS.FileManagement.Interface.DB;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using System.Runtime.InteropServices.JavaScript;
@@ -14,7 +15,7 @@ namespace IDMS.FileManagement.Interface
         public Task<string> GetFileUrl_SAS(string filename, string containerName);
         public Task<List<string>> GetFileUrlFromDB(List<string> guid);
 
-        public Task<List<string>> GetGroupFileUrlFromDB(List<string> groupGuid);
+        public Task<List<FileManagementDto>> GetGroupFileUrlFromDB(List<string> groupGuid);
         public Task<int> DeleteFile(List<string> guid);
 
     }

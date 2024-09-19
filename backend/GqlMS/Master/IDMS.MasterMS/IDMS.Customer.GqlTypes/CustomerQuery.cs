@@ -1,7 +1,6 @@
 ﻿using HotChocolate;
 using HotChocolate.Types;
 using IDMS.EstimateTemplate.GqlTypes;
-using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Master;
 using IDMS.Models.Master.GqlTypes.DB;
 using IDMS.Models.Shared;
