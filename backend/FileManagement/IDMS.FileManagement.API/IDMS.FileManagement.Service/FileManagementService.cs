@@ -176,14 +176,14 @@ namespace IDMS.FileManagement.Service
                             file.CopyTo(ms);
                             ms.Position = 0;
 
-                            var blobHttpHeaders = new BlobHttpHeaders{ ContentType = file.ContentType };
+                            var blobHttpHeaders = new BlobHttpHeaders { ContentType = file.ContentType };
 
                             var blobContainerClient = _blobServiceClient.GetBlobContainerClient(rootFileContainerName);
                             var blobClient = blobContainerClient.GetBlobClient(fullPath);
-                            var response = await blobClient.UploadAsync(ms, new BlobUploadOptions { HttpHeaders = blobHttpHeaders } );
+                            var response = await blobClient.UploadAsync(ms, new BlobUploadOptions { HttpHeaders = blobHttpHeaders });
 
                             fileObject.url = blobClient.Uri.ToString();
-                            returnUrl.Add(fileObject.url);  
+                            returnUrl.Add(fileObject.url);
                             _context.Add(fileObject);
                         }
                         // Here, you could save metadataObj.Description and metadataObj.Category associated with the file
@@ -210,7 +210,7 @@ namespace IDMS.FileManagement.Service
                     res = await _context.file_management.Where(f => guid.Contains(f.guid) && (f.delete_dt == null || f.delete_dt == 0)).Select(f => f.url).ToListAsync();
                 return res;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -258,19 +258,34 @@ namespace IDMS.FileManagement.Service
                 var res = await _context.SaveChangesAsync();
                 return res;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
         }
 
 
-        public async Task<List<string>> GetGroupFileUrlFromDB(List<string> groupGuid)
+        public async Task<List<string>> GetGroupFileUrlFromDB1(List<string> groupGuid)
         {
             try
             {
                 List<string> res = new List<string>();
-                res = await _context.file_management.Where(f => groupGuid.Contains(f.group_guid) && (f.delete_dt == null || f.delete_dt == 0)).Select(f => f.url).ToListAsync();
+                res = await _context.file_management.Where(f => groupGuid.Contains(f.group_guid) &&
+                        (f.delete_dt == null || f.delete_dt == 0)).Select(f => f.url).ToListAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<FileManagementDto>> GetGroupFileUrlFromDB(List<string> groupGuid)
+        {
+            try
+            {
+                var res = await _context.file_management.Where(f => groupGuid.Contains(f.group_guid) &&
+                        (f.delete_dt == null || f.delete_dt == 0)).Select(f => new FileManagementDto { Url = f.url, Description = f.description }).ToListAsync();
                 return res;
             }
             catch (Exception ex)

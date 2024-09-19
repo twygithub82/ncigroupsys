@@ -22,4 +22,11 @@ namespace IDMS.FileManagement.Interface.DB
         public long? update_dt { get; set; }
         public long? delete_dt { get; set; }
     }
+
+    public class FileManagementDto
+    {
+        public string Url { get; set; }
+        public string Description { get; set; }
+        // Add other properties as needed
+    }
 }
