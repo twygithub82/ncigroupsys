@@ -16,36 +16,36 @@ import { CustomerCompanyItem } from './customer-company';
 import { TariffRepairItem } from './tariff-repair';
 export class MasterTemplateGo {
   public guid?: string;
-  public template_name?:string;
-  public type_cv?:string;
-  public labour_cost_discount?:number;
+  public template_name?: string;
+  public type_cv?: string;
+  public labour_cost_discount?: number;
   public material_cost_discount?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  public remarks?:string|null;
-  
+  public remarks?: string | null;
+
   constructor(item: Partial<MasterTemplateGo> = {}) {
-   // Object.assign(this, { guid: '', ...item });
-   this.guid = item.guid;
-   if (!this.guid) this.guid = '';
-   this.template_name = item.template_name;
-   this.type_cv=item.type_cv;
-   this.labour_cost_discount=item.labour_cost_discount;
-   this.material_cost_discount=item.material_cost_discount;
-   this.remarks=item.remarks;
-   this.create_dt = item.create_dt;
-   this.create_by = item.create_by;
-   this.update_dt = item.update_dt;
-   this.update_by = item.update_by;
-   this.delete_dt = item.delete_dt;
+    // Object.assign(this, { guid: '', ...item });
+    this.guid = item.guid;
+    if (!this.guid) this.guid = '';
+    this.template_name = item.template_name;
+    this.type_cv = item.type_cv;
+    this.labour_cost_discount = item.labour_cost_discount;
+    this.material_cost_discount = item.material_cost_discount;
+    this.remarks = item.remarks;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
   }
 }
 
 export class TepDamageRepairItem {
-  action?:string;
+  action?: string;
   code_cv?: string;
   code_type?: number;
   create_by?: string | null;
@@ -72,7 +72,7 @@ export class TepDamageRepairItem {
 }
 
 export class TemplateEstPartItem {
-  action?:string='NEW';
+  action?: string = 'NEW';
   guid?: string | null;
   description?: string;
   delete_dt?: string | null;
@@ -82,8 +82,8 @@ export class TemplateEstPartItem {
   quantity?: number;
   location_cv?: string | null;
   remarks?: string | null;
-  tariff_repair_guid?:string|null;
-  tariff_repair?:TariffRepairItem|null;
+  tariff_repair_guid?: string | null;
+  tariff_repair?: TariffRepairItem | null;
   tep_damage_repair?: TepDamageRepairItem[] | null;
   update_by?: string | null;
   update_dt?: string | null;
@@ -91,30 +91,30 @@ export class TemplateEstPartItem {
 
   constructor(item: Partial<TemplateEstPartItem> = {}) {
     // Object.assign(this, { guid: '', ...item });
-    this.actions=item.actions;
-    this.action=item.action;
-    this.guid=item.guid;
-    this.description=item.description;
+    this.actions = item.actions;
+    this.action = item.action;
+    this.guid = item.guid;
+    this.description = item.description;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    this.hour=item.hour;
-    this.quantity=item.quantity;
-    this.location_cv=item.location_cv;
-    this.remarks=item.remarks;
-    this.tariff_repair_guid=item.tariff_repair_guid;
-    this.tariff_repair=item.tariff_repair;
-    this.tep_damage_repair=item.tep_damage_repair;
+    this.hour = item.hour;
+    this.quantity = item.quantity;
+    this.location_cv = item.location_cv;
+    this.remarks = item.remarks;
+    this.tariff_repair_guid = item.tariff_repair_guid;
+    this.tariff_repair = item.tariff_repair;
+    this.tep_damage_repair = item.tep_damage_repair;
 
-    
-   }
+
+  }
 }
 
-export class TemplateEstimateCustomerItem{
+export class TemplateEstimateCustomerItem {
 
-  action?:string='NEW';
+  action?: string = 'NEW';
   create_by?: string | null;
   create_dt?: string | null;
   delete_dt?: string | null;
@@ -122,9 +122,9 @@ export class TemplateEstimateCustomerItem{
   template_est_guid?: string | null;
   update_by?: string | null;
   update_dt?: string | null;
- 
+
   customer_company?: CustomerCompanyItem | null;
-  customer_company_guid?:string |null;
+  customer_company_guid?: string | null;
 
   constructor(item: Partial<TemplateEstimateCustomerItem> = {}) {
     // Object.assign(this, { guid: '', ...item });
@@ -141,18 +141,18 @@ export class TemplateEstimateCustomerItem{
     this.delete_dt = item.delete_dt;
     
    }
-  
+
 }
 export class MasterTemplateItem extends MasterTemplateGo {
   public template_est_customer?: TemplateEstimateCustomerItem[] | null;
   public template_est_part?: TemplateEstPartItem[] | null;
   public totalMaterialCost?: number = 0;
-  
+
 
   constructor(item: Partial<MasterTemplateItem> = {}) {
     super(item);
     this.template_est_customer = item.template_est_customer;
-    this.template_est_part=item.template_est_part;
+    this.template_est_part = item.template_est_part;
     this.totalMaterialCost = this.getTotalMaterialCost();
   }
 
@@ -292,7 +292,92 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
       totalCount
     }
   }
+`;
 
+export const GET_ESTIMATE_TEMPLATE_FOR_REPAIR = gql`
+  query queryTemplateEstimation($where: template_estFilterInput, $order:[template_estSortInput!]) {
+    resultList: queryTemplateEstimation(where: $where, order:$order) {
+      nodes {
+        create_by
+        create_dt
+        delete_dt
+        guid
+        labour_cost_discount
+        material_cost_discount
+        template_name
+        remarks
+        type_cv
+        update_by
+        update_dt
+        template_est_customer {
+          customer_company_guid
+          delete_dt
+          guid
+          update_dt
+        }
+        template_est_part {
+          guid
+          description
+          delete_dt
+          create_by
+          create_dt
+          update_by
+          update_dt
+          hour
+          quantity
+          location_cv
+          remarks
+          tariff_repair_guid
+          tariff_repair {
+            alias
+            create_by
+            create_dt
+            delete_dt
+            dimension
+            group_name_cv
+            guid
+            height_diameter
+            height_diameter_unit_cv
+            labour_hour
+            length
+            length_unit_cv
+            material_cost
+            part_name
+            remarks
+            subgroup_name_cv
+            thickness
+            thickness_unit_cv
+            update_by
+            update_dt
+            width_diameter
+            width_diameter_unit_cv
+            package_repair {
+              material_cost
+              labour_hour
+            }
+          }
+          tep_damage_repair {
+            code_cv
+            code_type
+            create_by
+            create_dt
+            delete_dt
+            guid
+            tep_guid
+            update_by
+            update_dt
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
 `;
 
 export const ADD_MASTER_TEMPLATE_ESTIMATION = gql`
@@ -307,15 +392,11 @@ export const UPDATE_MASTER_TEMPLATE_ESTIMATION = gql`
   }
 `;
 
-
-
-
-
 export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  
+
   SearchEstimateTemplateOnly(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<MasterTemplateItem[]> {
     this.loadingSubject.next(true);
     if (!last)
@@ -365,7 +446,7 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
         map((result) => {
           const masterTemplateResult = result.MasterTemplateResult || { nodes: [], totalCount: 0 };
           const masterTemplateItems: MasterTemplateItem[] = masterTemplateResult.nodes.map((node: any) => new MasterTemplateItem(node));
-        
+
           this.dataSubject.next(masterTemplateResult.nodes);
           this.pageInfo = masterTemplateResult.pageInfo;
           this.totalCount = masterTemplateResult.totalCount;
@@ -374,22 +455,44 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
       );
   }
 
-
-  
-
-    AddMasterTemplate(newTemplateEstimate: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: ADD_MASTER_TEMPLATE_ESTIMATION,
-        variables: {
-          newTemplateEstimate
-        }
-      }).pipe(
+  searchEstimateTemplateForRepair(where?: any, order?: any): Observable<MasterTemplateItem[]> {
+    this.loadingSubject.next(true);
+    
+    return this.apollo
+      .query<any>({
+        query: GET_ESTIMATE_TEMPLATE_FOR_REPAIR,
+        variables: { where, order },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
         catchError((error: ApolloError) => {
           console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
+          return of([] as MasterTemplateItem[]); // Return an empty array on error
         }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          const masterTemplateItems: MasterTemplateItem[] = resultList.nodes.map((node: any) => new MasterTemplateItem(node));
+          this.dataSubject.next(resultList.nodes);
+          return masterTemplateItems;
+        })
       );
-    }
+  }
+
+  AddMasterTemplate(newTemplateEstimate: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ADD_MASTER_TEMPLATE_ESTIMATION,
+      variables: {
+        newTemplateEstimate
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
     UpdateMasterTemplate(editTemplateEstimate: any): Observable<any> {
       return this.apollo.mutate({
@@ -405,7 +508,7 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
       );
     }
 
- 
 
-    
+
+
 }

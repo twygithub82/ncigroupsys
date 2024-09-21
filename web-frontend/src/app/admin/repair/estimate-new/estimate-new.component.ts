@@ -43,7 +43,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { Apollo } from 'apollo-angular';
 import { MatDividerModule } from '@angular/material/divider';
 import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -55,7 +55,10 @@ import { RepairEstPartDS, RepairEstPartItem } from 'app/data-sources/repair-est-
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { RepairEstDS } from 'app/data-sources/repair-est';
-import { testTypeMapping } from 'environments/environment.development';
+import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
+import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
+import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
+import { UserDS, UserItem } from 'app/data-sources/user';
 
 @Component({
   selector: 'app-estimate-new',
@@ -103,10 +106,11 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     'damange',
     'repair',
     'description',
-    'qty',
+    'quantity',
     'hour',
     'price',
     'material',
+    'isOwner',
     'actions'
   ];
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
@@ -209,7 +213,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     INTERNAL_QC_BY: 'COMMON-FORM.INTERNAL-QC-BY',
     RATE: 'COMMON-FORM.RATE',
     LESSEE: 'COMMON-FORM.LESSEE',
-    TOTAL: 'COMMON-FORM.TOTAL'
+    TOTAL: 'COMMON-FORM.TOTAL',
+    PART: 'COMMON-FORM.PART'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -222,7 +227,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   sotItem?: StoringOrderTankItem;
   packageLabourItem?: PackageLabourItem;
   repList = new MatTableDataSource<RepairEstPartItem>();
-  sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
+  repSelection = new SelectionModel<RepairEstPartItem>(true, []);
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
   yesnoCvList: CodeValuesItem[] = []
@@ -233,6 +238,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   partLocationCvList: CodeValuesItem[] = []
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
+  unitTypeCvList: CodeValuesItem[] = []
+  templateList: MasterTemplateItem[] = []
+  surveyorList: UserItem[] = []
 
   customerCodeControl = new UntypedFormControl();
 
@@ -244,6 +252,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   plDS: PackageLabourDS;
   repairEstDS: RepairEstDS;
   repairEstPartDS: RepairEstPartDS;
+  mtDS: MasterEstimateTemplateDS;
+  prDS: PackageRepairDS;
+  userDS: UserDS;
+  isOwner = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -266,6 +278,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.plDS = new PackageLabourDS(this.apollo);
     this.repairEstDS = new RepairEstDS(this.apollo);
     this.repairEstPartDS = new RepairEstPartDS(this.apollo);
+    this.mtDS = new MasterEstimateTemplateDS(this.apollo);
+    this.prDS = new PackageRepairDS(this.apollo);
+    this.userDS = new UserDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -274,7 +289,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeFilter();
+    this.initializeValueChanges();
     this.loadData();
   }
 
@@ -287,14 +302,114 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       remarks: [''],
       surveyor_name_cv: [''],
       internal_qc_by: [''],
-      labour_disc: [0],
-      material_disc: [0],
+      labour_cost_discount: [0],
+      material_cost_discount: [0],
       last_test: [''],
       next_test: [''],
+      total_owner_hour: [0],
+      total_lessee_hour: [0],
+      total_hour: [0],
+      total_owner_labour_cost: [0],
+      total_lessee_labour_cost: [0],
+      total_labour_cost: [0],
+      total_owner_mat_cost: [0],
+      total_lessee_mat_cost: [0],
+      total_mat_cost: [0],
+      total_owner_cost: [0],
+      total_lessee_cost: [0],
+      total_cost: [0],
+      discount_labour_owner_cost: [0],
+      discount_labour_lessee_cost: [0],
+      discount_labour_cost: [0],
+      discount_mat_owner_cost: [0],
+      discount_mat_lessee_cost: [0],
+      discount_mat_cost: [0],
+      net_owner_cost: [0],
+      net_lessee_cost: [0],
+      net_cost: [0],
     });
   }
 
-  initializeFilter() {
+  initializeValueChanges() {
+    this.repairEstForm?.get('est_template')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          console.log(value);
+          // estimate
+          this.repairEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
+          this.repairEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
+          this.repairEstForm?.get('remarks')?.setValue(value.remarks);
+          const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
+            return new RepairEstPartItem({
+              description: tep.description,
+              hour: tep.hour,
+              location_cv: tep.location_cv,
+              quantity: tep.quantity,
+              remarks: tep.remarks,
+              material_cost: tep.tariff_repair?.package_repair?.material_cost,
+              tariff_repair_guid: tep.tariff_repair_guid,
+              tariff_repair: tep.tariff_repair,
+              damage: tep.tep_damage_repair.filter((x: any) => x.code_type === 0).map((damage: any) => new REPDamageRepairItem(damage)),
+              repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
+            });
+          });
+          this.updateData(repList);
+          // estimate part
+          // const tariff_repair_guid = value.template_est_part.map((tep: any) => tep.tariff_repair_guid);
+          // this.getCustomerCost(this.sotItem?.storing_order?.customer_company_guid, tariff_repair_guid).pipe(
+          //   switchMap(data => {
+          //     let material_cost = 0;
+          //     if (data && data.length) {
+          //       material_cost = data[0].material_cost;
+          //       console.log('Customer Package Cost Data:', data);
+          //     }
+
+          //     const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
+          //       return new RepairEstPartItem({
+          //         description: tep.description,
+          //         hour: tep.hour,
+          //         location_cv: tep.location_cv,
+          //         quantity: tep.quantity,
+          //         remarks: tep.remarks,
+          //         material_cost: material_cost,
+          //         tariff_repair_guid: tep.tariff_repair_guid,
+          //         tariff_repair: tep.tariff_repair,
+          //         damage: tep.tep_damage_repair.filter((x: any) => x.code_type === 0).map((damage: any) => new REPDamageRepairItem(damage)),
+          //         repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
+          //       });
+          //     });
+          //     this.updateData(repList);
+
+          //     return of(repList);
+          //   })
+          // ).subscribe();
+        }
+      })
+    ).subscribe();
+
+    this.repairEstForm?.get('labour_cost_discount')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          // estimate
+          this.calculateCost();
+        }
+      })
+    ).subscribe();
+
+    this.repairEstForm?.get('material_cost_discount')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          // estimate
+          this.calculateCost();
+        }
+      })
+    ).subscribe();
   }
 
   public loadData() {
@@ -303,10 +418,13 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.sotItem = data[0];
+          console.log(this.sotItem.storing_order?.customer_company_guid);
           this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
+          this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
         }
       });
     }
+    this.getSurveyorList();
     const queries = [
       { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
@@ -317,6 +435,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -347,6 +466,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
       this.repairCodeCvList = data;
     });
+    this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
+      this.unitTypeCvList = data;
+    });
   }
 
   getCustomerLabourPackage(customer_company_guid: string) {
@@ -358,6 +480,49 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
       if (data?.length > 0) {
         this.packageLabourItem = data[0];
+      }
+    });
+  }
+
+  getTemplateList(customer_company_guid: string) {
+    const where = {
+      or: [
+        {
+          and: [
+            { template_est_customer: { some: { customer_company_guid: { eq: customer_company_guid } } } },
+            { type_cv: { eq: "EXCLUSIVE" } }
+          ]
+        },
+        { type_cv: { eq: "GENERAL" } }
+      ]
+    }
+    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, {}).subscribe(data => {
+      if (data?.length > 0) {
+        this.templateList = data;
+      }
+    });
+  }
+
+  getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } },
+        {
+          or: [
+            { tariff_repair_guid: { in: tariff_repair_guid } }
+          ]
+        }
+      ]
+    };
+
+    return this.prDS.getCustomerPackageCost(where);
+  }
+
+  getSurveyorList() {
+    const where = { aspnetuserroles: { some: { aspnetroles: { Role: { eq: "Surveyor" } } } } }
+    this.subs.sink = this.userDS.searchUser(where).subscribe(data => {
+      if (data?.length > 0) {
+        this.surveyorList = data;
       }
     });
   }
@@ -387,18 +552,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
+  selectOwner($event: Event, row: RepairEstPartItem) {
+    this.stopPropagation($event);
+    row.owner = !(row.owner || false);
+    this.calculateCost();
   }
 
   addEstDetails(event: Event, row?: RepairEstPartItem) {
@@ -412,6 +569,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     const addSot = row ?? new RepairEstPartItem();
     addSot.repair_est_guid = addSot.repair_est_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: row ? row : addSot,
         action: 'new',
@@ -422,7 +580,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList
+          repairCodeCvList: this.repairCodeCvList,
+          unitTypeCvList: this.unitTypeCvList
         },
         index: -1,
         customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
@@ -451,6 +610,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: row,
         action: 'edit',
@@ -461,7 +621,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList
+          repairCodeCvList: this.repairCodeCvList,
+          unitTypeCvList: this.unitTypeCvList
         },
         index: index,
         customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
@@ -492,6 +653,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '1000px',
       data: {
         item: row,
         langText: this.langText,
@@ -530,6 +692,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
       data: {
         action: "cancel",
         item: [...row],
@@ -569,6 +732,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
       data: {
         action: "rollback",
         item: [...row],
@@ -674,7 +838,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   updateData(newData: RepairEstPartItem[]): void {
     this.repList.data = [...newData];
-    this.sotSelection.clear();
+    this.calculateCost();
   }
 
   handleDelete(event: Event, row: any, index: number): void {
@@ -683,8 +847,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   cancelItem(event: Event, row: RepairEstPartItem) {
     // this.id = row.id;
-    if (this.sotSelection.hasValue()) {
-      this.cancelSelectedRows(this.sotSelection.selected)
+    if (this.repSelection.hasValue()) {
+      this.cancelSelectedRows(this.repSelection.selected)
     } else {
       this.cancelSelectedRows([row])
     }
@@ -692,8 +856,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   rollbackItem(event: Event, row: StoringOrderTankItem) {
     // this.id = row.id;
-    if (this.sotSelection.hasValue()) {
-      this.rollbackSelectedRows(this.sotSelection.selected)
+    if (this.repSelection.hasValue()) {
+      this.rollbackSelectedRows(this.repSelection.selected)
     } else {
       this.rollbackSelectedRows([row])
     }
@@ -702,8 +866,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   undoAction(event: Event, row: StoringOrderTankItem, action: string) {
     // this.id = row.id;
     this.stopPropagation(event);
-    if (this.sotSelection.hasValue()) {
-      this.undoTempAction(this.sotSelection.selected, action)
+    if (this.repSelection.hasValue()) {
+      this.undoTempAction(this.repSelection.selected, action)
     } else {
       this.undoTempAction([row], action)
     }
@@ -760,6 +924,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   isAnyItemEdited(): boolean {
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
+  }
+
+  isOwnerChange() {
+    this.isOwner = !this.isOwner;
   }
 
   getLastAction(actions: string[]): string {
@@ -873,5 +1041,97 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   selectText(event: FocusEvent) {
     Utility.selectText(event)
+  }
+
+  parse2Decimal(figure: number | string) {
+    if (typeof (figure) === 'string') {
+      return parseFloat(figure).toFixed(2);
+    } else if (typeof (figure) === 'number') {
+      return figure.toFixed(2);
+    }
+    return "";
+  }
+
+  calculateCost() {
+    const ownerList = this.repList.data.filter(item => item.owner);
+    const lesseeList = this.repList.data.filter(item => !item.owner);
+    const labourDiscount = this.repairEstForm?.get('labour_cost_discount')?.value;
+    const matDiscount = this.repairEstForm?.get('material_cost_discount')?.value;
+
+    let total_hour = 0;
+    let total_labour_cost = 0;
+    let total_mat_cost = 0;
+    let total_cost = 0;
+    let discount_labour_cost = 0;
+    let discount_mat_cost = 0;
+    let net_cost = 0;
+
+    const totalOwner = this.getTotal(ownerList);
+    const total_owner_hour = totalOwner.hour;
+    const total_owner_labour_cost = (total_owner_hour * (this.packageLabourItem?.cost ?? 0));
+    const total_owner_mat_cost = totalOwner.total_mat_cost;
+    const total_owner_cost = total_owner_labour_cost + total_owner_mat_cost;
+    const discount_labour_owner_cost = (labourDiscount * total_owner_labour_cost) / 100;
+    const discount_mat_owner_cost = (matDiscount * total_owner_mat_cost) / 100;
+    const net_owner_cost = total_owner_cost - discount_labour_owner_cost - discount_mat_owner_cost;
+
+    this.repairEstForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
+    this.repairEstForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
+    this.repairEstForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
+    this.repairEstForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
+    this.repairEstForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
+    this.repairEstForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
+    this.repairEstForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
+
+    total_hour += total_owner_hour;
+    total_labour_cost += total_owner_labour_cost;
+    total_mat_cost += total_owner_mat_cost;
+    total_cost += total_owner_cost;
+    discount_labour_cost += discount_labour_owner_cost;
+    discount_mat_cost += discount_mat_owner_cost;
+    net_cost += net_owner_cost;
+
+    const totalLessee = this.getTotal(lesseeList);
+    const total_lessee_hour = totalLessee.hour;
+    const total_lessee_labour_cost = (total_lessee_hour * (this.packageLabourItem?.cost ?? 0));
+    const total_lessee_mat_cost = totalLessee.total_mat_cost;
+    const total_lessee_cost = total_lessee_labour_cost + total_lessee_mat_cost;
+    const discount_labour_lessee_cost = (labourDiscount * total_lessee_labour_cost) / 100;
+    const discount_mat_lessee_cost = (matDiscount * total_lessee_mat_cost) / 100;
+    const net_lessee_cost = total_lessee_cost - discount_labour_lessee_cost - discount_mat_lessee_cost;
+
+    this.repairEstForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
+    this.repairEstForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
+    this.repairEstForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
+    this.repairEstForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
+    this.repairEstForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
+    this.repairEstForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
+    this.repairEstForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
+
+    total_hour += total_lessee_hour;
+    total_labour_cost += total_lessee_labour_cost;
+    total_mat_cost += total_lessee_mat_cost;
+    total_cost += total_lessee_cost;
+    discount_labour_cost += discount_labour_lessee_cost;
+    discount_mat_cost += discount_mat_lessee_cost;
+    net_cost += net_lessee_cost;
+
+    this.repairEstForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
+    this.repairEstForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
+    this.repairEstForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
+    this.repairEstForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
+    this.repairEstForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
+    this.repairEstForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
+    this.repairEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
+  }
+
+  getTotal(ownerList: any[]): any {
+    const totalSums = ownerList.reduce((totals: any, owner) => {
+      return {
+        hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+        total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.material_cost ?? 0)))
+      };
+    }, { hour: 0, total_mat_cost: 0 });
+    return totalSums;
   }
 }

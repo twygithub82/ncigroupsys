@@ -53,13 +53,15 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right pt-2">
                       <span>{{translatedLangText.OWNER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex">
+                      <div class="contact-detail-info font-bold pt-2">
                         {{ccDS.displayName(sotItem?.customer_company)}}
                       </div>
+                      <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner">
+                      </mat-checkbox>
                     </div>
                   </div>
                 </div>
@@ -143,9 +145,10 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
                     <mat-select formControlName="est_template">
-                      <!-- @for (codeValue of manufacturerCvList; track codeValue) {
-                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                      } -->
+                      @for (template of templateList; track template) {
+                      <mat-option [value]="template"
+                        [ngClass]="{'bg-light-gold-opacity-30': template.type_cv === 'EXCLUSIVE'}">{{template.template_name}}</mat-option>
+                      }
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -174,23 +177,23 @@
                       </ng-container>
                       <ng-container matColumnDef="group_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.GROUP}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.GROUP}}:</span>
                           {{row.tariff_repair?.group_name_cv}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.SUBGROUP}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.SUBGROUP}}:</span>
                           {{row.tariff_repair?.subgroup_name_cv}}
                         </mat-cell>
@@ -237,7 +240,7 @@
                           {{row.description}}
                         </mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="qty">
+                      <ng-container matColumnDef="quantity">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
@@ -246,7 +249,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.QTY}}:</span>
-                          {{row.qty}}
+                          {{row.quantity}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="hour">
@@ -270,19 +273,41 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
-                          {{row.material_cost}}
+                          <div class="cost-label">
+                            <span>$</span><span>{{parse2Decimal(row.material_cost)}}</span>
+                          </div>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="material">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
-                          {{translatedLangText.MATERIAL}}
+                          {{translatedLangText.MATERIAL}} $
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.MATERIAL}}:</span>
-                          {{row.material_cost}}
+                          <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
+                          <div class="cost-label">
+                            <span>$</span><span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
+                          </div>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="isOwner">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="''"
+                          mat-sort-header>
+                          @if (isOwner) {
+                          {{translatedLangText.OWNER}}
+                          }
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="''">
+                          @if (isOwner) {
+                          <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
+                          <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.isOwner"
+                            [ngClass]="'tbl-checkbox'">
+                          </mat-checkbox>
+                          }
                         </mat-cell>
                       </ng-container>
                       <!-- actions -->
@@ -300,17 +325,17 @@
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
                             }
-                            @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
+                            <!-- @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
                             <button mat-menu-item (click)="cancelItem($event, row)">
                               <mat-icon>cancel</mat-icon>
-                              <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                              <span>{{repSelection.hasValue() ? translatedLangText.BULK + " " :
                                 ""}}{{translatedLangText.CANCEL}}</span>
                             </button>
                             }
                             @if (!row.actions.includes('rollback') && sotDS.canRollbackStatus(row)) {
                             <button mat-menu-item (click)="rollbackItem($event, row)">
                               <mat-icon>undo</mat-icon>
-                              <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                              <span>{{repSelection.hasValue() ? translatedLangText.BULK + " " :
                                 ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
                             </button>
                             }
@@ -325,7 +350,7 @@
                               <mat-icon>undo</mat-icon>
                               <span>{{translatedLangText.UNDO}} {{translatedLangText.ROLLBACK_STATUS}}</span>
                             </button>
-                            }
+                            } -->
                           </mat-menu>
                         </mat-cell>
                       </ng-container>
@@ -392,30 +417,13 @@
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.SURVEYOR_NAME}}</mat-label>
                         <mat-select formControlName="surveyor_name_cv" required>
-                          @for (codeValue of groupNameCvList; track codeValue) {
-                          <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
+                          @for (user of surveyorList; track user) {
+                          <mat-option [value]="user.id">{{user.userName}}</mat-option>
                           }
                         </mat-select>
                         @if (repairEstForm?.get('surveyor_name_cv')?.hasError('required')) {
                         <mat-error>
                           {{translatedLangText.SURVEYOR_NAME}} {{translatedLangText.SO_REQUIRED}}
-                        </mat-error>
-                        }
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.INTERNAL_QC_BY}}</mat-label>
-                        <mat-select formControlName="internal_qc_by" required>
-                          @for (codeValue of groupNameCvList; track codeValue) {
-                          <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
-                          }
-                        </mat-select>
-                        @if (repairEstForm?.get('internal_qc_by')?.hasError('required')) {
-                        <mat-error>
-                          {{translatedLangText.INTERNAL_QC_BY}} {{translatedLangText.SO_REQUIRED}}
                         </mat-error>
                         }
                       </mat-form-field>
@@ -444,17 +452,17 @@
                           {{translatedLangText.TOTAL_COST}}
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.LABOUR_DISCOUNT}}
+                          {{translatedLangText.LABOUR_DISCOUNT}} (%)
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.MATERIAL_DISCOUNT}}s
+                          {{translatedLangText.MATERIAL_DISCOUNT}} (%)
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.NET_COST}}
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                        <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.CONVERTED_TO}}
-                        </div>
+                        </div> -->
                       </div>
                     </div>
                     <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
@@ -476,10 +484,10 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
                           <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput formControlName="labour_disc"
+                              <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.LABOUR_DISCOUNT"
                                 type="number" min="0" required>
-                              @if (repairEstForm?.get('labour_disc')?.hasError('required')) {
+                              @if (repairEstForm?.get('labour_cost_discount')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.LABOUR_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
                               </mat-error>
@@ -490,10 +498,10 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
                           <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput formControlName="material_disc"
+                              <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.MATERIAL_DISCOUNT"
                                 type="number" required>
-                              @if (repairEstForm?.get('material_disc')?.hasError('required')) {
+                              @if (repairEstForm?.get('material_cost_discount')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.MATERIAL_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
                               </mat-error>
@@ -504,13 +512,14 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label"></div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                        <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label cost-label font-bold">
                             <span>$</span><span>{{translatedLangText.CONVERTED_TO}}</span>
                           </div>
-                        </div>
+                        </div> -->
                       </div>
-                    </div><!-- test -->
+                    </div>
+                    @if (isOwner) {
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
@@ -525,7 +534,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span></span><span>{{repairEstForm?.get('total_owner_hour')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -546,10 +555,10 @@
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label"></div>
                                 </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
+                                <!-- <div
+                                    class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                    <div class="table-label"></div>
+                                  </div> -->
                               </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
@@ -557,45 +566,47 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('total_owner_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('total_owner_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('total_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>-
+                                      {{repairEstForm?.get('discount_labour_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>-
+                                      {{repairEstForm?.get('discount_mat_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('net_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label font-bold">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
+                                <!-- <div
+                                    class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                    <div class="table-label cost-label font-bold">
+                                      <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    </div>
+                                  </div> -->
                               </div>
                             </div>
                           </div>
@@ -616,7 +627,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span></span><span>{{repairEstForm?.get('total_lessee_hour')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -637,10 +648,10 @@
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label"></div>
                                 </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
+                                <!-- <div
+                                    class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                    <div class="table-label"></div>
+                                  </div> -->
                               </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
@@ -648,51 +659,54 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('total_lessee_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('total_lessee_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('total_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>-
+                                      {{repairEstForm?.get('discount_labour_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>-
+                                      {{repairEstForm?.get('discount_mat_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('net_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label font-bold">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
+                                <!-- <div
+                                    class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                    <div class="table-label cost-label font-bold">
+                                      <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    </div>
+                                  </div> -->
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                    }
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
@@ -707,7 +721,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span></span><span>{{repairEstForm?.get('total_hour')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -728,10 +742,10 @@
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label"></div>
                                 </div>
-                                <div
+                                <!-- <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label"></div>
-                                </div>
+                                </div> -->
                               </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
@@ -739,45 +753,45 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('total_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('total_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('total_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>- {{repairEstForm?.get('discount_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>- {{repairEstForm?.get('discount_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{repairEstForm?.get('net_cost')?.value}}</span>
                                   </div>
                                 </div>
-                                <div
+                                <!-- <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label font-bold">
                                     <span>$</span><span>{{0 | number: '1.2-2'}}</span>
                                   </div>
-                                </div>
+                                </div> -->
                               </div>
                             </div>
                           </div>

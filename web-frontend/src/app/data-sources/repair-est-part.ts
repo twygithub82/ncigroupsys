@@ -6,6 +6,8 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
+import { RepairEstItem } from './repair-est';
+import { REPDamageRepairItem } from './rep-damage-repair';
 
 export class RepairEstPartGO {
   public guid?: string;
@@ -14,9 +16,10 @@ export class RepairEstPartGO {
   public description?: string;
   public location_cv?: string;
   public remarks?: string;
-  public qty?: number;
+  public quantity?: number;
   public hour?: number;
   public material_cost?: number;
+  public owner?: boolean;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -30,9 +33,10 @@ export class RepairEstPartGO {
     this.description = item.description;
     this.location_cv = item.location_cv;
     this.remarks = item.remarks;
-    this.qty = item.qty;
+    this.quantity = item.quantity;
     this.hour = item.hour;
     this.material_cost = item.material_cost;
+    this.owner = item.owner;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -43,9 +47,9 @@ export class RepairEstPartGO {
 
 export class RepairEstPartItem extends RepairEstPartGO {
   public tariff_repair?: TariffRepairItem;
-  public repair_est?: StoringOrderTankItem;
-  public damage?: any;
-  public repair?: any;
+  public repair_est?: RepairEstItem;
+  public damage?: REPDamageRepairItem[];
+  public repair?: REPDamageRepairItem[];
   public actions?: string[]
   constructor(item: Partial<RepairEstPartItem> = {}) {
     super(item)

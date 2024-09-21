@@ -136,7 +136,7 @@ export class FormDialogComponent {
       description: [{ value: this.repairPart.description, disabled: !this.canEdit() }],
       location_cv: [{ value: this.repairPart.location_cv, disabled: !this.canEdit() }],
       remarks: [{ value: this.repairPart.remarks, disabled: !this.canEdit() }],
-      qty: [{ value: this.repairPart.qty, disabled: !this.canEdit() }],
+      quantity: [{ value: this.repairPart.quantity, disabled: !this.canEdit() }],
       hour: [{ value: this.repairPart.hour, disabled: !this.canEdit() }],
       group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.canEdit() }],
       subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
@@ -160,7 +160,7 @@ export class FormDialogComponent {
       description: this.repairPart.description,
       location_cv: this.repairPart.location_cv,
       remarks: this.repairPart.remarks,
-      qty: this.repairPart.qty,
+      quantity: this.repairPart.quantity,
       hour: this.repairPart.hour,
       group_name_cv: selectedCodeValue,
       subgroup_name_cv: this.repairPart.tariff_repair?.subgroup_name_cv,
@@ -196,7 +196,7 @@ export class FormDialogComponent {
           tariff_repair: this.selectedTariffRepair,
           damage: this.REPDamage(this.repairPartForm.get('damage')?.value),
           repair: this.REPRepair(this.repairPartForm.get('repair')?.value),
-          qty: this.repairPartForm.get('qty')?.value,
+          quantity: this.repairPartForm.get('quantity')?.value,
           hour: this.repairPartForm.get('hour')?.value,
           material_cost: this.repairPartForm.get('material_cost')?.value,
           remarks: this.repairPartForm.get('remarks')?.value,
@@ -395,7 +395,7 @@ export class FormDialogComponent {
     return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
   }
 
-  REPDamageRepairToCV(damagesRepair: any[]): REPDamageRepairItem[] {
+  REPDamageRepairToCV(damagesRepair: any[] | undefined): REPDamageRepairItem[] {
     return damagesRepair?.map(dmgRp => dmgRp.code_cv) || [];
   }
 
