@@ -19,12 +19,6 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.Entity<InGateWithTank>()
-                 //.Ignore(e => e.haulier)
-                 //.Ignore(e => e.eir_doc)
-                 //.HasOne(e => e.tank).WithMany(t => t.in_gate)
-                 //.HasForeignKey<InGateWithTank>(t => t.so_tank_guid);
-
             modelBuilder.Entity<storing_order_tank>(e =>
             {
                 //e.HasKey(t => t.guid);
@@ -38,11 +32,16 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
                 .HasMany(e => e.sot).WithOne(e => e.tariff_cleaning)
                 .HasForeignKey(e=>e.last_cargo_guid) ;
 
+            //modelBuilder.Entity<tariff_repair>()
+            //    .HasKey(t => t.guid);
 
-            //modelBuilder.Entity<tariff_depot>()
-            //   .ToTable("tariff_depot")
-            //   .HasMany(e => e.tanks).WithOne(e => e.tariff_depot)
-            //   .HasForeignKey(e => e.tariff_depot_guid);
+            //modelBuilder.Entity<tariff_repair>()
+            //    .HasOne(t => t.package_repair)
+            //    .WithOne(e => e.tariff_repair)
+            //    .HasForeignKey<package_repair>(p => p.tariff_repair_guid);
+
+            //modelBuilder.Entity<package_repair>()
+            //    .HasKey(p => new { p.tariff_repair_guid, p.customer_company_guid });
 
             //modelBuilder.Entity<tariff_cleaning>()
             //    .ToTable("tariff_cleaning")

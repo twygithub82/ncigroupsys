@@ -102,6 +102,6 @@ export class AuthService {
     }
 
     // Check if any of the user's roles match any of the expected roles
-    return userRoles.some(userRole => userRole.toLowerCase() === 'SA') || expectedRoles.some(role => userRoles.some(userRole => userRole.toLowerCase() === role.toLowerCase())) || expectedRoles.some(role => role.toLowerCase() === userRole.toLowerCase());
+    return userRoles.some(userRole => userRole.toLowerCase() === 'sa') || expectedRoles.some(role => userRoles.some(userRole => userRole.toLowerCase() === role.toLowerCase())) || expectedRoles.some(role => role.toLowerCase() === userRole.toLowerCase());
   }
 }

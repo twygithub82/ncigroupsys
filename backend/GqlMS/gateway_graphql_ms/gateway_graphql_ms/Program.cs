@@ -37,6 +37,7 @@ server.AddInMemorySubscriptions();
 // server.AddSubscriptionType(d => d.Name("Subscription"));
 server = builder.Services.AddGraphQLServer();
 server.AddLocalSchema("local");
+server.InitializeOnStartup();
 //server.AddQueryType<QueryType>();
 //server.AddSubscriptionType<SubscriptionType>();
 

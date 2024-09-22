@@ -27,7 +27,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SelectionModel } from '@angular/cdk/collections';
-import { SchedulingItem } from 'app/data-sources/scheduling';
+import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { CodeValuesDS } from 'app/data-sources/code-values';
@@ -89,6 +89,8 @@ export class FormDialogComponent {
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
 
   sotList: StoringOrderTankItem[] = [];
+  schedulingList: SchedulingItem[] = [];
+  schedulingFilteredList: SchedulingItem[] = [];
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
 
@@ -98,6 +100,7 @@ export class FormDialogComponent {
   cvDS: CodeValuesDS;
   igDS: InGateDS;
   bookingDS: BookingDS;
+  schedulingDS: SchedulingDS;
   schedulingSotDS: SchedulingSotDS;
 
   displayedColumns = [
@@ -127,6 +130,7 @@ export class FormDialogComponent {
     this.igDS = new InGateDS(this.apollo)
     this.bookingDS = new BookingDS(this.apollo)
     this.schedulingSotDS = new SchedulingSotDS(this.apollo)
+    this.schedulingDS = new SchedulingDS(this.apollo)
     this.action = data.action!;
     this.sotIdList = data.sotIdList || [];
     this.dialogTitle = 'Add Tank';
@@ -138,6 +142,20 @@ export class FormDialogComponent {
     return this.fb.group({
       filterTable: ['']
     });
+  }
+
+  initializeValueChange() {
+    // this.filterTableForm.get('filterTable')?.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     if (value) {
+    //       this.schedulingFilteredList = this.schedulingList.filter(x => {
+    //         x.scheduling_sot.some
+    //       })
+    //     }
+    //   })
+    // ).subscribe();
   }
 
   submit() {
@@ -238,55 +256,91 @@ export class FormDialogComponent {
   }
 
   performSearch(first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    const where: any = {
-      and: [
-        { status_cv: { eq: "ACCEPTED" } },
-        { tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
-        { storing_order: { customer_company_guid: { eq: this.data.customer_company_guid } } },
-        { scheduling_sot: { some: { scheduling: { book_type_cv: { eq: "RELEASE_ORDER" } } } } }
-      ],
-    };
+    // const where: any = {
+    //   and: [
+    //     { status_cv: { eq: "ACCEPTED" } },
+    //     { tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
+    //     { storing_order: { customer_company_guid: { eq: this.data.customer_company_guid } } },
+    //     { scheduling_sot: { some: { scheduling: { book_type_cv: { eq: "RELEASE_ORDER" } } } } }
+    //   ],
+    // };
 
-    this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    // this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+    // this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    //   .subscribe(data => {
+    //     this.sotList = this.sort(data);
+    //     console.log(this.sotList)
+    //   });
+
+    let where: any = {
+      and: [
+        { book_type_cv: { eq: "RELEASE_ORDER" } },
+        {
+          scheduling_sot: {
+            some: {
+              storing_order_tank: {
+                status_cv: { eq: "ACCEPTED" },
+                tank_status_cv: {
+                  in: [
+                    "CLEANING",
+                    "REPAIR",
+                    "STEAM",
+                    "STORAGE",
+                    "RO_GENERATED",
+                    "RESIDUE"
+                  ]
+                },
+                storing_order: {
+                  customer_company_guid: {
+                    eq: this.data.customer_company_guid
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+    where = this.schedulingDS.addDeleteDtCriteria(where);
+    this.schedulingDS.searchSchedulingForRO(where)
       .subscribe(data => {
-        this.sotList = this.sort(data);
-        console.log(this.sotList)
+        if (this.schedulingDS.totalCount > 0) {
+          this.schedulingList = data;
+          this.schedulingList.forEach((scheduling) => scheduling.scheduling_sot = this.sort(scheduling.scheduling_sot!));
+          this.schedulingFilteredList = this.schedulingList;
+        }
       });
   }
 
-  sort(sotList: any[]): any[] {
-    // Step 1: Update each item in the list using the updateAvailability method
-    sotList = sotList.map(sot => this.updateAvailability(sot));
+  sort(schedulingSot: any[]): any[] {
+    // Update each item in the list using the updateAvailability method
+    schedulingSot = schedulingSot.map(ss => this.updateAvailability(ss));
+    console.log(schedulingSot)
 
-    // Step 2: Sort the list by the required criteria
-    sotList.sort((a, b) => {
+    // Sort the list by the required criteria
+    schedulingSot.sort((a, b) => {
       // First criterion: notStorage is false and isOver3Days is false
-      if (a.notStorage !== b.notStorage) {
-        return a.notStorage ? 1 : -1; // Sort `notStorage: false` first
+      if (a.storing_order_tank.notStorage !== b.storing_order_tank.notStorage) {
+        return a.storing_order_tank.notStorage ? 1 : -1; // Sort `notStorage: false` first
       }
-      if (a.isOver3Days !== b.isOver3Days) {
-        return a.isOver3Days ? 1 : -1; // Sort `isOver3Days: false` first
+      if (a.storing_order_tank.isOver3Days !== b.storing_order_tank.isOver3Days) {
+        return a.storing_order_tank.isOver3Days ? 1 : -1; // Sort `isOver3Days: false` first
       }
-
-      // Second criterion: scheduling.guid (assuming it's a string or number)
-      const guidA = this.schedulingSotDS.getSchedulingSotReleaseOrder(a.scheduling_sot)?.scheduling?.guid || '';
-      const guidB = this.schedulingSotDS.getSchedulingSotReleaseOrder(b.scheduling_sot)?.scheduling?.guid || '';
-      if (guidA < guidB) return -1;
-      if (guidA > guidB) return 1;
 
       // Third criterion: scheduling_dt (assuming it's a timestamp)
-      const schedulingDtA = this.schedulingSotDS.getSchedulingSotReleaseOrder(a.scheduling_sot)?.scheduling_dt || 0;
-      const schedulingDtB = this.schedulingSotDS.getSchedulingSotReleaseOrder(b.scheduling_sot)?.scheduling_dt || 0;
+      const schedulingDtA = a.scheduling_dt || 0;
+      const schedulingDtB = b.scheduling_dt || 0;
       return schedulingDtA - schedulingDtB;
     });
 
-    return sotList;
+    return schedulingSot;
   }
 
-  updateAvailability(sot: any): any {
+  updateAvailability(ss: any): any {
     // 1. scheduling_dt within 3 days
     // 2. tank status 'STORAGE'
+
+    const sot = ss.storing_order_tank;
 
     let isOver3Days = false;
 
@@ -296,7 +350,7 @@ export class FormDialogComponent {
     endOfNext3Days.setHours(23, 59, 59, 999);
     const endOfNext3DaysEpoch = Math.floor(endOfNext3Days.getTime() / 1000);
 
-    const scheduling_dt = this.schedulingSotDS.getSchedulingSotReleaseOrder(sot.scheduling_sot)?.scheduling_dt;
+    const scheduling_dt = ss.scheduling_dt;
     if (scheduling_dt !== undefined && scheduling_dt > endOfNext3DaysEpoch) {
       isOver3Days = true;
     }
@@ -304,6 +358,6 @@ export class FormDialogComponent {
 
     sot.isOver3Days = isOver3Days;
     sot.notStorage = notStorage;
-    return sot;
+    return ss;
   }
 }

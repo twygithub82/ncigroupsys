@@ -7,10 +7,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Models.Package
 {
-    public class package_repair:Dates
+    [PrimaryKey("tariff_repair_guid", "customer_company_guid")]
+    public class package_repair : Dates
     {
         [Key]
         public string guid { get; set; }

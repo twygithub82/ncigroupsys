@@ -11,10 +11,12 @@ import { UserItem } from './user';
 
 export class RepairEstGO {
   public guid?: string;
+  public sot_guid?: string;
   public aspnetusers_guid?: string;
   public estimate_no?: string;
   public labour_cost_discount?: number;
   public material_cost_discount?: number;
+  public labour_cost?: number;
   public total_cost?: number;
   public status_cv?: string;
   public remarks?: string;
@@ -27,10 +29,12 @@ export class RepairEstGO {
 
   constructor(item: Partial<RepairEstGO> = {}) {
     this.guid = item.guid;
+    this.sot_guid = item.sot_guid;
     this.aspnetusers_guid = item.aspnetusers_guid;
     this.estimate_no = item.estimate_no;
     this.labour_cost_discount = item.labour_cost_discount;
     this.material_cost_discount = item.material_cost_discount;
+    this.labour_cost = item.labour_cost;
     this.total_cost = item.total_cost;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
@@ -44,7 +48,7 @@ export class RepairEstGO {
 }
 
 export class RepairEstItem extends RepairEstGO {
-  public repair_est_part?: RepairEstPartItem;
+  public repair_est_part?: RepairEstPartItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public aspnetuser?: UserItem;
   public actions?: string[]
@@ -173,11 +177,11 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
-  addRepairEstimate(booking: any): Observable<any> {
+  addRepairEstimate(repairEstimate: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_REPAIR_EST,
       variables: {
-        booking
+        repairEstimate
       }
     });
   }

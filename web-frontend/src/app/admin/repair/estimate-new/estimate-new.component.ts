@@ -54,7 +54,7 @@ import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { RepairEstPartDS, RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairEstDS, RepairEstGO } from 'app/data-sources/repair-est';
+import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
 import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
@@ -244,7 +244,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   customerCodeControl = new UntypedFormControl();
 
-  soDS: StoringOrderDS;
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
@@ -270,7 +269,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     super();
     this.translateLangText();
     this.initForm();
-    this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
@@ -340,50 +338,48 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           this.repairEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairEstForm?.get('remarks')?.setValue(value.remarks);
-          const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
-            return new RepairEstPartItem({
-              description: tep.description,
-              hour: tep.hour,
-              location_cv: tep.location_cv,
-              quantity: tep.quantity,
-              remarks: tep.remarks,
-              material_cost: tep.tariff_repair?.package_repair?.material_cost,
-              tariff_repair_guid: tep.tariff_repair_guid,
-              tariff_repair: tep.tariff_repair,
-              rep_damage_repair: tep.tep_damage_repair,
-              // repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
-            });
-          });
-          this.updateData(repList);
+          // const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
+          //   return new RepairEstPartItem({
+          //     description: tep.description,
+          //     hour: tep.hour,
+          //     location_cv: tep.location_cv,
+          //     quantity: tep.quantity,
+          //     remarks: tep.remarks,
+          //     material_cost: tep.tariff_repair?.package_repair?.material_cost,
+          //     tariff_repair_guid: tep.tariff_repair_guid,
+          //     tariff_repair: tep.tariff_repair,
+          //     rep_damage_repair: tep.tep_damage_repair,
+          //     // repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
+          //   });
+          // });
+          // this.updateData(repList);
           // estimate part
-          // const tariff_repair_guid = value.template_est_part.map((tep: any) => tep.tariff_repair_guid);
-          // this.getCustomerCost(this.sotItem?.storing_order?.customer_company_guid, tariff_repair_guid).pipe(
-          //   switchMap(data => {
-          //     let material_cost = 0;
-          //     if (data && data.length) {
-          //       material_cost = data[0].material_cost;
-          //       console.log('Customer Package Cost Data:', data);
-          //     }
+          const tariff_repair_guid = value.template_est_part.map((tep: any) => tep.tariff_repair_guid);
+          this.getCustomerCost(this.sotItem?.storing_order?.customer_company_guid, tariff_repair_guid).pipe(
+            switchMap(data => {
+              let material_cost = 0;
+              if (data && data.length) {
+                material_cost = data[0].material_cost;
+                console.log('Customer Package Cost Data:', data);
+              }
 
-          //     const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
-          //       return new RepairEstPartItem({
-          //         description: tep.description,
-          //         hour: tep.hour,
-          //         location_cv: tep.location_cv,
-          //         quantity: tep.quantity,
-          //         remarks: tep.remarks,
-          //         material_cost: material_cost,
-          //         tariff_repair_guid: tep.tariff_repair_guid,
-          //         tariff_repair: tep.tariff_repair,
-          //         damage: tep.tep_damage_repair.filter((x: any) => x.code_type === 0).map((damage: any) => new REPDamageRepairItem(damage)),
-          //         repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
-          //       });
-          //     });
-          //     this.updateData(repList);
-
-          //     return of(repList);
-          //   })
-          // ).subscribe();
+              const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
+                return new RepairEstPartItem({
+                  description: tep.description,
+                  hour: tep.hour,
+                  location_cv: tep.location_cv,
+                  quantity: tep.quantity,
+                  remarks: tep.remarks,
+                  material_cost: material_cost,
+                  tariff_repair_guid: tep.tariff_repair_guid,
+                  tariff_repair: tep.tariff_repair,
+                  rep_damage_repair: tep.tep_damage_repair,
+                });
+              });
+              this.updateData(repList);
+              return of(repList);
+            })
+          ).subscribe();
         }
       })
     ).subscribe();
@@ -801,7 +797,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       if (!this.repList.data.length) {
         this.repairEstForm.get('repList')?.setErrors({ required: true });
       } else {
-        let re: RepairEstGO = new RepairEstGO(this.sotItem?.repair_est);
+        let re: RepairEstItem = new RepairEstItem(this.sotItem?.repair_est);
 
         const rep: RepairEstPartItem[] = this.repList.data.map((item: any) => {
           // Ensure action is an array and take the last action only
@@ -811,10 +807,20 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           console.log(item)
           return new RepairEstPartItem({
             ...item,
+            tariff_repair: undefined,
             action: latestAction // Set the latest action as the single action
           });
         });
-        console.log(rep);
+        re.repair_est_part = rep;
+        re.sot_guid = this.sotItem?.guid;
+        re.aspnetusers_guid = this.repairEstForm.get('surveyor_id')?.value;
+        re.labour_cost_discount = Utility.convertNumber(this.repairEstForm.get('labour_cost_discount')?.value);
+        re.material_cost_discount = Utility.convertNumber(this.repairEstForm.get('material_cost_discount')?.value);
+        re.labour_cost = re.labour_cost || this.packageLabourItem?.cost;
+        re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value);
+        re.remarks = this.repairEstForm.get('remarks')?.value;
+        re.owner_enable = this.isOwner;
+        console.log(re);
         // console.log('so Value', so);
         // console.log('sot Value', sot);
         // if (so.guid) {
@@ -823,10 +829,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         //     this.handleSaveSuccess(result?.data?.updateStoringOrder);
         //   });
         // } else {
-        //   this.soDS.addStoringOrder(so, sot).subscribe(result => {
-        //     console.log(result)
-        //     this.handleSaveSuccess(result?.data?.addStoringOrder);
-        //   });
+        this.repairEstDS.addRepairEstimate(re).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.addRepairEstimate);
+        });
         // }
       }
     } else {

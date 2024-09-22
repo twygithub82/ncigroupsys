@@ -17,7 +17,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_depot?> QueryTariffDepot( ApplicationTariffDBContext context,
+        public IQueryable<tariff_depot?> QueryTariffDepot(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -43,7 +43,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public  IQueryable<tariff_cleaning?> QueryTariffCleaning( ApplicationTariffDBContext context,
+        public IQueryable<tariff_cleaning?> QueryTariffCleaning(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -64,7 +64,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             }
 
             return query;
-           
+
         }
 
 
@@ -73,7 +73,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_labour?> QueryTariffLabour( ApplicationTariffDBContext context,
+        public IQueryable<tariff_labour?> QueryTariffLabour(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -83,7 +83,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.tariff_labour.Where(i => i.delete_dt == null || i.delete_dt == 0);
-                     
+
             }
             catch
             {
@@ -100,7 +100,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<tariff_residue?> QueryTariffResidue( ApplicationTariffDBContext context,
+        public IQueryable<tariff_residue?> QueryTariffResidue(ApplicationTariffDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
@@ -178,19 +178,16 @@ namespace IDMS.Models.Tariff.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public async Task<un_number?> QueryUNClassByNo(ApplicationTariffDBContext context, [Service] IConfiguration config, 
+        public IQueryable<un_number?> QueryUNClassByNo(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string unNo)
         {
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var query = await context.un_number.Where(u => u.un_no == unNo).FirstOrDefaultAsync();
-                if (query == null)
-                    throw new GraphQLException(new Error($"UN_No not found", "NOT FOUND"));
-                else
-                    return query;
+                var query = context.un_number.Where(u => u.un_no == unNo && (u.delete_dt == null || u.delete_dt == 0));
+                return query;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }

@@ -31,8 +31,10 @@ namespace IDMS.Repair.GqlTypes
                 repEstimate.labour_cost_discount = RepairEstimate.labour_cost_discount;
                 repEstimate.material_cost_discount = RepairEstimate.material_cost_discount;
                 repEstimate.total_cost = RepairEstimate.total_cost;
+                repEstimate.labour_cost = RepairEstimate.labour_cost;   
                 repEstimate.owner_enable = RepairEstimate.owner_enable;
                 repEstimate.remarks = RepairEstimate.remarks;
+                repEstimate.status_cv = RepairEstStatus.PENDING;
                 await context.repair_est.AddAsync(repEstimate);
 
                 //if (TemplateType.EXCLUSIVE.EqualsIgnore(newRepairEstimate.type_cv))
@@ -99,6 +101,7 @@ namespace IDMS.Repair.GqlTypes
                 repTemplate.labour_cost_discount = RepairEsimate.labour_cost_discount;
                 repTemplate.material_cost_discount = RepairEsimate.material_cost_discount;
                 repTemplate.total_cost = RepairEsimate.total_cost;
+                repTemplate.labour_cost = RepairEsimate.labour_cost;
                 repTemplate.remarks = RepairEsimate.remarks;
 
                 if (RepairEsimate.repair_est_part != null)
@@ -133,8 +136,8 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.quantity = part.quantity;
                             existingPart.location_cv = part.location_cv;
                             existingPart.hour = part.hour;
+                            existingPart.material_cost = part.material_cost;    
                             existingPart.remarks = part.remarks;
-                            existingPart.status_cv = part.status_cv;
                             await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
                             continue;
                         }
