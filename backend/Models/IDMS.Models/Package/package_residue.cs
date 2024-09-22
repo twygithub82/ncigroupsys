@@ -20,9 +20,7 @@ namespace IDMS.Models.Package
 
         [ForeignKey("customer_company")]
         public string? customer_company_guid { get; set; }
-
         public double? cost { get; set; }
-
         public string? remarks { get; set; }
 
         public tariff_residue? tariff_residue { get; set; }

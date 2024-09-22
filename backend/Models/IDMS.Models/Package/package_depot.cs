@@ -20,21 +20,14 @@ namespace IDMS.Models.Package
 
         [ForeignKey("tariff_depot")]
         public string? tariff_depot_guid {  get; set; }
-
         public string? remarks { get; set; }
-
         public double? preinspection_cost { get; set; }
-
         public double? lolo_cost { get; set; }
-
         public double? storage_cost { get; set; }
-
         public double? gate_in_cost { get; set; }
         public double? gate_out_cost { get; set; }
         //public double? gate_charges { get; set; }
-
         public int? free_storage { get; set; }
-
         public string? storage_cal_cv { get; set; }
 
         public tariff_depot? tariff_depot { get; set; }

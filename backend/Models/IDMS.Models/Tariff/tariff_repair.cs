@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Master;
+using IDMS.Models.Package;
 using IDMS.Models.Service;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,10 @@ namespace IDMS.Models.Tariff
         public double? material_cost { get; set; }
         public string? remarks { get; set; }
 
-       public IEnumerable<template_est_part>? template_est_part { get; set; }    
-       public IEnumerable<repair_est_part>? repair_est_part { get; set; }
+        public IEnumerable<template_est_part>? template_est_part { get; set; }    
+        public IEnumerable<repair_est_part>? repair_est_part { get; set; }
+        //public IEnumerable<package_repair>? package_repair { get; set; }
+
+        public package_repair? package_repair { get; set; } 
     }
 }
