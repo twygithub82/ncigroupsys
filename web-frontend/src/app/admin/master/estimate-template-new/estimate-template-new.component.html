@@ -208,8 +208,8 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.damage)">
-                              {{displayDamageRepairCode(row.damage)}}
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 0)">
+                              {{displayDamageRepairCode(row.rep_damage_repair, 0)}}
                             </span>
                           </span>
                         </mat-cell>
@@ -223,8 +223,8 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.repair)">
-                            {{displayDamageRepairCode(row.repair)}}
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 1)">
+                            {{displayDamageRepairCode(row.rep_damage_repair, 1)}}
                           </span>
                         </mat-cell>
                       </ng-container>
@@ -316,7 +316,7 @@
                               <span>{{translatedLangText.DUPLICATE}}</span>
                             </button>
                             } -->
-                             @if (sotDS.canAddRemove(row)) { 
+                            <!-- @if (sotDS.canAddRemove(row)) { 
                             <button mat-menu-item (click)="handleDelete($event, row, i)">
                               <mat-icon>delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
@@ -347,7 +347,7 @@
                               <mat-icon>undo</mat-icon>
                               <span>{{translatedLangText.UNDO}} {{translatedLangText.ROLLBACK_STATUS}}</span>
                             </button>
-                            }
+                            } -->
                           </mat-menu>
                         </mat-cell> 
                       </ng-container>

@@ -761,7 +761,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         if (result.item.guid) {
-          const data = [...this.repList.data];
+          const data: any[] = [...this.repList.data];
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
@@ -799,7 +799,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data = [...this.repList.data];
+        const data:any[] = [...this.repList.data];
         result.item.forEach((newItem: RepairEstPartItem) => {
           // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
@@ -838,9 +838,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data = [...this.repList.data];
+        const data: any[] = [...this.repList.data];
         result.item.forEach((newItem: RepairEstPartItem) => {
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+          const index = data.findIndex((existingItem: any) => existingItem.guid === newItem.guid);
 
           if (index !== -1) {
             data[index] = {
@@ -858,16 +858,16 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   undoTempAction(row: RepairEstPartItem[], actionToBeRemove: string) {
-    const data = [...this.repList.data];
+    const data:any[] = [...this.repList.data];
     row.forEach((newItem: RepairEstPartItem) => {
-      const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+      const index = data.findIndex((existingItem: any) => existingItem.guid === newItem.guid);
 
       if (index !== -1) {
         data[index] = {
           ...data[index],
           ...newItem,
           actions: Array.isArray(data[index].actions!)
-            ? data[index].actions!.filter(action => action !== actionToBeRemove)
+            ? data[index].actions!.filter((action: any) => action !== actionToBeRemove)
             : []
         };
       }
@@ -955,19 +955,11 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
                 tempEstPartItem.remarks = repEstItem.remarks;
                 tempEstPartItem.description = repEstItem.description;
                 tempEstPartItem.tep_damage_repair = [];
-                let dmg: REPDamageRepairItem[] = repEstItem.damage!;
+                let dmg: REPDamageRepairItem[] = repEstItem.rep_damage_repair!;
                 dmg.forEach(d => {
                   let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
                   tepDamageRepairItm.code_cv = d.code_cv;
                   tepDamageRepairItm.code_type = d.code_type;
-                  tepDamageRepairItm.action = "NEW";
-                  tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
-                });
-                let rpr: REPDamageRepairItem[] = repEstItem.repair!;
-                rpr.forEach(r => {
-                  let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-                  tepDamageRepairItm.code_cv = r.code_cv;
-                  tepDamageRepairItm.code_type = r.code_type;
                   tepDamageRepairItm.action = "NEW";
                   tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
                 });
@@ -1070,19 +1062,11 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
           // consolidate new repair + new damage to tep_damage_repair
           var tep_damage_repairItems: TepDamageRepairItem[] = [];
-          let dmg: REPDamageRepairItem[] = (value.damage!);
+          let dmg: REPDamageRepairItem[] = (value.rep_damage_repair!);
           dmg.forEach(d => {
             let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
             tepDamageRepairItm.code_cv = d.code_cv;
             tepDamageRepairItm.code_type = d.code_type;
-            tepDamageRepairItm.action = "NEW";
-            tep_damage_repairItems?.push(tepDamageRepairItm);
-          });
-          let rpr: REPDamageRepairItem[] = (value.repair!);
-          rpr.forEach(r => {
-            let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-            tepDamageRepairItm.code_cv = r.code_cv;
-            tepDamageRepairItm.code_type = r.code_type;
             tepDamageRepairItm.action = "NEW";
             tep_damage_repairItems?.push(tepDamageRepairItm);
           });
@@ -1110,19 +1094,11 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
           tempEstPartItem.remarks = repEstItem.remarks;
           tempEstPartItem.description = repEstItem.description;
           tempEstPartItem.tep_damage_repair = [];
-          let dmg: REPDamageRepairItem[] = repEstItem.damage!;
+          let dmg: REPDamageRepairItem[] = repEstItem.rep_damage_repair!;
           dmg.forEach(d => {
             let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
             tepDamageRepairItm.code_cv = d.code_cv;
             tepDamageRepairItm.code_type = d.code_type;
-            tepDamageRepairItm.action = "NEW";
-            tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
-          });
-          let rpr: REPDamageRepairItem[] = repEstItem.repair!;
-          rpr.forEach(r => {
-            let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-            tepDamageRepairItm.code_cv = r.code_cv;
-            tepDamageRepairItm.code_type = r.code_type;
             tepDamageRepairItm.action = "NEW";
             tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
           });
@@ -1341,14 +1317,14 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     return this.cvDS.getCodeDescription(codeVal, this.repairCodeCvList);
   }
 
-  displayDamageRepairCode(damageRepair: any[]): string {
-    return damageRepair.map(item => {
+  displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
+    return damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
-  displayDamageRepairCodeDescription(damageRepair: any[]): string {
-    return damageRepair.map(item => {
+  displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
+    return damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';

@@ -54,7 +54,7 @@ import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { RepairEstPartDS, RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairEstDS } from 'app/data-sources/repair-est';
+import { RepairEstDS, RepairEstGO } from 'app/data-sources/repair-est';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
 import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
@@ -296,11 +296,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   initForm() {
     this.repairEstForm = this.fb.group({
       guid: [''],
-      customer_company_guid: [''],
-      customer_code: this.customerCodeControl,
       est_template: [''],
       remarks: [''],
-      surveyor_name_cv: [''],
+      surveyor_id: [''],
       internal_qc_by: [''],
       labour_cost_discount: [0],
       material_cost_discount: [0],
@@ -327,6 +325,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       net_owner_cost: [0],
       net_lessee_cost: [0],
       net_cost: [0],
+      repList: ['']
     });
   }
 
@@ -351,8 +350,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
               material_cost: tep.tariff_repair?.package_repair?.material_cost,
               tariff_repair_guid: tep.tariff_repair_guid,
               tariff_repair: tep.tariff_repair,
-              damage: tep.tep_damage_repair.filter((x: any) => x.code_type === 0).map((damage: any) => new REPDamageRepairItem(damage)),
-              repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
+              rep_damage_repair: tep.tep_damage_repair,
+              // repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
             });
           });
           this.updateData(repList);
@@ -664,7 +663,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         if (result.item.guid) {
-          const data = [...this.repList.data];
+          const data: any[] = [...this.repList.data];
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
@@ -702,7 +701,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data = [...this.repList.data];
+        const data: any[] = [...this.repList.data];
         result.item.forEach((newItem: RepairEstPartItem) => {
           // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
@@ -742,7 +741,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data = [...this.repList.data];
+        const data: any[] = [...this.repList.data];
         result.item.forEach((newItem: RepairEstPartItem) => {
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
@@ -761,9 +760,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  undoTempAction(row: RepairEstPartItem[], actionToBeRemove: string) {
-    const data = [...this.repList.data];
-    row.forEach((newItem: RepairEstPartItem) => {
+  undoTempAction(row: any[], actionToBeRemove: string) {
+    const data: any[] = [...this.repList.data];
+    row.forEach((newItem: any) => {
       const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
       if (index !== -1) {
@@ -771,7 +770,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           ...data[index],
           ...newItem,
           actions: Array.isArray(data[index].actions!)
-            ? data[index].actions!.filter(action => action !== actionToBeRemove)
+            ? data[index].actions!.filter((action: any) => action !== actionToBeRemove)
             : []
         };
       }
@@ -797,40 +796,39 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   onFormSubmit() {
-    // this.repairEstForm!.get('sotList')?.setErrors(null);
+    this.repairEstForm!.get('repList')?.setErrors(null);
     if (this.repairEstForm?.valid) {
-      // if (!this.repList.data.length) {
-      //   this.repairEstForm.get('sotList')?.setErrors({ required: true });
-      // } else {
-      //   let so: StoringOrderGO = new StoringOrderGO(this.storingOrderItem);
-      //   so.customer_company_guid = this.repairEstForm.value['customer_company_guid'];
-      //   so.haulier = this.repairEstForm.value['haulier'];
-      //   so.so_notes = this.repairEstForm.value['so_notes'];
+      if (!this.repList.data.length) {
+        this.repairEstForm.get('repList')?.setErrors({ required: true });
+      } else {
+        let re: RepairEstGO = new RepairEstGO(this.sotItem?.repair_est);
 
-      //   const sot: StoringOrderTankGO[] = this.repList.data.map((item: Partial<StoringOrderTankItem>) => {
-      //     // Ensure action is an array and take the last action only
-      //     const actions = Array.isArray(item!.actions) ? item!.actions : [];
-      //     const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
+        const rep: RepairEstPartItem[] = this.repList.data.map((item: any) => {
+          // Ensure action is an array and take the last action only
+          const actions = Array.isArray(item!.actions) ? item!.actions : [];
+          const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
 
-      //     return new StoringOrderTankUpdateSO({
-      //       ...item,
-      //       action: latestAction // Set the latest action as the single action
-      //     });
-      //   });
-      //   console.log('so Value', so);
-      //   console.log('sot Value', sot);
-      //   if (so.guid) {
-      //     this.soDS.updateStoringOrder(so, sot).subscribe(result => {
-      //       console.log(result)
-      //       this.handleSaveSuccess(result?.data?.updateStoringOrder);
-      //     });
-      //   } else {
-      //     this.soDS.addStoringOrder(so, sot).subscribe(result => {
-      //       console.log(result)
-      //       this.handleSaveSuccess(result?.data?.addStoringOrder);
-      //     });
-      //   }
-      // }
+          console.log(item)
+          return new RepairEstPartItem({
+            ...item,
+            action: latestAction // Set the latest action as the single action
+          });
+        });
+        console.log(rep);
+        // console.log('so Value', so);
+        // console.log('sot Value', sot);
+        // if (so.guid) {
+        //   this.soDS.updateStoringOrder(so, sot).subscribe(result => {
+        //     console.log(result)
+        //     this.handleSaveSuccess(result?.data?.updateStoringOrder);
+        //   });
+        // } else {
+        //   this.soDS.addStoringOrder(so, sot).subscribe(result => {
+        //     console.log(result)
+        //     this.handleSaveSuccess(result?.data?.addStoringOrder);
+        //   });
+        // }
+      }
     } else {
       console.log('Invalid repairEstForm', this.repairEstForm?.value);
     }
@@ -996,14 +994,14 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     return this.cvDS.getCodeDescription(codeVal, this.repairCodeCvList);
   }
 
-  displayDamageRepairCode(damageRepair: any[]): string {
-    return damageRepair.map(item => {
+  displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
+    return damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
-  displayDamageRepairCodeDescription(damageRepair: any[]): string {
-    return damageRepair.map(item => {
+  displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
+    return damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';

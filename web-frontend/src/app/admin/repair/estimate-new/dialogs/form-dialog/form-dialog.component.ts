@@ -75,7 +75,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   customer_company_guid: string;
 
   repairPartForm: UntypedFormGroup;
-  repairPart: RepairEstPartItem;
+  repairPart: any;
   partNameControl: UntypedFormControl;
   partNameList?: string[];
   partNameFilteredList?: string[];
@@ -159,8 +159,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       part_name: this.repairPart.tariff_repair?.part_name,
       dimension: this.repairPart.tariff_repair?.dimension,
       length: this.repairPart.tariff_repair?.length,
-      damage: this.REPDamageRepairToCV(this.repairPart.damage),
-      repair: this.REPDamageRepairToCV(this.repairPart.repair),
+      damage: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0)),
+      repair: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1)),
       material_cost: this.repairPart.material_cost
     });
   }
@@ -177,13 +177,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           actions = [...new Set([...actions, 'edit'])];
         }
       }
-      var rep: RepairEstPartItem = {
+      var rep: any = {
         ...this.repairPart,
         location_cv: this.repairPartForm.get('location_cv')?.value,
         tariff_repair_guid: this.repairPart?.tariff_repair_guid,
         tariff_repair: this.repairPart?.tariff_repair,
-        damage: this.REPDamage(this.repairPartForm.get('damage')?.value),
-        repair: this.REPRepair(this.repairPartForm.get('repair')?.value),
+        rep_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
+        // repair: this.REPRepair(this.repairPartForm.get('repair')?.value),
         quantity: this.repairPartForm.get('quantity')?.value,
         hour: this.repairPartForm.get('hour')?.value,
         material_cost: this.repairPartForm.get('material_cost')?.value,

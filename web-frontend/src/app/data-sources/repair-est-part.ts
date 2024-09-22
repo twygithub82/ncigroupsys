@@ -48,16 +48,14 @@ export class RepairEstPartGO {
 export class RepairEstPartItem extends RepairEstPartGO {
   public tariff_repair?: TariffRepairItem;
   public repair_est?: RepairEstItem;
-  public damage?: REPDamageRepairItem[];
-  public repair?: REPDamageRepairItem[];
-  public actions?: string[]
+  public rep_damage_repair?: REPDamageRepairItem[];
+  public action?: string
   constructor(item: Partial<RepairEstPartItem> = {}) {
     super(item)
     this.tariff_repair = item.tariff_repair;
     this.repair_est = item.repair_est;
-    this.damage = item.damage;
-    this.repair = item.repair;
-    this.actions = item.actions;
+    this.rep_damage_repair = item.rep_damage_repair;
+    this.action = item.action;
   }
 }
 
