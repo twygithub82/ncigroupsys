@@ -44,6 +44,7 @@ import {CleaningCategoryDS,CleaningCategoryItem } from 'app/data-sources/cleanin
 import {CleaningMethodDS,CleaningMethodItem} from 'app/data-sources/cleaning-method';
 import { sequence } from '@angular/animations';
 import {SearchCriteriaService} from 'app/services/search-criteria.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 
 @Component({
@@ -138,7 +139,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
     CARGO_COST :'COMMON-FORM.CARGO-COST',
     CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE'
+    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
   searchForm?: UntypedFormGroup;
@@ -611,5 +613,47 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initSearchForm();
+    // this.searchForm?.patchValue({
+    //   class_no: [''],
+    //   method: [''],
+    //   category:[''],
+    //   hazard_level:[''],
+    //   ban_type:[''],
+    // });
+    this.classNoControl.reset();
+    this.methodControl.reset();
+    this.categoryControl.reset();
+    this.hazardLevelControl.reset();
+    this.banTypeControl.reset();
+    
+    //this.customerCodeControl.reset('');
+   
   }
 }

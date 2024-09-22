@@ -211,7 +211,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     INTERNAL_QC_BY: 'COMMON-FORM.INTERNAL-QC-BY',
     RATE: "COMMON-FORM.RATE",
     TOTAL: "COMMON-FORM.TOTAL",
-    NO_PARTS: "COMMON-FORM.NO-PARTS"
+    NO_PARTS: "COMMON-FORM.NO-PARTS",
+    PART: 'COMMON-FORM.PART'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -467,6 +468,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       this.selectedTempEst!.template_est_customer = custCompanies;
       this.tempForm?.patchValue({
         guid: this.selectedTempEst?.guid,
+        labour_discount: this.selectedTempEst?.labour_cost_discount,
+        material_discount: this.selectedTempEst?.material_cost_discount,
         // customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
         template_name: this.selectedTempEst?.template_name,
         remarks: this.selectedTempEst?.remarks,
@@ -493,6 +496,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
             update_by: item.update_by,
             update_dt: item.update_dt,
             tep_damage_repair: item.tep_damage_repair!,
+            
             // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
             // Map other fields as needed
           } as RepairEstPartItem;
@@ -575,20 +579,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  // GetCustomerCompanyForDownDrop(customerCompanyList:TemplateEstimateCustomerItem[]):any[]
-  // {
-  //   var result :any =customerCompanyList?.filter((item: Partial<TemplateEstimateCustomerItem> | undefined): item is Partial<TemplateEstimateCustomerItem> => item !== undefined)
-  //   .map((item: Partial<TemplateEstimateCustomerItem>) => {
-  //       // Transform the Partial<TemplateEstPartItem> into a RepairEstPartItem
-  //       return {
-  //         guid : item.customer_company?.guid,
-  //         code : item.customer_company?.code,
-  //         name : item.customer_company?.name,
-  //       } as any;
-  //   }) ?? [];
-
-  //   return result;
-  // }
+  
   GetRepairOrDamage(repairDamageList: TepDamageRepairItem[], codeType: Number): any[] {
     var retval: any[] = [];
     var result = repairDamageList.filter((item) => item.code_type == codeType)
@@ -608,19 +599,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       }) ?? [];
     return retval.sort((a, b) => (a.code_cv ?? 0) - (b.code_cv ?? 0));
   }
-  // populateSOForm(so: StoringOrderItem): void {
-  //   this.tempForm!.patchValue({
-  //     guid: so.guid,
-  //     customer_code: so.customer_company,
-  //     customer_company_guid: '',//so.customer_company_guid,
-  //     so_no: so.so_no,
-  //     so_notes: so.so_notes,
-  //     haulier: so.haulier
-  //   });
-  //   if (so.storing_order_tank) {
-  //     this.populateSOT(so.storing_order_tank);
-  //   }
-  // }
+ 
 
   populateSOT(rep: any[]) {
     if (rep?.length) {
@@ -977,34 +956,37 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   updateExistTemplate() {
 
     const tempEstimateCustomerItems: TemplateEstimateCustomerItem[] = this.selectedTempEst!.template_est_customer!.map((node: any) => new TemplateEstimateCustomerItem(node));
-    this.selectedTempEst!.labour_cost_discount = this.tempForm?.get("labour_discount")?.value;
-    this.selectedTempEst!.material_cost_discount = this.tempForm?.get("material_discount")?.value;
-    this.selectedTempEst!.template_est_customer = tempEstimateCustomerItems;
-    var existdata_cust = this.selectedTempEst!.template_est_customer;
-    existdata_cust?.forEach(value => { value.action = "CANCEL"; value.customer_company = undefined; });
-
-    if (this.tempForm?.get("customer_code")?.value?.length > 0) {
-      var newdata_cust = this.tempForm?.get('customer_code')?.value;
-      this.selectedTempEst!.type_cv = "EXCLUSIVE";
-      var customerCodes: CustomerCompanyItem[] = this.tempForm?.get("customer_code")?.value;
-      //temp.template_est_customer=[];
-      customerCodes.forEach(data => {
-
-        // const filteredData = existdata_cust
-        // ?.map((value, index) => ({ value, index })) // Map data to an object containing both value and index
-        // .filter(item => item.value.customer_company_guid === data.guid); // Filter based on the condition
-
-        //   var act="NEW";
-        //   if(filteredData!.length>0)
-        //   {
-        //     this.selectedTempEst!.template_est_customer?.splice(filteredData![0].index,1);
-        //     act="";
-
-        //   }
-        const found = existdata_cust.filter(value => value.customer_company_guid === data.guid);
-        if (found!.length > 0) {
-          found[0].action = "";
-          found[0].customer_company = undefined;
+    
+    this.selectedTempEst!.labour_cost_discount=this.tempForm?.get("labour_discount")?.value;
+    this.selectedTempEst!.material_cost_discount=this.tempForm?.get("material_discount")?.value;
+    this.selectedTempEst!.template_est_customer=tempEstimateCustomerItems;
+    var existdata_cust=this.selectedTempEst!.template_est_customer;
+    existdata_cust?.forEach(value=>{value.action="CANCEL";value.customer_company=undefined;});
+    
+    if(this.tempForm?.get("customer_code")?.value?.length>0)
+      {
+        var newdata_cust = this.tempForm?.get('customer_code')?.value;
+        this.selectedTempEst!.type_cv="EXCLUSIVE";
+        var customerCodes : CustomerCompanyItem[] = this.tempForm?.get("customer_code")?.value;
+        //temp.template_est_customer=[];
+        customerCodes.forEach(data=>{
+          
+          // const filteredData = existdata_cust
+          // ?.map((value, index) => ({ value, index })) // Map data to an object containing both value and index
+          // .filter(item => item.value.customer_company_guid === data.guid); // Filter based on the condition
+        
+          //   var act="NEW";
+          //   if(filteredData!.length>0)
+          //   {
+          //     this.selectedTempEst!.template_est_customer?.splice(filteredData![0].index,1);
+          //     act="";
+        
+          //   }
+             const found=existdata_cust.filter(value=>value.customer_company_guid===data.guid);
+            if(found!.length>0)
+            {
+              found[0].action=""; 
+              found[0].customer_company=undefined;
 
         }
         else {
@@ -1023,10 +1005,14 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     this.selectedTempEst!.template_est_part = tempEstimatePartItems;
     this.selectedTempEst!.template_est_part.forEach(value => value.action = "CANCEL");
 
-    if (this.repList.data.length > 0) {
-      this.repList.data.forEach(value => {
-        var existData = this.selectedTempEst?.template_est_part?.filter(data => data.guid === value.guid);
-        if (existData?.length! > 0) {
+    if(this.repList.data.length>0)
+    {
+      this.repList.data.forEach(value=>{
+        
+        var existData = this.selectedTempEst?.template_est_part?.filter(data=>data.guid===value.guid);
+        if(existData?.length!>0)
+        {
+          var childNodeUpdated:Boolean=false;
           //if template estimate part found
           existData![0]!.action = "";
           existData![0]!.tariff_repair = undefined;
@@ -1035,26 +1021,43 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
           existData![0]!.tep_damage_repair.forEach(value => value.action = "CANCEL");
 
           // consolidate new repair + new damage to tep_damage_repair
-          var tep_damage_repairItems: TepDamageRepairItem[] = [];
-          let dmg: TepDamageRepairItem[] = (value.tep_damage_repair!);
-          dmg.forEach(d => {
-            let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-            tepDamageRepairItm.code_cv = d.code_cv;
-            tepDamageRepairItm.code_type = d.code_type;
-            tepDamageRepairItm.action = "NEW";
-            tep_damage_repairItems?.push(tepDamageRepairItm);
-          });
-          tep_damage_repairItems.forEach(repItm => {
-            var existRepItm = existData![0]!.tep_damage_repair?.filter(data => data.code_cv === repItm.code_cv && data.code_type === repItm.code_type);
-            if (existRepItm?.length! > 0) {
-              //set the damage or repair  to unchange
-              existRepItm![0]!.action = "";
-            }
-            else {
-              //add new damage or repair 
-              existData![0].tep_damage_repair?.push(repItm);
-            }
-          });
+          var rep_damage_repairItems=value.tep_damage_repair!;
+          // let dmg :REPDamageRepairItem[] =( value.);
+          //   dmg.forEach(d=>{
+          //     let tepDamageRepairItm :TepDamageRepairItem= new TepDamageRepairItem();
+          //     tepDamageRepairItm.code_cv=d.code_cv;
+          //     tepDamageRepairItm.code_type=d.code_type;
+          //     tepDamageRepairItm.action="NEW";
+          //     tep_damage_repairItems?.push(tepDamageRepairItm);
+          //   });
+          //   let rpr :REPDamageRepairItem[] =  ( value.repair);
+          //   rpr.forEach(r=>{
+          //     let tepDamageRepairItm :TepDamageRepairItem= new TepDamageRepairItem();
+          //     tepDamageRepairItm.code_cv=r.code_cv;
+          //     tepDamageRepairItm.code_type=r.code_type;
+          //     tepDamageRepairItm.action="NEW";
+          //     tep_damage_repairItems?.push(tepDamageRepairItm);
+          //   });
+            rep_damage_repairItems.forEach(repItm=>{
+              var existRepItm = existData![0]!.tep_damage_repair?.filter(data=>data.code_cv===repItm.code_cv && data.code_type===repItm.code_type);
+              if(existRepItm?.length!>0)
+              {
+                //set the damage or repair  to unchange
+                existRepItm![0]!.action="";
+              }
+              else
+              {
+                let tepDamageRepairItm :TepDamageRepairItem= new TepDamageRepairItem();
+                tepDamageRepairItm.code_cv=repItm.code_cv;
+                tepDamageRepairItm.code_type=repItm.code_type;
+                tepDamageRepairItm.action="NEW";
+                //add new damage or repair 
+                existData![0].tep_damage_repair!.push(tepDamageRepairItm);
+                childNodeUpdated=true;
+              }
+            });
+            if(childNodeUpdated) existData![0]!.action="EDIT";
+
         }
         else {
           var repEstItem: TemplateEstPartItem = value;
@@ -1068,7 +1071,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
           tempEstPartItem.remarks = repEstItem.remarks;
           tempEstPartItem.description = repEstItem.description;
           tempEstPartItem.tep_damage_repair = [];
-          let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!;
+          let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!.map((node:any)=>new TepDamageRepairItem(node));;
           dmg.forEach(d => {
             let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
             tepDamageRepairItm.code_cv = d.code_cv;
@@ -1080,45 +1083,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
         }
       });
     }
-    // this.selectedTempEst!.template_est_part.forEach(value=>{
-    //   var tep_damage_repairItems:TepDamageRepairItem[]=[];
-    //   value.tariff_repair=undefined;
-    //   value.tep_damage_repair= value.tep_damage_repair!.map((node: any) => new TepDamageRepairItem(node));
-    //   value.tep_damage_repair?.forEach(value=>value.action="CANCEL");
-
-    //   let dmg :REPDamageRepairItem[] =( this.tempForm?.get("damage")?.value);
-    //   dmg.forEach(d=>{
-    //     let tepDamageRepairItm :TepDamageRepairItem= new TepDamageRepairItem();
-    //     tepDamageRepairItm.code_cv=d.code_cv;
-    //     tepDamageRepairItm.code_type=d.code_type;
-    //     tepDamageRepairItm.action="NEW";
-    //     tep_damage_repairItems?.push(tepDamageRepairItm);
-    //   });
-    //   let rpr :REPDamageRepairItem[] =  this.tempForm?.get("repair")?.value;
-    //   rpr.forEach(r=>{
-    //     let tepDamageRepairItm :TepDamageRepairItem= new TepDamageRepairItem();
-    //     tepDamageRepairItm.code_cv=r.code_cv;
-    //     tepDamageRepairItm.code_type=r.code_type;
-    //     tepDamageRepairItm.action="NEW";
-    //     tep_damage_repairItems?.push(tepDamageRepairItm);
-    //   });
-
-    //   tep_damage_repairItems.map(data=>{
-    //       const found=value.tep_damage_repair!.filter(value=>value.code_cv===data.code_cv && value.code_type===data.code_type);
-    //       if(found!.length>0)
-    //       {
-    //         found[0].action=""; 
-
-
-    //       }
-    //       else
-    //       {
-    //         value.tep_damage_repair?.push(data)
-    //       }
-    //   });
-
-
-    // });
+   
     delete this.selectedTempEst!.totalMaterialCost;
     this.estTempDS.UpdateMasterTemplate(this.selectedTempEst).subscribe(result => {
       var count = result.data.updateTemplateEstimation;
@@ -1333,10 +1298,10 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     );
   }
 
-  GetEstimationPrice(row: RepairEstPartItem): string {
+  GetEstimationPrice(row: any): string {
     var retval: string = "0.00";
 
-    retval = Number(Number(row.material_cost || 0) * Number(row.quantity || 0)).toFixed(2);
+    retval = Number(Number(row.tariff_repair.material_cost || 0) * Number(row.quantity || 0)).toFixed(2);
     return retval;
   }
 }

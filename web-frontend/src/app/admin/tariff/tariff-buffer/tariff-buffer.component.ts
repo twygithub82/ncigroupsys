@@ -56,6 +56,7 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffBufferDS,TariffBufferItem } from 'app/data-sources/tariff-buffer';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-tariff-buffer',
@@ -245,7 +246,8 @@ implements OnInit {
     DESCRIPTION : 'COMMON-FORM.BUFFER-TYPE',
     BUFFER_CLEANING:'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
     COST : 'COMMON-FORM.COST',
-    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED"
+    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
      }
   
   constructor(
@@ -690,5 +692,35 @@ implements OnInit {
       return { 'invalidCharacter': true };
     }
     return null;
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initTcForm();
+    
+    this.customerCodeControl.reset('');
+   
   }
 }

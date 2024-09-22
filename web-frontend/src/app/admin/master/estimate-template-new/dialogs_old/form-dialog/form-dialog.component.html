@@ -62,27 +62,57 @@
         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.PART_NAME}}</mat-label>
-            <mat-select formControlName="part_name" required>
-              @for (name of partNameList; track name) {
-              <mat-option [value]="name">{{name}}</mat-option>
+            <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
+              formControlName="part_name" required>
+            <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
+              @for (name of partNameFilteredList; track name) {
+
+              <mat-option [value]="name">
+                {{name}}
+              </mat-option>
               }
-            </mat-select>
+            </mat-autocomplete>
+            @if (partNameControl.get('part_name')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.PART_NAME}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+            @if (partNameControl.hasError('invalidAutocompleteSelection')) {
+            <mat-error>
+              {{data.translatedLangText.INVALID_SELECTION}}
+            </mat-error>
+            }
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-          <button mat-mini-fab color="primary" [disabled]="!this.repairPartForm.get('part_name')?.value"
-            (click)="searchPart()">
-            <mat-icon>search</mat-icon>
-          </button>
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.DIMENSION}}</mat-label>
+            <mat-select formControlName="dimension" required>
+              @for (dim of dimensionList; track dim) {
+              <mat-option [value]="dim">{{dim}}</mat-option>
+              }
+            </mat-select>
+            @if (repairPartForm.get('dimension')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.DIMENSION}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+          </mat-form-field>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
-          {{data.translatedLangText.PART}}:
-          <span class="font-bold">
-            {{this.repairPart.tariff_repair?.alias}}
-            {{this.repairPart.tariff_repair?.length}}{{getUnitTypeDescription(this.repairPart.tariff_repair?.length_unit_cv)}}
-          </span>
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.LENGTH}}</mat-label>
+            <mat-select formControlName="length" required>
+              @for (length of lengthList; track length) {
+              <mat-option [value]="length.length">{{length.length + '' + length.length_unit_cv}}</mat-option>
+              }
+            </mat-select>
+            @if (repairPartForm.get('length')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.LENGTH}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+          </mat-form-field>
         </div>
       </div>
       <div class="row">
@@ -143,13 +173,18 @@
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.MATERIAL_COST}}</mat-label>
-            <input matInput formControlName="material_cost" type="number" readonly>
+            <input matInput formControlName="material_cost" type="number" required>
           </mat-form-field>
         </div>
+        <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+          <mat-checkbox formControlName="iq" class="m-r-5" color="primary">
+            {{data.translatedLangText.IQ}}
+          </mat-checkbox>
+        </div> -->
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit()">{{data.translatedLangText.UPDATE}}</button>
+        <button mat-flat-button color="primary" (click)="submit()">{{data.translatedLangText.UPDATE}}</button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>

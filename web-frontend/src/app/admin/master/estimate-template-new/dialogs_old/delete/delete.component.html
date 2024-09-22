@@ -1,6 +1,6 @@
 <div class="container">
     <h3 mat-dialog-title>{{data.langText.ARE_YOU_SURE_DELETE | translate}}</h3>
-    <div mat-dialog-content>
+    <!-- <div mat-dialog-content>
         <ul class="clearfix">
             <li>
                 <p>
@@ -10,7 +10,7 @@
                 </p>
             </li>
         </ul>
-    </div>
+    </div> -->
     <div mat-dialog-actions class="mb-1">
         <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmDelete()">
             {{data.langText.DELETE | translate}}

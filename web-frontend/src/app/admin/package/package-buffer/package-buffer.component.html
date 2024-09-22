@@ -176,9 +176,12 @@
                       <button mat-mini-fab color="primary" (click)="search()" style="margin-top: 10px; margin-left:15px">
                         <mat-icon>search</mat-icon>
                       </button>
-                      <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)" style="margin-top: 10px; margin-left:15px">
-                        <mat-icon>cached</mat-icon>
+                      <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
+                        {{translatedLangText.CLEAR_ALL}}
                       </button>
+                      <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)" style="margin-top: 10px; margin-left:15px">
+                        <mat-icon>cached</mat-icon>
+                      </button> -->
                       </div>
                     </div>
                  
@@ -234,7 +237,7 @@
                   <ng-container matColumnDef="mobile">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> </mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> {{row.cost.toFixed(2)}} </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="gender">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STANDARD_COST }}</mat-header-cell>

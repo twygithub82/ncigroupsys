@@ -294,7 +294,7 @@ implements OnInit {
     MATERIAL_COST$: "COMMON-FORM.MATERIAL-COST$",
     DIMENSION :"COMMON-FORM.DIMENSION",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
-    
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
      }
   
   constructor(
@@ -974,12 +974,12 @@ if (this.pcForm!.value["len"]) {
   resetForm() {
     this.initPcForm();
     
-    this.customerCodeControl.reset('');
-    this.groupNameControl.reset('');
-    this.subGroupNameControl.reset('');
-    this.lengthControl.reset('');
-    this.dimensionControl.reset('');
-    this.handledItemControl.reset('');
+    this.customerCodeControl.reset();
+    this.groupNameControl.reset();
+    this.subGroupNameControl.reset();
+    this.lengthControl.reset();
+    this.dimensionControl.reset();
+    this.handledItemControl.reset();
   }
   
 }

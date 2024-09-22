@@ -57,6 +57,7 @@ import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.compone
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,
@@ -244,7 +245,8 @@ implements OnInit {
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     DESCRIPTION : 'COMMON-FORM.DESCRIPTION',
     COST : 'COMMON-FORM.COST',
-    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED"
+    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
      }
   
   constructor(
@@ -719,6 +721,36 @@ implements OnInit {
       return { 'invalidCharacter': true };
     }
     return null;
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initTcForm();
+    
+    //this.customerCodeControl.reset('');
+   
   }
 }
 

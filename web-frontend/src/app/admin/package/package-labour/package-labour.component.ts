@@ -251,6 +251,7 @@ implements OnInit {
     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
    
     LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
      }
   
   constructor(

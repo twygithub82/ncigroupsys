@@ -204,12 +204,20 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CARGO_CLASS }}</mat-label>
-                          <input matInput formControlName="class_no" readonly required (click)="addOrderDetails($event)">
-                          @if (tcForm?.get('class_no')?.hasError('required')) {
-                            <mat-error>
-                              {{translatedLangText.CARGO_CLASS }} {{translatedLangText.CARGO_REQUIRED }}
-                            </mat-error>
+                          <input matInput formControlName="class_no" required (dblclick)="addClassNo($event)" [matAutocomplete]="classNo">
+                          <mat-autocomplete #classNo="matAutocomplete" [displayWith]="displayClassNoFn">
+                            @for (itm of existingClassNos; track itm) {
+              
+                            <mat-option [value]="itm.class">
+                              {{itm.class}}
+                            </mat-option>
                             }
+                          </mat-autocomplete>
+                          @if (tcForm?.get('class_no')?.hasError('required')) {
+                          <mat-error>
+                            {{this.translatedLangText.PART_NAME}} {{this.translatedLangText.SO_REQUIRED}}
+                          </mat-error>
+                          }
                         </mat-form-field>
                       </div>
                     </div>

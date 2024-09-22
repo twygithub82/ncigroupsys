@@ -259,6 +259,7 @@ implements OnInit {
     FAX_NO:"COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
     
      }
   
@@ -713,7 +714,7 @@ implements OnInit {
 
   resetForm() {
     this.initPcForm();
-    this.customerCodeControl.reset('');
+    this.customerCodeControl.reset();
   }
   
   displayLastUpdated(r: any) {

@@ -212,6 +212,32 @@ export class Utility {
     return undefined;
   }
 
+  static convertNumber(input: string | number | boolean | undefined, decimals: number = 0): number {
+    if (input === undefined) return 0;
+
+    // Handle boolean to number
+    if (typeof input === 'boolean') {
+      return +input; // true -> 1, false -> 0
+    }
+
+    // Handle number to number with specified decimals
+    if (typeof input === 'number') {
+      return parseFloat(input.toFixed(decimals)); // Round to the specified decimals
+    }
+
+    // Handle string to number
+    if (typeof input === 'string') {
+      // Check if the string is a valid number
+      const num = Number(input);
+      if (!isNaN(num)) {
+        return parseFloat(num.toFixed(decimals)); // Convert to number and round
+      }
+    }
+
+    // If input is not a valid number or boolean, return undefined
+    return 0;
+  }
+
   static translateAllLangText(translate: TranslateService, langText: any): Observable<any> {
     const keys: string[] = Object.keys(langText);
     const values: string[] = Object.values(langText);
@@ -254,7 +280,7 @@ export class Utility {
   static isBase64Url(url: string): boolean {
     return (url.startsWith('data:image/'));
   }
-  
+
   static selectText(event: FocusEvent) {
     const inputElement = event.target as HTMLInputElement;
     inputElement.select();
