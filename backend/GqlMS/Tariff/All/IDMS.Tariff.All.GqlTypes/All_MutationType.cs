@@ -208,33 +208,33 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             try
             {
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var currentDateTime = GqlUtils.GetNowEpochInSec();
+
                 NewTariffClean.guid = (string.IsNullOrEmpty(NewTariffClean.guid) ? Util.GenerateGUID() : NewTariffClean.guid);
                 var newTariffClean = new tariff_cleaning();
                 newTariffClean.guid = NewTariffClean.guid;
                 newTariffClean.description = NewTariffClean.description;
                 newTariffClean.alias = NewTariffClean.alias;
-                // newTariffClean.cost = NewTariffClean.cost;
                 newTariffClean.cargo = NewTariffClean.cargo;
                 newTariffClean.un_no = NewTariffClean.un_no;
+                newTariffClean.class_cv = NewTariffClean.class_cv;
                 newTariffClean.cleaning_category_guid = NewTariffClean.cleaning_category_guid;
                 newTariffClean.cleaning_method_guid = NewTariffClean.cleaning_method_guid;
                 newTariffClean.ban_type_cv = NewTariffClean.ban_type_cv;
-                newTariffClean.class_no = NewTariffClean.class_no;
-                //newTariffClean.class_child_cv = NewTariffClean.class_child_cv;
-                //  newTariffClean.cost_type_cv = NewTariffClean.cost_type_cv;
                 newTariffClean.depot_note = NewTariffClean.depot_note;
                 newTariffClean.flash_point = NewTariffClean.flash_point;
                 newTariffClean.hazard_level_cv = NewTariffClean.hazard_level_cv;
                 newTariffClean.nature_cv = NewTariffClean.nature_cv;
                 newTariffClean.open_on_gate_cv = NewTariffClean.open_on_gate_cv;
-                //   newTariffClean.rebate_type_cv = NewTariffClean.rebate_type_cv;
                 newTariffClean.alias = NewTariffClean.alias;
                 newTariffClean.in_gate_alert = NewTariffClean.in_gate_alert;
                 newTariffClean.remarks = NewTariffClean.remarks;
 
                 newTariffClean.create_by = uid;
-                newTariffClean.create_dt = GqlUtils.GetNowEpochInSec();
+                newTariffClean.create_dt = currentDateTime;
                 context.tariff_cleaning.Add(newTariffClean);
+
+                UpdateUNToTable(context, NewTariffClean.un_no, NewTariffClean.class_cv, uid, currentDateTime);
 
                 retval = context.SaveChanges();
             }
@@ -251,8 +251,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             int retval = 0;
             try
             {
-
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var currentDateTime = GqlUtils.GetNowEpochInSec();
+
                 var guid = UpdateTariffClean.guid;
                 var dbTariffClean = context.tariff_cleaning.Find(guid);
                 if (dbTariffClean == null)
@@ -265,8 +266,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 dbTariffClean.cleaning_category_guid = UpdateTariffClean.cleaning_category_guid;
                 dbTariffClean.cleaning_method_guid = UpdateTariffClean.cleaning_method_guid;
                 dbTariffClean.ban_type_cv = UpdateTariffClean.ban_type_cv;
-                dbTariffClean.class_no = UpdateTariffClean.class_no;
-                // dbTariffClean.class_child_cv = UpdateTariffClean.class_child_cv;
+                dbTariffClean.class_cv = UpdateTariffClean.class_cv;
                 dbTariffClean.depot_note = UpdateTariffClean.depot_note;
                 dbTariffClean.flash_point = UpdateTariffClean.flash_point;
                 dbTariffClean.hazard_level_cv = UpdateTariffClean.hazard_level_cv;
@@ -276,7 +276,10 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 dbTariffClean.in_gate_alert = UpdateTariffClean.in_gate_alert;
                 dbTariffClean.remarks = UpdateTariffClean.remarks;
                 dbTariffClean.update_by = uid;
-                dbTariffClean.update_dt = GqlUtils.GetNowEpochInSec();
+                dbTariffClean.update_dt = currentDateTime;
+
+                UpdateUNToTable(context, UpdateTariffClean.un_no, UpdateTariffClean.class_cv, uid, currentDateTime);
+
                 retval = context.SaveChanges();
 
             }
@@ -314,6 +317,31 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 throw ex;
             }
             return retval;
+        }
+
+        private async void UpdateUNToTable(ApplicationTariffDBContext context, string unNo, string classNo, string user, long currentDateTime)
+        {
+            try
+            {
+                var res = await context.un_number.Where(u => u.un_no == unNo && u.class_cv == classNo && (u.delete_dt == null || u.delete_dt == 0)).FirstOrDefaultAsync();
+                if (res == null)
+                {
+                    //No such UN and Class found, so need to insert into DB
+                    var UN = new un_number();
+                    UN.guid = Util.GenerateGUID();
+                    UN.un_no = unNo;
+                    UN.class_cv = classNo;
+                    UN.create_by = user;
+                    UN.create_dt = currentDateTime;
+
+                    await context.AddAsync(UN);
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         #endregion Tariff Cleaning methods
