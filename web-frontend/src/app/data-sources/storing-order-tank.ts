@@ -15,6 +15,7 @@ import { SchedulingSotItem } from './scheduling-sot';
 import { ReleaseOrderSotItem } from './release-order-sot';
 import { OutGateItem } from './out-gate';
 import { CustomerCompanyItem } from './customer-company';
+import { RepairEstItem } from './repair-est';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -97,6 +98,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public release_order_sot?: ReleaseOrderSotItem[];
   public out_gate?: OutGateItem[];
   public customer_company?: CustomerCompanyItem;
+  public repair_est?: RepairEstItem;
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
