@@ -133,13 +133,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (soDS.loadingSubject | async) {
+              @if (sotDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(soDS.loadingSubject | async)) {
+              @if (!(sotDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
@@ -395,13 +395,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (soDS.loadingSubject | async) {
+              @if (sotDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(soDS.loadingSubject | async)) {
+              @if (!(sotDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
@@ -486,12 +486,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.LABOUR_DISCOUNT"
-                                type="number" min="0" required>
-                              @if (repairEstForm?.get('labour_cost_discount')?.hasError('required')) {
-                              <mat-error>
-                                {{translatedLangText.LABOUR_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
-                              </mat-error>
-                              }
+                                type="number" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -500,12 +495,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.MATERIAL_DISCOUNT"
-                                type="number" required>
-                              @if (repairEstForm?.get('material_cost_discount')?.hasError('required')) {
-                              <mat-error>
-                                {{translatedLangText.MATERIAL_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
-                              </mat-error>
-                              }
+                                type="number">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -811,11 +801,11 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (isAnyItemEdited()) {
-                  <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)">
+                  <button mat-flat-button color="primary" [disabled]="(repairEstDS.loading$ | async)">
                     <mat-icon>
-                      @if (!(soDS.loading$ | async)) {
+                      @if (!(repairEstDS.loading$ | async)) {
                       save
-                      } @else if ((soDS.loading$ | async)) {
+                      } @else if ((repairEstDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>

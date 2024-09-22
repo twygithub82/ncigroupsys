@@ -36,7 +36,7 @@ export class RepairEstPartGO {
     this.quantity = item.quantity;
     this.hour = item.hour;
     this.material_cost = item.material_cost;
-    this.owner = item.owner;
+    this.owner = item.owner || false;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
