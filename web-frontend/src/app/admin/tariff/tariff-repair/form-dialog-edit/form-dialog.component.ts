@@ -256,6 +256,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   };
   unit_type_control = new UntypedFormControl();
   
+  unitTypeChangedEventUnsub:boolean=false;
   selectedItems: TariffRepairItem[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
@@ -517,6 +518,18 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
   }
 
 
+  RetrieveCodeDesc(CdValue :CodeValuesItem):String
+  {
+    let retCodeValue:String='';
+
+    if(CdValue)
+    {
+      retCodeValue=CdValue.description||'';
+    }
+    return retCodeValue;
+
+  }
+
   RetrieveCodeValue(CdValue :CodeValuesItem):String
   {
     let retCodeValue:String='';
@@ -729,18 +742,38 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
 
   updateDimensionAndAliasName():void
   {
+    if(this.unitTypeChangedEventUnsub) return;
     let heightDimension=`${this.pcForm?.get("height_diameter")?.value||''}`;
     let widthDimension=`${this.pcForm?.get("width_diameter")?.value||''}`;
     let thicknessDimension=`${this.pcForm?.get("thickness")?.value||''}`;
     let dimension = '';
-    if(heightDimension!="") dimension=`${heightDimension}${this.RetrieveCodeValue(this.heightDiameterUnitControl.value)||''}`;
+    if(heightDimension!="") dimension=`${heightDimension}${this.RetrieveCodeDesc(this.heightDiameterUnitControl.value)||''}`;
+    else
+    {
+      this.unitTypeChangedEventUnsub=true;
+      this.heightDiameterUnitControl.reset();
+      this.unitTypeChangedEventUnsub=false;
+    }
+
     if(widthDimension!="") {
-      if(dimension!="") dimension+="x";
-      dimension +=`${widthDimension}${this.RetrieveCodeValue(this.widthDiameterUnitControl.value)||''}`;}
+      if(dimension!="") dimension+=" x ";
+      dimension +=`${widthDimension}${this.RetrieveCodeDesc(this.widthDiameterUnitControl.value)||''}`;}
+      else
+      {
+        this.unitTypeChangedEventUnsub=true;
+        this.widthDiameterUnitControl.reset();
+        this.unitTypeChangedEventUnsub=false;
+      }
 
     if(thicknessDimension!="") {
-      if(dimension!="") dimension+="x";
-      dimension +=`${thicknessDimension}${this.RetrieveCodeValue(this.thicknessUnitControl.value)||''}`;
+      if(dimension!="") dimension+=" x ";
+      dimension +=`${thicknessDimension}${this.RetrieveCodeDesc(this.thicknessUnitControl.value)||''}`;
+    }
+    else
+    {
+      this.unitTypeChangedEventUnsub=true;
+        this.thicknessUnitControl.reset();
+        this.unitTypeChangedEventUnsub=false;
     }
 
     let aliasName = `${this.pcForm?.get("part_name")?.value}`;

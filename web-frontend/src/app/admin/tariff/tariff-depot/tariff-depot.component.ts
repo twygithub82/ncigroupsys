@@ -58,6 +58,7 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
 import { ComponentUtil } from 'app/utilities/component-util';
 import {TankDS, TankItem} from 'app/data-sources/tank';
 import {TariffDepotDS,TariffDepotItem} from 'app/data-sources/tariff-depot';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 @Component({
   selector: 'app-tariff-depot',
   standalone: true,
@@ -247,7 +248,8 @@ implements OnInit {
     PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
     DESCRIPTION:'COMMON-FORM.DESCRIPTION',
     VIEW:'COMMON-FORM.VIEW',
-    ASSIGNED:'COMMON-FORM.ASSIGNED'
+    ASSIGNED:'COMMON-FORM.ASSIGNED',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
      }
   
   constructor(
@@ -278,6 +280,7 @@ implements OnInit {
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.loadData();
+    this.translateLangText();
   }
 
   initTdForm() {
@@ -287,6 +290,12 @@ implements OnInit {
       description:[''],
       unit_type:this.unit_type_control
       
+    });
+  }
+
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
     });
   }
 
@@ -747,5 +756,35 @@ implements OnInit {
       return { 'invalidCharacter': true };
     }
     return null;
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initTdForm();
+    this.unit_type_control.reset();
+   //this.customerCodeControl.reset('');
+   
   }
 }

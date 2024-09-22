@@ -330,6 +330,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
       dimension:this.dimensionControl,
       length:this.lengthControl,
       material_cost_percentage:[''],
+      labour_hour_percentage:[''],
      
     });
   }

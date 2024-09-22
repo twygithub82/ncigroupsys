@@ -43,7 +43,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { BehaviorSubject, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { TankDS, TankItem } from 'app/data-sources/tank';
-import { TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
+import { ClassNoItem, TariffCleaningDS, TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
@@ -229,11 +229,9 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   openGateControl= new UntypedFormControl();
   natureControl=new UntypedFormControl();
   tcForm?: UntypedFormGroup;
-
+ 
   tariffCleaningItem:TariffCleaningItem=new TariffCleaningItem();
-
- // storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  //sotList = new MatTableDataSource<StoringOrderTankItem>();
+  existingClassNos:ClassNoItem[]=[];
   tc_guid?: string | null;
 
   cvDS: CodeValuesDS;
@@ -518,8 +516,9 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         tc.nature_cv=this.tcForm.value['nature'];
         tc.cleaning_category=undefined;
         tc.cleaning_method=undefined;
-              if (tc.guid) {
-              this.tcDS.updateTariffCleaning(tc).subscribe(async result => {
+            if (tc.guid) {
+               this.tcDS.updateTariffCleaning(tc).subscribe(async result => {
+                this.InsertClassNoToUnNoTable();
                 console.log(result)
                 var guid = tc.guid;
                 await this.handleSaveSuccess(result?.data?.updateTariffClean,guid!);
@@ -530,7 +529,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
             }
             else
             {
-              this.tcDS.addNewTariffCleaning(tc).subscribe(async result => {
+                this.tcDS.addNewTariffCleaning(tc).subscribe(async result => {
+                  this.InsertClassNoToUnNoTable();
                   console.log(result);
                   var cargo_name = tc.cargo;
                   var guid=await this.getTariffCleaningGuid(cargo_name!);
@@ -586,6 +586,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   
     return retval;
   }
+
   onlyFileSizeValidator(control: AbstractControl): { [key: string]: boolean } | null {
     //const regex = /^(UN)?[0-9-]*$/;
     if (control.value>20) {
@@ -630,7 +631,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
  
-  addOrderDetails(event: Event) {
+  addClassNo(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -646,14 +647,17 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         
     });
 
+   
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    
+     
          if (result) {
           if(result.selectedValue)
           {
+          
             this.tcForm!.patchValue({
               class_no: result.selectedValue,
             });
-          //this.tcForm?.setValue({"class_no":result.selectedValue});
           }
       
       }
@@ -746,6 +750,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       
   }
 
+ 
  async QueryClassNo()
  {
   let UnNumber:string='';
@@ -758,14 +763,18 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       // Additional logic can be added here
     }
 
+
     this.tcUNDS.SearchClassNoByUnNumber(UnNumber).subscribe(result=>{
       this.newUNNo=true;
-      if(result.class)
+      if(result.length>0)
       {
+        this.existingClassNos=result;
         this.newUNNo=false;
         this.tcForm?.patchValue({
-          class_no:result.class
+          class_no: this.existingClassNos[0].class
         });
+
+       
       }
       
     });
@@ -893,6 +902,27 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         console.error('Error converting URL to File:', error);
         throw error; // Re-throw the error to handle it elsewhere if needed
       });
+  }
+
+  displayClassNoFn(tr: string): string {
+    return tr;
+  }
+  
+  InsertClassNoToUnNoTable(){
+
+    var classNoValue:string = this.tcForm?.get("class_no")?.value;
+    if (classNoValue && classNoValue.trim() !== "") {
+      var filterItems=this.existingClassNos.filter(c=>{c.class==classNoValue});
+      if(filterItems.length==0)
+      {
+        var newItm:ClassNoItem= new ClassNoItem();
+        newItm.class=this.tcForm?.get("class_no")?.value;
+        newItm.un_no=this.tcForm?.get("un_no")?.value;
+        this.tcUNDS.AddClassNoAndUnNo(newItm).subscribe(result=>{
+          console.log(`inserted new un no ${newItm.un_no} or class no ${newItm.class} `);
+        });
+      }
+    }
   }
 
 }

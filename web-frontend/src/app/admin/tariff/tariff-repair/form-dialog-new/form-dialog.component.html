@@ -17,7 +17,7 @@
             <!-- <mat-form-field class="example-full-width"> -->
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
-              <mat-select [formControl]="groupNameControl" formControlName="group_name_cv" required>
+              <mat-select  formControlName="group_name_cv" required>
                 <mat-option *ngFor="let t of groupNameCvList" [value]="t">
                   {{ t.description }}
                 </mat-option>
@@ -32,7 +32,7 @@
           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
-              <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv" required>
+              <mat-select  formControlName="sub_group_name_cv" required>
                 <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
                   {{ t.description }}
                 </mat-option>
@@ -90,7 +90,7 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label style="font-size: 13px;">{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select [formControl]="heightDiameterUnitControl" formControlName="height_diameter_unit_cv"  [required]="isDimensionRequired()">
+              <mat-select  formControlName="height_diameter_unit_cv"  [required]="isDimensionRequired()">
                 <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                   {{ t.description }}
                 </mat-option>
@@ -106,7 +106,7 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
              <mat-form-field class="example-full-width">
               <mat-label style="font-size: 13px;">{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select [formControl]="widthDiameterUnitControl" formControlName="width_diameter_unit_cv" [required]="isDimensionRequired()">
+              <mat-select  formControlName="width_diameter_unit_cv" [required]="isDimensionRequired()">
                   <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                     {{ t.description }}
                   </mat-option>
@@ -124,7 +124,7 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-">
             <mat-form-field class="example-full-width">
               <mat-label style="font-size: 13px;">{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select [formControl]="thicknessUnitControl" formControlName="thickness_unit_cv" [required]="isDimensionRequired()">
+              <mat-select  formControlName="thickness_unit_cv" [required]="isDimensionRequired()">
                 <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                   {{ t.description }}
                 </mat-option>
@@ -145,7 +145,7 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label style="font-size: 13px;">{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select [formControl]="lengthUnitControl" formControlName="length_unit_cv" [required]="isDimensionRequired()">
+              <mat-select formControlName="length_unit_cv" [required]="isDimensionRequired()">
                 <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                   {{ t.description }}
                 </mat-option>

@@ -178,6 +178,11 @@ export const GET_TARIFF_CLEANING_QUERY = gql`
   }
 `;
 
+export const ADD_CLASS_NOA_AND_UN_NO=gql`
+  mutation addUN_Number($unNo: un_numberInput!) {
+    addUN_Number(unNumber: $unNo)
+  }
+`
 export const GET_CLASS_NO_BY_UN_NO_QUERY = gql`
   query queryUNClassByNo($unNo: String!) {
     queryUNClassByNoResult: queryUNClassByNo(unNo: $unNo) {
@@ -310,64 +315,6 @@ export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
 
 `;
 
-// export const GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD_PAGINATION = gql`
-//   query queryTariffCleaning($where: tariff_cleaningFilterInput, $order:[tariff_cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
-//     lastCargo: queryTariffCleaning(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
-//       nodes {
-//          alias
-//         ban_type_cv
-//         cargo
-//         class_cv
-//         cleaning_category_guid
-//         cleaning_method_guid
-//         create_by
-//         create_dt
-//         delete_dt
-//         depot_note
-//         description
-//         flash_point
-//         guid
-//         hazard_level_cv
-//         in_gate_alert
-//         nature_cv
-//         open_on_gate_cv
-//         remarks
-//         un_no
-//         update_by
-//         update_dt
-//         cleaning_category {
-//            cost
-//           create_by
-//           create_dt
-//           delete_dt
-//           description
-//           guid
-//           name
-//           update_by
-//           update_dt
-//         }
-//         cleaning_method {
-//            create_by
-//         create_dt
-//         delete_dt
-//         description
-//         guid
-//         name
-//         update_by
-//         update_dt
-//         }
-//       }
-//       pageInfo {
-//         endCursor
-//         hasNextPage
-//         hasPreviousPage
-//         startCursor
-//       }
-//       totalCount
-//     }
-//   }
-
-// `;
 
 
 export const ADD_TARIFF_CLEANING = gql`
@@ -412,28 +359,7 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       );
   }
 
-  SearchClassNoByUnNumber(unNo?: any): Observable<ClassNoItem> {
-    this.loadingSubject.next(true);
-    return this.apollo
-      .query<any>({
-        query: GET_CLASS_NO_BY_UN_NO_QUERY,
-        variables: { unNo },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of({} as ClassNoItem); // Return an empty array on error
-        }),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const r = result.queryUNClassByNoResult || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(r.queryUNClassByNoResult);
-          return r;
-        })
-      );
-  }
+  
 
   SearchTariffCleaning(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
@@ -496,6 +422,60 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     });
   }
 
+  
+
+
+  updateTariffCleaning(tc: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_TARIFF_CLEANING,
+      variables: {
+        tc
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+
+  AddClassNoAndUnNo(unNo?:any):Observable<any>{
+    return this.apollo.mutate({
+      mutation: ADD_CLASS_NOA_AND_UN_NO,
+      variables: {
+        unNo
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+  SearchClassNoByUnNumber(unNo?: any): Observable<ClassNoItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_CLASS_NO_BY_UN_NO_QUERY,
+        variables: { unNo },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({} as ClassNoItem); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const r = result.queryUNClassByNoResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(r.queryUNClassByNoResult);
+          return r;
+        })
+      );
+  }
+
   CheckTheExistingUnNo(un_no_value: string): Observable<TariffCleaningItem[]> {
     let where: any = { un_no: { eq: un_no_value } }
     return this.apollo
@@ -517,20 +497,5 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
           return retResult.nodes;
         })
       );
-  }
-
-
-  updateTariffCleaning(tc: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: UPDATE_TARIFF_CLEANING,
-      variables: {
-        tc
-      }
-    }).pipe(
-      catchError((error: ApolloError) => {
-        console.error('GraphQL Error:', error);
-        return of(0); // Return an empty array on error
-      }),
-    );
   }
 }

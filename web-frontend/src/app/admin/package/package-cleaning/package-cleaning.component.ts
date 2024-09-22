@@ -251,6 +251,7 @@ implements OnInit {
     STANDARD_COST:"COMMON-FORM.STANDARD-COST",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
      }
   
   constructor(
@@ -713,8 +714,8 @@ implements OnInit {
   resetForm() {
     this.initTcForm();
     
-    this.customerCodeControl.reset('');
-    this.categoryControl.reset('')
+    this.customerCodeControl.reset();
+    this.categoryControl.reset()
   }
 
   displayLastUpdated(r: any) {
