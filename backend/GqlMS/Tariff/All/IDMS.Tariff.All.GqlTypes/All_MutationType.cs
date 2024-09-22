@@ -238,7 +238,10 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
                 retval = context.SaveChanges();
             }
-            catch { throw; }
+            catch(Exception ex) 
+            { 
+                throw; 
+            }
 
 
             return retval;
@@ -876,13 +879,14 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
         public async Task<int> UpdateTariffRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
-            int? length, string? guid, double material_cost_percentage) // double labor_hour_percentage
+            int? length, string? guid, double material_cost_percentage, double labour_hour_percentage) // double labor_hour_percentage
         {
             int retval = 0;
             try
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var currentDateTime = GqlUtils.GetNowEpochInSec();
 
                 var dbTariffRepairs = context.tariff_repair.Where(i => i.delete_dt == null || i.delete_dt == 0).ToArray();
                 if (!string.IsNullOrEmpty(guid))
@@ -913,13 +917,11 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 foreach (var r in dbTariffRepairs)
                 {
                     r.material_cost = Math.Round(Convert.ToDouble(r.material_cost.Value * material_cost_percentage), 2);
+                    r.labour_hour = Math.Ceiling((r.labour_hour.Value * labour_hour_percentage) * 4) / 4;
+
                     r.update_by = uid;
-                    r.update_dt = GqlUtils.GetNowEpochInSec();
+                    r.update_dt = currentDateTime;
                 }
-
-
-                ///exisit labor hr * percentahe --> round up
-
 
                 retval = await context.SaveChangesAsync();
 
