@@ -136,6 +136,7 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.quantity = part.quantity;
                             existingPart.location_cv = part.location_cv;
                             existingPart.hour = part.hour;
+                            existingPart.material_cost = part.material_cost;    
                             existingPart.remarks = part.remarks;
                             await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
                             continue;
