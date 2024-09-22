@@ -26,7 +26,7 @@ namespace IDMS.Models.Tariff
         public string? remarks { get; set; }
 
         public string? un_no { get; set; }
-        public string? class_no { get; set; } // to class_no
+        public string? class_cv { get; set; }
 
         [ForeignKey("cleaning_method")]
         public string? cleaning_method_guid { get; set; }

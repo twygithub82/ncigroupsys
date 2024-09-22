@@ -681,16 +681,15 @@ namespace IDMS.Models.Package.All.GqlTypes
 
         public async Task<int> UpdatePackageRepair_MaterialCost(ApplicationPackageDBContext context, [Service] IConfiguration config,
       [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension, 
-      int? length, string? tariff_repair_guid,string[]? customer_company_guids, double material_cost_percentage)
+      int? length, string? tariff_repair_guid,string[]? customer_company_guids, double material_cost_percentage, double labour_hour_percentage)
         {
             int retval = 0;
             try
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-
-                
                 var currentDateTime = DateTime.Now.ToEpochTime();
+
                 var dbPackRepairs = context.package_repair.Where(i => i.delete_dt == null || i.delete_dt == 0)
                     .Include(t=>t.tariff_repair)
                     .ToArray();
@@ -718,31 +717,12 @@ namespace IDMS.Models.Package.All.GqlTypes
                 foreach (var packageRepair in dbPackRepairs)
                 {
                     packageRepair.material_cost = Math.Round(Convert.ToDouble(packageRepair.material_cost * material_cost_percentage), 2);
+                    packageRepair.labour_hour = Math.Ceiling((packageRepair.labour_hour.Value * labour_hour_percentage) * 4) / 4;
+
                     packageRepair.update_dt = currentDateTime;
                     packageRepair.update_by = uid;
                 }
                 retval = await context.SaveChangesAsync();
-
-                //var dbTariffRepairs = context.tariff_repair.Where(i => i.delete_dt == null || i.delete_dt == 0).ToArray();
-                //if (!string.IsNullOrEmpty(group_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.group_name_cv == group_name_cv).ToArray();
-                //if (!string.IsNullOrEmpty(subgroup_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.subgroup_name_cv == subgroup_name_cv).ToArray();
-                //if (!string.IsNullOrEmpty(part_name)) dbTariffRepairs = dbTariffRepairs.Where(t => t.part_name == part_name).ToArray();
-
-
-                //if (dbTariffRepairs == null)
-                //{
-                //    throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
-                //}
-
-                //foreach (var r in dbTariffRepairs)
-                //{
-                //    r.material_cost = Math.Round(Convert.ToDouble(r.material_cost.Value * material_cost_percentage), 2);
-                //    r.update_by = uid;
-                //    r.update_dt = GqlUtils.GetNowEpochInSec();
-                //}
-
-
-                //retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)

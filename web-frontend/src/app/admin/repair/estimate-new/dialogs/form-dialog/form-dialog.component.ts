@@ -167,28 +167,24 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   submit() {
     if (this.repairPartForm?.valid) {
-      let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
       if (this.action === 'new') {
-        if (!actions.includes('new')) {
-          actions = [...new Set([...actions, 'new'])];
-        }
+        this.repairPart.action = 'new';
       } else {
-        if (!actions.includes('new')) {
-          actions = [...new Set([...actions, 'edit'])];
+        if (this.repairPart.action !== 'new') {
+          this.repairPart.action = 'edit';
         }
       }
+
       var rep: any = {
         ...this.repairPart,
         location_cv: this.repairPartForm.get('location_cv')?.value,
         tariff_repair_guid: this.repairPart?.tariff_repair_guid,
         tariff_repair: this.repairPart?.tariff_repair,
         rep_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
-        // repair: this.REPRepair(this.repairPartForm.get('repair')?.value),
         quantity: this.repairPartForm.get('quantity')?.value,
         hour: this.repairPartForm.get('hour')?.value,
-        material_cost: this.repairPartForm.get('material_cost')?.value,
-        remarks: this.repairPartForm.get('remarks')?.value,
-        actions
+        material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value),
+        remarks: this.repairPartForm.get('remarks')?.value
       }
       rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${rep.tariff_repair?.length} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
@@ -335,12 +331,71 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  REPDamage(damages: any[]): REPDamageRepairItem[] {
-    return damages.map(dmg => this.repDrDS.createREPDamage(undefined, undefined, dmg));
+  // REPDamage(damages: any[]): REPDamageRepairItem[] {
+  //   const damage = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0);
+
+  //   damage.forEach((x: any) => {
+  //     if (damages.includes(x.code_cv)) {
+  //       x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit'
+  //     }
+  //   });
+
+  //   return damages.map(dmg => {
+  //     return this.repDrDS.createREPDamage(undefined, undefined, dmg)
+  //   });
+  // }
+
+  REPDamage(damages: string[]): REPDamageRepairItem[] {
+    const existingDamage = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0);
+  
+    const finalDamages: REPDamageRepairItem[] = [];
+  
+    existingDamage?.forEach((x: any) => {
+      if (damages.includes(x.code_cv)) {
+        x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
+      } else {
+        x.action = 'delete';
+      }
+
+      finalDamages.push(x);
+    });
+  
+    damages.forEach(dmg => {
+      const found = existingDamage?.some((x: any) => x.code_cv === dmg);
+      if (!found) {
+        const newDamage = this.repDrDS.createREPDamage(undefined, undefined, dmg);
+        finalDamages.push(newDamage);
+      }
+    });
+  
+    return finalDamages;
   }
 
   REPRepair(repairs: any[]): REPDamageRepairItem[] {
-    return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
+    const existingRepair = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1);
+  
+    const finalRepairs: REPDamageRepairItem[] = [];
+  
+    existingRepair?.forEach((x: any) => {
+      if (repairs.includes(x.code_cv)) {
+        x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
+      } else {
+        x.action = 'delete';
+      }
+
+      finalRepairs.push(x);
+    });
+  
+    repairs.forEach(dmg => {
+      const found = existingRepair?.some((x: any) => x.code_cv === dmg);
+      if (!found) {
+        const newDamage = this.repDrDS.createREPRepair(undefined, undefined, dmg);
+        finalRepairs.push(newDamage);
+      }
+    });
+  
+    return finalRepairs;
+    // return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
   }
 
   REPDamageRepairToCV(damagesRepair: any[] | undefined): REPDamageRepairItem[] {
