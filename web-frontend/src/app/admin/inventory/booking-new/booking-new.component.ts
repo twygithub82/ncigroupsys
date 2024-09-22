@@ -543,6 +543,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: selectedItems,
         action: 'new',
@@ -572,6 +573,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: [sot],
         action: 'edit',

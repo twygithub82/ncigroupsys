@@ -125,8 +125,8 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
   }
 
   getCodeDescription(codeValType: string | undefined, codeValItem: CodeValuesItem[]): string | undefined {
-    let cv = codeValItem.filter(cv => cv.code_val === codeValType);
-    if (cv.length) {
+    let cv = codeValItem?.filter(cv => cv.code_val === codeValType);
+    if (cv?.length) {
       return cv[0].description;
     }
     return '';
