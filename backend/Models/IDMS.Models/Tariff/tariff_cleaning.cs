@@ -26,11 +26,10 @@ namespace IDMS.Models.Tariff
         public string? remarks { get; set; }
 
         public string? un_no { get; set; }
-
+        public string? class_no { get; set; } // to class_no
 
         [ForeignKey("cleaning_method")]
         public string? cleaning_method_guid { get; set; }
-
 
         [ForeignKey("cleaning_category")]
         public string? cleaning_category_guid { get; set; }
@@ -42,8 +41,6 @@ namespace IDMS.Models.Tariff
         public string? in_gate_alert { get; set; }
 
         public string? depot_note { get; set; }
-
-        public string? class_cv { get; set; }
 
         //public string? class_child_cv { get; set; }
 

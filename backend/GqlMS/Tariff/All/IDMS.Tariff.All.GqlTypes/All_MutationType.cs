@@ -219,7 +219,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffClean.cleaning_category_guid = NewTariffClean.cleaning_category_guid;
                 newTariffClean.cleaning_method_guid = NewTariffClean.cleaning_method_guid;
                 newTariffClean.ban_type_cv = NewTariffClean.ban_type_cv;
-                newTariffClean.class_cv = NewTariffClean.class_cv;
+                newTariffClean.class_no = NewTariffClean.class_no;
                 //newTariffClean.class_child_cv = NewTariffClean.class_child_cv;
                 //  newTariffClean.cost_type_cv = NewTariffClean.cost_type_cv;
                 newTariffClean.depot_note = NewTariffClean.depot_note;
@@ -265,7 +265,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 dbTariffClean.cleaning_category_guid = UpdateTariffClean.cleaning_category_guid;
                 dbTariffClean.cleaning_method_guid = UpdateTariffClean.cleaning_method_guid;
                 dbTariffClean.ban_type_cv = UpdateTariffClean.ban_type_cv;
-                dbTariffClean.class_cv = UpdateTariffClean.class_cv;
+                dbTariffClean.class_no = UpdateTariffClean.class_no;
                 // dbTariffClean.class_child_cv = UpdateTariffClean.class_child_cv;
                 dbTariffClean.depot_note = UpdateTariffClean.depot_note;
                 dbTariffClean.flash_point = UpdateTariffClean.flash_point;
@@ -847,8 +847,8 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
 
         public async Task<int> UpdateTariffRepair_MaterialCost(ApplicationTariffDBContext context, [Service] IConfiguration config,
-       [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
-      int? length, string? guid, double material_cost_percentage)
+            [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
+            int? length, string? guid, double material_cost_percentage) // double labor_hour_percentage
         {
             int retval = 0;
             try
@@ -888,6 +888,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                     r.update_by = uid;
                     r.update_dt = GqlUtils.GetNowEpochInSec();
                 }
+
+
+                ///exisit labor hr * percentahe --> round up
 
 
                 retval = await context.SaveChangesAsync();
