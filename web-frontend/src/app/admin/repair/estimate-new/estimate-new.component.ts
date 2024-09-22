@@ -364,6 +364,16 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
               }
 
               const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
+                const tep_damage_repair = tep.tep_damage_repair.map((item: any) => {
+                  return new REPDamageRepairItem({
+                    guid: item.guid,
+                    rep_guid: item.rep_guid,
+                    code_cv: item.code_cv,
+                    code_type: item.code_type,
+                    action: 'new'
+                  });
+                })
+
                 return new RepairEstPartItem({
                   description: tep.description,
                   hour: tep.hour,
@@ -373,9 +383,11 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
                   material_cost: material_cost,
                   tariff_repair_guid: tep.tariff_repair_guid,
                   tariff_repair: tep.tariff_repair,
-                  rep_damage_repair: tep.tep_damage_repair,
+                  rep_damage_repair: tep_damage_repair,
+                  action: 'new',
                 });
               });
+              console.log(repList);
               this.updateData(repList);
               return of(repList);
             })
@@ -640,7 +652,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  deleteItem(row: StoringOrderTankItem, index: number) {
+  deleteItem(event: Event, row: RepairEstPartItem, index: number) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -663,9 +675,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
-            actions: Array.isArray(data[index].actions!)
-              ? [...new Set([...data[index].actions!, 'delete'])]
-              : ['delete']
+            action: 'delete'
           };
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
@@ -801,14 +811,22 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
         const rep: RepairEstPartItem[] = this.repList.data.map((item: any) => {
           // Ensure action is an array and take the last action only
-          const actions = Array.isArray(item!.actions) ? item!.actions : [];
-          const latestAction = actions.length > 0 ? actions[actions.length - 1] : '';
+          const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
+            return new REPDamageRepairItem({
+              guid: item.guid,
+              rep_guid: item.rep_guid,
+              code_cv: item.code_cv,
+              code_type: item.code_type,
+              action: item.action
+            });
+          });
 
           console.log(item)
           return new RepairEstPartItem({
             ...item,
             tariff_repair: undefined,
-            action: latestAction // Set the latest action as the single action
+            rep_damage_repair: rep_damage_repair,
+            action: item.action
           });
         });
         re.repair_est_part = rep;
@@ -846,7 +864,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   handleDelete(event: Event, row: any, index: number): void {
-    this.deleteItem(row, index);
+    this.deleteItem(event, row, index);
   }
 
   cancelItem(event: Event, row: RepairEstPartItem) {
@@ -902,7 +920,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        this.router.navigate(['/admin/inventory/storing-order']);
+        this.router.navigate(['/admin/repair/estimate']);
       });
     }
   }
@@ -932,10 +950,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   isOwnerChange() {
     this.isOwner = !this.isOwner;
-  }
-
-  getLastAction(actions: string[]): string {
-    return actions[actions.length - 1];
   }
 
   getBadgeClass(action: string): string {
