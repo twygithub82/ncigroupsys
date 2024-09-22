@@ -518,7 +518,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         tc.cleaning_method=undefined;
             if (tc.guid) {
                this.tcDS.updateTariffCleaning(tc).subscribe(async result => {
-                this.InsertClassNoToUnNoTable();
                 console.log(result)
                 var guid = tc.guid;
                 await this.handleSaveSuccess(result?.data?.updateTariffClean,guid!);
@@ -530,7 +529,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
             else
             {
                 this.tcDS.addNewTariffCleaning(tc).subscribe(async result => {
-                  this.InsertClassNoToUnNoTable();
                   console.log(result);
                   var cargo_name = tc.cargo;
                   var guid=await this.getTariffCleaningGuid(cargo_name!);
@@ -768,10 +766,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.newUNNo=true;
       if(result.length>0)
       {
+        var clsNo = this.tcForm?.get("class_no")?.value;
         this.existingClassNos=result;
         this.newUNNo=false;
+        if(!clsNo || clsNo.trim()==="") clsNo=this.existingClassNos[0].class;
         this.tcForm?.patchValue({
-          class_no: this.existingClassNos[0].class
+          class_no: clsNo
         });
 
        
@@ -908,21 +908,21 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     return tr;
   }
   
-  InsertClassNoToUnNoTable(){
+  // InsertClassNoToUnNoTable(){
 
-    var classNoValue:string = this.tcForm?.get("class_no")?.value;
-    if (classNoValue && classNoValue.trim() !== "") {
-      var filterItems=this.existingClassNos.filter(c=>{c.class==classNoValue});
-      if(filterItems.length==0)
-      {
-        var newItm:ClassNoItem= new ClassNoItem();
-        newItm.class=this.tcForm?.get("class_no")?.value;
-        newItm.un_no=this.tcForm?.get("un_no")?.value;
-        this.tcUNDS.AddClassNoAndUnNo(newItm).subscribe(result=>{
-          console.log(`inserted new un no ${newItm.un_no} or class no ${newItm.class} `);
-        });
-      }
-    }
-  }
+  //   var classNoValue:string = this.tcForm?.get("class_no")?.value;
+  //   if (classNoValue && classNoValue.trim() !== "") {
+  //     var filterItems=this.existingClassNos.filter(c=>{c.class==classNoValue});
+  //     if(filterItems.length==0)
+  //     {
+  //       var newItm:ClassNoItem= new ClassNoItem();
+  //       newItm.class=this.tcForm?.get("class_no")?.value;
+  //       newItm.un_no=this.tcForm?.get("un_no")?.value;
+  //       this.tcUNDS.AddClassNoAndUnNo(newItm).subscribe(result=>{
+  //         console.log(`inserted new un no ${newItm.un_no} or class no ${newItm.class} `);
+  //       });
+  //     }
+  //   }
+  // }
 
 }

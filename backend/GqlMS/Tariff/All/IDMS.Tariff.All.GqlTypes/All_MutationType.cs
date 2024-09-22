@@ -884,6 +884,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
                 foreach (var r in dbTariffRepairs)
                 {
+                    
                     r.material_cost = Math.Round(Convert.ToDouble(r.material_cost.Value * material_cost_percentage), 2);
                     r.update_by = uid;
                     r.update_dt = GqlUtils.GetNowEpochInSec();

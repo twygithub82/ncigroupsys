@@ -184,10 +184,12 @@ export const UPDATE_PACKAGE_REPAIR = gql`
 
 export const UPDATE_PACKAGE_REPAIRS_MATERIAL_COST = gql`
   mutation updatePackageRepair_MaterialCost($group_name_cv:String,$subgroup_name_cv:String,
-    $part_name:String,$dimension:String,$length:Int,$tariff_repair_guid:String, $customer_company_guids: [String!],$material_cost_percentage:Float!) {
+    $part_name:String,$dimension:String,$length:Int,$tariff_repair_guid:String, $customer_company_guids: [String!],
+    $material_cost_percentage:Float!,$labour_hour_percentage:Float!) {
     updatePackageRepair_MaterialCost(group_name_cv:$group_name_cv,subgroup_name_cv:$subgroup_name_cv,
     part_name:$part_name,dimension:$dimension,length:$length,tariff_repair_guid:$tariff_repair_guid,
-    customer_company_guids:$customer_company_guids,material_cost_percentage:$material_cost_percentage)
+    customer_company_guids:$customer_company_guids,material_cost_percentage:$material_cost_percentage,
+    labour_hour_percentage:$labour_hour_percentage)
   }
 `;
 
@@ -284,7 +286,7 @@ export class PackageRepairDS extends BaseDataSource<PackageRepairItem> {
   }
 
   updatePackageRepairs_MaterialCost(group_name_cv: any, subgroup_name_cv: any, part_name: any, dimension: any, length: any,
-    tariff_repair_guid: any, customer_company_guids: any, material_cost_percentage: any): Observable<any> {
+    tariff_repair_guid: any, customer_company_guids: any, material_cost_percentage: any,labour_hour_percentage:any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_PACKAGE_REPAIRS_MATERIAL_COST,
       variables: {
@@ -295,7 +297,8 @@ export class PackageRepairDS extends BaseDataSource<PackageRepairItem> {
         length,
         tariff_repair_guid,
         customer_company_guids,
-        material_cost_percentage
+        material_cost_percentage,
+        labour_hour_percentage
       }
     }).pipe(
       catchError((error: ApolloError) => {
