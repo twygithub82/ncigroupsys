@@ -26,6 +26,7 @@ import { CodeValuesDS } from 'app/data-sources/code-values';
 import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
+import { MasterEstimateTemplateDS, TepDamageRepairItem } from 'app/data-sources/master-template';
 
 
 export interface DialogData {
@@ -74,7 +75,7 @@ export class FormDialogComponent {
   repairPartForm: UntypedFormGroup;
   repairPart: any;
   //selectedPackageRepair?: PackageRepairItem;
-  selectedTariffRepair?:TariffRepairItem;
+  selectedTariffRepair?: TariffRepairItem;
   partNameControl: UntypedFormControl;
   partNameList?: string[];
   partNameFilteredList?: string[];
@@ -88,6 +89,8 @@ export class FormDialogComponent {
   trDS: TariffRepairDS;
   repDrDS: REPDamageRepairDS;
   prDS: PackageRepairDS;
+  estTempDS: MasterEstimateTemplateDS
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -102,6 +105,7 @@ export class FormDialogComponent {
     this.trDS = new TariffRepairDS(this.apollo);
     this.repDrDS = new REPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
+    this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
     if (this.action === 'edit') {
@@ -110,12 +114,12 @@ export class FormDialogComponent {
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     }
-   
+
     this.repairPart = data.item ? data.item : new RepairEstPartItem();
-    this.selectedTariffRepair= new TariffRepairItem(this.repairPart.tariff_repair);
+    this.selectedTariffRepair = new TariffRepairItem(this.repairPart.tariff_repair);
 
 
-    
+
 
     this.index = data.index;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
@@ -167,8 +171,8 @@ export class FormDialogComponent {
       part_name: this.repairPart.tariff_repair?.part_name,
       dimension: this.repairPart.tariff_repair?.dimension,
       length: this.repairPart.tariff_repair?.length,
-      damage: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0)),
-      repair: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1)),
+      damage: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 0)),
+      repair: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 1)),
       material_cost: this.repairPart.tariff_repair?.material_cost
     });
   }
@@ -194,7 +198,7 @@ export class FormDialogComponent {
           location_cv: this.repairPartForm.get('location_cv')?.value,
           tariff_repair_guid: this.selectedTariffRepair?.guid,
           tariff_repair: this.selectedTariffRepair,
-          rep_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
+          tep_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
           // repair: this.REPRepair(this.repairPartForm.get('repair')?.value),
           quantity: this.repairPartForm.get('quantity')?.value,
           hour: this.repairPartForm.get('hour')?.value,
@@ -257,11 +261,11 @@ export class FormDialogComponent {
             //this.partNameControl.setValue('');
             this.repairPartForm?.patchValue({
               part_name: '',
-              dimension:'',
+              dimension: '',
               length: '',
             });
-            this.dimensionList=[];
-            this.lengthList=[];
+            this.dimensionList = [];
+            this.lengthList = [];
             this.partNameList = data;
             this.partNameFilteredList = data
             // this.repairPartForm?.get('dimension')?.clearValidators();
@@ -272,13 +276,12 @@ export class FormDialogComponent {
             if (this.partNameControl.value) {
               this.handleValueChange(this.partNameControl.value)
             }
-            else if(this.repairPart.tariff_repair?.part_name)
-            {
-              
-              
-                this.partNameControl.setValue(this.repairPart.tariff_repair?.part_name);
-                this.handleValueChange(this.partNameControl.value);
-                this.repairPart.tariff_repair?.part_name!='';
+            else if (this.repairPart.tariff_repair?.part_name) {
+
+
+              this.partNameControl.setValue(this.repairPart.tariff_repair?.part_name);
+              this.handleValueChange(this.partNameControl.value);
+              this.repairPart.tariff_repair?.part_name != '';
 
             }
           });
@@ -287,7 +290,7 @@ export class FormDialogComponent {
     ).subscribe();
 
     this.partNameControl.valueChanges.subscribe(value => {
-      if (!this.valueChangesDisabled ) {
+      if (!this.valueChangesDisabled) {
         this.handleValueChange(value);
       }
     });
@@ -302,16 +305,15 @@ export class FormDialogComponent {
             this.lengthList = data;
             if (!this.lengthList.length) {
               this.repairPartForm?.get('length')?.disable();
-              
+
               this.getTariffRepairCost(partName, value, undefined);
             } else {
               this.repairPartForm?.get('length')?.enable();
-              if(this.repairPart.tariff_repair?.length)
-              {
+              if (this.repairPart.tariff_repair?.length) {
                 this.repairPartForm.patchValue({
-                     length:this.repairPart.tariff_repair?.length
-                   });
-                   this.repairPart.tariff_repair?.length!=0;
+                  length: this.repairPart.tariff_repair?.length
+                });
+                this.repairPart.tariff_repair?.length != 0;
                 // const index = this.lengthList.findIndex(item => item.length === this.repairPart.tariff_repair?.length && item.length_unit_cv === this.repairPart.tariff_repair?.length_unit_cv);
                 // this.repairPartForm.patchValue({
                 //   length:index
@@ -328,11 +330,9 @@ export class FormDialogComponent {
       debounceTime(300),
       tap(value => {
         if (value) {
-         
-            const partName = this.partNameControl.value;
-            const dimension = this.repairPartForm?.get('dimension')?.value;
-            this.getTariffRepairCost(partName, dimension, value);
-          
+          const partName = this.partNameControl.value;
+          const dimension = this.repairPartForm?.get('dimension')?.value;
+          this.getTariffRepairCost(partName, dimension, value);
         }
       })
     ).subscribe();
@@ -341,12 +341,12 @@ export class FormDialogComponent {
   handleValueChange(value: any) {
     this.valueChangesDisabled = true;
     if (value) {
-      
+
       this.partNameFilteredList = this.partNameList?.filter(item =>
-        
-        
-         item.trim().length > 0 && item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
-        
+
+
+        item.trim().length > 0 && item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
+
       );
       const isValid = this.partNameList?.some(item => item === value);
       if (isValid) {
@@ -362,10 +362,9 @@ export class FormDialogComponent {
             this.repairPartForm?.get('dimension')?.enable();
             this.repairPartForm?.get('dimension')?.setValidators([Validators.required]);
             this.repairPartForm?.get('dimension')?.updateValueAndValidity();
-            if(this.repairPart.tariff_repair?.dimension)
-            {
+            if (this.repairPart.tariff_repair?.dimension) {
               this.repairPartForm?.patchValue({
-                dimension:this.repairPart.tariff_repair?.dimension
+                dimension: this.repairPart.tariff_repair?.dimension
               });
             }
           }
@@ -387,15 +386,15 @@ export class FormDialogComponent {
     }
   }
 
-  REPDamage(damages: any[]): REPDamageRepairItem[] {
-    return damages.map(dmg => this.repDrDS.createREPDamage(undefined, undefined, dmg));
+  REPDamage(damages: any[]): any[] {
+    return damages.map(dmg => this.estTempDS.createTepDamage(undefined, undefined, dmg));
   }
 
-  REPRepair(repairs: any[]): REPDamageRepairItem[] {
-    return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
+  REPRepair(repairs: any[]): any[] {
+    return repairs.map(rp => this.estTempDS.createTepRepair(undefined, undefined, rp));
   }
 
-  REPDamageRepairToCV(damagesRepair: any[] | undefined): REPDamageRepairItem[] {
+  REPDamageRepairToCV(damagesRepair: any[] | undefined): any[] {
     return damagesRepair?.map(dmgRp => dmgRp.code_cv) || [];
   }
 

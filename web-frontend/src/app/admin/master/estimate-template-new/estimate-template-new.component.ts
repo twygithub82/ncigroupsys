@@ -226,7 +226,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   selectedTempEst?: MasterTemplateItem;
   sotItem?: StoringOrderTankItem;
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  repList = new MatTableDataSource<RepairEstPartItem>();
+  repList = new MatTableDataSource<TemplateEstPartItem>();
   sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
   groupNameCvList: CodeValuesItem[] = []
@@ -306,12 +306,10 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     var totalMaterialCost: number = 0;
     var totalLabourHours: number = 0;
     this.repList.data.forEach(data => {
-      totalMaterialCost += Number(data.tariff_repair?.material_cost ?? 0) * Number(data.quantity);
-      totalLabourHours += Number(data.hour ?? 0);
+      totalMaterialCost += (data.tariff_repair?.material_cost ?? 0) * (data.quantity ?? 0);
+      totalLabourHours += (data.hour ?? 0);
     });
-
     this.tempForm?.patchValue({
-
       total_material_cost: Number(totalMaterialCost).toFixed(2),
       labour_hour: totalLabourHours
     });
@@ -398,7 +396,6 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
 
     this.tempForm?.get('labour_discount')!.valueChanges.subscribe(value => {
-
       var discCostAmt: number = 0;
       if (this.tempForm?.get('labour_discount')?.value > 0) {
         discCostAmt = Number(this.tempForm?.get('labour_rate')!.value) * Number(Number(this.tempForm?.get('labour_discount')?.value / 100));
@@ -411,7 +408,6 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
 
     this.tempForm?.get('material_discount')!.valueChanges.subscribe(value => {
-
       var discCostAmt: number = 0;
       if (this.tempForm?.get('material_discount')?.value > 0) {
         discCostAmt = Number(this.tempForm?.get('total_material_cost')?.value) * Number(Number(this.tempForm?.get('material_discount')?.value / 100));
@@ -423,7 +419,6 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
 
     this.tempForm?.get('total_material_cost')!.valueChanges.subscribe(value => {
-
       var discCostAmt: number = 0;
       if (this.tempForm?.get('material_discount')?.value > 0) {
         discCostAmt = Number(this.tempForm?.get('total_material_cost')?.value) * Number(Number(this.tempForm?.get('material_discount')?.value / 100));
@@ -480,10 +475,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       repairEstPartItem = this.selectedTempEst?.template_est_part
         ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
         .map((item: Partial<TemplateEstPartItem>) => {
-          // Transform the Partial<TemplateEstPartItem> into a RepairEstPartItem
           return {
-            // Assuming the RepairEstPartItem structure, map fields accordingly:
-            actions: [],  // Use default values if fields are missing
+            actions: [],
             create_by: item.create_by,
             create_dt: item.create_dt,
             description: item.description,
@@ -491,7 +484,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
             hour: item.hour,
             location_cv: item.location_cv,
             material_cost: item.tariff_repair?.material_cost,
-            qty: item.quantity,
+            quantity: item.quantity,
             remarks: item.remarks,
             repair_est: undefined,
             repair_est_guid: undefined,
@@ -499,8 +492,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
             tariff_repair_guid: item.tariff_repair_guid,
             update_by: item.update_by,
             update_dt: item.update_dt,
-            repair: this.GetRepairOrDamage(item.tep_damage_repair!, 1),
-            damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
+            tep_damage_repair: item.tep_damage_repair!,
+            // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
             // Map other fields as needed
           } as RepairEstPartItem;
         }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
@@ -598,11 +591,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   // }
   GetRepairOrDamage(repairDamageList: TepDamageRepairItem[], codeType: Number): any[] {
     var retval: any[] = [];
-
     var result = repairDamageList.filter((item) => item.code_type == codeType)
     retval = result?.filter((item: Partial<TepDamageRepairItem> | undefined): item is Partial<TepDamageRepairItem> => item !== undefined)
       .map((item: Partial<TepDamageRepairItem>) => {
-        // Transform the Partial<TemplateEstPartItem> into a RepairEstPartItem
         return {
           guid: item.guid,
           rep_guid: item.tep_guid,
@@ -614,7 +605,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
           update_by: item.update_by,
           delete_dt: item.delete_dt,
         } as RepairEstPartItem;
-      }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
+      }) ?? [];
     return retval.sort((a, b) => (a.code_cv ?? 0) - (b.code_cv ?? 0));
   }
   // populateSOForm(so: StoringOrderItem): void {
@@ -633,8 +624,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
   populateSOT(rep: any[]) {
     if (rep?.length) {
-      const repList: RepairEstPartItem[] = rep.map((item: Partial<RepairEstPartItem> | undefined) => new RepairEstPartItem(item));
-      this.updateData(repList);
+      this.updateData(rep);
     }
   }
 
@@ -686,12 +676,11 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const data = [...this.repList.data];
-        const newItem = new RepairEstPartItem({
+        const data: any = [...this.repList.data];
+        const newItem = new TemplateEstPartItem({
           ...result.item,
         });
         data.push(newItem);
-
         this.updateData(data);
 
         this.calculateCostSummary();
@@ -727,8 +716,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const data = [...this.repList.data];
-        const updatedItem = new RepairEstPartItem({
+        const data: any[] = [...this.repList.data];
+        const updatedItem = new TemplateEstPartItem({
           ...result.item,
         });
         if (result.index >= 0) {
@@ -799,7 +788,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data:any[] = [...this.repList.data];
+        const data: any[] = [...this.repList.data];
         result.item.forEach((newItem: RepairEstPartItem) => {
           // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
@@ -858,7 +847,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   undoTempAction(row: RepairEstPartItem[], actionToBeRemove: string) {
-    const data:any[] = [...this.repList.data];
+    const data: any[] = [...this.repList.data];
     row.forEach((newItem: RepairEstPartItem) => {
       const index = data.findIndex((existingItem: any) => existingItem.guid === newItem.guid);
 
@@ -873,21 +862,6 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       }
     });
     this.updateData(data);
-  }
-
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.sotSelection.selected.length;
-    const numRows = this.storingOrderItem.storing_order_tank?.length;
-    return numSelected === numRows;
-  }
-
-  masterToggle() {
-    this.isAllSelected()
-      ? this.sotSelection.clear()
-      : this.repList.data?.forEach((row) =>
-        this.sotSelection.select(row)
-      );
   }
 
   // context menu
@@ -944,7 +918,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
             if (this.repList.data.length) {
               temp.template_est_part = [];
               this.repList.data.forEach(data => {
-                var repEstItem: RepairEstPartItem = data;
+                var repEstItem: any = data;
                 var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
                 tempEstPartItem.action = "NEW";
                 tempEstPartItem.guid = "";
@@ -955,7 +929,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
                 tempEstPartItem.remarks = repEstItem.remarks;
                 tempEstPartItem.description = repEstItem.description;
                 tempEstPartItem.tep_damage_repair = [];
-                let dmg: REPDamageRepairItem[] = repEstItem.rep_damage_repair!;
+                let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!;
                 dmg.forEach(d => {
                   let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
                   tepDamageRepairItm.code_cv = d.code_cv;
@@ -1062,7 +1036,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
           // consolidate new repair + new damage to tep_damage_repair
           var tep_damage_repairItems: TepDamageRepairItem[] = [];
-          let dmg: REPDamageRepairItem[] = (value.rep_damage_repair!);
+          let dmg: TepDamageRepairItem[] = (value.tep_damage_repair!);
           dmg.forEach(d => {
             let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
             tepDamageRepairItm.code_cv = d.code_cv;
@@ -1083,7 +1057,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
           });
         }
         else {
-          var repEstItem: RepairEstPartItem = value;
+          var repEstItem: TemplateEstPartItem = value;
           var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
           tempEstPartItem.action = "NEW";
           tempEstPartItem.guid = "";
@@ -1094,7 +1068,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
           tempEstPartItem.remarks = repEstItem.remarks;
           tempEstPartItem.description = repEstItem.description;
           tempEstPartItem.tep_damage_repair = [];
-          let dmg: REPDamageRepairItem[] = repEstItem.rep_damage_repair!;
+          let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!;
           dmg.forEach(d => {
             let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
             tepDamageRepairItm.code_cv = d.code_cv;
@@ -1154,7 +1128,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  updateData(newData: RepairEstPartItem[]): void {
+  updateData(newData: any[]): void {
     this.repList.data = [...newData];
     this.sotSelection.clear();
   }

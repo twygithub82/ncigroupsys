@@ -57,18 +57,18 @@ export class TepDamageRepairItem {
   update_dt?: string | null;
   constructor(item: Partial<TepDamageRepairItem> = {}) {
     // Object.assign(this, { guid: '', ...item });
-    
-    this.action=item.action;
-    this.guid=item.guid;
+
+    this.action = item.action;
+    this.guid = item.guid;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    this.code_cv=item.code_cv;
-    this.code_type=item.code_type;
-    this.tep_guid=item.tep_guid;
-   }
+    this.code_cv = item.code_cv;
+    this.code_type = item.code_type;
+    this.tep_guid = item.tep_guid;
+  }
 }
 
 export class TemplateEstPartItem {
@@ -128,19 +128,19 @@ export class TemplateEstimateCustomerItem {
 
   constructor(item: Partial<TemplateEstimateCustomerItem> = {}) {
     // Object.assign(this, { guid: '', ...item });
-    
-    this.action=item.action;
-    this.guid=item.guid;
-    this.template_est_guid=item.template_est_guid;
-    this.customer_company_guid=item.customer_company_guid
-    this.customer_company=item.customer_company;
+
+    this.action = item.action;
+    this.guid = item.guid;
+    this.template_est_guid = item.template_est_guid;
+    this.customer_company_guid = item.customer_company_guid
+    this.customer_company = item.customer_company;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    
-   }
+
+  }
 
 }
 export class MasterTemplateItem extends MasterTemplateGo {
@@ -457,7 +457,7 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
 
   searchEstimateTemplateForRepair(where?: any, order?: any): Observable<MasterTemplateItem[]> {
     this.loadingSubject.next(true);
-    
+
     return this.apollo
       .query<any>({
         query: GET_ESTIMATE_TEMPLATE_FOR_REPAIR,
@@ -494,21 +494,25 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
     );
   }
 
-    UpdateMasterTemplate(editTemplateEstimate: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_MASTER_TEMPLATE_ESTIMATION,
-        variables: {
-          editTemplateEstimate
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  UpdateMasterTemplate(editTemplateEstimate: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_MASTER_TEMPLATE_ESTIMATION,
+      variables: {
+        editTemplateEstimate
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
+  createTepDamage(guid: string | undefined, tep_guid: string | undefined, code_val: string): TepDamageRepairItem {
+    return new TepDamageRepairItem({ guid: guid, tep_guid: tep_guid, code_cv: code_val, code_type: 0 })
+  }
 
-
-
+  createTepRepair(guid: string | undefined, tep_guid: string | undefined, code_val: string): TepDamageRepairItem {
+    return new TepDamageRepairItem({ guid: guid, tep_guid: tep_guid, code_cv: code_val, code_type: 1 })
+  }
 }
