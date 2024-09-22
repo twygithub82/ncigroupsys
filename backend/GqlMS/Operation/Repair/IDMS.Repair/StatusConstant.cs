@@ -8,10 +8,13 @@ namespace IDMS.Repair.GqlTypes
 {
     public class StatusConstant
     {
-        public static class TemplateType
+        public static class RepairEstStatus
         {
-            public const string GENERAL = "GENERAL";
-            public const string EXCLUSIVE = "EXCLUSIVE";
+            public const string PENDING = "PENDING";
+            public const string APPROVED = "APPROVED";
+            public const string IN_PROGRESS = "JOB_IN_PROGRESS";
+            public const string QC = "QC_COMPLETED";
+            public const string BILL = "BILL_COMPLETED";
 
         }
 

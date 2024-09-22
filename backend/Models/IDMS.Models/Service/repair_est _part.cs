@@ -28,7 +28,7 @@ namespace IDMS.Models.Service
         public int quantity { get; set; }
         public double hour { get; set; }
         public bool owner { get; set; } = false;
-        public string? status_cv { get; set; }
+        public double material_cost { get; set; }
 
         [NotMapped]
         public string? action { get; set; }
