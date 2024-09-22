@@ -1,5 +1,6 @@
 ﻿using HotChocolate;
 using IDMS.Models.Master;
+using IDMS.Models.Service;
 using IDMS.Models.Tariff;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,6 @@ namespace IDMS.Models.Inventory
         public IEnumerable<booking>? booking { get; set; }
         public IEnumerable<scheduling_sot>? scheduling_sot { get; set; }    
         public IEnumerable<release_order_sot>? release_order_sot { get; set; }
-       
+        public IEnumerable<repair_est>? repair_est { get; set; }
     }
 }

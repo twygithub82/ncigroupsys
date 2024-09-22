@@ -537,7 +537,6 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             return retval;
         }
 
-
         public async Task<int> UpdateTariffLabour(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, tariff_labour UpdateTariffLabour)
         {

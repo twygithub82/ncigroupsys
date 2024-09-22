@@ -22,6 +22,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                         .ThenInclude(t => t.customer_company)
                     .Include(d => d.template_est_part)
                         .ThenInclude(p => p.tep_damage_repair);
+                    
 
                 return templateEst;
             }
