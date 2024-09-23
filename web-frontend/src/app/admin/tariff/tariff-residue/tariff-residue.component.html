@@ -132,7 +132,7 @@
                   <ng-container matColumnDef="lName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.COST }}:</span>{{row.cost}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.COST }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="email">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>

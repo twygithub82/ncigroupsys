@@ -316,12 +316,12 @@
                               <span>{{translatedLangText.DUPLICATE}}</span>
                             </button>
                             } -->
-                            <!-- @if (sotDS.canAddRemove(row)) { 
+                            @if (!row.actions.includes('delete')){
                             <button mat-menu-item (click)="handleDelete($event, row, i)">
                               <mat-icon>delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
-                            }
+                          }
                             @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
                             <button mat-menu-item (click)="cancelItem($event, row)">
                               <mat-icon>cancel</mat-icon>
@@ -347,7 +347,7 @@
                               <mat-icon>undo</mat-icon>
                               <span>{{translatedLangText.UNDO}} {{translatedLangText.ROLLBACK_STATUS}}</span>
                             </button>
-                            } -->
+                            } 
                           </mat-menu>
                         </mat-cell> 
                       </ng-container>

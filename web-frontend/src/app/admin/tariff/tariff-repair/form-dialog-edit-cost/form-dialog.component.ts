@@ -1,4 +1,4 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose, MatDialog } from '@angular/material/dialog';
 import { Component, Inject, OnInit,ViewChild } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
@@ -39,6 +39,8 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { stringifyForDisplay } from '@apollo/client/utilities';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Direction } from '@angular/cdk/bidi';
+import { ConfirmDialogComponent } from './confirm/confirm.component';
 
 export interface DialogData {
   action?: string;
@@ -272,10 +274,13 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     JOB_TYPE:"COMMON-FORM.JOB-TYPE",
     CANNOT_EXCEED:"COMMON-FORM.CANNOT-EXCEED",
     CANNOT_SMALLER:"COMMON-FORM.CANNOT-SMALLER",
+    SMALLER_THAN:"COMMON-FORM.SMALLER-THAN",
+    EXCEED:"COMMON-FORM.EXCEEDED"
   };
   unit_type_control = new UntypedFormControl();
   
   selectedItems: TariffRepairItem[];
+  
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -283,6 +288,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
+    public dialog: MatDialog,
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
@@ -582,12 +588,94 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     this.pcForm.get(path)?.updateValueAndValidity();
   }
 
+  ConfirmItem(msg:String) {
+    var retval:string="CANCEL";
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        message: msg,
+        langText: this.langText
+        
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if(result.action=="confirmed")
+      {
+        this.updateTariffRepair();
+      }
+      // else
+      // {
+      //   this.onNoClick();
+      // }
+      
+    });
+  }
+
+
   update() {
 
-    this.DisableValidator('material_cost_percentage');
-    this.DisableValidator('labour_hour_percentage');
-    if (!this.pcForm?.valid) return;
     
+
+    // this.DisableValidator('material_cost_percentage');
+    // this.DisableValidator('labour_hour_percentage');
+    if (!this.pcForm?.valid) return;
+
+    var confirmMessage :string="";
+    var mCostPercentage =this.pcForm.get('material_cost_percentage')?.value;
+    var lHourPercentage =this.pcForm.get('labour_hour_percentage')?.value;
+    
+
+    if(mCostPercentage>this.maxMaterialCost)
+    {
+      confirmMessage = `${this.translatedLangText.MATERIAL_COST} ${this.translatedLangText.EXCEED} ${this.maxMaterialCost}`;
+    }
+    else if(mCostPercentage<this.minMaterialCost)
+    {
+      confirmMessage = `${this.translatedLangText.MATERIAL_COST} ${this.translatedLangText.SMALLER_THAN} ${this.minMaterialCost}`;
+    }
+    
+    if(lHourPercentage>this.maxMaterialCost)
+      {
+        if(confirmMessage.trim()!="")
+          confirmMessage+="<br>";
+         
+        confirmMessage += `${this.translatedLangText.LABOUR_HOUR} ${this.translatedLangText.EXCEED} ${this.maxMaterialCost}`;
+      }
+      else if(lHourPercentage<this.minMaterialCost)
+      {
+        if(confirmMessage.trim()!="")
+          confirmMessage+="<br>";
+         
+        confirmMessage += `${this.translatedLangText.LABOUR_HOUR} ${this.translatedLangText.SMALLER_THAN} ${this.minMaterialCost}`;
+      }
+  
+    if(confirmMessage.trim()!="")
+    {
+      this.ConfirmItem(confirmMessage);
+    }
+    else
+    {
+      this.updateTariffRepair();
+    }
+
+   
+
+    
+
+  
+
+   
+
+  }
+
+  updateTariffRepair()
+  {
     var trfRepairItem = new TariffRepairItem();
     trfRepairItem.part_name=this.pcForm!.value['part_name'];
     
@@ -611,19 +699,10 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     this.trfRepairDS.updateTariffRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,
       trfRepairItem.part_name,trfRepairItem.dimension,trfRepairItem.length,trfRepairItem.guid,trfRepairItem.material_cost,trfRepairItem.labour_hour).subscribe(result=>{
       this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
-      this.EnableValidator('material_cost_percentage');
-      this.EnableValidator('labour_hour_percentage');
+      // this.EnableValidator('material_cost_percentage');
+      // this.EnableValidator('labour_hour_percentage');
     });
-
-    
-
-  
-
-   
-
   }
-
-  
   
   displayLastUpdated(r: TariffDepotItem) {
     var updatedt= r.update_dt;
