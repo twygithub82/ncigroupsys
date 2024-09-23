@@ -259,10 +259,12 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
                 var guid = UpdateTariffClean.guid;
                 var dbTariffClean = context.tariff_cleaning.Find(guid);
+
                 if (dbTariffClean == null)
                 {
                     throw new GraphQLException(new Error("The Cleaning Procedure not found", "500"));
                 }
+
                 dbTariffClean.description = UpdateTariffClean.description;
                 dbTariffClean.cargo = UpdateTariffClean.cargo;
                 dbTariffClean.un_no = UpdateTariffClean.un_no;
@@ -281,10 +283,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 dbTariffClean.update_by = uid;
                 dbTariffClean.update_dt = currentDateTime;
 
-                UpdateUNToTable(context, UpdateTariffClean.un_no, UpdateTariffClean.class_cv, uid, currentDateTime);
+                await UpdateUNToTable(context, UpdateTariffClean.un_no, UpdateTariffClean.class_cv, uid, currentDateTime);
 
-                retval = context.SaveChanges();
-
+                retval = await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -322,10 +323,11 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             return retval;
         }
 
-        private async void UpdateUNToTable(ApplicationTariffDBContext context, string unNo, string classNo, string user, long currentDateTime)
+        private async Task<int> UpdateUNToTable(ApplicationTariffDBContext context, string unNo, string classNo, string user, long currentDateTime)
         {
             try
             {
+                int ret = 0;
                 var res = await context.un_number.Where(u => u.un_no == unNo && u.class_cv == classNo && (u.delete_dt == null || u.delete_dt == 0)).FirstOrDefaultAsync();
                 if (res == null)
                 {
@@ -338,8 +340,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                     UN.create_dt = currentDateTime;
 
                     await context.AddAsync(UN);
-                    await context.SaveChangesAsync();
+                    //ret = await context.SaveChangesAsync();
                 }
+                return ret;
             }
             catch (Exception ex)
             {
@@ -536,7 +539,6 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
             return retval;
         }
-
 
         public async Task<int> UpdateTariffLabour(ApplicationTariffDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, tariff_labour UpdateTariffLabour)
