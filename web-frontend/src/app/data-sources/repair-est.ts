@@ -189,4 +189,30 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
   canAdd(re: RepairEstItem): boolean {
     return true;
   }
+
+  getTotal(repairEstPartList: any[] | undefined): any {
+    const totalSums = repairEstPartList?.reduce((totals: any, owner) => {
+      return {
+        hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+        total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.material_cost ?? 0)))
+      };
+    }, { hour: 0, total_mat_cost: 0 }) || 0;
+    return totalSums;
+  }
+
+  getTotalLabourCost(total_hour: number | undefined, labour_cost: number | undefined): any {
+    return ((total_hour ?? 0) * (labour_cost ?? 0));
+  }
+
+  getTotalCost(total_labour_cost: number | undefined, total_material_cost: number | undefined): any {
+    return ((total_labour_cost ?? 0) + (total_material_cost ?? 0));
+  }
+
+  getDiscountCost(discount: number | undefined, total_cost: number | undefined): any {
+    return ((discount ?? 0) * (total_cost ?? 0)) / 100;
+  }
+
+  getNetCost(total_cost: number | undefined, discount_labour_cost: number | undefined, discount_mat_cost: number | undefined) : any {
+    return (total_cost ?? 0) - (discount_labour_cost ?? 0) - (discount_mat_cost ?? 0);
+  }
 }

@@ -98,7 +98,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public release_order_sot?: ReleaseOrderSotItem[];
   public out_gate?: OutGateItem[];
   public customer_company?: CustomerCompanyItem;
-  public repair_est?: RepairEstItem;
+  public repair_est?: RepairEstItem[];
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -666,7 +666,7 @@ const GET_STORING_ORDER_TANK_BY_ID_OUT_GATE = gql`
   }
 `;
 
-const GET_STORING_ORDER_TANKS_ESTIMATE = gql`
+const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -694,6 +694,14 @@ const GET_STORING_ORDER_TANKS_ESTIMATE = gql`
         in_gate {
           eir_no
           eir_dt
+        }
+        repair_est {
+          guid
+          estimate_no
+          labour_cost_discount
+          material_cost_discount
+          status_cv
+          total_cost
         }
       }
       pageInfo {
@@ -814,6 +822,62 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
           name
           alias
         }
+        repair_est {
+          aspnetusers_guid
+          create_by
+          create_dt
+          delete_dt
+          estimate_no
+          guid
+          labour_cost
+          labour_cost_discount
+          material_cost_discount
+          owner_enable
+          remarks
+          sot_guid
+          status_cv
+          total_cost
+          update_by
+          update_dt
+          repair_est_part {
+            action
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            hour
+            location_cv
+            material_cost
+            owner
+            quantity
+            remarks
+            repair_est_guid
+            tariff_repair_guid
+            update_by
+            update_dt
+            rep_damage_repair {
+              action
+              code_cv
+              code_type
+              create_by
+              create_dt
+              delete_dt
+              guid
+              rep_guid
+              update_by
+              update_dt
+            }
+            tariff_repair {
+              group_name_cv
+              subgroup_name_cv
+            }
+          }
+          aspnetsuser {
+            id
+            userName
+          }
+        }
       }
       totalCount
     }
@@ -926,7 +990,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANKS_ESTIMATE,
+        query: GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
