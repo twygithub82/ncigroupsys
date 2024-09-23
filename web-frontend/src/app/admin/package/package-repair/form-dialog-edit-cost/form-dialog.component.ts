@@ -314,6 +314,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
       dimension:this.dimensionControl,
       length:this.lengthControl,
       material_cost_percentage:[''],
+      labour_hour_percentage:[''],
      
     });
   }
@@ -555,8 +556,27 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
 
   }
   
+  EnableValidator(path:string)
+  {
+    this.pcForm.get(path)?.setValidators([
+      Validators.min(this.minMaterialCost),
+      Validators.max(this.maxMaterialCost),
+      Validators.required  // If you have a required validator
+    ]);
+    
+    this.pcForm.get('material_cost_percentage')?.updateValueAndValidity();  // Revalidate the control
+    
+  }
+
+  DisableValidator(path:string)
+  {
+    this.pcForm.get(path)?.clearValidators();
+    this.pcForm.get(path)?.updateValueAndValidity();
+  }
   update() {
 
+    this.DisableValidator('material_cost_percentage');
+    this.DisableValidator('labour_hour_percentage');
     
     if (!this.pcForm?.valid) return;
     
@@ -565,7 +585,10 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     
     trfRepairItem.subgroup_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
     trfRepairItem.group_name_cv=String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
-    trfRepairItem.material_cost=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
+    trfRepairItem.material_cost=1;
+    if(this.pcForm!.value['material_cost_percentage']) trfRepairItem.material_cost=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
+    trfRepairItem.labour_hour=1;
+    if(this.pcForm!.value['labour_hour_percentage']) trfRepairItem.labour_hour=(Number(this.pcForm!.value['labour_hour_percentage'])/100)+1;
     trfRepairItem.dimension=String(this.pcForm!.value['dimension']||'');
     trfRepairItem.length=Number(this.pcForm!.value['length']||-1);
     if(this.selectedTariffRepair) trfRepairItem.guid=this.selectedTariffRepair?.guid;
@@ -586,9 +609,10 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
   
     this.pckRepairDS.updatePackageRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,
       trfRepairItem.part_name,trfRepairItem.dimension,trfRepairItem.length, trfRepairItem.guid,
-      guids,trfRepairItem.material_cost).subscribe(result=>{
+      guids,trfRepairItem.material_cost,trfRepairItem.labour_hour).subscribe(result=>{
       this.handleSaveSuccess(result?.data?.updatePackageRepair_MaterialCost);
-
+        this.EnableValidator('material_cost_percentage');
+        this.EnableValidator('labour_hour_percentage');
     });
 
     

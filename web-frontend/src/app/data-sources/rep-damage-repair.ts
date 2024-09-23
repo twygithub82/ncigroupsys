@@ -32,11 +32,11 @@ export class REPDamageRepairGO {
 
 export class REPDamageRepairItem extends REPDamageRepairGO {
   public repair_est_part?: RepairEstPartItem;
-  public actions?: string[]
+  public action?: string
   constructor(item: Partial<REPDamageRepairItem> = {}) {
     super(item)
     this.repair_est_part = item.repair_est_part;
-    this.actions = item.actions;
+    this.action = item.action;
   }
 }
 
@@ -151,10 +151,10 @@ export class REPDamageRepairDS extends BaseDataSource<REPDamageRepairItem> {
   }
 
   createREPDamage(guid: string | undefined, rep_guid: string | undefined, code_val: string): REPDamageRepairItem {
-    return new REPDamageRepairItem({guid: guid, rep_guid: rep_guid, code_cv: code_val, code_type: 0})
+    return new REPDamageRepairItem({guid: guid, rep_guid: rep_guid, code_cv: code_val, code_type: 0, action: 'new'})
   }
 
   createREPRepair(guid: string | undefined, rep_guid: string | undefined, code_val: string): REPDamageRepairItem {
-    return new REPDamageRepairItem({guid: guid, rep_guid: rep_guid, code_cv: code_val, code_type: 1})
+    return new REPDamageRepairItem({guid: guid, rep_guid: rep_guid, code_cv: code_val, code_type: 1, action: 'new'})
   }
 }

@@ -351,10 +351,6 @@ export const GET_ESTIMATE_TEMPLATE_FOR_REPAIR = gql`
             update_dt
             width_diameter
             width_diameter_unit_cv
-            package_repair {
-              material_cost
-              labour_hour
-            }
           }
           tep_damage_repair {
             code_cv

@@ -918,6 +918,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
                 foreach (var r in dbTariffRepairs)
                 {
+                    
                     r.material_cost = Math.Round(Convert.ToDouble(r.material_cost.Value * material_cost_percentage), 2);
                     r.labour_hour = Math.Ceiling((r.labour_hour.Value * labour_hour_percentage) * 4) / 4;
 
