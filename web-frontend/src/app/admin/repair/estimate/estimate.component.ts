@@ -45,6 +45,8 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { MatCardModule } from '@angular/material/card';
+import { RepairEstDS, RepairEstItem } from 'app/data-sources/repair-est';
 
 @Component({
   selector: 'app-estimate',
@@ -78,16 +80,23 @@ import { InGateDS } from 'app/data-sources/in-gate';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatCardModule,
   ]
 })
 export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  // displayedColumns = [
+  //   'tank_no',
+  //   'customer',
+  //   'eir_no',
+  //   'eir_dt',
+  //   'last_cargo',
+  //   'tank_status_cv'
+  // ];
+
   displayedColumns = [
-    'tank_no',
-    'customer',
-    'eir_no',
-    'eir_dt',
-    'last_cargo',
-    'tank_status_cv'
+    'estimate_no',
+    'net_cost',
+    'status_cv',
   ];
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.ESTIMATE'
@@ -131,7 +140,11 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
     ESTIMATE_STATUS: 'COMMON-FORM.ESTIMATE-STATUS',
-    CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS'
+    CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    NET_COST: 'COMMON-FORM.NET-COST',
+    CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
   searchForm?: UntypedFormGroup;
@@ -142,6 +155,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
+  repairEstDS: RepairEstDS;
 
   sotList: StoringOrderTankItem[] = [];
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -182,6 +196,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
+    this.repairEstDS = new RepairEstDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -563,6 +578,21 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
+  calculateNetCost(repair_est: RepairEstItem): any {
+    const total = this.repairEstDS.getTotal(repair_est?.repair_est_part)
+    const labourDiscount = repair_est.labour_cost_discount;
+    const matDiscount = repair_est.material_cost_discount;
+    
+    const total_hour = total.hour;
+    const total_labour_cost = this.repairEstDS.getTotalLabourCost(total_hour, repair_est?.labour_cost);
+    const total_mat_cost = total.total_mat_cost;
+    const total_cost = repair_est?.total_cost;
+    const discount_labour_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_labour_cost);
+    const discount_mat_cost = this.repairEstDS.getDiscountCost(matDiscount, total_mat_cost);
+    const net_cost = this.repairEstDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
+    return net_cost.toFixed(2);
+  }
+
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
@@ -613,5 +643,9 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
+  }
+
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 }

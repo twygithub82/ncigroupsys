@@ -234,9 +234,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 newTariffClean.create_dt = currentDateTime;
                 context.tariff_cleaning.Add(newTariffClean);
 
-                UpdateUNToTable(context, NewTariffClean.un_no, NewTariffClean.class_cv, uid, currentDateTime);
+                await UpdateUNToTable(context, NewTariffClean.un_no, NewTariffClean.class_cv, uid, currentDateTime);
 
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
             }
             catch(Exception ex) 
             { 

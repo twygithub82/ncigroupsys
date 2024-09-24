@@ -28,9 +28,12 @@ namespace IDMS.Models.Service
         public string? remarks { get; set; }   
         public bool? owner_enable { get; set; }
         public string? status_cv { get; set; }
+
+        [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; }
         public aspnetusers? aspnetsuser { get; set; }
-        //public IEnumerable<template_est_customer>? template_est_customer { get; set; }
+
+        [UseFiltering]
         public IEnumerable<repair_est_part>? repair_est_part { get; set; }
     }
 }

@@ -53,10 +53,14 @@ namespace IDMS.Models.Inventory
         public storing_order? storing_order { get; set; }
         public tariff_cleaning? tariff_cleaning { get; set; }
         public customer_company? customer_company { get; set; }
+
+        [UseFiltering]
         public IEnumerable<InGateWithTank>? in_gate { get; set; }
+        [UseFiltering]
         public IEnumerable<out_gate>? out_gate { get; set; }
+        [UseFiltering]
         public IEnumerable<booking>? booking { get; set; }
-        public IEnumerable<scheduling_sot>? scheduling_sot { get; set; }    
+        public IEnumerable<scheduling_sot>? scheduling_sot { get; set; }
         public IEnumerable<release_order_sot>? release_order_sot { get; set; }
         public IEnumerable<repair_est>? repair_est { get; set; }
     }

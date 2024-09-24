@@ -99,6 +99,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                 template.labour_cost_discount = editTemplateEsimate.labour_cost_discount;
                 template.material_cost_discount = editTemplateEsimate.material_cost_discount;
                 template.template_name = editTemplateEsimate.template_name;
+                template.type_cv = editTemplateEsimate.type_cv;
                 template.remarks = editTemplateEsimate.remarks;
 
                 if (editTemplateEsimate.template_est_part != null)

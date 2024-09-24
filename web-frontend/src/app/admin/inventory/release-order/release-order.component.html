@@ -131,6 +131,17 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.BOOKING_DATE}}</mat-label>
+                      <mat-date-range-input [rangePicker]="booking_picker">
+                        <input matStartDate placeholder="Start date" formControlName="booking_dt_start">
+                        <input matEndDate placeholder="End date" formControlName="booking_dt_end">
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle matSuffix [for]="booking_picker"></mat-datepicker-toggle>
+                      <mat-date-range-picker #booking_picker></mat-date-range-picker>
+                    </mat-form-field>
+                  </div>
                   <div class="col-xl col-lg col-md col-sm mb-0 d-flex align-items-center">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>

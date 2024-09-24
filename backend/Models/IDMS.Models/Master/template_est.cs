@@ -15,8 +15,10 @@ namespace IDMS.Models.Master
         public double labour_cost_discount { get; set; }
         public double material_cost_discount { get; set; }
         public string template_name { get; set; }
-        public string? remarks { get; set; }    
+        public string? remarks { get; set; }
+
         public IEnumerable<template_est_customer>? template_est_customer { get; set; }
+        [UseFiltering]
         public IEnumerable<template_est_part>? template_est_part { get; set; }
     }
 }

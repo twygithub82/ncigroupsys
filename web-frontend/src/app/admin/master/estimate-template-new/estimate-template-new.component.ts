@@ -1125,7 +1125,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     newSot.so_guid = row.so_guid;
     newSot.eta_dt = row.eta_dt;
     newSot.etr_dt = row.etr_dt;
-    this.addEstDetails(event, newSot);
+    //this.addEstDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {
