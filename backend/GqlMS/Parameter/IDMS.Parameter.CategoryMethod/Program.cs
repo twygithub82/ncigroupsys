@@ -5,7 +5,6 @@ using System.Text;
 using IDMS.Models.Parameter.CleaningMethod.GqlTypes;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
-using HotChocolate.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,23 +15,24 @@ var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration.GetConnectio
 
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationParameterDBContext>(options =>
-    options.UseMySql(connectionString,
-  ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine)
-
-);
-
-//builder.Services.AddDbContextFactory<ApplicationParameterDBContext>(options =>
-//    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-// new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
+//builder.Services.AddDbContext<ApplicationParameterDBContext>(options =>
+//    options.UseMySql(connectionString,
+//  ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine)
 
 //);
+builder.Services.AddPooledDbContextFactory<ApplicationParameterDBContext>(o =>
+{
+    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+    o.EnableSensitiveDataLogging(false);
+});
 
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
     .AddAuthorization()
-    .RegisterDbContext<ApplicationParameterDBContext>(DbContextKind.Synchronized)
+    .InitializeOnStartup()
+    .RegisterDbContext<ApplicationParameterDBContext>(DbContextKind.Pooled)
+    //.RegisterDbContext<ApplicationParameterDBContext>(DbContextKind.Synchronized)
     .AddQueryType<IDMS.Models.Parameter.CleaningMethod.GqlTypes.CleaningMethod_QueryType>()
     .AddMutationType<IDMS.Models.Parameter.CleaningMethod.GqlTypes.CleanningMethod_MutationType>()
     .AddFiltering()
@@ -99,7 +99,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 
-app.MapGet("/hello", () => "Hello World!");
+//app.MapGet("/hello", () => "Hello World!");
 app.MapGraphQL();
 //app.MapControllers();
 

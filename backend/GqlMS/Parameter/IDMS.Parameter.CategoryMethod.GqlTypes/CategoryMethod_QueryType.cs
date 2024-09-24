@@ -56,9 +56,6 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
               // var context = _contextFactory.CreateDbContext();
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.cleaning_category.Where(i => i.delete_dt == null);
-
-
-
             }
             catch
             {

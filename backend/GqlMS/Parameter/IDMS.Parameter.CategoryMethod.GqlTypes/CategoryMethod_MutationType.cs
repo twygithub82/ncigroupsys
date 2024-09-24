@@ -39,10 +39,13 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
                 newCleanMthd.create_by = uid;
                 newCleanMthd.create_dt = GqlUtils.GetNowEpochInSec();
                 // var context = _contextFactory.CreateDbContext();
-                context.cleaning_method.Add(newCleanMthd);
-                retval = context.SaveChanges();
+                await context.cleaning_method.AddAsync(newCleanMthd);
+                retval = await context.SaveChangesAsync();
             }
-            catch { throw; }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
 
 
             return retval;
@@ -71,13 +74,13 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
                 dbCleanMethod.update_by = uid;
                 dbCleanMethod.update_dt = GqlUtils.GetNowEpochInSec();
 
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -102,13 +105,13 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
                     delCleanMethod.update_by = uid;
                     delCleanMethod.update_dt = GqlUtils.GetNowEpochInSec();
                 }
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -133,25 +136,29 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
 
                 newCleanCategory.create_by = uid;
                 newCleanCategory.create_dt = GqlUtils.GetNowEpochInSec();
-                //var context = _contextFactory.CreateDbContext();
 
-                var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null);
-                foreach (var customerCompany in customerCompanies)
-                {
-                    var customerCom_CleanCat = new customer_company_cleaning_category();
-                    customerCom_CleanCat.guid = Util.GenerateGUID();
-                    customerCom_CleanCat.adjusted_price = newCleanCategory.cost;
-                    customerCom_CleanCat.initial_price = newCleanCategory.cost;
-                    customerCom_CleanCat.customer_company_guid = customerCompany.guid;
-                    customerCom_CleanCat.cleaning_category_guid = newCleanCategory.guid;
-                    customerCom_CleanCat.create_by = uid;
-                    customerCom_CleanCat.create_dt = GqlUtils.GetNowEpochInSec();
-                    context.customer_company_cleaning_category.Add(customerCom_CleanCat);
-                }
-                context.cleaning_category.Add(newCleanCategory);
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
+
+                //Change below code to use trigger
+                //var customerCompanies = context.customer_company.Where(cc => cc.delete_dt == 0 || cc.delete_dt == null);
+                //foreach (var customerCompany in customerCompanies)
+                //{
+                //    var customerCom_CleanCat = new customer_company_cleaning_category();
+                //    customerCom_CleanCat.guid = Util.GenerateGUID();
+                //    customerCom_CleanCat.adjusted_price = newCleanCategory.cost;
+                //    customerCom_CleanCat.initial_price = newCleanCategory.cost;
+                //    customerCom_CleanCat.customer_company_guid = customerCompany.guid;
+                //    customerCom_CleanCat.cleaning_category_guid = newCleanCategory.guid;
+                //    customerCom_CleanCat.create_by = uid;
+                //    customerCom_CleanCat.create_dt = GqlUtils.GetNowEpochInSec();
+                //    context.customer_company_cleaning_category.Add(customerCom_CleanCat);
+                //}
+                //context.cleaning_category.Add(newCleanCategory);
             }
-            catch { throw; }
+            catch(Exception ex) 
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
 
 
             return retval;
@@ -168,26 +175,30 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var guid = UpdateCleanCategory.guid;
-                // var context = _contextFactory.CreateDbContext();
-                var dbCleanCategory = context.cleaning_category.Find(guid);
-                if (dbCleanCategory == null)
-                {
-                    throw new GraphQLException(new Error("The Cleaning Procedure not found", "500"));
-                }
+                //var guid = UpdateCleanCategory.guid;
+
+                //var dbCleanCategory = context.cleaning_category.Find(guid);
+                //if (dbCleanCategory == null)
+                //{
+                //    throw new GraphQLException(new Error("The Cleaning Procedure not found", "500"));
+                //}
+
+                var dbCleanCategory = new cleaning_category() { guid = UpdateCleanCategory.guid };
+                context.Attach(dbCleanCategory);
+
                 dbCleanCategory.description = UpdateCleanCategory.description;
                 dbCleanCategory.name = UpdateCleanCategory.name;
                 dbCleanCategory.cost = UpdateCleanCategory.cost;
                 dbCleanCategory.update_by = uid;
                 dbCleanCategory.update_dt = GqlUtils.GetNowEpochInSec();
 
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -216,7 +227,7 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -254,15 +265,13 @@ namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
                             context.customer_company_cleaning_category.Add(customerCom_CleanCat);
                         }
                     }
-
-
                 }
                 retval = context.SaveChanges();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
 
