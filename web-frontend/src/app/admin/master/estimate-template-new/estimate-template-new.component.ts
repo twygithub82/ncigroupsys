@@ -1074,6 +1074,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   updateData(newData: any[]): void {
     this.repList.data = [...newData];
     this.sotSelection.clear();
+    this.tempForm?.get('repList')?.setErrors(null);
   }
 
   handleDelete(event: Event, row: any, index: number): void {

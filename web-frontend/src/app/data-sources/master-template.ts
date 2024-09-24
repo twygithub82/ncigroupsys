@@ -207,6 +207,7 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
   query queryTemplateEstimation($where: template_estFilterInput, $order:[template_estSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     MasterTemplateResult : queryTemplateEstimation(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
+      
       create_by
       create_dt
       delete_dt
@@ -233,7 +234,7 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
           name
         }
       }
-      template_est_part {
+      template_est_part(where:{delete_dt:{eq:null}}) {
         guid
         description
         delete_dt
