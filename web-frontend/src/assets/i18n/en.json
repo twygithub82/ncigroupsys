@@ -389,6 +389,7 @@
     "VOLUME": "Volume",
     "OTHER-COMMENTS": "Other Comment(s)",
     "EXCEEDED": "Exceeded",
+    "SMALLER-THAN":"Smaller than",
     "MUST-MORE-THAN-ZERO": "Must be more than 0",
     "BRAND": "Brand",
     "BOTTOM": "Bottom",
@@ -540,6 +541,7 @@
     "CLEAR-ALL": "Clear All",
     "CONFIRM-CLEAR-ALL": "Confirm Clear All",
     "PART": "Part"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

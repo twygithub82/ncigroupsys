@@ -250,7 +250,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
       selectedItem: this.selectedItem,
       action:"edit",
       description:this.selectedItem.description,
-      cost:this.selectedItem.cost,
+      cost:this.selectedItem.cost?.toFixed(2),
       remarks:this.selectedItem.remarks
     });
   }

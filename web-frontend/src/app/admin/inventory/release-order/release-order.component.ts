@@ -134,7 +134,8 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
     EIR_NO: 'COMMON-FORM.EIR-NO',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    BOOKING_DATE: 'COMMON-FORM.BOOKING-DATE',
   }
 
   searchForm?: UntypedFormGroup;
@@ -212,6 +213,8 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
       etr_dt_start: [''],
       etr_dt_end: [''],
       purpose: [''],
+      booking_dt_start: [''],
+      booking_dt_end: [''],
     });
   }
 
@@ -585,6 +588,8 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
       etr_dt_start: '',
       etr_dt_end: '',
       purpose: '',
+      booking_dt_start: '',
+      booking_dt_end: '',
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
