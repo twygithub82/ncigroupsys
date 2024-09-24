@@ -150,6 +150,12 @@ export const ADD_REPAIR_EST = gql`
   }
 `;
 
+export const UPDATE_REPAIR_EST = gql`
+  mutation UpdateRepairEstimate($repairEstimate: repair_estInput!) {
+    updateRepairEstimate(repairEstimate: $repairEstimate)
+  }
+`;
+
 export class RepairEstDS extends BaseDataSource<RepairEstItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -186,8 +192,17 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
     });
   }
 
-  canAdd(re: RepairEstItem): boolean {
-    return true;
+  updateRepairEstimate(repairEstimate: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_REPAIR_EST,
+      variables: {
+        repairEstimate
+      }
+    });
+  }
+
+  canAmend(re: RepairEstItem): boolean {
+    return re.status_cv === 'PENDING';
   }
 
   getTotal(repairEstPartList: any[] | undefined): any {

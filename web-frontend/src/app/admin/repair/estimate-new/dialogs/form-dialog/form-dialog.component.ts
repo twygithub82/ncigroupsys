@@ -22,7 +22,7 @@ import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
-import { CodeValuesDS } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS } from 'app/data-sources/code-values';
 import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
@@ -224,7 +224,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           ];
           this.cvDS.getCodeValuesByType(queries);
           this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
-            this.data.populateData.subgroupNameCvList = data;
+            this.data.populateData.subgroupNameCvList = addDefaultSelectOption(data, '-', '');
           });
         }
       })
@@ -234,17 +234,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       startWith(''),
       debounceTime(300),
       tap(value => {
-        if (value) {
-          const groupName = this.repairPartForm?.get('group_name_cv')?.value;
-          this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
-            this.partNameList = data;
-            // this.partNameFilteredList = data
-            // this.updateValidators(this.partNameList);
-            // if (this.partNameControl.value) {
-            //   this.handleValueChange(this.partNameControl.value)
-            // }
-          });
-        }
+        const groupName = this.repairPartForm?.get('group_name_cv')?.value;
+        this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
+          this.partNameList = data;
+          // this.partNameFilteredList = data
+          // this.updateValidators(this.partNameList);
+          // if (this.partNameControl.value) {
+          //   this.handleValueChange(this.partNameControl.value)
+          // }
+        });
       })
     ).subscribe();
 
@@ -354,7 +352,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       if (damages.includes(x.code_cv)) {
         x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
       } else {
-        x.action = 'delete';
+        x.action = 'cancel';
       }
 
       finalDamages.push(x);
@@ -380,7 +378,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       if (repairs.includes(x.code_cv)) {
         x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
       } else {
-        x.action = 'delete';
+        x.action = 'cancel';
       }
 
       finalRepairs.push(x);
