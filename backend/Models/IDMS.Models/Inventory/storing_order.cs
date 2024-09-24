@@ -19,9 +19,12 @@ namespace IDMS.Models.Inventory
         public string? haulier { get; set; }
         public string? remarks { get; set; }
         public string? status_cv { get; set; }
+
         [ForeignKey("customer_company")]
         public string? customer_company_guid { get; set; }
         public customer_company? customer_company { get; set; }
+        
+        [UseFiltering]
         public IEnumerable<storing_order_tank>? storing_order_tank { get; set; }
     }
 }
