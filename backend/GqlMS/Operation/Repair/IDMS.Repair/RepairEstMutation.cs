@@ -73,17 +73,17 @@ namespace IDMS.Repair.GqlTypes
 
 
         public async Task<int> UpdateRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, repair_est RepairEsimate)
+            [Service] IConfiguration config, repair_est RepairEstimate)
         {
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                if (string.IsNullOrEmpty(RepairEsimate.guid))
+                if (string.IsNullOrEmpty(RepairEstimate.guid))
                     throw new GraphQLException(new Error($"Template_estimate guid used for update cannot be null or empty", "ERROR"));
 
-                var repTemplate = new repair_est() { guid = RepairEsimate.guid };
+                var repTemplate = new repair_est() { guid = RepairEstimate.guid };
                 context.Attach(repTemplate);
 
                 //var repTemplate = await context.repair_est.Where(t => t.guid == editRepairEsimate.guid && (t.delete_dt == null || t.delete_dt == 0))
@@ -96,17 +96,17 @@ namespace IDMS.Repair.GqlTypes
 
                 repTemplate.update_by = user;
                 repTemplate.update_dt = currentDateTime;
-                repTemplate.sot_guid = RepairEsimate.sot_guid;
-                repTemplate.aspnetusers_guid = RepairEsimate.aspnetusers_guid;
-                repTemplate.labour_cost_discount = RepairEsimate.labour_cost_discount;
-                repTemplate.material_cost_discount = RepairEsimate.material_cost_discount;
-                repTemplate.total_cost = RepairEsimate.total_cost;
-                repTemplate.labour_cost = RepairEsimate.labour_cost;
-                repTemplate.remarks = RepairEsimate.remarks;
+                repTemplate.sot_guid = RepairEstimate.sot_guid;
+                repTemplate.aspnetusers_guid = RepairEstimate.aspnetusers_guid;
+                repTemplate.labour_cost_discount = RepairEstimate.labour_cost_discount;
+                repTemplate.material_cost_discount = RepairEstimate.material_cost_discount;
+                repTemplate.total_cost = RepairEstimate.total_cost;
+                repTemplate.labour_cost = RepairEstimate.labour_cost;
+                repTemplate.remarks = RepairEstimate.remarks;
 
-                if (RepairEsimate.repair_est_part != null)
+                if (RepairEstimate.repair_est_part != null)
                 {
-                    foreach (var part in RepairEsimate.repair_est_part)
+                    foreach (var part in RepairEstimate.repair_est_part)
                     {
                         if (ObjectAction.NEW.EqualsIgnore(part.action))
                         {
