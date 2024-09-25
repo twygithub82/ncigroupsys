@@ -25,10 +25,10 @@ namespace IDMS.Models.Service
         public string? description { get; set; }
         public string? location_cv { get; set; }
         public string? remarks { get; set; }
-        public int quantity { get; set; }
-        public double hour { get; set; }
+        public int? quantity { get; set; }
+        public double? hour { get; set; }
         public bool owner { get; set; } = false;
-        public double material_cost { get; set; }
+        public double? material_cost { get; set; }
 
         [NotMapped]
         public string? action { get; set; }
