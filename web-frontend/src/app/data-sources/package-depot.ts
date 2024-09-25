@@ -115,7 +115,6 @@ export const GET_PACKAGE_DEPOT_QUERY = gql`
         type_cv
         update_by
         update_dt
-        website
       }
       tariff_depot {
         create_by

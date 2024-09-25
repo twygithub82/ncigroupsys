@@ -532,7 +532,7 @@ implements OnInit {
   {
     const where: any = {};
 
-
+    
     if (this.customerCodeControl.value) {
       if(this.customerCodeControl.value.length>0)
         {
@@ -571,6 +571,7 @@ implements OnInit {
       this.lastSearchCriteria=where;
     this.subs.sink = this.masterEstTempDS.SearchEstimateTemplate(where,this.lastOrderBy,this.pageSize).subscribe(data => {
        this.masterTemplateItem=data;
+       
       // let a = this.masterTemplateItem[0].getTotalMaterialCost();
               // data[0].storage_cal_cv
        this.previous_endCursor=undefined;

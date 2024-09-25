@@ -222,18 +222,19 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                         <mat-label>{{translatedLangText.SDS_FILE }}</mat-label>
                         <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()" type="button" [disabled]="!isFileSelectable">
                           <i class="material-icons">attach_file</i>
                         </button>
                         <input type="file" #fileInput class="defaultd-none"  (change)="onFileSelected($event)" 
-                          style="display: none;" accept="application/pdf">
+                          style="display: none;" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
                           
                       </div>
+                    
                       @if (tcForm?.get('file_size')?.hasError('required')) {
                         <mat-error  >
-                          {{translatedLangText.ATTACHMENT_TOO_BIG }}
+                          {{translatedLangText.SDS_FILE }}  {{translatedLangText.CARGO_REQUIRED }}
                         </mat-error>
                         }
                       @if (tcForm?.get('file_size')?.hasError('error')) {

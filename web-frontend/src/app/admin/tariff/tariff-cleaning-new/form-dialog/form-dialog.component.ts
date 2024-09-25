@@ -1,5 +1,5 @@
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
-import { Component, Inject, OnInit,ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit,QueryList,ViewChild, ViewChildren } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
@@ -33,6 +33,15 @@ export interface DialogData {
   // sotExistedList?: StoringOrderTankItem[]
 }
 
+export interface TabData {
+  label: string;
+  images: {
+    src: string;
+    alt: string;
+    classNo: string;
+    isSelected: boolean;
+  }[];
+}
 
 
 @Component({
@@ -76,7 +85,7 @@ export class FormDialogComponent {
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
   startDate = new Date();
-
+  tabsData: TabData[]=[];
   translatedLangText: any = {};
   langText = {
     CARGO_CLASS_1 :"COMMON-FORM.CARGO-CLASS-1",
@@ -102,9 +111,15 @@ export class FormDialogComponent {
     CARGO_CLASS_9_2:"COMMON-FORM.CARGO-CLASS-9-2"
   };
 
+  selectedTabIndex = 0; // Active tab index
+  selectedClassNo: string | null = null; // Holds the selected class number
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
   lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+
+   // Reference to all tab headers
+   @ViewChildren('tabHeader') tabHeaders!: QueryList<ElementRef>;
+   
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -117,22 +132,95 @@ export class FormDialogComponent {
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.action = data.action!;
+    this.selectedClassNo=data.selectedValue!;
     this.translateLangText();
-    // this.sotExistedList = data.sotExistedList;
-    // if (this.action === 'edit') {
-    //   this.dialogTitle = 'Edit ' + data.item.tank_no;
-    //   this.storingOrderTank = data.item;
-    // } else {
-    //   this.dialogTitle = 'New Record';
-    //   this.storingOrderTank = new StoringOrderTankItem();
-    // }
-    // this.index = data.index;
-    // this.storingOrderTankForm = this.createStorigOrderTankForm();
-    // this.initializeValueChange();
+    this.SetTabContent();
+    // Deselect the currently selected image
+    this.clearPreviousSelection();
+    this.selectedTabIndex=this.findTabIndexByClassNo(this.selectedClassNo!);
+    if(this.selectedTabIndex!==-1)
+    {
+        // Mark the selected image as 'isSelected'
+        const tab = this.tabsData[this.selectedTabIndex];
+        const selectedImage = tab.images.find(image => image.classNo === this.selectedClassNo);
+        if (selectedImage) {
+          selectedImage.isSelected = true; // Mark the selected image
+        }
+  
+     // this.scrollToTabHeader(this.selectedTabIndex);
+    }
+  }
 
-    // if (this.storingOrderTank?.tariff_cleaning) {
-    //   this.lastCargoControl.setValue(this.storingOrderTank?.tariff_cleaning);
-    // }
+  SetTabContent(){
+
+    this.tabsData = [
+      {
+        label: "1.x",
+        images: [
+          { src: "assets/images/idms/tariff/1.jpg", alt: this.translatedLangText.CARGO_CLASS_1, classNo: "Explosive" , isSelected: false  },
+          { src: "assets/images/idms/tariff/1_4.jpg", alt: this.translatedLangText.CARGO_CLASS_1_4, classNo: this.translatedLangText.CARGO_CLASS_1_4, isSelected: false },
+          { src: "assets/images/idms/tariff/1_5.jpg", alt: this.translatedLangText.CARGO_CLASS_1_5, classNo: this.translatedLangText.CARGO_CLASS_1_5, isSelected: false  },
+          { src: "assets/images/idms/tariff/1_6.jpg", alt: this.translatedLangText.CARGO_CLASS_1_6, classNo: this.translatedLangText.CARGO_CLASS_1_6, isSelected: false  }
+        ]
+      },
+      {
+        label: "2.x",
+        images: [
+          { src: "assets/images/idms/tariff/2_1.jpg", alt: this.translatedLangText.CARGO_CLASS_2_1, classNo: this.translatedLangText.CARGO_CLASS_2_1, isSelected: false  },
+          { src: "assets/images/idms/tariff/2_2.jpg", alt: this.translatedLangText.CARGO_CLASS_2_2, classNo: this.translatedLangText.CARGO_CLASS_2_2, isSelected: false  },
+          { src: "assets/images/idms/tariff/2_3.jpg", alt: this.translatedLangText.CARGO_CLASS_2_3, classNo: this.translatedLangText.CARGO_CLASS_2_3, isSelected: false  }
+        ]
+      },
+      {
+        label: "3.x",
+        images: [
+          { src: "assets/images/idms/tariff/3.jpg", alt: this.translatedLangText.CARGO_CLASS_3, classNo: this.translatedLangText.CARGO_CLASS_3, isSelected: false  }
+        ]
+      },
+      {
+        label: "4.x",
+        images: [
+          { src: "assets/images/idms/tariff/4_1.jpg", alt: this.translatedLangText.CARGO_CLASS_4_1, classNo: this.translatedLangText.CARGO_CLASS_4_1, isSelected: false  },
+          { src: "assets/images/idms/tariff/4_2.jpg", alt: this.translatedLangText.CARGO_CLASS_4_2, classNo: this.translatedLangText.CARGO_CLASS_4_2, isSelected: false  },
+          { src: "assets/images/idms/tariff/4_3.jpg", alt: this.translatedLangText.CARGO_CLASS_4_3, classNo: this.translatedLangText.CARGO_CLASS_4_3, isSelected: false  }
+        ]
+      },
+      {
+        label: "5.x",
+        images: [
+          { src: "assets/images/idms/tariff/5_1.jpg", alt: this.translatedLangText.CARGO_CLASS_5_1, classNo: this.translatedLangText.CARGO_CLASS_5_1, isSelected: false  },
+          { src: "assets/images/idms/tariff/5_2.jpg", alt: this.translatedLangText.CARGO_CLASS_5_2, classNo: this.translatedLangText.CARGO_CLASS_5_2, isSelected: false  }
+        ]
+      },
+      {
+        label: "6.x",
+        images: [
+          { src: "assets/images/idms/tariff/6_1.jpg", alt: this.translatedLangText.CARGO_CLASS_6_1, classNo: this.translatedLangText.CARGO_CLASS_6_1, isSelected: false  },
+          { src: "assets/images/idms/tariff/6_2.jpg", alt: this.translatedLangText.CARGO_CLASS_6_2, classNo: this.translatedLangText.CARGO_CLASS_6_2, isSelected: false  }
+        ]
+      },
+      {
+        label: "7.x",
+        images: [
+          { src: "assets/images/idms/tariff/7_1.jpg", alt: this.translatedLangText.CARGO_CLASS_7_1, classNo: this.translatedLangText.CARGO_CLASS_7_1, isSelected: false  },
+          { src: "assets/images/idms/tariff/7_2.jpg", alt: this.translatedLangText.CARGO_CLASS_7_2, classNo: this.translatedLangText.CARGO_CLASS_7_2, isSelected: false  },
+          { src: "assets/images/idms/tariff/7_3.jpg", alt: this.translatedLangText.CARGO_CLASS_7_3, classNo: this.translatedLangText.CARGO_CLASS_7_3, isSelected: false  }
+        ]
+      },
+      {
+        label: "8.x",
+        images: [
+          { src: "assets/images/idms/tariff/8.jpg", alt: this.translatedLangText.CARGO_CLASS_8, classNo: this.translatedLangText.CARGO_CLASS_8, isSelected: false  }
+        ]
+      },
+      {
+        label: "9.x",
+        images: [
+          { src: "assets/images/idms/tariff/9_1.jpg", alt: this.translatedLangText.CARGO_CLASS_9_1, classNo: this.translatedLangText.CARGO_CLASS_9_1, isSelected: false  },
+          { src: "assets/images/idms/tariff/9_2.jpg", alt: this.translatedLangText.CARGO_CLASS_9_2, classNo: this.translatedLangText.CARGO_CLASS_9_2, isSelected: false  }
+        ]
+      }
+    ];
   }
 
   translateLangText() {
@@ -140,84 +228,19 @@ export class FormDialogComponent {
       this.translatedLangText = translations;
     });
   }
-  // tabs = Array.from(Array(20).keys());
-
-  // @ViewChild('tabGroup')
-  // tabGroup;
-
-  // scrollTabs(event: Event) {
-  //   const children = this.tabGroup._tabHeader._elementRef.nativeElement.children;
-  //   const back = children[0];
-  //   const forward = children[2];
-  //   if (event.deltaY > 0) {
-  //     forward.click();
-  //   } else {
-  //     back.click();
-  //   }
-  // }
-
-  // createStorigOrderTankForm(): UntypedFormGroup {
-
-  //   if (!this.canEdit()) {
-  //     this.lastCargoControl.disable();
-  //   } else {
-  //     this.lastCargoControl.enable();
-  //   }
-  //   return this.fb.group({
-  //     guid: [this.storingOrderTank?.guid],
-  //     so_guid: [this.storingOrderTank?.so_guid],
-  //     unit_type_guid: [{ value: this.storingOrderTank?.unit_type_guid, disabled: !this.canEdit() }, [Validators.required]],
-  //     tank_no: [{ value: this.storingOrderTank?.tank_no, disabled: !this.canEdit() }, [Validators.required]],
-  //     last_cargo: this.lastCargoControl,
-  //     last_cargo_guid: [{ value: this.storingOrderTank?.last_cargo_guid, disabled: !this.canEdit() }, [Validators.required]],
-  //     job_no: [{ value: this.storingOrderTank?.job_no, disabled: !this.canEdit() }, [Validators.required]],
-  //     eta_dt: [{ value: Utility.convertDate(this.storingOrderTank?.eta_dt), disabled: !this.canEdit() }],
-  //     purpose: [''],
-  //     purpose_storage: [{ value: this.storingOrderTank?.purpose_storage, disabled: !this.canEdit() }],
-  //     purpose_steam: [{ value: this.storingOrderTank?.purpose_steam, disabled: !this.canEdit() }],
-  //     purpose_cleaning: [{ value: this.storingOrderTank?.purpose_cleaning, disabled: !this.canEdit() }],
-  //     purpose_repair_cv: [{ value: this.storingOrderTank?.purpose_repair_cv, disabled: !this.canEdit() }],
-  //     clean_status_cv: [{ value: this.storingOrderTank?.clean_status_cv, disabled: !this.canEdit() }],
-  //     certificate_cv: [{ value: this.storingOrderTank?.certificate_cv, disabled: !this.canEdit() }],
-  //     required_temp: [{ value: this.storingOrderTank?.required_temp, disabled: !this.storingOrderTank?.purpose_steam || !this.canEdit() }],
-  //     etr_dt: [{ value: Utility.convertDate(this.storingOrderTank?.etr_dt), disabled: !this.canEdit() }],
-  //     remarks: [{ value: this.storingOrderTank?.tariff_cleaning?.remarks, disabled: true }],
-  //     open_on_gate: [{ value: this.storingOrderTank?.tariff_cleaning?.open_on_gate_cv, disabled: true }],
-  //     flash_point: [this.storingOrderTank?.tariff_cleaning?.flash_point]
-  //   });
-  // }
+  
 
   
-  selectClassNo(value:string):void{
+  selectClassNo(value:string, tabIndex:number):void{
     const returnDialog: DialogData = {
       selectedValue:value
     }
+    this.selectedTabIndex=tabIndex;
     console.log('valid');
     this.dialogRef.close(returnDialog);
   }
 
-  // submit() {
-  //   this.storingOrderTankForm?.get('purpose')?.setErrors(null);
-  //   this.storingOrderTankForm?.get('required_temp')?.setErrors(null);
-  //   debugger
-  //   if (this.storingOrderTankForm?.valid) {
-  //     if (!this.validatePurpose()) {
-  //       this.storingOrderTankForm?.get('purpose')?.setErrors({ required: true });
-  //     } else {
-  //       this.storingOrderTankForm?.get('purpose')?.setErrors(null);
-       
-  //       const returnDialog: DialogData = {
-  //         // item: sot,
-  //         // index: this.index
-  //       }
-  //       console.log('valid');
-  //       this.dialogRef.close(returnDialog);
-  //     }
-  //   } else {
-  //     console.log('invalid');
-  //     this.findInvalidControls();
-  //   }
-  // }
+ 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
@@ -231,95 +254,33 @@ export class FormDialogComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
-  // initializeValueChange() {
-  //   this.storingOrderTankForm!.get('purpose_steam')!.valueChanges.subscribe(value => {
-  //     const requiredTempControl = this.storingOrderTankForm?.get('required_temp');
-  //     if (value) {
-  //       requiredTempControl!.enable();
-  //     } else {
-  //       requiredTempControl!.disable();
-  //       requiredTempControl!.setValue(''); // Clear the value if disabled
-  //     }
-  //   });
+  
+  isSelected(classNo: string): boolean {
+    
 
-  //   this.storingOrderTankForm?.get('tank_no')?.valueChanges.subscribe(value => {
-  //     // Custom validation logic for tank_no
-  //     const isValid = Utility.verifyIsoContainerCheckDigit(value);
-  //     if (!isValid) {
-  //       // Set custom error if the value is invalid
-  //       this.storingOrderTankForm?.get('tank_no')?.setErrors({ invalidCheckDigit: true });
-  //     } else {
-  //       // Clear custom error if the value is valid
-  //       if (this.action !== 'edit') {
-  //         const found = this.sotExistedList?.filter(sot => sot.tank_no === value);
-  //         if (found?.length) {
-  //           this.storingOrderTankForm?.get('tank_no')?.setErrors({ existed: true });
-  //         } else {
-  //           this.storingOrderTankForm?.get('tank_no')?.setErrors(null);
-  //         }
-  //       }
-  //     }
-  //   });
+    return this.selectedClassNo === classNo;
+  }
 
-  //   this.storingOrderTankForm!.get('last_cargo')!.valueChanges.pipe(
-  //     startWith(''),
-  //     debounceTime(300),
-  //     tap(value => {
-  //       var searchCriteria = '';
-  //       if (typeof value === 'string') {
-  //         searchCriteria = value;
-  //       } else {
-  //         searchCriteria = value.cargo;
-  //         this.storingOrderTankForm!.get('last_cargo_guid')!.setValue(value.guid);
-  //       }
-  //       this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-  //         this.last_cargoList = data
-  //       });
-  //     })
-  //   ).subscribe();
+  findTabIndexByClassNo(classNo: string): number {
+    return this.tabsData.findIndex(tab => 
+      tab.images.some(image => image.classNo === classNo)
+    );
+  }
 
-  //   this.lastCargoControl.valueChanges.subscribe(value => {
-  //     if (value.guid) {
-  //       this.storingOrderTankForm?.get('remarks')!.setValue(value.remarks);
-  //       this.storingOrderTankForm?.get('flash_point')!.setValue(value.flash_point);
-  //       this.storingOrderTankForm?.get('open_on_gate')!.setValue(value.open_on_gate_cv);
-  //     }
-  //   });
+  // scrollToTabHeader(index: number): void {
+  //   setTimeout(() => {
+  //     const tabHeaderArray = this.tabHeaders.toArray();
+  //     const selectedTabHeader = tabHeaderArray[index].nativeElement;
+  //     selectedTabHeader.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  //   }, 0);
   // }
-  // findInvalidControls() {
-  //   const controls = this.storingOrderTankForm?.controls;
-  //   for (const name in controls) {
-  //     if (controls[name].invalid) {
-  //       console.log(name);
-  //     }
-  //   }
-  // }
-  // displayLastCargoFn(tc: TariffCleaningItem): string {
-  //   return tc && tc.cargo ? `${tc.cargo}` : '';
-  // }
-  // validatePurpose(): boolean {
-  //   let isValid = true;
-  //   const purposeStorage = this.storingOrderTankForm?.get('purpose_storage')?.value;
-  //   const purposeSteam = this.storingOrderTankForm?.get('purpose_steam')?.value;
-  //   const purposeCleaning = this.storingOrderTankForm?.get('purpose_cleaning')?.value;
-  //   const purposeRepairCV = this.storingOrderTankForm?.get('purpose_repair_cv')?.value;
-  //   const requiredTemp = this.storingOrderTankForm?.get('required_temp')?.value;
 
-  //   // Validate that at least one of the purpose checkboxes is checked
-  //   if (!purposeStorage && !purposeSteam && !purposeCleaning && !purposeRepairCV) {
-  //     isValid = false; // At least one purpose must be selected
-  //     this.storingOrderTankForm?.get('purpose')?.setErrors({ required: true });
-  //   }
-
-  //   // Validate that required_temp is filled in if purpose_steam is checked
-  //   if (purposeSteam && !requiredTemp) {
-  //     isValid = false; // required_temp must be filled if purpose_steam is checked
-  //     this.storingOrderTankForm?.get('required_temp')?.setErrors({ required: true });
-  //   }
-
-  //   return isValid;
-  // }
-  // canEdit(): boolean {
-  //   return true;//!this.sotDS.canRollbackStatus(this.storingOrderTank) && !this.storingOrderTank?.actions.includes('cancel') && !this.storingOrderTank?.actions.includes('rollback');
-  // }
+  clearPreviousSelection(): void {
+    // Deselect the previously selected image
+    this.tabsData.forEach(tab => {
+      tab.images.forEach(image => {
+        image.isSelected = false;
+      });
+    });
+  }
 }

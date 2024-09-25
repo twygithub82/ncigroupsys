@@ -9,8 +9,26 @@
     </div>
     <div class="body">
         <div class="row">
-        
-        <mat-tab-group  >
+          <mat-tab-group [(selectedIndex)]="this.selectedTabIndex">
+            <mat-tab *ngFor="let tab of tabsData; let tabIndex = index" [label]="tab.label">
+              <div #tabHeader class="tab-header">
+              <table>
+                <tr>
+                  <td *ngFor="let image of tab.images">
+                    <div 
+                      class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1" 
+                      
+                      (click)="selectClassNo(image.classNo,tabIndex)">
+                      <img [src]="image.src" [alt]="translatedLangText[image.alt]" [class.selected]="image.isSelected"/>  
+                      <!-- [ngClass]="{ 'selected': isSelected(image.classNo) }" /> -->
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            </mat-tab>
+          </mat-tab-group>
+        <!-- <mat-tab-group  >
          
            <mat-tab label="1.x">
             <table>
@@ -148,7 +166,7 @@
               </tr>
             </table>
           </mat-tab> 
-        </mat-tab-group>
+        </mat-tab-group> -->
         </div>
     </div>
   </div>

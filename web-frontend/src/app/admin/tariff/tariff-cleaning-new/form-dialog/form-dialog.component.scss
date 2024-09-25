@@ -36,3 +36,10 @@ td div img:hover {
   .mat-tab-labels{ 
     flex-wrap: wrap;
    }
+
+   .selected {
+    border: 3px solid #007bff; /* Blue border for the selected div */
+    padding: 5px;
+    background-color: #e9f5ff; /* Light blue background for selected div */
+    transition: background-color 0.3s, border-color 0.3s; /* Smooth transition for selection */
+  }

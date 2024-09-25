@@ -484,6 +484,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   onTCFormSubmit() {
+     var fileSize = Number(this.tcForm!.get("file_size")?.value);
+     if(fileSize==0)
+     {
+      this.tcForm!.get("file_size")?.setErrors({ required: true });
+     }
+    
    //this.tcForm!.get('sotList')?.setErrors(null);
    //this.tcForm?.get('un_no')?.setErrors({ exited: false });
     if (this.tcForm?.valid) 
@@ -641,6 +647,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       data: {
         action: 'new',
         langText: this.langText,
+        selectedValue:this.tcForm!.get("class_no")?.value
       }
         
     });
@@ -669,7 +676,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       reader.onload = (e: ProgressEvent<FileReader>) => {
         const result = e.target?.result;
         if (result) {
-          const blob = new Blob([result], { type: 'application/pdf' });
+          const blob = new Blob([result], { type: this.selectedFile?.type });
           const url = URL.createObjectURL(blob);
           // Open the Blob URL in a new window or tab
           window.open(url, '_blank');
@@ -852,11 +859,19 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       //   groupGuid :String = this.tcForm?.value["un_no"];
          this.DeleteExistingSDSFiles();
       
+         var fType ="pdf";
+        switch(this.selectedFile!.type)
+        {
+          case "application/msword":
+            fType="doc"
+            break;
+        }
+
        const uploadMeta ={
          file:this.selectedFile!,
          metadata:{
           TableName: tableName,
-          FileType: "pdf",
+          FileType: fType,
           GroupGuid: groupGuid,
           Description: "SDS file"
          }
