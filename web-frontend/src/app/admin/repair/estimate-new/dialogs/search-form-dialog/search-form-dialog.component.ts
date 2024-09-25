@@ -207,7 +207,7 @@ export class SearchFormDialogComponent {
             {
               tariff_repair: {
                 group_name_cv: { eq: this.group_name_cv },
-                subgroup_name_cv: { eq: this.subgroup_name_cv },
+                subgroup_name_cv: { eq: this.subgroup_name_cv || undefined },
                 part_name: { eq: this.part_name }
               }
             }

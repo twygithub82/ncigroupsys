@@ -218,14 +218,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       startWith(''),
       debounceTime(300),
       tap(value => {
-        if (value?.child_code) {
-          const queries = [
-            { alias: 'subgroupNameCv', codeValType: value.child_code },
-          ];
-          this.cvDS.getCodeValuesByType(queries);
-          this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
-            this.data.populateData.subgroupNameCvList = addDefaultSelectOption(data, '-', '');
-          });
+        console.log(value)
+        if (value) {
+          if (value.child_code) {
+            const queries = [
+              { alias: 'subgroupNameCv', codeValType: value.child_code },
+            ];
+            this.cvDS.getCodeValuesByType(queries);
+            this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
+              this.data.populateData.subgroupNameCvList = addDefaultSelectOption(data, '-', '');
+            });
+          } else {
+            this.trDS.searchDistinctPartName(value.code_val, undefined).subscribe(data => {
+              this.partNameList = data;
+            });
+          }
         }
       })
     ).subscribe();
@@ -235,14 +242,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       debounceTime(300),
       tap(value => {
         const groupName = this.repairPartForm?.get('group_name_cv')?.value;
-        this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
-          this.partNameList = data;
-          // this.partNameFilteredList = data
-          // this.updateValidators(this.partNameList);
-          // if (this.partNameControl.value) {
-          //   this.handleValueChange(this.partNameControl.value)
-          // }
-        });
+        if (groupName) {
+          this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
+            this.partNameList = data;
+            // this.partNameFilteredList = data
+            // this.updateValidators(this.partNameList);
+            // if (this.partNameControl.value) {
+            //   this.handleValueChange(this.partNameControl.value)
+            // }
+          });
+        }
       })
     ).subscribe();
 
@@ -345,9 +354,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   REPDamage(damages: string[]): REPDamageRepairItem[] {
     const existingDamage = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0);
-  
+
     const finalDamages: REPDamageRepairItem[] = [];
-  
+
     existingDamage?.forEach((x: any) => {
       if (damages.includes(x.code_cv)) {
         x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
@@ -357,7 +366,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
       finalDamages.push(x);
     });
-  
+
     damages.forEach(dmg => {
       const found = existingDamage?.some((x: any) => x.code_cv === dmg);
       if (!found) {
@@ -365,15 +374,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         finalDamages.push(newDamage);
       }
     });
-  
+
     return finalDamages;
   }
 
   REPRepair(repairs: any[]): REPDamageRepairItem[] {
     const existingRepair = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1);
-  
+
     const finalRepairs: REPDamageRepairItem[] = [];
-  
+
     existingRepair?.forEach((x: any) => {
       if (repairs.includes(x.code_cv)) {
         x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
@@ -383,7 +392,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
       finalRepairs.push(x);
     });
-  
+
     repairs.forEach(dmg => {
       const found = existingRepair?.some((x: any) => x.code_cv === dmg);
       if (!found) {
@@ -391,7 +400,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         finalRepairs.push(newDamage);
       }
     });
-  
+
     return finalRepairs;
     // return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
   }
@@ -471,7 +480,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
-    } else {  
+    } else {
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(SearchFormDialogComponent, {
