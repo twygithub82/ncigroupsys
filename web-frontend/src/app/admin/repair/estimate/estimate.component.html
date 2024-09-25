@@ -328,7 +328,7 @@
                       </mat-header-cell>
                       <mat-cell *matCellDef="let repair_estRow">
                         <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
-                        <span>$</span><span class="ms-3">{{calculateNetCost(repair_estRow)}}</span>
+                        <span>$</span><span class="ms-3">{{repair_estRow.net_cost}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="status_cv">
@@ -345,20 +345,18 @@
                         *matHeaderCellDef></mat-header-cell>
                       <mat-cell *matCellDef="let repair_estRow; let i=index;"
                         [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <!-- @if (schedulingSotDS.canCancel(repair_estRow)) {
-                        <button mat-icon-button color="warn" class="tbl-action-btn p-2"
-                          (click)="cancelItem(row, repair_estRow, $event)">
-                          <mat-icon>cancel</mat-icon>
+                        @if (repairEstDS.canAmend(repair_estRow)) {
+                        <button mat-icon-button color="accent" class="tbl-action-btn p-2" [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]">
+                          <mat-icon>edit</mat-icon>
                         </button>
                         }
                         @else {
                         <span class="me-3">NA</span>
-                        } -->
+                        }
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let repair_estRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                      [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]" matRipple>
+                    <mat-row *matRowDef="let repair_estRow; columns: displayedColumns;" [style.cursor]="'pointer'"matRipple>
                     </mat-row>
                   </table>
                 </div>

@@ -160,8 +160,15 @@
                   </button>
                   } -->
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addEstDetails($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ESTIMATE_DETAILS}}
+                    (click)="addEstDetails($event)" [disabled]="!(groupNameCvList.length)">
+                    <mat-icon class="col-white">
+                      @if ((groupNameCvList.length)) {
+                        add
+                      } @else if (!(groupNameCvList.length)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.ESTIMATE_DETAILS}}
                   </button>
                 </div>
               </div>
@@ -304,7 +311,7 @@
                           [ngClass]="''">
                           @if (isOwner) {
                           <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
-                          <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.isOwner"
+                          <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner"
                             [ngClass]="'tbl-checkbox'">
                           </mat-checkbox>
                           }
@@ -431,7 +438,7 @@
                   </div>
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      {{translatedLangText.ESTIMATE_NO}}
+                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairEstItem?.estimate_no}}</span>
                     </div>
                   </div>
                 </div>

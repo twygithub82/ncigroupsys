@@ -97,6 +97,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     'estimate_no',
     'net_cost',
     'status_cv',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.ESTIMATE'
@@ -477,7 +478,12 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.subs.sink = this.sotDS.searchStoringOrderTanksEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.sotList = data;
+        this.sotList = data.map(sot => {
+          sot.repair_est = sot.repair_est?.map(rep => {
+            return {...rep, net_cost: this.calculateNetCost(rep)}
+          })
+          return sot;
+        });
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;

@@ -189,29 +189,8 @@ export class SearchFormDialogComponent {
     }
   }
 
-  validateLength(): boolean {
-    let isValid = true;
-    const length = this.repairPartForm.get('length')?.value;
-    const remarks = this.repairPartForm.get('remarks')?.value;
-
-    // Validate that at least one of the purpose checkboxes is checked
-    if (!length && !remarks) {
-      isValid = false; // At least one purpose must be selected
-      this.repairPartForm.get('remarks')?.setErrors({ required: true });
-    }
-
-    return isValid;
-  }
-
   canEdit(): boolean {
     return true;
-  }
-
-  updateValidators(validOptions: any[]) {
-    this.partNameControl.setValidators([
-      Validators.required,
-      AutocompleteSelectionValidator(validOptions)
-    ]);
   }
 
   getLocationDescription(codeValType: string | undefined): string | undefined {

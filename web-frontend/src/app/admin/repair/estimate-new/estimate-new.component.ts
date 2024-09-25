@@ -386,10 +386,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       startWith(''),
       debounceTime(300),
       tap(value => {
-        if (value) {
-          // estimate
-          this.calculateCost();
-        }
+        this.calculateCost();
       })
     ).subscribe();
 
@@ -397,10 +394,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       startWith(''),
       debounceTime(300),
       tap(value => {
-        if (value) {
-          // estimate
-          this.calculateCost();
-        }
+        this.calculateCost();
       })
     ).subscribe();
   }
@@ -413,7 +407,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
           this.sotItem = data[0];
-          console.log(this.sotItem)
           this.populateRepairEst(this.sotItem.repair_est);
           console.log(this.sotItem.storing_order?.customer_company_guid);
           this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
@@ -473,14 +466,16 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       const found = repair_est.filter(x => x.guid === this.repair_est_guid);
       if (found?.length) {
         this.repairEstItem = found[0];
+        this.isOwner = this.repairEstItem.owner_enable ?? false;
         this.updateData(this.repairEstItem.repair_est_part);
         this.repairEstForm?.patchValue({
           guid: this.repairEstItem.guid,
           remarks: this.repairEstItem.remarks,
           surveyor_id: this.repairEstItem.aspnetusers_guid,
           labour_cost_discount: this.repairEstItem.labour_cost_discount,
-          material_cost_discount: this.repairEstItem.material_cost_discount,
-        })
+          material_cost_discount: this.repairEstItem.material_cost_discount
+        });
+        console.log(this.repairEstItem.repair_est_part)
       }
     }
   }
@@ -661,7 +656,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
-            action: 'delete'
+            action: 'cancel'
           };
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
@@ -812,7 +807,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
             ...item,
             tariff_repair: undefined,
             rep_damage_repair: rep_damage_repair,
-            action: item.action
+            action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
           });
         });
         re.repair_est_part = rep;
@@ -827,17 +822,17 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         console.log(re);
         // console.log('so Value', so);
         // console.log('sot Value', sot);
-        // if (so.guid) {
-        //   this.soDS.updateStoringOrder(so, sot).subscribe(result => {
-        //     console.log(result)
-        //     this.handleSaveSuccess(result?.data?.updateStoringOrder);
-        //   });
-        // } else {
-        this.repairEstDS.addRepairEstimate(re).subscribe(result => {
-          console.log(result)
-          this.handleSaveSuccess(result?.data?.addRepairEstimate);
-        });
-        // }
+        if (re.guid) {
+          this.repairEstDS.updateRepairEstimate(re).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result?.data?.updateRepairEstimate);
+          });
+        } else {
+          this.repairEstDS.addRepairEstimate(re).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result?.data?.addRepairEstimate);
+          });
+        }
       }
     } else {
       console.log('Invalid repairEstForm', this.repairEstForm?.value);
@@ -1003,13 +998,13 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
+    return damageRepair.filter((x: any) => x.code_type === filterCode && x.delete_dt === null && x.action !== 'cancel').map(item => {
       return item.code_cv;
     }).join('/');
   }
 
   displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-    return damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
+    return damageRepair.filter((x: any) => x.code_type === filterCode && x.delete_dt === null && x.action !== 'cancel').map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';

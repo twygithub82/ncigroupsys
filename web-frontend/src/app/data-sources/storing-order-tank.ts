@@ -698,10 +698,16 @@ const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
         repair_est {
           guid
           estimate_no
+          labour_cost
           labour_cost_discount
           material_cost_discount
           status_cv
           total_cost
+          repair_est_part {
+           hour
+           quantity
+           material_cost
+          }
         }
       }
       pageInfo {
@@ -725,7 +731,6 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
         create_dt
         delete_dt
         estimate_cv
-        eta_dt
         etr_dt
         guid
         job_no
@@ -740,30 +745,23 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
         purpose_repair_cv
         purpose_steam
         purpose_storage
-        remarks
-        required_temp
         so_guid
         status_cv
         tank_no
         tank_status_cv
-        unit_type_guid
         update_by
         update_dt
         in_gate {
           create_by
           create_dt
           delete_dt
-          driver_name
           eir_dt
           eir_no
           eir_status_cv
           guid
-          haulier
-          remarks
           so_tank_guid
           update_by
           update_dt
-          vehicle_no
           in_gate_survey {
             next_test_cv
             last_test_cv
@@ -775,24 +773,12 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
         }
         tariff_cleaning {
           alias
-          ban_type_cv
           cargo
           class_cv
-          cleaning_category_guid
-          cleaning_method_guid
           create_by
           create_dt
           delete_dt
-          depot_note
-          description
-          flash_point
           guid
-          hazard_level_cv
-          in_gate_alert
-          nature_cv
-          open_on_gate_cv
-          remarks
-          un_no
           update_by
           update_dt
         }
@@ -802,11 +788,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
           customer_company_guid
           delete_dt
           guid
-          haulier
-          remarks
           so_no
-          so_notes
-          status_cv
           update_by
           update_dt
           customer_company {
@@ -869,8 +851,28 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
               update_dt
             }
             tariff_repair {
+              alias
+              create_by
+              create_dt
+              delete_dt
+              dimension
               group_name_cv
+              guid
+              height_diameter
+              height_diameter_unit_cv
+              labour_hour
+              length
+              length_unit_cv
+              material_cost
+              part_name
+              remarks
               subgroup_name_cv
+              thickness
+              thickness_unit_cv
+              update_by
+              update_dt
+              width_diameter
+              width_diameter_unit_cv
             }
           }
           aspnetsuser {

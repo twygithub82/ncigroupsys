@@ -138,13 +138,12 @@ namespace IDMS.BatchJob.Service
             // Create a formatted string with each item surrounded by quotes
             string formattedSOTList = $"({string.Join(", ", bookingSOTList.ConvertAll(item => $"\"{item}\""))})";
 
-
-            string sqlScheduling = "SELECT sot.tank_no, sch.guid, sch.book_type_cv, sch.scheduling_dt, ss.sot_guid FROM scheduling sch " +
-                            $"LEFT JOIN scheduling_sot ss ON (ss.scheduling_guid = sch.guid) " +
-                            $"LEFT JOIN storing_order_tank sot on (sot.guid = ss.sot_guid) " +
+            string sqlScheduling = "SELECT sot.tank_no, sch.guid, s.book_type_cv, sch.scheduling_dt, sch.sot_guid FROM scheduling_sot sch " +
+                            $"LEFT JOIN scheduling s ON (s.guid = sch.scheduling_guid) " +
+                            $"LEFT JOIN storing_order_tank sot on (sot.guid = sch.sot_guid) " +
                             $"WHERE (sch.status_cv = '{STATUS_NEW}' OR sch.status_cv = '{STATUS_EDIT}') " +
                             $"AND (sch.delete_dt is null OR sch.delete_dt = 0) ";
-                            //$"AND ss.sot_guid in ('sot1', 'sot2')";
+
 
             var schedulingList = new List<JToken>();
             var schedulingDupList = new List<JToken>();
@@ -494,28 +493,13 @@ namespace IDMS.BatchJob.Service
                     if (count == schedulingSot.Count)
                     {
                         //All member of the same scheduling guid group have been matched
-                        string sql = $"UPDATE scheduling_sot SET status_cv = '{MATCHED_STATUS}', update_dt = {currentDateTime}, update_by = '{USER}' WHERE guid = '{itm?.ToString()}'";
+                        string sql = $"UPDATE scheduling SET status_cv = '{MATCHED_STATUS}', update_dt = {currentDateTime}, update_by = '{USER}' WHERE guid = '{itm?.ToString()}'";
                         using (var cmd = new MySqlCommand(sql, conn))
                         {
                             var res = cmd.ExecuteNonQuery();
                         }
                     }
                 }
-
-                //string MATCHED_STATUS = "MATCHED";
-                //string USER = "system";
-                //DateTimeOffset now = DateTimeOffset.UtcNow;
-                //// Get the epoch time
-                //long currentDateTime = now.ToUnixTimeSeconds();
-
-                //string sql = $"UPDATE {tableName} SET status_cv = '{MATCHED_STATUS}', update_dt = {currentDateTime}, update_by = '{USER}' WHERE guid in ({idsList})";
-                //conn = new MySqlConnection(dbConnection);
-                //conn.Open();
-
-                //using (var cmd = new MySqlCommand(sql, conn))
-                //{
-                //    var res = cmd.ExecuteNonQuery();
-                //}
             }
             catch (Exception ex)
             {
@@ -524,8 +508,5 @@ namespace IDMS.BatchJob.Service
             }
 
         }
-
-
-
     }
 }

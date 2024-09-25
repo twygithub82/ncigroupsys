@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Bcpg;
 using System;
+using System.Globalization;
 
 namespace IDMS.FileManagement.Service
 {
@@ -167,8 +168,10 @@ namespace IDMS.FileManagement.Service
                             extension = "pdf";
                         else if (metadataObj.FileType.Contains("xls"))
                             extension = "xlsx";
+                        else if (metadataObj.FileType.Contains("doc"))
+                            extension = "docx";
 
-                        string filename = $"{guid}.{extension}";
+                        string filename = string.IsNullOrEmpty(extension) ? $"{guid}" : $"{guid}.{extension}";
                         string blobPath = $"{metadataObj.TableName.ToLower()}/{metadataObj.GroupGuid.ToLower()}/";
                         string fullPath = blobPath + filename;
                         using (var ms = new MemoryStream())
