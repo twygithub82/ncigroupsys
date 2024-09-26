@@ -155,7 +155,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     EXISTED: 'COMMON-FORM.EXISTED',
     REMARKS: 'COMMON-FORM.REMARKS',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
-    CONFIRM: 'COMMON-FORM.CONFIRM'
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
   customerCodeControl = new UntypedFormControl();

@@ -199,7 +199,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     RATE: 'COMMON-FORM.RATE',
     LESSEE: 'COMMON-FORM.LESSEE',
     TOTAL: 'COMMON-FORM.TOTAL',
-    PART: 'COMMON-FORM.PART'
+    PART: 'COMMON-FORM.PART',
+    FILTER: 'COMMON-FORM.FILTER'
   }
 
   clean_statusList: CodeValuesItem[] = [];

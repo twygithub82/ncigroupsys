@@ -89,20 +89,13 @@ export class SearchFormDialogComponent {
   subgroup_name_cv: string;
   selected_repair_est_part: RepairEstPartItem;
 
-  repairPartForm: UntypedFormGroup;
+  filterTableForm: UntypedFormGroup;
   packageRepairList: PackageRepairItem[] = [];
-  partNameControl: UntypedFormControl;
-  partNameList?: string[];
-  partNameFilteredList?: string[];
-  dimensionList?: string[];
-  lengthList?: any[];
-  valueChangesDisabled: boolean = false;
+  packageRepairFilteredList: PackageRepairItem[] = [];
 
-  tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
-  repDrDS: REPDamageRepairDS;
   prDS: PackageRepairDS;
   constructor(
     public dialogRef: MatDialogRef<SearchFormDialogComponent>,
@@ -112,11 +105,9 @@ export class SearchFormDialogComponent {
 
   ) {
     // Set the defaults
-    this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
-    this.repDrDS = new REPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
@@ -125,10 +116,9 @@ export class SearchFormDialogComponent {
     this.part_name = data.part_name!;
     this.selected_repair_est_part = data.selected_repair_est_part!;
     this.dialogTitle = `${data.translatedLangText.PART_NAME}`;
-    this.partNameControl = new UntypedFormControl('', [Validators.required]);
-    this.repairPartForm = this.createForm();
+    this.filterTableForm = this.createForm();
     this.loadData();
-    // this.initializeValueChange();
+    this.initializeValueChange();
     // this.patchForm();
     // if (this.repairPart.tariff_cleaning) {
     //   this.lastCargoControl.setValue(this.storingOrderTank.tariff_cleaning);
@@ -137,7 +127,7 @@ export class SearchFormDialogComponent {
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      filter: [''],
+      filterTable: [''],
       selected_tariff_repair: ['']
     });
   }
@@ -178,10 +168,23 @@ export class SearchFormDialogComponent {
   }
 
   initializeValueChange() {
+    this.filterTableForm.get('filterTable')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        console.log(value)
+        if (value) {
+          this.packageRepairFilteredList = this.packageRepairList
+          .filter(x => x.tariff_repair?.alias?.toLowerCase().includes(value.toLowerCase()) || `${x.tariff_repair?.length}`.toLowerCase().includes(value.toLowerCase()));
+        } else {
+          this.packageRepairFilteredList = [...this.packageRepairList];
+        }
+      })
+    ).subscribe();
   }
 
   findInvalidControls() {
-    const controls = this.repairPartForm.controls;
+    const controls = this.filterTableForm.controls;
     for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);

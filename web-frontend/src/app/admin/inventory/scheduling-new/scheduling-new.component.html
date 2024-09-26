@@ -158,8 +158,8 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl col-lg col-md-12 col-sm-12 mb-0">
-                    <button mat-mini-fab class="mt-1" color="primary" (click)="search()"
+                  <div class="col-xl col-lg col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+                    <button mat-mini-fab class="" color="primary" (click)="search()"
                       [matTooltip]="translatedLangText.SEARCH">
                       <mat-icon>search</mat-icon>
                     </button>
@@ -172,8 +172,8 @@
                       [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
                       {{translatedLangText.SELECT_ALL}}
                     </mat-checkbox>
-                    <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                      <mat-icon>cached</mat-icon>
+                    <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
+                      {{translatedLangText.CLEAR_ALL}}
                     </button>
                   </div>
                 </div>

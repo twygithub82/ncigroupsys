@@ -136,6 +136,7 @@ export class FormDialogComponent {
     this.dialogTitle = 'Add Tank';
     this.performSearch();
     this.filterTableForm = this.createStorigOrderTankForm();
+    this.initializeValueChange();
   }
 
   createStorigOrderTankForm(): UntypedFormGroup {
@@ -145,17 +146,23 @@ export class FormDialogComponent {
   }
 
   initializeValueChange() {
-    // this.filterTableForm.get('filterTable')?.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       this.schedulingFilteredList = this.schedulingList.filter(x => {
-    //         x.scheduling_sot.some
-    //       })
-    //     }
-    //   })
-    // ).subscribe();
+    this.filterTableForm.get('filterTable')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        console.log(value)
+        if (value) {
+          this.schedulingFilteredList = this.schedulingList
+            .map(x => ({
+              ...x,
+              scheduling_sot: x.scheduling_sot?.filter(ss => ss.storing_order_tank?.tank_no?.toLowerCase().includes(value.toLowerCase()))
+            }))
+            .filter(x => x.scheduling_sot && x.scheduling_sot.length > 0); // Ensure we only keep items with filtered scheduling_sot
+        } else {
+          this.schedulingFilteredList = [...this.schedulingList]; // Restore full list if value is empty
+        }
+      })
+    ).subscribe();
   }
 
   submit() {
