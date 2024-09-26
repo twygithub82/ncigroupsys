@@ -187,7 +187,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                  <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 d-flex align-items-center">
                     <button mat-mini-fab color="primary" (click)="search()">
                       <mat-icon>search</mat-icon>
                     </button>
@@ -340,23 +340,30 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
-                      <mat-header-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                        *matHeaderCellDef></mat-header-cell>
-                      <mat-cell *matCellDef="let repair_estRow; let i=index;"
-                        [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        @if (repairEstDS.canAmend(repair_estRow)) {
-                        <button mat-icon-button color="accent" class="tbl-action-btn p-2" [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]">
-                          <mat-icon>edit</mat-icon>
+                      <mat-header-cell [ngClass]="'pr-0'" *matHeaderCellDef></mat-header-cell>
+                      <mat-cell *matCellDef="let repair_estRow; let i=index;" [ngClass]="'justify-content-end'">
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                          <mat-icon>more_vert</mat-icon>
                         </button>
-                        }
-                        @else {
-                        <span class="me-3">NA</span>
-                        }
+                        <mat-menu #menu="matMenu">
+                          @if (repairEstDS.canAmend(repair_estRow)) {
+                          <button mat-menu-item
+                            [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]">
+                            <mat-icon>edit</mat-icon>
+                            <span>{{translatedLangText.AMEND}}</span>
+                          </button>
+                          <button mat-menu-item
+                            [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]">
+                            <mat-icon>cancel</mat-icon>
+                            <span>{{translatedLangText.CANCEL}}</span>
+                          </button>
+                          }
+                        </mat-menu>
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let repair_estRow; columns: displayedColumns;" [style.cursor]="'pointer'"matRipple>
+                    <mat-row *matRowDef="let repair_estRow; columns: displayedColumns;" [style.cursor]="'pointer'"
+                      matRipple>
                     </mat-row>
                   </table>
                 </div>

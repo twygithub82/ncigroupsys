@@ -145,7 +145,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
     NET_COST: 'COMMON-FORM.NET-COST',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    AMEND: 'COMMON-FORM.AMEND'
   }
 
   searchForm?: UntypedFormGroup;
