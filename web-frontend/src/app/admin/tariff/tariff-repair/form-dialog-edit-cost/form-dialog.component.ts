@@ -111,6 +111,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
       // 'actions',
     ];
 
+    UpdateInProgress:boolean=false;
   action: string;
   index?: number;
   dialogTitle?: string;
@@ -635,7 +636,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
      this.DisableValidator('material_cost_percentage');
      this.DisableValidator('labour_hour_percentage');
     if (!this.pcForm?.valid) return;
-
+    this.UpdateInProgress=true;
     // var confirmMessage :string="";
     // var mCostPercentage =this.pcForm.get('material_cost_percentage')?.value;
     // var lHourPercentage =this.pcForm.get('labour_hour_percentage')?.value;
@@ -711,6 +712,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
       this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
       this.EnableValidator('material_cost_percentage');
       this.EnableValidator('labour_hour_percentage');
+      this.UpdateInProgress=false;
     });
   }
   

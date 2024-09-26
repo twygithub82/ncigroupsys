@@ -280,6 +280,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
   unit_type_control = new UntypedFormControl();
   
   selectedItems: PackageRepairItem[];
+  UpdateInProgress:boolean=false;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -654,13 +655,14 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
 
 
   update() {
+    
 
     this.DisableValidator('material_cost_percentage');
     this.DisableValidator('labour_hour_percentage');
     
     if (!this.pcForm?.valid) return;
     
-   
+    this.UpdateInProgress=true;
     // var confirmMessage :string="";
     // var mCostPercentage =this.pcForm.get('material_cost_percentage')?.value;
     // var lHourPercentage =this.pcForm.get('labour_hour_percentage')?.value;
@@ -738,6 +740,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
       this.handleSaveSuccess(result?.data?.updatePackageRepair_MaterialCost);
         this.EnableValidator('material_cost_percentage');
         this.EnableValidator('labour_hour_percentage');
+        this.UpdateInProgress=false;
     });
   }
   
