@@ -424,7 +424,17 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
            var rec=this.selectedItems[0];
            var subgroupNameCodeValue=this.GetCodeValue(rec.subgroup_name_cv!,this.subGroupNameCvList);
            this.subGroupNameControl.setValue(subgroupNameCodeValue);
+          
           }
+          this.partNameControl.reset('');
+           
+          const groupName = this.pcForm?.get('group_name_cv')?.value;
+          this.trfRepairDS.searchDistinctPartName(groupName.code_val, '').subscribe(data => {
+            this.partNameControl.reset('');
+            this.partNameList = data;
+            this.partNameFilteredList = data
+            this.updateValidators(this.partNameControl, this.partNameList);
+          });
 
       });
       // Handle value changes here
@@ -578,7 +588,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
       Validators.required  // If you have a required validator
     ]);
     
-    this.pcForm.get('material_cost_percentage')?.updateValueAndValidity();  // Revalidate the control
+    this.pcForm.get(path)?.updateValueAndValidity();  // Revalidate the control
     
   }
 
@@ -622,47 +632,47 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
 
     
 
-    // this.DisableValidator('material_cost_percentage');
-    // this.DisableValidator('labour_hour_percentage');
+     this.DisableValidator('material_cost_percentage');
+     this.DisableValidator('labour_hour_percentage');
     if (!this.pcForm?.valid) return;
 
-    var confirmMessage :string="";
-    var mCostPercentage =this.pcForm.get('material_cost_percentage')?.value;
-    var lHourPercentage =this.pcForm.get('labour_hour_percentage')?.value;
+    // var confirmMessage :string="";
+    // var mCostPercentage =this.pcForm.get('material_cost_percentage')?.value;
+    // var lHourPercentage =this.pcForm.get('labour_hour_percentage')?.value;
     
 
-    if(mCostPercentage>this.maxMaterialCost)
-    {
-      confirmMessage = `${this.translatedLangText.MATERIAL_COST} ${this.translatedLangText.EXCEED} ${this.maxMaterialCost}`;
-    }
-    else if(mCostPercentage<this.minMaterialCost)
-    {
-      confirmMessage = `${this.translatedLangText.MATERIAL_COST} ${this.translatedLangText.SMALLER_THAN} ${this.minMaterialCost}`;
-    }
+    // if(mCostPercentage>this.maxMaterialCost)
+    // {
+    //   confirmMessage = `${this.translatedLangText.MATERIAL_COST} ${this.translatedLangText.EXCEED} ${this.maxMaterialCost}`;
+    // }
+    // else if(mCostPercentage<this.minMaterialCost)
+    // {
+    //   confirmMessage = `${this.translatedLangText.MATERIAL_COST} ${this.translatedLangText.SMALLER_THAN} ${this.minMaterialCost}`;
+    // }
     
-    if(lHourPercentage>this.maxMaterialCost)
-      {
-        if(confirmMessage.trim()!="")
-          confirmMessage+="<br>";
+    // if(lHourPercentage>this.maxMaterialCost)
+    //   {
+    //     if(confirmMessage.trim()!="")
+    //       confirmMessage+="<br>";
          
-        confirmMessage += `${this.translatedLangText.LABOUR_HOUR} ${this.translatedLangText.EXCEED} ${this.maxMaterialCost}`;
-      }
-      else if(lHourPercentage<this.minMaterialCost)
-      {
-        if(confirmMessage.trim()!="")
-          confirmMessage+="<br>";
+    //     confirmMessage += `${this.translatedLangText.LABOUR_HOUR} ${this.translatedLangText.EXCEED} ${this.maxMaterialCost}`;
+    //   }
+    //   else if(lHourPercentage<this.minMaterialCost)
+    //   {
+    //     if(confirmMessage.trim()!="")
+    //       confirmMessage+="<br>";
          
-        confirmMessage += `${this.translatedLangText.LABOUR_HOUR} ${this.translatedLangText.SMALLER_THAN} ${this.minMaterialCost}`;
-      }
+    //     confirmMessage += `${this.translatedLangText.LABOUR_HOUR} ${this.translatedLangText.SMALLER_THAN} ${this.minMaterialCost}`;
+    //   }
   
-    if(confirmMessage.trim()!="")
-    {
-      this.ConfirmItem(confirmMessage);
-    }
-    else
-    {
+    // if(confirmMessage.trim()!="")
+    // {
+    //   this.ConfirmItem(confirmMessage);
+    // }
+    // else
+    // {
       this.updateTariffRepair();
-    }
+    // }
 
    
 
@@ -699,8 +709,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     this.trfRepairDS.updateTariffRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,
       trfRepairItem.part_name,trfRepairItem.dimension,trfRepairItem.length,trfRepairItem.guid,trfRepairItem.material_cost,trfRepairItem.labour_hour).subscribe(result=>{
       this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
-      // this.EnableValidator('material_cost_percentage');
-      // this.EnableValidator('labour_hour_percentage');
+      this.EnableValidator('material_cost_percentage');
+      this.EnableValidator('labour_hour_percentage');
     });
   }
   

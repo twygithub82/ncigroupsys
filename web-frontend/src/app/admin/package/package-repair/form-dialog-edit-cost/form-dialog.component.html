@@ -30,7 +30,8 @@
             <!-- <mat-form-field class="example-full-width"> -->
               <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
-              <mat-select [formControl]="groupNameControl" formControlName="group_name_cv"  [required]="isFieldRequired()">
+              <mat-select formControlName="group_name_cv"  [required]="isFieldRequired()">
+                <!-- <mat-select [formControl]="groupNameControl" formControlName="group_name_cv"  [required]="isFieldRequired()"> -->
                 <mat-option *ngFor="let t of groupNameCvList" [value]="t">
                     {{ t.description }}
                 </mat-option>
@@ -45,7 +46,8 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width"> 
                 <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
-                <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv"  [required]="isFieldRequired()">
+                <!-- <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv"  [required]="isFieldRequired()"> -->
+                <mat-select  formControlName="sub_group_name_cv"  [required]="isFieldRequired()">
                   <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
                       {{ t.description }}
                   </mat-option>
@@ -130,14 +132,13 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1" >
                   <mat-form-field class="example-full-width"> 
                   <mat-label>{{translatedLangText.MATERIAL_COST}} (%)</mat-label>
-                  <input matInput formControlName="material_cost_percentage" type="number" >
-                  <!-- [min]="minMaterialCost" [max]="maxMaterialCost" >
+                  <input matInput formControlName="material_cost_percentage" type="number" [min]="minMaterialCost" [max]="maxMaterialCost" >
                     <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')">
                       {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                     </mat-error>
                     <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('max')">
                       {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
-                    </mat-error> -->
+                    </mat-error>
                   </mat-form-field>  
                 </div> 
               </div>
@@ -146,15 +147,14 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1" >
                 <mat-form-field class="example-full-width"> 
                   <mat-label>{{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
-                  <input matInput formControlName="labour_hour_percentage" type="number" >
-                  <!-- [min]="minMaterialCost" [max]="maxMaterialCost" >
+                  <input matInput formControlName="labour_hour_percentage" type="number"  [min]="minMaterialCost" [max]="maxMaterialCost" >
                   <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')">
                     {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                   </mat-error>
                   
                   <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('max')">
                     {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
-                  </mat-error> -->
+                  </mat-error>
                   </mat-form-field>  
                 </div> 
               </div>

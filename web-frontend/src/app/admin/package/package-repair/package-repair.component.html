@@ -81,7 +81,7 @@
                       <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
-                          <mat-select [formControl]="groupNameControl" formControlName="group_name_cv" multiple>
+                          <mat-select formControlName="group_name_cv" multiple>
                             @for (cn of groupNameCvList; track cn) {
                             <mat-option [value]="cn.code_val">
                               {{cn.description}}
@@ -93,7 +93,7 @@
                       <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
-                          <mat-select [formControl]="subGroupNameControl" formControlName="sub_group_name_cv" multiple>
+                          <mat-select  formControlName="sub_group_name_cv" multiple>
                             @for (cn of subGroupNameCvList; track cn) {
                             <mat-option [value]="cn.code_val">
                               {{cn.description}}
@@ -120,7 +120,7 @@
                       <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.DIMENSION}}</mat-label>
-                          <mat-select [formControl]="dimensionControl" formControlName="dimension" multiple>
+                          <mat-select  formControlName="dimension" multiple>
                             @for (cn of dimensionItems; track cn) {
                               <ng-container *ngIf="cn !== null&& cn !== ''">
                                 <mat-option [value]="cn">
@@ -135,7 +135,7 @@
                       <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.LENGTH}}</mat-label>
-                          <mat-select [formControl]="lengthControl" formControlName="len" multiple>
+                          <mat-select  formControlName="len" multiple>
                             @for (cn of lengthItems; track cn) {
                               <ng-container *ngIf="cn !== null&& cn.ToString() !== ''">
                                 <mat-option [value]="cn">
@@ -166,7 +166,7 @@
                       <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-                            <mat-select [formControl]="customerCodeControl" formControlName="customer_code" multiple>
+                            <mat-select formControlName="customer_code" multiple>
                                 <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
                                  
                                   <ng-container *ngIf="cc !== null">
@@ -188,7 +188,7 @@
                       <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
-                          <mat-select [formControl]="handledItemControl" formControlName="handled_item_cv">
+                          <mat-select  formControlName="handled_item_cv">
                             @for (cn of handledItemCvList; track cn) {
                             <mat-option [value]="cn.code_val">
                               {{cn.description}}
