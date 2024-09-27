@@ -388,6 +388,7 @@ implements OnInit {
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost,{
       width: '800px',
+      
       data: {
         action: 'update',
         langText: this.langText,

@@ -85,12 +85,13 @@ export class FormDialogComponent {
   displayedColumns = [
     //  'select',
       // 'img',
+      'mobile',
        'fName',
        'lName',
        'email',
        'gender',
       // 'bDate',
-      // 'mobile',
+      
       // 'actions',
     ];
 
@@ -198,6 +199,7 @@ export class FormDialogComponent {
      PACKAGE_BUFFER:'MENUITEMS.PACKAGE.LIST.PACKAGE-BUFFER',
      LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
     CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
+    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
   };
 
   
@@ -296,7 +298,7 @@ export class FormDialogComponent {
     if(this.selectedItems.length==1)
     {
       var packLabour = new PackageLabourItem(this.selectedItems[0]);
-      packLabour.cost= this.pcForm!.value["adjusted_cost"];
+      packLabour.cost= Number( this.pcForm!.value["adjusted_cost"]);
       packLabour.remarks=this.pcForm!.value["remarks"];
       packLabour.tariff_labour=undefined;
       packLabour.customer_company=undefined;

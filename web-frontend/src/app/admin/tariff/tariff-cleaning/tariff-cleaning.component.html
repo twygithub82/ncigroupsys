@@ -71,7 +71,7 @@
                         </mat-autocomplete>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.CARGO_CATEGORY }}</mat-label>
                         <input matInput formControlName="category" [formControl]="categoryControl"
@@ -87,19 +87,19 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{langText.CARGO_FLASH_POINT | translate}}</mat-label>
                         <input matInput formControlName="flash_point">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.CARGO_UN_NO }}</mat-label>
                         <input matInput formControlName="un_no">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.CARGO_BAN_TYPE}}</mat-label>
                         <input matInput formControlName="ban_type" [formControl]="banTypeControl"
@@ -113,7 +113,7 @@
                       </mat-autocomplete>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                             <mat-label>{{translatedLangText.CARGO_HAZARD_LEVEL }}</mat-label>
                             <input matInput formControlName="hazard_level" [formControl]="hazardLevelControl"
@@ -127,14 +127,14 @@
                           </mat-autocomplete>
                           </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
-                      <button mat-mini-fab color="primary" (click)="search()">
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+                      <button mat-mini-fab color="primary" (click)="search()" >
                         <mat-icon>search</mat-icon>
-                      </button>
-                      <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
-                        {{translatedLangText.CLEAR_ALL}}
-                      </button>
-                    </div>
+                        </button>
+                        <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
+                          {{translatedLangText.CLEAR_ALL}}
+                        </button>
+                      </div>
                   </div>
                 </form>
               </mat-expansion-panel>
