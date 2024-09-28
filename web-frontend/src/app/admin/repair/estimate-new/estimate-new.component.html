@@ -363,7 +363,7 @@
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
-                        [ngClass]="{'deleted-row': row.delete_dt, 'edited-row': row.guid && !row.delete_dt && row.edited}"
+                        [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
                         (click)="editEstDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                     </table>

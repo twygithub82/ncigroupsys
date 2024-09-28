@@ -482,6 +482,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       if (found?.length) {
         this.repairEstItem = found[0];
         this.isOwner = this.repairEstItem.owner_enable ?? false;
+        this.repairEstItem.repair_est_part = this.filterDeleted(this.repairEstItem.repair_est_part)
         this.updateData(this.repairEstItem.repair_est_part);
         this.repairEstForm?.patchValue({
           guid: this.repairEstItem.guid,
@@ -1073,8 +1074,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   calculateCost() {
-    const ownerList = this.repList.data.filter(item => item.owner);
-    const lesseeList = this.repList.data.filter(item => !item.owner);
+    const ownerList = this.repList.data.filter(item => item.owner && !item.delete_dt);
+    const lesseeList = this.repList.data.filter(item => !item.owner && !item.delete_dt);
     const labourDiscount = this.repairEstForm?.get('labour_cost_discount')?.value;
     const matDiscount = this.repairEstForm?.get('material_cost_discount')?.value;
 
@@ -1145,13 +1146,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.repairEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
   }
 
-  // getTotal(ownerList: any[]): any {
-  //   const totalSums = ownerList.reduce((totals: any, owner) => {
-  //     return {
-  //       hour: (totals.hour ?? 0) + (owner.hour ?? 0),
-  //       total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.material_cost ?? 0)))
-  //     };
-  //   }, { hour: 0, total_mat_cost: 0 });
-  //   return totalSums;
-  // }
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
 }
