@@ -75,9 +75,9 @@ export class TemplateEstPartItem {
   action?: string = 'NEW';
   guid?: string | null;
   description?: string;
-  delete_dt?: string | null;
-  create_by?: string | null;
-  create_dt?: string | null;
+  delete_dt?: number | null;
+  create_by?: number | null;
+  create_dt?: number | null;
   hour?: number;
   quantity?: number;
   location_cv?: string | null;

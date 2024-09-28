@@ -460,6 +460,12 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   initializeFilter() {
   }
 
+SortRepairEstPart(items:TemplateEstPartItem[]):TemplateEstPartItem[]{
+var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_dt!);
+
+  return retval;
+}
+
   public loadData() {
     this.historyState = history.state;
 
@@ -477,6 +483,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
         remarks: this.selectedTempEst?.remarks,
       });
       var repairEstPartItem: RepairEstPartItem[] = [];
+      this.selectedTempEst?.template_est_part!=this.SortRepairEstPart(this.selectedTempEst?.template_est_part!);
       repairEstPartItem = this.selectedTempEst?.template_est_part
         ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
         .map((item: Partial<TemplateEstPartItem>) => {
@@ -693,6 +700,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  
   editEstDetails(event: Event, row: RepairEstPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -967,6 +975,11 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
             }
 
+          
+          }
+          else if(result.length==0 && this.selectedTempEst!=undefined)
+          {
+            this.updateExistTemplate();
           }
 
 
@@ -983,7 +996,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
     const tempEstimateCustomerItems: TemplateEstimateCustomerItem[] = this.selectedTempEst!.template_est_customer!.map((node: any) => new TemplateEstimateCustomerItem(node));
     
+    this.selectedTempEst!.template_name=this.tempForm?.get("template_name")?.value;
     this.selectedTempEst!.labour_cost_discount=this.tempForm?.get("labour_discount")?.value;
+    this.selectedTempEst!.remarks=this.tempForm?.get("remarks")?.value;
     this.selectedTempEst!.material_cost_discount=this.tempForm?.get("material_discount")?.value;
     this.selectedTempEst!.template_est_customer=tempEstimateCustomerItems;
     var existdata_cust=this.selectedTempEst!.template_est_customer;
