@@ -708,15 +708,28 @@ namespace IDMS.Models.Package.All.GqlTypes
                     }
                     else
                     {
-                        foreach (var packageRepair in dbPackRepairs)
-                        {
-                            packageRepair.material_cost = Math.Round(Convert.ToDouble(packageRepair.material_cost * material_cost_percentage), 2);
-                            packageRepair.labour_hour = Math.Ceiling((packageRepair.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4;
+                        //foreach (var packageRepair in dbPackRepairs)
+                        //{
+                        //    packageRepair.material_cost = Math.Round(Convert.ToDouble(packageRepair.material_cost * material_cost_percentage), 2);
+                        //    packageRepair.labour_hour = Math.Ceiling((packageRepair.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4;
 
-                            packageRepair.update_dt = currentDateTime;
-                            packageRepair.update_by = uid;
-                        }
-                        retval = await context.SaveChangesAsync();
+                        //    packageRepair.update_dt = currentDateTime;
+                        //    packageRepair.update_by = uid;
+                        //}
+                        //retval = await context.SaveChangesAsync();
+
+
+                        var guids = dbPackRepairs.Select(p => p.guid).ToList();
+                        string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
+
+                        string sql = $"UPDATE package_repair SET material_cost = (material_cost * {material_cost_percentage}), " +
+                                     $"labour_hour = (labour_hour * {labour_hour_percentage}), " +
+                                     $"update_dt = {currentDateTime}, update_by = '{uid}' " +
+                                     $"WHERE guid IN ({guidList})";
+
+                        // Execute the raw SQL command
+                        retval = await context.Database.ExecuteSqlRawAsync(sql);
+
                     }
                     // Commit the transaction if all operations succeed
                     await transaction.CommitAsync();
@@ -735,6 +748,31 @@ namespace IDMS.Models.Package.All.GqlTypes
 
         }
 
+
+        private int BulkUpdate(ApplicationPackageDBContext context, List<string?> ids, string user, double percentageCost, double percentageLabour)
+        {
+            try
+            {
+                string guid = string.Join(", ", ids.ConvertAll(id => $"'{id}'"));
+                long updateDate = DateTime.Now.ToEpochTime();
+
+                string sql = $"UPDATE package_repair SET material_cost = (material_cost * {percentageCost}), " +
+                             $"labour_hour = (labour_hour * {percentageLabour}), " +
+                             $"update_dt = {updateDate}, update_by = '{user}' " +
+                             $"WHERE guid IN ({guid})";
+
+                // Execute the raw SQL command
+                var ret = context.Database.ExecuteSqlRaw(sql);
+                //await Task.Delay(1);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+
+            //}
+        }
 
         private double CalculateMaterialCostRoundedUp(double materialCost, double materialCostPercentage)
         {
