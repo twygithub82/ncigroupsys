@@ -101,6 +101,7 @@ import { elements } from 'chart.js';
 })
 export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
+    'index',
     'group_name_cv',
     'subgroup_name_cv',
     'damage',
@@ -231,6 +232,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
   groupNameCvList: CodeValuesItem[] = []
+  allSubGroupNameCvList: CodeValuesItem[] = [];
   subgroupNameCvList: CodeValuesItem[] = []
   yesnoCvList: CodeValuesItem[] = []
   soTankStatusCvList: CodeValuesItem[] = []
@@ -552,6 +554,30 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
     this.cvDS.connectAlias('groupNameCv').subscribe(data => {
       this.groupNameCvList = data;
+
+      const subqueries: any[] = [];
+      data.map(d => {
+
+        if (d.child_code) {
+          let q = { alias: d.child_code, codeValType: d.child_code };
+          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+          if (!hasMatch) {
+            subqueries.push(q);
+
+          }
+        }
+      });
+      if (subqueries.length > 0) {
+
+
+        this.cvDS?.getCodeValuesByType(subqueries)
+        subqueries.map(s => {
+          this.cvDS?.connectAlias(s.alias).subscribe(data => {
+            this.allSubGroupNameCvList.push(...data);
+          });
+        });
+
+      }
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
@@ -659,7 +685,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
         const newItem = new TemplateEstPartItem({
           ...result.item,
         });
-        data.push(newItem);
+        data.unshift(newItem);
         this.updateData(data);
 
         this.calculateCostSummary();
@@ -1190,6 +1216,12 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
+  getGroupNameDescription(code_val:string): string | undefined{
+    return this.cvDS.getCodeDescription(code_val, this.groupNameCvList);
+  }
+  getSubGroupNameDescription(code_val:string): string | undefined{
+    return this.cvDS.getCodeDescription(code_val, this.allSubGroupNameCvList);
+  }
   getYesNoDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yesnoCvList);
   }

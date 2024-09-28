@@ -230,6 +230,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
             this.data.populateData.subgroupNameCvList = data;
           });
+
+          this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
+            this.partNameList = data;
+          });
         }
       })
     ).subscribe();

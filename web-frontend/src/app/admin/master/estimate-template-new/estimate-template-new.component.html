@@ -174,28 +174,39 @@
                   <div class="responsive_table">
                     <table mat-table [dataSource]="repList" matSort
                       class="mat-cell advance-table striped-rows hover-highlight">
+                       <!-- Index Column -->
+                      <ng-container matColumnDef="index">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          #
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; let i = index"
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{i + 1}} <!-- Add 1 if you want to display index starting from 1 -->
+                        </mat-cell>
+                      </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="group_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.GROUP}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.GROUP}}:</span>
-                          {{row.tariff_repair?.group_name_cv}}
+                          {{getGroupNameDescription(row.tariff_repair?.group_name_cv)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.SUBGROUP}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.SUBGROUP}}:</span>
-                          {{row.tariff_repair?.subgroup_name_cv}}
+                          {{getSubGroupNameDescription(row.tariff_repair?.subgroup_name_cv)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="damage">
