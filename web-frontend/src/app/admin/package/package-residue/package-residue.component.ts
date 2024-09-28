@@ -108,7 +108,7 @@ implements OnInit {
      'lName',
      'mobile',
      'gender',
-    // 'bDate',
+     'bDate',
      
      'email',
     // 'actions',

@@ -111,7 +111,7 @@
                         </mat-form-field>
                         
                       </div>
-                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
                       <button mat-mini-fab color="primary" (click)="search()" style="margin-top: 10px; margin-left:15px">
                         <mat-icon>search</mat-icon>
                       </button>
@@ -178,6 +178,11 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STANDARD_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.tariff_residue.cost.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="bDate">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.REMARKS }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.remarks}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="email">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE }}</mat-header-cell>
