@@ -118,6 +118,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.repairPartForm = this.createForm();
     this.initializeValueChange();
     this.patchForm();
+    this.initializePartNameValueChange();
   }
 
   createForm(): UntypedFormGroup {
@@ -243,6 +244,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tap(value => {
         const groupName = this.repairPartForm?.get('group_name_cv')?.value;
         if (groupName) {
+          debugger
           this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
             this.partNameList = data;
             // this.partNameFilteredList = data
@@ -255,15 +257,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       })
     ).subscribe();
 
-    this.repairPartForm?.get('part_name')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          //this.searchPart();
-        }
-      })
-    ).subscribe();
+    // this.repairPartForm?.get('part_name')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     if (value) {
+    //       //this.searchPart();
+    //     }
+    //   })
+    // ).subscribe();
 
     // this.partNameControl.valueChanges.subscribe(value => {
     //   if (!this.valueChangesDisabled) {
@@ -301,6 +303,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     //     }
     //   })
     // ).subscribe();
+  }
+
+  initializePartNameValueChange() {
+    this.repairPartForm?.get('part_name')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          this.searchPart();
+        }
+      })
+    ).subscribe();
   }
 
   // handleValueChange(value: any) {

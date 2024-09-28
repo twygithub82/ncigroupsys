@@ -190,7 +190,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.GROUP}}:</span>
-                          {{row.tariff_repair?.group_name_cv}}
+                          {{getGroupNameCodeDescription(row.tariff_repair?.group_name_cv)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">

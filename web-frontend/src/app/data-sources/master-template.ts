@@ -296,7 +296,7 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
 `;
 
 export const GET_ESTIMATE_TEMPLATE_FOR_REPAIR = gql`
-  query queryTemplateEstimation($where: template_estFilterInput, $order:[template_estSortInput!]) {
+  query queryTemplateEstimation($where: template_estFilterInput, $order:[template_estSortInput!], $customer_company_guid: String) {
     resultList: queryTemplateEstimation(where: $where, order:$order) {
       nodes {
         create_by
@@ -352,6 +352,9 @@ export const GET_ESTIMATE_TEMPLATE_FOR_REPAIR = gql`
             update_dt
             width_diameter
             width_diameter_unit_cv
+            package_repair(where: { customer_company_guid: { eq: $customer_company_guid } }) {
+              material_cost
+            }
           }
           tep_damage_repair {
             code_cv
@@ -452,13 +455,13 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
       );
   }
 
-  searchEstimateTemplateForRepair(where?: any, order?: any): Observable<MasterTemplateItem[]> {
+  searchEstimateTemplateForRepair(where?: any, order?: any, customer_company_guid?: string): Observable<MasterTemplateItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
         query: GET_ESTIMATE_TEMPLATE_FOR_REPAIR,
-        variables: { where, order },
+        variables: { where, order, customer_company_guid },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

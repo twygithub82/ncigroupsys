@@ -433,12 +433,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
-          searchCriteria = value.code;
-          this.surveyForm!.get('owner_guid')!.setValue(value.guid);
+          searchCriteria = value?.code || '';
+          this.surveyForm!.get('owner_guid')!.setValue(value?.guid);
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }], type_cv: { in: ["OWNER", "LEESSEE"] } }, { code: 'ASC' }).subscribe(data => {
           this.ownerList = data;
-          // this.markForCheck();
         });
       })
     ).subscribe();
@@ -625,7 +624,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   populateInGateForm(ig: InGateItem): void {
-    this.surveyForm!.patchValue({
+    this.surveyForm?.patchValue({
       guid: ig.guid,
       owner: ig.tank?.customer_company,
       owner_guid: ig.tank?.owner_guid,

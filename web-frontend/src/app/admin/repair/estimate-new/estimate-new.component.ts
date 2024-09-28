@@ -325,60 +325,74 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           this.repairEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairEstForm?.get('remarks')?.setValue(value.remarks);
-          // const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
-          //   return new RepairEstPartItem({
-          //     description: tep.description,
-          //     hour: tep.hour,
-          //     location_cv: tep.location_cv,
-          //     quantity: tep.quantity,
-          //     remarks: tep.remarks,
-          //     material_cost: tep.tariff_repair?.package_repair?.material_cost,
-          //     tariff_repair_guid: tep.tariff_repair_guid,
-          //     tariff_repair: tep.tariff_repair,
-          //     rep_damage_repair: tep.tep_damage_repair,
-          //     // repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
-          //   });
-          // });
-          // this.updateData(repList);
-          // estimate part
-          const tariff_repair_guid = value.template_est_part.map((tep: any) => tep.tariff_repair_guid);
-          this.getCustomerCost(this.sotItem?.storing_order?.customer_company_guid, tariff_repair_guid).pipe(
-            switchMap(data => {
-              let material_cost = 0;
-              if (data && data.length) {
-                material_cost = data[0].material_cost;
-                console.log('Customer Package Cost Data:', data);
-              }
-
-              const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
-                const tep_damage_repair = tep.tep_damage_repair.map((item: any) => {
-                  return new REPDamageRepairItem({
-                    guid: item.guid,
-                    rep_guid: item.rep_guid,
-                    code_cv: item.code_cv,
-                    code_type: item.code_type,
-                    action: 'new'
-                  });
-                })
-
-                return new RepairEstPartItem({
-                  description: tep.description,
-                  hour: tep.hour,
-                  location_cv: tep.location_cv,
-                  quantity: tep.quantity,
-                  remarks: tep.remarks,
-                  material_cost: material_cost,
-                  tariff_repair_guid: tep.tariff_repair_guid,
-                  tariff_repair: tep.tariff_repair,
-                  rep_damage_repair: tep_damage_repair,
-                  action: 'new',
-                });
+          const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
+            const package_repair = tep.tariff_repair?.package_repair;
+            let material_cost = 0;
+            if (package_repair?.length) {
+              material_cost = package_repair[0].material_cost
+            }
+            const tep_damage_repair = tep.tep_damage_repair.map((item: any) => {
+              return new REPDamageRepairItem({
+                code_cv: item.code_cv,
+                code_type: item.code_type,
+                action: 'new'
               });
-              console.log(repList);
-              this.updateData(repList);
-              return of(repList);
             })
-          ).subscribe();
+            return new RepairEstPartItem({
+              description: tep.description,
+              hour: tep.hour,
+              location_cv: tep.location_cv,
+              quantity: tep.quantity,
+              remarks: tep.remarks,
+              material_cost: material_cost,
+              tariff_repair_guid: tep.tariff_repair_guid,
+              tariff_repair: tep.tariff_repair,
+              rep_damage_repair: tep_damage_repair,
+              // repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
+            });
+          });
+          console.log(repList)
+          this.updateData(repList);
+
+          // estimate part
+          // const tariff_repair_guid = value.template_est_part.map((tep: any) => tep.tariff_repair_guid);
+          // this.getCustomerCost(this.sotItem?.storing_order?.customer_company_guid, tariff_repair_guid).pipe(
+          //   switchMap(data => {
+          //     let material_cost = 0;
+          //     if (data && data.length) {
+          //       material_cost = data[0].material_cost;
+          //       console.log('Customer Package Cost Data:', data);
+          //     }
+
+          //     const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
+          //       const tep_damage_repair = tep.tep_damage_repair.map((item: any) => {
+          //         return new REPDamageRepairItem({
+          //           guid: item.guid,
+          //           rep_guid: item.rep_guid,
+          //           code_cv: item.code_cv,
+          //           code_type: item.code_type,
+          //           action: 'new'
+          //         });
+          //       })
+
+          //       return new RepairEstPartItem({
+          //         description: tep.description,
+          //         hour: tep.hour,
+          //         location_cv: tep.location_cv,
+          //         quantity: tep.quantity,
+          //         remarks: tep.remarks,
+          //         material_cost: material_cost,
+          //         tariff_repair_guid: tep.tariff_repair_guid,
+          //         tariff_repair: tep.tariff_repair,
+          //         rep_damage_repair: tep_damage_repair,
+          //         action: 'new',
+          //       });
+          //     });
+          //     console.log(repList);
+          //     this.updateData(repList);
+          //     return of(repList);
+          //   })
+          // ).subscribe();
         }
       })
     ).subscribe();
@@ -506,7 +520,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         { type_cv: { eq: "GENERAL" } }
       ]
     }
-    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, {}).subscribe(data => {
+    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, {}, customer_company_guid).subscribe(data => {
       if (data?.length > 0) {
         this.templateList = data;
       }
@@ -998,14 +1012,18 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     return this.cvDS.getCodeDescription(codeVal, this.repairCodeCvList);
   }
 
+  getGroupNameCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.groupNameCvList);
+  }
+
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair.filter((x: any) => x.code_type === filterCode && x.delete_dt === null && x.action !== 'cancel').map(item => {
+    return damageRepair.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
       return item.code_cv;
     }).join('/');
   }
 
   displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-    return damageRepair.filter((x: any) => x.code_type === filterCode && x.delete_dt === null && x.action !== 'cancel').map(item => {
+    return damageRepair.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';
