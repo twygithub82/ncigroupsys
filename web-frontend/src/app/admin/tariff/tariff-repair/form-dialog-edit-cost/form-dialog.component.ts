@@ -276,7 +276,9 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     CANNOT_EXCEED:"COMMON-FORM.CANNOT-EXCEED",
     CANNOT_SMALLER:"COMMON-FORM.CANNOT-SMALLER",
     SMALLER_THAN:"COMMON-FORM.SMALLER-THAN",
-    EXCEED:"COMMON-FORM.EXCEEDED"
+    EXCEED:"COMMON-FORM.EXCEEDED",
+    ONE_CONDITION :"COMMON-FORM.ENTER-ATLEAST-ONE-CONDITION",
+    NO_VALUE_CHNAGE:"COMMON-FORM.NO-VALUE-CHNAGE"
   };
   unit_type_control = new UntypedFormControl();
   
@@ -707,13 +709,22 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     if(this.selectedTariffRepair) trfRepairItem.guid=this.selectedTariffRepair?.guid;
     //var material_cost_percentage=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
   
-    this.trfRepairDS.updateTariffRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,
-      trfRepairItem.part_name,trfRepairItem.dimension,trfRepairItem.length,trfRepairItem.guid,trfRepairItem.material_cost,trfRepairItem.labour_hour).subscribe(result=>{
-      this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
-      this.EnableValidator('material_cost_percentage');
-      this.EnableValidator('labour_hour_percentage');
-      this.UpdateInProgress=false;
-    });
+    if(this.checkCondition(trfRepairItem))
+    {
+        this.trfRepairDS.updateTariffRepairs_MaterialCost(trfRepairItem.group_name_cv,trfRepairItem.subgroup_name_cv,
+          trfRepairItem.part_name,trfRepairItem.dimension,trfRepairItem.length,trfRepairItem.guid,trfRepairItem.material_cost,trfRepairItem.labour_hour).subscribe(result=>{
+          this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
+          this.EnableValidator('material_cost_percentage');
+          this.EnableValidator('labour_hour_percentage');
+          this.UpdateInProgress=false;
+        });
+    }
+    else
+    {
+        this.EnableValidator('material_cost_percentage');
+        this.EnableValidator('labour_hour_percentage');
+        this.UpdateInProgress=false;
+    }
   }
   
   displayLastUpdated(r: TariffDepotItem) {
@@ -758,4 +769,43 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter  
     return tr;
   }
   
+
+  checkCondition(trfRepairItem:TariffRepairItem):Boolean
+  {
+     var retval:Boolean=false;
+     var maxCustomerAllowed :number=10;
+     var msg :String="";
+
+     
+       retval=(trfRepairItem.group_name_cv?.trim()!="");
+       if(!retval)retval=(trfRepairItem.subgroup_name_cv?.trim()!=""&&trfRepairItem.subgroup_name_cv!=undefined);
+       if(!retval)retval=(trfRepairItem.part_name?.trim()!=""&&trfRepairItem.part_name!=undefined);
+       if(!retval)retval=(trfRepairItem.dimension?.trim()!=""&&trfRepairItem.dimension!=undefined);
+       if(!retval)retval=(trfRepairItem.guid?.trim()!=""&&trfRepairItem.guid!=undefined);
+
+       if(!retval)
+            msg=`${this.translatedLangText.ONE_CONDITION}`;
+
+     if(trfRepairItem.labour_hour==1 && trfRepairItem.material_cost==1 && retval)
+     {
+        msg=`${this.translatedLangText.NO_VALUE_CHNAGE}`;
+        retval=false;
+     }
+     else if(msg.trim()=="")
+     {
+       retval=true;
+     }
+
+     
+
+     if(!retval && msg.trim()!="")
+     {
+        this.ConfirmItem(msg);
+     }
+     
+
+
+    return retval;
+
+  }
 }

@@ -171,7 +171,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   id?: number;
   advanceTable?: AdvanceTable;
-  pcForm: UntypedFormGroup;
+  pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -288,7 +288,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
-    this.pcForm = this.initTcForm();
+   this.initPcForm();
     // this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
@@ -312,8 +312,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  initTcForm(): UntypedFormGroup {
-    return this.fb.group({
+  initPcForm() {
+    this.pcForm = this.fb.group({
       // guid: [{value:''}],
       // customer_code: this.customerCodeControl,
       // cleaning_category:this.categoryControl,
@@ -610,16 +610,16 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   search() {
     const where: any = {};
 
-    if (this.pcForm.get('group_name_cv')?.value) {
-      if (this.pcForm.get('group_name_cv')?.value?.length > 0) {
-        const cdValues: string[] = this.pcForm.get('group_name_cv')?.value;
+    if (this.pcForm!.get('group_name_cv')?.value) {
+      if (this.pcForm!.get('group_name_cv')?.value?.length > 0) {
+        const cdValues: string[] = this.pcForm!.get('group_name_cv')?.value;
         where.group_name_cv = { in: cdValues };
       }
     }
 
-    if (this.pcForm.get('sub_group_name_cv')?.value) {
-      if (this.pcForm.get('sub_group_name_cv')?.value?.length > 0) {
-        const cdValues: CodeValuesItem[] = this.pcForm.get('sub_group_name_cv')?.value;
+    if (this.pcForm!.get('sub_group_name_cv')?.value) {
+      if (this.pcForm!.get('sub_group_name_cv')?.value?.length > 0) {
+        const cdValues: CodeValuesItem[] = this.pcForm!.get('sub_group_name_cv')?.value;
         where.subgroup_name_cv = { in: cdValues };
       }
     }
@@ -991,7 +991,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   resetForm() {
-    this.initTcForm();
+    this.initPcForm();
     
     //this.customerCodeControl.reset('');
    
