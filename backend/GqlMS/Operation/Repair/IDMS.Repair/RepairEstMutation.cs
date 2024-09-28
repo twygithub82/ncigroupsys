@@ -87,9 +87,9 @@ namespace IDMS.Repair.GqlTypes
                 //context.Attach(repTemplate);
 
                 var repTemplate = await context.repair_est.Where(t => t.guid == RepairEstimate.guid && (t.delete_dt == null || t.delete_dt == 0))
-                                                        .Include(t => t.repair_est_part)
+                                                          .Include(t => t.repair_est_part)
                                                             .ThenInclude(tp => tp.rep_damage_repair)
-                                                        .FirstOrDefaultAsync();
+                                                          .FirstOrDefaultAsync();
 
                 if (repTemplate == null)
                     throw new GraphQLException(new Error($"Repair_estimate not found", "ERROR"));
@@ -205,9 +205,9 @@ namespace IDMS.Repair.GqlTypes
                             if (string.IsNullOrEmpty(item.guid))
                                 throw new GraphQLException(new Error($"Rep_damage_repair guid cannot null or empty for update", "ERROR"));
 
-                            //var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
-                            var repDamage = new rep_damage_repair() { guid = item.guid };
-                            context.Attach(repDamage);
+                            var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                             //var repDamage = new rep_damage_repair() { guid = item.guid };
+                            //context.Attach(repDamage);
                             if (repDamage != null)
                             {
                                 repDamage.update_dt = currentDateTime;
@@ -224,9 +224,9 @@ namespace IDMS.Repair.GqlTypes
                             if (string.IsNullOrEmpty(item.guid))
                                 throw new GraphQLException(new Error($"Rep_damage_repair guid cannot null or empty for cancel", "ERROR"));
 
-                            var repDamage = new rep_damage_repair() { guid = item.guid };
-                            context.Attach(repDamage);
-                            //var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            //var repDamage = new rep_damage_repair() { guid = item.guid };
+                            //context.Attach(repDamage);
+                            var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
                             if (repDamage != null)
                             {
                                 repDamage.delete_dt = currentDateTime;

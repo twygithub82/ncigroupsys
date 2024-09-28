@@ -1,5 +1,6 @@
 ﻿using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Master;
+using IDMS.Models.Tariff;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,8 @@ namespace IDMS.Models.DB
         public DbSet<IDMS.Models.Package.package_repair> package_repair { get; set; }
         public DbSet<IDMS.Models.Package.package_residue> package_residue { get; set; }
         public DbSet<IDMS.Models.Package.package_buffer> package_buffer { get; set; }
+
+        //public DbSet<tariff_repair> tariff_repair { get; set; } 
     }
 
         

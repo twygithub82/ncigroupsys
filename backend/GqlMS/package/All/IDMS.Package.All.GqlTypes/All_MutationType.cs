@@ -635,71 +635,106 @@ namespace IDMS.Models.Package.All.GqlTypes
             return retval;
         }
 
-
         public async Task<int> UpdatePackageRepair_MaterialCost(ApplicationPackageDBContext context, [Service] IConfiguration config,
-      [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
-      int? length, string? tariff_repair_guid, string[]? customer_company_guids, double material_cost_percentage, double labour_hour_percentage)
+            [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
+            int? length, string? tariff_repair_guid, string[]? customer_company_guids, double material_cost_percentage, double labour_hour_percentage)
         {
             int retval = 0;
-            try
+            bool isAll = true;
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var currentDateTime = DateTime.Now.ToEpochTime();
-
-                var dbPackRepairs = await context.package_repair.Where(i => i.delete_dt == null || i.delete_dt == 0)
-                    .Include(t => t.tariff_repair)
-                    .ToListAsync();
-                if (customer_company_guids?.Length > 0) 
-                { 
-                    dbPackRepairs = dbPackRepairs.Where(t => customer_company_guids.Contains(t.customer_company_guid)).ToList();
-                }
-                if (!string.IsNullOrEmpty(tariff_repair_guid))
+                try
                 {
-                    dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.guid == tariff_repair_guid).ToList();
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(group_name_cv))
-                        dbPackRepairs = dbPackRepairs.Where(t => group_name_cv.EqualsIgnore(t.tariff_repair?.group_name_cv)).ToList();
-                    if (!string.IsNullOrEmpty(subgroup_name_cv))
-                        dbPackRepairs = dbPackRepairs.Where(t => subgroup_name_cv.EqualsIgnore(t.tariff_repair?.subgroup_name_cv)).ToList();
-                    if (!string.IsNullOrEmpty(part_name))
-                        dbPackRepairs = dbPackRepairs.Where(t => part_name.EqualsIgnore(t.tariff_repair?.part_name)).ToList();
-                    if (!string.IsNullOrEmpty(dimension))
-                        dbPackRepairs = dbPackRepairs.Where(t => dimension.EqualsIgnore(t.tariff_repair?.dimension)).ToList();
-                    if (length != null)
+                    var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    var currentDateTime = DateTime.Now.ToEpochTime();
+
+                    var dbPackRepairs = await context.package_repair.Include(p => p.tariff_repair)
+                        .Where(i => i.delete_dt == null || i.delete_dt == 0).ToListAsync();
+
+                    if (customer_company_guids?.Length > 0)
                     {
-                        if (length > 0)
+                        dbPackRepairs = dbPackRepairs.Where(t => customer_company_guids.Contains(t.customer_company_guid)).ToList();
+                        isAll = false;
+                    }
+                    if (!string.IsNullOrEmpty(tariff_repair_guid))
+                    {
+                        dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.guid == tariff_repair_guid).ToList();
+                        isAll = false;
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(group_name_cv))
                         {
-                            dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.length == length).ToList();
+                            dbPackRepairs = dbPackRepairs.Where(t => group_name_cv.EqualsIgnore(t.tariff_repair?.group_name_cv)).ToList();
+                            isAll = false;
+                        }
+         
+                        if (!string.IsNullOrEmpty(subgroup_name_cv))
+                        {
+                            dbPackRepairs = dbPackRepairs.Where(t => subgroup_name_cv.EqualsIgnore(t.tariff_repair?.subgroup_name_cv)).ToList();
+                            isAll = false;
+                        }
+
+                        if (!string.IsNullOrEmpty(part_name))
+                        {
+                            dbPackRepairs = dbPackRepairs.Where(t => part_name.EqualsIgnore(t.tariff_repair?.part_name)).ToList();
+                            isAll = false;
+                        }
+                        if (!string.IsNullOrEmpty(dimension))
+                        {
+                            dbPackRepairs = dbPackRepairs.Where(t => dimension.EqualsIgnore(t.tariff_repair?.dimension)).ToList();
+                            isAll = false;
+                        }
+
+                        if (length != null)
+                        {
+                            if (length > 0)
+                            {
+                                dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.length == length).ToList();
+                                isAll = false;
+                            }
                         }
                     }
-                }
 
-                foreach (var packageRepair in dbPackRepairs)
+                    if (isAll)
+                    {
+                        retval = await context.package_repair.ExecuteUpdateAsync(s => s
+                          .SetProperty(e => e.update_dt, currentDateTime)
+                          .SetProperty(e => e.update_by, uid)
+                          .SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
+                          .SetProperty(e => e.labour_hour, e => (Math.Round(Convert.ToDouble(e.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4))
+                           );
+                    }
+                    else
+                    {
+                        foreach (var packageRepair in dbPackRepairs)
+                        {
+                            packageRepair.material_cost = Math.Round(Convert.ToDouble(packageRepair.material_cost * material_cost_percentage), 2);
+                            packageRepair.labour_hour = Math.Ceiling((packageRepair.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4;
+
+                            packageRepair.update_dt = currentDateTime;
+                            packageRepair.update_by = uid;
+                        }
+                        retval = await context.SaveChangesAsync();
+                    }
+                    // Commit the transaction if all operations succeed
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
                 {
-                    packageRepair.material_cost = Math.Round(Convert.ToDouble(packageRepair.material_cost * material_cost_percentage), 2);
-                    packageRepair.labour_hour = Math.Ceiling((packageRepair.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4;
+                    // Rollback the transaction if any errors occur
+                    await transaction.RollbackAsync();
 
-                    packageRepair.update_dt = currentDateTime;
-                    packageRepair.update_by = uid;
+                    // Handle or log the exception
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                    //throw; // Re-throw if necessary
                 }
-                retval = await context.SaveChangesAsync();
-
-                //retval = await context.package_repair.ExecuteUpdateAsync(s => s
-                //                      .SetProperty(e => e.delete_dt, currentDateTime)
-                //                      .SetProperty(e => e.update_dt, currentDateTime)
-                //                      .SetProperty(e => e.update_by, uid));
-
+                return retval;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-            }
-            return retval;
+
         }
+
 
         private double CalculateMaterialCostRoundedUp(double materialCost, double materialCostPercentage)
         {

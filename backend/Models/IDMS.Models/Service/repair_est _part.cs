@@ -35,6 +35,7 @@ namespace IDMS.Models.Service
 
         public tariff_repair? tariff_repair { get; set; }
         public repair_est? repair_est { get; set; }
+        [UseFiltering]
         public IEnumerable<rep_damage_repair>? rep_damage_repair { get; set; }
     }
 }

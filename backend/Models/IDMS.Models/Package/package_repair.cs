@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Models.Package
 {
-    [PrimaryKey("tariff_repair_guid", "customer_company_guid")]
+    //[PrimaryKey("tariff_repair_guid", "customer_company_guid")]
     public class package_repair : Dates
     {
         [Key]

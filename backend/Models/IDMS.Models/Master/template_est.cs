@@ -17,6 +17,7 @@ namespace IDMS.Models.Master
         public string template_name { get; set; }
         public string? remarks { get; set; }
 
+        [UseFiltering]
         public IEnumerable<template_est_customer>? template_est_customer { get; set; }
         [UseFiltering]
         public IEnumerable<template_est_part>? template_est_part { get; set; }
