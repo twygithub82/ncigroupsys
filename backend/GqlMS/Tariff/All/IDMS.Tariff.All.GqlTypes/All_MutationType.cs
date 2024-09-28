@@ -151,8 +151,6 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 //    }
                 //}
 
-
-
                 retval = await context.SaveChangesAsync();
 
             }
@@ -238,9 +236,9 @@ namespace IDMS.Models.Tariff.All.GqlTypes
 
                 retval = await context.SaveChangesAsync();
             }
-            catch(Exception ex) 
-            { 
-                throw; 
+            catch (Exception ex)
+            {
+                throw;
             }
 
 
@@ -884,56 +882,106 @@ namespace IDMS.Models.Tariff.All.GqlTypes
             int? length, string? guid, double material_cost_percentage, double labour_hour_percentage) // double labor_hour_percentage
         {
             int retval = 0;
-            try
+            bool isAll = true;
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var currentDateTime = GqlUtils.GetNowEpochInSec();
-
-                var dbTariffRepairs = context.tariff_repair.Where(i => i.delete_dt == null || i.delete_dt == 0).ToArray();
-                if (!string.IsNullOrEmpty(guid))
+                try
                 {
-                    dbTariffRepairs = dbTariffRepairs.Where(t => t.guid == guid).ToArray();
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(group_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.group_name_cv == group_name_cv).ToArray();
-                    if (!string.IsNullOrEmpty(subgroup_name_cv)) dbTariffRepairs = dbTariffRepairs.Where(t => t.subgroup_name_cv == subgroup_name_cv).ToArray();
-                    if (!string.IsNullOrEmpty(part_name)) dbTariffRepairs = dbTariffRepairs.Where(t => t.part_name == part_name).ToArray();
-                    if (!string.IsNullOrEmpty(dimension)) dbTariffRepairs = dbTariffRepairs.Where(t => t.dimension == dimension).ToArray();
-                    if (length != null)
+                    var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    var currentDateTime = GqlUtils.GetNowEpochInSec();
+
+                    var dbTariffRepairs = context.tariff_repair.Where(i => i.delete_dt == null || i.delete_dt == 0).ToArray();
+                    if (!string.IsNullOrEmpty(guid))
                     {
-                        if (length > 0)
+                        dbTariffRepairs = dbTariffRepairs.Where(t => t.guid == guid).ToArray();
+                        isAll = false;
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(group_name_cv))
                         {
-                            dbTariffRepairs = dbTariffRepairs.Where(t => t.length == length).ToArray();
+                            dbTariffRepairs = dbTariffRepairs.Where(t => t.group_name_cv == group_name_cv).ToArray();
+                            isAll = false;
+                        }
+                        if (!string.IsNullOrEmpty(subgroup_name_cv))
+                        {
+                            dbTariffRepairs = dbTariffRepairs.Where(t => subgroup_name_cv.EqualsIgnore(t.subgroup_name_cv ?? "")).ToArray();
+                            isAll = false;
+                        }
+                        if (!string.IsNullOrEmpty(part_name))
+                        {
+                            dbTariffRepairs = dbTariffRepairs.Where(t => part_name.EqualsIgnore(t.part_name ?? "")).ToArray();
+                            isAll = false;
+                        }
+                        if (!string.IsNullOrEmpty(dimension))
+                        {
+                            dbTariffRepairs = dbTariffRepairs.Where(t => t.dimension == dimension).ToArray();
+                            isAll = false;
+                        }
+                        if (length != null)
+                        {
+                            if (length > 0)
+                            {
+                                dbTariffRepairs = dbTariffRepairs.Where(t => t.length == length).ToArray();
+                                isAll = false;
+                            }
                         }
                     }
+
+
+                    if (dbTariffRepairs == null)
+                    {
+                        throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
+                    }
+
+                    if (isAll)
+                    {
+                        retval = await context.package_repair.ExecuteUpdateAsync(s => s
+                          .SetProperty(e => e.update_dt, currentDateTime)
+                          .SetProperty(e => e.update_by, uid)
+                          .SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
+                          .SetProperty(e => e.labour_hour, e => (Math.Round(Convert.ToDouble(e.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4))
+                           );
+                    }
+                    else
+                    {
+                        //foreach (var r in dbTariffRepairs)
+                        //{
+                        //    r.material_cost = Math.Round(Convert.ToDouble(r.material_cost.Value * material_cost_percentage), 2);
+                        //    r.labour_hour = Math.Ceiling((r.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4;
+
+                        //    r.update_by = uid;
+                        //    r.update_dt = currentDateTime;
+                        //}
+                        //retval = await context.SaveChangesAsync();
+
+                        var guids = dbTariffRepairs.Select(p => p.guid).ToList();
+                        string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
+
+                        string sql = $"UPDATE tariff_repair SET material_cost = (material_cost * {material_cost_percentage}), " +
+                                     $"labour_hour = (labour_hour * {labour_hour_percentage}), " +
+                                     $"update_dt = {currentDateTime}, update_by = '{uid}' " +
+                                     $"WHERE guid IN ({guidList})";
+
+                        // Execute the raw SQL command
+                        retval = await context.Database.ExecuteSqlRawAsync(sql);
+                    }
+                    // Commit the transaction if all operations succeed
+                    await transaction.CommitAsync();
+
                 }
-
-
-                if (dbTariffRepairs == null)
+                catch (Exception ex)
                 {
-                    throw new GraphQLException(new Error("The Tariff Labour not found", "500"));
+                    // Rollback the transaction if any errors occur
+                    await transaction.RollbackAsync();
+
+                    // Handle or log the exception
+                    throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                    //throw; // Re-throw if necessary
                 }
-
-                foreach (var r in dbTariffRepairs)
-                {
-                    
-                    r.material_cost = Math.Round(Convert.ToDouble(r.material_cost.Value * material_cost_percentage), 2);
-                    r.labour_hour = Math.Ceiling((r.labour_hour.Value * labour_hour_percentage) * 4) / 4;
-
-                    r.update_by = uid;
-                    r.update_dt = currentDateTime;
-                }
-
-                retval = await context.SaveChangesAsync();
-
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
-            }
+
             return retval;
         }
 
