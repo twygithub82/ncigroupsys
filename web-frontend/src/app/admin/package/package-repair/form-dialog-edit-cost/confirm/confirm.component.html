@@ -5,7 +5,7 @@
         <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmAction()" hidden>
             {{data.langText.CONFIRM | translate}}
         </button>
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+        <button mat-flat-button color="warn" (click)="onNoClick()" tabindex="-1">
             {{data.langText.CLOSE | translate}}
         </button>
     </div>
