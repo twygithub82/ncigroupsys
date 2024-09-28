@@ -7,15 +7,7 @@ using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace IDMS.Models.Package.All.GqlTypes
 {
@@ -213,6 +205,7 @@ namespace IDMS.Models.Package.All.GqlTypes
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var currentDateTime = DateTime.Now.ToEpochTime();
 
                 var dbPackageLabours = context.package_labour.Where(cc => UpdatePackageLabour_guids.Contains(cc.guid)).ToList();
                 if (dbPackageLabours == null)
@@ -224,15 +217,15 @@ namespace IDMS.Models.Package.All.GqlTypes
                     if (cost > -1) dbPackageLabour.cost = cost;
                     if (!string.IsNullOrEmpty(remarks)) dbPackageLabour.remarks = remarks;
                     dbPackageLabour.update_by = uid;
-                    dbPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
+                    dbPackageLabour.update_dt = currentDateTime;
                 }
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -264,15 +257,13 @@ namespace IDMS.Models.Package.All.GqlTypes
                 dbPackageLabour.update_by = uid;
                 dbPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
 
-
-
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -286,21 +277,21 @@ namespace IDMS.Models.Package.All.GqlTypes
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var delPackageLabours = context.package_labour.Where(s => DeletePackageLabour_guids.Contains(s.guid) && s.delete_dt == null);
-
+                var currentDateTime = DateTime.Now.ToEpochTime();
 
                 foreach (var delPackageLabour in delPackageLabours)
                 {
-                    delPackageLabour.delete_dt = GqlUtils.GetNowEpochInSec();
+                    delPackageLabour.delete_dt = currentDateTime;
                     delPackageLabour.update_by = uid;
-                    delPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
+                    delPackageLabour.update_dt = currentDateTime;
                 }
-                retval = context.SaveChanges();
+                retval = await context.SaveChangesAsync();
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
@@ -314,34 +305,34 @@ namespace IDMS.Models.Package.All.GqlTypes
             try
             {
                 //Ori code -------------------------
-                //var dbPackageLabours = context.package_residue.Where(cc => UpdatePackageResidue_guids.Contains(cc.guid)).ToList();
-                //if (dbPackageLabours == null)
-                //{
-                //    throw new GraphQLException(new Error("The Package Cleaning not found", "500"));
-                //}
-                //foreach (var dbPackageLabour in dbPackageLabours)
-                //{
-                //    if (cost > -1) dbPackageLabour.cost = cost;
-                //    if (!string.IsNullOrEmpty(remarks)) dbPackageLabour.remarks = remarks;
-                //    dbPackageLabour.update_by = uid;
-                //    dbPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
-                //}
-                //retval = context.SaveChanges();
+                var packageResidues = context.package_residue.Where(cc => updatePackageResidue_guids.Contains(cc.guid)).ToList();
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var currentDateTime = DateTime.Now.ToEpochTime();
 
-                foreach (string residueGuid in updatePackageResidue_guids)
+                foreach (var packageResidue in packageResidues)
                 {
-                    var packageResidue = new package_residue() { guid = residueGuid };
-                    context.Attach(packageResidue);
-
                     if (cost > -1) packageResidue.cost = cost;
-                    if (!string.IsNullOrEmpty(remarks)) packageResidue.remarks = remarks.Replace("--", "");
-                    packageResidue.update_dt = currentDateTime;
+                    if (!string.IsNullOrEmpty(remarks)) packageResidue.remarks = remarks;
                     packageResidue.update_by = uid;
+                    packageResidue.update_dt = currentDateTime;
                 }
                 retval = await context.SaveChangesAsync();
+
+                //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                //var currentDateTime = DateTime.Now.ToEpochTime();
+
+                //foreach (string residueGuid in updatePackageResidue_guids)
+                //{
+                //    var packageResidue = new package_residue() { guid = residueGuid };
+                //    context.Attach(packageResidue);
+
+                //    if (cost > -1) packageResidue.cost = cost;
+                //    if (!string.IsNullOrEmpty(remarks)) packageResidue.remarks = remarks.Replace("--", "");
+                //    packageResidue.update_dt = currentDateTime;
+                //    packageResidue.update_by = uid;
+                //}
+                //retval = await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -357,34 +348,14 @@ namespace IDMS.Models.Package.All.GqlTypes
             int retval = 0;
             try
             {
-
-                //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //var guid = UpdatePackageResidue.guid;
-
-                //if (string.IsNullOrEmpty(guid))
-                //{
-                //    throw new GraphQLException(new Error("The package guid  is empty", "500"));
-                //}
-                //var dbPackageResidue = context.package_residue.Find(guid);
-
-                //if (dbPackageResidue == null)
-                //{
-                //    throw new GraphQLException(new Error("The Package Labour not found", "500"));
-                //}
-                //// dbPackageDepot.customer_company_guid = UpdatePackageDepot.customer_company_guid;
-                //dbPackageResidue.cost = UpdatePackageResidue.cost;
-                //dbPackageResidue.remarks = UpdatePackageResidue.remarks;
-
-                //dbPackageResidue.update_by = uid;
-                //dbPackageResidue.update_dt = GqlUtils.GetNowEpochInSec();
-
-                if (updatePackageResidue != null)
+                var packageResidue = await context.package_residue.Where(d => d.guid == updatePackageResidue.guid && (d.delete_dt == null || d.delete_dt == 0)).FirstOrDefaultAsync();
+                if (packageResidue != null)
                 {
                     var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     var currentDateTime = DateTime.Now.ToEpochTime();
 
-                    var packageResidue = new package_residue() { guid = updatePackageResidue.guid };
-                    context.Attach(packageResidue);
+                    //var packageResidue = new package_residue() { guid = updatePackageResidue.guid };
+                    //context.Attach(packageResidue);
 
                     packageResidue.cost = updatePackageResidue.cost;
                     packageResidue.remarks = updatePackageResidue.remarks;
@@ -393,6 +364,8 @@ namespace IDMS.Models.Package.All.GqlTypes
 
                     retval = await context.SaveChangesAsync();
                 }
+                else
+                    throw new GraphQLException(new Error($"Package residue not found", "ERROR"));
             }
             catch (Exception ex)
             {
@@ -409,30 +382,32 @@ namespace IDMS.Models.Package.All.GqlTypes
             try
             {
 
-                //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //var delPackageLabours = context.package_residue.Where(s => deletePackageResidue_guids.Contains(s.guid) && s.delete_dt == null);
-
-                //foreach (var delPackageLabour in delPackageLabours)
-                //{
-                //    delPackageLabour.delete_dt = GqlUtils.GetNowEpochInSec();
-                //    delPackageLabour.update_by = uid;
-                //    delPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
-                //}
-                //retval = context.SaveChanges();
-
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var currentDateTime = DateTime.Now.ToEpochTime();
 
-                foreach (var delGuid in deletePackageResidue_guids)
-                {
-                    var packageResidue = new package_residue() { guid = delGuid };
-                    context.Attach(packageResidue);
+                var delPackageLabours = context.package_residue.Where(s => deletePackageResidue_guids.Contains(s.guid) && s.delete_dt == null);
 
-                    packageResidue.delete_dt = currentDateTime;
-                    packageResidue.update_dt = currentDateTime;
-                    packageResidue.update_by = uid;
+                foreach (var delPackageLabour in delPackageLabours)
+                {
+                    delPackageLabour.delete_dt = currentDateTime;
+                    delPackageLabour.update_by = uid;
+                    delPackageLabour.update_dt = currentDateTime;
                 }
                 retval = await context.SaveChangesAsync();
+
+                //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                //var currentDateTime = DateTime.Now.ToEpochTime();
+
+                //foreach (var delGuid in deletePackageResidue_guids)
+                //{
+                //    var packageResidue = new package_residue() { guid = delGuid };
+                //    context.Attach(packageResidue);
+
+                //    packageResidue.delete_dt = currentDateTime;
+                //    packageResidue.update_dt = currentDateTime;
+                //    packageResidue.update_by = uid;
+                //}
+                //retval = await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -451,34 +426,30 @@ namespace IDMS.Models.Package.All.GqlTypes
             try
             {
                 //Ori code -------------------------
-                //var dbPackageLabours = context.package_residue.Where(cc => UpdatePackageResidue_guids.Contains(cc.guid)).ToList();
-                //if (dbPackageLabours == null)
-                //{
-                //    throw new GraphQLException(new Error("The Package Cleaning not found", "500"));
-                //}
-                //foreach (var dbPackageLabour in dbPackageLabours)
-                //{
-                //    if (cost > -1) dbPackageLabour.cost = cost;
-                //    if (!string.IsNullOrEmpty(remarks)) dbPackageLabour.remarks = remarks;
-                //    dbPackageLabour.update_by = uid;
-                //    dbPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
-                //}
-                //retval = context.SaveChanges();
+                var packageBuffers = context.package_buffer.Where(cc => updatePackageBuffer_guids.Contains(cc.guid)).ToList();
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var currentDateTime = DateTime.Now.ToEpochTime();
-
-                foreach (string bufferGuid in updatePackageBuffer_guids)
+                foreach (var packageBuffer in packageBuffers)
                 {
-                    var packageBuffer = new package_buffer() { guid = bufferGuid };
-                    context.Attach(packageBuffer);
-
                     if (cost > -1) packageBuffer.cost = cost;
-                    if (!string.IsNullOrEmpty(remarks)) packageBuffer.remarks = remarks.Replace("--", "");
-                    packageBuffer.update_dt = currentDateTime;
+                    if (!string.IsNullOrEmpty(remarks)) packageBuffer.remarks = remarks;
                     packageBuffer.update_by = uid;
+                    packageBuffer.update_dt = currentDateTime;
                 }
                 retval = await context.SaveChangesAsync();
+
+                //foreach (string bufferGuid in updatePackageBuffer_guids)
+                //{
+                //    var packageBuffer = new package_buffer() { guid = bufferGuid };
+                //    context.Attach(packageBuffer);
+
+                //    if (cost > -1) packageBuffer.cost = cost;
+                //    if (!string.IsNullOrEmpty(remarks)) packageBuffer.remarks = remarks.Replace("--", "");
+                //    packageBuffer.update_dt = currentDateTime;
+                //    packageBuffer.update_by = uid;
+                //}
+                //retval = await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -492,36 +463,17 @@ namespace IDMS.Models.Package.All.GqlTypes
           [Service] IHttpContextAccessor httpContextAccessor, package_buffer updatePackageBuffer)
         {
             int retval = 0;
+
             try
             {
-
-                //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //var guid = UpdatePackageResidue.guid;
-
-                //if (string.IsNullOrEmpty(guid))
-                //{
-                //    throw new GraphQLException(new Error("The package guid  is empty", "500"));
-                //}
-                //var dbPackageResidue = context.package_residue.Find(guid);
-
-                //if (dbPackageResidue == null)
-                //{
-                //    throw new GraphQLException(new Error("The Package Labour not found", "500"));
-                //}
-                //// dbPackageDepot.customer_company_guid = UpdatePackageDepot.customer_company_guid;
-                //dbPackageResidue.cost = UpdatePackageResidue.cost;
-                //dbPackageResidue.remarks = UpdatePackageResidue.remarks;
-
-                //dbPackageResidue.update_by = uid;
-                //dbPackageResidue.update_dt = GqlUtils.GetNowEpochInSec();
-
-                if (updatePackageBuffer != null)
+                var packageBuffer = await context.package_buffer.Where(b => b.guid == updatePackageBuffer.guid && (b.delete_dt == null || b.delete_dt == 0)).FirstOrDefaultAsync();
+                if (packageBuffer != null)
                 {
                     var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     var currentDateTime = DateTime.Now.ToEpochTime();
 
-                    var packageBuffer = new package_buffer() { guid = updatePackageBuffer.guid };
-                    context.Attach(packageBuffer);
+                    //var packageBuffer = new package_buffer() { guid = updatePackageBuffer.guid };
+                    //context.Attach(packageBuffer);
 
                     packageBuffer.cost = updatePackageBuffer.cost;
                     packageBuffer.remarks = updatePackageBuffer.remarks;
@@ -530,6 +482,8 @@ namespace IDMS.Models.Package.All.GqlTypes
 
                     retval = await context.SaveChangesAsync();
                 }
+                else
+                    throw new GraphQLException(new Error($"Package buffer not found", "ERROR"));
             }
             catch (Exception ex)
             {
@@ -547,23 +501,15 @@ namespace IDMS.Models.Package.All.GqlTypes
             {
 
                 //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //var delPackageLabours = context.package_residue.Where(s => deletePackageResidue_guids.Contains(s.guid) && s.delete_dt == null);
-
-                //foreach (var delPackageLabour in delPackageLabours)
-                //{
-                //    delPackageLabour.delete_dt = GqlUtils.GetNowEpochInSec();
-                //    delPackageLabour.update_by = uid;
-                //    delPackageLabour.update_dt = GqlUtils.GetNowEpochInSec();
-                //}
-                //retval = context.SaveChanges();
+                var packageBuffers = context.package_buffer.Where(s => deletePackageBuffer_guids.Contains(s.guid) && s.delete_dt == null);
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var currentDateTime = DateTime.Now.ToEpochTime();
 
-                foreach (var delGuid in deletePackageBuffer_guids)
+                foreach (var packageBuffer in packageBuffers)
                 {
-                    var packageBuffer = new package_buffer() { guid = delGuid };
-                    context.Attach(packageBuffer);
+                    //var packageBuffer = new package_buffer() { guid = delGuid };
+                    //context.Attach(packageBuffer);
 
                     packageBuffer.delete_dt = currentDateTime;
                     packageBuffer.update_dt = currentDateTime;
@@ -587,18 +533,18 @@ namespace IDMS.Models.Package.All.GqlTypes
             int retval = 0;
             try
             {
-                
 
+                var packageRepairs = await context.package_repair.Where(t => updatePackageRepair_guids.Contains(t.guid)).ToListAsync();
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var currentDateTime = DateTime.Now.ToEpochTime();
 
-                foreach (string repairGuid in updatePackageRepair_guids)
+                foreach (var packageRepair in packageRepairs)
                 {
-                    var packageRepair = new package_repair() { guid = repairGuid };
-                    context.Attach(packageRepair);
+                    //var packageRepair = new package_repair() { guid = repairGuid };
+                    //context.Attach(packageRepair);
                     if (material_cost > -1) packageRepair.material_cost = material_cost;
                     if (labour_hour > -1) packageRepair.labour_hour = labour_hour;
-                    if (!string.IsNullOrEmpty(remarks)) packageRepair.remarks = remarks.Replace("--","");
+                    if (!string.IsNullOrEmpty(remarks)) packageRepair.remarks = remarks.Replace("--", "");
 
                     packageRepair.update_dt = currentDateTime;
                     packageRepair.update_by = uid;
@@ -620,17 +566,23 @@ namespace IDMS.Models.Package.All.GqlTypes
             try
             {
 
-                
+                var packageRepair = await context.package_repair.Where(r => r.guid == updatePackageRepair.guid &&
+                                                                        (r.delete_dt == null || r.delete_dt == 0)).FirstOrDefaultAsync();
 
-                if (updatePackageRepair != null)
+                if (packageRepair != null)
                 {
                     var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     var currentDateTime = DateTime.Now.ToEpochTime();
 
-                    var packageRepair = new package_repair() { guid = updatePackageRepair.guid };
-                    context.Attach(packageRepair);
+                    //var packageRepair = new package_repair() 
+                    //{ 
+                    //    guid = updatePackageRepair.guid, 
+                    //    customer_company_guid = updatePackageRepair.customer_company_guid,
+                    //    tariff_repair_guid = updatePackageRepair.tariff_repair_guid
+                    //};
+                    //context.Attach(packageRepair);
 
-                    packageRepair.material_cost  = updatePackageRepair.material_cost;
+                    packageRepair.material_cost = updatePackageRepair.material_cost;
                     packageRepair.labour_hour = updatePackageRepair.labour_hour;
                     packageRepair.remarks = updatePackageRepair.remarks;
                     packageRepair.update_by = uid;
@@ -638,6 +590,9 @@ namespace IDMS.Models.Package.All.GqlTypes
 
                     retval = await context.SaveChangesAsync();
                 }
+                else
+                    throw new GraphQLException(new Error($"Package repair not found", "ERROR"));
+
             }
             catch (Exception ex)
             {
@@ -653,16 +608,18 @@ namespace IDMS.Models.Package.All.GqlTypes
             int retval = 0;
             try
             {
-
-               
+                var packageRepairs = await context.package_repair.Where(t => deletePackageRepair_guids.Contains(t.guid)).ToListAsync();
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var currentDateTime = DateTime.Now.ToEpochTime();
 
-                foreach (var delGuid in deletePackageRepair_guids)
+                foreach (var packageRepair in packageRepairs)
                 {
-                    var packageRepair = new package_repair() { guid = delGuid };
-                    context.Attach(packageRepair);
+                    //var packageRepair = new package_repair() 
+                    //{ 
+                    //    guid = delGuid
+                    //};
+                    //context.Attach(packageRepair);
 
                     packageRepair.delete_dt = currentDateTime;
                     packageRepair.update_dt = currentDateTime;
@@ -680,8 +637,8 @@ namespace IDMS.Models.Package.All.GqlTypes
 
 
         public async Task<int> UpdatePackageRepair_MaterialCost(ApplicationPackageDBContext context, [Service] IConfiguration config,
-      [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension, 
-      int? length, string? tariff_repair_guid,string[]? customer_company_guids, double material_cost_percentage, double labour_hour_percentage)
+      [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
+      int? length, string? tariff_repair_guid, string[]? customer_company_guids, double material_cost_percentage, double labour_hour_percentage)
         {
             int retval = 0;
             try
@@ -690,45 +647,56 @@ namespace IDMS.Models.Package.All.GqlTypes
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var currentDateTime = DateTime.Now.ToEpochTime();
 
-                var dbPackRepairs = context.package_repair.Where(i => i.delete_dt == null || i.delete_dt == 0)
-                    .Include(t=>t.tariff_repair)
-                    .ToArray();
-                if (customer_company_guids?.Length > 0) { dbPackRepairs = dbPackRepairs.Where(t => customer_company_guids.Contains(t.customer_company_guid)).ToArray(); }
+                var dbPackRepairs = await context.package_repair.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                    .Include(t => t.tariff_repair)
+                    .ToListAsync();
+                if (customer_company_guids?.Length > 0) 
+                { 
+                    dbPackRepairs = dbPackRepairs.Where(t => customer_company_guids.Contains(t.customer_company_guid)).ToList();
+                }
                 if (!string.IsNullOrEmpty(tariff_repair_guid))
                 {
-                    dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.guid == tariff_repair_guid).ToArray();
+                    dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.guid == tariff_repair_guid).ToList();
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(group_name_cv)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.group_name_cv == group_name_cv).ToArray();
-                    if (!string.IsNullOrEmpty(subgroup_name_cv)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.subgroup_name_cv == subgroup_name_cv).ToArray();
-                    if (!string.IsNullOrEmpty(part_name)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.part_name == part_name).ToArray();
-                    if(!string.IsNullOrEmpty(dimension)) dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.dimension == dimension).ToArray();
-                    if(length!=null)
+                    if (!string.IsNullOrEmpty(group_name_cv))
+                        dbPackRepairs = dbPackRepairs.Where(t => group_name_cv.EqualsIgnore(t.tariff_repair?.group_name_cv)).ToList();
+                    if (!string.IsNullOrEmpty(subgroup_name_cv))
+                        dbPackRepairs = dbPackRepairs.Where(t => subgroup_name_cv.EqualsIgnore(t.tariff_repair?.subgroup_name_cv)).ToList();
+                    if (!string.IsNullOrEmpty(part_name))
+                        dbPackRepairs = dbPackRepairs.Where(t => part_name.EqualsIgnore(t.tariff_repair?.part_name)).ToList();
+                    if (!string.IsNullOrEmpty(dimension))
+                        dbPackRepairs = dbPackRepairs.Where(t => dimension.EqualsIgnore(t.tariff_repair?.dimension)).ToList();
+                    if (length != null)
                     {
-                        if(length>0)
+                        if (length > 0)
                         {
-                            dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.length == length ).ToArray();
+                            dbPackRepairs = dbPackRepairs.Where(t => t.tariff_repair?.length == length).ToList();
                         }
                     }
                 }
-                
 
                 foreach (var packageRepair in dbPackRepairs)
                 {
                     packageRepair.material_cost = Math.Round(Convert.ToDouble(packageRepair.material_cost * material_cost_percentage), 2);
-                    packageRepair.labour_hour = Math.Ceiling((packageRepair.labour_hour.Value * labour_hour_percentage) * 4) / 4;
+                    packageRepair.labour_hour = Math.Ceiling((packageRepair.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4;
 
                     packageRepair.update_dt = currentDateTime;
                     packageRepair.update_by = uid;
                 }
                 retval = await context.SaveChangesAsync();
 
+                //retval = await context.package_repair.ExecuteUpdateAsync(s => s
+                //                      .SetProperty(e => e.delete_dt, currentDateTime)
+                //                      .SetProperty(e => e.update_dt, currentDateTime)
+                //                      .SetProperty(e => e.update_by, uid));
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
             return retval;
         }
