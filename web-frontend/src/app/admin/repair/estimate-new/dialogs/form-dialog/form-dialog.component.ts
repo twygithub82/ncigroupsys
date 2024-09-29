@@ -22,7 +22,7 @@ import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
-import { addDefaultSelectOption, CodeValuesDS } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
@@ -82,6 +82,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dimensionList?: string[];
   lengthList?: any[];
   valueChangesDisabled: boolean = false;
+  subgroupNameCvList?: CodeValuesItem[];
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
@@ -185,7 +186,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         quantity: this.repairPartForm.get('quantity')?.value,
         hour: this.repairPartForm.get('hour')?.value,
         material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value),
-        remarks: this.repairPartForm.get('remarks')?.value
+        remarks: this.repairPartForm.get('remarks')?.value,
+        create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
       }
       rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${rep.tariff_repair?.length} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
@@ -222,18 +224,22 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         console.log(value)
         if (value) {
           if (value.child_code) {
-            const queries = [
-              { alias: 'subgroupNameCv', codeValType: value.child_code },
-            ];
-            this.cvDS.getCodeValuesByType(queries);
-            this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
-              this.data.populateData.subgroupNameCvList = addDefaultSelectOption(data, '-', '');
-            });
+            this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
+            this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '')
+            // const queries = [
+            //   { alias: 'subgroupNameCv', codeValType: value.child_code },
+            // ];
+            // this.cvDS.getCodeValuesByType(queries);
+            // this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
+            //   this.data.populateData.subgroupNameCvList = addDefaultSelectOption(data, '-', '');
+            // });
           } else {
             this.trDS.searchDistinctPartName(value.code_val, undefined).subscribe(data => {
               this.partNameList = data;
             });
           }
+        } else {
+          this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '')
         }
       })
     ).subscribe();
@@ -244,7 +250,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tap(value => {
         const groupName = this.repairPartForm?.get('group_name_cv')?.value;
         if (groupName) {
-          debugger
           this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
             this.partNameList = data;
             // this.partNameFilteredList = data

@@ -769,6 +769,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
             test_dt
             update_by
             update_dt
+            delete_dt
           }
         }
         tariff_cleaning {
@@ -796,6 +797,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
             guid
             name
             alias
+            delete_dt
           }
         }
         customer_company {
@@ -803,6 +805,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
           guid
           name
           alias
+          delete_dt
         }
         repair_est {
           aspnetusers_guid

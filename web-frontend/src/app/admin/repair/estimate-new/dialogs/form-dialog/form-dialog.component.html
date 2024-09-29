@@ -31,7 +31,7 @@
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.SUBGROUP_NAME}}</mat-label>
             <mat-select formControlName="subgroup_name_cv">
-              @for (codeValue of data.populateData.subgroupNameCvList; track codeValue) {
+              @for (codeValue of subgroupNameCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
               }
             </mat-select>

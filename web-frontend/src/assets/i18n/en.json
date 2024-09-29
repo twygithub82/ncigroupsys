@@ -172,7 +172,8 @@
       "LIST": {
         "ESTIMATE": "Estimate",
         "ESTIMATE-NEW": "New Estimate",
-        "ESTIMATE-EDIT": "Edit Estimate"
+        "ESTIMATE-EDIT": "Edit Estimate",
+        "APPROVAL": "Approval"
       }
     }
   },
