@@ -228,7 +228,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
             this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '');
           } else {
-            this.trDS.searchDistinctPartName(value.code_val, undefined).subscribe(data => {
+            this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
               this.partNameList = data;
             });
           }
@@ -246,7 +246,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         if (groupName) {
           console.log(`${groupName.code_val}, ${value}`)
           const partName = this.repairPartForm?.get('part_name');
-          this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
+          this.trDS.searchDistinctPartName(groupName.code_val, value === '' ? null : value).subscribe(data => {
             this.partNameList = data;
           });
         }

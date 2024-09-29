@@ -25,14 +25,14 @@
       <mat-card [ngClass]="{'card-content p-2 m-b-10 bg-light-grey-opacity-30': true}"
         matRipple>
         @for(row of s.scheduling_sot; track row){
-        <mat-card [ngClass]="{'bg-light-grey': checkDisable(row.storing_order_tank!), 'card-content p-0 m-b-10': true}"
+        <mat-card [ngClass]="{'bg-light-grey': checkDisable(row!), 'card-content p-0 m-b-10': true}"
           matRipple>
           <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center"
-            (click)="toggleRow(row.storing_order_tank!)">
+            (click)="toggleRow(row!)">
             <mat-card-title [ngClass]="{'pt-1': true}">
-              <mat-checkbox (change)="$event ? toggleRow(row.storing_order_tank!) : null"
-                [checked]="sotSelection.isSelected(row.storing_order_tank!)" class="card-checkbox"
-                (click)="$event.stopPropagation()" [disabled]="checkDisable(row.storing_order_tank!)">
+              <mat-checkbox (change)="$event ? toggleRow(row!) : null"
+                [checked]="schedulingSotSelection.isSelected(row!)" class="card-checkbox"
+                (click)="$event.stopPropagation()" [disabled]="checkDisable(row!)">
               </mat-checkbox>
               {{row.storing_order_tank!.tank_no}}
             </mat-card-title>
@@ -52,20 +52,8 @@
                 {{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
               </div>
               <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
-                <span class="font-bold">{{data.translatedLangText.CAPACITY}}:</span> {{
-                igDS.getInGateItem(row.storing_order_tank!.in_gate)?.in_gate_survey?.capacity}}
-              </div>
-              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
-                <span class="font-bold">{{data.translatedLangText.TARE_WEIGHT}}:</span> {{
-                igDS.getInGateItem(row.storing_order_tank!.in_gate)?.in_gate_survey?.tare_weight}}
-              </div>
-              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
                 {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
-              </div>
-              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
-                <span class="font-bold">{{data.translatedLangText.BOOKING_DATE}}:</span>
-                {{displayDate(bookingDS.getBookingReleaseOrder(row.storing_order_tank!.booking)?.booking_dt)}}
               </div>
               <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{data.translatedLangText.SCHEDULING_DATE}}:</span>

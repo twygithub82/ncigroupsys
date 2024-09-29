@@ -234,7 +234,7 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       );
   }
 
-  searchDistinctPartName(groupName?: string, subgroupName?: string): Observable<string[]> {
+  searchDistinctPartName(groupName?: string, subgroupName?: string | null): Observable<string[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({

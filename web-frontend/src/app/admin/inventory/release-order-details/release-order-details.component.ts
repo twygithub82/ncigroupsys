@@ -434,7 +434,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const selectedList = result.selectedList;
-        const roSotList = selectedList.map((tank: any) => new ReleaseOrderSotUpdateItem({ sot_guid: tank.guid, storing_order_tank: new StoringOrderTankItem(tank), action: 'new', actions: ['new'] }))
+        console.log(selectedList);
+        const roSotList = selectedList.map((schedulingSot: SchedulingSotItem) => new ReleaseOrderSotUpdateItem({ sot_guid: schedulingSot.sot_guid, storing_order_tank: new StoringOrderTankItem({...schedulingSot.storing_order_tank, scheduling_sot: [schedulingSot]}), action: 'new', actions: ['new'] }))
         this.populateSOT(roSotList)
         // const data = [...this.schedulingList];
         // const newItem = new StoringOrderTankItem({

@@ -130,6 +130,7 @@ export const GET_SCHEDULING_FOR_RO = gql`
       totalCount
       nodes {
         book_type_cv
+        remarks
         create_by
         create_dt
         delete_dt
@@ -145,6 +146,11 @@ export const GET_SCHEDULING_FOR_RO = gql`
           reference
           scheduling_dt
           delete_dt
+          scheduling {
+            book_type_cv
+            remarks
+            status_cv
+          }
           storing_order_tank {
             certificate_cv
             clean_status_cv
