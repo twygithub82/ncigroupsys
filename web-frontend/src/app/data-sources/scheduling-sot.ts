@@ -39,10 +39,12 @@ export class SchedulingSotGO {
 export class SchedulingSotItem extends SchedulingSotGO {
   public scheduling?: SchedulingItem;
   public storing_order_tank?: StoringOrderTankItem;
+  public actions?: string[]
   constructor(item: Partial<SchedulingSotItem> = {}) {
     super(item)
     this.scheduling = item.scheduling;
     this.storing_order_tank = item.storing_order_tank;
+    this.actions = item.actions;
   }
 }
 

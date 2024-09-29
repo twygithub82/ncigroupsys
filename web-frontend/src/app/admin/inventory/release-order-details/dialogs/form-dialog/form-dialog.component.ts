@@ -33,7 +33,7 @@ import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatTableModule } from '@angular/material/table';
-import { SchedulingSotDS } from 'app/data-sources/scheduling-sot';
+import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 
 export interface DialogData {
   action?: string;
@@ -41,7 +41,7 @@ export interface DialogData {
   sotIdList?: string[];
   translatedLangText?: any;
   populateData?: any;
-  selectedList?: StoringOrderTankItem[];
+  selectedList?: SchedulingSotItem[];
 }
 
 @Component({
@@ -92,7 +92,7 @@ export class FormDialogComponent {
   schedulingList: SchedulingItem[] = [];
   schedulingFilteredList: SchedulingItem[] = [];
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
-  sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
+  schedulingSotSelection = new SelectionModel<SchedulingSotItem>(true, []);
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
@@ -166,23 +166,21 @@ export class FormDialogComponent {
   }
 
   submit() {
-    if (this.sotSelection.hasValue()) {
-      const selectedList = this.sotSelection.selected.map(sot => {
-        const sotItem = new StoringOrderTankItem(sot);
+    if (this.schedulingSotSelection.hasValue()) {
+      const selectedList = this.schedulingSotSelection.selected.map(schedulingSot => {
+        const schedulingSotItem = new SchedulingSotItem(schedulingSot);
 
-        // Ensure 'new' is added to actions without duplicates
-        sotItem.actions = sotItem.actions || []; // Initialize actions if it's undefined
-        if (!sotItem.actions.includes('new')) {
-          sotItem.actions.push('new');
+        schedulingSotItem.actions = schedulingSotItem.actions || [];
+        if (!schedulingSotItem.actions.includes('new')) {
+          schedulingSotItem.actions.push('new');
         }
 
-        return sotItem;
+        return schedulingSotItem;
       });
       const returnDialog: DialogData = {
         action: 'new',
         selectedList: selectedList
       }
-      console.log('valid');
       this.dialogRef.close(returnDialog);
     } else {
       console.log('invalid');
@@ -214,18 +212,18 @@ export class FormDialogComponent {
     }
   }
 
-  toggleRow(row: StoringOrderTankItem) {
+  toggleRow(row: SchedulingSotItem) {
     if (this.checkDisable(row)) return;
     const selectedItems = this.selectedItemsPerPage[0] || new Set<string>();
 
     // Check if the row is already selected
-    if (this.sotSelection.isSelected(row)) {
+    if (this.schedulingSotSelection.isSelected(row)) {
       // Deselect the row
-      this.sotSelection.deselect(row);
+      this.schedulingSotSelection.deselect(row);
       selectedItems.delete(row.guid!);
     } else {
       // If the row is not selected, check if it should be selected based on the company
-      this.sotSelection.select(row);
+      this.schedulingSotSelection.select(row);
       selectedItems.add(row.guid!);
     }
 
@@ -247,7 +245,7 @@ export class FormDialogComponent {
   }
 
   checkDisable(sot: any | undefined): boolean {
-    return sot.isOver3Days || sot.notStorage || this.sotIdList.some(sot_guid => sot_guid === sot.guid);
+    return sot?.storing_order_tank?.isOver3Days || sot?.storing_order_tank?.notStorage || this.sotIdList.some(sot_guid => sot_guid === sot?.sot_guid);
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {

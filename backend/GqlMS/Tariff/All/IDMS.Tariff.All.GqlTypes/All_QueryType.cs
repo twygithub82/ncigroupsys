@@ -1,4 +1,5 @@
-﻿using HotChocolate.Data;
+﻿using CommonUtil.Core.Service;
+using HotChocolate.Data;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Shared;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
@@ -234,12 +235,16 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                 // Apply filters conditionally
                 if (!string.IsNullOrEmpty(groupName))
                 {
-                    query = query.Where(tr => tr.group_name_cv == groupName);
+                    query = query.Where(tr => tr.group_name_cv.ToLower() == groupName.ToLower());
                 }
 
-                if (!string.IsNullOrEmpty(subgroupName))
+                if (subgroupName == null)
                 {
-                    query = query.Where(tr => tr.subgroup_name_cv == subgroupName);
+                    query = query.Where(tr => tr.subgroup_name_cv == null || tr.group_name_cv == "");
+                }
+                else if(subgroupName != "")
+                {
+                    query = query.Where(tr => tr.subgroup_name_cv.ToLower() == subgroupName.ToLower());
                 }
 
                 // Select distinct part names
