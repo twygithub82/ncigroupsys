@@ -197,6 +197,10 @@ export const ADMIN_ROUTE: Routes = [
     component: EstimateNewComponent,
   },
   {
+    path: "repair/approval",
+    component: EstimateComponent,
+  },
+  {
     path:"master/estimate-template",
     component:EstimateTemplateComponent,
   },

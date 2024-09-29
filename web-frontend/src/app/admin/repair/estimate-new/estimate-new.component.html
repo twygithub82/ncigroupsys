@@ -163,7 +163,7 @@
                     (click)="addEstDetails($event)" [disabled]="!(groupNameCvList.length)">
                     <mat-icon class="col-white">
                       @if ((groupNameCvList.length)) {
-                        add
+                      add
                       } @else if (!(groupNameCvList.length)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
@@ -177,6 +177,10 @@
                   <div class="responsive_table">
                     <table mat-table [dataSource]="repList" matSort
                       class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                      <ng-container matColumnDef="seq">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>No.</mat-header-cell>
+                        <mat-cell *matCellDef="let row; let i = index">{{i + 1}}</mat-cell>
+                      </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
@@ -202,7 +206,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.SUBGROUP}}:</span>
-                          {{row.tariff_repair?.subgroup_name_cv}}
+                          {{getSubgroupNameCodeDescription(row.tariff_repair?.subgroup_name_cv)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="damange">
@@ -300,15 +304,12 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="isOwner">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''"
-                          mat-sort-header>
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>
                           @if (isOwner) {
                           {{translatedLangText.OWNER}}
                           }
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                          [ngClass]="''">
+                        <mat-cell *matCellDef="let row" [ngClass]="''">
                           @if (isOwner) {
                           <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
                           <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner"
@@ -321,7 +322,7 @@
                       <ng-container matColumnDef="actions">
                         <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
+                        <mat-cell *matCellDef="let row; let i = index;" class="justify-content-end">
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
                           </button>
@@ -362,7 +363,7 @@
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
+                      <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
                         (click)="editEstDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
                       </mat-row>

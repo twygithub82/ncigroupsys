@@ -485,6 +485,17 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+      },
+      {
+        path: "admin/repair/approval",
+        title: "MENUITEMS.REPAIR.LIST.APPROVAL",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
       }
     ]
   },

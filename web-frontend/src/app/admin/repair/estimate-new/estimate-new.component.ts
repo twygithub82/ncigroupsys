@@ -101,6 +101,7 @@ import { UserDS, UserItem } from 'app/data-sources/user';
 })
 export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
+    'seq',
     'group_name_cv',
     'subgroup_name_cv',
     'damange',
@@ -325,13 +326,13 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           this.repairEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairEstForm?.get('remarks')?.setValue(value.remarks);
-          const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
+          const repList: RepairEstPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
             const package_repair = tep.tariff_repair?.package_repair;
             let material_cost = 0;
             if (package_repair?.length) {
               material_cost = package_repair[0].material_cost
             }
-            const tep_damage_repair = tep.tep_damage_repair.map((item: any) => {
+            const tep_damage_repair = this.filterDeleted(tep.tep_damage_repair).map((item: any) => {
               return new REPDamageRepairItem({
                 code_cv: item.code_cv,
                 code_type: item.code_type,
@@ -446,6 +447,24 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
     this.cvDS.connectAlias('groupNameCv').subscribe(data => {
       this.groupNameCvList = data;
+      const subqueries: any[] = [];
+      data.map(d => {
+        if (d.child_code) {
+          let q = { alias: d.child_code, codeValType: d.child_code };
+          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+          if (!hasMatch) {
+            subqueries.push(q);
+          }
+        }
+      });
+      if (subqueries.length > 0) {
+        this.cvDS?.getCodeValuesByType(subqueries);
+        subqueries.map(s => {
+          this.cvDS?.connectAlias(s.alias).subscribe(data => {
+            this.subgroupNameCvList.push(...data);
+          });
+        });
+      }
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
@@ -580,7 +599,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         translatedLangText: this.translatedLangText,
         populateData: {
           groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: [],
+          subgroupNameCvList: this.subgroupNameCvList,
           yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
@@ -621,7 +640,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         translatedLangText: this.translatedLangText,
         populateData: {
           groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: [],
+          subgroupNameCvList: this.subgroupNameCvList,
           yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
@@ -857,7 +876,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   updateData(newData: RepairEstPartItem[] | undefined): void {
     if (newData?.length) {
-      this.repList.data = [...newData];
+      this.repList.data = [...this.sortREP(newData)];
       this.calculateCost();
     }
   }
@@ -1017,6 +1036,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     return this.cvDS.getCodeDescription(codeVal, this.groupNameCvList);
   }
 
+  getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
+  }
+
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
     return damageRepair.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
       return item.code_cv;
@@ -1148,5 +1171,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  sortREP(newData: RepairEstPartItem[]): any[] {
+    newData.sort((a, b) => b.create_dt! - a.create_dt!);
+    return newData;
   }
 }
