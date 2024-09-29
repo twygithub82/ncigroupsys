@@ -137,7 +137,8 @@
       "TEXT": "Master",
       "LIST": {
         "ESTIMATE-TEMPLATE": "Estimate Template",
-        "ASSIGN-ESTIMATE-TEMPLATE": "Assign Template"
+        "ASSIGN-ESTIMATE-TEMPLATE": "Assign Template",
+        "CUSTOMER":"Customer"
       }
     },
     "NEW": {
@@ -542,7 +543,7 @@
     "CONFIRM-CLEAR-ALL": "Confirm Clear All",
     "PART": "Part",
     "AMEND": "Amend",
-    "CUSOTMER-EXCEED":"Selected Customer Exceed - ",
+    "CUSTOMER-EXCEED":"Selected Customer Exceed - ",
     "ENTER-ATLEAST-ONE-CONDITION": "Please enter at least one query condition.",
      "NO-VALUE-CHNAGE": "No Value Change Detected"
     

@@ -8,13 +8,18 @@
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
-            <!-- <div class="materialTableHeader">
+            <div class="materialTableHeader">
               <div class="left">
-                <form class="ms-0" [formGroup]="pcForm!"  #formDirective="ngForm">
-                <div class="row">
-                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
+                <ul class="header-buttons-left ms-0">
+                  <li class="tbl-title">
+                    <h2>{{translatedLangText.CUSTOMER_CODE}} :
+                    </h2>
+                  </li>
+                  <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 ">
+                  <!-- <li class="tbl-search-box"> -->
+                    <form class="ms-0" [formGroup]="pcForm!"  #formDirective="ngForm">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{langText.CUSTOMER_CODE | translate}}</mat-label>
                         <mat-select [formControl]="customerCodeControl" formControlName="customer_code" multiple>
                             <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
                              
@@ -23,46 +28,37 @@
                             </mat-option>
                           </mat-select>
                        
-                    </mat-form-field>
-                    
-                  </div>
-                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
-                        <mat-select [formControl]="profileNameControl" formControlName="profile_name" multiple>
-                            <mat-option *ngFor="let cc of tariffDepotDS.connect() | async" [value]="cc">
-                             
-                                {{ cc.profile_name }}
-                             
-                            </mat-option>
-                          </mat-select>
-                       
-                    </mat-form-field>
-                    
-                  </div> 
-                  
-                  <button mat-mini-fab color="primary" (click)="search()" style="margin-top: 10px; margin-left:15px">
-                    <mat-icon>search</mat-icon>
-                  </button>
-                
+                      </mat-form-field>
+                    </form>
+                  <!-- </li> -->
                 </div>
-               </form> 
-               
+                  <li class="ps-2">
+                    <button mat-mini-fab color="primary" (click)="search()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </li>
+                </ul>
               </div>
-            
-            </div> -->
-            <mat-accordion>
-              <mat-expansion-panel expanded="true">
+              <!-- <div class="right">
+              </div> -->
+            </div>
+            <!-- <mat-accordion>
+              <mat-expansion-panel>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                   </mat-panel-title>
                   <mat-panel-description>
-                    
-                    <div class="m-l-" [matTooltip]="translatedLangText.EDIT">
-                      <button mat-mini-fab color="primary" (click)="adjustCost()"  (click)="$event.stopPropagation()">
+                    <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                      <button mat-mini-fab color="primary" [routerLink]="['/admin/tariff/tariff-cleaning/new']">
+                        <mat-icon class="col-white">add</mat-icon>
+                      </button>
+                    </div>
+                    <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
+                      <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">edit</mat-icon>
                       </button>
                     </div>
+                  
                     <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                       <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                         (click)="$event.stopPropagation()" />
@@ -71,63 +67,61 @@
                 </mat-expansion-panel-header>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <form class="ms-0" [formGroup]="pcForm!"  #formDirective="ngForm">
-                    <div class="row">
+                  <div class="row">
                       <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-                            <mat-select formControlName="customer_code" multiple>
-                                <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
-                                 
-                                  <ng-container *ngIf="cc !== null">
-                                    {{ ccDS.displayName(cc) }}
-                                  </ng-container>
-                                 
-                                </mat-option>
-                              </mat-select>
-                           
-                        </mat-form-field>
-                        
+                          <mat-form-field class="example-full-width">
+                              <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
+                              <mat-select [formControl]="customerCodeControl" formControlName="customer_code" multiple>
+                                  <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
+                                   
+                                      {{ ccDS.displayName(cc) }}
+                                   
+                                  </mat-option>
+                                </mat-select>
+                             
+                            </mat-form-field>
                       </div>
                       <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.ALIAS_NAME}}</mat-label>
-                            <input matInput formControlName="alias_name" type="text">
-                        </mat-form-field>
-                        
+                          <mat-form-field class="example-full-width">
+                              <mat-label>{{translatedLangText.CARGO_CATEGORY }}</mat-label>
+                              <mat-select [formControl]="categoryControl" formControlName="cleaning_category" multiple>
+                                  @for (cn of cleaning_categoryList; track cn) {
+                                      <mat-option [value]="cn.guid">
+                                        {{cn.name}}
+                                      </mat-option>
+                                      }
+                                </mat-select>
+                             
+                            </mat-form-field>
                       </div>
                   
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.COUNTRY}}</mat-label>
-                            <input matInput formControlName="country" type="text">
-                        </mat-form-field>
-                      </div>  
-                      <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>{{translatedLangText.CONTACT_PERSON }}</mat-label>
-                            <input matInput formControlName="contact_person" type="text">
-                        </mat-form-field>
-                        
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                          <mat-form-field class="example-full-width">
+                              <mat-label>{{translatedLangText.PACKAGE_MIN_COST}}</mat-label>
+                              <input matInput formControlName="min_cost" type="number">
+                             
+                            </mat-form-field>
                       </div>
-                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
-                      <button mat-mini-fab color="primary" (click)="search()" style="margin-top: 10px; margin-left:15px">
-                        <mat-icon>search</mat-icon>
-                      </button>
-                      <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
-                        {{translatedLangText.CLEAR_ALL}}
-                      </button>
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
+                          <mat-form-field class="example-full-width">
+                              <mat-label>{{translatedLangText.PACKAGE_MAX_COST}}</mat-label>
+                              <input matInput formControlName="max_cost" type="number">
+                             
+                            </mat-form-field>
                       </div>
-                    </div>
-                 
-                   </form> 
+                      <div  class="col-xl-1 col-lg-1 col-md-1 col-sm-1 mb-1">
+                      <button mat-mini-fab color="primary" (click)="search()">
+                          <mat-icon>search</mat-icon>
+                        </button>
+                      </div>
+                  </div>
+                  </form>
                 </div>
               </mat-expansion-panel>
-            </mat-accordion>
+            </mat-accordion> -->
             <div class="body overflow-auto">
               <div class="responsive_table">
-                <table mat-table [dataSource]="packResidueItems" matSort class="mat-cell advance-table">
+                <table mat-table [dataSource]="customer_companyList" matSort class="mat-cell advance-table">
                   <!-- Checkbox Column -->
                   <ng-container matColumnDef="select">
                     <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
@@ -154,40 +148,25 @@
                       <img [src]="row.img" />
                     </mat-cell>
                   </ng-container> -->
-                  <ng-container matColumnDef="desc">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DESCRIPTION }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.DESCRIPTION }}:</span>{{row.tariff_residue.description}}</mat-cell>
-                  </ng-container>
                   <ng-container matColumnDef="fName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE }}:</span>{{row.customer_company.code}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE }}:</span>{{row.code}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="lName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="mobile">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COST }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> {{row.cost.toFixed(2)}}</mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="gender">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.STANDARD_COST }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.tariff_residue.cost.toFixed(2)}}</mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="bDate">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.REMARKS }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.remarks}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.name}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="email">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PHONE }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span> {{this.displayLastUpdated(row)}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.PHONE }}:</span> {{row.phone}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="gender">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.EMAIL }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                      <span class="mobile-label">{{this.translatedLangText.EMAIL}}:</span> {{row.email}}</mat-cell>
                   </ng-container>
                   <!-- actions -->
                   <ng-container matColumnDef="actions">
@@ -210,14 +189,14 @@
                 </table>
               </div>
               <!-- Loading spinner -->
-              @if (!(packResidueDS.loading$ | async) && !packResidueItems.length) {
+              @if (!(packDepotDS.loading$ | async) && !packDepotItems.length) {
                 <mat-divider></mat-divider>
-                <div class="no-results m-l-20 pt-3" [style.display]="packResidueItems.length === 0 ? '' : 'none'">
+                <div class="no-results m-l-20 pt-3" [style.display]="custCompClnCatItems.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>
                 }
                 <!-- Loading spinner -->
-                @if (packResidueDS.loading$ | async) {
+                @if (packDepotDS.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                   </mat-progress-spinner>
@@ -272,8 +251,8 @@
               </mat-menu>
               <!-- context menu end -->
              
-              <mat-paginator #paginator [length]="packResidueDS.totalCount" [pageIndex]="0" [pageSize]="10"
-                [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+              <mat-paginator #paginator [length]="custCompDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageEvent($event)">
               </mat-paginator>
             </div>
           </div>

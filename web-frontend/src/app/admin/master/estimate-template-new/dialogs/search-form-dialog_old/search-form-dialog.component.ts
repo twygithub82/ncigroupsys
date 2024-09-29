@@ -29,6 +29,7 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { TemplateEstPartItem } from 'app/data-sources/master-template';
 
 
 export interface DialogData {
@@ -83,21 +84,27 @@ export class SearchFormDialogComponent {
 
   action: string;
   dialogTitle: string;
-  //customer_company_guid: string;
+  customer_company_guid: string;
   part_name: string;
   group_name_cv: string;
   subgroup_name_cv: string;
   selected_repair_est_part: RepairEstPartItem;
 
-  filterTableForm: UntypedFormGroup;
-  tariffRepairList:TariffRepairItem[]=[];
-  tariffRepairFilteredList:TariffRepairItem[]=[];
-  //packageRepairList: PackageRepairItem[] = [];
- // packageRepairFilteredList: PackageRepairItem[] = [];
+  repairPartForm: UntypedFormGroup;
+  templateRepairList: TariffRepairItem[] = [];
+  partNameControl: UntypedFormControl;
+  partNameList?: string[];
+  partNameFilteredList?: string[];
+  dimensionList?: string[];
+  lengthList?: any[];
+  valueChangesDisabled: boolean = false;
 
+  
+  tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
+  repDrDS: REPDamageRepairDS;
   prDS: PackageRepairDS;
   constructor(
     public dialogRef: MatDialogRef<SearchFormDialogComponent>,
@@ -107,20 +114,23 @@ export class SearchFormDialogComponent {
 
   ) {
     // Set the defaults
+    this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
+    this.repDrDS = new REPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.action = data.action!;
-    //this.customer_company_guid = data.customer_company_guid!;
+    this.customer_company_guid = data.customer_company_guid!;
     this.group_name_cv = data.group_name_cv!;
     this.subgroup_name_cv = data.subgroup_name_cv!;
     this.part_name = data.part_name!;
     this.selected_repair_est_part = data.selected_repair_est_part!;
     this.dialogTitle = `${data.translatedLangText.PART_NAME}`;
-    this.filterTableForm = this.createForm();
+    this.partNameControl = new UntypedFormControl('', [Validators.required]);
+    this.repairPartForm = this.createForm();
     this.loadData();
-    this.initializeValueChange();
+    // this.initializeValueChange();
     // this.patchForm();
     // if (this.repairPart.tariff_cleaning) {
     //   this.lastCargoControl.setValue(this.storingOrderTank.tariff_cleaning);
@@ -129,7 +139,7 @@ export class SearchFormDialogComponent {
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      filterTable: [''],
+      filter: [''],
       selected_tariff_repair: ['']
     });
   }
@@ -141,11 +151,11 @@ export class SearchFormDialogComponent {
   patchForm() {
   }
 
-  submit(row: PackageRepairItem) {
+  submit(row: TariffRepairItem) {
     var rep: RepairEstPartItem = {
       ...this.selected_repair_est_part,
       tariff_repair_guid: row?.guid,
-      tariff_repair: row!,
+      tariff_repair: row,
       material_cost: row?.material_cost
     }
     const returnDialog: DialogData = {
@@ -170,32 +180,40 @@ export class SearchFormDialogComponent {
   }
 
   initializeValueChange() {
-    this.filterTableForm.get('filterTable')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        console.log(value)
-        if (value) {
-          this.tariffRepairFilteredList = this.tariffRepairList
-          .filter(x => x.alias?.toLowerCase().includes(value.toLowerCase()) || `${x.length}`.toLowerCase().includes(value.toLowerCase()));
-        } else {
-          this.tariffRepairFilteredList = [...this.tariffRepairList];
-        }
-      })
-    ).subscribe();
   }
 
   findInvalidControls() {
-    const controls = this.filterTableForm.controls;
+    const controls = this.repairPartForm.controls;
     for (const name in controls) {
-      if (controls[name].invalid) {  
+      if (controls[name].invalid) {
         console.log(name);
       }
     }
   }
 
+  validateLength(): boolean {
+    let isValid = true;
+    const length = this.repairPartForm.get('length')?.value;
+    const remarks = this.repairPartForm.get('remarks')?.value;
+
+    // Validate that at least one of the purpose checkboxes is checked
+    if (!length && !remarks) {
+      isValid = false; // At least one purpose must be selected
+      this.repairPartForm.get('remarks')?.setErrors({ required: true });
+    }
+
+    return isValid;
+  }
+
   canEdit(): boolean {
     return true;
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.partNameControl.setValidators([
+      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 
   getLocationDescription(codeValType: string | undefined): string | undefined {
@@ -203,21 +221,22 @@ export class SearchFormDialogComponent {
   }
 
   getTariffRepairCost() {
+ 
+    const group_name_cv =  this.group_name_cv;
+    const subgroup_name_cv = this.subgroup_name_cv;
+    const partName=this.part_name;
     const where = {
-              
-                group_name_cv: { eq: this.group_name_cv },
-                subgroup_name_cv: { eq: this.subgroup_name_cv || undefined },
-                part_name: { eq: this.part_name }
-              
-            }
-          
-        
+      group_name_cv: { eq: group_name_cv },
+      subgroup_name_cv: { eq: subgroup_name_cv },
+      part_name: { eq: partName },
       
-    
+    }
     this.trDS.SearchTariffRepair(where).subscribe(data => {
-      if (data.length) {
-        this.tariffRepairList = data;
-      }
+      this.templateRepairList=data;
+      // if (data.length) {
+      //   this.selectedTariffRepair = data[0];
+      //   this.repairPartForm.get('material_cost')?.setValue(this.selectedTariffRepair?.material_cost!.toFixed(2));
+      // }
     });
   }
 
@@ -231,7 +250,7 @@ export class SearchFormDialogComponent {
   //           {
   //             tariff_repair: {
   //               group_name_cv: { eq: this.group_name_cv },
-  //               subgroup_name_cv: { eq: this.subgroup_name_cv || undefined },
+  //               subgroup_name_cv: { eq: this.subgroup_name_cv },
   //               part_name: { eq: this.part_name }
   //             }
   //           }

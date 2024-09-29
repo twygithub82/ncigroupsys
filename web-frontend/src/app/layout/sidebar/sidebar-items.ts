@@ -305,6 +305,17 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       },
+      {
+        path: "admin/master/customer",
+        title: "MENUITEMS.MASTER.LIST.CUSTOMER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: []
+      },
       // {
       //   path: "admin/master/estimate-template/new",
       //   title: "MENUITEMS.MASTER.LIST.ASSIGN-ESTIMATE-TEMPLATE",

@@ -6,6 +6,7 @@ import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
+import { CurrencyItem } from './currency';
 
 export class CustomerCompanyGO {
     public guid?: string;
@@ -25,7 +26,7 @@ export class CustomerCompanyGO {
     public website?: string;
     public effective_dt?: number;
     public agreement_due_dt?: number;
-    public currency_cv?: string;
+   
     public create_dt?: number;
     public create_by?: string;
     public update_dt?: number;
@@ -50,7 +51,7 @@ export class CustomerCompanyGO {
         this.website = item.website;
         this.effective_dt = item.effective_dt;
         this.agreement_due_dt = item.agreement_due_dt;
-        this.currency_cv = item.currency_cv;
+       
         this.create_dt = item.create_dt;
         this.create_by = item.create_by;
         this.update_dt = item.update_dt;
@@ -60,8 +61,10 @@ export class CustomerCompanyGO {
 }
 
 export class CustomerCompanyItem extends CustomerCompanyGO {
+    public currency?:CurrencyItem;
     constructor(item: Partial<CustomerCompanyItem> = {}) {
         super(item);
+        this.currency = item.currency;
     }
 }
 
@@ -95,7 +98,6 @@ export const SEARCH_COMPANY_QUERY = gql`
         country
         create_by
         create_dt
-        currency_cv
         delete_dt
         description
         effective_dt
@@ -105,11 +107,23 @@ export const SEARCH_COMPANY_QUERY = gql`
         name
         phone
         postal
-        tariff_depot_guid
         type_cv
         update_by
         update_dt
         website
+        currency {
+            create_by
+            create_dt
+            currency_code
+            currency_name
+            delete_dt
+            guid
+            is_active
+            rate
+            sequence
+            update_by
+            update_dt
+         }
       }
       pageInfo {
         endCursor

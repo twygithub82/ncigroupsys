@@ -34,6 +34,8 @@ import { EstimateComponent } from './repair/estimate/estimate.component';
 import { EstimateNewComponent } from './repair/estimate-new/estimate-new.component';
 import { EstimateTemplateComponent } from './master/estimate-template/estimate-template.component';
 import { EstimateTemplateNewComponent } from './master/estimate-template-new/estimate-template-new.component';
+import { CustomerComponent } from './master/customer/customer.component';
+import { CustomerNewComponent } from './master/customer-new/customer-new.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -203,7 +205,15 @@ export const ADMIN_ROUTE: Routes = [
   {
     path:"master/estimate-template/new/:id",
     component:EstimateTemplateNewComponent,
-  }
+  },
+  {
+    path:"master/customer",
+    component:CustomerComponent,
+  },
+  {
+    path:"master/customer/new/:id",
+    component:CustomerNewComponent,
+  },
 ];
 
 // @NgModule({
