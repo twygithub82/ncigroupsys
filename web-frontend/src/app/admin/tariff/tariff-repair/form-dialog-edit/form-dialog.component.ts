@@ -738,6 +738,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     this.pcForm.get("width_diameter_unit_cv")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
     this.pcForm.get("thickness")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
     this.pcForm.get("thickness_unit_cv")?.valueChanges.subscribe(value=>{this.updateDimensionAndAliasName()});
+    this.pcForm.get('length')?.valueChanges.subscribe(value=>{
+      if (this.pcForm.get("part_name")?.hasError("existed")) {
+        const partNameControl = this.pcForm.get("part_name");
+        partNameControl?.setErrors(null);
+    }
+    });
   }
 
   updateDimensionAndAliasName():void
@@ -777,7 +783,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter  {
     }
 
     let aliasName = `${this.pcForm?.get("part_name")?.value}`;
-    if(dimension!="") aliasName+=`(${dimension})`
+    if(dimension!="") aliasName+=`  ${dimension}`
     this.pcForm.patchValue({
       alias:aliasName,
       dimension:dimension

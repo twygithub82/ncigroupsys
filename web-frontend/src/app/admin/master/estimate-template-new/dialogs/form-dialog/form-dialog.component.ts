@@ -113,6 +113,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     }
     this.repairPart = data.item ? data.item : new RepairEstPartItem();
+    if(this.repairPart.tariff_repair.material_cost) this.repairPart.material_cost= this.repairPart.tariff_repair.material_cost.toFixed(2);
+    
     this.index = data.index;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
     this.repairPartForm = this.createForm();
@@ -192,7 +194,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         remarks: this.repairPartForm.get('remarks')?.value,
         actions
       }
-      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${rep.tariff_repair?.length} ${rep.remarks ?? ''}`.trim();
+      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name??''} ${rep.tariff_repair?.length??''}${this.getUnitTypeDescription(rep.tariff_repair?.length_unit_cv)} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       const returnDialog: DialogData = {
         item: rep,
@@ -226,6 +228,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       debounceTime(300),
       tap(value => {
         if (value) {
+          this.resetPartSelectedDetail();
           this.searchPart();
         }
       })
@@ -433,6 +436,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   //   });
   // }
 
+  resetPartSelectedDetail()
+  {
+    this.repairPart.tariff_repair_guid=undefined;
+    this.repairPart.tariff_repair.alias='';
+    this.repairPart.tariff_repair.length='';
+    this.repairPart.tariff_repair.length_unit_cv='';
+    this.repairPart.tariff_repair.material_cost='';
+  }
+
   searchPart() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -458,6 +470,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         this.repairPart = result.selected_repair_est_part;
         this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
       }
+    
     });
   }
 }

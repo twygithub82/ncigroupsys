@@ -601,7 +601,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     }
 
     let aliasName = `${this.pcForm?.get("part_name")?.value}`;
-    if(dimension!="") aliasName+=`(${dimension})`
+    if(dimension!="") aliasName+=`  ${dimension}`
     this.pcForm.patchValue({
       alias:aliasName,
       dimension:dimension

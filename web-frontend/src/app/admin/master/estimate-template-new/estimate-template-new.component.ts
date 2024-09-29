@@ -59,6 +59,7 @@ import { EstimateComponent } from 'app/admin/repair/estimate/estimate.component'
 import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { elements } from 'chart.js';
+import { TariffRepairItem } from 'app/data-sources/tariff-repair';
 
 @Component({
   selector: 'app-estimate-new',
@@ -242,6 +243,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   partLocationCvList: CodeValuesItem[] = []
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
+  unitTypeCvList: CodeValuesItem[] = []
 
   customerCodeControl = new UntypedFormControl();
 
@@ -556,6 +558,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -609,6 +612,10 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     });
     this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
       this.repairCodeCvList = data;
+    });
+
+    this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
+      this.unitTypeCvList = data;
     });
   }
 
@@ -666,11 +673,13 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     } else {
       tempDirection = 'ltr';
     }
-    const addSot = row ?? new RepairEstPartItem();
-    addSot.repair_est_guid = addSot.repair_est_guid;
+    var r :TemplateEstPartItem = new TemplateEstPartItem();
+    r.tariff_repair= new TariffRepairItem();
+    //const addSot = row ?? new RepairEstPartItem();
+    //addSot.repair_est_guid = addSot.repair_est_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
-        item: row ? row : addSot,
+        item: r,
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
@@ -679,7 +688,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList
+          repairCodeCvList: this.repairCodeCvList,
+          unitTypeCvList:this.unitTypeCvList
         },
         index: -1,
         customer_company_guid: '' //this.sotItem?.storing_order?.customer_company_guid
@@ -701,7 +711,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   }
 
   
-  editEstDetails(event: Event, row: RepairEstPartItem, index: number) {
+  editEstDetails(event: Event, row: TemplateEstPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -709,9 +719,13 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     } else {
       tempDirection = 'ltr';
     }
+    var r :TemplateEstPartItem = new TemplateEstPartItem(row);
+    r.tariff_repair= new TariffRepairItem(row.tariff_repair!);
+   // r.tep_damage_repair=row.tep_damage_repair?;
+    
     const dialogRef = this.dialog.open(FormDialogComponent, {
       data: {
-        item: row,
+        item: r,
         action: 'edit',
         translatedLangText: this.translatedLangText,
         populateData: {
@@ -720,7 +734,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList
+          repairCodeCvList: this.repairCodeCvList,
+          unitTypeCvList:this.unitTypeCvList
         },
         index: index,
         customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
@@ -1017,15 +1032,15 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
               found[0].action=""; 
               found[0].customer_company=undefined;
 
-        }
-        else {
-          var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
-          custItem.action = "NEW";
-          custItem.customer_company_guid = data.guid;
-          custItem.customer_company = undefined;
-          custItem.guid = "";
-          this.selectedTempEst!.template_est_customer?.push(custItem)
-        }
+            }
+            else {
+              var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
+              custItem.action = "NEW";
+              custItem.customer_company_guid = data.guid;
+              custItem.customer_company = undefined;
+              custItem.guid = "";
+              this.selectedTempEst!.template_est_customer?.push(custItem)
+            }
 
       });
 
@@ -1054,6 +1069,11 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           //set all the tep_damage_repair action to cancel first
           existData![0]!.tep_damage_repair.forEach(value => {value.action = "CANCEL";});
 
+          if(value.description!=existData![0]!.description)
+          {
+            existData![0]!.action = "EDIT";
+            existData![0]!.description = value.description;
+          }
           // consolidate new repair + new damage to tep_damage_repair
           var rep_damage_repairItems=value.tep_damage_repair!;
         
@@ -1063,6 +1083,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
               {
                 //set the damage or repair  to unchange
                 existRepItm![0]!.action="";
+                
               }
               else
               {
