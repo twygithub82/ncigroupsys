@@ -138,7 +138,9 @@
       "LIST": {
         "ESTIMATE-TEMPLATE": "Estimate Template",
         "ASSIGN-ESTIMATE-TEMPLATE": "Assign Template",
-        "CUSTOMER":"Customer"
+        "CUSTOMER":"Customer",
+        "CUSTOMER-NEW":"New Customer",
+        "CUSTOMER-EDIT":"Edit Customer"
       }
     },
     "NEW": {
@@ -221,6 +223,12 @@
     "COMPANY-NAME": "Company Name",
     "CUSTOMER-NAME": "Customer Name",
     "CUSTOMER-COMPANY": "Customer Company",
+    "CUSTOMER-DETAILS": "Customer Details",
+    "CUSTOMER-TYPE": "Customer Type",
+    "ADDRESS-LINE1":"Address Line One",
+    "ADDRESS-LINE2":"Address Line Two",
+    "POSTAL-CODE":"Postal Code",
+    "CITY-NAME":"City Name",
     "SO-NO": "SO No.",
     "NO-OF-TANKS": "No. of Tanks",
     "SO-NOTES": "SO Notes",
@@ -439,11 +447,19 @@
     "ASSIGNED": "has been assigned to others",
     "ADD-TANK": "Add Tank",
     "CONTACT-PERSON": "Contact Person",
+    "JOB-TITLE":"Job Title",
+    "DEPARTMENT":"Department",
+    "DID":"DID",
     "MOBILE-NO": "Mobile No.",
     "COUNTRY": "Country",
     "FAX-NO": "Fax No.",
     "EMAIL": "Email",
     "PHONE": "Phone",
+    "WEB":"Web",
+    "CONVERSION-CURRENCY":"Conversion Currency",
+    "PERSON-IN-CHARGE":"Person-in-Charge",
+    "DEFAULT-PROFILE":"Default Profile",
+    "CONTACT-PERSON-DETAILS":"Contact Person Details",
     "AGREEMENT-DUE-DATE": "Agreement Due Date",
     "BILLING-PROFILE": "Billing Profile",
     "STANDARD-COST": "Standard Cost $",

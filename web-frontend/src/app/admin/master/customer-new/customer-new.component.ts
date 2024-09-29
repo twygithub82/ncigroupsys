@@ -108,13 +108,13 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     'repair',
     'description',
     'quantity',
-    'hour',
-    'price',
-    'material',
+   // 'hour',
+   // 'price',
+   // 'material',
     'actions'
   ];
-  pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
-  pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
+  pageTitleNew = 'MENUITEMS.MASTER.LIST.CUSTOMER-NEW'
+  pageTitleEdit = 'MENUITEMS.MASTER.LIST.CUSTOMER-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.REPAIR.LIST.ESTIMATE'
@@ -126,6 +126,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     HEADER: 'COMMON-FORM.HEADER',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    CUSTOMER_DETAILS:'COMMON-FORM.CUSTOMER-DETAILS',
+    ALIAS_NAME:'COMMON-FORM.ALIAS-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -213,14 +215,36 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     RATE: "COMMON-FORM.RATE",
     TOTAL: "COMMON-FORM.TOTAL",
     NO_PARTS: "COMMON-FORM.NO-PARTS",
-    PART: 'COMMON-FORM.PART'
+    PART: 'COMMON-FORM.PART',
+    CONTACT_PERSON:"COMMON-FORM.CONTACT-PERSON",
+    JOB_TITLE:"COMMON-FORM.JOB-TITLE",
+    DEPARTMENT:"COMMON-FORM.DEPARTMENT",
+    DID:"COMMON-FORM.DID",
+    MOBILE_NO:"COMMON-FORM.MOBILE-NO",
+    COUNTRY:"COMMON-FORM.COUNTRY",
+    FAX_NO:"COMMON-FORM.FAX-NO",
+    EMAIL:"COMMON-FORM.EMAIL",
+    PHONE:"COMMON-FORM.PHONE",
+    WEB:"COMMON-FORM.WEB",
+    CONVERSION_CURRENCY:"COMMON-FORM.CONVERSION-CURRENCY",
+    PERSON_IN_CHARGE:"COMMON-FORM.PERSON-IN-CHARGE",
+    DEFAULT_PROFILE:"COMMON-FORM.DEFAULT-PROFILE",
+    COMPANY_NAME:"COMMON-FORM.COMPANY-NAME",
+    CUSTOMER_NAME:"COMMON-FORM.CUSTOMER-NAME",
+    CUSTOMER_COMPANY:"COMMON-FORM.CUSTOMER-COMPANY",
+    CUSTOMER_TYPE:"COMMON-FORM.CUSTOMER-TYPE",
+    ADDRESS_LINE1:"COMMON-FORM.ADDRESS-LINE1",
+    ADDRESS_LINE2:"COMMON-FORM.ADDRESS-LINE2",
+    POSTAL_CODE:"COMMON-FORM.POSTAL-CODE",
+    CITY_NAME:"COMMON-FORM.CITY-NAME",
+    CONTACT_PERSON_DETAILS:"COMMON-FORM.CONTACT-PERSON-DETAILS"
   }
 
   clean_statusList: CodeValuesItem[] = [];
 
   temp_guid?: string | null;
 
-  tempForm?: UntypedFormGroup;
+  ccForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
   customer_code_changed: boolean = false;
@@ -295,12 +319,12 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   SetCostDecimal() {
-    this.tempForm?.get('material_discount_amount')?.valueChanges.subscribe(value => {
+    this.ccForm?.get('material_discount_amount')?.valueChanges.subscribe(value => {
       if (value !== null && value !== '') {
         // Ensure the value has two decimal places
         const formattedValue = parseFloat(value).toFixed(2);
-        this.tempForm?.get('material_discount_amount')?.setValue(formattedValue, { emitEvent: false });
-        // this.tempForm.get('material_discount_amount').setValue(formattedValue, { emitEvent: false });
+        this.ccForm?.get('material_discount_amount')?.setValue(formattedValue, { emitEvent: false });
+        // this.ccForm.get('material_discount_amount').setValue(formattedValue, { emitEvent: false });
       }
 
     });
@@ -312,7 +336,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       totalMaterialCost += (data.tariff_repair?.material_cost ?? 0) * (data.quantity ?? 0);
       totalLabourHours += (data.hour ?? 0);
     });
-    this.tempForm?.patchValue({
+    this.ccForm?.patchValue({
       total_material_cost: Number(totalMaterialCost).toFixed(2),
       labour_hour: totalLabourHours
     });
@@ -323,73 +347,73 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   GetNetCost(): string {
     var val: number = 0;
 
-    val = Number(this.tempForm?.get("total_cost")?.value) - Number(this.tempForm?.get("labour_discount_amount")?.value) - Number(this.tempForm?.get("material_discount_amount")?.value)
+    val = Number(this.ccForm?.get("total_cost")?.value) - Number(this.ccForm?.get("labour_discount_amount")?.value) - Number(this.ccForm?.get("material_discount_amount")?.value)
     return val.toFixed(2);
   }
 
   initializeValueChange() {
     //this.repList.data
 
-    this.tempForm?.get('labour_hour')?.valueChanges.subscribe(value => {
-      this.tempForm?.patchValue({
-        labour_total: Number(Number(this.tempForm?.get('labour_hour')!.value) * Number(this.tempForm?.get('labour_rate')!.value)).toFixed(2)
+    this.ccForm?.get('labour_hour')?.valueChanges.subscribe(value => {
+      this.ccForm?.patchValue({
+        labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
       });
     });
 
-    this.tempForm?.get('labour_total')!.valueChanges.subscribe(value => {
+    this.ccForm?.get('labour_total')!.valueChanges.subscribe(value => {
 
       var discCostAmt: number = 0;
-      if (this.tempForm?.get('labour_discount')?.value > 0) {
-        discCostAmt = Number(this.tempForm?.get('labour_total')!.value) * Number(Number(this.tempForm?.get('labour_discount')?.value / 100));
+      if (this.ccForm?.get('labour_discount')?.value > 0) {
+        discCostAmt = Number(this.ccForm?.get('labour_total')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
       }
-      this.tempForm?.patchValue({
-        total_cost: Number(Number(this.tempForm?.get('labour_total')!.value) + Number(this.tempForm?.get('total_material_cost')!.value)).toFixed(2),
+      this.ccForm?.patchValue({
+        total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
         labour_discount_amount: discCostAmt.toFixed(2),
 
       });
     });
 
-    this.tempForm?.get('total_cost')!.valueChanges.subscribe(value => {
+    this.ccForm?.get('total_cost')!.valueChanges.subscribe(value => {
 
 
-      this.tempForm?.patchValue({
+      this.ccForm?.patchValue({
         net_cost: this.GetNetCost()
 
 
       });
     });
 
-    this.tempForm?.get('labour_rate')!.valueChanges.subscribe(value => {
+    this.ccForm?.get('labour_rate')!.valueChanges.subscribe(value => {
 
-      this.tempForm?.patchValue({
+      this.ccForm?.patchValue({
 
-        //labour_total : (Number(this.tempForm?.get('labour_rate')?.value)+Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
-        labour_total: Number(Number(this.tempForm?.get('labour_hour')!.value) * Number(this.tempForm?.get('labour_rate')!.value)).toFixed(2)
-
-      });
-    });
-    this.tempForm?.get('labour_additional')!.valueChanges.subscribe(value => {
-
-      this.tempForm?.patchValue({
-        labour_total: (Number(this.tempForm?.get('labour_rate')?.value) + Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
+        //labour_total : (Number(this.ccForm?.get('labour_rate')?.value)+Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
+        labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
 
       });
     });
+    this.ccForm?.get('labour_additional')!.valueChanges.subscribe(value => {
 
-    this.tempForm?.get('labour_discount_amount')!.valueChanges.subscribe(value => {
+      this.ccForm?.patchValue({
+        labour_total: (Number(this.ccForm?.get('labour_rate')?.value) + Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
+
+      });
+    });
+
+    this.ccForm?.get('labour_discount_amount')!.valueChanges.subscribe(value => {
 
 
-      this.tempForm?.patchValue({
+      this.ccForm?.patchValue({
         net_cost: this.GetNetCost()
 
 
       });
     });
 
-    this.tempForm?.get('material_discount_amount')!.valueChanges.subscribe(value => {
+    this.ccForm?.get('material_discount_amount')!.valueChanges.subscribe(value => {
 
 
-      this.tempForm?.patchValue({
+      this.ccForm?.patchValue({
         net_cost: this.GetNetCost()
 
 
@@ -398,36 +422,36 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
 
 
-    this.tempForm?.get('labour_discount')!.valueChanges.subscribe(value => {
+    this.ccForm?.get('labour_discount')!.valueChanges.subscribe(value => {
       var discCostAmt: number = 0;
-      if (this.tempForm?.get('labour_discount')?.value > 0) {
-        discCostAmt = Number(this.tempForm?.get('labour_rate')!.value) * Number(Number(this.tempForm?.get('labour_discount')?.value / 100));
+      if (this.ccForm?.get('labour_discount')?.value > 0) {
+        discCostAmt = Number(this.ccForm?.get('labour_rate')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
       }
-      this.tempForm?.patchValue({
+      this.ccForm?.patchValue({
         labour_discount_amount: discCostAmt.toFixed(2),
         //net_cost:this.GetNetCost()
       });
     });
 
 
-    this.tempForm?.get('material_discount')!.valueChanges.subscribe(value => {
+    this.ccForm?.get('material_discount')!.valueChanges.subscribe(value => {
       var discCostAmt: number = 0;
-      if (this.tempForm?.get('material_discount')?.value > 0) {
-        discCostAmt = Number(this.tempForm?.get('total_material_cost')?.value) * Number(Number(this.tempForm?.get('material_discount')?.value / 100));
+      if (this.ccForm?.get('material_discount')?.value > 0) {
+        discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
       }
-      this.tempForm?.patchValue({
+      this.ccForm?.patchValue({
         material_discount_amount: discCostAmt.toFixed(2),
         // net_cost:this.GetNetCost()
       });
     });
 
-    this.tempForm?.get('total_material_cost')!.valueChanges.subscribe(value => {
+    this.ccForm?.get('total_material_cost')!.valueChanges.subscribe(value => {
       var discCostAmt: number = 0;
-      if (this.tempForm?.get('material_discount')?.value > 0) {
-        discCostAmt = Number(this.tempForm?.get('total_material_cost')?.value) * Number(Number(this.tempForm?.get('material_discount')?.value / 100));
+      if (this.ccForm?.get('material_discount')?.value > 0) {
+        discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
       }
-      this.tempForm?.patchValue({
-        total_cost: Number(Number(this.tempForm?.get('labour_total')!.value) + Number(this.tempForm?.get('total_material_cost')!.value)).toFixed(2),
+      this.ccForm?.patchValue({
+        total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
         material_discount_amount: discCostAmt.toFixed(2),
 
       });
@@ -436,7 +460,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   initTempForm() {
-    this.tempForm = this.fb.group({
+    this.ccForm = this.fb.group({
       guid: [''],
       customer_company_guid: [''],
       customer_code: this.customerCodeControl,
@@ -474,7 +498,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       this.selectedTempEst = this.historyState.selectedRow;
       const custCompanies = this.selectedTempEst?.template_est_customer?.filter(value => value.delete_dt == null);
       this.selectedTempEst!.template_est_customer = custCompanies;
-      this.tempForm?.patchValue({
+      this.ccForm?.patchValue({
         guid: this.selectedTempEst?.guid,
         labour_discount: this.selectedTempEst?.labour_cost_discount,
         material_discount: this.selectedTempEst?.material_cost_discount,
@@ -527,10 +551,10 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           selectedCustomerGuids?.includes(customer.guid)
         );
 
-        this.tempForm?.patchValue({
+        this.ccForm?.patchValue({
           customer_code: selectedCustomers
         });
-        // this.tempForm?.patchValue({
+        // this.ccForm?.patchValue({
         //   customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
         // });
       }
@@ -539,7 +563,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     this.trLabourDS.SearchTariffLabour({}, { create_dt: 'ASC' }).subscribe(data => {
       this.trLabourItems = data;
       if (this.trLabourItems.length > 0) {
-        this.tempForm?.patchValue({
+        this.ccForm?.patchValue({
           labour_rate: this.trLabourItems[0].cost?.toFixed(2)
         });
       }
@@ -895,13 +919,13 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   }
 
   onTempFormSubmit() {
-    this.tempForm!.get('repList')?.setErrors(null);
-    if (this.tempForm?.valid) {
+    this.ccForm!.get('repList')?.setErrors(null);
+    if (this.ccForm?.valid) {
       if (!this.repList.data.length) {
-        this.tempForm.get('repList')?.setErrors({ required: true });
+        this.ccForm.get('repList')?.setErrors({ required: true });
       } else {
 
-        var tempName = this.tempForm?.get("template_name")?.value;
+        var tempName = this.ccForm?.get("template_name")?.value;
         const where: any = {};
         where.template_name = { eq: tempName };
         this.estTempDS.SearchEstimateTemplateOnly(where).subscribe(result => {
@@ -909,15 +933,15 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           if (result.length == 0 && this.selectedTempEst == undefined) {
 
             let temp: MasterTemplateItem = new MasterTemplateItem();
-            temp.labour_cost_discount = this.tempForm?.get("labour_discount")?.value;
-            temp.material_cost_discount = this.tempForm?.get("material_discount")?.value;
-            temp.template_name = this.tempForm?.get("template_name")?.value;
+            temp.labour_cost_discount = this.ccForm?.get("labour_discount")?.value;
+            temp.material_cost_discount = this.ccForm?.get("material_discount")?.value;
+            temp.template_name = this.ccForm?.get("template_name")?.value;
             delete temp.totalMaterialCost;
             temp.type_cv = "GENERAL";
-            if (this.tempForm?.get("customer_code")?.value?.length > 0) {
+            if (this.ccForm?.get("customer_code")?.value?.length > 0) {
 
               temp.type_cv = "EXCLUSIVE";
-              var customerCodes: CustomerCompanyItem[] = this.tempForm?.get("customer_code")?.value;
+              var customerCodes: CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
               temp.template_est_customer = [];
               customerCodes.forEach(data => {
                 var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
@@ -967,7 +991,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           }
           else if (result.length > 0) {
             if (this.selectedTempEst == undefined) {
-              this.tempForm?.get('template_name')?.setErrors({ existed: true });
+              this.ccForm?.get('template_name')?.setErrors({ existed: true });
             }
             else {
 
@@ -988,7 +1012,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
 
       }
     } else {
-      console.log('Invalid soForm', this.tempForm?.value);
+      console.log('Invalid soForm', this.ccForm?.value);
     }
   }
 
@@ -996,19 +1020,19 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
 
     const tempEstimateCustomerItems: TemplateEstimateCustomerItem[] = this.selectedTempEst!.template_est_customer!.map((node: any) => new TemplateEstimateCustomerItem(node));
     
-    this.selectedTempEst!.template_name=this.tempForm?.get("template_name")?.value;
-    this.selectedTempEst!.labour_cost_discount=this.tempForm?.get("labour_discount")?.value;
-    this.selectedTempEst!.remarks=this.tempForm?.get("remarks")?.value;
-    this.selectedTempEst!.material_cost_discount=this.tempForm?.get("material_discount")?.value;
+    this.selectedTempEst!.template_name=this.ccForm?.get("template_name")?.value;
+    this.selectedTempEst!.labour_cost_discount=this.ccForm?.get("labour_discount")?.value;
+    this.selectedTempEst!.remarks=this.ccForm?.get("remarks")?.value;
+    this.selectedTempEst!.material_cost_discount=this.ccForm?.get("material_discount")?.value;
     this.selectedTempEst!.template_est_customer=tempEstimateCustomerItems;
     var existdata_cust=this.selectedTempEst!.template_est_customer;
     existdata_cust?.forEach(value=>{value.action="CANCEL";value.customer_company=undefined;});
     this.selectedTempEst!.type_cv="GENERAL";
-    if(this.tempForm?.get("customer_code")?.value?.length>0)
+    if(this.ccForm?.get("customer_code")?.value?.length>0)
       {
-        var newdata_cust = this.tempForm?.get('customer_code')?.value;
+        var newdata_cust = this.ccForm?.get('customer_code')?.value;
         this.selectedTempEst!.type_cv="EXCLUSIVE";
-        var customerCodes : CustomerCompanyItem[] = this.tempForm?.get("customer_code")?.value;
+        var customerCodes : CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
         //temp.template_est_customer=[];
         customerCodes.forEach(data=>{
              const found=existdata_cust.filter(value=>value.customer_company_guid===data.guid);
@@ -1115,7 +1139,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   updateData(newData: any[]): void {
     this.repList.data = [...newData];
     this.sotSelection.clear();
-    this.tempForm?.get('repList')?.setErrors(null);
+    this.ccForm?.get('repList')?.setErrors(null);
   }
 
   handleDelete(event: Event, row: any, index: number): void {
