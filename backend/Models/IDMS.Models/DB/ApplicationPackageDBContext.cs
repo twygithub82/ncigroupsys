@@ -32,7 +32,7 @@ namespace IDMS.Models.DB
         public DbSet<IDMS.Models.Package.package_residue> package_residue { get; set; }
         public DbSet<IDMS.Models.Package.package_buffer> package_buffer { get; set; }
 
-        //public DbSet<tariff_repair> tariff_repair { get; set; } 
+        public DbSet<tariff_repair> tariff_repair { get; set; } 
     }
 
         

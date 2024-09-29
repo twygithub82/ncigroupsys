@@ -941,7 +941,7 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                           .SetProperty(e => e.update_dt, currentDateTime)
                           .SetProperty(e => e.update_by, uid)
                           .SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
-                          .SetProperty(e => e.labour_hour, e => (Math.Round(Convert.ToDouble(e.labour_hour ?? 0 * labour_hour_percentage) * 4) / 4))
+                          .SetProperty(e => e.labour_hour, e => (Math.Ceiling(Convert.ToDouble((e.labour_hour ?? 0) * labour_hour_percentage) * 4) / 4))
                            );
                     }
                     else
@@ -959,8 +959,13 @@ namespace IDMS.Models.Tariff.All.GqlTypes
                         var guids = dbTariffRepairs.Select(p => p.guid).ToList();
                         string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
 
-                        string sql = $"UPDATE tariff_repair SET material_cost = (material_cost * {material_cost_percentage}), " +
-                                     $"labour_hour = (labour_hour * {labour_hour_percentage}), " +
+                        //string sql = $"UPDATE tariff_repair SET material_cost = (material_cost * {material_cost_percentage}), " +
+                        //             $"labour_hour = (labour_hour * {labour_hour_percentage}), " +
+                        //             $"update_dt = {currentDateTime}, update_by = '{uid}' " +
+                        //             $"WHERE guid IN ({guidList})";
+
+                        string sql = $"UPDATE tariff_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
+                                     $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
                                      $"update_dt = {currentDateTime}, update_by = '{uid}' " +
                                      $"WHERE guid IN ({guidList})";
 
