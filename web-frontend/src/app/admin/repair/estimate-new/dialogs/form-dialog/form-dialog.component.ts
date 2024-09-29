@@ -224,15 +224,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         console.log(value)
         if (value) {
           if (value.child_code) {
+            const subgroupName = this.repairPartForm?.get('subgroup_name_cv');
             this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
-            this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '')
-            // const queries = [
-            //   { alias: 'subgroupNameCv', codeValType: value.child_code },
-            // ];
-            // this.cvDS.getCodeValuesByType(queries);
-            // this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
-            //   this.data.populateData.subgroupNameCvList = addDefaultSelectOption(data, '-', '');
-            // });
+            this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '');
           } else {
             this.trDS.searchDistinctPartName(value.code_val, undefined).subscribe(data => {
               this.partNameList = data;
@@ -250,13 +244,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tap(value => {
         const groupName = this.repairPartForm?.get('group_name_cv')?.value;
         if (groupName) {
+          console.log(`${groupName.code_val}, ${value}`)
+          const partName = this.repairPartForm?.get('part_name');
           this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
             this.partNameList = data;
-            // this.partNameFilteredList = data
-            // this.updateValidators(this.partNameList);
-            // if (this.partNameControl.value) {
-            //   this.handleValueChange(this.partNameControl.value)
-            // }
           });
         }
       })
