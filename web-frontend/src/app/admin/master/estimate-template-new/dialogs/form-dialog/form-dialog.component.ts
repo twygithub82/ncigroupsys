@@ -118,6 +118,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.repairPartForm = this.createForm();
     this.initializeValueChange();
     this.patchForm();
+    this.initializePartNameValueChange();
+
   }
 
   createForm(): UntypedFormGroup {
@@ -217,6 +219,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
 
+  initializePartNameValueChange(){
+
+    this.repairPartForm?.get('part_name')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          this.searchPart();
+        }
+      })
+    ).subscribe();
+  }
+
   initializeValueChange() {
     this.repairPartForm?.get('group_name_cv')!.valueChanges.pipe(
       startWith(''),
@@ -264,15 +279,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       })
     ).subscribe();
 
-    this.repairPartForm?.get('part_name')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          //this.searchPart();
-        }
-      })
-    ).subscribe();
+
 
     // this.partNameControl.valueChanges.subscribe(value => {
     //   if (!this.valueChangesDisabled) {
