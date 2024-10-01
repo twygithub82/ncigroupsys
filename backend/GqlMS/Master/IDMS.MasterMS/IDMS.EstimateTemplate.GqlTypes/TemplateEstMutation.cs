@@ -131,6 +131,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                             existingPart.update_dt = currentDateTime;
                             existingPart.quantity = part.quantity;
                             existingPart.location_cv = part.location_cv;
+                            existingPart.description = part.description; 
                             existingPart.hour = part.hour;
                             existingPart.remarks = part.remarks;
                             await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
@@ -173,48 +174,48 @@ namespace IDMS.EstimateTemplate.GqlTypes
         }
 
         #region private function
-        private async void UpdateCustomer(ApplicationMasterDBContext context, IEnumerable<template_est_customer> templateCustomers, string user, long currentDateTime, string templateGuid)
-        {
-            try
-            {
-                //IList<template_est_customer> tempEstCustomerList = new List<template_est_customer>();
-                foreach (var cus in templateCustomers)
-                {
-                    if (string.IsNullOrEmpty(cus.customer_company_guid))
-                        throw new GraphQLException(new Error($"Customer_company guid cannot null or empty", "ERROR"));
+        //private async void UpdateCustomer(ApplicationMasterDBContext context, IEnumerable<template_est_customer> templateCustomers, string user, long currentDateTime, string templateGuid)
+        //{
+        //    try
+        //    {
+        //        //IList<template_est_customer> tempEstCustomerList = new List<template_est_customer>();
+        //        foreach (var cus in templateCustomers)
+        //        {
+        //            if (string.IsNullOrEmpty(cus.customer_company_guid))
+        //                throw new GraphQLException(new Error($"Customer_company guid cannot null or empty", "ERROR"));
 
-                    if (ObjectAction.NEW.EqualsIgnore(cus.action) || (string.IsNullOrEmpty(cus.action) && string.IsNullOrEmpty(cus.guid)))
-                    {
-                        var templateEstCustomer = cus;//new template_est_customer();
-                        templateEstCustomer.guid = Util.GenerateGUID();
-                        templateEstCustomer.create_by = user;
-                        templateEstCustomer.create_dt = currentDateTime;
+        //            if (ObjectAction.NEW.EqualsIgnore(cus.action) || (string.IsNullOrEmpty(cus.action) && string.IsNullOrEmpty(cus.guid)))
+        //            {
+        //                var templateEstCustomer = cus;//new template_est_customer();
+        //                templateEstCustomer.guid = Util.GenerateGUID();
+        //                templateEstCustomer.create_by = user;
+        //                templateEstCustomer.create_dt = currentDateTime;
 
-                        templateEstCustomer.template_est_guid = templateGuid;
-                        templateEstCustomer.customer_company_guid = cus.customer_company_guid;
-                        await context.AddAsync(templateEstCustomer);
-                    }
-                    else if (ObjectAction.CANCEL.EqualsIgnore(cus.action))
-                    {
-                        if (string.IsNullOrEmpty(cus.guid))
-                            throw new GraphQLException(new Error($"Template_estimate_customer guid cannot null or empty for cancel", "ERROR"));
+        //                templateEstCustomer.template_est_guid = templateGuid;
+        //                templateEstCustomer.customer_company_guid = cus.customer_company_guid;
+        //                await context.AddAsync(templateEstCustomer);
+        //            }
+        //            else if (ObjectAction.CANCEL.EqualsIgnore(cus.action))
+        //            {
+        //                if (string.IsNullOrEmpty(cus.guid))
+        //                    throw new GraphQLException(new Error($"Template_estimate_customer guid cannot null or empty for cancel", "ERROR"));
 
-                        var customer = cus;//new template_est_customer() { guid = cus.guid };
-                        //context.Attach(customer);
+        //                var customer = cus;//new template_est_customer() { guid = cus.guid };
+        //                //context.Attach(customer);
 
-                        customer.update_dt = currentDateTime;
-                        customer.delete_dt = currentDateTime;
-                        customer.update_by = user;
-                        context.Update(customer);
-                    }
-                }
-                //context.AddRangeAsync(tempEstCustomerList);
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error(ex.Message, "ERROR"));
-            }
-        }
+        //                customer.update_dt = currentDateTime;
+        //                customer.delete_dt = currentDateTime;
+        //                customer.update_by = user;
+        //                context.Update(customer);
+        //            }
+        //        }
+        //        //context.AddRangeAsync(tempEstCustomerList);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error(ex.Message, "ERROR"));
+        //    }
+        //}
 
         private async Task UpdateCustomer(ApplicationMasterDBContext context, IEnumerable<template_est_customer> templateCustomers,
                                             string user, long currentDateTime, template_est templateEst)
