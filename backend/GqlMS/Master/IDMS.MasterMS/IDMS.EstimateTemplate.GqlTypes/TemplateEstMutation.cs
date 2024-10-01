@@ -134,6 +134,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
                             existingPart.description = part.description; 
                             existingPart.hour = part.hour;
                             existingPart.remarks = part.remarks;
+                            existingPart.comment = part.comment;
                             await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.tep_damage_repair);
                             continue;
                         }

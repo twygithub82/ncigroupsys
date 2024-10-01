@@ -22,19 +22,18 @@ namespace IDMS.Models.Master
         public string tariff_repair_guid { get; set; }
         public string? description { get; set; }
         public string? location_cv { get; set; }
+        public string? comment { get; set; }
         public string? remarks {  get; set; }
         public int? quantity { get; set; }
         public double? hour { get; set; }
 
-        //[NotMapped]
-        //public List<string> damage_code { get; set; }
-        //[NotMapped]
-        //public List<string> repair_code { get; set; }
         [NotMapped]
         public string? action {  get; set; }
 
         public template_est? template_est { get; set; }
         public tariff_repair? tariff_repair { get; set; }
+
+        [UseFiltering]
         public IEnumerable<tep_damage_repair>? tep_damage_repair { get; set; } 
     }
 }
