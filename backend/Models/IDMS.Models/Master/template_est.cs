@@ -21,5 +21,7 @@ namespace IDMS.Models.Master
         public IEnumerable<template_est_customer>? template_est_customer { get; set; }
         [UseFiltering]
         public IEnumerable<template_est_part>? template_est_part { get; set; }
+        [UseFiltering]
+        public IEnumerable<customer_company>? customer_company { get; set; }    
     }
 }

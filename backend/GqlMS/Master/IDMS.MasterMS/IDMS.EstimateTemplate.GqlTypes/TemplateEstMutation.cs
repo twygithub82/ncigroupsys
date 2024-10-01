@@ -158,7 +158,16 @@ namespace IDMS.EstimateTemplate.GqlTypes
 
                     await UpdateCustomer(context, editTemplateEsimate.template_est_customer, user, currentDateTime, template);
                 }
-
+                else
+                {
+                    //Cautions check to softdelete all custmomer from this template since it ald being change to general type
+                    foreach(var cus in template.template_est_customer)
+                    {
+                        cus.update_dt = currentDateTime;
+                        cus.delete_dt = currentDateTime;
+                        cus.update_by = user;
+                    }
+                }
 
                 var res = await context.SaveChangesAsync();
 

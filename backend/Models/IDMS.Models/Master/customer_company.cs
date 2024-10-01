@@ -33,9 +33,12 @@ namespace IDMS.Models.Master
         public string? website { get; set; }
         public long? effective_dt { get; set; }
         public long? agreement_due_dt { get; set; }
-        //public string? tariff_depot_guid { get; set; }
+
+        [ForeignKey("template_est")]
+        public string? def_template_guid { get; set; }
 
         public currency? currency { get; set; }
+        public template_est? template_est { get; set; } 
         public IEnumerable<storing_order_tank>? storing_order_tank { get; set; }
         public IEnumerable<storing_order>? storing_orders { get; set; }
         public IEnumerable<customer_company_contact_person>? cc_contact_person { get; set; }
