@@ -1,6 +1,12 @@
 <div class="container">
     <h3 mat-dialog-title>{{headerText | translate}}</h3>
-    <div mat-dialog-content>
+    <div mat-dialog-content class="image-container">
+        <button mat-mini-fab class="arrow left" [disabled]="isPreviousDisabled" (click)="onPrevious()">
+            <mat-icon>chevron_left</mat-icon>
+        </button>
         <img [src]="previewImage" [alt]="imageDescription" class="responsive-image">
+        <button mat-mini-fab class="arrow right" [disabled]="isNextDisabled" (click)="onNext()">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
     </div>
 </div>

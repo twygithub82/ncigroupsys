@@ -208,6 +208,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     DELETE: 'COMMON-FORM.DELETE',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS'
   }
 
   in_gate_guid: string | null | undefined;
@@ -443,7 +444,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     ).subscribe();
   }
 
-  images(): UntypedFormArray {
+  dmgImages(): UntypedFormArray {
     return this.surveyForm?.get('dmgImages') as UntypedFormArray;
   }
 
@@ -699,6 +700,22 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     // this.markForCheck();
   }
 
+  getImages() {
+    const images: any[] = [];
+    images.push(this.surveyForm?.get('leftImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('rearImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('rightImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('topImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('frontImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('bottomImage')?.get('preview')?.value);
+
+    this.dmgImages().controls.forEach(x => {
+      images.push(x?.get('preview')?.value)
+    })
+
+    return images;
+  }
+
   populateHighlightedCells(toUpdateCells: boolean[], coordinates: { x: number; y: number }[]): boolean[] {
     if (!Array.isArray(coordinates)) {
       return [];
@@ -745,7 +762,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     const frontImg = files.filter(file => file.description === 'FRONT_SIDE');
     const bottomImg = files.filter(file => file.description === 'BOTTOM_SIDE');
     dmgImg.forEach(dmgFile => {
-      this.images().push(this.createImageForm(dmgFile.description.replace('_DMG', ''), dmgFile.url, undefined));
+      this.dmgImages().push(this.createImageForm(dmgFile.description.replace('_DMG', ''), dmgFile.url, undefined));
     });
     this.surveyForm!.patchValue({
       leftImage: this.patchOrCreateImageForm('LEFT_SIDE', leftImg, this.surveyForm?.get('leftImage')),
@@ -1106,7 +1123,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         const reader = new FileReader();
         reader.onload = () => {
           const preview = reader.result as string | ArrayBuffer;
-          this.images().push(this.createImageForm('', preview, file));
+          this.dmgImages().push(this.createImageForm('', preview, file));
           // this.markForCheck();
         };
         reader.readAsDataURL(file);
@@ -1211,14 +1228,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
         if (Utility.isBase64Url(url)) {
-          this.images().removeAt(index);
+          this.dmgImages().removeAt(index);
           // this.markForCheck();
           this.handleDeleteSuccess(1);
         } else if (Utility.isUrl(url)) {
           this.fileManagerService.deleteFile([url]).subscribe({
             next: (response) => {
               console.log('Files delete successfully:', response);
-              this.images().removeAt(index);
+              this.dmgImages().removeAt(index);
               // this.markForCheck();
               this.handleDeleteSuccess(response);
             },
@@ -1251,6 +1268,28 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       data: {
         headerText: isDmg ? `${this.translatedLangText.DAMAGE_PHOTOS} - ${headerText}` : `${this.translatedLangText.TANK_PHOTOS} - ${headerText}`,
         previewImage: previewImage.get('preview')?.value,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
+  previewImagesDialog(event: Event, index: number) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const headerText = this.translatedLangText.PREVIEW_PHOTOS;
+    const dialogRef = this.dialog.open(PreviewImageDialogComponent, {
+      data: {
+        headerText: headerText,
+        previewImages: this.getImages(),
+        focusIndex: index
       },
       direction: tempDirection
     });
@@ -1308,7 +1347,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       };
     });
 
-    const dmgImages = this.images().controls
+    const dmgImages = this.dmgImages().controls
       .filter(preview => preview.get('file')?.value)
       .map(preview => {
         const file = preview.get('file')?.value;

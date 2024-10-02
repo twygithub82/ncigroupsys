@@ -138,7 +138,7 @@
       "LIST": {
         "ESTIMATE-TEMPLATE": "Estimate Template",
         "ASSIGN-ESTIMATE-TEMPLATE": "Assign Template",
-        "CUSTOMER":"Customer",
+        "CUSTOMER": "Customer",
         "CUSTOMER-NEW":"New Customer",
         "CUSTOMER-EDIT":"Edit Customer"
       }
@@ -399,7 +399,7 @@
     "VOLUME": "Volume",
     "OTHER-COMMENTS": "Other Comment(s)",
     "EXCEEDED": "Exceeded",
-    "SMALLER-THAN":"Smaller than",
+    "SMALLER-THAN": "Smaller than",
     "MUST-MORE-THAN-ZERO": "Must be more than 0",
     "BRAND": "Brand",
     "BOTTOM": "Bottom",
@@ -560,10 +560,10 @@
     "CONFIRM-CLEAR-ALL": "Confirm Clear All",
     "PART": "Part",
     "AMEND": "Amend",
-    "CUSTOMER-EXCEED":"Selected Customer Exceed - ",
+    "CUSTOMER-EXCEED": "Selected Customer Exceed - ",
     "ENTER-ATLEAST-ONE-CONDITION": "Please enter at least one query condition.",
-     "NO-VALUE-CHNAGE": "No Value Change Detected"
-    
+    "NO-VALUE-CHNAGE": "No Value Change Detected",
+    "PREVIEW-PHOTOS": "Preview Photos"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
