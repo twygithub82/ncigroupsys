@@ -16,7 +16,7 @@ import { FeatherIconsComponent } from '../../shared/components/feather-icons/fea
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import {GraphqlNotificationService} from '../../services/global-notification.service'
+import { GraphqlNotificationService } from '../../services/global-notification.service'
 import { Apollo } from 'apollo-angular';
 import { Subscription } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -24,13 +24,13 @@ import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition
 
 interface Notifications {
   message: string;
-  notification_date:number;
+  notification_date: number;
   time: string;
   icon: string;
   color: string;
   status: string;
-  module:string;
-  id:number;
+  module: string;
+  id: number;
 }
 
 @Component({
@@ -76,7 +76,7 @@ export class HeaderComponent
     private router: Router,
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-   // private graphqlNotificationService: GraphqlNotificationService,
+    // private graphqlNotificationService: GraphqlNotificationService,
     public languageService: LanguageService
   ) {
     super();
@@ -91,55 +91,6 @@ export class HeaderComponent
   notificationSubscription?: Subscription;
   notificationCount: number = 0; // Example count
   notifications: Notifications[] = [
-    // {
-    //   message: 'Please check your mail',
-    //   time: '14 mins ago',
-    //   icon: 'mail',
-    //   color: 'nfc-green',
-    //   status: 'msg-unread',
-    // },
-    // {
-    //   message: 'New Employee Added..',
-    //   time: '22 mins ago',
-    //   icon: 'person_add',
-    //   color: 'nfc-blue',
-    //   status: 'msg-read',
-    // },
-    // {
-    //   message: 'Your leave is approved!! ',
-    //   time: '3 hours ago',
-    //   icon: 'event_available',
-    //   color: 'nfc-orange',
-    //   status: 'msg-read',
-    // },
-    // {
-    //   message: 'Lets break for lunch...',
-    //   time: '5 hours ago',
-    //   icon: 'lunch_dining',
-    //   color: 'nfc-blue',
-    //   status: 'msg-read',
-    // },
-    // {
-    //   message: 'Employee report generated',
-    //   time: '14 mins ago',
-    //   icon: 'description',
-    //   color: 'nfc-green',
-    //   status: 'msg-read',
-    // },
-    // {
-    //   message: 'Please check your mail',
-    //   time: '22 mins ago',
-    //   icon: 'mail',
-    //   color: 'nfc-red',
-    //   status: 'msg-read',
-    // },
-    // {
-    //   message: 'Salary credited...',
-    //   time: '3 hours ago',
-    //   icon: 'paid',
-    //   color: 'nfc-purple',
-    //   status: 'msg-read',
-    // },
   ];
   ngOnInit() {
     this.config = this.configService.configData;
@@ -219,161 +170,151 @@ export class HeaderComponent
     });
   }
 
-  private searchNotificationRecords()
-  {
-    this.subs.sink =this.graphqlNotificationService!.SearchNotificationData({},{ date: 'DESC' }).subscribe(data=>{
+  private searchNotificationRecords() {
+    this.subs.sink = this.graphqlNotificationService!.SearchNotificationData({}, { date: 'DESC' }).subscribe(data => {
 
-       let rec= data;
-       rec.forEach(item=>{
-        let notifyCls :Notifications={
-          message:item.message!,
-          color : this.getNotificationColor(item.id!),
+      let rec = data;
+      rec.forEach(item => {
+        let notifyCls: Notifications = {
+          message: item.message!,
+          color: this.getNotificationColor(item.id!),
           //color: 'nfc-orange',
-          icon : this.getNotificationIcon(item.id!),
+          icon: this.getNotificationIcon(item.id!),
           // icon :"mail",
           status: 'msg-read',
           time: this.getTimeAgo(item.date!),
-          module:item.module_cv!,
-          id:item.id!,
-          notification_date:item.date!
+          module: item.module_cv!,
+          id: item.id!,
+          notification_date: item.date!
         }
         this.notifications.push(notifyCls);
-       });
+      });
     });
 
-   
+
   }
 
-  private NotificationSubscribe(){
+  private NotificationSubscribe() {
 
     this.notificationSubscription = this.graphqlNotificationService!.notificationTriggered.subscribe(
       (notification) => {
         //alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
-        if(notification.notificationTriggered.id>0)
-        {
-          const notify : any = notification.notificationTriggered;
-          const notifyCls :Notifications={
-            message:notify.message,
-            color : this.getNotificationColor(notify.id),
+        if (notification.notificationTriggered.id > 0) {
+          const notify: any = notification.notificationTriggered;
+          const notifyCls: Notifications = {
+            message: notify.message,
+            color: this.getNotificationColor(notify.id),
             //color: 'nfc-orange',
-            icon : this.getNotificationIcon(notify.id),
+            icon: this.getNotificationIcon(notify.id),
             // icon :"mail",
             status: 'msg-read',
             time: this.getTimeAgo(notify.date),
-            module:notify.module_cv,
-            id:notify.id,
-            notification_date:notify.date
+            module: notify.module_cv,
+            id: notify.id,
+            notification_date: notify.date
           }
           this.notifications.unshift(notifyCls);
           this.notificationCount += 1;
-          const successMsg:string ="New Notification Added";
+          const successMsg: string = "New Notification Added";
           ComponentUtil.showNotification('snackbar-info', successMsg, 'top', 'right', this.snackBar);
         }
-        
+
       },
       (error) => console.error(error),
     );
   }
 
-   resetCounter()
-  {
-     this.notificationCount=0;
+  resetCounter() {
+    this.notificationCount = 0;
   }
 
-  clickNotificationItem(notification:Notifications)
-  {
-    let defaultLink:string="";
-    switch(notification.module)
-    {
+  clickNotificationItem(notification: Notifications) {
+    let defaultLink: string = "";
+    switch (notification.module) {
       case "tariff-cleaning":
-        defaultLink="admin/tariff/tariff-cleaning";
+        defaultLink = "admin/tariff/tariff-cleaning";
         break;
       case "package-cleaning":
-        defaultLink="admin/package/package-cleaning";
+        defaultLink = "admin/package/package-cleaning";
         break;
       case "storing-order":
-        defaultLink="admin/inventory/storing-order";
-          break;
+        defaultLink = "admin/inventory/storing-order";
+        break;
       case "in-gate":
-        defaultLink="admin/inventory/in-gate";
+        defaultLink = "admin/inventory/in-gate";
         break;
       case "in-gate-survey":
-        defaultLink="admin/inventory/in-gate-survey";
+        defaultLink = "admin/inventory/in-gate-survey";
         break;
       case "cross-check-booking":
-        defaultLink="admin/inventory/booking-new";
+        defaultLink = "admin/inventory/booking-new";
         break;
       case "cross-check-scheduling":
-        defaultLink="admin/inventory/scheduling-new";
+        defaultLink = "admin/inventory/scheduling-new";
         break;
     }
-    if(defaultLink!="") 
+    if (defaultLink != "")
       this.router.navigate([defaultLink]);
   }
 
-  getNotificationIcon(module_id:number):string
-  {
-    let defaultIcon:string="email";
-    switch(module_id)
-    {
+  getNotificationIcon(module_id: number): string {
+    let defaultIcon: string = "email";
+    switch (module_id) {
       case 1:
-        defaultIcon="store";
+        defaultIcon = "store";
         break;
       case 2:
-        defaultIcon="toll";
+        defaultIcon = "toll";
         break;
       case 3:
-          defaultIcon="watch_later";
-          break;
+        defaultIcon = "watch_later";
+        break;
       case 4:
-        defaultIcon="warning";
+        defaultIcon = "warning";
         break;
       case 5:
-        defaultIcon="error_outline";
+        defaultIcon = "error_outline";
         break;
-        case 6:
-          defaultIcon="publish";
-          break;
-        case 7:
-          defaultIcon="update";
-          break;
+      case 6:
+        defaultIcon = "publish";
+        break;
+      case 7:
+        defaultIcon = "update";
+        break;
     }
     return defaultIcon;
   }
 
-  getNotificationColor(module_id:number):string
-  {
-    let defaultColor:string="nfc-green";
-    switch(module_id)
-    {
+  getNotificationColor(module_id: number): string {
+    let defaultColor: string = "nfc-green";
+    switch (module_id) {
       case 1:
-        defaultColor="nfc-black";
+        defaultColor = "nfc-black";
         break;
       case 2:
-        defaultColor="nfc-blue";
+        defaultColor = "nfc-blue";
         break;
       case 3:
-        defaultColor="nfc-purple";
-          break;
+        defaultColor = "nfc-purple";
+        break;
       case 4:
-        defaultColor="nfc-orange";
+        defaultColor = "nfc-orange";
         break;
       case 5:
-        defaultColor="nfc-red";
+        defaultColor = "nfc-red";
         break;
       case 6:
-        defaultColor="nfc-orange";
+        defaultColor = "nfc-orange";
         break;
       case 7:
-        defaultColor="nfc-green";
+        defaultColor = "nfc-green";
         break;
     }
     return defaultColor;
   }
 
-  resetTheItemTime()
-  {
-    this.notifications.forEach(item=>{
+  resetTheItemTime() {
+    this.notifications.forEach(item => {
 
       item.time = this.getTimeAgo(item.notification_date);
     });

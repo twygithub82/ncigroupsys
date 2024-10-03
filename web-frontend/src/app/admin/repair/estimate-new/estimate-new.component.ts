@@ -340,6 +340,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
               });
             })
             return new RepairEstPartItem({
+              repair_est_guid: this.repair_est_guid || undefined,
               description: tep.description,
               hour: tep.hour,
               location_cv: tep.location_cv,
@@ -349,6 +350,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
               tariff_repair_guid: tep.tariff_repair_guid,
               tariff_repair: tep.tariff_repair,
               rep_damage_repair: tep_damage_repair,
+              action: "new"
               // repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
             });
           });
@@ -819,6 +821,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   onFormSubmit() {
     this.repairEstForm!.get('repList')?.setErrors(null);
+    debugger
     if (this.repairEstForm?.valid) {
       if (!this.repList.data.length) {
         this.repairEstForm.get('repList')?.setErrors({ required: true });
