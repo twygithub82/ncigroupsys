@@ -72,6 +72,8 @@ export class TepDamageRepairItem {
 }
 
 export class TemplateEstPartItem {
+  no?:number=0;
+  index?:number=0;
   action?: string = 'NEW';
   guid?: string | null;
   description?: string;
@@ -80,6 +82,7 @@ export class TemplateEstPartItem {
   create_dt?: number | null;
   hour?: number;
   quantity?: number;
+  comment?: string | null;
   location_cv?: string | null;
   remarks?: string | null;
   tariff_repair_guid?: string | null;
@@ -95,6 +98,7 @@ export class TemplateEstPartItem {
     this.action = item.action;
     this.guid = item.guid;
     this.description = item.description;
+    this.comment=item.comment;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -219,7 +223,7 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
       type_cv
       update_by
       update_dt
-      template_est_customer {
+      template_est_customer(where:{delete_dt:{eq:null}})  {
         create_by
         create_dt
         customer_company_guid
@@ -244,6 +248,7 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
         update_dt
         hour
         quantity
+        comment
         location_cv
         remarks
         tariff_repair_guid
@@ -326,6 +331,7 @@ export const GET_ESTIMATE_TEMPLATE_FOR_REPAIR = gql`
           update_dt
           hour
           quantity
+          comment
           location_cv
           remarks
           tariff_repair_guid

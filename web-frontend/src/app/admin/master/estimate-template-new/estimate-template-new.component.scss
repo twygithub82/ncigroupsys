@@ -1,3 +1,13 @@
 .full-height {
     height: 100%; /* Set full height for the container */
   }
+
+
+  .hidden-header {
+    display: none; /* or visibility: hidden; */
+}
+
+.clickable-row {
+  cursor: pointer; /* Change cursor to pointer (hand) */
+}
+

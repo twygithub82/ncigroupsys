@@ -1,5 +1,5 @@
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose, MatDialog } from '@angular/material/dialog';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
@@ -72,6 +72,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   action: string;
   index: number;
   dialogTitle: string;
+  buttonContent:string;
   customer_company_guid: string;
 
   repairPartForm: UntypedFormGroup;
@@ -89,6 +90,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   trDS: TariffRepairDS;
   repDrDS: REPDamageRepairDS;
   prDS: PackageRepairDS;
+  
+  @Output() InsertEstimationPartEvent = new EventEmitter<any>();
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -109,8 +113,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.customer_company_guid = data.customer_company_guid!;
     if (this.action === 'edit') {
       this.dialogTitle = `${data.translatedLangText.EDIT} ${data.translatedLangText.ESTIMATE_DETAILS}`;
+      this.buttonContent = `${data.translatedLangText.UPDATE}`;
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
+      this.buttonContent = `${data.translatedLangText.ADD_ANOTHER}`;
     }
     this.repairPart = data.item ? data.item : new RepairEstPartItem();
     if(this.repairPart.tariff_repair.material_cost) this.repairPart.material_cost= this.repairPart.tariff_repair.material_cost.toFixed(2);
@@ -141,7 +147,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       length: [''],
       damage: [''],
       repair: [''],
-      material_cost: [{ value: '' }]
+      material_cost: [{ value: '' }],
+      comment:[{ value: this.repairPart.comment, disabled: !this.canEdit() }],
     });
   }
 
@@ -165,7 +172,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       length: this.repairPart.tariff_repair?.length,
       damage: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 0)),
       repair: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 1)),
-      material_cost: this.repairPart.material_cost
+      material_cost: this.repairPart.material_cost,
+      comment:this.repairPart.comment
     });
   }
 
@@ -183,6 +191,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
       var rep: any = {
         ...this.repairPart,
+        comment: this.repairPartForm.get('comment')?.value,
         location_cv: this.repairPartForm.get('location_cv')?.value,
         tariff_repair_guid: this.repairPart?.tariff_repair_guid,
         tariff_repair: this.repairPart?.tariff_repair,
@@ -192,15 +201,32 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         hour: this.repairPartForm.get('hour')?.value,
         material_cost: this.repairPartForm.get('material_cost')?.value,
         remarks: this.repairPartForm.get('remarks')?.value,
+        
         actions
       }
-      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name??''} ${rep.tariff_repair?.length??''}${this.getUnitTypeDescription(rep.tariff_repair?.length_unit_cv)} ${rep.remarks ?? ''}`.trim();
+      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment} - ${rep.tariff_repair?.part_name??''} ${rep.tariff_repair?.length??''}${this.getUnitTypeDescription(rep.tariff_repair?.length_unit_cv)} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       const returnDialog: DialogData = {
         item: rep,
         index: this.index
       }
-      this.dialogRef.close(returnDialog);
+      if(this.buttonContent==this.data.translatedLangText.UPDATE)
+      { this.dialogRef.close(returnDialog);}
+      else
+      {
+        this.InsertEstimationPartEvent.emit(rep);
+        this.repairPart =  new RepairEstPartItem();
+        this.repairPart.tariff_repair= new TariffRepairItem();
+        this.repairPartForm = this.createForm();
+        this.initializeValueChange();
+        this.patchForm();
+        this.initializePartNameValueChange();
+     //   this.DisableAllRequireValidator();
+       // this.patchForm();
+       // this.EnableAllRequireValidator();
+       // this.repairPartForm.setErrors(null);
+  
+      }
     } else {
       this.findInvalidControls();
     }
@@ -284,69 +310,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
 
 
-    // this.partNameControl.valueChanges.subscribe(value => {
-    //   if (!this.valueChangesDisabled) {
-    //     this.handleValueChange(value);
-    //   }
-    // });
-
-    // this.repairPartForm?.get('dimension')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       const partName = this.partNameControl.value;
-    //       this.trDS.searchDistinctLength(partName, value).subscribe(data => {
-    //         this.lengthList = data;
-    //         if (!this.lengthList.length) {
-    //           this.repairPartForm?.get('length')?.disable();
-    //           this.getCustomerCost(partName, value, undefined);
-    //         } else {
-    //           this.repairPartForm?.get('length')?.enable();
-    //         }
-    //       });
-    //     }
-    //   })
-    // ).subscribe();
-
-    // this.repairPartForm?.get('length')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       const partName = this.partNameControl.value;
-    //       const dimension = this.repairPartForm?.get('dimension')?.value;
-    //       this.getCustomerCost(partName, dimension, value);
-    //     }
-    //   })
-    // ).subscribe();
   }
 
-  // handleValueChange(value: any) {
-  //   this.valueChangesDisabled = true;
-  //   if (value) {
-  //     this.partNameFilteredList = this.partNameList?.filter(item =>
-  //       item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
-  //     );
-  //     const isValid = this.partNameList?.some(item => item === value);
-  //     if (isValid) {
-  //       // Only search if the value exists in the partNameList
-  //       this.trDS.searchDistinctDimension(value).subscribe(data => {
-  //         this.dimensionList = data;
-  //         if (!this.dimensionList.length) {
-  //           this.repairPartForm?.get('dimension')?.disable();
-  //           this.getCustomerCost(value, undefined, undefined);
-  //         } else {
-  //           this.repairPartForm?.get('dimension')?.enable();
-  //         }
-  //       });
-  //     }
-  //   } else {
-  //     // If no value is entered, reset the filtered list to the full list
-  //     this.partNameFilteredList = this.partNameList;
-  //   }
-  //   this.valueChangesDisabled = false;
-  // }
+ 
 
   findInvalidControls() {
     const controls = this.repairPartForm.controls;
@@ -406,36 +372,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
   }
 
-  // getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {
-  //   const group_name_cv = this.repairPartForm.get('group_name_cv')?.value
-  //   const subgroup_name_cv = this.repairPartForm.get('subgroup_name_cv')?.value
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: this.customer_company_guid } },
-  //       {
-  //         or: [
-  //           { tariff_repair_guid: { eq: null } },
-  //           {
-  //             tariff_repair: {
-  //               group_name_cv: { eq: group_name_cv.code_val },
-  //               subgroup_name_cv: { eq: subgroup_name_cv },
-  //               part_name: { eq: partName },
-  //               dimension: { eq: dimension },
-  //               length: { eq: length }
-  //             }
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   }
-  //   this.prDS.getCustomerPackageCost(where).subscribe(data => {
-  //     if (data.length) {
-  //       // this.selectedPackageRepair = data[0];
-  //       // this.repairPartForm.get('material_cost')?.setValue(this.selectedPackageRepair?.material_cost!.toFixed(2));
-  //     }
-  //   });
-  // }
-
+ 
   resetPartSelectedDetail()
   {
     this.repairPart.tariff_repair_guid=undefined;
@@ -472,5 +409,45 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
     
     });
+  }
+
+  EnableValidator(path:string)
+  {
+    this.repairPartForm.get(path)?.setValidators([
+      Validators.required  // If you have a required validator
+    ]);
+    
+    this.repairPartForm.get(path)?.updateValueAndValidity();  // Revalidate the control
+    
+  }
+
+  DisableValidator(path:string)
+  {
+    this.repairPartForm.get(path)?.clearValidators();
+    
+  }
+
+  DisableAllRequireValidator()
+  {
+    this.DisableValidator('part_name');
+    this.DisableValidator('group_name_cv');
+    this.DisableValidator('hour');
+    this.DisableValidator('quantity');
+    this.DisableValidator('damage');
+    this.DisableValidator('repair');
+    
+  }
+
+  EnableAllRequireValidator()
+  {
+   
+    this.EnableValidator('part_name');
+    this.EnableValidator('group_name_cv');
+    this.EnableValidator('hour');
+    this.EnableValidator('quantity');
+    this.EnableValidator('damage');
+    this.EnableValidator('repair');
+   
+    
   }
 }

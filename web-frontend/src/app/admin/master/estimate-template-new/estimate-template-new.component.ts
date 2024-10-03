@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
@@ -60,6 +60,7 @@ import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { elements } from 'chart.js';
 import { TariffRepairItem } from 'app/data-sources/tariff-repair';
+import {DisplayPartGroupSection, groupByTariffRepairGroup} from 'app/shared/DisplayGroupSection';
 
 @Component({
   selector: 'app-estimate-new',
@@ -214,7 +215,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     RATE: "COMMON-FORM.RATE",
     TOTAL: "COMMON-FORM.TOTAL",
     NO_PARTS: "COMMON-FORM.NO-PARTS",
-    PART: 'COMMON-FORM.PART'
+    PART: 'COMMON-FORM.PART',
+    COMMENTS:'COMMON-FORM.COMMENTS',
+    ADD_ANOTHER:'COMMON-FORM.ADD-ANOTHER',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -245,6 +248,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
 
+  displayPartGroupSectionList:DisplayPartGroupSection[]=[];
+
   customerCodeControl = new UntypedFormControl();
 
   soDS: StoringOrderDS;
@@ -259,6 +264,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
 
+  
+  showHeader: boolean = false; 
   constructor(
 
     public httpClient: HttpClient,
@@ -293,7 +300,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     this.initializeValueChange();
     this.loadData();
     this.SetCostDecimal();
-
+    
   }
 
   SetCostDecimal() {
@@ -496,6 +503,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
             description: item.description,
             guid: item.guid,
             hour: item.hour,
+            comment:item.comment,
             location_cv: item.location_cv,
             material_cost: item.tariff_repair?.material_cost,
             quantity: item.quantity,
@@ -696,6 +704,24 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       },
       direction: tempDirection
     });
+    
+   // Access the component instance and subscribe to the event
+    dialogRef.afterOpened().subscribe(() => {
+      const instance = dialogRef.componentInstance;
+      instance.InsertEstimationPartEvent.subscribe((result: any) => {
+        if (result) {
+          const data: any = [...this.repList.data];
+          const newItem = new TemplateEstPartItem({
+            ...result,
+          });
+          data.unshift(newItem);
+          this.updateData(data);
+  
+          this.calculateCostSummary();
+        }
+      });
+    });
+
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const data: any = [...this.repList.data];
@@ -711,9 +737,10 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   }
 
   
-  editEstDetails(event: Event, row: TemplateEstPartItem, index: number) {
+  editEstDetails(event: Event, row: TemplateEstPartItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
+    let index=row.index;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -760,8 +787,9 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     });
   }
 
-  deleteItem(row: StoringOrderTankItem, index: number) {
+  deleteItem(row: TemplateEstPartItem,index:number) {
     let tempDirection: Direction;
+    
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -775,24 +803,15 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       },
       direction: tempDirection
     });
+
+    
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        // if (result.item.guid) {
-        //   const data: any[] = [...this.repList.data];
-        //   const updatedItem = {
-        //     ...result.item,
-        //     delete_dt: Utility.getDeleteDtEpoch(),
-        //     actions: Array.isArray(data[index].actions!)
-        //       ? [...new Set([...data[index].actions!, 'delete'])]
-        //       : ['delete']
-        //   };
-        //   data[result.index] = updatedItem;
-        //   this.updateData(data); // Refresh the data source
-        // } else {
+     
           const data = [...this.repList.data];
           data.splice(index, 1);
           this.updateData(data); // Refresh the data source
-        // }
+
         this.calculateCostSummary();
       }
     });
@@ -948,6 +967,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
               this.repList.data.forEach(data => {
                 var repEstItem: any = data;
                 var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
+                delete tempEstPartItem.index;
+                delete tempEstPartItem.no;
                 tempEstPartItem.action = "NEW";
                 tempEstPartItem.guid = "";
                 tempEstPartItem.tariff_repair_guid = data.tariff_repair_guid;
@@ -1051,7 +1072,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       value.action = "CANCEL"; 
       value.tariff_repair=undefined;
       value.tep_damage_repair= value.tep_damage_repair?.map((node:any)=>new TepDamageRepairItem(node));
-
+      delete value.index;
+      delete value.no;
     });
 
     if(this.repList.data.length>0)
@@ -1069,10 +1091,15 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           //set all the tep_damage_repair action to cancel first
           existData![0]!.tep_damage_repair.forEach(value => {value.action = "CANCEL";});
 
-          if(value.description!=existData![0]!.description)
+          if(value.description!=existData![0]!.description||value.hour!=existData![0].hour||value.quantity!=existData![0].quantity)
           {
             existData![0]!.action = "EDIT";
             existData![0]!.description = value.description;
+            existData![0].remarks=value.remarks;
+            existData![0].comment=value.comment;
+            existData![0].quantity=value.quantity;
+            existData![0].hour=value.hour;
+            existData![0].location_cv=value.location_cv;
           }
           // consolidate new repair + new damage to tep_damage_repair
           var rep_damage_repairItems=value.tep_damage_repair!;
@@ -1104,6 +1131,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
           tempEstPartItem.action = "NEW";
           tempEstPartItem.guid = "";
+          tempEstPartItem.comment=repEstItem.comment;
           tempEstPartItem.tariff_repair_guid = value.tariff_repair_guid;
           tempEstPartItem.hour = repEstItem.hour;
           tempEstPartItem.quantity = repEstItem.quantity;
@@ -1119,6 +1147,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
             tepDamageRepairItm.action = "NEW";
             tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
           });
+          delete tempEstPartItem.index;
+          delete tempEstPartItem.no;
           this.selectedTempEst?.template_est_part?.push(tempEstPartItem);
         }
       });
@@ -1137,9 +1167,14 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     this.repList.data = [...newData];
     this.sotSelection.clear();
     this.tempForm?.get('repList')?.setErrors(null);
+    this.displayPartGroupSectionList = groupByTariffRepairGroup(this.repList.data);
+
+   
+
   }
 
-  handleDelete(event: Event, row: any, index: number): void {
+  handleDelete(event: Event, row: any): void {
+    let index :number = row.index;
     this.deleteItem(row, index);
   }
 
@@ -1212,6 +1247,25 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  handleAction(event: Event, action: string, item: any) {
+    this.stopEventTrigger(event);
+    switch(action) {
+      case 'edit':
+        // Handle edit action
+        console.log('Editing item:', item);
+        break;
+      case 'delete':
+        let index=item.index;
+        
+        this.deleteItem(item,index);
+        // Handle delete action
+        console.log('Deleting item:', item);
+        break;
+      default:
+        console.log('Unknown action:', action);
+    }
   }
 
   stopEventTrigger(event: Event) {
@@ -1351,4 +1405,6 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     retval = Number(Number(row.tariff_repair.material_cost || 0) * Number(row.quantity || 0)).toFixed(2);
     return retval;
   }
+
+  
 }

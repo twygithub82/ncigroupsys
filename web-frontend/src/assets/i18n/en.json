@@ -562,7 +562,9 @@
     "AMEND": "Amend",
     "CUSTOMER-EXCEED":"Selected Customer Exceed - ",
     "ENTER-ATLEAST-ONE-CONDITION": "Please enter at least one query condition.",
-     "NO-VALUE-CHNAGE": "No Value Change Detected"
+     "NO-VALUE-CHNAGE": "No Value Change Detected",
+     "COMMENTS": "Comments",
+     "ADD-ANOTHER": "Add Another"
     
   },
   "CLEAN-PROCEDURES": {

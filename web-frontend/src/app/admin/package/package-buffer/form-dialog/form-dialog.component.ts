@@ -89,7 +89,7 @@ export class FormDialogComponent {
        'fName',
        'lName',
        'email',
-       'gender',
+      // 'gender',
       // 'bDate',
       
       // 'actions',

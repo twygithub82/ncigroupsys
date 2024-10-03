@@ -19,9 +19,9 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-label style="display: flex; justify-content: center;">{{translatedLangText.CUSTOMER_COST}}</mat-label>
+                  <mat-label style="display: flex; justify-content: left;">{{translatedLangText.CUSTOMER_COST}}</mat-label>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>
                   <mat-label style="display: flex; justify-content: center;">{{translatedLangText.STANDARD_COST}}</mat-label>
                 </div>
               </div>
@@ -30,7 +30,7 @@
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.COST}}</mat-label>
                         <input matInput formControlName="cost_cust" type="number" [required]="this.selectedItems.length===1">
@@ -41,7 +41,7 @@
                           }
                       </mat-form-field>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.COST }}</mat-label>
                       <input matInput formControlName="cost_standard" type="text" readonly="true">
@@ -216,11 +216,11 @@
                     <mat-cell *matCellDef="let row" >
                       <span class="mobile-label">{{translatedLangText.COST }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
                   </ng-container>
-                  <ng-container matColumnDef="bDate">
+                  <!-- <ng-container matColumnDef="bDate">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.STANDARD_COST }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" >
                       <span class="mobile-label">{{translatedLangText.COST }}:</span>{{row.tariff_residue.cost.toFixed(2)}}</mat-cell>
-                  </ng-container>
+                  </ng-container> -->
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns;" 
                     [style.cursor]="'pointer'" matRipple>

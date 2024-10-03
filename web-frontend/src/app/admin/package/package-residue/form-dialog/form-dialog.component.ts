@@ -91,7 +91,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
        'lName',
        'email',
        'gender',
-       'bDate',
+      // 'bDate',
       // 'mobile',
       // 'actions',
     ];
