@@ -160,6 +160,7 @@ namespace IDMS.Booking.GqlTypes
                         extROSot.remarks = roSOT.remarks;
                         extROSot.update_by = user;
                         extROSot.update_dt = currentDateTime;
+                        extROSot.delete_dt = currentDateTime;   
 
                         sot.tank_status_cv = TankMovementStatus.STORAGE;
                         sot.update_by = user;
