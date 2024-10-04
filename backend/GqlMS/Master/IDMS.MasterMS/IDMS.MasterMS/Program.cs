@@ -63,7 +63,7 @@ namespace IDMS.Master.Application
                        //.AddTypeExtension<ReleaseOrderQuery>()
                        //.AddSubscriptionType<BookingSubscription>()
                        .AddMutationType<TemplateEstMutation>()
-                       //.AddTypeExtension<ReleaseOrderMutation>()
+                       .AddTypeExtension<CustomerMutation>()
                        //.AddTypeExtension<SchedulingMutation>()
                        .AddFiltering()
                        .AddSorting()

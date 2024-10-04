@@ -24,9 +24,10 @@ namespace IDMS.Customer.GqlTypes.LocalModel
         public string? postal { get; set; }
         public string? phone { get; set; }
         public string? fax { get; set; }
-        public string email { get; set; }
+        public string? email { get; set; }
         public string? website { get; set; }
         public long effective_dt { get; set; }
         public long agreement_due_dt { get; set; }
+        public string? def_template_guid { get; set; }
     }
 }
