@@ -423,7 +423,7 @@ namespace IDMS.StoringOrder.GqlTypes
         {
 
             var res = SO.storing_order_tank.Any(t => t.tank_no == tankNo &&
-                (t.status_cv.EqualsIgnore(SOTankStatus.WAITING) ||
+                (t.status_cv.EqualsIgnore(SOTankStatus.CANCELED) ||
                     (t.status_cv.EqualsIgnore(SOTankStatus.ACCEPTED) && !t.tank_status_cv.EqualsIgnore(TankMovementStatus.RO))));
 
             return res;
