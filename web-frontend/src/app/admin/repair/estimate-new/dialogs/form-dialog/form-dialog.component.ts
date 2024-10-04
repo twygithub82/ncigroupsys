@@ -130,6 +130,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       repair_est_guid: [this.repairPart.repair_est_guid],
       description: [{ value: this.repairPart.description, disabled: !this.canEdit() }],
       location_cv: [{ value: this.repairPart.location_cv, disabled: !this.canEdit() }],
+      comment: [{ value: this.repairPart.comment, disabled: !this.canEdit() }],
       remarks: [{ value: this.repairPart.remarks, disabled: !this.canEdit() }],
       quantity: [{ value: this.repairPart.quantity, disabled: !this.canEdit() }],
       hour: [{ value: this.repairPart.hour, disabled: !this.canEdit() }],
@@ -153,6 +154,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       repair_est_guid: this.repairPart.repair_est_guid,
       description: this.repairPart.description,
       location_cv: this.repairPart.location_cv,
+      comment: this.repairPart.comment,
       remarks: this.repairPart.remarks,
       quantity: this.repairPart.quantity,
       hour: this.repairPart.hour,
@@ -180,6 +182,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       var rep: any = {
         ...this.repairPart,
         location_cv: this.repairPartForm.get('location_cv')?.value,
+        comment: this.repairPartForm.get('comment')?.value,
         tariff_repair_guid: this.repairPart?.tariff_repair_guid,
         tariff_repair: this.repairPart?.tariff_repair,
         rep_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
@@ -189,7 +192,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         remarks: this.repairPartForm.get('remarks')?.value,
         create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
       }
-      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${rep.tariff_repair?.length} ${rep.remarks ?? ''}`.trim();
+      const concludeLength = rep.tariff_repair?.length 
+                              ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} ` 
+                              : '';
+      rep.description = `${this.getLocationDescription(rep.location_cv)} (${rep.comment}) - ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       const returnDialog: DialogData = {
         item: rep,

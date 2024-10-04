@@ -26,6 +26,7 @@ export class CustomerCompanyGO {
     public website?: string;
     public effective_dt?: number;
     public agreement_due_dt?: number;
+    public def_template_guid?: string;
    
     public create_dt?: number;
     public create_by?: string;
@@ -51,6 +52,7 @@ export class CustomerCompanyGO {
         this.website = item.website;
         this.effective_dt = item.effective_dt;
         this.agreement_due_dt = item.agreement_due_dt;
+        this.def_template_guid = item.def_template_guid;
        
         this.create_dt = item.create_dt;
         this.create_by = item.create_by;

@@ -797,6 +797,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
             guid
             name
             alias
+            def_template_guid
             delete_dt
           }
         }
@@ -833,6 +834,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
             guid
             hour
             location_cv
+            comment
             material_cost
             owner
             quantity

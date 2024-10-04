@@ -31,7 +31,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-storing-order-cancel-form-dialog',
+  selector: 'app-repair-estimate-cancel-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [],

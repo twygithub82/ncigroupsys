@@ -567,7 +567,9 @@
      "ADD-ANOTHER": "Add Another",
     
     "NO-VALUE-CHNAGE": "No Value Change Detected",
-    "PREVIEW-PHOTOS": "Preview Photos"
+    "PREVIEW-PHOTOS": "Preview Photos",
+    "DEFAULT": "Default",
+    "COMMENT": "Comment"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -38,7 +38,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
+import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company'
 import { MatRadioModule } from '@angular/material/radio';
 import { Apollo } from 'apollo-angular';
 import { MatDividerModule } from '@angular/material/divider';
@@ -201,7 +201,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     LESSEE: 'COMMON-FORM.LESSEE',
     TOTAL: 'COMMON-FORM.TOTAL',
     PART: 'COMMON-FORM.PART',
-    FILTER: 'COMMON-FORM.FILTER'
+    FILTER: 'COMMON-FORM.FILTER',
+    DEFAULT: 'COMMON-FORM.DEFAULT',
+    COMMENT: 'COMMON-FORM.COMMENT'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -284,6 +286,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.repairEstForm = this.fb.group({
       guid: [''],
       est_template: [''],
+      is_default_template: [''],
       remarks: [''],
       surveyor_id: [''],
       labour_cost_discount: [0],
@@ -322,6 +325,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       tap(value => {
         if (value) {
           console.log(value);
+          if (this.getCustomer()?.def_template_guid) {
+            this.repairEstForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
+          }
           // estimate
           this.repairEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
@@ -344,6 +350,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
               description: tep.description,
               hour: tep.hour,
               location_cv: tep.location_cv,
+              comment: tep.comment,
               quantity: tep.quantity,
               remarks: tep.remarks,
               material_cost: material_cost,
@@ -530,6 +537,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
+  getCustomer() {
+    return this.sotItem?.storing_order?.customer_company;
+  }
+
   getTemplateList(customer_company_guid: string) {
     const where = {
       or: [
@@ -544,7 +555,19 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
     this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, {}, customer_company_guid).subscribe(data => {
       if (data?.length > 0) {
-        this.templateList = data;
+        this.templateList = [new MasterTemplateItem({ template_name: "-" }), ...data];
+        const def_guid = this.getCustomer()?.def_template_guid;
+        if (!this.repair_est_guid) {
+          if (def_guid) {
+            this.repairEstForm?.get('is_default_template')?.setValue(true);
+          }
+
+          const def_template = this.templateList.find(x =>
+            def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
+          );
+
+          this.repairEstForm?.get('est_template')?.setValue(def_template);
+        }
       }
     });
   }
@@ -821,7 +844,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   onFormSubmit() {
     this.repairEstForm!.get('repList')?.setErrors(null);
-    debugger
     if (this.repairEstForm?.valid) {
       if (!this.repList.data.length) {
         this.repairEstForm.get('repList')?.setErrors({ required: true });
@@ -857,16 +879,21 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value);
         re.remarks = this.repairEstForm.get('remarks')?.value;
         re.owner_enable = this.isOwner;
+
+        let cc: any = undefined;
+        if (this.repairEstForm?.get('is_default_template')?.value && this.repairEstForm.get('est_template')?.value?.guid) {
+          cc = this.getCustomer();
+          cc!.def_template_guid = this.repairEstForm.get('est_template')?.value?.guid;
+          console.log(cc);
+        }
         console.log(re);
-        // console.log('so Value', so);
-        // console.log('sot Value', sot);
         if (re.guid) {
-          this.repairEstDS.updateRepairEstimate(re).subscribe(result => {
+          this.repairEstDS.updateRepairEstimate(re, new CustomerCompanyGO({...cc})).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.updateRepairEstimate);
           });
         } else {
-          this.repairEstDS.addRepairEstimate(re).subscribe(result => {
+          this.repairEstDS.addRepairEstimate(re, new CustomerCompanyGO({...cc})).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.addRepairEstimate);
           });

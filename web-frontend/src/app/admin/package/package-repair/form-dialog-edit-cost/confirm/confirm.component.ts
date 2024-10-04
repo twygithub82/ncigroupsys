@@ -12,7 +12,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-confirm',
+    selector: 'app-package-repair-confirm',
     templateUrl: './confirm.component.html',
     styleUrls: ['./confirm.component.scss'],
     standalone: true,

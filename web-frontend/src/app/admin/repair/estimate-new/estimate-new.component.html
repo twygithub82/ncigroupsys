@@ -2,8 +2,8 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="this.sot_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
-        [active_item]="this.sot_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
+      <app-breadcrumb [title]="repair_est_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
+        [active_item]="repair_est_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -152,6 +152,13 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
+                @if (repairEstForm?.get('est_template')?.value?.guid) {
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-checkbox class="m-r-5" color="primary" formControlName="is_default_template">
+                    {{translatedLangText.DEFAULT}}
+                  </mat-checkbox>
+                </div>
+                }
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <!-- @if (repairEstDS.canAdd(row)) {
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"

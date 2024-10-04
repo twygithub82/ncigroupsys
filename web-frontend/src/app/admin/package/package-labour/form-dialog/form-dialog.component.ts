@@ -45,7 +45,7 @@ export interface DialogData {
 
 
 @Component({
-  selector: 'app-form-dialog',
+  selector: 'app-package-labour-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],

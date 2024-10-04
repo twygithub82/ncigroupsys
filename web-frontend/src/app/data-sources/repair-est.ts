@@ -145,14 +145,14 @@ export const GET_SCHEDULING_SOT = gql`
 `;
 
 export const ADD_REPAIR_EST = gql`
-  mutation AddRepairEstimate($repairEstimate: repair_estInput!) {
-    addRepairEstimate(repairEstimate: $repairEstimate)
+  mutation AddRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
+    addRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
   }
 `;
 
 export const UPDATE_REPAIR_EST = gql`
-  mutation UpdateRepairEstimate($repairEstimate: repair_estInput!) {
-    updateRepairEstimate(repairEstimate: $repairEstimate)
+  mutation UpdateRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
+    updateRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
   }
 `;
 
@@ -183,20 +183,22 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
-  addRepairEstimate(repairEstimate: any): Observable<any> {
+  addRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_REPAIR_EST,
       variables: {
-        repairEstimate
+        repairEstimate,
+        customerCompany
       }
     });
   }
 
-  updateRepairEstimate(repairEstimate: any): Observable<any> {
+  updateRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_REPAIR_EST,
       variables: {
-        repairEstimate
+        repairEstimate,
+        customerCompany
       }
     });
   }

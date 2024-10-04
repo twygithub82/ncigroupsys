@@ -59,7 +59,7 @@ interface Condition {
 
 
 @Component({
-  selector: 'app-form-dialog',
+  selector: 'app-estimate-template-form-edit-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],

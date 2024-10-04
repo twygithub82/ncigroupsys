@@ -72,8 +72,8 @@ export class TepDamageRepairItem {
 }
 
 export class TemplateEstPartItem {
-  no?:number=0;
-  index?:number=0;
+  no?: number = 0;
+  index?: number = 0;
   action?: string = 'NEW';
   guid?: string | null;
   description?: string;
@@ -98,7 +98,7 @@ export class TemplateEstPartItem {
     this.action = item.action;
     this.guid = item.guid;
     this.description = item.description;
-    this.comment=item.comment;
+    this.comment = item.comment;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -117,7 +117,6 @@ export class TemplateEstPartItem {
 }
 
 export class TemplateEstimateCustomerItem {
-
   action?: string = 'NEW';
   create_by?: string | null;
   create_dt?: string | null;
@@ -211,85 +210,84 @@ export const GET_ESTIMATE_TEMPLATE_QUERY = gql`
   query queryTemplateEstimation($where: template_estFilterInput, $order:[template_estSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     MasterTemplateResult : queryTemplateEstimation(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-      
-      create_by
-      create_dt
-      delete_dt
-      guid
-      labour_cost_discount
-      material_cost_discount
-      template_name
-      remarks
-      type_cv
-      update_by
-      update_dt
-      template_est_customer(where:{delete_dt:{eq:null}})  {
         create_by
         create_dt
-        customer_company_guid
         delete_dt
         guid
-        template_est_guid
-        update_by
-        update_dt
-        customer_company {
-          guid
-          code
-          name
-        }
-      }
-      template_est_part(where:{delete_dt:{eq:null}}) {
-        guid
-        description
-        delete_dt
-        create_by
-        create_dt
-        update_by
-        update_dt
-        hour
-        quantity
-        comment
-        location_cv
+        labour_cost_discount
+        material_cost_discount
+        template_name
         remarks
-        tariff_repair_guid
-        tariff_repair {
-          alias
+        type_cv
+        update_by
+        update_dt
+        template_est_customer(where:{delete_dt:{eq:null}})  {
           create_by
           create_dt
+          customer_company_guid
           delete_dt
-          dimension
-          group_name_cv
           guid
-          height_diameter
-          height_diameter_unit_cv
-          labour_hour
-          length
-          length_unit_cv
-          material_cost
-          part_name
-          remarks
-          subgroup_name_cv
-          thickness
-          thickness_unit_cv
+          template_est_guid
           update_by
           update_dt
-          width_diameter
-          width_diameter_unit_cv
+          customer_company {
+            guid
+            code
+            name
+          }
         }
-        tep_damage_repair {
-          code_cv
-          code_type
+        template_est_part(where:{delete_dt:{eq:null}}) {
+          guid
+          description
+          delete_dt
           create_by
           create_dt
-          delete_dt
-          guid
-          tep_guid
           update_by
           update_dt
+          hour
+          quantity
+          comment
+          location_cv
+          remarks
+          tariff_repair_guid
+          tariff_repair {
+            alias
+            create_by
+            create_dt
+            delete_dt
+            dimension
+            group_name_cv
+            guid
+            height_diameter
+            height_diameter_unit_cv
+            labour_hour
+            length
+            length_unit_cv
+            material_cost
+            part_name
+            remarks
+            subgroup_name_cv
+            thickness
+            thickness_unit_cv
+            update_by
+            update_dt
+            width_diameter
+            width_diameter_unit_cv
+          }
+          tep_damage_repair {
+            code_cv
+            code_type
+            create_by
+            create_dt
+            delete_dt
+            guid
+            tep_guid
+            update_by
+            update_dt
+          }
         }
       }
-    }
-    pageInfo {
+      pageInfo {
         endCursor
         hasNextPage
         hasPreviousPage
@@ -331,8 +329,8 @@ export const GET_ESTIMATE_TEMPLATE_FOR_REPAIR = gql`
           update_dt
           hour
           quantity
-          comment
           location_cv
+          comment
           remarks
           tariff_repair_guid
           tariff_repair {
