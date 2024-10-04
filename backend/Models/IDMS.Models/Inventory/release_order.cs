@@ -27,6 +27,8 @@ namespace IDMS.Models
         public long? release_dt { get; set; }
         //public long? booking_dt { get; set; }
         public customer_company? customer_company { get; set; }
+
+        [UseFiltering]
         public IEnumerable<release_order_sot>? release_order_sot { get; set; }    
     }
 }

@@ -18,6 +18,7 @@ namespace IDMS.Models.Inventory
         public string? book_type_cv { get; set; }
         public string? remarks { get; set; }
         //public long? scheduling_dt { get; set; }
+        [UseFiltering]
         public IEnumerable<scheduling_sot>? scheduling_sot { get; set; }
 
     }
