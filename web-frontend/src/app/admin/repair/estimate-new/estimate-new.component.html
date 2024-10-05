@@ -183,26 +183,25 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
                     <table mat-table [dataSource]="repList" matSort
-                      class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                      class="mat-cell advance-table hover-highlight dark-header" multiTemplateDataRows>
+                      <ng-container matColumnDef="group_name_cv">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{translatedLangText.GROUP}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length"
+                          [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{getGroupNameCodeDescription(row.tariff_repair?.group_name_cv)}}
+                        </mat-cell>
+                      </ng-container>
                       <ng-container matColumnDef="seq">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>No.</mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i = index">{{i + 1}}</mat-cell>
+                        <mat-cell *matCellDef="let row;">{{row.index}}</mat-cell>
                       </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="group_name_cv">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          {{translatedLangText.GROUP}}
-                        </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.GROUP}}:</span>
-                          {{getGroupNameCodeDescription(row.tariff_repair?.group_name_cv)}}
-                        </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">
                         <mat-header-cell *matHeaderCellDef
@@ -248,12 +247,12 @@
                       </ng-container>
                       <ng-container matColumnDef="description">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.DESCRIPTION}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
                           {{row.description}}
                         </mat-cell>
@@ -340,45 +339,22 @@
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
                             }
-                            <!-- @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
-                            <button mat-menu-item (click)="cancelItem($event, row)">
-                              <mat-icon>cancel</mat-icon>
-                              <span>{{repSelection.hasValue() ? translatedLangText.BULK + " " :
-                                ""}}{{translatedLangText.CANCEL}}</span>
-                            </button>
-                            }
-                            @if (!row.actions.includes('rollback') && sotDS.canRollbackStatus(row)) {
-                            <button mat-menu-item (click)="rollbackItem($event, row)">
-                              <mat-icon>undo</mat-icon>
-                              <span>{{repSelection.hasValue() ? translatedLangText.BULK + " " :
-                                ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
-                            </button>
-                            }
-                            @if (row.actions.includes('cancel')) {
-                            <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
-                              <mat-icon>undo</mat-icon>
-                              <span>{{translatedLangText.UNDO}} {{translatedLangText.CANCEL}}</span>
-                            </button>
-                            }
-                            @if (row.actions.includes('rollback')) {
-                            <button mat-menu-item (click)="undoAction($event, row, 'rollback')">
-                              <mat-icon>undo</mat-icon>
-                              <span>{{translatedLangText.UNDO}} {{translatedLangText.ROLLBACK_STATUS}}</span>
-                            </button>
-                            } -->
                           </mat-menu>
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let row; let i = index; columns: ['group_name_cv'];" [hidden]="!row.isGroupHeader"
+                        [ngClass]="{'bg-lightest-purple font-bold': true}" [style.cursor]="'pointer'" matRipple>
+                      </mat-row>
                       <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
                         (click)="editEstDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                     </table>
                   </div>
-                  @if (!repList.data.length) {
+                  @if (!repList.length) {
                   <mat-divider></mat-divider>
-                  <div class="no-results m-l-20 pt-3" [style.display]="repList.data.length === 0 ? '' : 'none'">
+                  <div class="no-results m-l-20 pt-3" [style.display]="repList.length === 0 ? '' : 'none'">
                     <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                   </div>
                   }
