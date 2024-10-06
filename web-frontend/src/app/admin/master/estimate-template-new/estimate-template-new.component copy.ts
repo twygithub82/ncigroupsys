@@ -103,8 +103,8 @@ import {DisplayPartGroupSection, groupByTariffRepairGroup} from 'app/shared/Disp
 })
 export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'seq',
-   // 'group_name_cv',
+    'index',
+    'group_name_cv',
     'subgroup_name_cv',
     'damage',
     'repair',
@@ -476,7 +476,53 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
 }
 
   public loadData() {
-   
+    this.historyState = history.state;
+
+    if (this.historyState.selectedRow != null) {
+
+      this.selectedTempEst = this.historyState.selectedRow;
+      const custCompanies = this.selectedTempEst?.template_est_customer?.filter(value => value.delete_dt == null);
+      this.selectedTempEst!.template_est_customer = custCompanies;
+      this.tempForm?.patchValue({
+        guid: this.selectedTempEst?.guid,
+        labour_discount: this.selectedTempEst?.labour_cost_discount,
+        material_discount: this.selectedTempEst?.material_cost_discount,
+        // customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
+        template_name: this.selectedTempEst?.template_name,
+        remarks: this.selectedTempEst?.remarks,
+      });
+      var repairEstPartItem: RepairEstPartItem[] = [];
+      this.selectedTempEst?.template_est_part!=this.SortRepairEstPart(this.selectedTempEst?.template_est_part!);
+      repairEstPartItem = this.selectedTempEst?.template_est_part
+        ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
+        .map((item: Partial<TemplateEstPartItem>) => {
+          return {
+            actions: [],
+            create_by: item.create_by,
+            create_dt: item.create_dt,
+            description: item.description,
+            guid: item.guid,
+            hour: item.hour,
+            comment:item.comment,
+            location_cv: item.location_cv,
+            material_cost: item.tariff_repair?.material_cost,
+            quantity: item.quantity,
+            remarks: item.remarks,
+            repair_est: undefined,
+            repair_est_guid: undefined,
+            tariff_repair: item.tariff_repair,
+            tariff_repair_guid: item.tariff_repair_guid,
+            update_by: item.update_by,
+            update_dt: item.update_dt,
+            tep_damage_repair: item.tep_damage_repair!,
+            
+            // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
+            // Map other fields as needed
+          } as RepairEstPartItem;
+        }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
+      this.populateSOT(repairEstPartItem!);
+      this.calculateCostSummary();
+    }
 
     this.temp_guid = this.route.snapshot.paramMap.get('id');
     if (this.temp_guid?.trim() == '') {
@@ -526,7 +572,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
 
     this.cvDS.connectAlias('groupNameCv').subscribe(data => {
       this.groupNameCvList = data;
-      this.loadHistoryState();
+
       const subqueries: any[] = [];
       data.map(d => {
 
@@ -582,56 +628,6 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   }
 
   
-  loadHistoryState()
-  {
-    this.historyState = history.state;
-
-    if (this.historyState.selectedRow != null) {
-
-      this.selectedTempEst = this.historyState.selectedRow;
-      const custCompanies = this.selectedTempEst?.template_est_customer?.filter(value => value.delete_dt == null);
-      this.selectedTempEst!.template_est_customer = custCompanies;
-      this.tempForm?.patchValue({
-        guid: this.selectedTempEst?.guid,
-        labour_discount: this.selectedTempEst?.labour_cost_discount,
-        material_discount: this.selectedTempEst?.material_cost_discount,
-        // customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
-        template_name: this.selectedTempEst?.template_name,
-        remarks: this.selectedTempEst?.remarks,
-      });
-      var repairEstPartItem: RepairEstPartItem[] = [];
-      this.selectedTempEst?.template_est_part!=this.SortRepairEstPart(this.selectedTempEst?.template_est_part!);
-      repairEstPartItem = this.selectedTempEst?.template_est_part
-        ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
-        .map((item: Partial<TemplateEstPartItem>) => {
-          return {
-            actions: [],
-            create_by: item.create_by,
-            create_dt: item.create_dt,
-            description: item.description,
-            guid: item.guid,
-            hour: item.hour,
-            comment:item.comment,
-            location_cv: item.location_cv,
-            material_cost: item.tariff_repair?.material_cost,
-            quantity: item.quantity,
-            remarks: item.remarks,
-            repair_est: undefined,
-            repair_est_guid: undefined,
-            tariff_repair: item.tariff_repair,
-            tariff_repair_guid: item.tariff_repair_guid,
-            update_by: item.update_by,
-            update_dt: item.update_dt,
-            tep_damage_repair: item.tep_damage_repair!,
-            
-            // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
-            // Map other fields as needed
-          } as RepairEstPartItem;
-        }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
-      this.populateSOT(repairEstPartItem!);
-      this.calculateCostSummary();
-    }
-  }
   GetRepairOrDamage(repairDamageList: TepDamageRepairItem[], codeType: Number): any[] {
     var retval: any[] = [];
     var result = repairDamageList.filter((item) => item.code_type == codeType)
@@ -971,8 +967,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
               this.repList.data.forEach(data => {
                 var repEstItem: any = data;
                 var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
-              //  delete tempEstPartItem.index;
-              //  delete tempEstPartItem.no;
+                delete tempEstPartItem.index;
+                delete tempEstPartItem.no;
                 tempEstPartItem.action = "NEW";
                 tempEstPartItem.guid = "";
                 tempEstPartItem.tariff_repair_guid = data.tariff_repair_guid;
@@ -1076,8 +1072,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       value.action = "CANCEL"; 
       value.tariff_repair=undefined;
       value.tep_damage_repair= value.tep_damage_repair?.map((node:any)=>new TepDamageRepairItem(node));
-      //delete value.index;
-      //delete value.no;
+      delete value.index;
+      delete value.no;
     });
 
     if(this.repList.data.length>0)
@@ -1151,8 +1147,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
             tepDamageRepairItm.action = "NEW";
             tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
           });
-         // delete tempEstPartItem.index;
-         // delete tempEstPartItem.no;
+          delete tempEstPartItem.index;
+          delete tempEstPartItem.no;
           this.selectedTempEst?.template_est_part?.push(tempEstPartItem);
         }
       });
@@ -1230,7 +1226,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   
     return groupedRepList;
   }
-
+  
   getGroupSeq(codeVal: string | undefined): number | undefined {
     const gncv = this.groupNameCvList.filter(x => x.code_val === codeVal);
     if (gncv.length) {

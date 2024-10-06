@@ -21,7 +21,7 @@ export class DisplayPartGroupSection {
       if (!acc[groupName]) {
         acc[groupName] = [];
       }
-      item.index = index++;
+    //  item.index = index++;
       acc[groupName].push(item);
       return acc;
     }, {});
@@ -30,7 +30,7 @@ export class DisplayPartGroupSection {
     return Object.keys(groupedItems).map(groupName => {
         const itemsWithGlobalIndex = groupedItems[groupName].map(item => {
         // Increment the global index for each item
-        item.no = ++globalIndex; // Assign global index to item
+    //    item.no = ++globalIndex; // Assign global index to item
         return item; // Return the modified item
     });
     

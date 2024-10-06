@@ -72,8 +72,8 @@ export class TepDamageRepairItem {
 }
 
 export class TemplateEstPartItem {
-  no?: number = 0;
-  index?: number = 0;
+  // no?: number = 0;
+  // index?: number = 0;
   action?: string = 'NEW';
   guid?: string | null;
   description?: string;

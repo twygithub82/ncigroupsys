@@ -171,190 +171,83 @@
               </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                  <div class="responsive_table">
-                    <table mat-table [dataSource]="repList.data" matSort
-                      class="mat-cell advance-table hover-highlight dark-header" multiTemplateDataRows>
-                      <ng-container matColumnDef="group_name_cv">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          {{translatedLangText.GROUP}}
-                        </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length"
-                          [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          {{getGroupNameDescription(row.tariff_repair?.group_name_cv)}}
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="seq">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>No.</mat-header-cell>
-                        <mat-cell *matCellDef="let row;">{{row.index+1}}</mat-cell>
-                      </ng-container>
-                      <!-- ID Column -->
-                      <ng-container matColumnDef="id">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
-                        <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="subgroup_name_cv">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
-                          {{translatedLangText.SUBGROUP}}
-                        </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.SUBGROUP}}:</span>
-                          {{getSubGroupNameDescription(row.tariff_repair?.subgroup_name_cv)}}
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="damage">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
-                          {{translatedLangText.DAMAGE}}
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="truncate-text">
-                            <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 0)">
-                              {{displayDamageRepairCode(row.tep_damage_repair, 0)}}
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover">
+                      <thead class="thead-dark">
+                        <tr>
+                          <th  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</th>
+                          <th  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.SUBGROUP}}</th>
+                          <th  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.DAMAGE}}</th>
+                          <th  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.REPAIR}}</th>
+                          <th  [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.DESCRIPTION}}</th>
+                          <th  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"> {{translatedLangText.QTY}}</th>
+                          <th  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.HOUR}}</th>
+                          <th  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.PRICE}}</th>
+                          <th [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"> {{translatedLangText.MATERIAL}}</th>
+                          <th  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></th> <!-- Adding an 'Actions' column -->
+                        </tr>
+                      </thead>
+                      <tbody *ngFor="let section of displayPartGroupSectionList">
+                        <!-- Group Name Row -->
+                        <tr class="table-info">
+                          <td colspan="10">
+                            <strong>{{getGroupNameDescription(section.group_name_cv)}}</strong>
+                          </td>
+                        </tr>
+              
+                        <!-- Items under each group -->
+                        <tr *ngFor="let item of section.items"
+                        (click)="editEstDetails($event, item)" 
+                        class="clickable-row">
+                          <td>{{ item.no }}</td>
+                          <td>{{getSubGroupNameDescription(item.tariff_repair?.subgroup_name_cv!)}}</td>
+                          <td> 
+                            <span class="truncate-text">
+                              <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
+                              <span [matTooltip]="displayDamageRepairCodeDescription(item.tep_damage_repair!,0)">
+                                {{displayDamageRepairCode(item.tep_damage_repair!, 0)}}
+                              </span>
                             </span>
-                          </span>
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="repair">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
-                          {{translatedLangText.REPAIR}}
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 1)">
-                            {{displayDamageRepairCode(row.tep_damage_repair, 1)}}
-                          </span>
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="description">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
-                          {{translatedLangText.DESCRIPTION}}
-                        </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
-                          {{row.description}}
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="quantity">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
-                          {{translatedLangText.QTY}}
-                        </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.QTY}}:</span>
-                          {{row.quantity}}
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="hour">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
-                          {{translatedLangText.HOUR}}
-                        </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.HOUR}}:</span>
-                          {{row.hour}}
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="price">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
-                          {{translatedLangText.PRICE}}
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
-                          <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.material_cost)}}</span>
-                          </div>
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="material">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
-                          {{translatedLangText.MATERIAL}} $
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
-                          <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
-                          </div>
-                        </mat-cell>
-                      </ng-container>
-                      <!-- <ng-container matColumnDef="isOwner">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" mat-sort-header>
-                          @if (isOwner) {
-                          {{translatedLangText.OWNER}}
-                          }
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="''">
-                          @if (isOwner) {
-                          <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
-                          <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner"
-                            [ngClass]="'tbl-checkbox'">
-                          </mat-checkbox>
-                          }
-                        </mat-cell>
-                      </ng-container> -->
-                      <!-- actions -->
-                      <ng-container matColumnDef="actions">
-                        <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row;" class="justify-content-end">
-                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                            <mat-icon>more_vert</mat-icon>
-                          </button>
-                          <mat-menu #menu="matMenu">
-                            @if (sotDS.canAddRemove(row)) {
-                            <button mat-menu-item (click)="handleDelete($event, row, row.index)">
-                              <mat-icon>delete_forever</mat-icon>
-                              <span>{{translatedLangText.DELETE}}</span>
+                          </td>
+                          <td> 
+                            <span class="truncate-text">
+                              <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
+                              <span [matTooltip]="displayDamageRepairCodeDescription(item.tep_damage_repair!,1)">
+                                {{displayDamageRepairCode(item.tep_damage_repair!, 1)}}
+                              </span>
+                            </span>
+                          </td>
+                          <td>
+                            {{item.description}}
+                          </td>
+                          <td>
+                            {{item.quantity}}
+                          </td>
+                          <td>
+                            {{item.hour}}
+                          </td>
+                          <td>
+                            {{item.tariff_repair?.material_cost?.toFixed(2)}}
+                          </td>
+                          <td>
+                            {{this.GetEstimationPrice(item)}}
+                          </td>
+                          <td>
+                            <!-- Action menu with an icon -->
+                            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                              <mat-icon>more_vert</mat-icon>
                             </button>
-                            }
-                          </mat-menu>
-                        </mat-cell>
-                      </ng-container>
-                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: ['group_name_cv'];"
-                        [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-purple font-bold': true}"
-                        [style.cursor]="'pointer'" matRipple>
-                      </mat-row>
-                      <mat-row *matRowDef="let row; columns: displayedColumns;"
-                        [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
-                        (click)="editEstDetails($event, row, row.index)" [style.cursor]="'pointer'" matRipple>
-                      </mat-row>
+                            <mat-menu #menu="matMenu" >
+                              <button mat-menu-item  (click)="handleAction($event,'delete', item)" >
+                                <mat-icon>delete</mat-icon>
+                                <span>Delete</span>
+                              </button>
+                            </mat-menu>
+                          </td>
+                        </tr>
+                      </tbody>
                     </table>
                   </div>
-                  @if (!repList.data.length) {
-                  <mat-divider></mat-divider>
-                  <div class="no-results m-l-20 pt-3" [style.display]="repList.data.length === 0 ? '' : 'none'">
-                    <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-                  </div>
-                  }
-                  @if (sotDS.loading$ | async) {
-                  <div class="tbl-spinner">
-                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                    </mat-progress-spinner>
-                  </div>
-                  }
                 </div>
               </div>
               
