@@ -237,7 +237,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     ADDRESS_LINE2:"COMMON-FORM.ADDRESS-LINE2",
     POSTAL_CODE:"COMMON-FORM.POSTAL-CODE",
     CITY_NAME:"COMMON-FORM.CITY-NAME",
-    CONTACT_PERSON_DETAILS:"COMMON-FORM.CONTACT-PERSON-DETAILS"
+    CONTACT_PERSON_DETAILS:"COMMON-FORM.CONTACT-PERSON-DETAILS",
+    BILLING_BRANCH:"COMMON-FORM.BILLING-BRANCH",
+    
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -267,19 +269,22 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
 
-  customerCodeControl = new UntypedFormControl();
+  customerTypeControl = new UntypedFormControl();
 
-  soDS: StoringOrderDS;
-  sotDS: StoringOrderTankDS;
+  // soDS: StoringOrderDS;
+  // sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
-  igDS: InGateDS;
-  trLabourDS: TariffLabourDS;
-  estTempDS: MasterEstimateTemplateDS
+  // igDS: InGateDS;
+  // trLabourDS: TariffLabourDS;
+  // estTempDS: MasterEstimateTemplateDS
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
+  billingBranchesControl= new UntypedFormControl();
+  profileControl=new UntypedFormControl();
+  customerTypeCvList: CodeValuesItem[]=[];
 
   constructor(
 
@@ -294,15 +299,15 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   ) {
     super();
     this.translateLangText();
-    this.initTempForm();
-    this.soDS = new StoringOrderDS(this.apollo);
-    this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.initCCForm();
+    // this.soDS = new StoringOrderDS(this.apollo);
+    // this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
-    this.igDS = new InGateDS(this.apollo);
-    this.trLabourDS = new TariffLabourDS(this.apollo);
-    this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
+    // this.igDS = new InGateDS(this.apollo);
+    // this.trLabourDS = new TariffLabourDS(this.apollo);
+    // this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -354,130 +359,130 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   initializeValueChange() {
     //this.repList.data
 
-    this.ccForm?.get('labour_hour')?.valueChanges.subscribe(value => {
-      this.ccForm?.patchValue({
-        labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
-      });
-    });
+    // this.ccForm?.get('labour_hour')?.valueChanges.subscribe(value => {
+    //   this.ccForm?.patchValue({
+    //     labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
+    //   });
+    // });
 
-    this.ccForm?.get('labour_total')!.valueChanges.subscribe(value => {
+    // this.ccForm?.get('labour_total')!.valueChanges.subscribe(value => {
 
-      var discCostAmt: number = 0;
-      if (this.ccForm?.get('labour_discount')?.value > 0) {
-        discCostAmt = Number(this.ccForm?.get('labour_total')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
-      }
-      this.ccForm?.patchValue({
-        total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
-        labour_discount_amount: discCostAmt.toFixed(2),
+    //   var discCostAmt: number = 0;
+    //   if (this.ccForm?.get('labour_discount')?.value > 0) {
+    //     discCostAmt = Number(this.ccForm?.get('labour_total')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
+    //   }
+    //   this.ccForm?.patchValue({
+    //     total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
+    //     labour_discount_amount: discCostAmt.toFixed(2),
 
-      });
-    });
+    //   });
+    // });
 
-    this.ccForm?.get('total_cost')!.valueChanges.subscribe(value => {
-
-
-      this.ccForm?.patchValue({
-        net_cost: this.GetNetCost()
+    // this.ccForm?.get('total_cost')!.valueChanges.subscribe(value => {
 
 
-      });
-    });
-
-    this.ccForm?.get('labour_rate')!.valueChanges.subscribe(value => {
-
-      this.ccForm?.patchValue({
-
-        //labour_total : (Number(this.ccForm?.get('labour_rate')?.value)+Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
-        labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
-
-      });
-    });
-    this.ccForm?.get('labour_additional')!.valueChanges.subscribe(value => {
-
-      this.ccForm?.patchValue({
-        labour_total: (Number(this.ccForm?.get('labour_rate')?.value) + Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
-
-      });
-    });
-
-    this.ccForm?.get('labour_discount_amount')!.valueChanges.subscribe(value => {
+    //   this.ccForm?.patchValue({
+    //     net_cost: this.GetNetCost()
 
 
-      this.ccForm?.patchValue({
-        net_cost: this.GetNetCost()
+    //   });
+    // });
+
+    // this.ccForm?.get('labour_rate')!.valueChanges.subscribe(value => {
+
+    //   this.ccForm?.patchValue({
+
+    //     //labour_total : (Number(this.ccForm?.get('labour_rate')?.value)+Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
+    //     labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
+
+    //   });
+    // });
+    // this.ccForm?.get('labour_additional')!.valueChanges.subscribe(value => {
+
+    //   this.ccForm?.patchValue({
+    //     labour_total: (Number(this.ccForm?.get('labour_rate')?.value) + Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
+
+    //   });
+    // });
+
+    // this.ccForm?.get('labour_discount_amount')!.valueChanges.subscribe(value => {
 
 
-      });
-    });
-
-    this.ccForm?.get('material_discount_amount')!.valueChanges.subscribe(value => {
+    //   this.ccForm?.patchValue({
+    //     net_cost: this.GetNetCost()
 
 
-      this.ccForm?.patchValue({
-        net_cost: this.GetNetCost()
+    //   });
+    // });
+
+    // this.ccForm?.get('material_discount_amount')!.valueChanges.subscribe(value => {
 
 
-      });
-    });
+    //   this.ccForm?.patchValue({
+    //     net_cost: this.GetNetCost()
+
+
+    //   });
+    // });
 
 
 
-    this.ccForm?.get('labour_discount')!.valueChanges.subscribe(value => {
-      var discCostAmt: number = 0;
-      if (this.ccForm?.get('labour_discount')?.value > 0) {
-        discCostAmt = Number(this.ccForm?.get('labour_rate')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
-      }
-      this.ccForm?.patchValue({
-        labour_discount_amount: discCostAmt.toFixed(2),
-        //net_cost:this.GetNetCost()
-      });
-    });
+    // this.ccForm?.get('labour_discount')!.valueChanges.subscribe(value => {
+    //   var discCostAmt: number = 0;
+    //   if (this.ccForm?.get('labour_discount')?.value > 0) {
+    //     discCostAmt = Number(this.ccForm?.get('labour_rate')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
+    //   }
+    //   this.ccForm?.patchValue({
+    //     labour_discount_amount: discCostAmt.toFixed(2),
+    //     //net_cost:this.GetNetCost()
+    //   });
+    // });
 
 
-    this.ccForm?.get('material_discount')!.valueChanges.subscribe(value => {
-      var discCostAmt: number = 0;
-      if (this.ccForm?.get('material_discount')?.value > 0) {
-        discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
-      }
-      this.ccForm?.patchValue({
-        material_discount_amount: discCostAmt.toFixed(2),
-        // net_cost:this.GetNetCost()
-      });
-    });
+    // this.ccForm?.get('material_discount')!.valueChanges.subscribe(value => {
+    //   var discCostAmt: number = 0;
+    //   if (this.ccForm?.get('material_discount')?.value > 0) {
+    //     discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
+    //   }
+    //   this.ccForm?.patchValue({
+    //     material_discount_amount: discCostAmt.toFixed(2),
+    //     // net_cost:this.GetNetCost()
+    //   });
+    // });
 
-    this.ccForm?.get('total_material_cost')!.valueChanges.subscribe(value => {
-      var discCostAmt: number = 0;
-      if (this.ccForm?.get('material_discount')?.value > 0) {
-        discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
-      }
-      this.ccForm?.patchValue({
-        total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
-        material_discount_amount: discCostAmt.toFixed(2),
+    // this.ccForm?.get('total_material_cost')!.valueChanges.subscribe(value => {
+    //   var discCostAmt: number = 0;
+    //   if (this.ccForm?.get('material_discount')?.value > 0) {
+    //     discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
+    //   }
+    //   this.ccForm?.patchValue({
+    //     total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
+    //     material_discount_amount: discCostAmt.toFixed(2),
 
-      });
-    });
+    //   });
+    // });
 
   }
 
-  initTempForm() {
+  initCCForm() {
     this.ccForm = this.fb.group({
       guid: [''],
       customer_company_guid: [''],
-      customer_code: this.customerCodeControl,
-      template_name: [''],
-      remarks: [''],
-      repList: [''],
-      labour_hour: ['0'],
-      labour_rate: ['0.00'],
-      labour_additional: ['0.00'],
-      labour_total: ['0.00'],
-      total_material_cost: ['0.00'],
-      total_cost: ['0.00'],
-      labour_discount: [0],
-      material_discount: [0],
-      labour_discount_amount: ['0.00'],
-      material_discount_amount: ['0.00'],
-      net_cost: ['0.00']
+      customer_code: [''],
+      customer_name: [''],
+      customer_type: [''],
+      billing_branches:[''],
+      phone: [''],
+      email: [''],
+      web: [''],
+      currency: [''],
+      default_profile:[''],
+      address1: [''],
+      address2: [''],
+      postal_code: [''],
+      city_name: [''],
+      country: ['Singapore'],
+      remarks:['']
     });
   }
 
@@ -560,80 +565,63 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       }
     });
 
-    this.trLabourDS.SearchTariffLabour({}, { create_dt: 'ASC' }).subscribe(data => {
-      this.trLabourItems = data;
-      if (this.trLabourItems.length > 0) {
-        this.ccForm?.patchValue({
-          labour_rate: this.trLabourItems[0].cost?.toFixed(2)
-        });
-      }
-    })
+    // this.trLabourDS.SearchTariffLabour({}, { create_dt: 'ASC' }).subscribe(data => {
+    //   this.trLabourItems = data;
+    //   if (this.trLabourItems.length > 0) {
+    //     this.ccForm?.patchValue({
+    //       labour_rate: this.trLabourItems[0].cost?.toFixed(2)
+    //     });
+    //   }
+    // })
 
 
     const queries = [
-      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      
+      { alias: 'customerTypeCv', codeValType: 'CUSTOMER_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
-    this.cvDS.connectAlias('groupNameCv').subscribe(data => {
-      this.groupNameCvList = data;
+    this.cvDS.connectAlias('customerTypeCv').subscribe(data => {
+      this.customerTypeCvList = data;
 
-      const subqueries: any[] = [];
-      data.map(d => {
-
-        if (d.child_code) {
-          let q = { alias: d.child_code, codeValType: d.child_code };
-          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-          if (!hasMatch) {
-            subqueries.push(q);
-
-          }
-        }
+    
       });
-      if (subqueries.length > 0) {
+    //   if (subqueries.length > 0) {
 
 
-        this.cvDS?.getCodeValuesByType(subqueries)
-        subqueries.map(s => {
-          this.cvDS?.connectAlias(s.alias).subscribe(data => {
-            this.allSubGroupNameCvList.push(...data);
-          });
-        });
+    //     this.cvDS?.getCodeValuesByType(subqueries)
+    //     subqueries.map(s => {
+    //       this.cvDS?.connectAlias(s.alias).subscribe(data => {
+    //         this.allSubGroupNameCvList.push(...data);
+    //       });
+    //     });
 
-      }
-    });
-    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
-      this.yesnoCvList = data;
-    });
-    this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
-      this.soTankStatusCvList = data;
-    });
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
-    });
-    this.cvDS.connectAlias('testTypeCv').subscribe(data => {
-      this.testTypeCvList = data;
-    });
-    this.cvDS.connectAlias('testClassCv').subscribe(data => {
-      this.testClassCvList = data;
-    });
-    this.cvDS.connectAlias('partLocationCv').subscribe(data => {
-      this.partLocationCvList = data;
-    });
-    this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
-      this.damageCodeCvList = data;
-    });
-    this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
-      this.repairCodeCvList = data;
-    });
+    //   }
+    // });
+    // this.cvDS.connectAlias('yesnoCv').subscribe(data => {
+    //   this.yesnoCvList = data;
+    // });
+    // this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
+    //   this.soTankStatusCvList = data;
+    // });
+    // this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+    //   this.purposeOptionCvList = data;
+    // });
+    // this.cvDS.connectAlias('testTypeCv').subscribe(data => {
+    //   this.testTypeCvList = data;
+    // });
+    // this.cvDS.connectAlias('testClassCv').subscribe(data => {
+    //   this.testClassCvList = data;
+    // });
+    // this.cvDS.connectAlias('partLocationCv').subscribe(data => {
+    //   this.partLocationCvList = data;
+    // });
+    // this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
+    //   this.damageCodeCvList = data;
+    // });
+    // this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
+    //   this.repairCodeCvList = data;
+    // });
   }
 
   
@@ -928,86 +916,86 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
         var tempName = this.ccForm?.get("template_name")?.value;
         const where: any = {};
         where.template_name = { eq: tempName };
-        this.estTempDS.SearchEstimateTemplateOnly(where).subscribe(result => {
+        // this.estTempDS.SearchEstimateTemplateOnly(where).subscribe(result => {
 
-          if (result.length == 0 && this.selectedTempEst == undefined) {
+        //   if (result.length == 0 && this.selectedTempEst == undefined) {
 
-            let temp: MasterTemplateItem = new MasterTemplateItem();
-            temp.labour_cost_discount = this.ccForm?.get("labour_discount")?.value;
-            temp.material_cost_discount = this.ccForm?.get("material_discount")?.value;
-            temp.template_name = this.ccForm?.get("template_name")?.value;
-            delete temp.totalMaterialCost;
-            temp.type_cv = "GENERAL";
-            if (this.ccForm?.get("customer_code")?.value?.length > 0) {
+        //     let temp: MasterTemplateItem = new MasterTemplateItem();
+        //     temp.labour_cost_discount = this.ccForm?.get("labour_discount")?.value;
+        //     temp.material_cost_discount = this.ccForm?.get("material_discount")?.value;
+        //     temp.template_name = this.ccForm?.get("template_name")?.value;
+        //     delete temp.totalMaterialCost;
+        //     temp.type_cv = "GENERAL";
+        //     if (this.ccForm?.get("customer_code")?.value?.length > 0) {
 
-              temp.type_cv = "EXCLUSIVE";
-              var customerCodes: CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
-              temp.template_est_customer = [];
-              customerCodes.forEach(data => {
-                var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
-                custItem.action = "NEW";
-                custItem.customer_company_guid = data.guid;
-                custItem.customer_company = undefined;
-                custItem.guid = "";
-                temp.template_est_customer?.push(custItem)
-              });
-            }
-            if (this.repList.data.length) {
-              temp.template_est_part = [];
-              this.repList.data.forEach(data => {
-                var repEstItem: any = data;
-                var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
-                tempEstPartItem.action = "NEW";
-                tempEstPartItem.guid = "";
-                tempEstPartItem.tariff_repair_guid = data.tariff_repair_guid;
-                tempEstPartItem.hour = repEstItem.hour;
-                tempEstPartItem.quantity = repEstItem.quantity;
-                tempEstPartItem.location_cv = repEstItem.location_cv;
-                tempEstPartItem.remarks = repEstItem.remarks;
-                tempEstPartItem.description = repEstItem.description;
-                tempEstPartItem.tep_damage_repair = [];
-                let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!;
-                dmg.forEach(d => {
-                  let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-                  tepDamageRepairItm.code_cv = d.code_cv;
-                  tepDamageRepairItm.code_type = d.code_type;
-                  tepDamageRepairItm.action = "NEW";
-                  tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
-                });
-                temp.template_est_part?.push(tempEstPartItem);
-                // data.
-                // tempEstPartItem.tep_damage_repair?.push()
-                // temp.template_est_part?.push()
-              });
-            }
+        //       temp.type_cv = "EXCLUSIVE";
+        //       var customerCodes: CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
+        //       temp.template_est_customer = [];
+        //       customerCodes.forEach(data => {
+        //         var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
+        //         custItem.action = "NEW";
+        //         custItem.customer_company_guid = data.guid;
+        //         custItem.customer_company = undefined;
+        //         custItem.guid = "";
+        //         temp.template_est_customer?.push(custItem)
+        //       });
+        //     }
+        //     if (this.repList.data.length) {
+        //       temp.template_est_part = [];
+        //       this.repList.data.forEach(data => {
+        //         var repEstItem: any = data;
+        //         var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
+        //         tempEstPartItem.action = "NEW";
+        //         tempEstPartItem.guid = "";
+        //         tempEstPartItem.tariff_repair_guid = data.tariff_repair_guid;
+        //         tempEstPartItem.hour = repEstItem.hour;
+        //         tempEstPartItem.quantity = repEstItem.quantity;
+        //         tempEstPartItem.location_cv = repEstItem.location_cv;
+        //         tempEstPartItem.remarks = repEstItem.remarks;
+        //         tempEstPartItem.description = repEstItem.description;
+        //         tempEstPartItem.tep_damage_repair = [];
+        //         let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!;
+        //         dmg.forEach(d => {
+        //           let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
+        //           tepDamageRepairItm.code_cv = d.code_cv;
+        //           tepDamageRepairItm.code_type = d.code_type;
+        //           tepDamageRepairItm.action = "NEW";
+        //           tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
+        //         });
+        //         temp.template_est_part?.push(tempEstPartItem);
+        //         // data.
+        //         // tempEstPartItem.tep_damage_repair?.push()
+        //         // temp.template_est_part?.push()
+        //       });
+        //     }
 
-            this.estTempDS.AddMasterTemplate(temp).subscribe(result => {
-              var count = result.data.addTemplateEstimation;
-              if (count > 0) {
-                this.handleSaveSuccess(count);
-              }
-            });
+        //     this.estTempDS.AddMasterTemplate(temp).subscribe(result => {
+        //       var count = result.data.addTemplateEstimation;
+        //       if (count > 0) {
+        //         this.handleSaveSuccess(count);
+        //       }
+        //     });
 
-          }
-          else if (result.length > 0) {
-            if (this.selectedTempEst == undefined) {
-              this.ccForm?.get('template_name')?.setErrors({ existed: true });
-            }
-            else {
+        //   }
+        //   else if (result.length > 0) {
+        //     if (this.selectedTempEst == undefined) {
+        //       this.ccForm?.get('template_name')?.setErrors({ existed: true });
+        //     }
+        //     else {
 
-              this.updateExistTemplate();
+        //       this.updateExistTemplate();
 
-            }
+        //     }
 
           
-          }
-          else if(result.length==0 && this.selectedTempEst!=undefined)
-          {
-            this.updateExistTemplate();
-          }
+        //   }
+        //   else if(result.length==0 && this.selectedTempEst!=undefined)
+        //   {
+        //     this.updateExistTemplate();
+        //   }
 
 
-        });
+        // });
 
 
       }
@@ -1128,12 +1116,12 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     }
    
     delete this.selectedTempEst!.totalMaterialCost;
-    this.estTempDS.UpdateMasterTemplate(this.selectedTempEst).subscribe(result => {
-      var count = result.data.updateTemplateEstimation;
-      if (count > 0) {
-        this.handleSaveSuccess(count);
-      }
-    });
+    // this.estTempDS.UpdateMasterTemplate(this.selectedTempEst).subscribe(result => {
+    //   var count = result.data.updateTemplateEstimation;
+    //   if (count > 0) {
+    //     this.handleSaveSuccess(count);
+    //   }
+    // });
   }
 
   updateData(newData: any[]): void {

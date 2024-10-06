@@ -18,10 +18,10 @@
             
              
               <div class="row">
-                <div class="col-xl-1 col-lg-1 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                    <input matInput formControlName="template_name" required>
+                    <input matInput formControlName="customer_code" required>
                     @if (ccForm?.get('template_name')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.SO_REQUIRED}}
@@ -37,11 +37,11 @@
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CUSTOMER_TYPE }}</mat-label>
-                      <mat-select  formControlName="customer_code" multiple>
-                          <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
+                      <mat-select  formControlName="customer_type" required >
+                          <mat-option *ngFor="let cc of this.customerTypeCvList" [value]="cc">
                            
                             <ng-container *ngIf="cc !== null">
-                              {{ ccDS.displayName(cc) }}
+                              {{ cc.description }}
                             </ng-container>
                            
                           </mat-option>
@@ -53,61 +53,71 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CUSTOMER_NAME }}</mat-label>
-                      <input matInput formControlName="template_name" >
+                      <input matInput formControlName="customer_name" >
                      
                   </mat-form-field>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.ALIAS_NAME }}</mat-label>
-                      <input matInput formControlName="template_name" >
+                      <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
+                      <input matInput formControlName="billing_branches" >
                      
                   </mat-form-field>
                   
                 </div>
               </div>
               <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                    <input matInput formControlName="template_name" required>
-                    @if (ccForm?.get('template_name')?.hasError('required')) {
-                      <mat-error>
-                        {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.SO_REQUIRED}}
-                      </mat-error>
-                      }
-                    @if (ccForm?.get('template_name')?.hasError('existed')) {
-                        <mat-error>
-                          {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.EXISTED}}
-                        </mat-error>
-                        }
-                  </mat-form-field>
-                </div>
+            
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.PHONE }}</mat-label>
-                      <input matInput formControlName="template_name" required>
-                  </mat-form-field>
-                  
-                </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.FAX_NO }}</mat-label>
-                      <input matInput formControlName="template_name" required>
+                      <input matInput formControlName="phone" required>
                   </mat-form-field>
                   
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.EMAIL }}</mat-label>
-                      <input matInput formControlName="template_name" required>
+                      <input matInput formControlName="email" required>
                   </mat-form-field>
                   
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.WEB }}</mat-label>
-                      <input matInput formControlName="template_name" required>
+                      <input matInput formControlName="web" required>
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CONVERSION_CURRENCY }}</mat-label>
+                      <mat-select  formControlName="currency">
+                          <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
+                           
+                            <ng-container *ngIf="cc !== null">
+                              {{ ccDS.displayName(cc) }}
+                            </ng-container>
+                           
+                          </mat-option>
+                        </mat-select>
+                     
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.DEFAULT_PROFILE }}</mat-label>
+                      <mat-select  formControlName="default_profile" >
+                          <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
+                           
+                            <ng-container *ngIf="cc !== null">
+                              {{ ccDS.displayName(cc) }}
+                            </ng-container>
+                           
+                          </mat-option>
+                        </mat-select>
+                     
                   </mat-form-field>
                   
                 </div>
@@ -116,95 +126,56 @@
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.ADDRESS_LINE1}}</mat-label>
-                    <input matInput formControlName="template_name" required>
-                    @if (ccForm?.get('template_name')?.hasError('required')) {
+                    <input matInput formControlName="address1" required>
+                    @if (ccForm?.get('address1')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
                       }
-                    @if (ccForm?.get('template_name')?.hasError('existed')) {
-                        <mat-error>
-                          {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.EXISTED}}
-                        </mat-error>
-                        }
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.ADDRESS_LINE2 }}</mat-label>
-                      <input matInput formControlName="template_name" required>
+                      <input matInput formControlName="address2" required>
                   </mat-form-field>
                   
                 </div>
                 <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.POSTAL_CODE }}</mat-label>
-                      <input matInput formControlName="template_name" required>
+                      <input matInput formControlName="postal_code" required>
                   </mat-form-field>
                   
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CITY_NAME }}</mat-label>
-                      <input matInput formControlName="template_name" required>
+                      <input matInput formControlName="city_name">
                   </mat-form-field>
                   
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
-                      <input matInput formControlName="template_name" required>
+                      <input matInput formControlName="country" required>
                   </mat-form-field>
                   
                 </div>
               </div>
               <div class="row">
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 mb-1">
                   <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.CONVERSION_CURRENCY }}</mat-label>
-                      <mat-select  formControlName="customer_code" multiple>
-                          <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
-                           
-                            <ng-container *ngIf="cc !== null">
-                              {{ ccDS.displayName(cc) }}
-                            </ng-container>
-                           
-                          </mat-option>
-                        </mat-select>
-                     
+                    <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                    <input matInput formControlName="remarks" >
                   </mat-form-field>
-                  
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.PERSON_IN_CHARGE }}</mat-label>
-                      <mat-select  formControlName="customer_code" multiple>
-                          <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
-                           
-                            <ng-container *ngIf="cc !== null">
-                              {{ ccDS.displayName(cc) }}
-                            </ng-container>
-                           
-                          </mat-option>
-                        </mat-select>
-                     
-                  </mat-form-field>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   
-                </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.DEFAULT_PROFILE }}</mat-label>
-                      <mat-select  formControlName="customer_code" multiple>
-                          <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
-                           
-                            <ng-container *ngIf="cc !== null">
-                              {{ ccDS.displayName(cc) }}
-                            </ng-container>
-                           
-                          </mat-option>
-                        </mat-select>
-                     
-                  </mat-form-field>
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addEstDetails($event)">
+                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}
+                  </button>
                   
                 </div>
               </div>
@@ -387,7 +358,7 @@
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
                           }
-                            @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
+                            <!-- @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
                             <button mat-menu-item (click)="cancelItem($event, row)">
                               <mat-icon>cancel</mat-icon>
                               <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
@@ -400,7 +371,7 @@
                               <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
                                 ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
                             </button>
-                            }
+                            } -->
                             @if (row.actions.includes('cancel')) {
                             <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
                               <mat-icon>undo</mat-icon>
@@ -429,12 +400,12 @@
                     <h5 class="m-b-15">{{translatedLangText.NO_PARTS}}</h5>
                   </div>
                   }
-                  @if (sotDS.loading$ | async) {
+                  <!-- @if (sotDS.loading$ | async) {
                   <div class="tbl-spinner">
                     <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                     </mat-progress-spinner>
                   </div>
-                  }
+                  } -->
                 </div>
               </div>
               
@@ -451,14 +422,14 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (isAnyItemEdited()) {
-                  <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)">
-                    <mat-icon>
+                  <button mat-flat-button color="primary" >
+                    <!-- <mat-icon>
                       @if (!(soDS.loading$ | async)) {
                       save
                       } @else if ((soDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
-                    </mat-icon>
+                    </mat-icon> -->
                     {{translatedLangText.SAVE_AND_SUBMIT}}
                   </button>
                   }

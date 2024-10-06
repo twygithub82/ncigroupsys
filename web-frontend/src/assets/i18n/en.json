@@ -572,7 +572,8 @@
     "ADD-SUCCESS": "Add Successfully",
     "CHANGE-REQUEST": "Change Request",
     "APPROVE": "Approve",
-    "NO-ACTION": "No Action"
+    "NO-ACTION": "No Action",
+    "BILLING-BRANCH":"Billing Branch"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

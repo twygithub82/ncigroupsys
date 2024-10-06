@@ -690,6 +690,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     //const addSot = row ?? new RepairEstPartItem();
     //addSot.repair_est_guid = addSot.repair_est_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: r,
         action: 'new',
@@ -755,6 +756,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
    // r.tep_damage_repair=row.tep_damage_repair?;
     
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: r,
         action: 'edit',
