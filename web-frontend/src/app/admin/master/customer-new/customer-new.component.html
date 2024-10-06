@@ -109,10 +109,10 @@
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.DEFAULT_PROFILE }}</mat-label>
                       <mat-select  formControlName="default_profile" >
-                          <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
+                          <mat-option *ngFor="let t of this.tankItemList" [value]="t">
                            
-                            <ng-container *ngIf="cc !== null">
-                              {{ ccDS.displayName(cc) }}
+                            <ng-container *ngIf="t !== null">
+                              {{ t.unit_type }}
                             </ng-container>
                            
                           </mat-option>

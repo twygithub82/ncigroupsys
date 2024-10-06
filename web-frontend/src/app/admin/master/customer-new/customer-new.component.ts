@@ -239,6 +239,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     CITY_NAME:"COMMON-FORM.CITY-NAME",
     CONTACT_PERSON_DETAILS:"COMMON-FORM.CONTACT-PERSON-DETAILS",
     BILLING_BRANCH:"COMMON-FORM.BILLING-BRANCH",
+    SALUTATION:"COMMON-FORM.SALUTATION",
+    NAME:"COMMON-FORM.NAME"
     
   }
 
@@ -257,18 +259,20 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   repList = new MatTableDataSource<TemplateEstPartItem>();
   sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
-  groupNameCvList: CodeValuesItem[] = []
+  groupNameCvList: CodeValuesItem[] = [];
   allSubGroupNameCvList: CodeValuesItem[] = [];
-  subgroupNameCvList: CodeValuesItem[] = []
-  yesnoCvList: CodeValuesItem[] = []
-  soTankStatusCvList: CodeValuesItem[] = []
-  purposeOptionCvList: CodeValuesItem[] = []
-  testTypeCvList: CodeValuesItem[] = []
-  testClassCvList: CodeValuesItem[] = []
-  partLocationCvList: CodeValuesItem[] = []
-  damageCodeCvList: CodeValuesItem[] = []
-  repairCodeCvList: CodeValuesItem[] = []
+  subgroupNameCvList: CodeValuesItem[] = [];
+  yesnoCvList: CodeValuesItem[] = [];
+  soTankStatusCvList: CodeValuesItem[] = [];
+  purposeOptionCvList: CodeValuesItem[] = [];
+  testTypeCvList: CodeValuesItem[] = [];
+  testClassCvList: CodeValuesItem[] = [];
+  partLocationCvList: CodeValuesItem[] = [];
+  damageCodeCvList: CodeValuesItem[] = [];
+  repairCodeCvList: CodeValuesItem[] = [];
+  satulationCvList:CodeValuesItem[]=[];
 
+  tankItemList?:TankItem[]=[];
   customerTypeControl = new UntypedFormControl();
 
   // soDS: StoringOrderDS;
@@ -565,19 +569,15 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       }
     });
 
-    // this.trLabourDS.SearchTariffLabour({}, { create_dt: 'ASC' }).subscribe(data => {
-    //   this.trLabourItems = data;
-    //   if (this.trLabourItems.length > 0) {
-    //     this.ccForm?.patchValue({
-    //       labour_rate: this.trLabourItems[0].cost?.toFixed(2)
-    //     });
-    //   }
-    // })
+    this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
+      this.tankItemList = data;
+    })
 
 
     const queries = [
       
       { alias: 'customerTypeCv', codeValType: 'CUSTOMER_TYPE' },
+      { alias: 'satulationCv', codeValType: 'PERSON_TITLE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -586,6 +586,12 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
 
     
       });
+
+      this.cvDS.connectAlias('satulationCv').subscribe(data => {
+        this.satulationCvList = data;
+  
+      
+        });
     //   if (subqueries.length > 0) {
 
 
@@ -681,17 +687,13 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     const addSot = row ?? new RepairEstPartItem();
     addSot.repair_est_guid = addSot.repair_est_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width:'1000px',
       data: {
         item: row ? row : addSot,
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: [],
-          yesnoCvList: this.yesnoCvList,
-          partLocationCvList: this.partLocationCvList,
-          damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList
+          satulationCvList:this.satulationCvList
         },
         index: -1,
         customer_company_guid: '' //this.sotItem?.storing_order?.customer_company_guid

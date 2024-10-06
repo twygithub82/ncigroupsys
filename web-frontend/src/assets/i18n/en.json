@@ -573,7 +573,9 @@
     "CHANGE-REQUEST": "Change Request",
     "APPROVE": "Approve",
     "NO-ACTION": "No Action",
-    "BILLING-BRANCH":"Billing Branch"
+    "BILLING-BRANCH":"Billing Branch",
+    "SALUTATION":"Salutation",
+    "NAME":"Name"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
