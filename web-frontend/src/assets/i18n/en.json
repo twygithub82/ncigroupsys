@@ -172,10 +172,11 @@
     "REPAIR": {
       "TEXT": "Repair",
       "LIST": {
-        "ESTIMATE": "Estimate",
+        "ESTIMATE": "Repair Estimate",
         "ESTIMATE-NEW": "New Estimate",
         "ESTIMATE-EDIT": "Edit Estimate",
-        "APPROVAL": "Approval"
+        "APPROVAL": "Estimate Approval",
+        "APPROVAL-DETAILS": "Estimate Approval Details"
       }
     }
   },
@@ -283,6 +284,7 @@
     "EIR-NO": "EIR No.",
     "CLEANING-CONDITIONS": "Cleaning Conditions",
     "ROLLBACK-STATUS": "Rollback Status",
+    "ROLLBACK": "Rollback",
     "BULK": "Bulk",
     "CARGO-NAME": "Cargo Name",
     "CARGO-ALIAS": "Alias Name",

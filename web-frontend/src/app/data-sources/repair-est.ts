@@ -50,13 +50,13 @@ export class RepairEstGO {
 export class RepairEstItem extends RepairEstGO {
   public repair_est_part?: RepairEstPartItem[];
   public storing_order_tank?: StoringOrderTankItem;
-  public aspnetuser?: UserItem;
+  public aspnetsuser?: UserItem;
   public actions?: string[]
   constructor(item: Partial<RepairEstItem> = {}) {
     super(item)
     this.repair_est_part = item.repair_est_part;
     this.storing_order_tank = item.storing_order_tank;
-    this.aspnetuser = item.aspnetuser;
+    this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
   }
 }
@@ -233,7 +233,6 @@ export const GET_REPAIR_EST_FOR_APPROVAL = gql`
             code
             guid
             name
-            alias
             delete_dt
           }
         }

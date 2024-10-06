@@ -102,7 +102,6 @@ import { UserDS, UserItem } from 'app/data-sources/user';
 export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'subgroup_name_cv',
     'damange',
     'repair',
@@ -111,19 +110,16 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     'hour',
     'price',
     'material',
-    'isOwner',
-    'actions'
+    'isOwner'
   ];
-  pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
-  pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
+  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.ESTIMATE'
+    'MENUITEMS.REPAIR.LIST.APPROVAL'
   ]
   translatedLangText: any = {}
   langText = {
-    NEW: 'COMMON-FORM.NEW',
-    EDIT: 'COMMON-FORM.EDIT',
+    VIEW: 'COMMON-FORM.VIEW',
     HEADER: 'COMMON-FORM.HEADER',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
@@ -207,7 +203,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     EXPORT: 'COMMON-FORM.EXPORT',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     APPROVE: 'COMMON-FORM.APPROVE',
-    NO_ACTION: 'COMMON-FORM.NO-ACTION'
+    NO_ACTION: 'COMMON-FORM.NO-ACTION',
+    ROLLBACK: 'COMMON-FORM.ROLLBACK'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -495,8 +492,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.repair_est_guid) {
       this.subs.sink = this.repairEstDS.getRepairEstByIDForApproval(this.repair_est_guid).subscribe(data => {
         if (data?.length) {
-          console.log(data);
           this.repairEstItem = data[0];
+          console.log(this.repairEstItem?.aspnetsuser);
           this.sotItem = this.repairEstItem?.storing_order_tank;
           this.populateRepairEst(this.repairEstItem);
           // console.log(this.sotItem.storing_order?.customer_company_guid);
@@ -975,16 +972,20 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     event.preventDefault(); // Prevents the form submission
   }
 
+  canRollback(): boolean {
+    return this.repairEstItem?.status_cv === 'CANCELED';
+  }
+
   canApprove(): boolean {
-    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
+    return this.repairEstItem?.status_cv === 'PENDING';
   }
 
   canCancel(): boolean {
-    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
+    return this.repairEstItem?.status_cv === 'APPROVED';
   }
 
   canSave(): boolean {
-    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
+    return  this.repairEstItem?.status_cv === 'PENDING';
   }
 
   isOwnerChange() {

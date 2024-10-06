@@ -207,7 +207,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     EXPORT: 'COMMON-FORM.EXPORT',
     ADD_ANOTHER: 'COMMON-FORM.ADD-ANOTHER',
     SAVE: 'COMMON-FORM.SAVE',
-    ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS'
+    ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -1133,8 +1134,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     return Utility.convertEpochToDateTimeStr(input);
   }
 
-  displayDate(input: Date): string {
-    return Utility.convertDateToStr(input);
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
   }
 
   getLastTest(igs: InGateSurveyItem | undefined): string | undefined {

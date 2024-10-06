@@ -124,6 +124,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.repairPartForm = this.createForm();
     this.initializeValueChange();
     this.patchForm();
+  }
+
+  ngAfterViewInit() {
     this.initializePartNameValueChange();
   }
 
@@ -285,61 +288,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         if (groupName) {
           console.log(`${groupName.code_val}, ${value}`)
           const partName = this.repairPartForm?.get('part_name');
-          partName?.disable()
           this.trDS.searchDistinctPartName(groupName.code_val, value === '' ? null : value).subscribe(data => {
             this.partNameList = data;
-            partName?.enable()
           });
         }
       })
     ).subscribe();
-
-    // this.repairPartForm?.get('part_name')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       //this.searchPart();
-    //     }
-    //   })
-    // ).subscribe();
-
-    // this.partNameControl.valueChanges.subscribe(value => {
-    //   if (!this.valueChangesDisabled) {
-    //     this.handleValueChange(value);
-    //   }
-    // });
-
-    // this.repairPartForm?.get('dimension')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       const partName = this.partNameControl.value;
-    //       this.trDS.searchDistinctLength(partName, value).subscribe(data => {
-    //         this.lengthList = data;
-    //         if (!this.lengthList.length) {
-    //           this.repairPartForm?.get('length')?.disable();
-    //           this.getCustomerCost(partName, value, undefined);
-    //         } else {
-    //           this.repairPartForm?.get('length')?.enable();
-    //         }
-    //       });
-    //     }
-    //   })
-    // ).subscribe();
-
-    // this.repairPartForm?.get('length')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       const partName = this.partNameControl.value;
-    //       const dimension = this.repairPartForm?.get('dimension')?.value;
-    //       this.getCustomerCost(partName, dimension, value);
-    //     }
-    //   })
-    // ).subscribe();
   }
 
   initializePartNameValueChange() {
@@ -485,13 +439,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.action === 'edit';
   }
 
-  // updateValidators(validOptions: any[]) {
-  //   this.partNameControl.setValidators([
-  //     Validators.required,
-  //     AutocompleteSelectionValidator(validOptions)
-  //   ]);
-  // }
-
   getLocationDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData?.partLocationCvList);
   }
@@ -499,36 +446,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   getUnitTypeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
   }
-
-  // getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {
-  //   const group_name_cv = this.repairPartForm.get('group_name_cv')?.value
-  //   const subgroup_name_cv = this.repairPartForm.get('subgroup_name_cv')?.value
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: this.customer_company_guid } },
-  //       {
-  //         or: [
-  //           { tariff_repair_guid: { eq: null } },
-  //           {
-  //             tariff_repair: {
-  //               group_name_cv: { eq: group_name_cv.code_val },
-  //               subgroup_name_cv: { eq: subgroup_name_cv },
-  //               part_name: { eq: partName },
-  //               dimension: { eq: dimension },
-  //               length: { eq: length }
-  //             }
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   }
-  //   this.prDS.getCustomerPackageCost(where).subscribe(data => {
-  //     if (data.length) {
-  //       // this.selectedPackageRepair = data[0];
-  //       // this.repairPartForm.get('material_cost')?.setValue(this.selectedPackageRepair?.material_cost!.toFixed(2));
-  //     }
-  //   });
-  // }
 
   searchPart() {
     let tempDirection: Direction;

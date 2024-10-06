@@ -422,8 +422,12 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairEstItem?.estimate_no}}</span>
+                    </div>
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      {{translatedLangText.ESTIMATE_DATE}}: <span
+                        class="font-bold">{{displayDate(repairEstItem?.create_dt)}}</span>
                     </div>
                   </div>
                 </div>

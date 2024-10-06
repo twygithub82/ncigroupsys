@@ -2,8 +2,8 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="repair_est_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
-        [active_item]="repair_est_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
+      <app-breadcrumb [title]="pageTitleDetails" [items]="breadcrumsMiddleList"
+        [active_item]="langText.VIEW"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -60,7 +60,7 @@
                       <div class="contact-detail-info font-bold pt-2">
                         {{ccDS.displayName(sotItem?.customer_company)}}
                       </div>
-                      <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner">
+                      <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner" disabled>
                       </mat-checkbox>
                     </div>
                   </div>
@@ -285,24 +285,6 @@
                           }
                         </mat-cell>
                       </ng-container>
-                      <!-- actions -->
-                      <ng-container matColumnDef="actions">
-                        <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i = index;" class="justify-content-end">
-                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                            <mat-icon>more_vert</mat-icon>
-                          </button>
-                          <mat-menu #menu="matMenu">
-                            @if (sotDS.canAddRemove(row)) {
-                            <button mat-menu-item (click)="handleDelete($event, row, i)">
-                              <mat-icon>delete_forever</mat-icon>
-                              <span>{{translatedLangText.DELETE}}</span>
-                            </button>
-                            }
-                          </mat-menu>
-                        </mat-cell>
-                      </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; let i = index; columns: ['group_name_cv'];"
                         [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-purple font-bold': true}"
@@ -310,7 +292,7 @@
                       </mat-row>
                       <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
-                        (click)="editEstDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
+                        [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                     </table>
                   </div>
@@ -366,7 +348,10 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-10">
+                      {{translatedLangText.SURVEYOR_NAME}}: <span class="font-bold">{{repairEstItem?.aspnetsuser?.userName}}</span>
+                    </div>
+                    <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.SURVEYOR_NAME}}</mat-label>
                         <mat-select formControlName="surveyor_id" required>
@@ -380,17 +365,17 @@
                         </mat-error>
                         }
                       </mat-form-field>
-                    </div>
+                    </div> -->
                   </div>
                   <div class="row">
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
                       {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairEstItem?.estimate_no}}</span>
                     </div>
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
                       {{translatedLangText.ESTIMATE_DATE}}: <span
                         class="font-bold">{{displayDate(repairEstItem?.create_dt)}}</span>
                     </div>
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
                       {{translatedLangText.STATUS}}: <span
                         [ngClass]="'font-bold badge ' + getBadgeClass(repairEstItem?.status_cv)">{{repairEstItem?.status_cv}}</span>
                     </div>
@@ -761,8 +746,20 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (canApprove()) {
+                  @if (canRollback()) {
                   <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)">
+                    <mat-icon>
+                      @if (!(repairEstDS.loading$ | async)) {
+                      redo
+                      } @else if ((repairEstDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.ROLLBACK}}
+                  </button>
+                  }
+                  @if (canApprove()) {
+                  <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5">
                     <mat-icon>
                       @if (!(repairEstDS.loading$ | async)) {
                       done

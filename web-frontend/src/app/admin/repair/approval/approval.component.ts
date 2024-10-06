@@ -101,7 +101,7 @@ export class ApprovalComponent extends UnsubscribeOnDestroyAdapter implements On
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.REPAIR.LIST.ESTIMATE'
+  pageTitle = 'MENUITEMS.REPAIR.LIST.APPROVAL'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -225,8 +225,7 @@ export class ApprovalComponent extends UnsubscribeOnDestroyAdapter implements On
       eir_dt_start: [''],
       eir_dt_end: [''],
       part_name: [''],
-      bill_completed_cv: [''],
-      status_cv: [''],
+      change_request_cv: [''],
       eir_no: [''],
       repair_job_no: [''],
       repair_type_cv: [''],
@@ -234,8 +233,7 @@ export class ApprovalComponent extends UnsubscribeOnDestroyAdapter implements On
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [''],
-      current_status_cv: ['']
+      est_status_cv: ['']
     });
   }
 
