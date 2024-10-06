@@ -36,6 +36,8 @@ import { EstimateTemplateComponent } from './master/estimate-template/estimate-t
 import { EstimateTemplateNewComponent } from './master/estimate-template-new/estimate-template-new.component';
 import { CustomerComponent } from './master/customer/customer.component';
 import { CustomerNewComponent } from './master/customer-new/customer-new.component';
+import { ApprovalComponent } from './repair/approval/approval.component';
+import { ApprovalViewComponent } from './repair/approval-view/approval-view.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -200,7 +202,11 @@ export const ADMIN_ROUTE: Routes = [
   },
   {
     path: "repair/approval",
-    component: EstimateComponent,
+    component: ApprovalComponent,
+  },
+  {
+    path: "repair/approval/view/:id",
+    component: ApprovalViewComponent,
   },
   {
     path:"master/estimate-template",

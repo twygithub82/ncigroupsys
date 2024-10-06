@@ -196,7 +196,7 @@
                       </ng-container>
                       <ng-container matColumnDef="seq">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>No.</mat-header-cell>
-                        <mat-cell *matCellDef="let row;">{{row.index + 1}}</mat-cell>
+                        <mat-cell *matCellDef="let row;">{{row.index}}</mat-cell>
                       </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">
@@ -328,13 +328,13 @@
                       <ng-container matColumnDef="actions">
                         <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row;" class="justify-content-end">
+                        <mat-cell *matCellDef="let row; let i = index;" class="justify-content-end">
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
                           </button>
                           <mat-menu #menu="matMenu">
                             @if (sotDS.canAddRemove(row)) {
-                            <button mat-menu-item (click)="handleDelete($event, row, row.index)">
+                            <button mat-menu-item (click)="handleDelete($event, row, i)">
                               <mat-icon>delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
@@ -343,13 +343,13 @@
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: ['group_name_cv'];"
+                      <mat-row *matRowDef="let row; let i = index; columns: ['group_name_cv'];"
                         [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-purple font-bold': true}"
                         [style.cursor]="'pointer'" matRipple>
                       </mat-row>
-                      <mat-row *matRowDef="let row; columns: displayedColumns;"
+                      <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
-                        (click)="editEstDetails($event, row, row.index)" [style.cursor]="'pointer'" matRipple>
+                        (click)="editEstDetails($event, row, i)" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                     </table>
                   </div>

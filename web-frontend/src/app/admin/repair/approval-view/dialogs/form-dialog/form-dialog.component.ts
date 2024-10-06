@@ -18,7 +18,7 @@ import { DatePipe } from '@angular/common';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Apollo } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
-import { startWith, debounceTime, tap, Subject } from 'rxjs';
+import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
@@ -27,11 +27,7 @@ import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { Direction } from '@angular/cdk/bidi';
-import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 export interface DialogData {
@@ -69,11 +65,9 @@ export interface DialogData {
     MatAutocompleteModule,
     CommonModule,
     NgxMaskDirective,
-    MatProgressSpinnerModule,
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
-  public dataSubject: Subject<any> = new Subject();
   action: string;
   index: number;
   dialogTitle: string;
@@ -101,7 +95,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private snackBar: MatSnackBar
+
   ) {
     super();
     // Set the defaults
@@ -174,29 +168,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-  resetForm() {
-    this.repairPartForm.setValue({
-      guid: null,
-      tariff_repair_guid: null,
-      repair_est_guid: null,
-      description: null,
-      location_cv: null,
-      comment: null,
-      remarks: null,
-      quantity: null,
-      hour: null,
-      group_name_cv: null,
-      subgroup_name_cv: null,
-      part_name: null,
-      dimension: null,
-      length: null,
-      damage: null,
-      repair: null,
-      material_cost: null
-    });
-  }
-
-  submit(addAnother: boolean) {
+  submit() {
     if (this.repairPartForm?.valid) {
       if (this.action === 'new') {
         this.repairPart.action = 'new';
@@ -219,22 +191,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         remarks: this.repairPartForm.get('remarks')?.value,
         create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
       }
-      const concludeLength = rep.tariff_repair?.length
-        ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
-        : '';
+      const concludeLength = rep.tariff_repair?.length 
+                              ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} ` 
+                              : '';
       rep.description = `${this.getLocationDescription(rep.location_cv)} (${rep.comment}) - ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       const returnDialog: DialogData = {
         item: rep,
         index: this.index
       }
-      if (addAnother) {
-        this.dataSubject.next(returnDialog);
-        this.addedSuccessfully();
-        this.resetForm();
-      } else {
-        this.dialogRef.close(returnDialog);
-      }
+      this.dialogRef.close(returnDialog);
     } else {
       this.findInvalidControls();
     }
@@ -285,10 +251,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         if (groupName) {
           console.log(`${groupName.code_val}, ${value}`)
           const partName = this.repairPartForm?.get('part_name');
-          partName?.disable()
           this.trDS.searchDistinctPartName(groupName.code_val, value === '' ? null : value).subscribe(data => {
             this.partNameList = data;
-            partName?.enable()
           });
         }
       })
@@ -343,15 +307,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   initializePartNameValueChange() {
-    this.repairPartForm?.get('part_name')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          this.searchPart();
-        }
-      })
-    ).subscribe();
   }
 
   // handleValueChange(value: any) {
@@ -453,6 +408,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
 
     return finalRepairs;
+    // return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
   }
 
   REPDamageRepairToCV(damagesRepair: any[] | undefined): REPDamageRepairItem[] {
@@ -479,10 +435,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   canEdit(): boolean {
     return true;
-  }
-
-  isEdit(): boolean {
-    return this.action === 'edit';
   }
 
   // updateValidators(validOptions: any[]) {
@@ -529,36 +481,4 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   //     }
   //   });
   // }
-
-  searchPart() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(SearchFormDialogComponent, {
-      width: '1050px',
-      data: {
-        customer_company_guid: this.customer_company_guid,
-        group_name_cv: this.repairPartForm?.get('group_name_cv')!.value?.code_val,
-        subgroup_name_cv: this.repairPartForm?.get('subgroup_name_cv')!.value,
-        part_name: this.repairPartForm?.get('part_name')!.value,
-        translatedLangText: this.data.translatedLangText,
-        populateData: this.data.populateData,
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        console.log(result);
-        this.repairPart = result.selected_repair_est_part;
-        this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
-      }
-    });
-  }
-
-  addedSuccessfully() {
-    ComponentUtil.showNotification('snackbar-success', this.data.translatedLangText.ADD_SUCCESS, 'top', 'center', this.snackBar);
-  }
 }

@@ -1060,8 +1060,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   getStoringOrderTankByIDForInGate(id: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-    let where: any = { guid: { eq: id } }
-    where = this.addDeleteDtCriteria(where)
+    const where: any = { guid: { eq: id } }
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_IN_GATE,
@@ -1083,7 +1082,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   getStoringOrderTankByIDForOutGate(id: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-    let where: any = { guid: { eq: id } }
+    const where: any = { guid: { eq: id } }
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANK_BY_ID_OUT_GATE,

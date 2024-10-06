@@ -61,37 +61,128 @@ export class RepairEstItem extends RepairEstGO {
   }
 }
 
-export const GET_SCHEDULING_SOT = gql`
-  query QueryScheduling($where: scheduling_sotFilterInput, $order: [scheduling_sotSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    resultList: querySchedulingSOT(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-      totalCount
+export const GET_REPAIR_EST = gql`
+  query QueryRepairEstimate($where: repair_estFilterInput, $order: [repair_estSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryRepairEstimate(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        aspnetusers_guid
+        create_by
+        create_dt
+        delete_dt
+        estimate_no
+        guid
+        labour_cost
+        labour_cost_discount
+        material_cost_discount
+        owner_enable
+        remarks
+        sot_guid
+        status_cv
+        total_cost
+        update_by
+        update_dt
+        storing_order_tank {
+          guid
+          job_no
+          tank_no
+          storing_order {
+            customer_company {
+              code
+              name
+              guid
+            }
+          }
+        }
+      }
       pageInfo {
         endCursor
         hasNextPage
         hasPreviousPage
         startCursor
       }
+      totalCount
+    }
+  }
+`;
+
+export const GET_REPAIR_EST_FOR_APPROVAL = gql`
+  query QueryRepairEstimate($where: repair_estFilterInput, $order: [repair_estSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryRepairEstimate(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
+        aspnetusers_guid
         create_by
         create_dt
         delete_dt
+        estimate_no
         guid
-        scheduling_guid
+        labour_cost
+        labour_cost_discount
+        material_cost_discount
+        owner_enable
+        remarks
         sot_guid
         status_cv
+        total_cost
         update_by
         update_dt
-        scheduling {
-          book_type_cv
+        repair_est_part {
+          action
           create_by
           create_dt
           delete_dt
+          description
           guid
-          reference
-          scheduling_dt
-          status_cv
+          hour
+          location_cv
+          comment
+          material_cost
+          owner
+          quantity
+          remarks
+          repair_est_guid
+          tariff_repair_guid
           update_by
           update_dt
+          rep_damage_repair {
+            action
+            code_cv
+            code_type
+            create_by
+            create_dt
+            delete_dt
+            guid
+            rep_guid
+            update_by
+            update_dt
+          }
+          tariff_repair {
+            alias
+            create_by
+            create_dt
+            delete_dt
+            dimension
+            group_name_cv
+            guid
+            height_diameter
+            height_diameter_unit_cv
+            labour_hour
+            length
+            length_unit_cv
+            material_cost
+            part_name
+            remarks
+            subgroup_name_cv
+            thickness
+            thickness_unit_cv
+            update_by
+            update_dt
+            width_diameter
+            width_diameter_unit_cv
+          }
+        }
+        aspnetsuser {
+          id
+          userName
         }
         storing_order_tank {
           certificate_cv
@@ -100,46 +191,60 @@ export const GET_SCHEDULING_SOT = gql`
           create_dt
           delete_dt
           estimate_cv
-          eta_dt
           etr_dt
           guid
           job_no
-          last_cargo_guid
-          last_test_guid
+          owner_guid
+          preinspect_job_no
           liftoff_job_no
           lifton_job_no
-          preinspect_job_no
+          takein_job_no
+          release_job_no
+          last_cargo_guid
           purpose_cleaning
           purpose_repair_cv
           purpose_steam
           purpose_storage
-          release_job_no
-          remarks
-          required_temp
           so_guid
           status_cv
-          takein_job_no
           tank_no
           tank_status_cv
-          unit_type_guid
           update_by
           update_dt
-          in_gate {
-            eir_no
-            eir_dt
-            yard_cv
-          }
-          tariff_cleaning {
-            cargo
-          }
           storing_order {
             customer_company {
               code
               name
+              guid
             }
+          }
+          tariff_cleaning {
+            alias
+            cargo
+            class_cv
+            create_by
+            create_dt
+            delete_dt
+            guid
+            update_by
+            update_dt
+          }
+          customer_company {
+            code
+            guid
+            name
+            alias
+            delete_dt
           }
         }
       }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
     }
   }
 `;
@@ -160,13 +265,36 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchSchedulingSot(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<SchedulingItem[]> {
+  searchRepairEst(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RepairEstItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
-        query: GET_SCHEDULING_SOT,
+        query: GET_REPAIR_EST,
         variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  getRepairEstByIDForApproval(id: string): Observable<RepairEstItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { guid: { eq: id } }
+    return this.apollo
+      .query<any>({
+        query: GET_REPAIR_EST_FOR_APPROVAL,
+        variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -229,7 +357,7 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
     return ((discount ?? 0) * (total_cost ?? 0)) / 100;
   }
 
-  getNetCost(total_cost: number | undefined, discount_labour_cost: number | undefined, discount_mat_cost: number | undefined) : any {
+  getNetCost(total_cost: number | undefined, discount_labour_cost: number | undefined, discount_mat_cost: number | undefined): any {
     return (total_cost ?? 0) - (discount_labour_cost ?? 0) - (discount_mat_cost ?? 0);
   }
 }

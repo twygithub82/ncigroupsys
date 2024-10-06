@@ -61,10 +61,10 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { UserDS, UserItem } from 'app/data-sources/user';
 
 @Component({
-  selector: 'app-estimate-new',
+  selector: 'app-approval-view',
   standalone: true,
-  templateUrl: './estimate-new.component.html',
-  styleUrl: './estimate-new.component.scss',
+  templateUrl: './approval-view.component.html',
+  styleUrl: './approval-view.component.scss',
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -99,7 +99,7 @@ import { UserDS, UserItem } from 'app/data-sources/user';
     TlxFormFieldComponent
   ]
 })
-export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
     // 'group_name_cv',
@@ -204,15 +204,11 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     FILTER: 'COMMON-FORM.FILTER',
     DEFAULT: 'COMMON-FORM.DEFAULT',
     COMMENT: 'COMMON-FORM.COMMENT',
-    EXPORT: 'COMMON-FORM.EXPORT',
-    ADD_ANOTHER: 'COMMON-FORM.ADD-ANOTHER',
-    SAVE: 'COMMON-FORM.SAVE',
-    ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS'
+    EXPORT: 'COMMON-FORM.EXPORT'
   }
 
   clean_statusList: CodeValuesItem[] = [];
 
-  sot_guid?: string | null;
   repair_est_guid?: string | null;
 
   repairEstForm?: UntypedFormGroup;
@@ -492,17 +488,17 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
     this.getSurveyorList();
 
-    this.sot_guid = this.route.snapshot.paramMap.get('id');
-    this.repair_est_guid = this.route.snapshot.paramMap.get('repair_est_id');
-    console.log(`sot_guid: ${this.sot_guid}, repair_est_guid: ${this.repair_est_guid}`)
-    if (this.sot_guid) {
-      this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
-        if (this.sotDS.totalCount > 0) {
-          this.sotItem = data[0];
-          this.populateRepairEst(this.sotItem.repair_est);
-          console.log(this.sotItem.storing_order?.customer_company_guid);
-          this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
-          this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
+    this.repair_est_guid = this.route.snapshot.paramMap.get('id');
+    if (this.repair_est_guid) {
+      this.subs.sink = this.repairEstDS.getRepairEstByIDForApproval(this.repair_est_guid).subscribe(data => {
+        if (data?.length) {
+          console.log(data);
+          this.repairEstItem = data[0];
+          this.sotItem = this.repairEstItem?.storing_order_tank;
+          // this.populateRepairEst(this.sotItem.repair_est);
+          // console.log(this.sotItem.storing_order?.customer_company_guid);
+          // this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
+          // this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
         }
       });
     }
@@ -639,12 +635,15 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       },
       direction: tempDirection
     });
-    dialogRef.componentInstance.dataSubject.subscribe((result) => {
-      this.addRepairEstPart(result)
-    });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.addRepairEstPart(result)
+        const data = [...this.repList];
+        const newItem = new RepairEstPartItem({
+          ...result.item,
+        });
+        data.push(newItem);
+
+        this.updateData(data);
       }
     });
   }
@@ -825,16 +824,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.updateData(data);
   }
 
-  addRepairEstPart(result: any) {
-    const data = [...this.repList];
-        const newItem = new RepairEstPartItem({
-          ...result.item,
-        });
-        data.push(newItem);
-
-        this.updateData(data);
-  }
-
   // context menu
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
     this.preventDefault(event);
@@ -928,7 +917,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       
       newData = newData.map((row, index) => ({
         ...row,
-        index: index
+        index: index + 1 // Add the index starting from 1
       }));
       console.log(newData)
       this.repList = [...this.sortREP(newData)];
@@ -961,8 +950,12 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/estimate']);
+      let successMsg = this.langText.SAVE_SUCCESS;
+      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+        successMsg = res;
+        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        this.router.navigate(['/admin/repair/estimate']);
+      });
     }
   }
 
@@ -1081,9 +1074,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       }
   
       if (a.tariff_repair.subgroup_name_cv !== b.tariff_repair.subgroup_name_cv) {
-        if (!a.tariff_repair.subgroup_name_cv) return 1; 
-        if (!b.tariff_repair.subgroup_name_cv) return -1;
-        
         return a.tariff_repair.subgroup_name_cv.localeCompare(b.tariff_repair.subgroup_name_cv);
       }
   

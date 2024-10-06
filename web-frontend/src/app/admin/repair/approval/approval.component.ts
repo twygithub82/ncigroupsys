@@ -49,10 +49,10 @@ import { MatCardModule } from '@angular/material/card';
 import { RepairEstDS, RepairEstItem } from 'app/data-sources/repair-est';
 
 @Component({
-  selector: 'app-estimate',
+  selector: 'app-approval',
   standalone: true,
-  templateUrl: './estimate.component.html',
-  styleUrl: './estimate.component.scss',
+  templateUrl: './approval.component.html',
+  styleUrl: './approval.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -83,7 +83,7 @@ import { RepairEstDS, RepairEstItem } from 'app/data-sources/repair-est';
     MatCardModule,
   ]
 })
-export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class ApprovalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // displayedColumns = [
   //   'tank_no',
   //   'customer',
@@ -94,10 +94,11 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   // ];
 
   displayedColumns = [
+    'tank_no',
+    'customer',
     'estimate_no',
     'net_cost',
-    'status_cv',
-    'actions'
+    'status_cv'
   ];
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.ESTIMATE'
@@ -146,7 +147,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     NET_COST: 'COMMON-FORM.NET-COST',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    AMEND: 'COMMON-FORM.AMEND'
+    AMEND: 'COMMON-FORM.AMEND',
+    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
   }
 
   searchForm?: UntypedFormGroup;
@@ -159,8 +161,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   igDS: InGateDS;
   repairEstDS: RepairEstDS;
 
-  sotList: StoringOrderTankItem[] = [];
-  soSelection = new SelectionModel<StoringOrderItem>(true, []);
+  repEstList: RepairEstItem[] = [];
+  reSelection = new SelectionModel<RepairEstItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -174,7 +176,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { storing_order: { so_no: "DESC" } };
+  lastOrderBy: any = { estimate_no: "DESC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -250,7 +252,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   isAllSelected() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     const numSelected = selectedItems.size;
-    const numRows = this.sotList.length;
+    const numRows = this.repEstList.length;
     return numSelected === numRows;
   }
 
@@ -266,8 +268,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   /** Clear selection on the current page */
   clearPageSelection() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      this.soSelection.deselect(row);
+    this.repEstList.forEach(row => {
+      this.reSelection.deselect(row);
       selectedItems.delete(row.guid!);
     });
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
@@ -276,18 +278,18 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   /** Select all items on the current page */
   selectAllOnPage() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      this.soSelection.select(row);
+    this.repEstList.forEach(row => {
+      this.reSelection.select(row);
       selectedItems.add(row.guid!);
     });
     this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Handle row selection */
-  toggleRow(row: StoringOrderItem) {
-    this.soSelection.toggle(row);
+  toggleRow(row: RepairEstItem) {
+    this.reSelection.toggle(row);
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    if (this.soSelection.isSelected(row)) {
+    if (this.reSelection.isSelected(row)) {
       selectedItems.add(row.guid!);
     } else {
       selectedItems.delete(row.guid!);
@@ -297,19 +299,12 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
 
   /** Update selection for the current page */
   updatePageSelection() {
-    this.soSelection.clear();
+    this.reSelection.clear();
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
+    this.repEstList.forEach(row => {
       if (selectedItems.has(row.guid!)) {
-        this.soSelection.select(row);
+        this.reSelection.select(row);
       }
-    });
-  }
-
-  canCancelSelectedRows(): boolean {
-    return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
-      const index: number = this.sotList.findIndex((d) => d === item);
-      return this.soDS.canCancel(this.sotList[index]);
     });
   }
 
@@ -410,7 +405,6 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['IN_SURVEY', 'CLEANING', 'STORAGE', 'STEAM', 'REPAIR'] }
     };
 
     if (this.searchForm!.value['so_no']) {
@@ -424,7 +418,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     if (this.searchForm!.value['customer_code']) {
       where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
-
+    
     if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
       const sotSome: any = {};
 
@@ -440,8 +434,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
         sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
       }
 
-      if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
-        sotSome.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
+        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
       }
 
       if (this.searchForm!.value['purpose']) {
@@ -477,13 +471,10 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.repairEstDS.searchRepairEst(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.sotList = data.map(sot => {
-          sot.repair_est = sot.repair_est?.map(rep => {
-            return {...rep, net_cost: this.calculateNetCost(rep)}
-          })
-          return sot;
+        this.repEstList = data.map(re => {
+          return {...re, net_cost: this.calculateNetCost(re)}
         });
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
@@ -654,5 +645,18 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
 
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
   }
 }
