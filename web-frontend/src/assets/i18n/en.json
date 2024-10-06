@@ -570,7 +570,9 @@
     "COMMENT": "Comment",
     "SAVE": "Save",
     "ADD-SUCCESS": "Add Successfully",
-    "CHANGE-REQUEST": "Change Request"
+    "CHANGE-REQUEST": "Change Request",
+    "APPROVE": "Approve",
+    "NO-ACTION": "No Action"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

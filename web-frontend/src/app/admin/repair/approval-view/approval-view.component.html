@@ -141,45 +141,6 @@
               }
               @if (!(sotDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
-                    <mat-select formControlName="est_template">
-                      @for (template of templateList; track template) {
-                      <mat-option [value]="template"
-                        [ngClass]="{'bg-light-gold-opacity-30': template.type_cv === 'EXCLUSIVE'}">{{template.template_name}}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                @if (repairEstForm?.get('est_template')?.value?.guid) {
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
-                  <mat-checkbox class="m-r-5" color="primary" formControlName="is_default_template">
-                    {{translatedLangText.DEFAULT}}
-                  </mat-checkbox>
-                </div>
-                }
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                  <!-- @if (repairEstDS.canAdd(row)) {
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addEstDetails($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ESTIMATE_DETAILS}}
-                  </button>
-                  } -->
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addEstDetails($event)" [disabled]="!(groupNameCvList.length)">
-                    <mat-icon class="col-white">
-                      @if ((groupNameCvList.length)) {
-                      add
-                      } @else if (!(groupNameCvList.length)) {
-                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                      }
-                    </mat-icon>
-                    {{translatedLangText.ESTIMATE_DETAILS}}
-                  </button>
-                </div>
-              </div>
-              <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
                     <table mat-table [dataSource]="repList" matSort
@@ -422,8 +383,16 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-5">
                       {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairEstItem?.estimate_no}}</span>
+                    </div>
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      {{translatedLangText.ESTIMATE_DATE}}: <span
+                        class="font-bold">{{displayDate(repairEstItem?.create_dt)}}</span>
+                    </div>
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      {{translatedLangText.STATUS}}: <span
+                        [ngClass]="'font-bold badge ' + getBadgeClass(repairEstItem?.status_cv)">{{repairEstItem?.status_cv}}</span>
                     </div>
                   </div>
                 </div>
@@ -787,25 +756,37 @@
               <div class="row m-t-5">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
-                    (click)="$event.preventDefault();" [routerLink]="['/admin/repair/estimate']">
+                    (click)="$event.preventDefault();" [routerLink]="['/admin/repair/approval']">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (canExport()) {
-                  <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)" class="m-r-5">
-                    @if (!(repairEstDS.loading$ | async)) {
-                    <i class="fas fa-file-export"></i>
-                    } @else if ((repairEstDS.loading$ | async)) {
+                  @if (canApprove()) {
+                  <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)">
                     <mat-icon>
+                      @if (!(repairEstDS.loading$ | async)) {
+                      done
+                      } @else if ((repairEstDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
                     </mat-icon>
-                    }
-                    {{translatedLangText.EXPORT}}
+                    {{translatedLangText.APPROVE}}
                   </button>
                   }
-                  @if (isAnyItemEdited()) {
-                  <button mat-flat-button color="primary" [disabled]="(repairEstDS.loading$ | async)">
+                  @if (canCancel()) {
+                  <button mat-flat-button color="warn" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5">
+                    <mat-icon>
+                      @if (!(repairEstDS.loading$ | async)) {
+                      close
+                      } @else if ((repairEstDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.NO_ACTION}}
+                  </button>
+                  }
+                  @if (canSave()) {
+                  <button mat-flat-button color="primary" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5">
                     <mat-icon>
                       @if (!(repairEstDS.loading$ | async)) {
                       save

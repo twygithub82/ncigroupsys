@@ -204,7 +204,10 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     FILTER: 'COMMON-FORM.FILTER',
     DEFAULT: 'COMMON-FORM.DEFAULT',
     COMMENT: 'COMMON-FORM.COMMENT',
-    EXPORT: 'COMMON-FORM.EXPORT'
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    APPROVE: 'COMMON-FORM.APPROVE',
+    NO_ACTION: 'COMMON-FORM.NO-ACTION'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -495,7 +498,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
           console.log(data);
           this.repairEstItem = data[0];
           this.sotItem = this.repairEstItem?.storing_order_tank;
-          // this.populateRepairEst(this.sotItem.repair_est);
+          this.populateRepairEst(this.repairEstItem);
           // console.log(this.sotItem.storing_order?.customer_company_guid);
           // this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
           // this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
@@ -504,23 +507,17 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
-  populateRepairEst(repair_est: RepairEstItem[] | undefined) {
-    if (repair_est?.length) {
-      const found = repair_est.filter(x => x.guid === this.repair_est_guid);
-      if (found?.length) {
-        this.repairEstItem = found[0];
-        this.isOwner = this.repairEstItem.owner_enable ?? false;
-        this.repairEstItem.repair_est_part = this.filterDeleted(this.repairEstItem.repair_est_part)
-        this.updateData(this.repairEstItem.repair_est_part);
-        this.repairEstForm?.patchValue({
-          guid: this.repairEstItem.guid,
-          remarks: this.repairEstItem.remarks,
-          surveyor_id: this.repairEstItem.aspnetusers_guid,
-          labour_cost_discount: this.repairEstItem.labour_cost_discount,
-          material_cost_discount: this.repairEstItem.material_cost_discount
-        });
-      }
-    }
+  populateRepairEst(repair_est: RepairEstItem) {
+    this.isOwner = repair_est.owner_enable ?? false;
+    repair_est.repair_est_part = this.filterDeleted(repair_est.repair_est_part)
+    this.updateData(repair_est.repair_est_part);
+    this.repairEstForm?.patchValue({
+      guid: repair_est.guid,
+      remarks: repair_est.remarks,
+      surveyor_id: repair_est.aspnetusers_guid,
+      labour_cost_discount: repair_est.labour_cost_discount,
+      material_cost_discount: repair_est.material_cost_discount
+    });
   }
 
   getCustomerLabourPackage(customer_company_guid: string) {
@@ -978,7 +975,15 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     event.preventDefault(); // Prevents the form submission
   }
 
-  isAnyItemEdited(): boolean {
+  canApprove(): boolean {
+    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
+  }
+
+  canCancel(): boolean {
+    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
+  }
+
+  canSave(): boolean {
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 
@@ -986,18 +991,14 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     this.isOwner = !this.isOwner;
   }
 
-  getBadgeClass(action: string): string {
-    switch (action) {
-      case 'new':
+  getBadgeClass(status: string | undefined): string {
+    switch (status) {
+      case 'APPROVED':
         return 'badge-solid-green';
-      case 'edit':
+      case 'PENDING':
         return 'badge-solid-cyan';
-      case 'rollback':
-        return 'badge-solid-blue';
       case 'cancel':
-        return 'badge-solid-orange';
-      case 'preorder':
-        return 'badge-solid-pink';
+        return 'badge-solid-red';
       default:
         return '';
     }
@@ -1123,8 +1124,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     return Utility.convertEpochToDateTimeStr(input);
   }
 
-  displayDate(input: Date): string {
-    return Utility.convertDateToStr(input);
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
   }
 
   getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
