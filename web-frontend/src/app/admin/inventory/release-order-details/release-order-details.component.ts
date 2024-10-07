@@ -178,6 +178,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   sotForm?: UntypedFormGroup;
 
   releaseOrderItem: ReleaseOrderItem = new ReleaseOrderItem();
+  activeRoSotList: ReleaseOrderSotItem[] = [];
   schedulingList: SchedulingUpdateItem[] = [];
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   roSotSelection = new SelectionModel<any>(true, []);
@@ -245,7 +246,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       sotList: this.fb.array([])
     });
   }
-  
+
   updateROList() {
     this.cdr.markForCheck(); // Trigger change detection manually
   }
@@ -283,12 +284,22 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.ro_guid = this.route.snapshot.paramMap.get('id');
     if (this.ro_guid) {
       // EDIT
-      this.subs.sink = this.roDS.getReleaseOrderByID(this.ro_guid).subscribe(data => {
+      this.subs.sink = this.roDS.getReleaseOrderByID(this.ro_guid).subscribe(roData => {
         if (this.roDS.totalCount > 0) {
-          this.releaseOrderItem = data[0];
-          this.populateROForm(this.releaseOrderItem);
-          this.roForm!.get('customer_code')!.disable();
-          this.roForm!.get('customer_company_guid')!.disable();
+          this.releaseOrderItem = roData[0];
+          const sot_guids = this.releaseOrderItem.release_order_sot?.filter(item => item.status_cv === 'CANCELED').map(item => item.sot_guid!) || [];
+          this.subs.sink = this.roSotDS.ValidateSotInReleaseOrder(this.releaseOrderItem.guid!, [...sot_guids]).subscribe(roSotData => {
+            console.log(roSotData)
+            if (this.roSotDS.totalCount > 0) {
+              this.activeRoSotList = roSotData;
+            }
+            this.populateROForm(this.releaseOrderItem);
+            this.roForm!.get('customer_code')!.disable();
+            this.roForm!.get('customer_company_guid')!.disable();
+          });
+          // this.populateROForm(this.releaseOrderItem);
+          // this.roForm!.get('customer_code')!.disable();
+          // this.roForm!.get('customer_company_guid')!.disable();
         }
       });
     } else {
@@ -332,8 +343,6 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   populateSOT(sotList: ReleaseOrderSotUpdateItem[]) {
     const schedulingFormArray = this.roForm!.get('sotList') as UntypedFormArray;
-    // schedulingFormArray.clear();  // Clear existing items
-
     sotList.forEach(item => {
       const roSotForm = this.createRoSotFormGroup(item);
       schedulingFormArray.push(roSotForm);
@@ -386,8 +395,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   updateData(newData: SchedulingItem[]): void {
-    this.schedulingList = [...newData];
-    this.roSotSelection.clear();
+    // this.schedulingList = [...newData];
+    // this.roSotSelection.clear();
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -436,7 +445,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (result) {
         const selectedList = result.selectedList;
         console.log(selectedList);
-        const roSotList = selectedList.map((schedulingSot: SchedulingSotItem) => new ReleaseOrderSotUpdateItem({ sot_guid: schedulingSot.sot_guid, storing_order_tank: new StoringOrderTankItem({...schedulingSot.storing_order_tank, scheduling_sot: [schedulingSot]}), action: 'new', actions: ['new'] }))
+        const roSotList = selectedList.map((schedulingSot: SchedulingSotItem) => new ReleaseOrderSotUpdateItem({ sot_guid: schedulingSot.sot_guid, storing_order_tank: new StoringOrderTankItem({ ...schedulingSot.storing_order_tank, scheduling_sot: [schedulingSot] }), action: 'new', actions: ['new'] }))
         this.populateSOT(roSotList)
         // const data = [...this.schedulingList];
         // const newItem = new StoringOrderTankItem({
@@ -796,5 +805,16 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getRoStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.roStatusCvList);
+  }
+
+  canRollback(status_cv: string, sot_guid: string): boolean {
+    return this.roSotDS.canRollbackStatus(status_cv) && !this.activeRoSotList.some(item => item.sot_guid === sot_guid);
+  }
+
+  checkMenuItems(row: any): boolean {
+    return !row.get('actions')?.value.includes('cancel') && this.roSotDS.canCancelStatus(row.get('status_cv')?.value) ||
+      !row.get('actions')?.value.includes('rollback') && this.canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value) ||
+      row.get('action')?.value === 'new' ||
+      row.get('actions')?.value.includes('cancel');
   }
 }

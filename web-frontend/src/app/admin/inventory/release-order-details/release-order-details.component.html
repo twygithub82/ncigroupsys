@@ -162,6 +162,7 @@
                               }
                             </mat-form-field>
                           </div>
+                          @if (checkMenuItems(row)) {
                           <div class="col-xl-0-5 col-lg-0-5 col-md-12 col-sm-12 mb-1">
                             <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                               <mat-icon>more_vert</mat-icon>
@@ -175,7 +176,7 @@
                               </button>
                               }
                               @if (!row.get('actions')?.value.includes('rollback') &&
-                              roSotDS.canRollbackStatus(row.get('status_cv')?.value)) {
+                              canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value)) {
                               <button mat-menu-item (click)="rollbackItem($event, row)">
                                 <mat-icon>undo</mat-icon>
                                 <span>{{translatedLangText.ROLLBACK_STATUS}}</span>
@@ -195,6 +196,7 @@
                               }
                             </mat-menu>
                           </div>
+                          }
                         </div>
                       </mat-card-content>
                     </mat-card>
