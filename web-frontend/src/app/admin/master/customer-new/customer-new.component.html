@@ -57,12 +57,28 @@
                      
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-1 col-lg-1 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
-                      <input matInput formControlName="billing_branches" >
+                      <mat-select  formControlName="billing_branch">
+                        <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
+                         
+                          <ng-container *ngIf="cc !== null">
+                            {{ ccDS.displayName(cc) }}
+                          </ng-container>
+                         
+                        </mat-option>
+                      </mat-select>
                      
                   </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addContactPerson($event)">
+                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
+                  </button>
                   
                 </div>
               </div>
@@ -173,7 +189,7 @@
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addEstDetails($event)">
+                    (click)="addContactPerson($event)">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}
                   </button>
                   
@@ -219,7 +235,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.CONTACT_PERSON}}:</span>
-                          {{getGroupNameDescription(row.tariff_repair?.group_name_cv)}}
+                          {{row.name}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">
@@ -231,7 +247,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.JOB_TITLE}}:</span>
-                          {{getSubGroupNameDescription(row.tariff_repair?.subgroup_name_cv)}}
+                          {{row.job_title}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="damage">
@@ -244,8 +260,8 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DEPARTMENT}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 0)">
-                              {{displayDamageRepairCode(row.tep_damage_repair, 0)}}
+                            <span >
+                              {{row.department}}
                             </span>
                           </span>
                         </mat-cell>
@@ -259,9 +275,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.EMAIL}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 1)">
-                            {{displayDamageRepairCode(row.tep_damage_repair, 1)}}
-                          </span>
+                          {{row.email}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="description">
@@ -273,7 +287,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.DID}}:</span>
-                          {{row.description}}
+                          {{row.did}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="quantity">
@@ -285,7 +299,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.MOBILE_NO}}:</span>
-                          {{row.quantity}}
+                          {{row.contact}}
                         </mat-cell>
                       </ng-container>
                       <!-- <ng-container matColumnDef="hour">

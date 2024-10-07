@@ -59,6 +59,7 @@ import { EstimateComponent } from 'app/admin/repair/estimate/estimate.component'
 import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { elements } from 'chart.js';
+import { ContactPersonItem } from 'app/data-sources/contact-person';
 
 @Component({
   selector: 'app-customer-new',
@@ -240,7 +241,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     CONTACT_PERSON_DETAILS:"COMMON-FORM.CONTACT-PERSON-DETAILS",
     BILLING_BRANCH:"COMMON-FORM.BILLING-BRANCH",
     SALUTATION:"COMMON-FORM.SALUTATION",
-    NAME:"COMMON-FORM.NAME"
+    NAME:"COMMON-FORM.NAME",
+    INVALID_FORMAT:"COMMON-FORM.INVALID-FORMAT",
+    ADD:"COMMON-FORM.ADD"
     
   }
 
@@ -256,7 +259,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   selectedTempEst?: MasterTemplateItem;
   sotItem?: StoringOrderTankItem;
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  repList = new MatTableDataSource<TemplateEstPartItem>();
+  repList = new MatTableDataSource<ContactPersonItem>();
   sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
   groupNameCvList: CodeValuesItem[] = [];
@@ -339,16 +342,16 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
   calculateCostSummary() {
-    var totalMaterialCost: number = 0;
-    var totalLabourHours: number = 0;
-    this.repList.data.forEach(data => {
-      totalMaterialCost += (data.tariff_repair?.material_cost ?? 0) * (data.quantity ?? 0);
-      totalLabourHours += (data.hour ?? 0);
-    });
-    this.ccForm?.patchValue({
-      total_material_cost: Number(totalMaterialCost).toFixed(2),
-      labour_hour: totalLabourHours
-    });
+    // var totalMaterialCost: number = 0;
+    // var totalLabourHours: number = 0;
+    // this.repList.data.forEach(data => {
+    //   totalMaterialCost += (data.tariff_repair?.material_cost ?? 0) * (data.quantity ?? 0);
+    //   totalLabourHours += (data.hour ?? 0);
+    // });
+    // this.ccForm?.patchValue({
+    //   total_material_cost: Number(totalMaterialCost).toFixed(2),
+    //   labour_hour: totalLabourHours
+    // });
 
     //const totalCost= this.repList.data.reduce((total,part)=>total+(part.material_cost??0));
   }
@@ -676,7 +679,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     });
   }
 
-  addEstDetails(event: Event, row?: RepairEstPartItem) {
+addContactPerson(event: Event, row?: ContactPersonItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -684,12 +687,12 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     } else {
       tempDirection = 'ltr';
     }
-    const addSot = row ?? new RepairEstPartItem();
-    addSot.repair_est_guid = addSot.repair_est_guid;
+    const cntPerson = row ?? new ContactPersonItem();
+    
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width:'1000px',
       data: {
-        item: row ? row : addSot,
+        item: row ? row : cntPerson,
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
@@ -703,7 +706,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const data: any = [...this.repList.data];
-        const newItem = new TemplateEstPartItem({
+        const newItem = new ContactPersonItem({
           ...result.item,
         });
         data.unshift(newItem);
@@ -1008,116 +1011,116 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
 
   updateExistTemplate() {
 
-    const tempEstimateCustomerItems: TemplateEstimateCustomerItem[] = this.selectedTempEst!.template_est_customer!.map((node: any) => new TemplateEstimateCustomerItem(node));
+    // // const tempEstimateCustomerItems: TemplateEstimateCustomerItem[] = this.selectedTempEst!.template_est_customer!.map((node: any) => new TemplateEstimateCustomerItem(node));
     
-    this.selectedTempEst!.template_name=this.ccForm?.get("template_name")?.value;
-    this.selectedTempEst!.labour_cost_discount=this.ccForm?.get("labour_discount")?.value;
-    this.selectedTempEst!.remarks=this.ccForm?.get("remarks")?.value;
-    this.selectedTempEst!.material_cost_discount=this.ccForm?.get("material_discount")?.value;
-    this.selectedTempEst!.template_est_customer=tempEstimateCustomerItems;
-    var existdata_cust=this.selectedTempEst!.template_est_customer;
-    existdata_cust?.forEach(value=>{value.action="CANCEL";value.customer_company=undefined;});
-    this.selectedTempEst!.type_cv="GENERAL";
-    if(this.ccForm?.get("customer_code")?.value?.length>0)
-      {
-        var newdata_cust = this.ccForm?.get('customer_code')?.value;
-        this.selectedTempEst!.type_cv="EXCLUSIVE";
-        var customerCodes : CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
-        //temp.template_est_customer=[];
-        customerCodes.forEach(data=>{
-             const found=existdata_cust.filter(value=>value.customer_company_guid===data.guid);
-            if(found!.length>0)
-            {
-              found[0].action=""; 
-              found[0].customer_company=undefined;
+    // // this.selectedTempEst!.template_name=this.ccForm?.get("template_name")?.value;
+    // // this.selectedTempEst!.labour_cost_discount=this.ccForm?.get("labour_discount")?.value;
+    // // this.selectedTempEst!.remarks=this.ccForm?.get("remarks")?.value;
+    // // this.selectedTempEst!.material_cost_discount=this.ccForm?.get("material_discount")?.value;
+    // // this.selectedTempEst!.template_est_customer=tempEstimateCustomerItems;
+    // // var existdata_cust=this.selectedTempEst!.template_est_customer;
+    // // existdata_cust?.forEach(value=>{value.action="CANCEL";value.customer_company=undefined;});
+    // // this.selectedTempEst!.type_cv="GENERAL";
+    // // if(this.ccForm?.get("customer_code")?.value?.length>0)
+    // //   {
+    // //     var newdata_cust = this.ccForm?.get('customer_code')?.value;
+    // //     this.selectedTempEst!.type_cv="EXCLUSIVE";
+    // //     var customerCodes : CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
+    // //     //temp.template_est_customer=[];
+    // //     customerCodes.forEach(data=>{
+    // //          const found=existdata_cust.filter(value=>value.customer_company_guid===data.guid);
+    // //         if(found!.length>0)
+    // //         {
+    // //           found[0].action=""; 
+    // //           found[0].customer_company=undefined;
 
-        }
-        else {
-          var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
-          custItem.action = "NEW";
-          custItem.customer_company_guid = data.guid;
-          custItem.customer_company = undefined;
-          custItem.guid = "";
-          this.selectedTempEst!.template_est_customer?.push(custItem)
-        }
+    // //     }
+    // //     else {
+    // //       var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
+    // //       custItem.action = "NEW";
+    // //       custItem.customer_company_guid = data.guid;
+    // //       custItem.customer_company = undefined;
+    // //       custItem.guid = "";
+    // //       this.selectedTempEst!.template_est_customer?.push(custItem)
+    // //     }
 
-      });
+    // //   });
 
-    }
-    const tempEstimatePartItems: TemplateEstPartItem[] = this.selectedTempEst!.template_est_part!.map((node: any) => new TemplateEstPartItem(node));
-    this.selectedTempEst!.template_est_part = tempEstimatePartItems;
-    this.selectedTempEst!.template_est_part.forEach(value => {
-      value.action = "CANCEL"; 
-      value.tariff_repair=undefined;
-      value.tep_damage_repair= value.tep_damage_repair?.map((node:any)=>new TepDamageRepairItem(node));
+    // // }
+    // // const tempEstimatePartItems: TemplateEstPartItem[] = this.selectedTempEst!.template_est_part!.map((node: any) => new TemplateEstPartItem(node));
+    // // this.selectedTempEst!.template_est_part = tempEstimatePartItems;
+    // // this.selectedTempEst!.template_est_part.forEach(value => {
+    // //   value.action = "CANCEL"; 
+    // //   value.tariff_repair=undefined;
+    // //   value.tep_damage_repair= value.tep_damage_repair?.map((node:any)=>new TepDamageRepairItem(node));
 
-    });
+    // // });
 
-    if(this.repList.data.length>0)
-    {
-      this.repList.data.forEach(value=>{
+    // // if(this.repList.data.length>0)
+    // // {
+    // //   this.repList.data.forEach(value=>{
         
-        var existData = this.selectedTempEst?.template_est_part?.filter(data=>data.guid===value.guid);
-        if(existData?.length!>0)
-        {
-          var childNodeUpdated:Boolean=false;
-          //if template estimate part found
-          existData![0]!.action = "";
-          existData![0]!.tariff_repair = undefined;
-          existData![0]!.tep_damage_repair = existData![0]!.tep_damage_repair!.map((node: any) => new TepDamageRepairItem(node));
-          //set all the tep_damage_repair action to cancel first
-          existData![0]!.tep_damage_repair.forEach(value => {value.action = "CANCEL";});
+    // //     var existData = this.selectedTempEst?.template_est_part?.filter(data=>data.guid===value.guid);
+    // //     if(existData?.length!>0)
+    // //     {
+    // //       var childNodeUpdated:Boolean=false;
+    // //       //if template estimate part found
+    // //       existData![0]!.action = "";
+    // //       existData![0]!.tariff_repair = undefined;
+    // //       existData![0]!.tep_damage_repair = existData![0]!.tep_damage_repair!.map((node: any) => new TepDamageRepairItem(node));
+    // //       //set all the tep_damage_repair action to cancel first
+    // //       existData![0]!.tep_damage_repair.forEach(value => {value.action = "CANCEL";});
 
-          // consolidate new repair + new damage to tep_damage_repair
-          var rep_damage_repairItems=value.tep_damage_repair!;
+    // //       // consolidate new repair + new damage to tep_damage_repair
+    // //       var rep_damage_repairItems=value.tep_damage_repair!;
         
-            rep_damage_repairItems.forEach(repItm=>{
-              var existRepItm = existData![0]!.tep_damage_repair?.filter(data=>data.code_cv===repItm.code_cv && data.code_type===repItm.code_type);
-              if(existRepItm?.length!>0)
-              {
-                //set the damage or repair  to unchange
-                existRepItm![0]!.action="";
-              }
-              else
-              {
-                let tepDamageRepairItm :TepDamageRepairItem= new TepDamageRepairItem();
-                tepDamageRepairItm.code_cv=repItm.code_cv;
-                tepDamageRepairItm.code_type=repItm.code_type;
-                tepDamageRepairItm.action="NEW";
-                //add new damage or repair 
-                existData![0].tep_damage_repair!.push(tepDamageRepairItm);
-                childNodeUpdated=true;
-              }
-            });
-            if(childNodeUpdated) existData![0]!.action="EDIT";
+    // //         rep_damage_repairItems.forEach(repItm=>{
+    // //           var existRepItm = existData![0]!.tep_damage_repair?.filter(data=>data.code_cv===repItm.code_cv && data.code_type===repItm.code_type);
+    // //           if(existRepItm?.length!>0)
+    // //           {
+    // //             //set the damage or repair  to unchange
+    // //             existRepItm![0]!.action="";
+    // //           }
+    // //           else
+    // //           {
+    // //             let tepDamageRepairItm :TepDamageRepairItem= new TepDamageRepairItem();
+    // //             tepDamageRepairItm.code_cv=repItm.code_cv;
+    // //             tepDamageRepairItm.code_type=repItm.code_type;
+    // //             tepDamageRepairItm.action="NEW";
+    // //             //add new damage or repair 
+    // //             existData![0].tep_damage_repair!.push(tepDamageRepairItm);
+    // //             childNodeUpdated=true;
+    // //           }
+    // //         });
+    // //         if(childNodeUpdated) existData![0]!.action="EDIT";
 
-        }
-        else {
-          var repEstItem: TemplateEstPartItem = value;
-          var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
-          tempEstPartItem.action = "NEW";
-          tempEstPartItem.guid = "";
-          tempEstPartItem.tariff_repair_guid = value.tariff_repair_guid;
-          tempEstPartItem.hour = repEstItem.hour;
-          tempEstPartItem.quantity = repEstItem.quantity;
-          tempEstPartItem.location_cv = repEstItem.location_cv;
-          tempEstPartItem.remarks = repEstItem.remarks;
-          tempEstPartItem.description = repEstItem.description;
-          tempEstPartItem.tep_damage_repair = [];
-          let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!.map((node:any)=>new TepDamageRepairItem(node));;
-          dmg.forEach(d => {
-            let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-            tepDamageRepairItm.code_cv = d.code_cv;
-            tepDamageRepairItm.code_type = d.code_type;
-            tepDamageRepairItm.action = "NEW";
-            tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
-          });
-          this.selectedTempEst?.template_est_part?.push(tempEstPartItem);
-        }
-      });
-    }
+    // //     }
+    // //     else {
+    // //       var repEstItem: TemplateEstPartItem = value;
+    // //       var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
+    // //       tempEstPartItem.action = "NEW";
+    // //       tempEstPartItem.guid = "";
+    // //       tempEstPartItem.tariff_repair_guid = value.tariff_repair_guid;
+    // //       tempEstPartItem.hour = repEstItem.hour;
+    // //       tempEstPartItem.quantity = repEstItem.quantity;
+    // //       tempEstPartItem.location_cv = repEstItem.location_cv;
+    // //       tempEstPartItem.remarks = repEstItem.remarks;
+    // //       tempEstPartItem.description = repEstItem.description;
+    // //       tempEstPartItem.tep_damage_repair = [];
+    // //       let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!.map((node:any)=>new TepDamageRepairItem(node));;
+    // //       dmg.forEach(d => {
+    // //         let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
+    // //         tepDamageRepairItm.code_cv = d.code_cv;
+    // //         tepDamageRepairItm.code_type = d.code_type;
+    // //         tepDamageRepairItm.action = "NEW";
+    // //         tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
+    // //       });
+    // //       this.selectedTempEst?.template_est_part?.push(tempEstPartItem);
+    // //     }
+    // //   });
+    // }
    
-    delete this.selectedTempEst!.totalMaterialCost;
+    //delete this.selectedTempEst!.totalMaterialCost;
     // this.estTempDS.UpdateMasterTemplate(this.selectedTempEst).subscribe(result => {
     //   var count = result.data.updateTemplateEstimation;
     //   if (count > 0) {

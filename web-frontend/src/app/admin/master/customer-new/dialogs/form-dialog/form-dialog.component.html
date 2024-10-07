@@ -10,7 +10,7 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <form class="register-form" [formGroup]="contactPersonFrom" #formDirective="ngForm">
+    <form class="register-form" [formGroup]="contactPersonForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
@@ -20,7 +20,7 @@
               <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
               }
             </mat-select>
-            @if (contactPersonFrom.get('title_cv')?.hasError('required')) {
+            @if (contactPersonForm.get('title_cv')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.TITLE}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
@@ -31,21 +31,59 @@
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.NAME}}</mat-label>
             <input matInput formControlName="name" required>
+            @if (contactPersonForm.get('name')?.hasError('required')) {
+              <mat-error>
+                {{data.translatedLangText.NAME}} {{data.translatedLangText.SO_REQUIRED}}
+              </mat-error>
+              }
           </mat-form-field>
         </div>
        
       </div>
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.EMAIL}}</mat-label>
             <input matInput formControlName="email" required>
+          
+              @if (contactPersonForm.get('email')?.hasError('required')) {
+                <mat-error>
+                {{data.translatedLangText.EMAIL}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+              }
+
+              @if (contactPersonForm.get('contact')?.hasError('email')) {
+                <mat-error>
+                {{data.translatedLangText.EMAIL}} {{data.translatedLangText.INVALID_FORMAT}}
+                </mat-error>
+              }
+          
+            
           </mat-form-field>
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.MOBILE_NO}}</mat-label>
-            <input matInput formControlName="contact" required>
+            <input matInput formControlName="contact" required maxlength="13">
+            @if (contactPersonForm.get('contact')?.hasError('required')) {
+              <mat-error>
+              {{data.translatedLangText.MOBILE_NO}} {{data.translatedLangText.SO_REQUIRED}}
+              </mat-error>
+            }
+             
+           
+          </mat-form-field>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.DID}}</mat-label>
+            <input matInput formControlName="did" required maxlength="13">
+            <mat-error *ngIf="this.contactPersonForm.get('did')?.invalid &&this.contactPersonForm.get('did')?.touched">
+              <span *ngIf="this.contactPersonForm.get('did')?.errors?.['required']">
+                {{data.translatedLangText.DID}} {{data.translatedLangText.SO_REQUIRED}}
+              </span>
+             
+            </mat-error>
           </mat-form-field>
         </div>
       </div>
@@ -59,14 +97,14 @@
         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.JOB_TITLE}}</mat-label>
-            <input matInput formControlName="job_title" required>
+            <input matInput formControlName="job_title" >
           </mat-form-field>
         </div>
        
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" [disabled]="!this.contactPerson.guid" (click)="submit()">{{data.translatedLangText.UPDATE}}</button>
+        <button mat-flat-button color="primary" [disabled]="this.contactPersonForm.invalid" (click)="submit()">{{data.translatedLangText.ADD}}</button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>
