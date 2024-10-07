@@ -61,7 +61,7 @@ interface Condition {
 
 
 @Component({
-  selector: 'app-form-dialog',
+  selector: 'app-package-repair-form-edit-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],

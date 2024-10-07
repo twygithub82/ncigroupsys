@@ -173,9 +173,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.menuIcon = 'radio_button_unchecked';
     }
 
-    const sideClosedHover =
-      this.document.body.classList.contains('side-closed');
-    if (sideClosedHover) {
+    const sideClosedExists = this.document.body.classList.contains('side-closed');
+    if (sideClosedExists) {
       this.renderer.removeClass(this.document.body, 'side-closed-hover');
     }
   }

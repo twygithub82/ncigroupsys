@@ -567,7 +567,10 @@
                       <div>
                         <span
                           (click)="editRemarks($event, translatedLangText.LEFT_REMARKS, surveyForm?.get('leftRemarks'))"
-                          class="link-button" [matTooltip]="surveyForm?.get('leftRemarks')?.value">
+                          class="link-button font-bold" [matTooltip]="surveyForm?.get('leftRemarks')?.value">
+                          @if (surveyForm?.get('leftRemarks')?.value) {
+                            *
+                          }
                           {{translatedLangText.LEFT_SIDE}}
                         </span>
                         <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsLeft, $event)">
@@ -594,7 +597,10 @@
                       <div>
                         <span
                           (click)="editRemarks($event, translatedLangText.REAR_REMARKS, surveyForm?.get('rearRemarks'))"
-                          class="link-button" [matTooltip]="surveyForm?.get('rearRemarks')?.value">
+                          class="link-button font-bold" [matTooltip]="surveyForm?.get('rearRemarks')?.value">
+                          @if (surveyForm?.get('rearRemarks')?.value) {
+                            *
+                          }
                           {{translatedLangText.REAR_SIDE}}
                         </span>
                         <button mat-icon-button class="link-button" (click)="resetDialog(highlightedCellsRear, $event)">
@@ -621,7 +627,10 @@
                       <div>
                         <span
                           (click)="editRemarks($event, translatedLangText.RIGHT_REMARKS, surveyForm?.get('rightRemarks'))"
-                          class="link-button" [matTooltip]="surveyForm?.get('rightRemarks')?.value">
+                          class="link-button font-bold" [matTooltip]="surveyForm?.get('rightRemarks')?.value">
+                          @if (surveyForm?.get('rightRemarks')?.value) {
+                            *
+                          }
                           {{translatedLangText.RIGHT_SIDE}}
                         </span>
                         <button mat-icon-button class="link-button"
@@ -649,7 +658,10 @@
                       <div>
                         <span
                           (click)="editRemarks($event, translatedLangText.TOP_REMARKS, surveyForm?.get('topRemarks'))"
-                          class="link-button" [matTooltip]="surveyForm?.get('topRemarks')?.value">
+                          class="link-button font-bold" [matTooltip]="surveyForm?.get('topRemarks')?.value">
+                          @if (surveyForm?.get('topRemarks')?.value) {
+                            *
+                          }
                           {{translatedLangText.TOP_SIDE}}
                         </span>
                         <button mat-icon-button class="link-button"
@@ -745,7 +757,10 @@
                       <div>
                         <span
                           (click)="editRemarks($event, translatedLangText.FRONT_REMARKS, surveyForm?.get('frontRemarks'))"
-                          class="link-button" [matTooltip]="surveyForm?.get('frontRemarks')?.value">
+                          class="link-button font-bold" [matTooltip]="surveyForm?.get('frontRemarks')?.value">
+                          @if (surveyForm?.get('frontRemarks')?.value) {
+                            *
+                          }
                           {{translatedLangText.FRONT_SIDE}}
                         </span>
                         <button mat-icon-button class="link-button"
@@ -773,7 +788,10 @@
                       <div>
                         <span
                           (click)="editRemarks($event, translatedLangText.BOTTOM_REMARKS, surveyForm?.get('bottomRemarks'))"
-                          class="link-button" [matTooltip]="surveyForm?.get('bottomRemarks')?.value">
+                          class="link-button font-bold" [matTooltip]="surveyForm?.get('bottomRemarks')?.value">
+                          @if (surveyForm?.get('bottomRemarks')?.value) {
+                            *
+                          }
                           {{translatedLangText.BOTTOM_SIDE}}
                         </span>
                         <button mat-icon-button class="link-button"
@@ -851,7 +869,7 @@
                                 </button>
                                 <mat-menu #menu="matMenu">
                                   <button mat-menu-item
-                                    (click)="previewImageDialog(surveyForm?.get('leftImage'), $event)">
+                                    (click)="previewImagesDialog($event, 0)">
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item (click)="deleteDialog(surveyForm?.get('leftImage'), $event)">
@@ -888,7 +906,7 @@
                                 </button>
                                 <mat-menu #menu="matMenu">
                                   <button mat-menu-item
-                                    (click)="previewImageDialog(surveyForm?.get('rearImage'), $event)">
+                                    (click)="previewImagesDialog($event, 1)">
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item (click)="deleteDialog(surveyForm?.get('rearImage'), $event)">
@@ -925,7 +943,7 @@
                                 </button>
                                 <mat-menu #menu="matMenu">
                                   <button mat-menu-item
-                                    (click)="previewImageDialog(surveyForm?.get('rightImage'), $event)">
+                                    (click)="previewImagesDialog($event, 2)">
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item (click)="deleteDialog(surveyForm?.get('rightImage'), $event)">
@@ -962,7 +980,7 @@
                                 </button>
                                 <mat-menu #menu="matMenu">
                                   <button mat-menu-item
-                                    (click)="previewImageDialog(surveyForm?.get('topImage'), $event)">
+                                    (click)="previewImagesDialog($event, 3)">
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item (click)="deleteDialog(surveyForm?.get('topImage'), $event)">
@@ -999,7 +1017,7 @@
                                 </button>
                                 <mat-menu #menu="matMenu">
                                   <button mat-menu-item
-                                    (click)="previewImageDialog(surveyForm?.get('frontImage'), $event)">
+                                    (click)="previewImagesDialog($event, 4)">
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item (click)="deleteDialog(surveyForm?.get('frontImage'), $event)">
@@ -1036,7 +1054,7 @@
                                 </button>
                                 <mat-menu #menu="matMenu">
                                   <button mat-menu-item
-                                    (click)="previewImageDialog(surveyForm?.get('bottomImage'), $event)">
+                                    (click)="previewImagesDialog($event, 5)">
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item (click)="deleteDialog(surveyForm?.get('bottomImage'), $event)">
@@ -1078,7 +1096,7 @@
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
                           <div class="image-previews" formArrayName="dmgImages">
-                            @for (img of images().controls; track img; let index = $index) {
+                            @for (img of dmgImages().controls; track img; let index = $index) {
                             <div [formGroupName]="index">
                               <div class="image-preview">
                                 <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img">
@@ -1088,7 +1106,7 @@
                                   <mat-icon>more_vert</mat-icon>
                                 </button>
                                 <mat-menu #menu="matMenu">
-                                  <button mat-menu-item (click)="previewImageDialog(img, $event, true)">
+                                  <button mat-menu-item (click)="previewImagesDialog($event, index + 6)">
                                     <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
                                   </button>
                                   <button mat-menu-item (click)="deleteDialogDmgImg(img, index, $event)">

@@ -123,6 +123,10 @@ export class Utility {
     return date1 < date2 ? date1 : date2;
   }
 
+  static getLaterDate(date1: Date, date2: Date): Date {
+    return date1 > date2 ? date1 : date2;
+  }
+
   static verifyIsoContainerCheckDigit(containerNumber: string): boolean {
     // Regular expression to validate container number format:
     const containerNumberRegex = /^[A-Z]{4}[0-9]{7}$/;

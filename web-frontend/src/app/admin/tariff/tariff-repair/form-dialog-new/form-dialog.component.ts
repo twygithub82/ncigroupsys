@@ -55,7 +55,7 @@ interface Condition {
 
 
 @Component({
-  selector: 'app-form-dialog',
+  selector: 'app-tariff-repair-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],
@@ -601,7 +601,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     }
 
     let aliasName = `${this.pcForm?.get("part_name")?.value}`;
-    if(dimension!="") aliasName+=`(${dimension})`
+    if(dimension!="") aliasName+=`  ${dimension}`
     this.pcForm.patchValue({
       alias:aliasName,
       dimension:dimension

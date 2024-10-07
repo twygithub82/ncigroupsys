@@ -38,7 +38,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
 import { StoringOrderService } from 'app/services/storing-order.service';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
-import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company'
+import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company'
 import { MatRadioModule } from '@angular/material/radio';
 import { Apollo } from 'apollo-angular';
 import { MatDividerModule } from '@angular/material/divider';
@@ -102,7 +102,7 @@ import { UserDS, UserItem } from 'app/data-sources/user';
 export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
-    'group_name_cv',
+    // 'group_name_cv',
     'subgroup_name_cv',
     'damange',
     'repair',
@@ -201,7 +201,14 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     LESSEE: 'COMMON-FORM.LESSEE',
     TOTAL: 'COMMON-FORM.TOTAL',
     PART: 'COMMON-FORM.PART',
-    FILTER: 'COMMON-FORM.FILTER'
+    FILTER: 'COMMON-FORM.FILTER',
+    DEFAULT: 'COMMON-FORM.DEFAULT',
+    COMMENT: 'COMMON-FORM.COMMENT',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    ADD_ANOTHER: 'COMMON-FORM.ADD-ANOTHER',
+    SAVE: 'COMMON-FORM.SAVE',
+    ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -215,8 +222,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   sotItem?: StoringOrderTankItem;
   repairEstItem?: RepairEstItem;
   packageLabourItem?: PackageLabourItem;
-  repList = new MatTableDataSource<RepairEstPartItem>();
-  repSelection = new SelectionModel<RepairEstPartItem>(true, []);
+  repList: RepairEstPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
   yesnoCvList: CodeValuesItem[] = []
@@ -284,6 +290,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.repairEstForm = this.fb.group({
       guid: [''],
       est_template: [''],
+      is_default_template: [''],
       remarks: [''],
       surveyor_id: [''],
       labour_cost_discount: [0],
@@ -322,6 +329,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       tap(value => {
         if (value) {
           console.log(value);
+          if (this.getCustomer()?.def_template_guid) {
+            this.repairEstForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
+          }
           // estimate
           this.repairEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
@@ -340,19 +350,20 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
               });
             })
             return new RepairEstPartItem({
+              repair_est_guid: this.repair_est_guid || undefined,
               description: tep.description,
               hour: tep.hour,
               location_cv: tep.location_cv,
+              comment: tep.comment,
               quantity: tep.quantity,
               remarks: tep.remarks,
               material_cost: material_cost,
               tariff_repair_guid: tep.tariff_repair_guid,
               tariff_repair: tep.tariff_repair,
               rep_damage_repair: tep_damage_repair,
-              // repair: tep.tep_damage_repair.filter((x: any) => x.code_type === 1).map((repair: any) => new REPDamageRepairItem(repair)),
+              action: "new"
             });
           });
-          console.log(repList)
           this.updateData(repList);
 
           // estimate part
@@ -416,21 +427,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   public loadData() {
-    this.sot_guid = this.route.snapshot.paramMap.get('id');
-    this.repair_est_guid = this.route.snapshot.paramMap.get('repair_est_id');
-    console.log(`sot_guid: ${this.sot_guid}, repair_est_guid: ${this.repair_est_guid}`)
-    if (this.sot_guid) {
-      this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
-        if (this.sotDS.totalCount > 0) {
-          this.sotItem = data[0];
-          this.populateRepairEst(this.sotItem.repair_est);
-          console.log(this.sotItem.storing_order?.customer_company_guid);
-          this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
-          this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
-        }
-      });
-    }
-    this.getSurveyorList();
     const queries = [
       { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
@@ -447,6 +443,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
     this.cvDS.connectAlias('groupNameCv').subscribe(data => {
       this.groupNameCvList = data;
+      this.updateData(this.repList);
       const subqueries: any[] = [];
       data.map(d => {
         if (d.child_code) {
@@ -493,6 +490,23 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
       this.unitTypeCvList = data;
     });
+
+    this.getSurveyorList();
+
+    this.sot_guid = this.route.snapshot.paramMap.get('id');
+    this.repair_est_guid = this.route.snapshot.paramMap.get('repair_est_id');
+    console.log(`sot_guid: ${this.sot_guid}, repair_est_guid: ${this.repair_est_guid}`)
+    if (this.sot_guid) {
+      this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
+        if (this.sotDS.totalCount > 0) {
+          this.sotItem = data[0];
+          this.populateRepairEst(this.sotItem.repair_est);
+          console.log(this.sotItem.storing_order?.customer_company_guid);
+          this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
+          this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
+        }
+      });
+    }
   }
 
   populateRepairEst(repair_est: RepairEstItem[] | undefined) {
@@ -510,7 +524,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           labour_cost_discount: this.repairEstItem.labour_cost_discount,
           material_cost_discount: this.repairEstItem.material_cost_discount
         });
-        console.log(this.repairEstItem.repair_est_part)
       }
     }
   }
@@ -528,6 +541,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
+  getCustomer() {
+    return this.sotItem?.storing_order?.customer_company;
+  }
+
   getTemplateList(customer_company_guid: string) {
     const where = {
       or: [
@@ -542,7 +559,19 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
     this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, {}, customer_company_guid).subscribe(data => {
       if (data?.length > 0) {
-        this.templateList = data;
+        this.templateList = [new MasterTemplateItem({ template_name: "-" }), ...data];
+        const def_guid = this.getCustomer()?.def_template_guid;
+        if (!this.repair_est_guid) {
+          if (def_guid) {
+            this.repairEstForm?.get('is_default_template')?.setValue(true);
+          }
+
+          const def_template = this.templateList.find(x =>
+            def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
+          );
+
+          this.repairEstForm?.get('est_template')?.setValue(def_template);
+        }
       }
     });
   }
@@ -611,15 +640,12 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       },
       direction: tempDirection
     });
+    dialogRef.componentInstance.dataSubject.subscribe((result) => {
+      this.addRepairEstPart(result)
+    });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const data = [...this.repList.data];
-        const newItem = new RepairEstPartItem({
-          ...result.item,
-        });
-        data.push(newItem);
-
-        this.updateData(data);
+        this.addRepairEstPart(result)
       }
     });
   }
@@ -654,7 +680,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const data = [...this.repList.data];
+        const data = [...this.repList];
         const updatedItem = new RepairEstPartItem({
           ...result.item,
         });
@@ -662,7 +688,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           data[result.index] = updatedItem;
           this.updateData(data);
         } else {
-          this.updateData([...this.repList.data, result.item]);
+          this.updateData([...this.repList, result.item]);
         }
       }
     });
@@ -687,7 +713,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         if (result.item.guid) {
-          const data: any[] = [...this.repList.data];
+          const data: any[] = [...this.repList];
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
@@ -696,7 +722,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
         } else {
-          const data = [...this.repList.data];
+          const data = [...this.repList];
           data.splice(index, 1);
           this.updateData(data); // Refresh the data source
         }
@@ -723,7 +749,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList.data];
+        const data: any[] = [...this.repList];
         result.item.forEach((newItem: RepairEstPartItem) => {
           // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
@@ -763,7 +789,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList.data];
+        const data: any[] = [...this.repList];
         result.item.forEach((newItem: RepairEstPartItem) => {
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
@@ -783,7 +809,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   undoTempAction(row: any[], actionToBeRemove: string) {
-    const data: any[] = [...this.repList.data];
+    const data: any[] = [...this.repList];
     row.forEach((newItem: any) => {
       const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
@@ -798,6 +824,16 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       }
     });
     this.updateData(data);
+  }
+
+  addRepairEstPart(result: any) {
+    const data = [...this.repList];
+        const newItem = new RepairEstPartItem({
+          ...result.item,
+        });
+        data.push(newItem);
+
+        this.updateData(data);
   }
 
   // context menu
@@ -820,12 +856,12 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   onFormSubmit() {
     this.repairEstForm!.get('repList')?.setErrors(null);
     if (this.repairEstForm?.valid) {
-      if (!this.repList.data.length) {
+      if (!this.repList.length) {
         this.repairEstForm.get('repList')?.setErrors({ required: true });
       } else {
         let re: RepairEstItem = new RepairEstItem(this.repairEstItem);
 
-        const rep: RepairEstPartItem[] = this.repList.data.map((item: any) => {
+        const rep: RepairEstPartItem[] = this.repList.map((item: any) => {
           // Ensure action is an array and take the last action only
           const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
             return new REPDamageRepairItem({
@@ -854,16 +890,21 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value);
         re.remarks = this.repairEstForm.get('remarks')?.value;
         re.owner_enable = this.isOwner;
+
+        let cc: any = undefined;
+        if (this.repairEstForm?.get('is_default_template')?.value && this.repairEstForm.get('est_template')?.value?.guid) {
+          cc = this.getCustomer();
+          cc!.def_template_guid = this.repairEstForm.get('est_template')?.value?.guid;
+          console.log(cc);
+        }
         console.log(re);
-        // console.log('so Value', so);
-        // console.log('sot Value', sot);
         if (re.guid) {
-          this.repairEstDS.updateRepairEstimate(re).subscribe(result => {
+          this.repairEstDS.updateRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.updateRepairEstimate);
           });
         } else {
-          this.repairEstDS.addRepairEstimate(re).subscribe(result => {
+          this.repairEstDS.addRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.addRepairEstimate);
           });
@@ -876,41 +917,28 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   updateData(newData: RepairEstPartItem[] | undefined): void {
     if (newData?.length) {
-      this.repList.data = [...this.sortREP(newData)];
+      newData = newData.map((row) => ({
+        ...row,
+        tariff_repair: {
+          ...row.tariff_repair,
+          sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
+        }
+      }));
+      
+      newData = this.sortAndGroupByGroupName(newData);
+      
+      newData = newData.map((row, index) => ({
+        ...row,
+        index: index
+      }));
+      console.log(newData)
+      this.repList = [...this.sortREP(newData)];
       this.calculateCost();
     }
   }
 
   handleDelete(event: Event, row: any, index: number): void {
     this.deleteItem(event, row, index);
-  }
-
-  cancelItem(event: Event, row: RepairEstPartItem) {
-    // this.id = row.id;
-    if (this.repSelection.hasValue()) {
-      this.cancelSelectedRows(this.repSelection.selected)
-    } else {
-      this.cancelSelectedRows([row])
-    }
-  }
-
-  rollbackItem(event: Event, row: StoringOrderTankItem) {
-    // this.id = row.id;
-    if (this.repSelection.hasValue()) {
-      this.rollbackSelectedRows(this.repSelection.selected)
-    } else {
-      //this.rollbackSelectedRows([row])
-    }
-  }
-
-  undoAction(event: Event, row: StoringOrderTankItem, action: string) {
-    // this.id = row.id;
-    this.stopPropagation(event);
-    if (this.repSelection.hasValue()) {
-      this.undoTempAction(this.repSelection.selected, action)
-    } else {
-      this.undoTempAction([row], action)
-    }
   }
 
   handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
@@ -934,12 +962,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.langText.SAVE_SUCCESS;
-      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-        successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        this.router.navigate(['/admin/repair/estimate']);
-      });
+      ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/estimate']);
     }
   }
 
@@ -1040,14 +1064,66 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
   }
 
+  getGroupSeq(codeVal: string | undefined): number | undefined {
+    const gncv = this.groupNameCvList.filter(x => x.code_val === codeVal);
+    if (gncv.length) {
+      return gncv[0].sequence;
+    }
+    return -1;
+  }
+
+  sortAndGroupByGroupName(repList: any[]): any[] {
+    const groupedRepList: any[] = [];
+    let currentGroup = '';
+  
+    const sortedList = repList.sort((a, b) => {
+      if (a.tariff_repair!.sequence !== b.tariff_repair.sequence) {
+        return a.tariff_repair.sequence - b.tariff_repair.sequence;
+      }
+  
+      if (a.tariff_repair.subgroup_name_cv !== b.tariff_repair.subgroup_name_cv) {
+        if (!a.tariff_repair.subgroup_name_cv) return 1; 
+        if (!b.tariff_repair.subgroup_name_cv) return -1;
+        
+        return a.tariff_repair.subgroup_name_cv.localeCompare(b.tariff_repair.subgroup_name_cv);
+      }
+  
+      return b.create_dt! - a.create_dt!;
+    });
+  
+    sortedList.forEach(item => {
+      const groupName = item.tariff_repair.group_name_cv;
+      
+      const isGroupHeader = groupName !== currentGroup;
+  
+      if (isGroupHeader) {
+        currentGroup = groupName;
+      }
+  
+      groupedRepList.push({
+        ...item,
+        isGroupHeader: isGroupHeader,
+        group_name_cv: item.tariff_repair.group_name_cv,
+        subgroup_name_cv: item.tariff_repair.subgroup_name_cv,
+      });
+    });
+  
+    return groupedRepList;
+  }
+
+  sortREP(newData: RepairEstPartItem[]): any[] {
+    newData.sort((a, b) => b.create_dt! - a.create_dt!);
+    return newData;
+  }
+
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
+    return damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
       return item.code_cv;
     }).join('/');
   }
 
   displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-    return damageRepair.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
+    return damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';
@@ -1058,8 +1134,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     return Utility.convertEpochToDateTimeStr(input);
   }
 
-  displayDate(input: Date): string {
-    return Utility.convertDateToStr(input);
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
   }
 
   getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
@@ -1097,8 +1173,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   calculateCost() {
-    const ownerList = this.repList.data.filter(item => item.owner && !item.delete_dt);
-    const lesseeList = this.repList.data.filter(item => !item.owner && !item.delete_dt);
+    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
+    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
     const labourDiscount = this.repairEstForm?.get('labour_cost_discount')?.value;
     const matDiscount = this.repairEstForm?.get('material_cost_discount')?.value;
 
@@ -1173,8 +1249,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 
-  sortREP(newData: RepairEstPartItem[]): any[] {
-    newData.sort((a, b) => b.create_dt! - a.create_dt!);
-    return newData;
+  canExport(): boolean {
+    return !!this.repair_est_guid;
   }
 }

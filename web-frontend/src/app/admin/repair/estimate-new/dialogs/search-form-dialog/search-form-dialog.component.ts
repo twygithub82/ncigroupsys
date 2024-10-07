@@ -172,7 +172,6 @@ export class SearchFormDialogComponent {
       startWith(''),
       debounceTime(300),
       tap(value => {
-        console.log(value)
         if (value) {
           this.packageRepairFilteredList = this.packageRepairList
           .filter(x => x.tariff_repair?.alias?.toLowerCase().includes(value.toLowerCase()) || `${x.tariff_repair?.length}`.toLowerCase().includes(value.toLowerCase()));

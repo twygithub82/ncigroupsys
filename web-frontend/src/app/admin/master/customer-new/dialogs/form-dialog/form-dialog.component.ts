@@ -29,6 +29,7 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { Direction } from '@angular/cdk/bidi';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ContactPersonItem } from 'app/data-sources/contact-person';
 
 
 export interface DialogData {
@@ -74,7 +75,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dialogTitle: string;
   customer_company_guid: string;
 
-  repairPartForm: UntypedFormGroup;
+  contactPerson : ContactPersonItem;
+  contactPersonFrom: UntypedFormGroup;
   repairPart: any;
   partNameControl: UntypedFormControl;
   partNameList?: string[];
@@ -108,65 +110,55 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
     if (this.action === 'edit') {
-      this.dialogTitle = `${data.translatedLangText.EDIT} ${data.translatedLangText.ESTIMATE_DETAILS}`;
+      this.dialogTitle = `${data.translatedLangText.EDIT} ${data.translatedLangText.CONTACT_PERSON}`;
     } else {
-      this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
+      this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.CONTACT_PERSON}`;
     }
-    this.repairPart = data.item ? data.item : new RepairEstPartItem();
+    this.contactPerson= data.item ? data.item : new ContactPersonItem();
+    
     this.index = data.index;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
-    this.repairPartForm = this.createForm();
+    this.contactPersonFrom = this.createForm();
     this.initializeValueChange();
     this.patchForm();
   }
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      guid: [this.repairPart.guid],
-      tariff_repair_guid: [this.repairPart.tariff_repair_guid],
-      part_name: [this.repairPart.tariff_repair?.part_name],
-      repair_est_guid: [this.repairPart.repair_est_guid],
-      description: [{ value: this.repairPart.description, disabled: !this.canEdit() }],
-      location_cv: [{ value: this.repairPart.location_cv, disabled: !this.canEdit() }],
-      remarks: [{ value: this.repairPart.remarks, disabled: !this.canEdit() }],
-      quantity: [{ value: this.repairPart.quantity, disabled: !this.canEdit() }],
-      hour: [{ value: this.repairPart.hour, disabled: !this.canEdit() }],
-      group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.canEdit() }],
-      subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
-      dimension: [''],
-      length: [''],
-      damage: [''],
-      repair: [''],
-      material_cost: [{ value: '' }]
+      guid: [this.contactPerson.guid||''],
+      title_cv: [this.contactPerson.title_cv],
+      customer_company: [this.contactPerson.customer_company],
+      name: [this.contactPerson.name],
+      email: [this.contactPerson.email],
+      department: [this.contactPerson.department],
+      job_title: [this.contactPerson.job_title],
+      customer_guid: [this.contactPerson.customer_guid],
+      did :[this.contactPerson.did],
+      contact:[this.contactPerson.contact]
+
     });
   }
 
   patchForm() {
-    const selectedCodeValue = this.data.populateData.groupNameCvList.find(
-      (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
-    );
-    this.repairPartForm.patchValue({
-      guid: this.repairPart.guid,
-      tariff_repair_guid: this.repairPart.tariff_repair_guid,
-      repair_est_guid: this.repairPart.repair_est_guid,
-      description: this.repairPart.description,
-      location_cv: this.repairPart.location_cv,
-      remarks: this.repairPart.remarks,
-      quantity: this.repairPart.quantity,
-      hour: this.repairPart.hour,
-      group_name_cv: selectedCodeValue,
-      subgroup_name_cv: this.repairPart.tariff_repair?.subgroup_name_cv,
-      part_name: this.repairPart.tariff_repair?.part_name,
-      dimension: this.repairPart.tariff_repair?.dimension,
-      length: this.repairPart.tariff_repair?.length,
-      damage: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 0)),
-      repair: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 1)),
-      material_cost: this.repairPart.material_cost
+    // const selectedCodeValue = this.data.populateData.groupNameCvList.find(
+    //   (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
+    // );
+    this.contactPersonFrom.patchValue({
+      guid: [this.contactPerson.guid||''],
+      title_cv: [this.contactPerson.title_cv],
+      customer_company: [this.contactPerson.customer_company],
+      name: [this.contactPerson.name],
+      email: [this.contactPerson.email],
+      department: [this.contactPerson.department],
+      did :[this.contactPerson.did],
+      contact:[this.contactPerson.contact],
+      job_title: [this.contactPerson.job_title],
+      customer_guid: [this.contactPerson.customer_guid]
     });
   }
 
   submit() {
-    if (this.repairPartForm?.valid) {
+    if (this.contactPersonFrom?.valid) {
       let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
       if (this.action === 'new') {
         if (!actions.includes('new')) {
@@ -178,19 +170,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         }
       }
       var rep: any = {
-        ...this.repairPart,
-        location_cv: this.repairPartForm.get('location_cv')?.value,
-        tariff_repair_guid: this.repairPart?.tariff_repair_guid,
-        tariff_repair: this.repairPart?.tariff_repair,
-        tep_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
-        // repair: this.REPRepair(this.repairPartForm.get('repair')?.value),
-        quantity: this.repairPartForm.get('quantity')?.value,
-        hour: this.repairPartForm.get('hour')?.value,
-        material_cost: this.repairPartForm.get('material_cost')?.value,
-        remarks: this.repairPartForm.get('remarks')?.value,
+        ...this.contactPerson,
+        title_cv: this.contactPersonFrom?.get("title_cv")!.value,
+        name: this.contactPersonFrom?.get("name")!.value,
+        email: this.contactPersonFrom?.get("email")!.value,
+        department: this.contactPersonFrom?.get("department")!.value,
+        department_id: this.contactPersonFrom?.get("department_id")!.value,
+        job_title: this.contactPersonFrom?.get("job_title")!.value,
         actions
       }
-      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${rep.tariff_repair?.length} ${rep.remarks ?? ''}`.trim();
+  
       console.log(rep)
       const returnDialog: DialogData = {
         item: rep,
@@ -218,61 +207,61 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   initializeValueChange() {
-    this.repairPartForm?.get('group_name_cv')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
+    // this.contactPersonFrom?.get('group_name_cv')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
         
-        if (value?.child_code) {
-          const queries = [
-            { alias: 'subgroupNameCv', codeValType: value.child_code },
-          ];
-          this.cvDS.getCodeValuesByType(queries);
-          this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
-            this.data.populateData.subgroupNameCvList = data;
-          });
+    //     if (value?.child_code) {
+    //       const queries = [
+    //         { alias: 'subgroupNameCv', codeValType: value.child_code },
+    //       ];
+    //       this.cvDS.getCodeValuesByType(queries);
+    //       this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
+    //         this.data.populateData.subgroupNameCvList = data;
+    //       });
 
-        }
-        else
-        {
-          this.data.populateData.subgroupNameCvList=[];
-        }
-        if(value){
-        this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
-          this.partNameList = data;
-        }); 
-      }
+    //     }
+    //     else
+    //     {
+    //       this.data.populateData.subgroupNameCvList=[];
+    //     }
+    //     if(value){
+    //     this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
+    //       this.partNameList = data;
+    //     }); 
+    //   }
 
-      })
-    ).subscribe();
+    //   })
+    // ).subscribe();
 
-    this.repairPartForm?.get('subgroup_name_cv')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          const groupName = this.repairPartForm?.get('group_name_cv')?.value;
-          this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
-            this.partNameList = data;
-            // this.partNameFilteredList = data
-            // this.updateValidators(this.partNameList);
-            // if (this.partNameControl.value) {
-            //   this.handleValueChange(this.partNameControl.value)
-            // }
-          });
-        }
-      })
-    ).subscribe();
+    // this.repairPartForm?.get('subgroup_name_cv')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     if (value) {
+    //       const groupName = this.repairPartForm?.get('group_name_cv')?.value;
+    //       this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
+    //         this.partNameList = data;
+    //         // this.partNameFilteredList = data
+    //         // this.updateValidators(this.partNameList);
+    //         // if (this.partNameControl.value) {
+    //         //   this.handleValueChange(this.partNameControl.value)
+    //         // }
+    //       });
+    //     }
+    //   })
+    // ).subscribe();
 
-    this.repairPartForm?.get('part_name')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          //this.searchPart();
-        }
-      })
-    ).subscribe();
+    // this.repairPartForm?.get('part_name')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     if (value) {
+    //       //this.searchPart();
+    //     }
+    //   })
+    // ).subscribe();
 
     // this.partNameControl.valueChanges.subscribe(value => {
     //   if (!this.valueChangesDisabled) {
@@ -339,7 +328,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   // }
 
   findInvalidControls() {
-    const controls = this.repairPartForm.controls;
+    const controls = this.contactPersonFrom.controls;
     for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);
@@ -364,17 +353,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   validateLength(): boolean {
-    let isValid = true;
-    const length = this.repairPartForm.get('length')?.value;
-    const remarks = this.repairPartForm.get('remarks')?.value;
+     let isValid = true;
+    // const length = this.repairPartForm.get('length')?.value;
+    // const remarks = this.repairPartForm.get('remarks')?.value;
 
-    // Validate that at least one of the purpose checkboxes is checked
-    if (!length && !remarks) {
-      isValid = false; // At least one purpose must be selected
-      this.repairPartForm.get('remarks')?.setErrors({ required: true });
-    }
+    // // Validate that at least one of the purpose checkboxes is checked
+    // if (!length && !remarks) {
+    //   isValid = false; // At least one purpose must be selected
+    //   this.repairPartForm.get('remarks')?.setErrors({ required: true });
+    // }
 
-    return isValid;
+     return isValid;
   }
 
   canEdit(): boolean {
@@ -427,30 +416,30 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   // }
 
   searchPart() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {  
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(SearchFormDialogComponent, {
-      width: '1050px',
-      data: {
-        customer_company_guid: this.customer_company_guid,
-        group_name_cv: this.repairPartForm?.get('group_name_cv')!.value?.code_val,
-        subgroup_name_cv: this.repairPartForm?.get('subgroup_name_cv')!.value,
-        part_name: this.repairPartForm?.get('part_name')!.value,
-        translatedLangText: this.data.translatedLangText,
-        populateData: this.data.populateData,
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        console.log(result);
-        this.repairPart = result.selected_repair_est_part;
-        this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
-      }
-    });
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {  
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(SearchFormDialogComponent, {
+    //   width: '1050px',
+    //   data: {
+    //     customer_company_guid: this.customer_company_guid,
+    //     group_name_cv: this.repairPartForm?.get('group_name_cv')!.value?.code_val,
+    //     subgroup_name_cv: this.repairPartForm?.get('subgroup_name_cv')!.value,
+    //     part_name: this.repairPartForm?.get('part_name')!.value,
+    //     translatedLangText: this.data.translatedLangText,
+    //     populateData: this.data.populateData,
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result) {
+    //     console.log(result);
+    //     this.repairPart = result.selected_repair_est_part;
+    //     this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
+    //   }
+    // });
   }
 }

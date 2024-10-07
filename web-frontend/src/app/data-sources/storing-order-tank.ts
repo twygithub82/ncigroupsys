@@ -161,7 +161,6 @@ const GET_STORING_ORDER_TANKS = gql`
             code
             guid
             name
-            alias
           }
         }
       }
@@ -214,7 +213,6 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
           code
           guid
           name
-          alias
         }
         tariff_cleaning {
           alias
@@ -247,7 +245,6 @@ const GET_STORING_ORDER_TANKS_IN_GATE = gql`
             code
             guid
             name
-            alias
           }
         }
         in_gate {
@@ -294,7 +291,6 @@ const GET_STORING_ORDER_TANKS_OUT_GATE = gql`
               code
               guid
               name
-              alias
             }
           }
         }
@@ -545,7 +541,6 @@ const GET_STORING_ORDER_TANK_BY_ID = gql`
             code
             guid
             name
-            alias
           }
         }
       }
@@ -656,7 +651,6 @@ const GET_STORING_ORDER_TANK_BY_ID_OUT_GATE = gql`
               code
               guid
               name
-              alias
             }
           }
         }
@@ -796,7 +790,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
             code
             guid
             name
-            alias
+            def_template_guid
             delete_dt
           }
         }
@@ -804,7 +798,6 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
           code
           guid
           name
-          alias
           delete_dt
         }
         repair_est {
@@ -833,6 +826,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
             guid
             hour
             location_cv
+            comment
             material_cost
             owner
             quantity
@@ -1058,8 +1052,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   getStoringOrderTankByIDForInGate(id: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-    let where: any = { guid: { eq: id } }
-    where = this.addDeleteDtCriteria(where)
+    const where: any = { guid: { eq: id } }
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_IN_GATE,
@@ -1081,7 +1074,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   getStoringOrderTankByIDForOutGate(id: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-    let where: any = { guid: { eq: id } }
+    const where: any = { guid: { eq: id } }
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANK_BY_ID_OUT_GATE,

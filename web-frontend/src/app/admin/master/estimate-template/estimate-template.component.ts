@@ -60,6 +60,7 @@ import { pack } from 'd3';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import {FormDialogComponent_Edit_Cost} from './form-dialog-edit-cost/form-dialog.component';
 import { MasterEstimateTemplateDS,MasterTemplateItem, TemplateEstPartItem } from 'app/data-sources/master-template';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-package-repair',
@@ -287,7 +288,8 @@ implements OnInit {
     TEMPLATE_TYPE:"COMMON-FORM.TEMPLATE-TYPE",
     TEMPLATE_TYPE_GENERAL:"COMMON-FORM.TEMPLATE-TYPE-GENERAL",
     TEMPLATE_TYPE_EXCLUSIVE:"COMMON-FORM.TEMPLATE-TYPE-EXCLUSIVE",
-    TOTAL_MATERIAL_COST:"COMMON-FORM.TOTAL-MATERIAL-COST"
+    TOTAL_MATERIAL_COST:"COMMON-FORM.TOTAL-MATERIAL-COST",
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
     
      }
   
@@ -801,5 +803,35 @@ implements OnInit {
     }
    return tempType;
   }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.initMtForm();
+    this.customerCodeControl.reset();
+    this.templateNameControl.reset();
+  }
+
 }
 

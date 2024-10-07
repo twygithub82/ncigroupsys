@@ -108,13 +108,13 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     'repair',
     'description',
     'quantity',
-    'hour',
-    'price',
-    'material',
+   // 'hour',
+   // 'price',
+   // 'material',
     'actions'
   ];
-  pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
-  pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
+  pageTitleNew = 'MENUITEMS.MASTER.LIST.CUSTOMER-NEW'
+  pageTitleEdit = 'MENUITEMS.MASTER.LIST.CUSTOMER-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.REPAIR.LIST.ESTIMATE'
@@ -126,6 +126,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     HEADER: 'COMMON-FORM.HEADER',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
+    CUSTOMER_DETAILS:'COMMON-FORM.CUSTOMER-DETAILS',
+    ALIAS_NAME:'COMMON-FORM.ALIAS-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -213,14 +215,40 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     RATE: "COMMON-FORM.RATE",
     TOTAL: "COMMON-FORM.TOTAL",
     NO_PARTS: "COMMON-FORM.NO-PARTS",
-    PART: 'COMMON-FORM.PART'
+    PART: 'COMMON-FORM.PART',
+    CONTACT_PERSON:"COMMON-FORM.CONTACT-PERSON",
+    JOB_TITLE:"COMMON-FORM.JOB-TITLE",
+    DEPARTMENT:"COMMON-FORM.DEPARTMENT",
+    DID:"COMMON-FORM.DID",
+    MOBILE_NO:"COMMON-FORM.MOBILE-NO",
+    COUNTRY:"COMMON-FORM.COUNTRY",
+    FAX_NO:"COMMON-FORM.FAX-NO",
+    EMAIL:"COMMON-FORM.EMAIL",
+    PHONE:"COMMON-FORM.PHONE",
+    WEB:"COMMON-FORM.WEB",
+    CONVERSION_CURRENCY:"COMMON-FORM.CONVERSION-CURRENCY",
+    PERSON_IN_CHARGE:"COMMON-FORM.PERSON-IN-CHARGE",
+    DEFAULT_PROFILE:"COMMON-FORM.DEFAULT-PROFILE",
+    COMPANY_NAME:"COMMON-FORM.COMPANY-NAME",
+    CUSTOMER_NAME:"COMMON-FORM.CUSTOMER-NAME",
+    CUSTOMER_COMPANY:"COMMON-FORM.CUSTOMER-COMPANY",
+    CUSTOMER_TYPE:"COMMON-FORM.CUSTOMER-TYPE",
+    ADDRESS_LINE1:"COMMON-FORM.ADDRESS-LINE1",
+    ADDRESS_LINE2:"COMMON-FORM.ADDRESS-LINE2",
+    POSTAL_CODE:"COMMON-FORM.POSTAL-CODE",
+    CITY_NAME:"COMMON-FORM.CITY-NAME",
+    CONTACT_PERSON_DETAILS:"COMMON-FORM.CONTACT-PERSON-DETAILS",
+    BILLING_BRANCH:"COMMON-FORM.BILLING-BRANCH",
+    SALUTATION:"COMMON-FORM.SALUTATION",
+    NAME:"COMMON-FORM.NAME"
+    
   }
 
   clean_statusList: CodeValuesItem[] = [];
 
   temp_guid?: string | null;
 
-  tempForm?: UntypedFormGroup;
+  ccForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
   customer_code_changed: boolean = false;
@@ -231,31 +259,36 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   repList = new MatTableDataSource<TemplateEstPartItem>();
   sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
-  groupNameCvList: CodeValuesItem[] = []
+  groupNameCvList: CodeValuesItem[] = [];
   allSubGroupNameCvList: CodeValuesItem[] = [];
-  subgroupNameCvList: CodeValuesItem[] = []
-  yesnoCvList: CodeValuesItem[] = []
-  soTankStatusCvList: CodeValuesItem[] = []
-  purposeOptionCvList: CodeValuesItem[] = []
-  testTypeCvList: CodeValuesItem[] = []
-  testClassCvList: CodeValuesItem[] = []
-  partLocationCvList: CodeValuesItem[] = []
-  damageCodeCvList: CodeValuesItem[] = []
-  repairCodeCvList: CodeValuesItem[] = []
+  subgroupNameCvList: CodeValuesItem[] = [];
+  yesnoCvList: CodeValuesItem[] = [];
+  soTankStatusCvList: CodeValuesItem[] = [];
+  purposeOptionCvList: CodeValuesItem[] = [];
+  testTypeCvList: CodeValuesItem[] = [];
+  testClassCvList: CodeValuesItem[] = [];
+  partLocationCvList: CodeValuesItem[] = [];
+  damageCodeCvList: CodeValuesItem[] = [];
+  repairCodeCvList: CodeValuesItem[] = [];
+  satulationCvList:CodeValuesItem[]=[];
 
-  customerCodeControl = new UntypedFormControl();
+  tankItemList?:TankItem[]=[];
+  customerTypeControl = new UntypedFormControl();
 
-  soDS: StoringOrderDS;
-  sotDS: StoringOrderTankDS;
+  // soDS: StoringOrderDS;
+  // sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
-  igDS: InGateDS;
-  trLabourDS: TariffLabourDS;
-  estTempDS: MasterEstimateTemplateDS
+  // igDS: InGateDS;
+  // trLabourDS: TariffLabourDS;
+  // estTempDS: MasterEstimateTemplateDS
 
   trLabourItems: TariffLabourItem[] = [];
   historyState: any = {};
+  billingBranchesControl= new UntypedFormControl();
+  profileControl=new UntypedFormControl();
+  customerTypeCvList: CodeValuesItem[]=[];
 
   constructor(
 
@@ -270,15 +303,15 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   ) {
     super();
     this.translateLangText();
-    this.initTempForm();
-    this.soDS = new StoringOrderDS(this.apollo);
-    this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.initCCForm();
+    // this.soDS = new StoringOrderDS(this.apollo);
+    // this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
-    this.igDS = new InGateDS(this.apollo);
-    this.trLabourDS = new TariffLabourDS(this.apollo);
-    this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
+    // this.igDS = new InGateDS(this.apollo);
+    // this.trLabourDS = new TariffLabourDS(this.apollo);
+    // this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -295,12 +328,12 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   SetCostDecimal() {
-    this.tempForm?.get('material_discount_amount')?.valueChanges.subscribe(value => {
+    this.ccForm?.get('material_discount_amount')?.valueChanges.subscribe(value => {
       if (value !== null && value !== '') {
         // Ensure the value has two decimal places
         const formattedValue = parseFloat(value).toFixed(2);
-        this.tempForm?.get('material_discount_amount')?.setValue(formattedValue, { emitEvent: false });
-        // this.tempForm.get('material_discount_amount').setValue(formattedValue, { emitEvent: false });
+        this.ccForm?.get('material_discount_amount')?.setValue(formattedValue, { emitEvent: false });
+        // this.ccForm.get('material_discount_amount').setValue(formattedValue, { emitEvent: false });
       }
 
     });
@@ -312,7 +345,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       totalMaterialCost += (data.tariff_repair?.material_cost ?? 0) * (data.quantity ?? 0);
       totalLabourHours += (data.hour ?? 0);
     });
-    this.tempForm?.patchValue({
+    this.ccForm?.patchValue({
       total_material_cost: Number(totalMaterialCost).toFixed(2),
       labour_hour: totalLabourHours
     });
@@ -323,137 +356,137 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   GetNetCost(): string {
     var val: number = 0;
 
-    val = Number(this.tempForm?.get("total_cost")?.value) - Number(this.tempForm?.get("labour_discount_amount")?.value) - Number(this.tempForm?.get("material_discount_amount")?.value)
+    val = Number(this.ccForm?.get("total_cost")?.value) - Number(this.ccForm?.get("labour_discount_amount")?.value) - Number(this.ccForm?.get("material_discount_amount")?.value)
     return val.toFixed(2);
   }
 
   initializeValueChange() {
     //this.repList.data
 
-    this.tempForm?.get('labour_hour')?.valueChanges.subscribe(value => {
-      this.tempForm?.patchValue({
-        labour_total: Number(Number(this.tempForm?.get('labour_hour')!.value) * Number(this.tempForm?.get('labour_rate')!.value)).toFixed(2)
-      });
-    });
+    // this.ccForm?.get('labour_hour')?.valueChanges.subscribe(value => {
+    //   this.ccForm?.patchValue({
+    //     labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
+    //   });
+    // });
 
-    this.tempForm?.get('labour_total')!.valueChanges.subscribe(value => {
+    // this.ccForm?.get('labour_total')!.valueChanges.subscribe(value => {
 
-      var discCostAmt: number = 0;
-      if (this.tempForm?.get('labour_discount')?.value > 0) {
-        discCostAmt = Number(this.tempForm?.get('labour_total')!.value) * Number(Number(this.tempForm?.get('labour_discount')?.value / 100));
-      }
-      this.tempForm?.patchValue({
-        total_cost: Number(Number(this.tempForm?.get('labour_total')!.value) + Number(this.tempForm?.get('total_material_cost')!.value)).toFixed(2),
-        labour_discount_amount: discCostAmt.toFixed(2),
+    //   var discCostAmt: number = 0;
+    //   if (this.ccForm?.get('labour_discount')?.value > 0) {
+    //     discCostAmt = Number(this.ccForm?.get('labour_total')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
+    //   }
+    //   this.ccForm?.patchValue({
+    //     total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
+    //     labour_discount_amount: discCostAmt.toFixed(2),
 
-      });
-    });
+    //   });
+    // });
 
-    this.tempForm?.get('total_cost')!.valueChanges.subscribe(value => {
-
-
-      this.tempForm?.patchValue({
-        net_cost: this.GetNetCost()
+    // this.ccForm?.get('total_cost')!.valueChanges.subscribe(value => {
 
 
-      });
-    });
-
-    this.tempForm?.get('labour_rate')!.valueChanges.subscribe(value => {
-
-      this.tempForm?.patchValue({
-
-        //labour_total : (Number(this.tempForm?.get('labour_rate')?.value)+Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
-        labour_total: Number(Number(this.tempForm?.get('labour_hour')!.value) * Number(this.tempForm?.get('labour_rate')!.value)).toFixed(2)
-
-      });
-    });
-    this.tempForm?.get('labour_additional')!.valueChanges.subscribe(value => {
-
-      this.tempForm?.patchValue({
-        labour_total: (Number(this.tempForm?.get('labour_rate')?.value) + Number(this.tempForm?.get('labour_additional')?.value)).toFixed(2),
-
-      });
-    });
-
-    this.tempForm?.get('labour_discount_amount')!.valueChanges.subscribe(value => {
+    //   this.ccForm?.patchValue({
+    //     net_cost: this.GetNetCost()
 
 
-      this.tempForm?.patchValue({
-        net_cost: this.GetNetCost()
+    //   });
+    // });
+
+    // this.ccForm?.get('labour_rate')!.valueChanges.subscribe(value => {
+
+    //   this.ccForm?.patchValue({
+
+    //     //labour_total : (Number(this.ccForm?.get('labour_rate')?.value)+Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
+    //     labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
+
+    //   });
+    // });
+    // this.ccForm?.get('labour_additional')!.valueChanges.subscribe(value => {
+
+    //   this.ccForm?.patchValue({
+    //     labour_total: (Number(this.ccForm?.get('labour_rate')?.value) + Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
+
+    //   });
+    // });
+
+    // this.ccForm?.get('labour_discount_amount')!.valueChanges.subscribe(value => {
 
 
-      });
-    });
-
-    this.tempForm?.get('material_discount_amount')!.valueChanges.subscribe(value => {
+    //   this.ccForm?.patchValue({
+    //     net_cost: this.GetNetCost()
 
 
-      this.tempForm?.patchValue({
-        net_cost: this.GetNetCost()
+    //   });
+    // });
+
+    // this.ccForm?.get('material_discount_amount')!.valueChanges.subscribe(value => {
 
 
-      });
-    });
+    //   this.ccForm?.patchValue({
+    //     net_cost: this.GetNetCost()
+
+
+    //   });
+    // });
 
 
 
-    this.tempForm?.get('labour_discount')!.valueChanges.subscribe(value => {
-      var discCostAmt: number = 0;
-      if (this.tempForm?.get('labour_discount')?.value > 0) {
-        discCostAmt = Number(this.tempForm?.get('labour_rate')!.value) * Number(Number(this.tempForm?.get('labour_discount')?.value / 100));
-      }
-      this.tempForm?.patchValue({
-        labour_discount_amount: discCostAmt.toFixed(2),
-        //net_cost:this.GetNetCost()
-      });
-    });
+    // this.ccForm?.get('labour_discount')!.valueChanges.subscribe(value => {
+    //   var discCostAmt: number = 0;
+    //   if (this.ccForm?.get('labour_discount')?.value > 0) {
+    //     discCostAmt = Number(this.ccForm?.get('labour_rate')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
+    //   }
+    //   this.ccForm?.patchValue({
+    //     labour_discount_amount: discCostAmt.toFixed(2),
+    //     //net_cost:this.GetNetCost()
+    //   });
+    // });
 
 
-    this.tempForm?.get('material_discount')!.valueChanges.subscribe(value => {
-      var discCostAmt: number = 0;
-      if (this.tempForm?.get('material_discount')?.value > 0) {
-        discCostAmt = Number(this.tempForm?.get('total_material_cost')?.value) * Number(Number(this.tempForm?.get('material_discount')?.value / 100));
-      }
-      this.tempForm?.patchValue({
-        material_discount_amount: discCostAmt.toFixed(2),
-        // net_cost:this.GetNetCost()
-      });
-    });
+    // this.ccForm?.get('material_discount')!.valueChanges.subscribe(value => {
+    //   var discCostAmt: number = 0;
+    //   if (this.ccForm?.get('material_discount')?.value > 0) {
+    //     discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
+    //   }
+    //   this.ccForm?.patchValue({
+    //     material_discount_amount: discCostAmt.toFixed(2),
+    //     // net_cost:this.GetNetCost()
+    //   });
+    // });
 
-    this.tempForm?.get('total_material_cost')!.valueChanges.subscribe(value => {
-      var discCostAmt: number = 0;
-      if (this.tempForm?.get('material_discount')?.value > 0) {
-        discCostAmt = Number(this.tempForm?.get('total_material_cost')?.value) * Number(Number(this.tempForm?.get('material_discount')?.value / 100));
-      }
-      this.tempForm?.patchValue({
-        total_cost: Number(Number(this.tempForm?.get('labour_total')!.value) + Number(this.tempForm?.get('total_material_cost')!.value)).toFixed(2),
-        material_discount_amount: discCostAmt.toFixed(2),
+    // this.ccForm?.get('total_material_cost')!.valueChanges.subscribe(value => {
+    //   var discCostAmt: number = 0;
+    //   if (this.ccForm?.get('material_discount')?.value > 0) {
+    //     discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
+    //   }
+    //   this.ccForm?.patchValue({
+    //     total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
+    //     material_discount_amount: discCostAmt.toFixed(2),
 
-      });
-    });
+    //   });
+    // });
 
   }
 
-  initTempForm() {
-    this.tempForm = this.fb.group({
+  initCCForm() {
+    this.ccForm = this.fb.group({
       guid: [''],
       customer_company_guid: [''],
-      customer_code: this.customerCodeControl,
-      template_name: [''],
-      remarks: [''],
-      repList: [''],
-      labour_hour: ['0'],
-      labour_rate: ['0.00'],
-      labour_additional: ['0.00'],
-      labour_total: ['0.00'],
-      total_material_cost: ['0.00'],
-      total_cost: ['0.00'],
-      labour_discount: [0],
-      material_discount: [0],
-      labour_discount_amount: ['0.00'],
-      material_discount_amount: ['0.00'],
-      net_cost: ['0.00']
+      customer_code: [''],
+      customer_name: [''],
+      customer_type: [''],
+      billing_branches:[''],
+      phone: [''],
+      email: [''],
+      web: [''],
+      currency: [''],
+      default_profile:[''],
+      address1: [''],
+      address2: [''],
+      postal_code: [''],
+      city_name: [''],
+      country: ['Singapore'],
+      remarks:['']
     });
   }
 
@@ -474,7 +507,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       this.selectedTempEst = this.historyState.selectedRow;
       const custCompanies = this.selectedTempEst?.template_est_customer?.filter(value => value.delete_dt == null);
       this.selectedTempEst!.template_est_customer = custCompanies;
-      this.tempForm?.patchValue({
+      this.ccForm?.patchValue({
         guid: this.selectedTempEst?.guid,
         labour_discount: this.selectedTempEst?.labour_cost_discount,
         material_discount: this.selectedTempEst?.material_cost_discount,
@@ -527,89 +560,74 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           selectedCustomerGuids?.includes(customer.guid)
         );
 
-        this.tempForm?.patchValue({
+        this.ccForm?.patchValue({
           customer_code: selectedCustomers
         });
-        // this.tempForm?.patchValue({
+        // this.ccForm?.patchValue({
         //   customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
         // });
       }
     });
 
-    this.trLabourDS.SearchTariffLabour({}, { create_dt: 'ASC' }).subscribe(data => {
-      this.trLabourItems = data;
-      if (this.trLabourItems.length > 0) {
-        this.tempForm?.patchValue({
-          labour_rate: this.trLabourItems[0].cost?.toFixed(2)
-        });
-      }
+    this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
+      this.tankItemList = data;
     })
 
 
     const queries = [
-      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
-      { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
-      { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      
+      { alias: 'customerTypeCv', codeValType: 'CUSTOMER_TYPE' },
+      { alias: 'satulationCv', codeValType: 'PERSON_TITLE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
-    this.cvDS.connectAlias('groupNameCv').subscribe(data => {
-      this.groupNameCvList = data;
+    this.cvDS.connectAlias('customerTypeCv').subscribe(data => {
+      this.customerTypeCvList = data;
 
-      const subqueries: any[] = [];
-      data.map(d => {
-
-        if (d.child_code) {
-          let q = { alias: d.child_code, codeValType: d.child_code };
-          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-          if (!hasMatch) {
-            subqueries.push(q);
-
-          }
-        }
+    
       });
-      if (subqueries.length > 0) {
 
-
-        this.cvDS?.getCodeValuesByType(subqueries)
-        subqueries.map(s => {
-          this.cvDS?.connectAlias(s.alias).subscribe(data => {
-            this.allSubGroupNameCvList.push(...data);
-          });
+      this.cvDS.connectAlias('satulationCv').subscribe(data => {
+        this.satulationCvList = data;
+  
+      
         });
+    //   if (subqueries.length > 0) {
 
-      }
-    });
-    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
-      this.yesnoCvList = data;
-    });
-    this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
-      this.soTankStatusCvList = data;
-    });
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
-    });
-    this.cvDS.connectAlias('testTypeCv').subscribe(data => {
-      this.testTypeCvList = data;
-    });
-    this.cvDS.connectAlias('testClassCv').subscribe(data => {
-      this.testClassCvList = data;
-    });
-    this.cvDS.connectAlias('partLocationCv').subscribe(data => {
-      this.partLocationCvList = data;
-    });
-    this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
-      this.damageCodeCvList = data;
-    });
-    this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
-      this.repairCodeCvList = data;
-    });
+
+    //     this.cvDS?.getCodeValuesByType(subqueries)
+    //     subqueries.map(s => {
+    //       this.cvDS?.connectAlias(s.alias).subscribe(data => {
+    //         this.allSubGroupNameCvList.push(...data);
+    //       });
+    //     });
+
+    //   }
+    // });
+    // this.cvDS.connectAlias('yesnoCv').subscribe(data => {
+    //   this.yesnoCvList = data;
+    // });
+    // this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
+    //   this.soTankStatusCvList = data;
+    // });
+    // this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+    //   this.purposeOptionCvList = data;
+    // });
+    // this.cvDS.connectAlias('testTypeCv').subscribe(data => {
+    //   this.testTypeCvList = data;
+    // });
+    // this.cvDS.connectAlias('testClassCv').subscribe(data => {
+    //   this.testClassCvList = data;
+    // });
+    // this.cvDS.connectAlias('partLocationCv').subscribe(data => {
+    //   this.partLocationCvList = data;
+    // });
+    // this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
+    //   this.damageCodeCvList = data;
+    // });
+    // this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
+    //   this.repairCodeCvList = data;
+    // });
   }
 
   
@@ -669,17 +687,13 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     const addSot = row ?? new RepairEstPartItem();
     addSot.repair_est_guid = addSot.repair_est_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width:'1000px',
       data: {
         item: row ? row : addSot,
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: [],
-          yesnoCvList: this.yesnoCvList,
-          partLocationCvList: this.partLocationCvList,
-          damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList
+          satulationCvList:this.satulationCvList
         },
         index: -1,
         customer_company_guid: '' //this.sotItem?.storing_order?.customer_company_guid
@@ -895,100 +909,100 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   }
 
   onTempFormSubmit() {
-    this.tempForm!.get('repList')?.setErrors(null);
-    if (this.tempForm?.valid) {
+    this.ccForm!.get('repList')?.setErrors(null);
+    if (this.ccForm?.valid) {
       if (!this.repList.data.length) {
-        this.tempForm.get('repList')?.setErrors({ required: true });
+        this.ccForm.get('repList')?.setErrors({ required: true });
       } else {
 
-        var tempName = this.tempForm?.get("template_name")?.value;
+        var tempName = this.ccForm?.get("template_name")?.value;
         const where: any = {};
         where.template_name = { eq: tempName };
-        this.estTempDS.SearchEstimateTemplateOnly(where).subscribe(result => {
+        // this.estTempDS.SearchEstimateTemplateOnly(where).subscribe(result => {
 
-          if (result.length == 0 && this.selectedTempEst == undefined) {
+        //   if (result.length == 0 && this.selectedTempEst == undefined) {
 
-            let temp: MasterTemplateItem = new MasterTemplateItem();
-            temp.labour_cost_discount = this.tempForm?.get("labour_discount")?.value;
-            temp.material_cost_discount = this.tempForm?.get("material_discount")?.value;
-            temp.template_name = this.tempForm?.get("template_name")?.value;
-            delete temp.totalMaterialCost;
-            temp.type_cv = "GENERAL";
-            if (this.tempForm?.get("customer_code")?.value?.length > 0) {
+        //     let temp: MasterTemplateItem = new MasterTemplateItem();
+        //     temp.labour_cost_discount = this.ccForm?.get("labour_discount")?.value;
+        //     temp.material_cost_discount = this.ccForm?.get("material_discount")?.value;
+        //     temp.template_name = this.ccForm?.get("template_name")?.value;
+        //     delete temp.totalMaterialCost;
+        //     temp.type_cv = "GENERAL";
+        //     if (this.ccForm?.get("customer_code")?.value?.length > 0) {
 
-              temp.type_cv = "EXCLUSIVE";
-              var customerCodes: CustomerCompanyItem[] = this.tempForm?.get("customer_code")?.value;
-              temp.template_est_customer = [];
-              customerCodes.forEach(data => {
-                var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
-                custItem.action = "NEW";
-                custItem.customer_company_guid = data.guid;
-                custItem.customer_company = undefined;
-                custItem.guid = "";
-                temp.template_est_customer?.push(custItem)
-              });
-            }
-            if (this.repList.data.length) {
-              temp.template_est_part = [];
-              this.repList.data.forEach(data => {
-                var repEstItem: any = data;
-                var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
-                tempEstPartItem.action = "NEW";
-                tempEstPartItem.guid = "";
-                tempEstPartItem.tariff_repair_guid = data.tariff_repair_guid;
-                tempEstPartItem.hour = repEstItem.hour;
-                tempEstPartItem.quantity = repEstItem.quantity;
-                tempEstPartItem.location_cv = repEstItem.location_cv;
-                tempEstPartItem.remarks = repEstItem.remarks;
-                tempEstPartItem.description = repEstItem.description;
-                tempEstPartItem.tep_damage_repair = [];
-                let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!;
-                dmg.forEach(d => {
-                  let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-                  tepDamageRepairItm.code_cv = d.code_cv;
-                  tepDamageRepairItm.code_type = d.code_type;
-                  tepDamageRepairItm.action = "NEW";
-                  tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
-                });
-                temp.template_est_part?.push(tempEstPartItem);
-                // data.
-                // tempEstPartItem.tep_damage_repair?.push()
-                // temp.template_est_part?.push()
-              });
-            }
+        //       temp.type_cv = "EXCLUSIVE";
+        //       var customerCodes: CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
+        //       temp.template_est_customer = [];
+        //       customerCodes.forEach(data => {
+        //         var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
+        //         custItem.action = "NEW";
+        //         custItem.customer_company_guid = data.guid;
+        //         custItem.customer_company = undefined;
+        //         custItem.guid = "";
+        //         temp.template_est_customer?.push(custItem)
+        //       });
+        //     }
+        //     if (this.repList.data.length) {
+        //       temp.template_est_part = [];
+        //       this.repList.data.forEach(data => {
+        //         var repEstItem: any = data;
+        //         var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
+        //         tempEstPartItem.action = "NEW";
+        //         tempEstPartItem.guid = "";
+        //         tempEstPartItem.tariff_repair_guid = data.tariff_repair_guid;
+        //         tempEstPartItem.hour = repEstItem.hour;
+        //         tempEstPartItem.quantity = repEstItem.quantity;
+        //         tempEstPartItem.location_cv = repEstItem.location_cv;
+        //         tempEstPartItem.remarks = repEstItem.remarks;
+        //         tempEstPartItem.description = repEstItem.description;
+        //         tempEstPartItem.tep_damage_repair = [];
+        //         let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!;
+        //         dmg.forEach(d => {
+        //           let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
+        //           tepDamageRepairItm.code_cv = d.code_cv;
+        //           tepDamageRepairItm.code_type = d.code_type;
+        //           tepDamageRepairItm.action = "NEW";
+        //           tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
+        //         });
+        //         temp.template_est_part?.push(tempEstPartItem);
+        //         // data.
+        //         // tempEstPartItem.tep_damage_repair?.push()
+        //         // temp.template_est_part?.push()
+        //       });
+        //     }
 
-            this.estTempDS.AddMasterTemplate(temp).subscribe(result => {
-              var count = result.data.addTemplateEstimation;
-              if (count > 0) {
-                this.handleSaveSuccess(count);
-              }
-            });
+        //     this.estTempDS.AddMasterTemplate(temp).subscribe(result => {
+        //       var count = result.data.addTemplateEstimation;
+        //       if (count > 0) {
+        //         this.handleSaveSuccess(count);
+        //       }
+        //     });
 
-          }
-          else if (result.length > 0) {
-            if (this.selectedTempEst == undefined) {
-              this.tempForm?.get('template_name')?.setErrors({ existed: true });
-            }
-            else {
+        //   }
+        //   else if (result.length > 0) {
+        //     if (this.selectedTempEst == undefined) {
+        //       this.ccForm?.get('template_name')?.setErrors({ existed: true });
+        //     }
+        //     else {
 
-              this.updateExistTemplate();
+        //       this.updateExistTemplate();
 
-            }
+        //     }
 
           
-          }
-          else if(result.length==0 && this.selectedTempEst!=undefined)
-          {
-            this.updateExistTemplate();
-          }
+        //   }
+        //   else if(result.length==0 && this.selectedTempEst!=undefined)
+        //   {
+        //     this.updateExistTemplate();
+        //   }
 
 
-        });
+        // });
 
 
       }
     } else {
-      console.log('Invalid soForm', this.tempForm?.value);
+      console.log('Invalid soForm', this.ccForm?.value);
     }
   }
 
@@ -996,19 +1010,19 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
 
     const tempEstimateCustomerItems: TemplateEstimateCustomerItem[] = this.selectedTempEst!.template_est_customer!.map((node: any) => new TemplateEstimateCustomerItem(node));
     
-    this.selectedTempEst!.template_name=this.tempForm?.get("template_name")?.value;
-    this.selectedTempEst!.labour_cost_discount=this.tempForm?.get("labour_discount")?.value;
-    this.selectedTempEst!.remarks=this.tempForm?.get("remarks")?.value;
-    this.selectedTempEst!.material_cost_discount=this.tempForm?.get("material_discount")?.value;
+    this.selectedTempEst!.template_name=this.ccForm?.get("template_name")?.value;
+    this.selectedTempEst!.labour_cost_discount=this.ccForm?.get("labour_discount")?.value;
+    this.selectedTempEst!.remarks=this.ccForm?.get("remarks")?.value;
+    this.selectedTempEst!.material_cost_discount=this.ccForm?.get("material_discount")?.value;
     this.selectedTempEst!.template_est_customer=tempEstimateCustomerItems;
     var existdata_cust=this.selectedTempEst!.template_est_customer;
     existdata_cust?.forEach(value=>{value.action="CANCEL";value.customer_company=undefined;});
     this.selectedTempEst!.type_cv="GENERAL";
-    if(this.tempForm?.get("customer_code")?.value?.length>0)
+    if(this.ccForm?.get("customer_code")?.value?.length>0)
       {
-        var newdata_cust = this.tempForm?.get('customer_code')?.value;
+        var newdata_cust = this.ccForm?.get('customer_code')?.value;
         this.selectedTempEst!.type_cv="EXCLUSIVE";
-        var customerCodes : CustomerCompanyItem[] = this.tempForm?.get("customer_code")?.value;
+        var customerCodes : CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
         //temp.template_est_customer=[];
         customerCodes.forEach(data=>{
              const found=existdata_cust.filter(value=>value.customer_company_guid===data.guid);
@@ -1104,18 +1118,18 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     }
    
     delete this.selectedTempEst!.totalMaterialCost;
-    this.estTempDS.UpdateMasterTemplate(this.selectedTempEst).subscribe(result => {
-      var count = result.data.updateTemplateEstimation;
-      if (count > 0) {
-        this.handleSaveSuccess(count);
-      }
-    });
+    // this.estTempDS.UpdateMasterTemplate(this.selectedTempEst).subscribe(result => {
+    //   var count = result.data.updateTemplateEstimation;
+    //   if (count > 0) {
+    //     this.handleSaveSuccess(count);
+    //   }
+    // });
   }
 
   updateData(newData: any[]): void {
     this.repList.data = [...newData];
     this.sotSelection.clear();
-    this.tempForm?.get('repList')?.setErrors(null);
+    this.ccForm?.get('repList')?.setErrors(null);
   }
 
   handleDelete(event: Event, row: any, index: number): void {

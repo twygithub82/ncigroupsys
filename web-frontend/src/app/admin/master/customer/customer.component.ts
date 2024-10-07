@@ -269,6 +269,7 @@ implements OnInit {
      }
   
   constructor(
+    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
@@ -377,10 +378,30 @@ implements OnInit {
       });
   }
   
-  addCall()
+  addCall(event: Event)
   {
-
+    event.stopPropagation(); // Stop the click event from propagating
+    // Navigate to the route and pass the JSON object
+       this.router.navigate(['/admin/master/customer/new/ '], {
+         state: { id: '' ,
+           type:'estimate-template',
+           pagination:{
+             where :this.lastSearchCriteria,
+             pageSize:this.pageSize,
+             pageIndex:this.pageIndex,
+             hasPreviousPage:this.hasPreviousPage,
+             startCursor:this.startCursor,
+             endCursor:this.endCursor,
+             previous_endCursor:this.previous_endCursor,
+             
+             showResult: this.ccDS.totalCount>0
+             
+           }
+         }
+       });
   }
+
+  
 
   editCall(row: PackageResidueItem) {
    // this.preventDefault(event);  // Prevents the form submission

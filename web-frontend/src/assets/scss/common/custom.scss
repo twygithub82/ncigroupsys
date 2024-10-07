@@ -974,12 +974,7 @@ $breakpoints: (
   background-color: rgba(255, 255, 255, 0.0);
 }
 
-.responsive-image {
-  max-width: 640px;
-  max-height: 480px;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto;
+.group-header-row {
+  background-color: #00e1ff !important;
+  font-weight: bold !important;
 }

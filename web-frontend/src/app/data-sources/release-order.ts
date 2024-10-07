@@ -177,7 +177,7 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
           name
           guid
         }
-        release_order_sot {
+        release_order_sot(where: { delete_dt: { eq: null } }) {
           create_by
           create_dt
           delete_dt

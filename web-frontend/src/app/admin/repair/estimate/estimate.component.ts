@@ -440,8 +440,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
         sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
       }
 
-      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
+      if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
+        sotSome.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
       }
 
       if (this.searchForm!.value['purpose']) {

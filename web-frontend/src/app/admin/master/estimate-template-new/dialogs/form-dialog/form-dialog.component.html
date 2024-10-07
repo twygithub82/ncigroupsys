@@ -12,6 +12,43 @@
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="repairPartForm" #formDirective="ngForm">
       <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{data.translatedLangText.DAMAGE}}</mat-label>
+            <mat-select multiple formControlName="damage" required>
+              @for (codeValue of data.populateData.damageCodeCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">
+                {{'(' + codeValue.code_val + ')' + codeValue.description}}
+              </mat-option>
+              }
+            </mat-select>
+            @if (repairPartForm.get('damage')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.DAMAGE}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
+            <mat-select multiple formControlName="repair" required>
+              @for (codeValue of data.populateData.repairCodeCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">
+                {{'(' + codeValue.code_val + ')' + codeValue.description}}
+              </mat-option>
+              }
+            </mat-select>
+            @if (repairPartForm.get('repair')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.REPAIR}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+      
+      </div>
+      <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.GROUP_NAME}}</mat-label>
@@ -69,11 +106,25 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
           <button mat-mini-fab color="primary" [disabled]="!this.repairPartForm.get('part_name')?.value"
             (click)="searchPart()">
             <mat-icon>search</mat-icon>
           </button>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.COMMENTS}}</mat-label>
+            <input matInput formControlName="comment">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+            <input matInput formControlName="remarks">
+          </mat-form-field>
         </div>
       </div>
       <div class="row">
@@ -85,48 +136,7 @@
           </span>
         </div>
       </div>
-      <div class="row">
-        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>{{data.translatedLangText.DAMAGE}}</mat-label>
-            <mat-select multiple formControlName="damage" required>
-              @for (codeValue of data.populateData.damageCodeCvList; track codeValue) {
-              <mat-option [value]="codeValue.code_val">
-                {{'(' + codeValue.code_val + ')' + codeValue.description}}
-              </mat-option>
-              }
-            </mat-select>
-            @if (repairPartForm.get('damage')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.DAMAGE}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
-            <mat-select multiple formControlName="repair" required>
-              @for (codeValue of data.populateData.repairCodeCvList; track codeValue) {
-              <mat-option [value]="codeValue.code_val">
-                {{'(' + codeValue.code_val + ')' + codeValue.description}}
-              </mat-option>
-              }
-            </mat-select>
-            @if (repairPartForm.get('repair')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.REPAIR}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
-            <input matInput formControlName="remarks">
-          </mat-form-field>
-        </div>
-      </div>
+    
       <div class="row">
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
@@ -149,7 +159,7 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit()">{{data.translatedLangText.UPDATE}}</button>
+        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit()">{{buttonContent}}</button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>

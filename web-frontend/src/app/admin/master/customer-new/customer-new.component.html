@@ -5,149 +5,94 @@
       <app-breadcrumb [title]="this.temp_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
         [active_item]="this.temp_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
     </div>
-    <div class="row">
-      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
-            <h2>
-              {{translatedLangText.TANK_DETAILS}}
-            </h2>
-          </div>
-          <!-- <div class="body">
-            @if (sotDS.loading$ | async) {
-            <div class="tbl-spinner">
-              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-              </mat-progress-spinner>
-            </div>
-            }
-            @if (!(sotDS.loading$ | async)) {
-            <mat-card-content>
-              <div class="row">
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.TANK_NO}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{sotItem?.tank_no}}</div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CUSTOMER}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_CARGO}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{sotItem?.tariff_cleaning?.cargo}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.OWNER}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_NO}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_DATE}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{displayDateTime(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.PURPOSE}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{displayTankPurpose(sotItem!)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_TEST}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </mat-card-content>
-            }
-          </div> -->
-        </div>
-      </div>
-    </div>
-    <form class="ms-0" [formGroup]="tempForm!" (ngSubmit)="onTempFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="ccForm!" (ngSubmit)="onTempFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
             <div class="header">
               <h2>
-                {{translatedLangText.ESTIMATE_DETAILS}}
+                {{translatedLangText.CUSTOMER_DETAILS}}
               </h2>
             </div>
             <div class="body">
-              @if (soDS.loadingSubject | async) {
-              <div class="tbl-spinner">
-                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                </mat-progress-spinner>
-              </div>
-              }
-              @if (!(soDS.loadingSubject | async)) {
+            
+             
               <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
-                    <input matInput formControlName="template_name" required>
-                    @if (tempForm?.get('template_name')?.hasError('required')) {
+                    <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
+                    <input matInput formControlName="customer_code" required>
+                    @if (ccForm?.get('template_name')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
                       }
-                    @if (tempForm?.get('template_name')?.hasError('existed')) {
+                    @if (ccForm?.get('template_name')?.hasError('existed')) {
                         <mat-error>
                           {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.EXISTED}}
                         </mat-error>
                         }
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-                      <mat-select  formControlName="customer_code" multiple>
+                      <mat-label>{{translatedLangText.CUSTOMER_TYPE }}</mat-label>
+                      <mat-select  formControlName="customer_type" required >
+                          <mat-option *ngFor="let cc of this.customerTypeCvList" [value]="cc">
+                           
+                            <ng-container *ngIf="cc !== null">
+                              {{ cc.description }}
+                            </ng-container>
+                           
+                          </mat-option>
+                        </mat-select>
+                     
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CUSTOMER_NAME }}</mat-label>
+                      <input matInput formControlName="customer_name" >
+                     
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
+                      <input matInput formControlName="billing_branches" >
+                     
+                  </mat-form-field>
+                  
+                </div>
+              </div>
+              <div class="row">
+            
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.PHONE }}</mat-label>
+                      <input matInput formControlName="phone" required>
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.EMAIL }}</mat-label>
+                      <input matInput formControlName="email" required>
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.WEB }}</mat-label>
+                      <input matInput formControlName="web" required>
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CONVERSION_CURRENCY }}</mat-label>
+                      <mat-select  formControlName="currency">
                           <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
                            
                             <ng-container *ngIf="cc !== null">
@@ -160,15 +105,95 @@
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                  @if (soDS.canAdd(storingOrderItem)) {
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addEstDetails($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ESTIMATE_DETAILS}}
-                  </button>
-                  }
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.DEFAULT_PROFILE }}</mat-label>
+                      <mat-select  formControlName="default_profile" >
+                          <mat-option *ngFor="let t of this.tankItemList" [value]="t">
+                           
+                            <ng-container *ngIf="t !== null">
+                              {{ t.unit_type }}
+                            </ng-container>
+                           
+                          </mat-option>
+                        </mat-select>
+                     
+                  </mat-form-field>
+                  
                 </div>
               </div>
+              <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.ADDRESS_LINE1}}</mat-label>
+                    <input matInput formControlName="address1" required>
+                    @if (ccForm?.get('address1')?.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.ADDRESS_LINE2 }}</mat-label>
+                      <input matInput formControlName="address2" required>
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.POSTAL_CODE }}</mat-label>
+                      <input matInput formControlName="postal_code" required>
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CITY_NAME }}</mat-label>
+                      <input matInput formControlName="city_name">
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
+                      <input matInput formControlName="country" required>
+                  </mat-form-field>
+                  
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                    <input matInput formControlName="remarks" >
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addEstDetails($event)">
+                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}
+                  </button>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.CONTACT_PERSON_DETAILS}}
+              </h2>
+            </div>
+            <div class="body">
+              <mat-divider></mat-divider>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
@@ -189,11 +214,11 @@
                       <ng-container matColumnDef="group_name_cv">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          {{translatedLangText.GROUP}}
+                          {{translatedLangText.CONTACT_PERSON}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.GROUP}}:</span>
+                          <span class="mobile-label">{{translatedLangText.CONTACT_PERSON}}:</span>
                           {{getGroupNameDescription(row.tariff_repair?.group_name_cv)}}
                         </mat-cell>
                       </ng-container>
@@ -201,11 +226,11 @@
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
-                          {{translatedLangText.SUBGROUP}}
+                          {{translatedLangText.JOB_TITLE}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.SUBGROUP}}:</span>
+                          <span class="mobile-label">{{translatedLangText.JOB_TITLE}}:</span>
                           {{getSubGroupNameDescription(row.tariff_repair?.subgroup_name_cv)}}
                         </mat-cell>
                       </ng-container>
@@ -213,12 +238,12 @@
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
-                          {{translatedLangText.DAMAGE}}
+                          {{translatedLangText.DEPARTMENT}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
-                            <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
+                            <span class="mobile-label">{{translatedLangText.DEPARTMENT}}:</span>
                             <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 0)">
                               {{displayDamageRepairCode(row.tep_damage_repair, 0)}}
                             </span>
@@ -229,11 +254,11 @@
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
-                          {{translatedLangText.REPAIR}}
+                          {{translatedLangText.EMAIL}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
+                          <span class="mobile-label">{{translatedLangText.EMAIL}}:</span>
                           <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 1)">
                             {{displayDamageRepairCode(row.tep_damage_repair, 1)}}
                           </span>
@@ -243,11 +268,11 @@
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
-                          {{translatedLangText.DESCRIPTION}}
+                          {{translatedLangText.DID}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
+                          <span class="mobile-label">{{translatedLangText.DID}}:</span>
                           {{row.description}}
                         </mat-cell>
                       </ng-container>
@@ -255,15 +280,15 @@
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
-                          {{translatedLangText.QTY}}
+                          {{translatedLangText.MOBILE_NO}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                          <span class="mobile-label">{{translatedLangText.QTY}}:</span>
+                          <span class="mobile-label">{{translatedLangText.MOBILE_NO}}:</span>
                           {{row.quantity}}
                         </mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="hour">
+                      <!-- <ng-container matColumnDef="hour">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
@@ -298,7 +323,7 @@
                           <span class="mobile-label">{{translatedLangText.MATERIAL}}:</span>
                           {{this.GetEstimationPrice(row)}}
                         </mat-cell>
-                      </ng-container>
+                      </ng-container> -->
                       <!-- actions -->
                       <ng-container matColumnDef="actions">
                         <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
@@ -333,7 +358,7 @@
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
                           }
-                            @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
+                            <!-- @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
                             <button mat-menu-item (click)="cancelItem($event, row)">
                               <mat-icon>cancel</mat-icon>
                               <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
@@ -346,7 +371,7 @@
                               <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
                                 ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
                             </button>
-                            }
+                            } -->
                             @if (row.actions.includes('cancel')) {
                             <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
                               <mat-icon>undo</mat-icon>
@@ -375,438 +400,20 @@
                     <h5 class="m-b-15">{{translatedLangText.NO_PARTS}}</h5>
                   </div>
                   }
-                  @if (sotDS.loading$ | async) {
+                  <!-- @if (sotDS.loading$ | async) {
                   <div class="tbl-spinner">
                     <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                     </mat-progress-spinner>
                   </div>
-                  }
+                  } -->
                 </div>
               </div>
-              }
+              
               <mat-divider></mat-divider>
             
-              <mat-error *ngIf="tempForm?.get('repList')?.hasError('required')">
+              <mat-error *ngIf="ccForm?.get('repList')?.hasError('required')">
                 {{ translatedLangText.ADD_ATLEAST_ONE }}
               </mat-error>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row clearfix">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
-            <div class="header">
-              <h2>
-                {{translatedLangText.ESTIMATE_SUMMARY}}
-              </h2>
-            </div>
-            <div class="body">
-              @if (soDS.loadingSubject | async) {
-              <div class="tbl-spinner">
-                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                </mat-progress-spinner>
-              </div>
-              }
-              @if (!(soDS.loadingSubject | async)) {
-              <div class="row">
-                <div class="col-xl-5-5 col-lg-5-5 col-md-12 col-sm-12 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <mat-form-field class="example-full-width full-height">
-                        <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                        <textarea matInput formControlName="remarks"  style="height:220px ;"></textarea>
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <!-- <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.SURVEYOR_NAME}}</mat-label>
-                        <mat-select formControlName="surveyor_name_cv" required>
-                          @for (codeValue of groupNameCvList; track codeValue) {
-                          <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
-                          }
-                        </mat-select>
-                        @if (tempForm?.get('surveyor_name_cv')?.hasError('required')) {
-                        <mat-error>
-                          {{translatedLangText.SURVEYOR_NAME}} {{translatedLangText.SO_REQUIRED}}
-                        </mat-error>
-                        }
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.INTERNAL_QC_BY}}</mat-label>
-                        <mat-select formControlName="internal_qc_by" required>
-                          @for (codeValue of groupNameCvList; track codeValue) {
-                          <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
-                          }
-                        </mat-select>
-                        @if (tempForm?.get('internal_qc_by')?.hasError('required')) {
-                        <mat-error>
-                          {{translatedLangText.INTERNAL_QC_BY}} {{translatedLangText.SO_REQUIRED}}
-                        </mat-error>
-                        }
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      {{translatedLangText.ESTIMATE_NO}}
-                    </div>
-                  </div> -->
-                </div>
-                <div class="col-xl-6-5 col-lg-6-5 col-md-12 col-sm-12 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border">
-                          <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.LABOUR}}
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.MATERIAL_COST}}
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.TOTAL_COST}}
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.LABOUR_DISCOUNT}}
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.MATERIAL_DISCOUNT}}s
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.NET_COST}}
-                        </div>
-                       
-                      </div>
-                    </div>
-                    <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
-                          <span class="font-bold">{{translatedLangText.RATE}}</span>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label cost-label">
-                            <span>$</span><span>{{tempForm?.get("labour_rate")?.value | number: '1.2-2'}}</span>
-                          </div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label"></div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label"></div>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <tlx-form-field customClass="example-full-width">
-                            <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput formControlName="labour_discount"
-                                 [placeholder]="translatedLangText.LABOUR_DISCOUNT"
-                                type="number" min="0" required>
-                              @if (tempForm?.get('labour_discount')?.hasError('required')) {
-                              <mat-error>
-                                {{translatedLangText.LABOUR_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
-                              </mat-error>
-                              }
-                            </mat-form-field>
-                          </tlx-form-field>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <tlx-form-field customClass="example-full-width">
-                            <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput formControlName="material_discount"
-                                [placeholder]="translatedLangText.MATERIAL_DISCOUNT"
-                                type="number" required>
-                              @if (tempForm?.get('material_discount')?.hasError('required')) {
-                              <mat-error>
-                                {{translatedLangText.MATERIAL_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
-                              </mat-error>
-                              }
-                            </mat-form-field>
-                          </tlx-form-field>
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label"></div>
-                        </div>
-                       
-                      </div>
-                    </div><!-- test -->
-                    <!-- <div class="col-xl col-lg col-md col-sm m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
-                          <span class="font-bold">{{translatedLangText.OWNER}}</span>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                              <div class="row">
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                              <div class="row">
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label font-bold">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-xl col-lg col-md col-sm m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
-                          <span class="font-bold">{{translatedLangText.LESSEE}}</span>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                              <div class="row">
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                              <div class="row">
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label font-bold">
-                                    <span>$</span><span>{{0 | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div> -->
-                    <div class="col-xl col-lg col-md col-sm m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
-                          <span class="font-bold">{{translatedLangText.TOTAL}}</span>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                              <div class="row">
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span></span><span>{{tempForm!.get('labour_hour')?.value | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                                  <div class="table-label"></div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label"></div>
-                                </div>
-                               
-                              </div>
-                            </div>
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                              <div class="row">
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{tempForm!.get('labour_total')?.value | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{tempForm!.get('total_material_cost')?.value | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{tempForm!.get('total_cost')?.value | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span style="color: #af0404;">{{tempForm!.get('labour_discount_amount')?.value | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span style="color:  #af0404;">{{tempForm!.get('material_discount_amount')?.value | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>{{tempForm!.get('net_cost')?.value | number: '1.2-2'}}</span>
-                                  </div>
-                                </div>
-                                
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              }
               <div class="row m-t-5">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"  (click)="GoBackPrevious($event)">
@@ -815,14 +422,14 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (isAnyItemEdited()) {
-                  <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)">
-                    <mat-icon>
+                  <button mat-flat-button color="primary" >
+                    <!-- <mat-icon>
                       @if (!(soDS.loading$ | async)) {
                       save
                       } @else if ((soDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
-                    </mat-icon>
+                    </mat-icon> -->
                     {{translatedLangText.SAVE_AND_SUBMIT}}
                   </button>
                   }

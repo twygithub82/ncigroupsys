@@ -100,7 +100,7 @@ implements OnInit {
      'fName',
      'lName',
      'email',
-     'bDate',
+    // 'bDate',
      'gender',
      
     // 'mobile',

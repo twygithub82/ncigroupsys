@@ -12,6 +12,7 @@ export class CodeValuesItem {
   public code_val_type?: string;
   public code_val?: string;
   public child_code?: string;
+  public sequence?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -24,6 +25,7 @@ export class CodeValuesItem {
     this.code_val_type = item.code_val_type;
     this.code_val = item.code_val;
     this.child_code = item.child_code;
+    this.sequence = item.sequence;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -45,6 +47,7 @@ export function getCodeValuesByTypeQueries(aliases: string[]): DocumentNode {
       code_val
       description
       guid
+      sequence
     }
   `).join('\n');
 

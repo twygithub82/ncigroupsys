@@ -45,7 +45,7 @@ export interface TabData {
 
 
 @Component({
-  selector: 'app-form-dialog',
+  selector: 'app-tariff-cleaning-new-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],

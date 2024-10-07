@@ -315,11 +315,12 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   populateROForm(ro: ReleaseOrderItem): void {
+    this.startDateRO = Utility.getEarlierDate(Utility.convertDate(ro.release_dt) as Date, this.startDateRO)
     this.roForm!.patchValue({
       guid: ro.guid,
       customer_code: ro.customer_company,
       customer_company_guid: ro.customer_company_guid,
-      release_dt: Utility.convertDate(ro.release_dt),
+      release_dt: Utility.convertDate(ro.release_dt) as Date,
       ro_no: ro.ro_no,
       ro_notes: ro.ro_notes,
       haulier: ro.haulier

@@ -138,7 +138,9 @@
       "LIST": {
         "ESTIMATE-TEMPLATE": "Estimate Template",
         "ASSIGN-ESTIMATE-TEMPLATE": "Assign Template",
-        "CUSTOMER":"Customer"
+        "CUSTOMER": "Customer",
+        "CUSTOMER-NEW": "New Customer",
+        "CUSTOMER-EDIT": "Edit Customer"
       }
     },
     "NEW": {
@@ -170,10 +172,11 @@
     "REPAIR": {
       "TEXT": "Repair",
       "LIST": {
-        "ESTIMATE": "Estimate",
+        "ESTIMATE": "Repair Estimate",
         "ESTIMATE-NEW": "New Estimate",
         "ESTIMATE-EDIT": "Edit Estimate",
-        "APPROVAL": "Approval"
+        "APPROVAL": "Estimate Approval",
+        "APPROVAL-DETAILS": "Estimate Approval Details"
       }
     }
   },
@@ -221,6 +224,12 @@
     "COMPANY-NAME": "Company Name",
     "CUSTOMER-NAME": "Customer Name",
     "CUSTOMER-COMPANY": "Customer Company",
+    "CUSTOMER-DETAILS": "Customer Details",
+    "CUSTOMER-TYPE": "Customer Type",
+    "ADDRESS-LINE1": "Address Line One",
+    "ADDRESS-LINE2": "Address Line Two",
+    "POSTAL-CODE": "Postal Code",
+    "CITY-NAME": "City Name",
     "SO-NO": "SO No.",
     "NO-OF-TANKS": "No. of Tanks",
     "SO-NOTES": "SO Notes",
@@ -275,6 +284,7 @@
     "EIR-NO": "EIR No.",
     "CLEANING-CONDITIONS": "Cleaning Conditions",
     "ROLLBACK-STATUS": "Rollback Status",
+    "ROLLBACK": "Rollback",
     "BULK": "Bulk",
     "CARGO-NAME": "Cargo Name",
     "CARGO-ALIAS": "Alias Name",
@@ -391,7 +401,7 @@
     "VOLUME": "Volume",
     "OTHER-COMMENTS": "Other Comment(s)",
     "EXCEEDED": "Exceeded",
-    "SMALLER-THAN":"Smaller than",
+    "SMALLER-THAN": "Smaller than",
     "MUST-MORE-THAN-ZERO": "Must be more than 0",
     "BRAND": "Brand",
     "BOTTOM": "Bottom",
@@ -439,11 +449,19 @@
     "ASSIGNED": "has been assigned to others",
     "ADD-TANK": "Add Tank",
     "CONTACT-PERSON": "Contact Person",
+    "JOB-TITLE": "Job Title",
+    "DEPARTMENT": "Department",
+    "DID": "DID",
     "MOBILE-NO": "Mobile No.",
     "COUNTRY": "Country",
     "FAX-NO": "Fax No.",
     "EMAIL": "Email",
     "PHONE": "Phone",
+    "WEB": "Web",
+    "CONVERSION-CURRENCY": "Conversion Currency",
+    "PERSON-IN-CHARGE": "Person-in-Charge",
+    "DEFAULT-PROFILE": "Default Profile",
+    "CONTACT-PERSON-DETAILS": "Contact Person Details",
     "AGREEMENT-DUE-DATE": "Agreement Due Date",
     "BILLING-PROFILE": "Billing Profile",
     "STANDARD-COST": "Standard Cost $",
@@ -544,10 +562,22 @@
     "CONFIRM-CLEAR-ALL": "Confirm Clear All",
     "PART": "Part",
     "AMEND": "Amend",
-    "CUSTOMER-EXCEED":"Selected Customer Exceed - ",
+    "CUSTOMER-EXCEED": "Selected Customer Exceed - ",
     "ENTER-ATLEAST-ONE-CONDITION": "Please enter at least one query condition.",
-     "NO-VALUE-CHNAGE": "No Value Change Detected"
-    
+    "NO-VALUE-CHNAGE": "No Value Change Detected",
+    "COMMENTS": "Comments",
+    "ADD-ANOTHER": "Add Another",
+    "PREVIEW-PHOTOS": "Preview Photos",
+    "DEFAULT": "Default",
+    "COMMENT": "Comment",
+    "SAVE": "Save",
+    "ADD-SUCCESS": "Add Successfully",
+    "CHANGE-REQUEST": "Change Request",
+    "APPROVE": "Approve",
+    "NO-ACTION": "No Action",
+    "BILLING-BRANCH":"Billing Branch",
+    "SALUTATION":"Salutation",
+    "NAME":"Name"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

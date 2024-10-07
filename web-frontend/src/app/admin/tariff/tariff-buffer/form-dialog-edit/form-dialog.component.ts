@@ -55,7 +55,7 @@ interface Condition {
 
 
 @Component({
-  selector: 'app-form-dialog',
+  selector: 'app-tariff-buffer-form-edit-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],

@@ -15,6 +15,7 @@ export class RepairEstPartGO {
   public repair_est_guid?: string;
   public description?: string;
   public location_cv?: string;
+  public comment?: string;
   public remarks?: string;
   public quantity?: number;
   public hour?: number;
@@ -32,6 +33,7 @@ export class RepairEstPartGO {
     this.repair_est_guid = item.repair_est_guid;
     this.description = item.description;
     this.location_cv = item.location_cv;
+    this.comment = item.comment;
     this.remarks = item.remarks;
     this.quantity = item.quantity;
     this.hour = item.hour;
