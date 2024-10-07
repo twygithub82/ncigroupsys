@@ -25,6 +25,7 @@ namespace IDMS.Models.Service
         public string? description { get; set; }
         public string? location_cv { get; set; }
         public string? remarks { get; set; }
+        public string? comment { get; set; }
         public int? quantity { get; set; }
         public double? hour { get; set; }
         public bool owner { get; set; } = false;
