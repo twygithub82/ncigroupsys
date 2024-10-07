@@ -13,7 +13,7 @@ namespace IDMS.Repair.GqlTypes
     public class RepairEstMutation
     {
         public async Task<int> AddRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, repair_est RepairEstimate)
+            [Service] IConfiguration config, repair_est RepairEstimate, customer_company? customerCompany)
         {
             try
             {
@@ -37,14 +37,7 @@ namespace IDMS.Repair.GqlTypes
                 repEstimate.status_cv = RepairEstStatus.PENDING;
                 await context.repair_est.AddAsync(repEstimate);
 
-                //if (TemplateType.EXCLUSIVE.EqualsIgnore(newRepairEstimate.type_cv))
-                //{
-                //    if (newRepairEstimate.template_est_customer == null)
-                //        throw new GraphQLException(new Error($"Template_estimate_customer object cannot be null", "ERROR"));
-
-                //    await UpdateCustomer(context, newRepairEstimate.template_est_customer, user, currentDateTime, repEstimate);
-                //}
-
+                //Handling For Template_est_part
                 IList<repair_est_part> partList = new List<repair_est_part>();
                 foreach (var newPart in RepairEstimate.repair_est_part)
                 {
@@ -57,6 +50,19 @@ namespace IDMS.Repair.GqlTypes
                     await UpdateRepairDamageCode(context, user, currentDateTime, newPart);
                 }
                 await context.repair_est_part.AddRangeAsync(partList);
+
+
+                //Handlind For Customer Default Template
+                if (customerCompany != null && customerCompany.guid != "") 
+                {
+                    var cust = new customer_company() { guid = customerCompany.guid };
+                    context.Attach(cust);
+
+                    cust.def_template_guid = customerCompany.def_template_guid;
+                    cust.update_by = user;
+                    cust.update_dt = currentDateTime;
+                }
+
 
                 var res = await context.SaveChangesAsync();
 
@@ -73,7 +79,7 @@ namespace IDMS.Repair.GqlTypes
 
 
         public async Task<int> UpdateRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, repair_est RepairEstimate)
+            [Service] IConfiguration config, repair_est RepairEstimate, customer_company? customerCompany)
         {
             try
             {
@@ -133,6 +139,7 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.update_by = user;
                             existingPart.update_dt = currentDateTime;
                             existingPart.description = part.description;
+                            existingPart.comment = part.comment;    
                             existingPart.owner = part.owner;
                             existingPart.quantity = part.quantity;
                             existingPart.location_cv = part.location_cv;
@@ -156,6 +163,18 @@ namespace IDMS.Repair.GqlTypes
                         }
                     }
                 }
+
+                //Handlind For Customer Default Template
+                if (customerCompany != null && customerCompany.guid != "")
+                {
+                    var cust = new customer_company() { guid = customerCompany.guid };
+                    context.Attach(cust);
+
+                    cust.def_template_guid = customerCompany.def_template_guid;
+                    cust.update_by = user;
+                    cust.update_dt = currentDateTime;
+                }
+
                 var res = await context.SaveChangesAsync();
 
                 //TODO
