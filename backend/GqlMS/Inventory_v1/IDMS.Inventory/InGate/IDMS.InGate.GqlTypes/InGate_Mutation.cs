@@ -17,7 +17,7 @@ namespace IDMS.InGate.GqlTypes
     {
         //[Authorize]
         public async Task<int> AddInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor
-            , InGateWithTank InGate)
+            , in_gate InGate)
         {
             int retval = 0;
             try
@@ -31,7 +31,7 @@ namespace IDMS.InGate.GqlTypes
                 InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
                 InGate.create_by = uid;
                 InGate.create_dt = currentDate;
-                InGateWithTank newInGate = new()
+                in_gate newInGate = new()
                 {
                     create_by = InGate.create_by,
                     create_dt = InGate.create_dt,
@@ -132,7 +132,8 @@ namespace IDMS.InGate.GqlTypes
         }
 
         //[Authorize]
-        public async Task<int> UpdateInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, InGateWithTank InGate)
+        public async Task<int> UpdateInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, 
+                                            [Service] IHttpContextAccessor httpContextAccessor, in_gate InGate)
         {
             int retval = 0;
             string so_guid = "";
@@ -144,7 +145,7 @@ namespace IDMS.InGate.GqlTypes
                     var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
 
                     //added to update ingate as well
-                    var updatedIngate = new InGateWithTank() { guid = InGate.guid };
+                    var updatedIngate = new in_gate() { guid = InGate.guid };
                     context.Attach(updatedIngate);
 
                     updatedIngate.remarks = InGate.remarks;

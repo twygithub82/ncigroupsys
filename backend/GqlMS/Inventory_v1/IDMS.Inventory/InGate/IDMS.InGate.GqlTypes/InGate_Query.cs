@@ -28,9 +28,9 @@ namespace IDMS.InGate.GqlTypes
         // [UseProjection]
         [UseFiltering(typeof(IDMS.Models.Filters.in_gate_filtertype))]
         [UseSorting]
-        public IQueryable<InGateWithTank> QueryInGates(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<in_gate> QueryInGates(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
-            IQueryable<InGateWithTank> query = null;
+            IQueryable<in_gate> query = null;
             try
             {
 

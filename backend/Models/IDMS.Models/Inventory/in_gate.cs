@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace IDMS.Models.Inventory
 {
 
-    public class in_gate:Dates
+    public class in_gate : Dates
     {
         [Key]
         public string? guid { get; set; } = "";
@@ -27,11 +27,13 @@ namespace IDMS.Models.Inventory
         public string? remarks { get; set; }
         //public storing_order_tank? tank { get; set; } = null;
         public in_gate_survey? in_gate_survey { get; set; }
-    }
 
-    public class InGateWithTank : in_gate
-    {
         public storing_order_tank? tank { get; set; } = null;
     }
+
+    //public class InGateWithTank : in_gate
+    //{
+    //    public storing_order_tank? tank { get; set; } = null;
+    //}
 
 }

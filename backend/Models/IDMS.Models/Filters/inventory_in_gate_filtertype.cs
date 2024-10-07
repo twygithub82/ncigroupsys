@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Filters
 {
-    public class in_gate_filtertype : FilterInputType<InGateWithTank>
+    public class in_gate_filtertype : FilterInputType<in_gate>
     {
-        protected override void Configure(IFilterInputTypeDescriptor<InGateWithTank> descriptor)
+        protected override void Configure(IFilterInputTypeDescriptor<in_gate> descriptor)
         {
             //descriptor.Ignore(c => c.tank);
 

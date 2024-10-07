@@ -55,7 +55,7 @@ namespace IDMS.Models.Inventory
         public customer_company? customer_company { get; set; }
 
         [UseFiltering]
-        public IEnumerable<InGateWithTank>? in_gate { get; set; }
+        public IEnumerable<in_gate>? in_gate { get; set; }
         [UseFiltering]
         public IEnumerable<out_gate>? out_gate { get; set; }
         [UseFiltering]

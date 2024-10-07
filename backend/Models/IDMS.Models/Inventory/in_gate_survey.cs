@@ -81,7 +81,7 @@ namespace IDMS.Models.Inventory
         public string? rear_remarks { get; set; }
         public string? left_remarks { get; set; }
         public string? right_remarks { get; set; }
-        public InGateWithTank? in_gate { get; set; }
+        public in_gate? in_gate { get; set; }
 
     }
 }
