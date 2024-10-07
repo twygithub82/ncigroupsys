@@ -20,7 +20,9 @@ namespace IDMS.Repair
             {
                 var repairEst = context.repair_est.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(d => d.repair_est_part)
-                        .ThenInclude(p => p.rep_damage_repair);
+                        .ThenInclude(p => p.rep_damage_repair)
+                    .Include(d => d.storing_order_tank)
+                        .ThenInclude(p => p.in_gate);
 
                 return repairEst;
             }
