@@ -43,7 +43,7 @@ namespace IDMS.Master.Application
                 //    .ForMember(dest => dest.guid, opt => opt.Ignore());
 
                 cfg.CreateMap<CustomerRequest, customer_company>();
-                //cfg.CreateMap<StoringOrderRequest, storing_order>();
+                cfg.CreateMap<ContactPersonRequest, customer_company_contact_person>();
             });
 
             IMapper mapper = mappingConfig.CreateMapper();

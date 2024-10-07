@@ -10,6 +10,8 @@ using IDMS.Customer.GqlTypes.LocalModel;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory;
+using static IDMS.Customer.GqlTypes.LocalModel.StatusConstant;
+using System.Xml.Schema;
 
 namespace IDMS.Customer.GqlTypes
 {
@@ -17,7 +19,7 @@ namespace IDMS.Customer.GqlTypes
     public class CustomerMutation
     {
         public async Task<int> AddCustomerCompany(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        [Service] IConfiguration config, [Service] IMapper mapper, CustomerRequest customer)
+        [Service] IConfiguration config, [Service] IMapper mapper, CustomerRequest customer, List<ContactPersonRequest> contactPersons)
         {
             try
             {
@@ -34,6 +36,22 @@ namespace IDMS.Customer.GqlTypes
                 newCustomer.create_by = user;
 
                 await context.customer_company.AddAsync(newCustomer);
+
+                IList<customer_company_contact_person> contactPersonList = new List<customer_company_contact_person>();
+                foreach (var cc in contactPersons) 
+                {
+                    customer_company_contact_person newContactPerson = new();
+                    mapper.Map(cc, newContactPerson);
+
+                    newContactPerson.guid = Util.GenerateGUID();
+                    newContactPerson.create_dt = currentDateTime;
+                    newContactPerson.create_by = user;
+                    newContactPerson.customer_guid = newCustomer.guid;
+
+                    contactPersonList.Add(newContactPerson);
+                }
+
+                await context.customer_company_contact_person.AddRangeAsync(contactPersonList);
                 var res = await context.SaveChangesAsync();
 
                 //TODO
@@ -49,14 +67,14 @@ namespace IDMS.Customer.GqlTypes
         }
 
         public async Task<int> UpdateCustomerCompany(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, [Service] IMapper mapper, CustomerRequest customer)
+            [Service] IConfiguration config, [Service] IMapper mapper, CustomerRequest customer, List<ContactPersonRequest> contactPersons)
         {
             try
             {
                 if (customer == null)
                     throw new GraphQLException(new Error($"Customer object or guid cannot be null", "ERROR"));
 
-                var updateCustomer = await context.customer_company.Where(c => c.guid.EqualsIgnore(customer.guid)).FirstOrDefaultAsync();
+                var updateCustomer = await context.customer_company.Where(c => c.guid == customer.guid).FirstOrDefaultAsync();
                 if(updateCustomer == null)
                     throw new GraphQLException(new Error($"Customer company not found", "ERROR"));
 
@@ -66,6 +84,52 @@ namespace IDMS.Customer.GqlTypes
                 mapper.Map(customer, updateCustomer);
                 updateCustomer.update_by = user;
                 updateCustomer.update_dt = currentDateTime;
+
+
+                foreach (var cc in contactPersons)
+                {
+                    if (ObjectAction.NEW.EqualsIgnore(cc.action))
+                    {
+                        customer_company_contact_person newContactPerson = new();
+                        mapper.Map(cc, newContactPerson);
+
+                        newContactPerson.guid = Util.GenerateGUID();
+                        newContactPerson.create_dt = currentDateTime;
+                        newContactPerson.create_by = user;
+                        newContactPerson.customer_guid = customer.guid;
+
+                        await context.customer_company_contact_person.AddAsync(newContactPerson);
+                    }
+
+                    if (ObjectAction.EDIT.EqualsIgnore(cc.action))
+                    {
+                        var extPerson = await context.customer_company_contact_person.FindAsync(cc.guid);
+                        if (extPerson != null) 
+                        {
+                            extPerson.update_by = user;
+                            extPerson.update_dt = currentDateTime;
+                            extPerson.customer_guid = cc.customer_guid;
+                            extPerson.email = cc.email;
+                            extPerson.title_cv = cc.title_cv;
+                            extPerson.department = cc.department;
+                            extPerson.department_id = cc.department_id;
+                            extPerson.name = cc.name;
+                            extPerson.phone = cc.phone;
+                            extPerson.job_title = cc.job_title;
+                            extPerson.email_alert = cc.email_alert; 
+                        }
+                    }
+
+                    if (ObjectAction.CANCEL.EqualsIgnore(cc.action))
+                    {
+                        var ccPerson = new customer_company_contact_person() { guid = cc.guid };
+                        context.Attach(ccPerson);
+
+                        ccPerson.update_by = user;
+                        ccPerson.update_dt = currentDateTime;
+                        cc.delete_dt = currentDateTime;
+                    }
+                }
 
                 var res = await context.SaveChangesAsync();
 
