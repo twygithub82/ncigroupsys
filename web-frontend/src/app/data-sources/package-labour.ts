@@ -96,17 +96,14 @@ export const GET_PACKAGE_LABOUR_QUERY = gql`
           update_dt
         }
         customer_company {
-          alias
           city
           code
           country
           create_by
           create_dt
           delete_dt
-          description
           effective_dt
           email
-          fax
           guid
           name
           phone
@@ -158,7 +155,6 @@ export const GET_CUSTOMER_COST = gql`
           address_line1
           address_line2
           agreement_due_dt
-          alias
           city
           code
           country
@@ -166,10 +162,8 @@ export const GET_CUSTOMER_COST = gql`
           create_dt
           currency_guid
           delete_dt
-          description
           effective_dt
           email
-          fax
           guid
           name
           phone

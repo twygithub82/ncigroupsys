@@ -129,6 +129,40 @@
           <div class="card">
             <div class="header">
               <h2>
+                {{translatedLangText.BILL_DETAILS}}
+              </h2>
+            </div>
+            <div class="body">
+              @if (sotDS.loadingSubject | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              @if (!(sotDS.loadingSubject | async)) {
+              <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
+                    <mat-select formControlName="bill_to">
+                      <!-- @for (template of templateList; track template) {
+                      <mat-option [value]="template"
+                        [ngClass]="{'bg-light-gold-opacity-30': template.type_cv === 'EXCLUSIVE'}">{{template.template_name}}</mat-option>
+                      } -->
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
                 {{translatedLangText.ESTIMATE_DETAILS}}
               </h2>
             </div>
@@ -296,27 +330,10 @@
                       </mat-row>
                     </table>
                   </div>
-                  @if (!repList.length) {
-                  <mat-divider></mat-divider>
-                  <div class="no-results m-l-20 pt-3" [style.display]="repList.length === 0 ? '' : 'none'">
-                    <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-                  </div>
-                  }
-                  @if (sotDS.loading$ | async) {
-                  <div class="tbl-spinner">
-                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                    </mat-progress-spinner>
-                  </div>
-                  }
                 </div>
               </div>
               }
               <mat-divider></mat-divider>
-              @if (repairEstForm?.get('sotList')?.hasError('required')) {
-              <mat-error class="ps-3">
-                {{translatedLangText.ADD_ATLEAST_ONE}}
-              </mat-error>
-              }
             </div>
           </div>
         </div>

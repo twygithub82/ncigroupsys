@@ -76,17 +76,14 @@ export const GET_PACKAGE_REPAIR_QUERY = gql`
       update_by
       update_dt
         customer_company {
-          alias
           city
           code
           country
           create_by
           create_dt
           delete_dt
-          description
           effective_dt
           email
-          fax
           guid
           name
           phone

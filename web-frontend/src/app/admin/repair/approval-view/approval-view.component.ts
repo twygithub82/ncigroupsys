@@ -204,7 +204,9 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     APPROVE: 'COMMON-FORM.APPROVE',
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
-    ROLLBACK: 'COMMON-FORM.ROLLBACK'
+    ROLLBACK: 'COMMON-FORM.ROLLBACK',
+    BILL_DETAILS: 'COMMON-FORM.BILL-DETAILS',
+    BILL_TO: 'COMMON-FORM.BILL-TO'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -229,7 +231,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
-  templateList: MasterTemplateItem[] = []
   surveyorList: UserItem[] = []
 
   customerCodeControl = new UntypedFormControl();
@@ -283,6 +284,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   initForm() {
     this.repairEstForm = this.fb.group({
+      bill_to: [''],
       guid: [''],
       est_template: [''],
       is_default_template: [''],
@@ -496,9 +498,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
           console.log(this.repairEstItem?.aspnetsuser);
           this.sotItem = this.repairEstItem?.storing_order_tank;
           this.populateRepairEst(this.repairEstItem);
-          // console.log(this.sotItem.storing_order?.customer_company_guid);
-          // this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
-          // this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
         }
       });
     }
@@ -532,37 +531,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   getCustomer() {
     return this.sotItem?.storing_order?.customer_company;
-  }
-
-  getTemplateList(customer_company_guid: string) {
-    const where = {
-      or: [
-        {
-          and: [
-            { template_est_customer: { some: { customer_company_guid: { eq: customer_company_guid } } } },
-            { type_cv: { eq: "EXCLUSIVE" } }
-          ]
-        },
-        { type_cv: { eq: "GENERAL" } }
-      ]
-    }
-    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, {}, customer_company_guid).subscribe(data => {
-      if (data?.length > 0) {
-        this.templateList = [new MasterTemplateItem({ template_name: "-" }), ...data];
-        const def_guid = this.getCustomer()?.def_template_guid;
-        if (!this.repair_est_guid) {
-          if (def_guid) {
-            this.repairEstForm?.get('is_default_template')?.setValue(true);
-          }
-
-          const def_template = this.templateList.find(x =>
-            def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
-          );
-
-          this.repairEstForm?.get('est_template')?.setValue(def_template);
-        }
-      }
-    });
   }
 
   getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {

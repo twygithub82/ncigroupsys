@@ -75,7 +75,6 @@ export const GET_PACKAGE_RESIDUE_QUERY = gql`
       update_by
       update_dt
       customer_company {
-        alias
         city
         code
         country

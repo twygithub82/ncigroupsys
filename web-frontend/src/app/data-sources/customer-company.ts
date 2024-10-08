@@ -12,8 +12,6 @@ export class CustomerCompanyGO {
     public guid?: string;
     public name?: string;
     public code?: string;
-    public description?: string;
-    public alias?: string;
     public tariff_depot_guid?: string;
     public address_line1?: string;
     public address_line2?: string;
@@ -21,14 +19,15 @@ export class CustomerCompanyGO {
     public country?: string;
     public postal?: string;
     public phone?: string;
-    public fax?: string;
     public email?: string;
     public website?: string;
     public effective_dt?: number;
     public agreement_due_dt?: number;
     public def_template_guid?: string;
-    public type_cv?:string;
-    public remarks?:string;
+    public remarks?: string;
+    public main_customer_guid?: string;
+    public billing_branch?: boolean;
+   
     public create_dt?: number;
     public create_by?: string;
     public update_dt?: number;
@@ -39,8 +38,6 @@ export class CustomerCompanyGO {
         this.guid = item.guid;
         this.name = item.name;
         this.code = item.code;
-        this.description = item.description;
-        this.alias = item.alias;
         this.tariff_depot_guid = item.tariff_depot_guid;
         this.address_line1 = item.address_line1;
         this.address_line2 = item.address_line2;
@@ -48,15 +45,15 @@ export class CustomerCompanyGO {
         this.country = item.country;
         this.postal = item.postal;
         this.phone = item.phone;
-        this.fax = item.fax;
         this.email = item.email;
         this.website = item.website;
         this.effective_dt = item.effective_dt;
         this.agreement_due_dt = item.agreement_due_dt;
         this.def_template_guid = item.def_template_guid;
-        this.type_cv=item.type_cv;
-        this.remarks=item.remarks;
-
+        this.remarks = item.remarks;
+        this.main_customer_guid = item.main_customer_guid;
+        this.billing_branch = item.billing_branch;
+       
         this.create_dt = item.create_dt;
         this.create_by = item.create_by;
         this.update_dt = item.update_dt;
@@ -103,17 +100,14 @@ export const SEARCH_COMPANY_QUERY = gql`
         address_line1
         address_line2
         agreement_due_dt
-        alias
         city
         code
         country
         create_by
         create_dt
         delete_dt
-        description
         effective_dt
         email
-        fax
         guid
         name
         phone
@@ -123,6 +117,8 @@ export const SEARCH_COMPANY_QUERY = gql`
         update_dt
         website
         remarks
+        main_customer_guid
+        billing_branch
         currency {
             create_by
             create_dt

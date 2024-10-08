@@ -123,17 +123,14 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
             address_line1
             address_line2
             agreement_due_dt
-            alias
             city
             code
             country
             create_by
             create_dt
             delete_dt
-            description
             effective_dt
             email
-            fax
             guid
             name
             phone
@@ -142,6 +139,9 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
             update_by
             update_dt
             website
+            remarks
+            main_customer_guid
+            billing_branch
         }
       }
     totalCount

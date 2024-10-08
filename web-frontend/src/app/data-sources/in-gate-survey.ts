@@ -392,8 +392,8 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
 `
 
 export const ADD_IN_GATE_SURVEY = gql`
-  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: ig_gateRequestInput!) {
-    record: addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: $inGate) {
+  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: in_gateInput!) {
+    record: addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateRequest: $inGate) {
       affected
       guid
     }
@@ -401,8 +401,8 @@ export const ADD_IN_GATE_SURVEY = gql`
 `;
 
 export const UPDATE_IN_GATE_SURVEY = gql`
-  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankRequestInput!) {
-    updateInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: $inGate)
+  mutation UpdateInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: in_gateInput!) {
+    updateInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateRequest: $inGate)
   }
 `;
 

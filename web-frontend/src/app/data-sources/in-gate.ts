@@ -221,7 +221,6 @@ export const GET_IN_GATE_BY_ID = gql`
             code
             guid
             name
-            alias
           }
           tariff_cleaning {
             alias

@@ -75,7 +75,6 @@ export const GET_CONTACT_PERSON = gql`
         address_line1
         address_line2
         agreement_due_dt
-        alias
         city
         code
         country
@@ -84,7 +83,6 @@ export const GET_CONTACT_PERSON = gql`
         currency_guid
         def_template_guid
         delete_dt
-        description
         effective_dt
         email
         fax

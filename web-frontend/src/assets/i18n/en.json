@@ -582,6 +582,8 @@
     "SALUTATION":"Salutation",
     "NAME":"Name",
     "INVALID-FORMAT":"Invalid Format",
+    "BILL-DETAILS":"Bill Details",
+    "BILL-TO":"Bill To",
     "NO-CONTACT-PERSON":"No Contact Person",
     "BRANCH-CODE":"Branch Code",
     "BRANCH-NAME":"Branch Name"
