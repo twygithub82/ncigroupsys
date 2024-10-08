@@ -65,9 +65,59 @@ export class ReleaseOrderSotUpdateItem extends ReleaseOrderSotUpdateRO {
   }
 }
 
+export const CHECK_ANY_ACTIVE_RELEASE_ORDER_SOT = gql`
+  query QueryReleaseOrderSOT($where: release_order_sotFilterInput){
+    resultList: queryReleaseOrderSOT(where: $where) {
+      nodes {
+        status_cv
+        sot_guid
+        guid
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+
+`;
+
 export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem> {
   constructor(private apollo: Apollo) {
     super();
+  }
+
+  ValidateSotInReleaseOrder(guid: string, sot_guid: string[]): Observable<ReleaseOrderSotItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = {
+      and: [
+        { guid: { neq: guid } },
+        { sot_guid: { in: sot_guid } },
+        { status_cv: { nin: ["CANCELED"] } },
+        { delete_dt: { eq: null } }
+      ]
+    }
+    return this.apollo
+      .query<any>({
+        query: CHECK_ANY_ACTIVE_RELEASE_ORDER_SOT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
   }
 
   canCancel(roSot: any): boolean {

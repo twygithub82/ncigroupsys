@@ -23,7 +23,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { CodeValuesDS } from 'app/data-sources/code-values';
-import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+// import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { Direction } from '@angular/cdk/bidi';
@@ -34,7 +34,7 @@ import { ContactPersonItem } from 'app/data-sources/contact-person';
 
 export interface DialogData {
   action?: string;
-  item?: RepairEstPartItem;
+  item?: ContactPersonItem;
   translatedLangText?: any;
   populateData?: any;
   index: number;
@@ -76,7 +76,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   customer_company_guid: string;
 
   contactPerson : ContactPersonItem;
-  contactPersonFrom: UntypedFormGroup;
+  contactPersonForm: UntypedFormGroup;
   repairPart: any;
   partNameControl: UntypedFormControl;
   partNameList?: string[];
@@ -118,23 +118,29 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     
     this.index = data.index;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
-    this.contactPersonFrom = this.createForm();
+    this.contactPersonForm = this.createForm();
     this.initializeValueChange();
-    this.patchForm();
+   // this.patchForm();
   }
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
       guid: [this.contactPerson.guid||''],
-      title_cv: [this.contactPerson.title_cv],
+      title_cv: [this.contactPerson.title_cv, [Validators.required]],
       customer_company: [this.contactPerson.customer_company],
-      name: [this.contactPerson.name],
-      email: [this.contactPerson.email],
+      name:  [this.contactPerson.name, [Validators.required]],
+      email: [this.contactPerson.email, [Validators.required, Validators.email]],
       department: [this.contactPerson.department],
       job_title: [this.contactPerson.job_title],
       customer_guid: [this.contactPerson.customer_guid],
-      did :[this.contactPerson.did],
-      contact:[this.contactPerson.contact]
+      did : [ this.contactPerson.did,
+        [Validators.required,
+        Validators.pattern(/^\+?[1-9]\d{8,10}$/)] // Adjust regex for your format
+      ],
+      contact: [this.contactPerson.contact,[
+        Validators.required,
+        Validators.pattern(/^\+?[1-9]\d{8,10}$/)] // Adjust regex for your format
+      ]
 
     });
   }
@@ -143,7 +149,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     // const selectedCodeValue = this.data.populateData.groupNameCvList.find(
     //   (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
     // );
-    this.contactPersonFrom.patchValue({
+    this.contactPersonForm.patchValue({
       guid: [this.contactPerson.guid||''],
       title_cv: [this.contactPerson.title_cv],
       customer_company: [this.contactPerson.customer_company],
@@ -158,26 +164,27 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   submit() {
-    if (this.contactPersonFrom?.valid) {
-      let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
-      if (this.action === 'new') {
-        if (!actions.includes('new')) {
-          actions = [...new Set([...actions, 'new'])];
-        }
-      } else {
-        if (!actions.includes('new')) {
-          actions = [...new Set([...actions, 'edit'])];
-        }
-      }
+    if (this.contactPersonForm?.valid) {
+    //  let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
+      // if (this.action === 'new') {
+      //   if (!actions.includes('new')) {
+      //     actions = [...new Set([...actions, 'new'])];
+      //   }
+      // } else {
+      //   if (!actions.includes('new')) {
+      //     actions = [...new Set([...actions, 'edit'])];
+      //   }
+      // }
       var rep: any = {
         ...this.contactPerson,
-        title_cv: this.contactPersonFrom?.get("title_cv")!.value,
-        name: this.contactPersonFrom?.get("name")!.value,
-        email: this.contactPersonFrom?.get("email")!.value,
-        department: this.contactPersonFrom?.get("department")!.value,
-        department_id: this.contactPersonFrom?.get("department_id")!.value,
-        job_title: this.contactPersonFrom?.get("job_title")!.value,
-        actions
+        title_cv: this.contactPersonForm?.get("title_cv")!.value,
+        name: this.contactPersonForm?.get("name")!.value,
+        email: this.contactPersonForm?.get("email")!.value,
+        department: this.contactPersonForm?.get("department")!.value,
+        contact: this.contactPersonForm?.get("contact")!.value,
+        job_title: this.contactPersonForm?.get("job_title")!.value,
+        did: this.contactPersonForm?.get("did")!.value,
+  //     actions
       }
   
       console.log(rep)
@@ -328,7 +335,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   // }
 
   findInvalidControls() {
-    const controls = this.contactPersonFrom.controls;
+    const controls = this.contactPersonForm.controls;
     for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);
