@@ -1,5 +1,6 @@
 ﻿using IDMS.Models.Inventory;
 using IDMS.Models.Package;
+using IDMS.Models.Service;
 using IDMS.Models.Shared;
 
 //using IDMS.StoringOrder.Model.Domain.Customer;
@@ -33,20 +34,27 @@ namespace IDMS.Models.Master
         public string? website { get; set; }
         public long? effective_dt { get; set; }
         public long? agreement_due_dt { get; set; }
-
+        public string? remarks { get; set; }
+        
         [ForeignKey("template_est")]
         public string? def_template_guid { get; set; }
 
         public currency? currency { get; set; }
-        public template_est? template_est { get; set; } 
+        
+        [UseFiltering]
+        public template_est? template_est { get; set; }
+
+        [UseFiltering]
+        public IEnumerable<repair_est>? repair_est { get; set; }
         public IEnumerable<storing_order_tank>? storing_order_tank { get; set; }
         public IEnumerable<storing_order>? storing_orders { get; set; }
+        
         [UseFiltering]
         public IEnumerable<customer_company_contact_person>? cc_contact_person { get; set; }
         public IEnumerable<release_order>? release_order { get; set; }
         public IEnumerable<package_residue>? package_residue { get; set; }
         public IEnumerable<package_buffer>? package_buffer { get; set; }
-        public IEnumerable<package_repair>? package_repair { get; set; }
+        public IEnumerable<package_repair>? package_repair { get; set; }    
         public IEnumerable<template_est_customer>? template_est_customer { get; set; }
     }
 

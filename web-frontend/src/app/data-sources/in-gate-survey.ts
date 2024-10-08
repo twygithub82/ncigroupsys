@@ -167,7 +167,7 @@ export interface InGateResult {
 
 
 export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
- query queryInGateCount($where: InGateWithTankFilterInput) {
+ query queryInGateCount($where: ig_gateFilterInput) {
     inGates: queryInGates(where: $where) {
       totalCount
   }
@@ -175,7 +175,7 @@ export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
 `;
 
 export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
-  query queryInGateForSurvey($where: InGateWithTankFilterInput, $order: [InGateWithTankSortInput!]) {
+  query queryInGateForSurvey($where: ig_gateFilterInput, $order: [ig_gateSortInput!]) {
     inGates: queryInGates(where: $where, order: $order) {
       totalCount
       nodes {
@@ -392,7 +392,7 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
 `
 
 export const ADD_IN_GATE_SURVEY = gql`
-  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: InGateWithTankRequestInput!) {
+  mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: ig_gateRequestInput!) {
     record: addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateWithTankRequest: $inGate) {
       affected
       guid

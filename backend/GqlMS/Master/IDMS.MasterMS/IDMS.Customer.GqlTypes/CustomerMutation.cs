@@ -19,7 +19,7 @@ namespace IDMS.Customer.GqlTypes
     public class CustomerMutation
     {
         public async Task<int> AddCustomerCompany(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        [Service] IConfiguration config, [Service] IMapper mapper, CustomerRequest customer, List<ContactPersonRequest> contactPersons)
+        [Service] IConfiguration config, [Service] IMapper mapper, CustomerRequest customer, List<customer_company_contact_person?>? contactPersons)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace IDMS.Customer.GqlTypes
 
                 await context.customer_company.AddAsync(newCustomer);
 
-                IList<customer_company_contact_person> contactPersonList = new List<customer_company_contact_person>();
+                IList<customer_company_contact_person> newContactPersonList = new List<customer_company_contact_person>();
                 foreach (var cc in contactPersons) 
                 {
                     customer_company_contact_person newContactPerson = new();
@@ -48,10 +48,10 @@ namespace IDMS.Customer.GqlTypes
                     newContactPerson.create_by = user;
                     newContactPerson.customer_guid = newCustomer.guid;
 
-                    contactPersonList.Add(newContactPerson);
+                    newContactPersonList.Add(newContactPerson);
                 }
 
-                await context.customer_company_contact_person.AddRangeAsync(contactPersonList);
+                await context.customer_company_contact_person.AddRangeAsync(newContactPersonList);
                 var res = await context.SaveChangesAsync();
 
                 //TODO
@@ -67,7 +67,7 @@ namespace IDMS.Customer.GqlTypes
         }
 
         public async Task<int> UpdateCustomerCompany(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, [Service] IMapper mapper, CustomerRequest customer, List<ContactPersonRequest> contactPersons)
+            [Service] IConfiguration config, [Service] IMapper mapper, CustomerRequest customer, List<customer_company_contact_person?>? contactPersons)
         {
             try
             {
@@ -112,7 +112,7 @@ namespace IDMS.Customer.GqlTypes
                             extPerson.email = cc.email;
                             extPerson.title_cv = cc.title_cv;
                             extPerson.department = cc.department;
-                            extPerson.department_id = cc.department_id;
+                            extPerson.did = cc.did;
                             extPerson.name = cc.name;
                             extPerson.phone = cc.phone;
                             extPerson.job_title = cc.job_title;

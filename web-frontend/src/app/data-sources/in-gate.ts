@@ -78,37 +78,15 @@ export interface InGateResult {
 
 
 export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
- query queryInGateCount($where: InGateWithTankFilterInput) {
+ query queryInGateCount($where: in_gateFilterInput) {
     inGates: queryInGates(where: $where) {
       totalCount
   }
 }
 `;
 
-export const IN_GATE_FRAGMENT = gql`
-  fragment InGateWithTankInputFields on InGateWithTankInput {
-    create_by
-    create_dt
-    delete_dt
-    driver_name
-    eir_dt
-    eir_doc
-    eir_no
-    guid
-    haulier
-    lolo_cv
-    preinspection_cv
-    so_tank_guid
-    remarks
-    update_by
-    update_dt
-    vehicle_no
-    yard_cv
-  }
-`;
-
 export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
-  query queryInGateForSurvey($where: InGateWithTankFilterInput, $order: [InGateWithTankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+  query queryInGateForSurvey($where: in_gateFilterInput, $order: [in_gateSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     inGates: queryInGates(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
       pageInfo {
@@ -186,7 +164,7 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
 `;
 
 export const GET_IN_GATE_BY_ID = gql`
-  query getInGateByID($where: InGateWithTankFilterInput) {
+  query getInGateByID($where: in_gateFilterInput) {
     inGates: queryInGates(where: $where) {
       totalCount
       nodes {
@@ -354,13 +332,13 @@ export const GET_IN_GATE_BY_ID = gql`
 `;
 
 export const ADD_IN_GATE = gql`
-  mutation AddInGate($inGate: InGateWithTankInput!) {
+  mutation AddInGate($inGate: in_gateInput!) {
     addInGate(inGate: $inGate)
   }
 `;
 
 export const UPDATE_IN_GATE = gql`
-  mutation UpdateInGate($inGate: InGateWithTankInput!) {
+  mutation UpdateInGate($inGate: in_gateInput!) {
     updateInGate(inGate: $inGate)
   }
 `;

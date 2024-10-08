@@ -189,6 +189,35 @@ namespace IDMS.Repair.GqlTypes
         }
 
 
+        public async Task<int> UpdateApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, repair_est RepairEstimate)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                //Handlind update approval for estimate
+                if (RepairEstimate != null && !string.IsNullOrEmpty(RepairEstimate.guid) && !string.IsNullOrEmpty(RepairEstimate.bill_to_guid))
+                {
+                    var est = new repair_est() { guid = RepairEstimate.guid };
+                    context.Attach(est);
+
+                    est.bill_to_guid = RepairEstimate.bill_to_guid;
+                    est.update_by = user;
+                    est.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex) 
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
         private async Task UpdateRepairDamageCode(ApplicationServiceDBContext context, string user, long currentDateTime,
                                           repair_est_part estPart, IEnumerable<rep_damage_repair>? repDamageRepair = null)
         {
@@ -262,6 +291,7 @@ namespace IDMS.Repair.GqlTypes
                 throw;
             }
         }
+
 
     }
 }

@@ -20,7 +20,7 @@ namespace IDMS.InGateSurvey.GqlTypes
         //[Authorize]
         public async Task<Record> AddInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
-            InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
+            InGateSurveyRequest inGateSurveyRequest, in_gate inGateRequest)
         {
             int retval = 0;
             List<string> retGuids = new List<string>();
@@ -41,30 +41,21 @@ namespace IDMS.InGateSurvey.GqlTypes
                 ingateSurvey.create_dt = currentDateTime;
                 context.in_gate_survey.Add(ingateSurvey);
 
-                var igWithTank = inGateWithTankRequest;
-                var ingate = context.in_gate.Where(i => i.guid == igWithTank.guid).FirstOrDefault();
+                //var igWithTank = inGateRequest;
+                var ingate = context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefault();
                 if (ingate != null)
                 {
-                    ingate.remarks = igWithTank.remarks;
-                    ingate.vehicle_no = igWithTank.vehicle_no;
-                    ingate.driver_name = igWithTank.driver_name;
-                    ingate.haulier = igWithTank.haulier;
+                    ingate.remarks = inGateRequest.remarks;
+                    ingate.vehicle_no = inGateRequest.vehicle_no;
+                    ingate.driver_name = inGateRequest.driver_name;
+                    ingate.haulier = inGateRequest.haulier;
                     //yet to survey --> pending
                     ingate.eir_status_cv = EirStatus.PENDING;
                     ingate.update_by = user;
                     ingate.update_dt = currentDateTime;
                 }
 
-                var tnk = inGateWithTankRequest.tank;
-                //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
-                //if (sot != null)
-                //{
-                //    sot.unit_type_guid = tnk.unit_type_guid;
-                //    sot.update_by = user;
-                //    sot.update_dt = currentDateTime;
-                //}
-
-                //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
+                var tnk = inGateRequest.tank;
                 storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
                 context.Attach(sot);
                 sot.unit_type_guid = tnk.unit_type_guid;
@@ -96,7 +87,7 @@ namespace IDMS.InGateSurvey.GqlTypes
         //[Authorize]
         public async Task<int> UpdateInGateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
-            InGateSurveyRequest inGateSurveyRequest, InGateWithTankRequest inGateWithTankRequest)
+            InGateSurveyRequest inGateSurveyRequest, in_gate inGateRequest)
         {
             int retval = 0;
 
@@ -128,29 +119,21 @@ namespace IDMS.InGateSurvey.GqlTypes
                     ingateSurvey.update_dt = currentDateTime;
                 }
 
-                var igWithTank = inGateWithTankRequest;
-                var ingate = context.in_gate.Where(i => i.guid == igWithTank.guid).FirstOrDefault();
+                //var igWithTank = inGateRequest;
+                var ingate = context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefault();
                 if (ingate != null)
                 {
-                    ingate.remarks = igWithTank.remarks;
-                    ingate.vehicle_no = igWithTank.vehicle_no;
-                    ingate.driver_name = igWithTank.driver_name;
-                    ingate.haulier = igWithTank.haulier;
+                    ingate.remarks = inGateRequest.remarks;
+                    ingate.vehicle_no = inGateRequest.vehicle_no;
+                    ingate.driver_name = inGateRequest.driver_name;
+                    ingate.haulier = inGateRequest.haulier;
                     //yet to survey --> pending
                     ingate.eir_status_cv = EirStatus.PENDING;
                     ingate.update_by = user;
                     ingate.update_dt = currentDateTime;
                 }
 
-                var tnk = inGateWithTankRequest.tank;
-                //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
-                //if (sot != null)
-                //{
-                //    sot.unit_type_guid = tnk.unit_type_guid;
-                //    sot.update_by = user;
-                //    sot.update_dt = currentDateTime;
-                //}
-
+                var tnk = inGateRequest.tank;
                 storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
                 context.Attach(sot);
                 sot.unit_type_guid = tnk.unit_type_guid;
