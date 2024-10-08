@@ -316,6 +316,17 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: []
       },
+      {
+        path: "admin/master/billing-branch",
+        title: "MENUITEMS.MASTER.LIST.BILLING-BRANCH",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: []
+      },
       // {
       //   path: "admin/master/estimate-template/new",
       //   title: "MENUITEMS.MASTER.LIST.ASSIGN-ESTIMATE-TEMPLATE",

@@ -1,0 +1,89 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h3>{{dialogTitle}}</h3>
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    <form class="register-form" [formGroup]="repairPartForm" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.FILTER}}</mat-label>
+            <input matInput formControlName="filter">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <div class="responsive_table">
+            <table mat-table [dataSource]="templateRepairList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+              <!-- ID Column -->
+              <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="part_name">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  {{data.translatedLangText.PART_NAME}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" class="">
+                  <span class="mobile-label">{{data.translatedLangText.PART_NAME}}:</span>{{row.part_name}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="dimension">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  {{data.translatedLangText.DIMENSION}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row" class="">
+                  <span class="mobile-label">{{data.translatedLangText.DIMENSION}}:</span>{{row.dimension}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="length">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{data.translatedLangText.LENGTH}}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <span class="mobile-label">{{data.translatedLangText.LENGTH}}:</span>{{row.length}}{{getUnitTypeDescription(row.length_unit_cv)}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="material_cost">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{data.translatedLangText.MATERIAL_COST}}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <span class="mobile-label">{{data.translatedLangText.MATERIAL_COST}}:</span>
+                  <div class="cost-label">
+                    <span>$</span><span>{{row.material_cost | number: '1.2-2'}}</span>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="submit(row)" [style.cursor]="'pointer'" matRipple>
+              </mat-row>
+            </table>
+          </div>
+          <!-- No result -->
+          @if (!(sotDS.loading$ | async) && !templateRepairList.length) {
+          <mat-divider></mat-divider>
+          <div class="no-results m-l-20 pt-3" [style.display]="templateRepairList.length === 0 ? '' : 'none'">
+            <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
+          </div>
+          }
+          <!-- Loading spinner -->
+          @if (sotDS.loading$ | async) {
+          <div class="tbl-spinner">
+            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+            </mat-progress-spinner>
+          </div>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

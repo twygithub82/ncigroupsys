@@ -21,69 +21,35 @@
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                    <input matInput formControlName="customer_code" required>
-                    @if (ccForm?.get('customer_code')?.hasError('required')) {
-                      <mat-error>
-                        {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.SO_REQUIRED}}
-                      </mat-error>
-                      }
-                    @if (ccForm?.get('customer_code')?.hasError('existed')) {
-                        <mat-error>
-                          {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.EXISTED}}
-                        </mat-error>
-                        }
+                    <mat-select  formControlName="customer_code" required>
+                      <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
+                       
+                        <ng-container *ngIf="cc !== null">
+                          {{ ccDS.displayName(cc) }}
+                        </ng-container>
+                       
+                      </mat-option>
+                    </mat-select>
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.CUSTOMER_TYPE }}</mat-label>
-                      <mat-select  formControlName="customer_type" required >
-                          <mat-option *ngFor="let cc of this.customerTypeCvList" [value]="cc">
-                           
-                            <ng-container *ngIf="cc !== null">
-                              {{ cc.description }}
-                            </ng-container>
-                           
-                          </mat-option>
-                        </mat-select>
+                      <mat-label>{{translatedLangText.BRANCH_CODE }}</mat-label>
+                      <input matInput formControlName="branch_code" required >
                      
                   </mat-form-field>
                   
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm12 mb-1">
+                <div class="col-xl-7 col-lg-7 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.CUSTOMER_NAME }}</mat-label>
-                      <input matInput formControlName="customer_name" required >
-                      @if (ccForm?.get('customer_name')?.hasError('required')) {
+                      <mat-label>{{translatedLangText.BRANCH_NAME }}</mat-label>
+                      <input matInput formControlName="branch_name" required >
+                      @if (ccForm?.get('branch_name')?.hasError('required')) {
                         <mat-error>
-                          {{this.translatedLangText.CUSTOMER_NAME}} {{this.translatedLangText.SO_REQUIRED}}
+                          {{this.translatedLangText.BRANCH_NAME}} {{this.translatedLangText.SO_REQUIRED}}
                         </mat-error>
                         }
                   </mat-form-field>
-                </div>
-                <div class="col-xl-1 col-lg-1 col-md-12 col-sm12 mb-1">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
-                      <mat-select  formControlName="billing_branch">
-                        <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
-                         
-                          <ng-container *ngIf="cc !== null">
-                            {{ ccDS.displayName(cc) }}
-                          </ng-container>
-                         
-                        </mat-option>
-                      </mat-select>
-                     
-                  </mat-form-field>
-                  
-                </div>
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
-                  
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addContactPerson($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
-                  </button>
-                  
                 </div>
               </div>
               <div class="row">

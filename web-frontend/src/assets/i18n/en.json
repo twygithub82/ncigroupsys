@@ -140,7 +140,10 @@
         "ASSIGN-ESTIMATE-TEMPLATE": "Assign Template",
         "CUSTOMER": "Customer",
         "CUSTOMER-NEW": "New Customer",
-        "CUSTOMER-EDIT": "Edit Customer"
+        "CUSTOMER-EDIT": "Edit Customer",
+        "BILLING-BRANCH": "Billing Branch",
+        "BILLING-BRANCH-NEW": "New Billing Branch",
+        "BILLING-BRANCH-EDIT": "Edit Billing Branch"
       }
     },
     "NEW": {
@@ -578,7 +581,10 @@
     "BILLING-BRANCH":"Billing Branch",
     "SALUTATION":"Salutation",
     "NAME":"Name",
-    "INVALID-FORMAT":"Invalid Format"
+    "INVALID-FORMAT":"Invalid Format",
+    "NO-CONTACT-PERSON":"No Contact Person",
+    "BRANCH-CODE":"Branch Code",
+    "BRANCH-NAME":"Branch Name"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

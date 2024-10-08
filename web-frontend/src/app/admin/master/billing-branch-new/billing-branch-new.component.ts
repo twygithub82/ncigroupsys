@@ -63,10 +63,10 @@ import { ContactPersonItem } from 'app/data-sources/contact-person';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
-  selector: 'app-customer-new',
+  selector: 'app-billing-branch-new',
   standalone: true,
-  templateUrl: './customer-new.component.html',
-  styleUrl: './customer-new.component.scss',
+  templateUrl: './billing-branch-new.component.html',
+  styleUrl: './billing-branch-new.component.scss',
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -101,7 +101,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
     TlxFormFieldComponent,
   ]
 })
-export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'index',
     'group_name_cv',
@@ -115,8 +115,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
    // 'material',
     'actions'
   ];
-  pageTitleNew = 'MENUITEMS.MASTER.LIST.CUSTOMER-NEW'
-  pageTitleEdit = 'MENUITEMS.MASTER.LIST.CUSTOMER-EDIT'
+  pageTitleNew = 'MENUITEMS.MASTER.LIST.BILLING-BRANCH-NEW'
+  pageTitleEdit = 'MENUITEMS.MASTER.LIST.BILLING-BRANCH-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.REPAIR.LIST.ESTIMATE'
@@ -246,8 +246,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     NAME:"COMMON-FORM.NAME",
     INVALID_FORMAT:"COMMON-FORM.INVALID-FORMAT",
     ADD:"COMMON-FORM.ADD",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
-    
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    BRANCH_CODE:"COMMON-FORM.BRANCH-CODE",
+    BRANCH_NAME:"COMMON-FORM.BRANCH-NAME"
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -295,7 +296,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   billingBranchesControl= new UntypedFormControl();
   profileControl=new UntypedFormControl();
   customerTypeCvList: CodeValuesItem[]=[];
-  selectedCustomerCmp?: CustomerCompanyItem;
 
   constructor(
 
@@ -479,10 +479,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.ccForm = this.fb.group({
       guid: [''],
       customer_company_guid: [''],
-      customer_code: [''],
-      customer_name: [''],
-      customer_type: [''],
-      billing_branches:[''],
+      customer_code:[''],
+      branch_code: [''],
+      branch_name: [''],
       phone: [''],
       email: [''],
       web: [''],
@@ -511,56 +510,47 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
 
     if (this.historyState.selectedRow != null) {
 
-      this.selectedCustomerCmp = this.historyState.selectedRow;
+      this.selectedTempEst = this.historyState.selectedRow;
       const custCompanies = this.selectedTempEst?.template_est_customer?.filter(value => value.delete_dt == null);
       this.selectedTempEst!.template_est_customer = custCompanies;
       this.ccForm?.patchValue({
-        guid: this.selectedCustomerCmp?.guid,
-        customer_code: this.selectedCustomerCmp?.code,
-        customer_name: this.selectedCustomerCmp?.name,
-        customer_type: this.selectedCustomerCmp?.type_cv,
-        phone: this.selectedCustomerCmp?.phone,
-        email: this.selectedCustomerCmp?.email,
-        web: this.selectedCustomerCmp?.website,
-        currency: this.selectedCustomerCmp?.currency,
-        default_profile:[''],
-        address1: this.selectedCustomerCmp?.address_line1,
-        address2: this.selectedCustomerCmp?.address_line2,
-        postal_code: this.selectedCustomerCmp?.postal,
-        city_name: this.selectedCustomerCmp?.city,
-        country: this.selectedCustomerCmp?.country,
-        remarks:this.selectedCustomerCmp?.remarks,
+        guid: this.selectedTempEst?.guid,
+        labour_discount: this.selectedTempEst?.labour_cost_discount,
+        material_discount: this.selectedTempEst?.material_cost_discount,
+        // customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
+        template_name: this.selectedTempEst?.template_name,
+        remarks: this.selectedTempEst?.remarks,
       });
-      // var repairEstPartItem: RepairEstPartItem[] = [];
-      // this.selectedTempEst?.template_est_part!=this.SortRepairEstPart(this.selectedTempEst?.template_est_part!);
-      // repairEstPartItem = this.selectedTempEst?.template_est_part
-      //   ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
-      //   .map((item: Partial<TemplateEstPartItem>) => {
-      //     return {
-      //       actions: [],
-      //       create_by: item.create_by,
-      //       create_dt: item.create_dt,
-      //       description: item.description,
-      //       guid: item.guid,
-      //       hour: item.hour,
-      //       location_cv: item.location_cv,
-      //       material_cost: item.tariff_repair?.material_cost,
-      //       quantity: item.quantity,
-      //       remarks: item.remarks,
-      //       repair_est: undefined,
-      //       repair_est_guid: undefined,
-      //       tariff_repair: item.tariff_repair,
-      //       tariff_repair_guid: item.tariff_repair_guid,
-      //       update_by: item.update_by,
-      //       update_dt: item.update_dt,
-      //       tep_damage_repair: item.tep_damage_repair!,
+      var repairEstPartItem: RepairEstPartItem[] = [];
+      this.selectedTempEst?.template_est_part!=this.SortRepairEstPart(this.selectedTempEst?.template_est_part!);
+      repairEstPartItem = this.selectedTempEst?.template_est_part
+        ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
+        .map((item: Partial<TemplateEstPartItem>) => {
+          return {
+            actions: [],
+            create_by: item.create_by,
+            create_dt: item.create_dt,
+            description: item.description,
+            guid: item.guid,
+            hour: item.hour,
+            location_cv: item.location_cv,
+            material_cost: item.tariff_repair?.material_cost,
+            quantity: item.quantity,
+            remarks: item.remarks,
+            repair_est: undefined,
+            repair_est_guid: undefined,
+            tariff_repair: item.tariff_repair,
+            tariff_repair_guid: item.tariff_repair_guid,
+            update_by: item.update_by,
+            update_dt: item.update_dt,
+            tep_damage_repair: item.tep_damage_repair!,
             
-      //       // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
-      //       // Map other fields as needed
-      //     } as RepairEstPartItem;
-      //   }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
-      // this.populateSOT(repairEstPartItem!);
-      // this.calculateCostSummary();
+            // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
+            // Map other fields as needed
+          } as RepairEstPartItem;
+        }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
+      this.populateSOT(repairEstPartItem!);
+      this.calculateCostSummary();
     }
 
     this.temp_guid = this.route.snapshot.paramMap.get('id');
@@ -608,7 +598,42 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   
       
         });
-  
+    //   if (subqueries.length > 0) {
+
+
+    //     this.cvDS?.getCodeValuesByType(subqueries)
+    //     subqueries.map(s => {
+    //       this.cvDS?.connectAlias(s.alias).subscribe(data => {
+    //         this.allSubGroupNameCvList.push(...data);
+    //       });
+    //     });
+
+    //   }
+    // });
+    // this.cvDS.connectAlias('yesnoCv').subscribe(data => {
+    //   this.yesnoCvList = data;
+    // });
+    // this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
+    //   this.soTankStatusCvList = data;
+    // });
+    // this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
+    //   this.purposeOptionCvList = data;
+    // });
+    // this.cvDS.connectAlias('testTypeCv').subscribe(data => {
+    //   this.testTypeCvList = data;
+    // });
+    // this.cvDS.connectAlias('testClassCv').subscribe(data => {
+    //   this.testClassCvList = data;
+    // });
+    // this.cvDS.connectAlias('partLocationCv').subscribe(data => {
+    //   this.partLocationCvList = data;
+    // });
+    // this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
+    //   this.damageCodeCvList = data;
+    // });
+    // this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
+    //   this.repairCodeCvList = data;
+    // });
   }
 
   
@@ -696,7 +721,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
   }
 
   
-  editEstDetails(event: Event, row: ContactPersonItem, index: number) {
+  editEstDetails(event: Event, row: RepairEstPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -729,6 +754,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         } else {
           this.updateData([...this.repList.data, result.item]);
         }
+       
 
       }
     });

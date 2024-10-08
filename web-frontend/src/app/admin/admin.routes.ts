@@ -38,6 +38,8 @@ import { CustomerComponent } from './master/customer/customer.component';
 import { CustomerNewComponent } from './master/customer-new/customer-new.component';
 import { ApprovalComponent } from './repair/approval/approval.component';
 import { ApprovalViewComponent } from './repair/approval-view/approval-view.component';
+import { BillingBranchComponent } from './master/billing-branch/billing-branch.component';
+import { BillingBranchNewComponent } from './master/billing-branch-new/billing-branch-new.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -223,6 +225,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path:"master/customer/new/:id",
     component:CustomerNewComponent,
+  },
+  {
+    path:"master/billing-branch",
+    component:BillingBranchComponent,
+  },
+  {
+    path:"master/billing-branch/new/:id",
+    component:BillingBranchNewComponent,
   },
 ];
 

@@ -27,7 +27,8 @@ export class CustomerCompanyGO {
     public effective_dt?: number;
     public agreement_due_dt?: number;
     public def_template_guid?: string;
-   
+    public type_cv?:string;
+    public remarks?:string;
     public create_dt?: number;
     public create_by?: string;
     public update_dt?: number;
@@ -53,7 +54,9 @@ export class CustomerCompanyGO {
         this.effective_dt = item.effective_dt;
         this.agreement_due_dt = item.agreement_due_dt;
         this.def_template_guid = item.def_template_guid;
-       
+        this.type_cv=item.type_cv;
+        this.remarks=item.remarks;
+
         this.create_dt = item.create_dt;
         this.create_by = item.create_by;
         this.update_dt = item.update_dt;
@@ -74,6 +77,12 @@ export interface CustomerCompanyResult {
     items: CustomerCompanyItem[];
     totalCount: number;
 }
+
+export const ADD_CUSTOMER_COMPANY=gql`
+    mutation addCustomerCompany($customer: CustomerRequestInput!,$contactPerson:[ContactPersonRequestInput!]!) {
+    adCustomerCompany(customer: $customer,contactPerson:$contactPerson)
+  }
+`
 
 export const GET_COMPANY_QUERY = gql`
   query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!],$first: Int) {
@@ -113,6 +122,7 @@ export const SEARCH_COMPANY_QUERY = gql`
         update_by
         update_dt
         website
+        remarks
         currency {
             create_by
             create_dt
