@@ -24,10 +24,10 @@ export class CustomerCompanyGO {
     public effective_dt?: number;
     public agreement_due_dt?: number;
     public def_template_guid?: string;
+    public type_cv?: string;
     public remarks?: string;
     public main_customer_guid?: string;
     public billing_branch?: boolean;
-   
     public create_dt?: number;
     public create_by?: string;
     public update_dt?: number;
@@ -50,10 +50,10 @@ export class CustomerCompanyGO {
         this.effective_dt = item.effective_dt;
         this.agreement_due_dt = item.agreement_due_dt;
         this.def_template_guid = item.def_template_guid;
+        this.type_cv = item.type_cv;
         this.remarks = item.remarks;
         this.main_customer_guid = item.main_customer_guid;
         this.billing_branch = item.billing_branch;
-       
         this.create_dt = item.create_dt;
         this.create_by = item.create_by;
         this.update_dt = item.update_dt;
@@ -63,7 +63,7 @@ export class CustomerCompanyGO {
 }
 
 export class CustomerCompanyItem extends CustomerCompanyGO {
-    public currency?:CurrencyItem;
+    public currency?: CurrencyItem;
     constructor(item: Partial<CustomerCompanyItem> = {}) {
         super(item);
         this.currency = item.currency;
@@ -75,7 +75,7 @@ export interface CustomerCompanyResult {
     totalCount: number;
 }
 
-export const ADD_CUSTOMER_COMPANY=gql`
+export const ADD_CUSTOMER_COMPANY = gql`
     mutation addCustomerCompany($customer: CustomerRequestInput!,$contactPerson:[ContactPersonRequestInput!]!) {
     adCustomerCompany(customer: $customer,contactPerson:$contactPerson)
   }
