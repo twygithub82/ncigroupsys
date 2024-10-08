@@ -18,7 +18,7 @@ namespace IDMS.Customer.GqlTypes.LocalModel
         public string? job_title { get; set; }
         public string? email { get; set; }
         public string? department { get; set; }
-        public string? department_id { get; set; }
+        public string? did { get; set; }
         public string? phone { get; set; }
         public int? email_alert { get; set; } = 0;
         public string? action { get; set; } 

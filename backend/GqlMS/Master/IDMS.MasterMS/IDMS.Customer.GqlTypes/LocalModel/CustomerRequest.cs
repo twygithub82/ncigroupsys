@@ -29,5 +29,6 @@ namespace IDMS.Customer.GqlTypes.LocalModel
         public long? effective_dt { get; set; }
         public long? agreement_due_dt { get; set; }
         public string? def_template_guid { get; set; }
+        public string? remarks { get; set; }
     }
 }
