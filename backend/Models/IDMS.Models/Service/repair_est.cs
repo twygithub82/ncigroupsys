@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Inventory;
+using IDMS.Models.Master;
 using IDMS.Models.Shared;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,12 @@ namespace IDMS.Models.Service
         public string? remarks { get; set; }
         public bool owner_enable { get; set; } = false;
         public string? status_cv { get; set; }
+
+        [ForeignKey("customer_company")]
+        public string? bill_to_guid { get; set; }
+
+        [UseFiltering]
+        public customer_company? customer_company { get; set; }
 
         [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; }
