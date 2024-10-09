@@ -17,7 +17,7 @@
             <mat-label>{{data.translatedLangText.SALUTATION}}</mat-label>
             <mat-select formControlName="title_cv" required>
               @for (codeValue of data.populateData.satulationCvList; track codeValue) {
-              <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
+              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
               }
             </mat-select>
             @if (contactPersonForm?.get('title_cv')?.hasError('required')) {
@@ -52,7 +52,7 @@
                 </mat-error>
               }
 
-              @if (contactPersonForm?.get('contact')?.hasError('email')) {
+              @if (contactPersonForm?.get('email')?.hasError('email')) {
                 <mat-error>
                 {{data.translatedLangText.EMAIL}} {{data.translatedLangText.INVALID_FORMAT}}
                 </mat-error>
@@ -64,8 +64,8 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.MOBILE_NO}}</mat-label>
-            <input matInput formControlName="contact" required maxlength="13">
-            @if (contactPersonForm?.get('contact')?.hasError('required')) {
+            <input matInput formControlName="phone" required maxlength="13">
+            @if (contactPersonForm?.get('phone')?.hasError('required')) {
               <mat-error>
               {{data.translatedLangText.MOBILE_NO}} {{data.translatedLangText.SO_REQUIRED}}
               </mat-error>

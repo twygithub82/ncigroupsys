@@ -144,7 +144,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         [Validators.required,
         Validators.pattern(/^\+?[1-9]\d{7,10}$/)] // Adjust regex for your format
       ],
-      contact: [this.contactPerson.contact,[
+      phone: [this.contactPerson.phone,[
         Validators.required,
         Validators.pattern(/^\+?[1-9]\d{7,10}$/)] // Adjust regex for your format
       ]
@@ -164,7 +164,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       email: this.contactPerson.email,
       department: this.contactPerson.department,
       did :this.contactPerson.did,
-      contact:this.contactPerson.contact,
+      phone:this.contactPerson.phone,
       job_title: this.contactPerson.job_title,
       customer_guid: this.contactPerson.customer_guid
     });
@@ -188,7 +188,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         name: this.contactPersonForm?.get("name")!.value,
         email: this.contactPersonForm?.get("email")!.value,
         department: this.contactPersonForm?.get("department")!.value,
-        contact: this.contactPersonForm?.get("contact")!.value,
+        phone: this.contactPersonForm?.get("phone")!.value,
         job_title: this.contactPersonForm?.get("job_title")!.value,
         did: this.contactPersonForm?.get("did")!.value,
   //     actions

@@ -7,6 +7,7 @@ import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
 import { CurrencyItem } from './currency';
+import { ContactPersonItem } from './contact-person';
 
 export class CustomerCompanyGO {
     public guid?: string;
@@ -26,6 +27,7 @@ export class CustomerCompanyGO {
     public def_template_guid?: string;
     public type_cv?: string;
     public remarks?: string;
+    public currency_guid?:string;
     public main_customer_guid?: string;
     public billing_branch?: boolean;
     public create_dt?: number;
@@ -52,6 +54,7 @@ export class CustomerCompanyGO {
         this.def_template_guid = item.def_template_guid;
         this.type_cv = item.type_cv;
         this.remarks = item.remarks;
+        this.currency_guid=item.currency_guid;
         this.main_customer_guid = item.main_customer_guid;
         this.billing_branch = item.billing_branch;
         this.create_dt = item.create_dt;
@@ -64,9 +67,12 @@ export class CustomerCompanyGO {
 
 export class CustomerCompanyItem extends CustomerCompanyGO {
     public currency?: CurrencyItem;
+    public cc_contact_person?:ContactPersonItem[]=[];
+
     constructor(item: Partial<CustomerCompanyItem> = {}) {
         super(item);
         this.currency = item.currency;
+        this.cc_contact_person=item.cc_contact_person;
     }
 }
 
@@ -76,8 +82,8 @@ export interface CustomerCompanyResult {
 }
 
 export const ADD_CUSTOMER_COMPANY = gql`
-    mutation addCustomerCompany($customer: CustomerRequestInput!,$contactPerson:[ContactPersonRequestInput!]!) {
-    adCustomerCompany(customer: $customer,contactPerson:$contactPerson)
+    mutation addCustomerCompany($customer: CustomerRequestInput!,$contactPersons:[customer_company_contact_personInput],$billingBranches:[BillingBranchRequestInput]) {
+    addCustomerCompany(customer: $customer,contactPersons:$contactPersons,billingBranches:$billingBranches)
   }
 `
 
@@ -117,8 +123,23 @@ export const SEARCH_COMPANY_QUERY = gql`
         update_dt
         website
         remarks
-        main_customer_guid
-        billing_branch
+         cc_contact_person {
+          create_by
+          create_dt
+          customer_guid
+          delete_dt
+          department
+          did
+          email
+          email_alert
+          guid
+          job_title
+          name
+          phone
+          title_cv
+          update_by
+          update_dt
+        }
         currency {
             create_by
             create_dt
@@ -243,5 +264,23 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
 
     displayName(cc?: CustomerCompanyItem): string {
         return cc?.code ? `${cc.code} (${cc.name})` : '';
+    }
+
+    AddCustomerCompany(customer:any,contactPersons:any,billingBranches:any):Observable<any>
+    {
+        return this.apollo.mutate({
+            mutation: ADD_CUSTOMER_COMPANY,
+            variables: {
+              customer,
+              contactPersons,
+              billingBranches
+            }
+          }).pipe(
+            catchError((error: ApolloError) => {
+              console.error('GraphQL Error:', error);
+              return of(0); // Return an empty array on error
+            }),
+          );
+
     }
 }

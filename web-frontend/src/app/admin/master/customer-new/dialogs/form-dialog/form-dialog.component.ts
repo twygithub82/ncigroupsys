@@ -22,7 +22,7 @@ import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
-import { CodeValuesDS } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
@@ -119,7 +119,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.contactPerson= data.item ? data.item : new ContactPersonItem();
     
     this.index = data.index;
-    this.title_control.setValue(this.contactPerson.title_cv);
+   // this.title_control.setValue(this.contactPerson.title_cv);
   
     this.initializeValueChange();
    // this.patchForm();
@@ -144,7 +144,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         [Validators.required,
         Validators.pattern(/^\+?[1-9]\d{7,10}$/)] // Adjust regex for your format
       ],
-      contact: [this.contactPerson.contact,[
+      phone: [this.contactPerson.phone,[
         Validators.required,
         Validators.pattern(/^\+?[1-9]\d{7,10}$/)] // Adjust regex for your format
       ]
@@ -164,7 +164,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       email: this.contactPerson.email,
       department: this.contactPerson.department,
       did :this.contactPerson.did,
-      contact:this.contactPerson.contact,
+      phone:this.contactPerson.phone,
       job_title: this.contactPerson.job_title,
       customer_guid: this.contactPerson.customer_guid
     });
@@ -188,7 +188,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         name: this.contactPersonForm?.get("name")!.value,
         email: this.contactPersonForm?.get("email")!.value,
         department: this.contactPersonForm?.get("department")!.value,
-        contact: this.contactPersonForm?.get("contact")!.value,
+        phone: this.contactPersonForm?.get("phone")!.value,
         job_title: this.contactPersonForm?.get("job_title")!.value,
         did: this.contactPersonForm?.get("did")!.value,
   //     actions
@@ -397,6 +397,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   getUnitTypeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
+  }
+
+  getTitleCvObject(codeValType:string):CodeValuesItem |undefined{
+    return this.cvDS.getCodeObject(codeValType,this.data.populateData.satulationCvList);
   }
 
   // getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {

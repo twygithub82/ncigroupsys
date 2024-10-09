@@ -19,7 +19,7 @@ export class ContactPersonItem {
     public email?: string;
     public department?: string;
     public did?: string;
-    public contact?:string;
+    public phone?:string;
     public email_alert?: number;
     public create_dt?: number;
     public create_by?: string;
@@ -38,7 +38,7 @@ export class ContactPersonItem {
         this.email = item.email;
         this.department = item.department;
         this.did = item.did;
-        this.contact=item.contact;
+        this.phone=item.phone;
         this.email_alert = item.email_alert;
         this.email = item.email;
         

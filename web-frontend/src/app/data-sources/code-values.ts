@@ -135,4 +135,12 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
     }
     return '';
   }
+
+  getCodeObject(codeValType: string | undefined, codeValItem: CodeValuesItem[]): CodeValuesItem | undefined {
+    let cv = codeValItem?.filter(cv => cv.code_val === codeValType);
+    if (cv?.length) {
+      return cv[0];
+    }
+    return undefined;
+  }
 }
