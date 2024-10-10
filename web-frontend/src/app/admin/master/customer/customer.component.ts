@@ -298,6 +298,25 @@ implements OnInit {
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    var state = history.state;
+    if(state.type=="customer-company")
+    {
+      let showResult = state.pagination.showResult;
+      if(showResult)
+      {
+      this.searchCriteriaService=state.pagination.where;
+      this.pageIndex=state.pagination.pageIndex;
+      this.pageSize= state.pagination.pageSize;
+      this.hasPreviousPage=state.pagination.hasPreviousPage;
+      this.startCursor=state.pagination.startCursor;
+      this.endCursor=state.pagination.endCursor;
+      this.previous_endCursor=state.pagination.previous_endCursor;
+      this.paginator.pageSize=this.pageSize;
+      this.paginator.pageIndex=this.pageIndex;
+      this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+      }
+
+    }
   }
 
   initPcForm() {

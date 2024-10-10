@@ -119,7 +119,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   pageTitleEdit = 'MENUITEMS.MASTER.LIST.BILLING-BRANCH-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.ESTIMATE'
+    'MENUITEMS.MASTER.LIST.BILLING-BRANCH'
   ]
   translatedLangText: any = {}
   langText = {
@@ -500,6 +500,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 SortRepairEstPart(items:TemplateEstPartItem[]):TemplateEstPartItem[]{
+  if(items.length==0) return [];
 var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_dt!);
 
   return retval;
@@ -508,50 +509,50 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   public loadData() {
     this.historyState = history.state;
 
-    if (this.historyState.selectedRow != null) {
+    // if (this.historyState.selectedRow != null) {
 
-      this.selectedTempEst = this.historyState.selectedRow;
-      const custCompanies = this.selectedTempEst?.template_est_customer?.filter(value => value.delete_dt == null);
-      this.selectedTempEst!.template_est_customer = custCompanies;
-      this.ccForm?.patchValue({
-        guid: this.selectedTempEst?.guid,
-        labour_discount: this.selectedTempEst?.labour_cost_discount,
-        material_discount: this.selectedTempEst?.material_cost_discount,
-        // customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
-        template_name: this.selectedTempEst?.template_name,
-        remarks: this.selectedTempEst?.remarks,
-      });
-      var repairEstPartItem: RepairEstPartItem[] = [];
-      this.selectedTempEst?.template_est_part!=this.SortRepairEstPart(this.selectedTempEst?.template_est_part!);
-      repairEstPartItem = this.selectedTempEst?.template_est_part
-        ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
-        .map((item: Partial<TemplateEstPartItem>) => {
-          return {
-            actions: [],
-            create_by: item.create_by,
-            create_dt: item.create_dt,
-            description: item.description,
-            guid: item.guid,
-            hour: item.hour,
-            location_cv: item.location_cv,
-            material_cost: item.tariff_repair?.material_cost,
-            quantity: item.quantity,
-            remarks: item.remarks,
-            repair_est: undefined,
-            repair_est_guid: undefined,
-            tariff_repair: item.tariff_repair,
-            tariff_repair_guid: item.tariff_repair_guid,
-            update_by: item.update_by,
-            update_dt: item.update_dt,
-            tep_damage_repair: item.tep_damage_repair!,
+    //   this.selectedTempEst = this.historyState.selectedRow;
+    //   const custCompanies = this.selectedTempEst?.template_est_customer?.filter(value => value.delete_dt == null);
+    //   this.selectedTempEst!.template_est_customer = custCompanies;
+    //   this.ccForm?.patchValue({
+    //     guid: this.selectedTempEst?.guid,
+    //     labour_discount: this.selectedTempEst?.labour_cost_discount,
+    //     material_discount: this.selectedTempEst?.material_cost_discount,
+    //     // customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
+    //     template_name: this.selectedTempEst?.template_name,
+    //     remarks: this.selectedTempEst?.remarks,
+    //   });
+    //   var repairEstPartItem: RepairEstPartItem[] = [];
+    //   this.selectedTempEst?.template_est_part!=this.SortRepairEstPart(this.selectedTempEst?.template_est_part!);
+    //   repairEstPartItem = this.selectedTempEst?.template_est_part
+    //     ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
+    //     .map((item: Partial<TemplateEstPartItem>) => {
+    //       return {
+    //         actions: [],
+    //         create_by: item.create_by,
+    //         create_dt: item.create_dt,
+    //         description: item.description,
+    //         guid: item.guid,
+    //         hour: item.hour,
+    //         location_cv: item.location_cv,
+    //         material_cost: item.tariff_repair?.material_cost,
+    //         quantity: item.quantity,
+    //         remarks: item.remarks,
+    //         repair_est: undefined,
+    //         repair_est_guid: undefined,
+    //         tariff_repair: item.tariff_repair,
+    //         tariff_repair_guid: item.tariff_repair_guid,
+    //         update_by: item.update_by,
+    //         update_dt: item.update_dt,
+    //         tep_damage_repair: item.tep_damage_repair!,
             
-            // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
-            // Map other fields as needed
-          } as RepairEstPartItem;
-        }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
-      this.populateSOT(repairEstPartItem!);
-      this.calculateCostSummary();
-    }
+    //         // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
+    //         // Map other fields as needed
+    //       } as RepairEstPartItem;
+    //     }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
+    //   this.populateSOT(repairEstPartItem!);
+    //   this.calculateCostSummary();
+    // }
 
     this.temp_guid = this.route.snapshot.paramMap.get('id');
     if (this.temp_guid?.trim() == '') {

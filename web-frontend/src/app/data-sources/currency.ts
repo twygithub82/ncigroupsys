@@ -37,8 +37,8 @@ export class CurrencyItem {
 
 
 const GET_CURRENCY= gql`
-  query queryCurrency($where: currenyFilterInput, $order: [currencySortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    resultList: queryUsers(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+  query queryCurrency($where: currencyFilterInput, $order: [currencySortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryCurrency(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
       nodes {
         create_by

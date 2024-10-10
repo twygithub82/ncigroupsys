@@ -49,7 +49,15 @@ export class ContactPersonItem {
         this.delete_dt = item.delete_dt;
     }
 }
+export class ContactPersonItemAction extends ContactPersonItem {
+    public action?: string;
+   
 
+    constructor(item: Partial<any> = {}) {
+        super(item);
+        this.action=item['action'];
+    }
+}
 
 
 export const GET_CONTACT_PERSON = gql`

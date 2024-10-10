@@ -59,9 +59,10 @@ import { EstimateComponent } from 'app/admin/repair/estimate/estimate.component'
 import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { elements } from 'chart.js';
-import { ContactPersonItem } from 'app/data-sources/contact-person';
+import { ContactPersonItem, ContactPersonItemAction } from 'app/data-sources/contact-person';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { BillingBranchesItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
+import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 
 @Component({
   selector: 'app-customer-new',
@@ -263,7 +264,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   selectedTempEst?: MasterTemplateItem;
   sotItem?: StoringOrderTankItem;
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  repList = new MatTableDataSource<ContactPersonItem>();
+  
+
+  repList = new MatTableDataSource<ContactPersonItemAction>();
   sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
   groupNameCvList: CodeValuesItem[] = [];
@@ -287,6 +290,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
+  curDS:CurrencyDS;
   // igDS: InGateDS;
   // trLabourDS: TariffLabourDS;
   // estTempDS: MasterEstimateTemplateDS
@@ -297,6 +301,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   profileControl=new UntypedFormControl();
   customerTypeCvList: CodeValuesItem[]=[];
   selectedCustomerCmp?: CustomerCompanyItem;
+  currencyList?:CurrencyItem[]=[];
 
   constructor(
 
@@ -317,6 +322,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
+    this.curDS= new CurrencyDS(this.apollo);
     // this.igDS = new InGateDS(this.apollo);
     // this.trLabourDS = new TariffLabourDS(this.apollo);
     // this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
@@ -484,8 +490,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       customer_name: [''],
       customer_type: [''],
       billing_branches:[''],
-      phone: [''],
-      email: [''],
+      phone:    ['',[Validators.required,
+        Validators.pattern(/^\+?[1-9]\d{7,10}$/)]], // Adjust regex for your format,
+      email: ['',[Validators.required, Validators.email]],
       web: [''],
       currency: [''],
       default_profile:[''],
@@ -523,8 +530,8 @@ PatchSelectedRowValue(){
       phone: this.selectedCustomerCmp?.phone,
       email: this.selectedCustomerCmp?.email,
       web: this.selectedCustomerCmp?.website,
-      currency: this.selectedCustomerCmp?.currency,
-      default_profile:[''],
+      currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
+      default_profile:this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
       address1: this.selectedCustomerCmp?.address_line1,
       address2: this.selectedCustomerCmp?.address_line2,
       postal_code: this.selectedCustomerCmp?.postal,
@@ -532,18 +539,37 @@ PatchSelectedRowValue(){
       country: this.selectedCustomerCmp?.country,
       remarks:this.selectedCustomerCmp?.remarks,
     });
-    this.updateData(this.selectedCustomerCmp?.cc_contact_person!);
+
+    var existContact = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
+      ...row,
+     action:''
+    }));
+    this.updateData(existContact!);
   }
 
 }
+
+
   public loadData() {
   
+
     this.customer_guid = this.route.snapshot.paramMap.get('id');
     if (this.customer_guid?.trim() == '') {
       this.customer_guid = undefined;
     }
 
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 20).subscribe(data => {
+    this.curDS.search({},{sequence:'ASC'},100).subscribe(data=>{
+      this.currencyList=data;
+      if(this.selectedCustomerCmp)
+      {
+        this.ccForm?.patchValue({
+          currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
+        })
+      }
+  
+    });
+
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
       this.customer_companyList = data
       if (data.length) {
         const selectedCustomerGuids = this.selectedTempEst?.template_est_customer?.map(customer => customer.customer_company_guid);
@@ -562,6 +588,12 @@ PatchSelectedRowValue(){
 
     this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
       this.tankItemList = data;
+      if(this.selectedCustomerCmp)
+        {
+          this.ccForm?.patchValue({
+            default_profile:this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
+          })
+        }
     })
 
 
@@ -580,8 +612,8 @@ PatchSelectedRowValue(){
         // You can apply a transformation here if needed
         return data;  // Or transform data in some way
       });
-
-      this.PatchSelectedRowValue();
+      if(this.customerTypeCvList.length>0) 
+            this.PatchSelectedRowValue();
       });
 
       this.cvDS.connectAlias('satulationCv').subscribe(data => {
@@ -665,8 +697,9 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const data: any = [...this.repList.data];
-        const newItem = new ContactPersonItem({
+        const newItem = new ContactPersonItemAction({
           ...result.item,
+          action:"NEW"
         });
         data.unshift(newItem);
         this.updateData(data);
@@ -701,8 +734,9 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const data: any[] = [...this.repList.data];
-        const updatedItem = new ContactPersonItem({
+        const updatedItem = new ContactPersonItemAction({
           ...result.item,
+          action:"EDIT"
         });
         if (result.index >= 0) {
           data[result.index] = updatedItem;
@@ -886,7 +920,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
             }
             else {
 
-             //this.updateExistTemplate();
+              this.updateExistCustomer();
 
             }
 
@@ -894,7 +928,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
           }
           else if(result.length==0 && this.selectedTempEst!=undefined)
           {
-            //this.updateExistTemplate();
+            this.updateExistCustomer();
           }
     });
         // var tempName = this.ccForm?.get("template_name")?.value;
@@ -992,10 +1026,10 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
 
     var cust:CustomerCompanyItem=new CustomerCompanyItem();
     cust.address_line1=this.ccForm?.get("address1")?.value;
+    cust.address_line2=this.ccForm?.get("address2")?.value;
     cust.code=this.ccForm?.get("customer_code")?.value;
     cust.name=this.ccForm?.get("customer_name")?.value;
-    cust.address_line2=this.ccForm?.get("address2")?.value;
-    cust.city=this.ccForm?.get("city")?.value;
+    cust.city=this.ccForm?.get("city_name")?.value;
     cust.country=this.ccForm?.get("country")?.value;
     cust.currency=this.ccForm?.get("currency")?.value;
     cust.email=this.ccForm?.get("email")?.value;
@@ -1003,7 +1037,12 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     cust.website=this.ccForm?.get("web")?.value;
     
     cust.phone=this.ccForm?.get("phone")?.value;
-    cust.postal=this.ccForm?.get("postal")?.value;
+    cust.postal=this.ccForm?.get("postal_code")?.value;
+    if(this.ccForm?.get("default_profile")?.value)
+    {
+      let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
+      cust.def_tank_guid=defTank.guid;
+    }
     if(this.ccForm?.get("currency")?.value)
     {
       cust.currency_guid= cust.currency?.guid;
@@ -1023,11 +1062,11 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     }));
 
     
-    var billingBranches:BillingBranchesItem = new BillingBranchesItem();
-    billingBranches.branchContactPerson=[];
-
-    billingBranches.branchCustomer=new BillingCustomerItem();
-    billingBranches.branchCustomer.action="";
+    var billingBranches:BillingBranchesItem[]=[]; 
+    if(this.ccForm?.get("billing_branches")?.value)
+    {
+   
+    }
     this.ccDS.AddCustomerCompany(cust,contactPerson,billingBranches).subscribe(result => {
 
 
@@ -1041,6 +1080,121 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
 
   updateExistCustomer() {
 
+    if(this.selectedCustomerCmp)
+    {
+      this.selectedCustomerCmp = new CustomerCompanyItem(this.selectedCustomerCmp);
+
+      this.selectedCustomerCmp.address_line1=this.ccForm?.get("address1")?.value;
+      this.selectedCustomerCmp.address_line2=this.ccForm?.get("address2")?.value;
+      this.selectedCustomerCmp.code=this.ccForm?.get("customer_code")?.value;
+      this.selectedCustomerCmp.name=this.ccForm?.get("customer_name")?.value;
+      this.selectedCustomerCmp.city=this.ccForm?.get("city_name")?.value;
+      this.selectedCustomerCmp.country=this.ccForm?.get("country")?.value;
+      this.selectedCustomerCmp.currency=this.ccForm?.get("currency")?.value;
+      this.selectedCustomerCmp.email=this.ccForm?.get("email")?.value;
+      this.selectedCustomerCmp.remarks=this.ccForm?.get("remarks")?.value;
+      this.selectedCustomerCmp.website=this.ccForm?.get("web")?.value;
+      
+      this.selectedCustomerCmp.phone=this.ccForm?.get("phone")?.value;
+      this.selectedCustomerCmp.postal=this.ccForm?.get("postal_code")?.value;
+
+      
+      if(this.ccForm?.get("default_profile")?.value)
+        {
+          let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
+          this.selectedCustomerCmp.def_tank_guid=defTank.guid;
+        }
+
+      if(this.ccForm?.get("currency")?.value)
+      {
+        let currency=this.ccForm?.get("currency")?.value;
+        this.selectedCustomerCmp.currency_guid= currency?.guid;
+      }
+      else
+      {
+        this.selectedCustomerCmp.currency_guid="-";
+        
+      }
+      delete this.selectedCustomerCmp.currency;
+
+
+      var existContactPerson =  this.selectedCustomerCmp?.cc_contact_person?.map((row) => ({
+        ...row,
+        title_cv : row.title_cv,
+        action:'CANCEL'
+      }));
+
+      var updContactPerson =  this.repList.data.map((row) => ({
+        ...row,
+        title_cv : row.title_cv
+        
+      }));
+
+      updContactPerson.forEach(data=>{
+
+        var matchContact= existContactPerson?.filter(d=>d.guid===data.guid);
+        let Cnt :any = new ContactPersonItem();
+
+        if(matchContact?.length!>0)
+        {
+          Cnt=matchContact![0];
+          Cnt.action=data.action;
+         
+        }
+        else
+        {
+         
+          Cnt.action="NEW";
+
+        }
+        Cnt.did=data.did;
+        Cnt.email=data.email;
+        Cnt.job_title=data.job_title;
+        Cnt.name=data.name;
+        Cnt.phone=data.phone;
+        Cnt.title_cv=data.title_cv;
+        Cnt.department=data.department;
+        
+        if(Cnt.action==="NEW")
+        {
+          existContactPerson?.push(Cnt);
+        }
+      
+
+      });
+
+
+      var billingBranches:BillingBranchesItem[]=[]; 
+      if(this.ccForm?.get("billing_branches")?.value)
+      {
+     
+      }
+
+      
+      delete this.selectedCustomerCmp.update_by;
+      delete this.selectedCustomerCmp.update_dt;
+      delete this.selectedCustomerCmp.create_by;
+      delete this.selectedCustomerCmp.create_dt;
+      delete this.selectedCustomerCmp.delete_dt;
+      delete this.selectedCustomerCmp.cc_contact_person;
+
+
+      var existContactPersons=existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
+
+      this.ccDS.UpdateCustomerCompany(this.selectedCustomerCmp,existContactPersons,billingBranches).subscribe(result => {
+  
+  
+        var count = result.data.updateCustomerCompany;
+        if (count > 0) {
+          this.handleSaveSuccess(count);
+        }
+      });
+
+    }
+    else
+    {
+      this.insertNewCustomer();
+    }
   
   }
 
@@ -1110,7 +1264,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         //this.router.navigate(['/admin/master/estimate-template']);
 
         // Navigate to the route and pass the JSON object
-        this.router.navigate(['/admin/master/estimate-template'], {
+        this.router.navigate(['/admin/master/customer'], {
           state: this.historyState
 
         }
@@ -1142,6 +1296,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 
+  
   getLastAction(actions: string[]): string {
     return actions[actions.length - 1];
   }
@@ -1252,10 +1407,60 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     return "";
   }
 
+  addBillingBranch(event: Event) {
+    event.stopPropagation(); // Stop the click event from propagating
+    // Navigate to the route and pass the JSON object
+    var updContactPerson =  this.repList.data.map((row) => ({
+      ...row,
+      title_cv : row.title_cv
+      
+    }));
+
+    var cust:CustomerCompanyItem=new CustomerCompanyItem();
+    cust.address_line1=this.ccForm?.get("address1")?.value;
+    cust.address_line2=this.ccForm?.get("address2")?.value;
+    cust.code=this.ccForm?.get("customer_code")?.value;
+    cust.name=this.ccForm?.get("customer_name")?.value;
+    cust.city=this.ccForm?.get("city_name")?.value;
+    cust.country=this.ccForm?.get("country")?.value;
+    cust.currency=this.ccForm?.get("currency")?.value;
+    cust.email=this.ccForm?.get("email")?.value;
+    cust.remarks=this.ccForm?.get("remarks")?.value;
+    cust.website=this.ccForm?.get("web")?.value;
+    
+    cust.phone=this.ccForm?.get("phone")?.value;
+    cust.postal=this.ccForm?.get("postal_code")?.value;
+    if(this.ccForm?.get("default_profile")?.value)
+    {
+      let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
+      cust.def_tank_guid=defTank.guid;
+    }
+    if(this.ccForm?.get("currency")?.value)
+    {
+      cust.currency_guid= cust.currency?.guid;
+    }
+   
+    
+    cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
+
+
+    let custCmp:any={
+      customerCompanyData :cust,
+      contactPerson:updContactPerson,
+    } ;
+    this.historyState.customerCompany=custCmp;
+    
+    this.router.navigate(['/admin/master/billing-branch/new/ '], {
+      state: this.historyState
+
+    }
+    );
+  }
+
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/master/estimate-template'], {
+    this.router.navigate(['/admin/master/customer'], {
       state: this.historyState
 
     }
@@ -1298,5 +1503,37 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     this.initCCForm();
     
 
+  }
+
+  getCurrency(guid:string):CurrencyItem|undefined
+  {
+    if(this.currencyList?.length!>0 && guid)
+    {
+      const curItm= this.currencyList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;});
+        if(curItm?.length!>0)
+          return curItm![0];
+        else
+          return undefined;
+
+    }
+    return undefined;
+    
+  }
+
+  getDefaultTank(guid:string):TankItem|undefined
+  {
+    if(this.tankItemList?.length!>0)
+    {
+      const tnkItm= this.tankItemList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;});
+        if(tnkItm?.length!>0)
+          return tnkItm![0];
+        else
+          return undefined;
+
+    }
+    return undefined;
+    
   }
 }

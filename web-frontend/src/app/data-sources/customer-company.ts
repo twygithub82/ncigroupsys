@@ -25,6 +25,7 @@ export class CustomerCompanyGO {
     public effective_dt?: number;
     public agreement_due_dt?: number;
     public def_template_guid?: string;
+    public def_tank_guid?: string;
     public type_cv?: string;
     public remarks?: string;
     public currency_guid?:string;
@@ -52,6 +53,7 @@ export class CustomerCompanyGO {
         this.effective_dt = item.effective_dt;
         this.agreement_due_dt = item.agreement_due_dt;
         this.def_template_guid = item.def_template_guid;
+        this.def_tank_guid = item.def_tank_guid;
         this.type_cv = item.type_cv;
         this.remarks = item.remarks;
         this.currency_guid=item.currency_guid;
@@ -80,6 +82,12 @@ export interface CustomerCompanyResult {
     items: CustomerCompanyItem[];
     totalCount: number;
 }
+
+export const UPDATE_CUSTOMER_COMPANY = gql`
+    mutation updateCustomerCompany($customer: CustomerRequestInput!,$contactPersons:[customer_company_contact_personInput],$billingBranches:[BillingBranchRequestInput]) {
+    updateCustomerCompany(customer: $customer,contactPersons:$contactPersons,billingBranches:$billingBranches)
+  }
+`
 
 export const ADD_CUSTOMER_COMPANY = gql`
     mutation addCustomerCompany($customer: CustomerRequestInput!,$contactPersons:[customer_company_contact_personInput],$billingBranches:[BillingBranchRequestInput]) {
@@ -113,6 +121,7 @@ export const SEARCH_COMPANY_QUERY = gql`
         create_dt
         delete_dt
         effective_dt
+        def_tank_guid
         email
         guid
         name
@@ -270,6 +279,24 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     {
         return this.apollo.mutate({
             mutation: ADD_CUSTOMER_COMPANY,
+            variables: {
+              customer,
+              contactPersons,
+              billingBranches
+            }
+          }).pipe(
+            catchError((error: ApolloError) => {
+              console.error('GraphQL Error:', error);
+              return of(0); // Return an empty array on error
+            }),
+          );
+
+    }
+
+    UpdateCustomerCompany(customer:any,contactPersons:any,billingBranches:any):Observable<any>
+    {
+        return this.apollo.mutate({
+            mutation: UPDATE_CUSTOMER_COMPANY,
             variables: {
               customer,
               contactPersons,
