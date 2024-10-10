@@ -699,6 +699,7 @@ const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
           material_cost_discount
           status_cv
           total_cost
+          sot_guid
           repair_est_part {
            hour
            quantity

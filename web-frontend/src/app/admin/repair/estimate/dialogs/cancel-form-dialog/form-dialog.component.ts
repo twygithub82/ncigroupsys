@@ -9,7 +9,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
@@ -20,12 +19,13 @@ import { Apollo } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { MatDividerModule } from '@angular/material/divider';
+import { RepairEstItem } from 'app/data-sources/repair-est';
+import { MatCardModule } from '@angular/material/card';
 
 export interface DialogData {
   action?: string;
-  item: StoringOrderItem[];
+  item: RepairEstItem[];
   langText?: any;
   index: number;
 }
@@ -48,13 +48,14 @@ export interface DialogData {
     MatDividerModule,
     FormsModule,
     ReactiveFormsModule,
+    MatCardModule
   ],
 })
 export class CancelFormDialogComponent {
   index: number;
   dialogTitle?: string;
-  storingOrder: StoringOrderItem[];
-  storingOrderForm: UntypedFormGroup;
+  repairEstList: RepairEstItem[];
+  cancelForm: UntypedFormGroup;
   startDate = new Date();
 
   lastCargoControl = new UntypedFormControl();
@@ -65,25 +66,25 @@ export class CancelFormDialogComponent {
     private translate: TranslateService
   ) {
     // Set the defaults
-    this.storingOrder = data.item;
-    this.storingOrderForm = this.createStorigOrderForm();
+    this.repairEstList = data.item;
+    this.cancelForm = this.createCancelForm();
     this.translate.get(data.langText.ARE_YOU_SURE_CANCEL).subscribe((res: string) => {
       this.dialogTitle = res;
     });
     this.index = data.index;
   }
-  createStorigOrderForm(): UntypedFormGroup {
+  createCancelForm(): UntypedFormGroup {
     return this.fb.group({
-      storingOrder: this.fb.array(this.storingOrder.map(so => this.createOrderGroup(so)))
+      cancelItemList: this.fb.array(this.repairEstList.map(re => this.createOrderGroup(re))),
+      remarks: ['']
     });
   }
-  createOrderGroup(so: any): UntypedFormGroup {
+  createOrderGroup(re: any): UntypedFormGroup {
     return this.fb.group({
-      guid: [so.guid],
-      so_no: [so.so_no],
-      customer_company_guid: [so.customer_company_guid],
-      storing_order_tank: this.fb.array(so.storing_order_tank.map((tank: any) => this.createTankGroup(tank))),
-      remarks: [so.remarks, Validators.required]
+      guid: [re.guid],
+      estimate_no: [re.estimate_no],
+      sot_guid: [re.sot_guid],
+      remarks: [re.remarks, Validators.required]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {
@@ -96,20 +97,17 @@ export class CancelFormDialogComponent {
     this.dialogRef.close();
   }
   confirmCancel(): void {
-    if (this.storingOrderForm.valid) {
-      let so = this.storingOrderForm.value['storingOrder']
+    if (this.cancelForm.valid) {
+      let cancelItemList = this.cancelForm.value['cancelItemList']
       const returnDialog: DialogData = {
         action: 'confirmed',
-        item: so,
+        item: cancelItemList,
         index: this.index
       }
       this.dialogRef.close(returnDialog);
     }
   }
-  storingOrderArray(): UntypedFormArray {
-    return this.storingOrderForm.get('storingOrder') as UntypedFormArray;
-  }
-  getStoringOrderTanksArray(so: AbstractControl<any, any>): UntypedFormArray {
-    return so.get('storing_order_tank') as UntypedFormArray;
+  cancelItemArray(): UntypedFormArray {
+    return this.cancelForm.get('cancelItemList') as UntypedFormArray;
   }
 }

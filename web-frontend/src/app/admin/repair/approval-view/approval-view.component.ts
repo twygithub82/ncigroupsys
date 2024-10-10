@@ -288,10 +288,10 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
       guid: [''],
       est_template: [''],
       is_default_template: [''],
-      remarks: [''],
+      remarks: [{value: '', disabled: true}],
       surveyor_id: [''],
-      labour_cost_discount: [0],
-      material_cost_discount: [0],
+      labour_cost_discount: [{value: 0, disabled: true}],
+      material_cost_discount: [{value: 0, disabled: true}],
       last_test: [''],
       next_test: [''],
       total_owner_hour: [0],
@@ -495,8 +495,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
       this.subs.sink = this.repairEstDS.getRepairEstByIDForApproval(this.repair_est_guid).subscribe(data => {
         if (data?.length) {
           this.repairEstItem = data[0];
-          console.log(this.repairEstItem?.aspnetsuser);
           this.sotItem = this.repairEstItem?.storing_order_tank;
+          console.log(this.sotItem);
           this.populateRepairEst(this.repairEstItem);
         }
       });

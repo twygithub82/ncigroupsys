@@ -32,13 +32,13 @@ export class RepairEstGO {
     this.sot_guid = item.sot_guid;
     this.aspnetusers_guid = item.aspnetusers_guid;
     this.estimate_no = item.estimate_no;
-    this.labour_cost_discount = item.labour_cost_discount;
-    this.material_cost_discount = item.material_cost_discount;
-    this.labour_cost = item.labour_cost;
-    this.total_cost = item.total_cost;
+    this.labour_cost_discount = item.labour_cost_discount || 0;
+    this.material_cost_discount = item.material_cost_discount || 0;
+    this.labour_cost = item.labour_cost || 0;
+    this.total_cost = item.total_cost || 0;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
-    this.owner_enable = item.owner_enable;
+    this.owner_enable = item.owner_enable || false;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -235,6 +235,17 @@ export const GET_REPAIR_EST_FOR_APPROVAL = gql`
             name
             delete_dt
           }
+          in_gate {
+            eir_no
+            eir_dt
+            delete_dt
+            in_gate_survey {
+              last_test_cv
+              next_test_cv
+              test_dt
+              test_class_cv
+            }
+          }
         }
       }
       pageInfo {
@@ -259,6 +270,12 @@ export const UPDATE_REPAIR_EST = gql`
     updateRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
   }
 `;
+
+export const CANCEL_REPAIR_EST = gql`
+  mutation CancelRepairEstimate($repairEstimate: [repair_estInput!]!) {
+    cancelRepairEstimate(repairEstimate: $repairEstimate)
+  }
+`
 
 export class RepairEstDS extends BaseDataSource<RepairEstItem> {
   constructor(private apollo: Apollo) {
@@ -326,6 +343,15 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       variables: {
         repairEstimate,
         customerCompany
+      }
+    });
+  }
+
+  cancelRepairEstimate(repairEstimate: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: CANCEL_REPAIR_EST,
+      variables: {
+        repairEstimate
       }
     });
   }

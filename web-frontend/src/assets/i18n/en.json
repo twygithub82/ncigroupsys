@@ -586,7 +586,8 @@
     "BILL-TO":"Bill To",
     "NO-CONTACT-PERSON":"No Contact Person",
     "BRANCH-CODE":"Branch Code",
-    "BRANCH-NAME":"Branch Name"
+    "BRANCH-NAME":"Branch Name",
+    "ALL-REMARKS":"All Remarks"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

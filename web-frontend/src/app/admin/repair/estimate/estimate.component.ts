@@ -46,7 +46,8 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairEstDS, RepairEstItem } from 'app/data-sources/repair-est';
+import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
+import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 
 @Component({
   selector: 'app-estimate',
@@ -94,6 +95,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   // ];
 
   displayedColumns = [
+    'select',
     'estimate_no',
     'net_cost',
     'status_cv',
@@ -146,7 +148,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     NET_COST: 'COMMON-FORM.NET-COST',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    AMEND: 'COMMON-FORM.AMEND'
+    AMEND: 'COMMON-FORM.AMEND',
+    ALL_REMARKS: 'COMMON-FORM.ALL-REMARKS'
   }
 
   searchForm?: UntypedFormGroup;
@@ -160,7 +163,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   repairEstDS: RepairEstDS;
 
   sotList: StoringOrderTankItem[] = [];
-  soSelection = new SelectionModel<StoringOrderItem>(true, []);
+  reSelection = new SelectionModel<RepairEstItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -237,57 +240,14 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     });
   }
 
-  cancelItem(row: StoringOrderItem) {
-    // this.id = row.id;
-    this.cancelSelectedRows([row])
-  }
-
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
+  toggleRow(row: RepairEstItem) {
+    this.reSelection.toggle(row);
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    const numSelected = selectedItems.size;
-    const numRows = this.sotList.length;
-    return numSelected === numRows;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    if (this.isAllSelected()) {
-      this.clearPageSelection();
-    } else {
-      this.selectAllOnPage();
-    }
-  }
-
-  /** Clear selection on the current page */
-  clearPageSelection() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      this.soSelection.deselect(row);
-      selectedItems.delete(row.guid!);
-    });
-    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  }
-
-  /** Select all items on the current page */
-  selectAllOnPage() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      this.soSelection.select(row);
-      selectedItems.add(row.guid!);
-    });
-    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  }
-
-  /** Handle row selection */
-  toggleRow(row: StoringOrderItem) {
-    this.soSelection.toggle(row);
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    if (this.soSelection.isSelected(row)) {
+    if (this.reSelection.isSelected(row)) {
       selectedItems.add(row.guid!);
     } else {
       selectedItems.delete(row.guid!);
@@ -297,23 +257,24 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
 
   /** Update selection for the current page */
   updatePageSelection() {
-    this.soSelection.clear();
+    this.reSelection.clear();
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     this.sotList.forEach(row => {
       if (selectedItems.has(row.guid!)) {
-        this.soSelection.select(row);
+        this.reSelection.select(row);
       }
     });
   }
 
-  canCancelSelectedRows(): boolean {
-    return !this.soSelection.hasValue() || !this.soSelection.selected.every((item) => {
-      const index: number = this.sotList.findIndex((d) => d === item);
-      return this.soDS.canCancel(this.sotList[index]);
-    });
+  cancelRow(row: RepairEstItem) {
+    const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    if (!found) {
+      this.toggleRow(row);
+    }
+    this.cancelSelectedRows(this.reSelection.selected)
   }
 
-  cancelSelectedRows(row: StoringOrderItem[]) {
+  cancelSelectedRows(row: RepairEstItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -321,6 +282,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
       data: {
         item: [...row],
         langText: this.langText
@@ -329,16 +291,11 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-        this.soDS.cancelStoringOrder(so).subscribe(result => {
-          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-            let successMsg = this.langText.CANCELED_SUCCESS;
-            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-              successMsg = res;
-              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-              this.refreshTable();
-            });
-          }
+        const reList = result.item.map((item: RepairEstItem) => new RepairEstGO(item));
+        console.log(reList);
+        this.repairEstDS.cancelRepairEstimate(reList).subscribe(result => {
+          this.handleCancelSuccess(result?.data?.cancelRepairEstimate)
+          this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
     });
@@ -364,18 +321,11 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     });
   }
 
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
+  handleCancelSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    }
   }
 
   // export table data in excel file
@@ -481,7 +431,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
       .subscribe(data => {
         this.sotList = data.map(sot => {
           sot.repair_est = sot.repair_est?.map(rep => {
-            return {...rep, net_cost: this.calculateNetCost(rep)}
+            return { ...rep, net_cost: this.calculateNetCost(rep) }
           })
           return sot;
         });
@@ -589,7 +539,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     const total = this.repairEstDS.getTotal(repair_est?.repair_est_part)
     const labourDiscount = repair_est.labour_cost_discount;
     const matDiscount = repair_est.material_cost_discount;
-    
+
     const total_hour = total.hour;
     const total_labour_cost = this.repairEstDS.getTotalLabourCost(total_hour, repair_est?.labour_cost);
     const total_mat_cost = total.total_mat_cost;
