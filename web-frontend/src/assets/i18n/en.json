@@ -262,6 +262,7 @@
     "NO-RESULT": "No results",
     "SAVE-SUCCESS": "Saved Successfully.",
     "CANCELED-SUCCESS": "Canceled Successfully.",
+    "ROLLBACK-SUCCESS": "Rollback Successfully.",
     "BACK": "Back",
     "SAVE-AND-SUBMIT": "Save & Submit",
     "ARE-YOU-SURE-DELETE": "Are you sure to delete?",

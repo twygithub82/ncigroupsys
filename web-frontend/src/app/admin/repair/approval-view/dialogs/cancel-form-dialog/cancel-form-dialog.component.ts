@@ -21,11 +21,13 @@ import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatDividerModule } from '@angular/material/divider';
+import { RepairEstItem } from 'app/data-sources/repair-est';
+import { MatCardModule } from '@angular/material/card';
 
 export interface DialogData {
   action?: string;
-  item: StoringOrderTankItem[];
-  langText?: any;
+  dialogTitle?: string;
+  item: RepairEstItem[];
   translatedLangText?: any;
   index: number;
 }
@@ -48,13 +50,15 @@ export interface DialogData {
     MatDividerModule,
     FormsModule,
     ReactiveFormsModule,
+    MatCardModule
   ],
 })
 export class CancelFormDialogComponent {
+  action?: string;
   index: number;
   dialogTitle?: string;
-  storingOrderTank: StoringOrderTankItem[];
-  storingOrderTankForm: UntypedFormGroup;
+  repairEstList: RepairEstItem[];
+  cancelForm: UntypedFormGroup;
   startDate = new Date();
 
   lastCargoControl = new UntypedFormControl();
@@ -64,38 +68,48 @@ export class CancelFormDialogComponent {
     private fb: UntypedFormBuilder
   ) {
     // Set the defaults
-    this.storingOrderTank = data.item;
-    this.storingOrderTankForm = this.createStorigOrderForm();
+    this.repairEstList = data.item;
+    this.cancelForm = this.createCancelForm();
+    this.action = this.data.action;
+    this.dialogTitle = this.data.dialogTitle;
     this.index = data.index;
   }
-  createStorigOrderForm(): UntypedFormGroup {
+  createCancelForm(): UntypedFormGroup {
     return this.fb.group({
-      storingOrderTank: this.fb.array(this.storingOrderTank.map(sot => this.createTankGroup(sot))),
-      remarks: ['', Validators.required]
+      cancelItemList: this.fb.array(this.repairEstList.map(re => this.createOrderGroup(re))),
+      remarks: ['']
     });
   }
-  createTankGroup(sot: any): UntypedFormGroup {
+  createOrderGroup(re: any): UntypedFormGroup {
     return this.fb.group({
-      tank_no: [sot.tank_no],
-      status_cv: [sot.status_cv],
+      customer_company_guid: [re?.storing_order_tank?.storing_order?.customer_company_guid],
+      guid: [re.guid],
+      estimate_no: [re.estimate_no],
+      sot_guid: [re.sot_guid],
+      remarks: [re.remarks, Validators.required]
+    });
+  }
+  createTankGroup(tank: any): UntypedFormGroup {
+    return this.fb.group({
+      tank_no: [tank.tank_no],
+      status_cv: [tank.status_cv]
     });
   }
   onNoClick(): void {
     this.dialogRef.close();
   }
-  confirm(): void {
-    if (this.storingOrderTankForm.valid) {
-      let remarks = this.storingOrderTankForm.value['remarks']
-      this.storingOrderTank.forEach(row => row.remarks = remarks);
+  confirmCancel(): void {
+    if (this.cancelForm.valid) {
+      let cancelItemList = this.cancelForm.value['cancelItemList']
       const returnDialog: DialogData = {
         action: 'confirmed',
-        item: this.storingOrderTank,
+        item: cancelItemList,
         index: this.index
       }
       this.dialogRef.close(returnDialog);
     }
   }
-  getStoringOrderTanksArray(): UntypedFormArray {
-    return this.storingOrderTankForm.get('storingOrderTank') as UntypedFormArray;
+  cancelItemArray(): UntypedFormArray {
+    return this.cancelForm.get('cancelItemList') as UntypedFormArray;
   }
 }

@@ -128,6 +128,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
@@ -349,7 +350,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
         });
         console.log(reList);
         this.repairEstDS.rollbackRepairEstimate(reList).subscribe(result => {
-          this.handleCancelSuccess(result?.data?.rollbackRepairEstimate)
+          this.handleRollbackSuccess(result?.data?.rollbackRepairEstimate)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
@@ -379,6 +380,13 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   handleCancelSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    }
+  }
+
+  handleRollbackSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
     }
   }

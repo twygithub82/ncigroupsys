@@ -154,6 +154,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
@@ -688,8 +689,10 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
-  cancelSelectedRows(row: RepairEstPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
+  onCancel(event: Event) {
+    this.preventDefault(event);
+    console.log(this.repairEstItem)
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -699,37 +702,28 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '1000px',
       data: {
-        action: "cancel",
-        item: [...row],
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        item: [this.repairEstItem],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairEstPartItem) => {
-          // Find the index of the item in data with the same id
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          // If the item is found, update the properties
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'cancel'])]
-                : ['cancel']
-            };
-          }
+        const reList = result.item.map((item: RepairEstItem) => new RepairEstGO(item));
+        console.log(reList);
+        this.repairEstDS.cancelRepairEstimate(reList).subscribe(result => {
+          this.handleCancelSuccess(result?.data?.cancelRepairEstimate)
         });
-        this.updateData(data);
       }
     });
   }
 
-  rollbackSelectedRows(row: RepairEstPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
+  onRollback(event: Event) {
+    this.preventDefault(event);
+    console.log(this.repairEstItem)
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -739,29 +733,29 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '1000px',
       data: {
-        action: "rollback",
-        item: [...row],
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        item: [this.repairEstItem],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairEstPartItem) => {
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'rollback'])]
-                : ['rollback']
-            };
+        const reList = result.item.map((item: any) => {
+          const RepairEstimateRequestInput = {
+            customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
+            estimate_no: item.estimate_no,
+            guid: item.guid,
+            remarks: item.remarks,
+            sot_guid: item.sot_guid
           }
+          return RepairEstimateRequestInput
         });
-        this.updateData(data);
+        console.log(reList);
+        this.repairEstDS.rollbackRepairEstimate(reList).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackRepairEstimate)
+        });
       }
     });
   }
@@ -929,6 +923,22 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
+  handleCancelSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
+    }
+  }
+
+  handleRollbackSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
+    }
+  }
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -949,7 +959,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   canRollback(): boolean {
-    return this.repairEstItem?.status_cv === 'CANCELED';
+    return this.repairEstItem?.status_cv === 'CANCELED' || this.repairEstItem?.status_cv === 'APPROVED';
   }
 
   canApprove(): boolean {
@@ -957,7 +967,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   canCancel(): boolean {
-    return this.repairEstItem?.status_cv === 'APPROVED';
+    return this.repairEstItem?.status_cv === 'PENDING';
   }
 
   canSave(): boolean {

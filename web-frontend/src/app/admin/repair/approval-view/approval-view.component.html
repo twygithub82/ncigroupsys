@@ -764,10 +764,10 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (canRollback()) {
-                  <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)">
+                  <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)" (click)="onRollback($event)">
                     <mat-icon>
                       @if (!(repairEstDS.loading$ | async)) {
-                      redo
+                      undo
                       } @else if ((repairEstDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
@@ -776,7 +776,7 @@
                   </button>
                   }
                   @if (canApprove()) {
-                  <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5" (click)="onApprove($event)">
+                  <button mat-flat-button color="basic" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5 bg-green" (click)="onApprove($event)">
                     <mat-icon>
                       @if (!(repairEstDS.loading$ | async)) {
                       done
@@ -788,7 +788,7 @@
                   </button>
                   }
                   @if (canCancel()) {
-                  <button mat-flat-button color="warn" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5">
+                  <button mat-flat-button color="warn" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5" (click)="onCancel($event)">
                     <mat-icon>
                       @if (!(repairEstDS.loading$ | async)) {
                       close
