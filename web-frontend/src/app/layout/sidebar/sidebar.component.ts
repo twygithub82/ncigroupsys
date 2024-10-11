@@ -105,7 +105,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     // this.sidebarItems = ROUTES.filter((sidebarItem) => sidebarItem);
-    this.checkScreenSizeAndCollapse();
+    // this.checkScreenSizeAndCollapse();
     this.initLeftSidebar();
     this.bodyTag = this.document.body;
   }
