@@ -7,6 +7,8 @@ using CommonUtil.Core.Service;
 using IDMS.Models.Service;
 using static IDMS.Repair.GqlTypes.StatusConstant;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using IDMS.Repair.GqlTypes.LocalModel;
 
 namespace IDMS.Repair.GqlTypes
 {
@@ -53,7 +55,7 @@ namespace IDMS.Repair.GqlTypes
 
 
                 //Handlind For Customer Default Template
-                if (customerCompany != null && customerCompany.guid != "") 
+                if (customerCompany != null && customerCompany.guid != "")
                 {
                     var cust = new customer_company() { guid = customerCompany.guid };
                     context.Attach(cust);
@@ -139,7 +141,7 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.update_by = user;
                             existingPart.update_dt = currentDateTime;
                             existingPart.description = part.description;
-                            existingPart.comment = part.comment;    
+                            existingPart.comment = part.comment;
                             existingPart.owner = part.owner;
                             existingPart.quantity = part.quantity;
                             existingPart.location_cv = part.location_cv;
@@ -189,7 +191,90 @@ namespace IDMS.Repair.GqlTypes
         }
 
 
-        public async Task<int> UpdateApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<int> CancelRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+                [Service] IConfiguration config, List<repair_est> RepairEstimate)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var estRepair in RepairEstimate)
+                {
+                    if (estRepair != null && !string.IsNullOrEmpty(estRepair.guid))
+                    {
+                        var est = new repair_est() { guid = estRepair.guid };
+                        context.Attach(est);
+
+                        est.update_by = user;
+                        est.update_dt = currentDateTime;
+                        est.status_cv = RepairEstStatus.CANCEL;
+                        est.remarks = estRepair.remarks;
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        public async Task<int> RollbackRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+                [Service] IConfiguration config, List<RepairEstimateRequest> RepairEstimate)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var estRepair in RepairEstimate)
+                {
+                    if (estRepair != null && !string.IsNullOrEmpty(estRepair.guid))
+                    {
+                        var est = new repair_est() { guid = estRepair.guid };
+                        context.Attach(est);
+
+                        est.update_by = user;
+                        est.update_dt = currentDateTime;
+                        est.status_cv = RepairEstStatus.PENDING;
+                        est.remarks = estRepair.remarks;
+
+                        if (string.IsNullOrEmpty(estRepair.customer_guid))
+                            throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+
+                        var customerGuid = estRepair.customer_guid;
+                        var repairEstPart = context.repair_est_part.Where(r => r.repair_est_guid == estRepair.guid).ToList();
+                        var estPartGuid = repairEstPart.Select(x => x.tariff_repair_guid).ToArray();
+                        //var estPartGuid = estRepair.repair_est_part.Select(x => x.tariff_repair_guid).ToArray();
+                        var packageRepair = context.package_repair.Where(r => estPartGuid.Contains(r.guid) &&
+                                            r.customer_company_guid == customerGuid).ToList();
+
+                        foreach (var part in repairEstPart)
+                        {
+                            var estPart = new repair_est_part() { guid = part.guid };
+                            context.Attach(estPart);
+
+                            estPart.update_by = user;
+                            estPart.update_dt = currentDateTime;
+                            estPart.material_cost = packageRepair.Where(r => r.tariff_repair_guid == part.tariff_repair_guid).Select(r => r.material_cost).First();
+                        }
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> ApproveRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, repair_est RepairEstimate)
         {
             try
@@ -206,12 +291,14 @@ namespace IDMS.Repair.GqlTypes
                     est.bill_to_guid = RepairEstimate.bill_to_guid;
                     est.update_by = user;
                     est.update_dt = currentDateTime;
+                    est.status_cv = RepairEstStatus.APPROVED;
+                    est.remarks = RepairEstimate.remarks;
                 }
 
                 var res = await context.SaveChangesAsync();
                 return res;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
@@ -254,7 +341,7 @@ namespace IDMS.Repair.GqlTypes
                                 throw new GraphQLException(new Error($"Rep_damage_repair guid cannot null or empty for update", "ERROR"));
 
                             var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
-                             //var repDamage = new rep_damage_repair() { guid = item.guid };
+                            //var repDamage = new rep_damage_repair() { guid = item.guid };
                             //context.Attach(repDamage);
                             if (repDamage != null)
                             {

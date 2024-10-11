@@ -15,6 +15,7 @@ namespace IDMS.Repair.GqlTypes
             public const string IN_PROGRESS = "JOB_IN_PROGRESS";
             public const string QC = "QC_COMPLETED";
             public const string BILL = "BILL_COMPLETED";
+            public const string CANCEL = "CANCELED";
 
         }
 

@@ -27,7 +27,7 @@ namespace IDMS.ServiceMS
             builder.Services.AddPooledDbContextFactory<ApplicationServiceDBContext>(o =>
             {
                 o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
-                o.EnableSensitiveDataLogging(false);
+                //o.EnableSensitiveDataLogging(false);
             });
 
 
