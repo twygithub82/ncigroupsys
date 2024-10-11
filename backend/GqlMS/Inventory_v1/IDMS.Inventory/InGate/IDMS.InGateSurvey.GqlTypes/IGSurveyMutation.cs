@@ -62,8 +62,12 @@ namespace IDMS.InGateSurvey.GqlTypes
                 sot.owner_guid = tnk.owner_guid;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
+                sot.tank_status_cv = TankMovementStatus.STORAGE;
+                if ((tnk.purpose_cleaning ?? false) || (tnk.purpose_steam ?? false))
+                {
+                    sot.tank_status_cv = TankMovementStatus.CLEANING;
+                }
 
-                
 
                 //Add the newly created guid into list for return
                 retGuids.Add(ingateSurvey.guid);
