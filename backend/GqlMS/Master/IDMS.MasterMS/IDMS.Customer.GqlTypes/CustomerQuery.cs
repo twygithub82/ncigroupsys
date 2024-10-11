@@ -32,8 +32,7 @@ namespace IDMS.Customer.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<customer_company_contact_person> QueryContactPerson([Service] IHttpContextAccessor httpContextAccessor,
-          ApplicationMasterDBContext context)
+        public IQueryable<customer_company_contact_person> QueryContactPerson([Service] IHttpContextAccessor httpContextAccessor, ApplicationMasterDBContext context)
         {
             try
             {
@@ -50,8 +49,7 @@ namespace IDMS.Customer.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<currency> QueryCurrency([Service] IHttpContextAccessor httpContextAccessor,
-          ApplicationMasterDBContext context)
+        public IQueryable<currency> QueryCurrency([Service] IHttpContextAccessor httpContextAccessor, ApplicationMasterDBContext context)
         {
             try
             {
@@ -62,6 +60,22 @@ namespace IDMS.Customer.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
             }
         }
+
+        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        //[UseProjection]
+        //[UseFiltering]
+        //[UseSorting]
+        //public IQueryable<customer_company> QueryBillingBranch([Service] IHttpContextAccessor httpContextAccessor, ApplicationMasterDBContext context)
+        //{
+        //    try
+        //    {
+        //        return context.customer_company.Where(d=> d.delete_dt == null || d.delete_dt == 0);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+        //    }
+        //}
 
     }
 }

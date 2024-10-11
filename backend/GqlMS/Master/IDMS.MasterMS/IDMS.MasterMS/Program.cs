@@ -35,15 +35,14 @@ namespace IDMS.Master.Application
 
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-
                 //cfg.CreateMap<InGateSurveyRequest, in_gate_survey>()
                 //    .ForMember(dest => dest.guid, opt => opt.Ignore());
 
-                //cfg.CreateMap<OutGateSurveyRequest, out_gate_survey>()
+                //cfg.CreateMap<CustomerRequest, customer_company>()
                 //    .ForMember(dest => dest.guid, opt => opt.Ignore());
 
                 cfg.CreateMap<CustomerRequest, customer_company>();
-                cfg.CreateMap<ContactPersonRequest, customer_company_contact_person>();
+                //cfg.CreateMap<ContactPersonRequest, customer_company_contact_person>();
             });
 
             IMapper mapper = mappingConfig.CreateMapper();
