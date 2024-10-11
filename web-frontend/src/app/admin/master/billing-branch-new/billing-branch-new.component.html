@@ -2,8 +2,8 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="this.temp_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
-        [active_item]="this.temp_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
+      <app-breadcrumb [title]="this.branch_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
+        [active_item]="this.branch_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
     </div>
     <form class="ms-0" [formGroup]="ccForm!" (ngSubmit)="onTempFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">

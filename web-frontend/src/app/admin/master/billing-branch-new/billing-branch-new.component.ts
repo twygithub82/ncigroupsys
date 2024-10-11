@@ -253,7 +253,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   clean_statusList: CodeValuesItem[] = [];
 
-  temp_guid?: string | null;
+  branch_guid?: string | null;
+  isFromBranch?:boolean=true;
 
   ccForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
@@ -509,6 +510,11 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   public loadData() {
     this.historyState = history.state;
 
+    if(this.historyState.customerCompany)
+    {
+      this.isFromBranch=false;
+    }
+
     // if (this.historyState.selectedRow != null) {
 
     //   this.selectedTempEst = this.historyState.selectedRow;
@@ -554,9 +560,9 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     //   this.calculateCostSummary();
     // }
 
-    this.temp_guid = this.route.snapshot.paramMap.get('id');
-    if (this.temp_guid?.trim() == '') {
-      this.temp_guid = undefined;
+    this.branch_guid = this.route.snapshot.paramMap.get('id');
+    if (this.branch_guid?.trim() == '') {
+      this.branch_guid = undefined;
     }
 
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 20).subscribe(data => {
@@ -1333,7 +1339,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/master/estimate-template'], {
+    this.router.navigate(['/admin/master/billing-branch'], {
       state: this.historyState
 
     }

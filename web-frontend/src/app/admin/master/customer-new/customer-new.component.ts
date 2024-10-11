@@ -520,31 +520,94 @@ PatchSelectedRowValue(){
   if (this.historyState.selectedRow != null) {
 
     this.selectedCustomerCmp = this.historyState.selectedRow;
-    const contactPerson = this.selectedCustomerCmp?.cc_contact_person?.filter(value => value.delete_dt == null);
-    this.selectedCustomerCmp!.cc_contact_person = contactPerson;
-    this.ccForm?.patchValue({
-      guid: this.selectedCustomerCmp?.guid,
-      customer_code: this.selectedCustomerCmp?.code,
-      customer_name: this.selectedCustomerCmp?.name,
-      customer_type: this.getCustomerTypeCvObject(this.selectedCustomerCmp?.type_cv!),
-      phone: this.selectedCustomerCmp?.phone,
-      email: this.selectedCustomerCmp?.email,
-      web: this.selectedCustomerCmp?.website,
-      currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
-      default_profile:this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
-      address1: this.selectedCustomerCmp?.address_line1,
-      address2: this.selectedCustomerCmp?.address_line2,
-      postal_code: this.selectedCustomerCmp?.postal,
-      city_name: this.selectedCustomerCmp?.city,
-      country: this.selectedCustomerCmp?.country,
-      remarks:this.selectedCustomerCmp?.remarks,
-    });
 
-    var existContact = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
-      ...row,
-     action:''
-    }));
-    this.updateData(existContact!);
+    if(this.historyState.customerCompany)
+    {
+
+      var cust:CustomerCompanyItem=this.historyState.customerCompany.cust;
+      var contactPsn:ContactPersonItem[]=this.historyState.customerCompany.contactPerson;
+      this.ccForm?.patchValue({
+
+        address1:cust.address_line1,
+        address2:cust.address_line2,
+        customer_code:cust.code,
+        customer_name:cust.name,
+        city_name:cust.city,
+        country:cust.country,
+        email:cust.email,
+        remarks:cust.remarks,
+        web:cust.website,
+        phone:cust.phone,
+        postal_code:cust.postal,
+        default_profile:this.getDefaultTank(cust.def_tank_guid!),
+        customer_type:this.getCustomerTypeCvObject(cust.type_cv!)
+
+      });
+      var existContact = contactPsn?.map((row) => ({
+        ...row
+      }));
+      this.updateData(existContact!);
+      // cust.address_line1=this.ccForm?.get("address1")?.value;
+      // cust.address_line2=this.ccForm?.get("address2")?.value;
+      // cust.code=this.ccForm?.get("customer_code")?.value;
+      // cust.name=this.ccForm?.get("customer_name")?.value;
+      // cust.city=this.ccForm?.get("city_name")?.value;
+      // cust.country=this.ccForm?.get("country")?.value;
+      // cust.currency=this.ccForm?.get("currency")?.value;
+      // cust.email=this.ccForm?.get("email")?.value;
+      // cust.remarks=this.ccForm?.get("remarks")?.value;
+      // cust.website=this.ccForm?.get("web")?.value;
+      
+      // cust.phone=this.ccForm?.get("phone")?.value;
+      // cust.postal=this.ccForm?.get("postal_code")?.value;
+      // if(this.ccForm?.get("default_profile")?.value)
+      // {
+      //   let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
+      //   cust.def_tank_guid=defTank.guid;
+      // }
+      // if(this.ccForm?.get("currency")?.value)
+      // {
+      //   cust.currency_guid= cust.currency?.guid;
+      // }
+     
+      
+      // cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
+  
+  
+      // let custCmp:any={
+      //   customerCompanyData :cust,
+      //   contactPerson:updContactPerson,
+      // } ;
+      // this.historyState.customerCompany=custCmp;
+    }
+    else
+    {
+      const contactPerson = this.selectedCustomerCmp?.cc_contact_person?.filter(value => value.delete_dt == null);
+      this.selectedCustomerCmp!.cc_contact_person = contactPerson;
+      this.ccForm?.patchValue({
+        guid: this.selectedCustomerCmp?.guid,
+        customer_code: this.selectedCustomerCmp?.code,
+        customer_name: this.selectedCustomerCmp?.name,
+        customer_type: this.getCustomerTypeCvObject(this.selectedCustomerCmp?.type_cv!),
+        phone: this.selectedCustomerCmp?.phone,
+        email: this.selectedCustomerCmp?.email,
+        web: this.selectedCustomerCmp?.website,
+        currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
+        default_profile:this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
+        address1: this.selectedCustomerCmp?.address_line1,
+        address2: this.selectedCustomerCmp?.address_line2,
+        postal_code: this.selectedCustomerCmp?.postal,
+        city_name: this.selectedCustomerCmp?.city,
+        country: this.selectedCustomerCmp?.country,
+        remarks:this.selectedCustomerCmp?.remarks,
+      });
+
+      var existContact1 = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
+        ...row,
+      action:''
+      }));
+      this.updateData(existContact1!);
+    }
   }
 
 }
@@ -588,6 +651,8 @@ PatchSelectedRowValue(){
 
     this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
       this.tankItemList = data;
+
+
       if(this.selectedCustomerCmp)
         {
           this.ccForm?.patchValue({
