@@ -700,6 +700,12 @@ const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
           status_cv
           total_cost
           sot_guid
+          remarks
+          storing_order_tank {
+            storing_order {
+              customer_company_guid
+            }
+          }
           repair_est_part {
            hour
            quantity

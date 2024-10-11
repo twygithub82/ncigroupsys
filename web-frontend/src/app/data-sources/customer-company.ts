@@ -174,6 +174,19 @@ export const SEARCH_COMPANY_QUERY = gql`
   }
 `;
 
+export const GET_COMPANY_AND_BRANCH = gql`
+  query queryCustomerCompany($where: customer_companyFilterInput, $order: [customer_companySortInput!]) {
+    resultList: queryCustomerCompany(where: $where, order: $order) {
+      nodes {
+        guid
+        code
+        name
+        type_cv
+      }
+    }
+  }
+`
+
 export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     constructor(private apollo: Apollo) {
         super();
@@ -263,6 +276,42 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
                 ),
                 map((result) => {
                     const list = result.companyList || { nodes: [], totalCount: 0 };
+                    this.dataSubject.next(list.nodes);
+                    this.pageInfo = list.pageInfo;
+                    this.totalCount = list.totalCount;
+                    return list.nodes;
+                })
+            );
+    }
+
+    getCustomerAndBranch(guid: string) {
+        this.loadingSubject.next(true);
+        const where = {
+            or: [
+                { guid: { eq: guid } },
+                { main_customer_guid: { eq: guid } }
+            ]
+        }
+        const order = {
+
+        }
+        return this.apollo
+            .query<any>({
+                query: GET_COMPANY_AND_BRANCH,
+                variables: { where, order },
+                fetchPolicy: 'no-cache' // Ensure fresh data
+            })
+            .pipe(
+                map((result) => result.data),
+                catchError((error: ApolloError) => {
+                    console.error('GraphQL Error:', error);
+                    return of([] as CustomerCompanyItem[]); // Return an empty array on error
+                }),
+                finalize(() =>
+                    this.loadingSubject.next(false)
+                ),
+                map((result) => {
+                    const list = result.resultList || { nodes: [], totalCount: 0 };
                     this.dataSubject.next(list.nodes);
                     this.pageInfo = list.pageInfo;
                     this.totalCount = list.totalCount;

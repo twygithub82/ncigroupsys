@@ -214,7 +214,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   repair_est_guid?: string | null;
 
   repairEstForm?: UntypedFormGroup;
-  sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
   repairEstItem?: RepairEstItem;
@@ -231,7 +230,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
-  surveyorList: UserItem[] = []
+
+  customer_companyList?: CustomerCompanyItem[];
 
   customerCodeControl = new UntypedFormControl();
 
@@ -286,12 +286,10 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairEstForm = this.fb.group({
       bill_to: [''],
       guid: [''],
-      est_template: [''],
-      is_default_template: [''],
-      remarks: [{value: '', disabled: true}],
+      remarks: [{ value: '', disabled: true }],
       surveyor_id: [''],
-      labour_cost_discount: [{value: 0, disabled: true}],
-      material_cost_discount: [{value: 0, disabled: true}],
+      labour_cost_discount: [{ value: 0, disabled: true }],
+      material_cost_discount: [{ value: 0, disabled: true }],
       last_test: [''],
       next_test: [''],
       total_owner_hour: [0],
@@ -488,15 +486,24 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
       this.unitTypeCvList = data;
     });
 
-    this.getSurveyorList();
-
     this.repair_est_guid = this.route.snapshot.paramMap.get('id');
     if (this.repair_est_guid) {
       this.subs.sink = this.repairEstDS.getRepairEstByIDForApproval(this.repair_est_guid).subscribe(data => {
         if (data?.length) {
           this.repairEstItem = data[0];
           this.sotItem = this.repairEstItem?.storing_order_tank;
-          console.log(this.sotItem);
+          this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+            if (cc?.length) {
+              this.customer_companyList = cc;
+              if (this.customer_companyList?.length == 1) {
+                const bill_to = this.repairEstForm?.get('bill_to');
+                bill_to?.setValue(this.customer_companyList[0]);
+                if (!this.canApprove()) {
+                  bill_to?.disable();
+                }
+              }
+            }
+          });
           this.populateRepairEst(this.repairEstItem);
         }
       });
@@ -548,17 +555,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     return this.prDS.getCustomerPackageCost(where);
   }
 
-  getSurveyorList() {
-    const where = { aspnetuserroles: { some: { aspnetroles: { Role: { eq: "Surveyor" } } } } }
-    this.subs.sink = this.userDS.searchUser(where).subscribe(data => {
-      if (data?.length > 0) {
-        this.surveyorList = data;
-      }
-    });
-  }
-
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  displayCustomerCompanyName(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv}` : '';
   }
 
   selectOwner($event: Event, row: RepairEstPartItem) {
@@ -800,69 +798,82 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   onEnterKey(event: Event) {
     event.preventDefault();
-    // Add any additional logic if needed
+  }
+
+  onApprove(event: Event) {
+    event.preventDefault();
+    if (this.repairEstForm!.get('bill_to')?.valid) {
+      let re: RepairEstItem = new RepairEstItem();
+      re.guid = this.repairEstItem?.guid;
+      re.sot_guid = this.repairEstItem?.sot_guid;
+      re.bill_to_guid = this.repairEstForm!.get('bill_to')?.value?.guid;
+      this.repairEstDS.approveRepairEstimate(re).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result?.data?.approveRepairEstimate);
+      });
+    }
   }
 
   onFormSubmit() {
     this.repairEstForm!.get('repList')?.setErrors(null);
-    if (this.repairEstForm?.valid) {
-      if (!this.repList.length) {
-        this.repairEstForm.get('repList')?.setErrors({ required: true });
-      } else {
-        let re: RepairEstItem = new RepairEstItem(this.repairEstItem);
+    // if (this.repairEstForm?.valid) {
+    //   if (!this.repList.length) {
+    //     this.repairEstForm.get('repList')?.setErrors({ required: true });
+    //   } else {
+    //     let re: RepairEstItem = new RepairEstItem(this.repairEstItem);
 
-        const rep: RepairEstPartItem[] = this.repList.map((item: any) => {
-          // Ensure action is an array and take the last action only
-          const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
-            return new REPDamageRepairItem({
-              guid: item.guid,
-              rep_guid: item.rep_guid,
-              code_cv: item.code_cv,
-              code_type: item.code_type,
-              action: item.action
-            });
-          });
+    //     const rep: RepairEstPartItem[] = this.repList.map((item: any) => {
+    //       // Ensure action is an array and take the last action only
+    //       const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
+    //         return new REPDamageRepairItem({
+    //           guid: item.guid,
+    //           rep_guid: item.rep_guid,
+    //           code_cv: item.code_cv,
+    //           code_type: item.code_type,
+    //           action: item.action
+    //         });
+    //       });
 
-          console.log(item)
-          return new RepairEstPartItem({
-            ...item,
-            tariff_repair: undefined,
-            rep_damage_repair: rep_damage_repair,
-            action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
-          });
-        });
-        re.repair_est_part = rep;
-        re.sot_guid = this.sotItem?.guid;
-        re.aspnetusers_guid = this.repairEstForm.get('surveyor_id')?.value;
-        re.labour_cost_discount = Utility.convertNumber(this.repairEstForm.get('labour_cost_discount')?.value);
-        re.material_cost_discount = Utility.convertNumber(this.repairEstForm.get('material_cost_discount')?.value);
-        re.labour_cost = re.labour_cost || this.packageLabourItem?.cost;
-        re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value);
-        re.remarks = this.repairEstForm.get('remarks')?.value;
-        re.owner_enable = this.isOwner;
+    //       console.log(item)
+    //       return new RepairEstPartItem({
+    //         ...item,
+    //         tariff_repair: undefined,
+    //         rep_damage_repair: rep_damage_repair,
+    //         action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
+    //       });
+    //     });
+    //     re.repair_est_part = rep;
+    //     re.sot_guid = this.sotItem?.guid;
+    //     re.aspnetusers_guid = this.repairEstForm.get('surveyor_id')?.value;
+    //     re.labour_cost_discount = Utility.convertNumber(this.repairEstForm.get('labour_cost_discount')?.value);
+    //     re.material_cost_discount = Utility.convertNumber(this.repairEstForm.get('material_cost_discount')?.value);
+    //     re.labour_cost = re.labour_cost || this.packageLabourItem?.cost;
+    //     re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value);
+    //     re.remarks = this.repairEstForm.get('remarks')?.value;
+    //     re.owner_enable = this.isOwner;
 
-        let cc: any = undefined;
-        if (this.repairEstForm?.get('is_default_template')?.value && this.repairEstForm.get('est_template')?.value?.guid) {
-          cc = this.getCustomer();
-          cc!.def_template_guid = this.repairEstForm.get('est_template')?.value?.guid;
-          console.log(cc);
-        }
-        console.log(re);
-        if (re.guid) {
-          this.repairEstDS.updateRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.updateRepairEstimate);
-          });
-        } else {
-          this.repairEstDS.addRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.addRepairEstimate);
-          });
-        }
-      }
-    } else {
-      console.log('Invalid repairEstForm', this.repairEstForm?.value);
-    }
+    //     let cc: any = undefined;
+    //     if (this.repairEstForm?.get('is_default_template')?.value && this.repairEstForm.get('est_template')?.value?.guid) {
+    //       cc = this.getCustomer();
+    //       cc!.def_template_guid = this.repairEstForm.get('est_template')?.value?.guid;
+    //       console.log(cc);
+    //     }
+    //     console.log(re);
+    //     if (re.guid) {
+    //       this.repairEstDS.updateRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
+    //         console.log(result)
+    //         this.handleSaveSuccess(result?.data?.updateRepairEstimate);
+    //       });
+    //     } else {
+    //       this.repairEstDS.addRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
+    //         console.log(result)
+    //         this.handleSaveSuccess(result?.data?.addRepairEstimate);
+    //       });
+    //     }
+    //   }
+    // } else {
+    //   console.log('Invalid repairEstForm', this.repairEstForm?.value);
+    // }
   }
 
   updateData(newData: RepairEstPartItem[] | undefined): void {
@@ -874,9 +885,9 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
           sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
         }
       }));
-      
+
       newData = this.sortAndGroupByGroupName(newData);
-      
+
       newData = newData.map((row, index) => ({
         ...row,
         index: index + 1 // Add the index starting from 1
@@ -912,12 +923,9 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.langText.SAVE_SUCCESS;
-      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-        successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        this.router.navigate(['/admin/repair/estimate']);
-      });
+      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
     }
   }
 
@@ -953,7 +961,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   canSave(): boolean {
-    return  this.repairEstItem?.status_cv === 'PENDING';
+    return this.repairEstItem?.status_cv === 'PENDING';
   }
 
   isOwnerChange() {
@@ -1037,28 +1045,28 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   sortAndGroupByGroupName(repList: any[]): any[] {
     const groupedRepList: any[] = [];
     let currentGroup = '';
-  
+
     const sortedList = repList.sort((a, b) => {
       if (a.tariff_repair!.sequence !== b.tariff_repair.sequence) {
         return a.tariff_repair.sequence - b.tariff_repair.sequence;
       }
-  
+
       if (a.tariff_repair.subgroup_name_cv !== b.tariff_repair.subgroup_name_cv) {
         return a.tariff_repair.subgroup_name_cv.localeCompare(b.tariff_repair.subgroup_name_cv);
       }
-  
+
       return b.create_dt! - a.create_dt!;
     });
-  
+
     sortedList.forEach(item => {
       const groupName = item.tariff_repair.group_name_cv;
-      
+
       const isGroupHeader = groupName !== currentGroup;
-  
+
       if (isGroupHeader) {
         currentGroup = groupName;
       }
-  
+
       groupedRepList.push({
         ...item,
         isGroupHeader: isGroupHeader,
@@ -1066,7 +1074,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
         subgroup_name_cv: item.tariff_repair.subgroup_name_cv,
       });
     });
-  
+
     return groupedRepList;
   }
 

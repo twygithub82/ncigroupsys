@@ -99,6 +99,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     'estimate_no',
     'net_cost',
     'status_cv',
+    'remarks',
     'actions'
   ];
 
@@ -122,6 +123,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     ETA_DATE: 'COMMON-FORM.ETA-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
@@ -149,7 +151,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
-    ALL_REMARKS: 'COMMON-FORM.ALL-REMARKS'
+    ALL_REMARKS: 'COMMON-FORM.ALL-REMARKS',
+    ROLLBACK: 'COMMON-FORM.ROLLBACK'
   }
 
   searchForm?: UntypedFormGroup;
@@ -268,10 +271,12 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
 
   cancelRow(row: RepairEstItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    let selectedList = [...this.reSelection.selected];
     if (!found) {
-      this.toggleRow(row);
+      // this.toggleRow(row);
+      selectedList.push(row);
     }
-    this.cancelSelectedRows(this.reSelection.selected)
+    this.cancelSelectedRows(selectedList)
   }
 
   cancelSelectedRows(row: RepairEstItem[]) {
@@ -284,8 +289,10 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '1000px',
       data: {
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
         item: [...row],
-        langText: this.langText
+        translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
@@ -295,6 +302,54 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
         console.log(reList);
         this.repairEstDS.cancelRepairEstimate(reList).subscribe(result => {
           this.handleCancelSuccess(result?.data?.cancelRepairEstimate)
+          this.performSearch(this.pageSize, 0, this.pageSize);
+        });
+      }
+    });
+  }
+
+  rollbackRow(row: RepairEstItem) {
+    const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    let selectedList = [...this.reSelection.selected];
+    if (!found) {
+      // this.toggleRow(row);
+      selectedList.push(row);
+    }
+    this.rollbackSelectedRows(selectedList)
+  }
+
+  rollbackSelectedRows(row: RepairEstItem[]) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        item: [...row],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const reList = result.item.map((item: any) => {
+          const RepairEstimateRequestInput = {
+            customer_guid: item.customer_company_guid,
+            estimate_no: item.estimate_no,
+            guid: item.guid,
+            remarks: item.remarks,
+            sot_guid: item.sot_guid
+          }
+          return RepairEstimateRequestInput
+        });
+        console.log(reList);
+        this.repairEstDS.rollbackRepairEstimate(reList).subscribe(result => {
+          this.handleCancelSuccess(result?.data?.rollbackRepairEstimate)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
