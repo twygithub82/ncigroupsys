@@ -38,7 +38,12 @@ namespace IDMS.Models.Master
         
         [ForeignKey("template_est")]
         public string? def_template_guid { get; set; }
+        [ForeignKey("tank")]
+        public string? def_tank_guid { get; set; }
+        public string? main_customer_guid { get; set; }
+        //public bool billing_branch {  get; set; }
 
+        public tank? tank { get; set; }
         public currency? currency { get; set; }
         
         [UseFiltering]

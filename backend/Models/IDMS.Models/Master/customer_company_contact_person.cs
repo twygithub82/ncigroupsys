@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotChocolate;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -26,6 +27,7 @@ namespace IDMS.Models.Master
         
         [NotMapped]
         public string? action { get; set; }
+        [GraphQLIgnore]
         public customer_company? customer_company { get; set; }
     }
 }
