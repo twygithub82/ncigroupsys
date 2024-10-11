@@ -17,17 +17,17 @@ namespace IDMS.Models.Service
         public string? guid { get; set; }
 
         [ForeignKey("storing_order_tank")]
-        public string sot_guid { get; set; }
+        public string? sot_guid { get; set; }
 
         [ForeignKey("aspnetsuser")]
         public string? aspnetusers_guid { get; set; }
         public string? estimate_no { get; set; }
-        public double labour_cost_discount { get; set; }
-        public double material_cost_discount { get; set; }
-        public double labour_cost { get; set; }
-        public double total_cost { get; set; }
+        public double? labour_cost_discount { get; set; }
+        public double? material_cost_discount { get; set; }
+        public double? labour_cost { get; set; }
+        public double? total_cost { get; set; }
         public string? remarks { get; set; }
-        public bool owner_enable { get; set; } = false;
+        public bool? owner_enable { get; set; } = false;
         public string? status_cv { get; set; }
 
         [ForeignKey("customer_company")]
