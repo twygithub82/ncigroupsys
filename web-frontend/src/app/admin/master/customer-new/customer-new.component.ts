@@ -301,6 +301,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   profileControl=new UntypedFormControl();
   customerTypeCvList: CodeValuesItem[]=[];
   selectedCustomerCmp?: CustomerCompanyItem;
+  billingBranch?:CustomerCompanyItem[]=[];
   currencyList?:CurrencyItem[]=[];
 
   constructor(
@@ -524,7 +525,7 @@ PatchSelectedRowValue(){
     if(this.historyState.customerCompany)
     {
 
-      var cust:CustomerCompanyItem=this.historyState.customerCompany.cust;
+      var cust:CustomerCompanyItem=this.historyState.customerCompany.customerCompanyData;
       var contactPsn:ContactPersonItem[]=this.historyState.customerCompany.contactPerson;
       this.ccForm?.patchValue({
 
@@ -547,38 +548,7 @@ PatchSelectedRowValue(){
         ...row
       }));
       this.updateData(existContact!);
-      // cust.address_line1=this.ccForm?.get("address1")?.value;
-      // cust.address_line2=this.ccForm?.get("address2")?.value;
-      // cust.code=this.ccForm?.get("customer_code")?.value;
-      // cust.name=this.ccForm?.get("customer_name")?.value;
-      // cust.city=this.ccForm?.get("city_name")?.value;
-      // cust.country=this.ccForm?.get("country")?.value;
-      // cust.currency=this.ccForm?.get("currency")?.value;
-      // cust.email=this.ccForm?.get("email")?.value;
-      // cust.remarks=this.ccForm?.get("remarks")?.value;
-      // cust.website=this.ccForm?.get("web")?.value;
-      
-      // cust.phone=this.ccForm?.get("phone")?.value;
-      // cust.postal=this.ccForm?.get("postal_code")?.value;
-      // if(this.ccForm?.get("default_profile")?.value)
-      // {
-      //   let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
-      //   cust.def_tank_guid=defTank.guid;
-      // }
-      // if(this.ccForm?.get("currency")?.value)
-      // {
-      //   cust.currency_guid= cust.currency?.guid;
-      // }
-     
-      
-      // cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
-  
-  
-      // let custCmp:any={
-      //   customerCompanyData :cust,
-      //   contactPerson:updContactPerson,
-      // } ;
-      // this.historyState.customerCompany=custCmp;
+    
     }
     else
     {
@@ -623,7 +593,16 @@ PatchSelectedRowValue(){
 
     this.curDS.search({},{sequence:'ASC'},100).subscribe(data=>{
       this.currencyList=data;
-      if(this.selectedCustomerCmp)
+
+      
+      if(this.historyState.customerCompany)
+      {
+        var cust:CustomerCompanyItem=this.historyState.customerCompany.customerCompanyData;
+        this.ccForm?.patchValue({
+          currency:this.getCurrency(cust.currency_guid!),
+        })
+      }
+      else if(this.selectedCustomerCmp)
       {
         this.ccForm?.patchValue({
           currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
@@ -653,7 +632,14 @@ PatchSelectedRowValue(){
       this.tankItemList = data;
 
 
-      if(this.selectedCustomerCmp)
+      if(this.historyState.customerCompany)
+        {
+          var cust:CustomerCompanyItem=this.historyState.customerCompany.customerCompanyData;
+          this.ccForm?.patchValue({
+            default_profile:this.getDefaultTank(cust.def_tank_guid!),
+          })
+        }
+        else if(this.selectedCustomerCmp)
         {
           this.ccForm?.patchValue({
             default_profile:this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
@@ -1307,11 +1293,6 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     newSot.unit_type_guid = row.unit_type_guid;
     newSot.last_cargo_guid = row.last_cargo_guid;
     newSot.tariff_cleaning = row.tariff_cleaning;
-    // newSot.purpose_cleaning = row.purpose_cleaning;
-    // newSot.purpose_storage = row.purpose_storage;
-    // newSot.purpose_repair_cv = row.purpose_repair_cv;
-    // newSot.purpose_steam = row.purpose_steam;
-    // newSot.required_temp = row.required_temp;
     newSot.clean_status_cv = row.clean_status_cv;
     newSot.certificate_cv = row.certificate_cv;
     newSot.so_guid = row.so_guid;
@@ -1481,7 +1462,10 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       
     }));
 
+    let billingBranches=   this.billingBranch?.map(row => ({ ...row }));
+
     var cust:CustomerCompanyItem=new CustomerCompanyItem();
+    cust.guid=this.selectedCustomerCmp?.guid;
     cust.address_line1=this.ccForm?.get("address1")?.value;
     cust.address_line2=this.ccForm?.get("address2")?.value;
     cust.code=this.ccForm?.get("customer_code")?.value;
@@ -1512,6 +1496,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     let custCmp:any={
       customerCompanyData :cust,
       contactPerson:updContactPerson,
+      billingBranches:billingBranches
     } ;
     this.historyState.customerCompany=custCmp;
     

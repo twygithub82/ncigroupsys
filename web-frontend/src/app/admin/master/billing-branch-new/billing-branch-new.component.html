@@ -5,7 +5,7 @@
       <app-breadcrumb [title]="this.branch_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
         [active_item]="this.branch_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
     </div>
-    <form class="ms-0" [formGroup]="ccForm!" (ngSubmit)="onTempFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="ccForm!" (ngSubmit)="onBillingBranchSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -36,7 +36,16 @@
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.BRANCH_CODE }}</mat-label>
                       <input matInput formControlName="branch_code" required >
-                     
+                      @if (ccForm?.get('branch_code')?.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
+                    @if (ccForm?.get('branch_code')?.hasError('existed')) {
+                        <mat-error>
+                          {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.EXISTED}}
+                        </mat-error>
+                        }
                   </mat-form-field>
                   
                 </div>
@@ -78,16 +87,20 @@
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CONVERSION_CURRENCY }}</mat-label>
-                      <mat-select  formControlName="currency">
-                          <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
+                      <mat-select  formControlName="currency" required>
+                          <mat-option *ngFor="let cc of this.currencyList" [value]="cc">
                            
                             <ng-container *ngIf="cc !== null">
-                              {{ ccDS.displayName(cc) }}
+                              {{ cc.currency_code }}
                             </ng-container>
                            
                           </mat-option>
                         </mat-select>
-                     
+                        @if (ccForm?.get('currency')?.hasError('required')) {
+                          <mat-error>
+                            {{this.translatedLangText.CONVERSION_CURRENCY}} {{this.translatedLangText.SO_REQUIRED}}
+                          </mat-error>
+                          }
                   </mat-form-field>
                   
                 </div>
