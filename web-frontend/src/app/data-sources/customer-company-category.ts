@@ -141,7 +141,6 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
             website
             remarks
             main_customer_guid
-            billing_branch
         }
       }
     totalCount

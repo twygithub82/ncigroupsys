@@ -81,10 +81,8 @@ export const GET_PACKAGE_RESIDUE_QUERY = gql`
         create_by
         create_dt
         delete_dt
-        description
         effective_dt
         email
-        fax
         guid
         name
         phone

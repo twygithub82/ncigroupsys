@@ -30,7 +30,7 @@ export class CustomerCompanyGO {
     public remarks?: string;
     public currency_guid?:string;
     public main_customer_guid?: string;
-    public billing_branch?: boolean;
+    
     public create_dt?: number;
     public create_by?: string;
     public update_dt?: number;
@@ -58,7 +58,7 @@ export class CustomerCompanyGO {
         this.remarks = item.remarks;
         this.currency_guid=item.currency_guid;
         this.main_customer_guid = item.main_customer_guid;
-        this.billing_branch = item.billing_branch;
+        //this.billing_branch = item.billing_branch;
         this.create_dt = item.create_dt;
         this.create_by = item.create_by;
         this.update_dt = item.update_dt;
