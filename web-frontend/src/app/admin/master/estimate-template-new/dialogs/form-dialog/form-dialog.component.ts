@@ -29,15 +29,19 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { Direction } from '@angular/cdk/bidi';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-
+import { ComponentUtil } from 'app/utilities/component-util';
+import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
+import { TemplateEstPartItem } from 'app/data-sources/master-template';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 export interface DialogData {
   action?: string;
-  item?: RepairEstPartItem;
+  item?: TemplateEstPartItem;
   translatedLangText?: any;
   populateData?: any;
   index: number;
   customer_company_guid?: string;
+  
 }
 
 @Component({
@@ -90,6 +94,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   trDS: TariffRepairDS;
   repDrDS: REPDamageRepairDS;
   prDS: PackageRepairDS;
+  currentParts:TemplateEstPartItem[]=[];
+  
   
   @Output() InsertEstimationPartEvent = new EventEmitter<any>();
 
@@ -99,6 +105,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
+    private snackBar: MatSnackBar,
 
   ) {
     super();
@@ -116,8 +123,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.buttonContent = `${data.translatedLangText.UPDATE}`;
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
-      this.buttonContent = `${data.translatedLangText.ADD_ANOTHER}`;
+      this.buttonContent = `${data.translatedLangText.ADD}`;
     }
+    this.currentParts=data.populateData.currentParts?data.populateData.currentParts: [];
     this.repairPart = data.item ? data.item : new RepairEstPartItem();
     if(this.repairPart.tariff_repair.material_cost) this.repairPart.material_cost= this.repairPart.tariff_repair.material_cost.toFixed(2);
     
@@ -172,11 +180,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       length: this.repairPart.tariff_repair?.length,
       damage: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 0)),
       repair: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 1)),
-      material_cost: this.repairPart.material_cost,
+      material_cost: this.repairPart.tariff_repair?.material_cost,
       comment:this.repairPart.comment
     });
   }
 
+ 
+  CheckPartExistInTheList(rep :any):boolean
+  {
+    let existPart=this.currentParts.filter((data,index)=>{ return data.description===rep.description && index!=this.data.index});
+    return existPart.length>0;
+  }
   submit() {
     if (this.repairPartForm?.valid) {
       let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
@@ -204,28 +218,68 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         
         actions
       }
-      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment} - ${rep.tariff_repair?.part_name??''} ${rep.tariff_repair?.length??''}${this.getUnitTypeDescription(rep.tariff_repair?.length_unit_cv)} ${rep.remarks ?? ''}`.trim();
+      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment??''} - ${rep.tariff_repair?.part_name??''} ${rep.tariff_repair?.length??''}${this.getUnitTypeDescription(rep.tariff_repair?.length_unit_cv)} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       const returnDialog: DialogData = {
         item: rep,
         index: this.index
       }
-      if(this.buttonContent==this.data.translatedLangText.UPDATE)
-      { this.dialogRef.close(returnDialog);}
+      var dupFound:boolean=false;
+      dupFound=this.CheckPartExistInTheList(rep);
+     
+      if(dupFound)
+      {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          data: {
+            headerText: this.data.translatedLangText.DUPLICATE_ESTIMATION_DETECTED,
+            action: 'new',
+          }
+          
+        });
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result.action === 'confirmed') {
+            if(this.buttonContent==this.data.translatedLangText.UPDATE)
+              { 
+                this.handleSaveSuccess(1);
+                this.dialogRef.close(returnDialog);
+    
+              }
+              else
+              {
+                this.InsertEstimationPartEvent.emit(rep);
+                this.repairPart =  new RepairEstPartItem();
+                this.repairPart.tariff_repair= new TariffRepairItem();
+                this.repairPartForm = this.createForm();
+                this.initializeValueChange();
+                this.patchForm();
+                this.initializePartNameValueChange();
+                this.handleSaveSuccess(1);
+                this.currentParts.push(rep);
+              }
+          }
+        });
+     }
       else
       {
-        this.InsertEstimationPartEvent.emit(rep);
-        this.repairPart =  new RepairEstPartItem();
-        this.repairPart.tariff_repair= new TariffRepairItem();
-        this.repairPartForm = this.createForm();
-        this.initializeValueChange();
-        this.patchForm();
-        this.initializePartNameValueChange();
-     //   this.DisableAllRequireValidator();
-       // this.patchForm();
-       // this.EnableAllRequireValidator();
-       // this.repairPartForm.setErrors(null);
-  
+
+          if(this.buttonContent==this.data.translatedLangText.UPDATE)
+          { 
+            this.handleSaveSuccess(1);
+            this.dialogRef.close(returnDialog);
+
+          }
+          else
+          {
+            this.InsertEstimationPartEvent.emit(rep);
+            this.repairPart =  new RepairEstPartItem();
+            this.repairPart.tariff_repair= new TariffRepairItem();
+            this.repairPartForm = this.createForm();
+            this.initializeValueChange();
+            this.patchForm();
+            this.initializePartNameValueChange();
+            this.handleSaveSuccess(1);
+            this.currentParts.push(rep);
+          }
       }
     } else {
       this.findInvalidControls();
@@ -449,5 +503,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.EnableValidator('repair');
    
     
+  }
+
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.data.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        //this.router.navigate(['/admin/master/estimate-template']);
+
+        // Navigate to the route and pass the JSON object
+     
+        
+      
+    }
   }
 }

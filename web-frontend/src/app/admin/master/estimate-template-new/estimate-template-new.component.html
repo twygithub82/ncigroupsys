@@ -110,7 +110,14 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 0)">
+                            <!-- <span  matTooltip="A very long long line:&#13;
+                            1. First Point.&#13;
+                            2. Second Point.&#13;
+                            Final line very long very long very long very long very long very long."
+                                    matTooltipClass="custom-tooltip">
+                              {{displayDamageRepairCode(row.tep_damage_repair, 0)}}
+                            </span> -->
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 0)" matTooltipClass="custom-tooltip">
                               {{displayDamageRepairCode(row.tep_damage_repair, 0)}}
                             </span>
                           </span>
@@ -125,7 +132,14 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 1)">
+                          <!-- <span  matTooltip="A very long long line:&#13;
+                          1. First Point.&#13;
+                          2. Second Point.&#13;
+                          Final line very long very long very long very long very long very long."
+                                  matTooltipClass="custom-tooltip">
+                            {{displayDamageRepairCode(row.tep_damage_repair, 1)}}
+                          </span> -->
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 1)" matTooltipClass="custom-tooltip">
                             {{displayDamageRepairCode(row.tep_damage_repair, 1)}}
                           </span>
                         </mat-cell>
@@ -176,7 +190,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.material_cost)}}</span>
+                            <span>$</span><span>{{parse2Decimal(row.tariff_repair.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
@@ -190,7 +204,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
+                            <span>$</span><span>{{parse2Decimal(row.quantity * row.tariff_repair.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>

@@ -349,9 +349,17 @@
                         <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{repair_estRow.status_cv}}
                       </mat-cell>
                     </ng-container>
+                    <ng-container matColumnDef="remarks">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        {{translatedLangText.REMARKS}}
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let repair_estRow" class="">
+                        <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{repair_estRow.remarks}}
+                      </mat-cell>
+                    </ng-container>
                     <ng-container matColumnDef="actions">
-                      <mat-header-cell [ngClass]="'pr-0'" *matHeaderCellDef></mat-header-cell>
-                      <mat-cell *matCellDef="let repair_estRow; let i=index;" [ngClass]="'justify-content-end'">
+                      <mat-header-cell [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matHeaderCellDef></mat-header-cell>
+                      <mat-cell *matCellDef="let repair_estRow; let i=index;" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                         <button mat-icon-button [matMenuTriggerFor]="menu">
                           <mat-icon>more_vert</mat-icon>
                         </button>
@@ -365,6 +373,12 @@
                           <button mat-menu-item (click)="cancelRow(repair_estRow)">
                             <mat-icon>cancel</mat-icon>
                             <span>{{translatedLangText.CANCEL}}</span>
+                          </button>
+                          }
+                          @if (repairEstDS.canRollback(repair_estRow)) {
+                          <button mat-menu-item (click)="rollbackRow(repair_estRow)">
+                            <mat-icon>undo</mat-icon>
+                            <span>{{translatedLangText.ROLLBACK}}</span>
                           </button>
                           }
                         </mat-menu>

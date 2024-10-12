@@ -154,6 +154,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
@@ -214,7 +215,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   repair_est_guid?: string | null;
 
   repairEstForm?: UntypedFormGroup;
-  sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
   repairEstItem?: RepairEstItem;
@@ -231,7 +231,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
-  surveyorList: UserItem[] = []
+
+  customer_companyList?: CustomerCompanyItem[];
 
   customerCodeControl = new UntypedFormControl();
 
@@ -286,12 +287,10 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairEstForm = this.fb.group({
       bill_to: [''],
       guid: [''],
-      est_template: [''],
-      is_default_template: [''],
-      remarks: [{value: '', disabled: true}],
+      remarks: [{ value: '', disabled: true }],
       surveyor_id: [''],
-      labour_cost_discount: [{value: 0, disabled: true}],
-      material_cost_discount: [{value: 0, disabled: true}],
+      labour_cost_discount: [{ value: 0, disabled: true }],
+      material_cost_discount: [{ value: 0, disabled: true }],
       last_test: [''],
       next_test: [''],
       total_owner_hour: [0],
@@ -488,15 +487,24 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
       this.unitTypeCvList = data;
     });
 
-    this.getSurveyorList();
-
     this.repair_est_guid = this.route.snapshot.paramMap.get('id');
     if (this.repair_est_guid) {
       this.subs.sink = this.repairEstDS.getRepairEstByIDForApproval(this.repair_est_guid).subscribe(data => {
         if (data?.length) {
           this.repairEstItem = data[0];
           this.sotItem = this.repairEstItem?.storing_order_tank;
-          console.log(this.sotItem);
+          this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+            if (cc?.length) {
+              this.customer_companyList = cc;
+              if (this.customer_companyList?.length == 1) {
+                const bill_to = this.repairEstForm?.get('bill_to');
+                bill_to?.setValue(this.customer_companyList[0]);
+                if (!this.canApprove()) {
+                  bill_to?.disable();
+                }
+              }
+            }
+          });
           this.populateRepairEst(this.repairEstItem);
         }
       });
@@ -548,17 +556,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     return this.prDS.getCustomerPackageCost(where);
   }
 
-  getSurveyorList() {
-    const where = { aspnetuserroles: { some: { aspnetroles: { Role: { eq: "Surveyor" } } } } }
-    this.subs.sink = this.userDS.searchUser(where).subscribe(data => {
-      if (data?.length > 0) {
-        this.surveyorList = data;
-      }
-    });
-  }
-
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  displayCustomerCompanyName(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv}` : '';
   }
 
   selectOwner($event: Event, row: RepairEstPartItem) {
@@ -690,8 +689,10 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
-  cancelSelectedRows(row: RepairEstPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
+  onCancel(event: Event) {
+    this.preventDefault(event);
+    console.log(this.repairEstItem)
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -701,37 +702,28 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '1000px',
       data: {
-        action: "cancel",
-        item: [...row],
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        item: [this.repairEstItem],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairEstPartItem) => {
-          // Find the index of the item in data with the same id
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          // If the item is found, update the properties
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'cancel'])]
-                : ['cancel']
-            };
-          }
+        const reList = result.item.map((item: RepairEstItem) => new RepairEstGO(item));
+        console.log(reList);
+        this.repairEstDS.cancelRepairEstimate(reList).subscribe(result => {
+          this.handleCancelSuccess(result?.data?.cancelRepairEstimate)
         });
-        this.updateData(data);
       }
     });
   }
 
-  rollbackSelectedRows(row: RepairEstPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
+  onRollback(event: Event) {
+    this.preventDefault(event);
+    console.log(this.repairEstItem)
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -741,29 +733,29 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '1000px',
       data: {
-        action: "rollback",
-        item: [...row],
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        item: [this.repairEstItem],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairEstPartItem) => {
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'rollback'])]
-                : ['rollback']
-            };
+        const reList = result.item.map((item: any) => {
+          const RepairEstimateRequestInput = {
+            customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
+            estimate_no: item.estimate_no,
+            guid: item.guid,
+            remarks: item.remarks,
+            sot_guid: item.sot_guid
           }
+          return RepairEstimateRequestInput
         });
-        this.updateData(data);
+        console.log(reList);
+        this.repairEstDS.rollbackRepairEstimate(reList).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackRepairEstimate)
+        });
       }
     });
   }
@@ -800,69 +792,82 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   onEnterKey(event: Event) {
     event.preventDefault();
-    // Add any additional logic if needed
+  }
+
+  onApprove(event: Event) {
+    event.preventDefault();
+    if (this.repairEstForm!.get('bill_to')?.valid) {
+      let re: RepairEstItem = new RepairEstItem();
+      re.guid = this.repairEstItem?.guid;
+      re.sot_guid = this.repairEstItem?.sot_guid;
+      re.bill_to_guid = this.repairEstForm!.get('bill_to')?.value?.guid;
+      this.repairEstDS.approveRepairEstimate(re).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result?.data?.approveRepairEstimate);
+      });
+    }
   }
 
   onFormSubmit() {
     this.repairEstForm!.get('repList')?.setErrors(null);
-    if (this.repairEstForm?.valid) {
-      if (!this.repList.length) {
-        this.repairEstForm.get('repList')?.setErrors({ required: true });
-      } else {
-        let re: RepairEstItem = new RepairEstItem(this.repairEstItem);
+    // if (this.repairEstForm?.valid) {
+    //   if (!this.repList.length) {
+    //     this.repairEstForm.get('repList')?.setErrors({ required: true });
+    //   } else {
+    //     let re: RepairEstItem = new RepairEstItem(this.repairEstItem);
 
-        const rep: RepairEstPartItem[] = this.repList.map((item: any) => {
-          // Ensure action is an array and take the last action only
-          const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
-            return new REPDamageRepairItem({
-              guid: item.guid,
-              rep_guid: item.rep_guid,
-              code_cv: item.code_cv,
-              code_type: item.code_type,
-              action: item.action
-            });
-          });
+    //     const rep: RepairEstPartItem[] = this.repList.map((item: any) => {
+    //       // Ensure action is an array and take the last action only
+    //       const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
+    //         return new REPDamageRepairItem({
+    //           guid: item.guid,
+    //           rep_guid: item.rep_guid,
+    //           code_cv: item.code_cv,
+    //           code_type: item.code_type,
+    //           action: item.action
+    //         });
+    //       });
 
-          console.log(item)
-          return new RepairEstPartItem({
-            ...item,
-            tariff_repair: undefined,
-            rep_damage_repair: rep_damage_repair,
-            action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
-          });
-        });
-        re.repair_est_part = rep;
-        re.sot_guid = this.sotItem?.guid;
-        re.aspnetusers_guid = this.repairEstForm.get('surveyor_id')?.value;
-        re.labour_cost_discount = Utility.convertNumber(this.repairEstForm.get('labour_cost_discount')?.value);
-        re.material_cost_discount = Utility.convertNumber(this.repairEstForm.get('material_cost_discount')?.value);
-        re.labour_cost = re.labour_cost || this.packageLabourItem?.cost;
-        re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value);
-        re.remarks = this.repairEstForm.get('remarks')?.value;
-        re.owner_enable = this.isOwner;
+    //       console.log(item)
+    //       return new RepairEstPartItem({
+    //         ...item,
+    //         tariff_repair: undefined,
+    //         rep_damage_repair: rep_damage_repair,
+    //         action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
+    //       });
+    //     });
+    //     re.repair_est_part = rep;
+    //     re.sot_guid = this.sotItem?.guid;
+    //     re.aspnetusers_guid = this.repairEstForm.get('surveyor_id')?.value;
+    //     re.labour_cost_discount = Utility.convertNumber(this.repairEstForm.get('labour_cost_discount')?.value);
+    //     re.material_cost_discount = Utility.convertNumber(this.repairEstForm.get('material_cost_discount')?.value);
+    //     re.labour_cost = re.labour_cost || this.packageLabourItem?.cost;
+    //     re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value);
+    //     re.remarks = this.repairEstForm.get('remarks')?.value;
+    //     re.owner_enable = this.isOwner;
 
-        let cc: any = undefined;
-        if (this.repairEstForm?.get('is_default_template')?.value && this.repairEstForm.get('est_template')?.value?.guid) {
-          cc = this.getCustomer();
-          cc!.def_template_guid = this.repairEstForm.get('est_template')?.value?.guid;
-          console.log(cc);
-        }
-        console.log(re);
-        if (re.guid) {
-          this.repairEstDS.updateRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.updateRepairEstimate);
-          });
-        } else {
-          this.repairEstDS.addRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.addRepairEstimate);
-          });
-        }
-      }
-    } else {
-      console.log('Invalid repairEstForm', this.repairEstForm?.value);
-    }
+    //     let cc: any = undefined;
+    //     if (this.repairEstForm?.get('is_default_template')?.value && this.repairEstForm.get('est_template')?.value?.guid) {
+    //       cc = this.getCustomer();
+    //       cc!.def_template_guid = this.repairEstForm.get('est_template')?.value?.guid;
+    //       console.log(cc);
+    //     }
+    //     console.log(re);
+    //     if (re.guid) {
+    //       this.repairEstDS.updateRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
+    //         console.log(result)
+    //         this.handleSaveSuccess(result?.data?.updateRepairEstimate);
+    //       });
+    //     } else {
+    //       this.repairEstDS.addRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
+    //         console.log(result)
+    //         this.handleSaveSuccess(result?.data?.addRepairEstimate);
+    //       });
+    //     }
+    //   }
+    // } else {
+    //   console.log('Invalid repairEstForm', this.repairEstForm?.value);
+    // }
   }
 
   updateData(newData: RepairEstPartItem[] | undefined): void {
@@ -874,9 +879,9 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
           sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
         }
       }));
-      
+
       newData = this.sortAndGroupByGroupName(newData);
-      
+
       newData = newData.map((row, index) => ({
         ...row,
         index: index + 1 // Add the index starting from 1
@@ -912,12 +917,25 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.langText.SAVE_SUCCESS;
-      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-        successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        this.router.navigate(['/admin/repair/estimate']);
-      });
+      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
+    }
+  }
+
+  handleCancelSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
+    }
+  }
+
+  handleRollbackSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
     }
   }
 
@@ -941,7 +959,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   canRollback(): boolean {
-    return this.repairEstItem?.status_cv === 'CANCELED';
+    return this.repairEstItem?.status_cv === 'CANCELED' || this.repairEstItem?.status_cv === 'APPROVED';
   }
 
   canApprove(): boolean {
@@ -949,11 +967,11 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   canCancel(): boolean {
-    return this.repairEstItem?.status_cv === 'APPROVED';
+    return this.repairEstItem?.status_cv === 'PENDING';
   }
 
   canSave(): boolean {
-    return  this.repairEstItem?.status_cv === 'PENDING';
+    return this.repairEstItem?.status_cv === 'PENDING';
   }
 
   isOwnerChange() {
@@ -1037,28 +1055,28 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   sortAndGroupByGroupName(repList: any[]): any[] {
     const groupedRepList: any[] = [];
     let currentGroup = '';
-  
+
     const sortedList = repList.sort((a, b) => {
       if (a.tariff_repair!.sequence !== b.tariff_repair.sequence) {
         return a.tariff_repair.sequence - b.tariff_repair.sequence;
       }
-  
+
       if (a.tariff_repair.subgroup_name_cv !== b.tariff_repair.subgroup_name_cv) {
         return a.tariff_repair.subgroup_name_cv.localeCompare(b.tariff_repair.subgroup_name_cv);
       }
-  
+
       return b.create_dt! - a.create_dt!;
     });
-  
+
     sortedList.forEach(item => {
       const groupName = item.tariff_repair.group_name_cv;
-      
+
       const isGroupHeader = groupName !== currentGroup;
-  
+
       if (isGroupHeader) {
         currentGroup = groupName;
       }
-  
+
       groupedRepList.push({
         ...item,
         isGroupHeader: isGroupHeader,
@@ -1066,7 +1084,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
         subgroup_name_cv: item.tariff_repair.subgroup_name_cv,
       });
     });
-  
+
     return groupedRepList;
   }
 

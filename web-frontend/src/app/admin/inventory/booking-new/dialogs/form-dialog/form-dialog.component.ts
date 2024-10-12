@@ -18,7 +18,7 @@ import { DatePipe } from '@angular/common';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Apollo } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
-import { startWith, debounceTime, tap } from 'rxjs';
+import { startWith, debounceTime, tap, combineLatest } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { MatTableModule } from '@angular/material/table';
@@ -87,7 +87,7 @@ export class FormDialogComponent {
   storingOrderTank: StoringOrderTankItem[];
   booking?: BookingItem;
   startDateToday = new Date();
-  existingBookTypeCvs: (string | undefined)[] | undefined = [];
+  existingBookTypeCvs: (BookingItem | undefined)[] | undefined = [];
 
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
@@ -117,7 +117,7 @@ export class FormDialogComponent {
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
     this.existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
-      (tank.booking || []).filter(booking => booking.delete_dt === null).map(booking => booking.book_type_cv)
+      (tank.booking || []).filter(booking => booking.delete_dt === null).map(booking => booking)
     );
     this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
     this.bookingForm = this.createStorigOrderTankForm();
@@ -188,19 +188,39 @@ export class FormDialogComponent {
       startWith(''),
       debounceTime(100),
       tap(value => {
-        const control = this.bookingForm!.get('book_type_cv');
-        control?.setErrors(null);
-        if (this.action === 'edit') {
-          if (this.booking && this.booking.book_type_cv !== value && this.existingBookTypeCvs!.includes(value)) {
-            control?.setErrors({ existed: true });
-          }
-        } else {
-          if (this.existingBookTypeCvs!.includes(value)) {
-            control?.setErrors({ existed: true });
-          }
-        }
+        const booking_dt = this.bookingForm!.get('booking_dt')?.value;
+        this.validateBookingType(value, booking_dt);
       })
     ).subscribe();
+
+    this.bookingForm!.get('booking_dt')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(100),
+      tap(booking_dt => {
+        const value = this.bookingForm!.get('book_type_cv')?.value;
+        this.validateBookingType(value, booking_dt);
+      })
+    ).subscribe();
+  }
+
+  validateBookingType(value: string, booking_dt: any): void {
+    const control = this.bookingForm!.get('book_type_cv');
+    control?.setErrors(null);
+  
+    const dateOnly = Utility.convertDate(booking_dt) as number;
+  
+    const condition = this.action === 'edit'
+      ? this.booking && this.booking.book_type_cv !== value
+      : true;
+  
+    if (
+      condition &&
+      this.existingBookTypeCvs!.some(
+        booking => booking?.book_type_cv === value && (booking?.booking_dt ?? 0) >= dateOnly
+      )
+    ) {
+      control?.setErrors({ existed: true });
+    }
   }
 
   findInvalidControls() {

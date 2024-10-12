@@ -61,6 +61,8 @@ import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-fiel
 import { elements } from 'chart.js';
 import { ContactPersonItem } from 'app/data-sources/contact-person';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { BillingBranchesItem } from 'app/data-sources/billingBranches';
+import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 
 @Component({
   selector: 'app-billing-branch-new',
@@ -288,6 +290,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   tDS: TankDS;
+  curDS:CurrencyDS;
   // igDS: InGateDS;
   // trLabourDS: TariffLabourDS;
   // estTempDS: MasterEstimateTemplateDS
@@ -297,6 +300,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   billingBranchesControl= new UntypedFormControl();
   profileControl=new UntypedFormControl();
   customerTypeCvList: CodeValuesItem[]=[];
+  currencyList?:CurrencyItem[]=[];
+  selectedCustomerCmp: any;
 
   constructor(
 
@@ -317,6 +322,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
+    this.curDS= new CurrencyDS(this.apollo);
     // this.igDS = new InGateDS(this.apollo);
     // this.trLabourDS = new TariffLabourDS(this.apollo);
     // this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
@@ -483,8 +489,9 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       customer_code:[''],
       branch_code: [''],
       branch_name: [''],
-      phone: [''],
-      email: [''],
+      phone:    ['',[Validators.required,
+        Validators.pattern(/^\+?[1-9]\d{7,10}$/)]], // Adjust regex for your format,
+      email: ['',[Validators.required, Validators.email]],
       web: [''],
       currency: [''],
       default_profile:[''],
@@ -513,52 +520,22 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     if(this.historyState.customerCompany)
     {
       this.isFromBranch=false;
+      
     }
 
-    // if (this.historyState.selectedRow != null) {
+  
+    this.curDS.search({},{sequence:'ASC'},100).subscribe(data=>{
+      this.currencyList=data;
 
-    //   this.selectedTempEst = this.historyState.selectedRow;
-    //   const custCompanies = this.selectedTempEst?.template_est_customer?.filter(value => value.delete_dt == null);
-    //   this.selectedTempEst!.template_est_customer = custCompanies;
-    //   this.ccForm?.patchValue({
-    //     guid: this.selectedTempEst?.guid,
-    //     labour_discount: this.selectedTempEst?.labour_cost_discount,
-    //     material_discount: this.selectedTempEst?.material_cost_discount,
-    //     // customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
-    //     template_name: this.selectedTempEst?.template_name,
-    //     remarks: this.selectedTempEst?.remarks,
-    //   });
-    //   var repairEstPartItem: RepairEstPartItem[] = [];
-    //   this.selectedTempEst?.template_est_part!=this.SortRepairEstPart(this.selectedTempEst?.template_est_part!);
-    //   repairEstPartItem = this.selectedTempEst?.template_est_part
-    //     ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
-    //     .map((item: Partial<TemplateEstPartItem>) => {
-    //       return {
-    //         actions: [],
-    //         create_by: item.create_by,
-    //         create_dt: item.create_dt,
-    //         description: item.description,
-    //         guid: item.guid,
-    //         hour: item.hour,
-    //         location_cv: item.location_cv,
-    //         material_cost: item.tariff_repair?.material_cost,
-    //         quantity: item.quantity,
-    //         remarks: item.remarks,
-    //         repair_est: undefined,
-    //         repair_est_guid: undefined,
-    //         tariff_repair: item.tariff_repair,
-    //         tariff_repair_guid: item.tariff_repair_guid,
-    //         update_by: item.update_by,
-    //         update_dt: item.update_dt,
-    //         tep_damage_repair: item.tep_damage_repair!,
-            
-    //         // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
-    //         // Map other fields as needed
-    //       } as RepairEstPartItem;
-    //     }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
-    //   this.populateSOT(repairEstPartItem!);
-    //   this.calculateCostSummary();
-    // }
+      
+     if(this.selectedCustomerCmp)
+      {
+        this.ccForm?.patchValue({
+          currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
+        })
+      }
+  
+    });
 
     this.branch_guid = this.route.snapshot.paramMap.get('id');
     if (this.branch_guid?.trim() == '') {
@@ -568,17 +545,28 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 20).subscribe(data => {
       this.customer_companyList = data
       if (data.length) {
-        const selectedCustomerGuids = this.selectedTempEst?.template_est_customer?.map(customer => customer.customer_company_guid);
-        const selectedCustomers = data.filter(customer =>
-          selectedCustomerGuids?.includes(customer.guid)
-        );
 
-        this.ccForm?.patchValue({
-          customer_code: selectedCustomers
-        });
-        // this.ccForm?.patchValue({
-        //   customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
-        // });
+        if(!this.isFromBranch)
+        {
+          let selectedCustomer = this.historyState.customerCompany.customerCompanyData;
+          if(selectedCustomer.guid)
+          {
+            var selectedCustomers=data.filter(customer=>customer.guid==selectedCustomer.guid);
+            if(selectedCustomers.length)
+              selectedCustomer=selectedCustomers[0];
+            else
+              this.customer_companyList.unshift(selectedCustomer);
+          }
+          else
+          {
+            this.customer_companyList.unshift(selectedCustomer);
+          }
+          this.ccForm?.patchValue({
+              customer_code: selectedCustomer
+            });
+            this.ccForm?.get('customer_code')?.disable();
+        }
+    
       }
     });
 
@@ -605,42 +593,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   
       
         });
-    //   if (subqueries.length > 0) {
-
-
-    //     this.cvDS?.getCodeValuesByType(subqueries)
-    //     subqueries.map(s => {
-    //       this.cvDS?.connectAlias(s.alias).subscribe(data => {
-    //         this.allSubGroupNameCvList.push(...data);
-    //       });
-    //     });
-
-    //   }
-    // });
-    // this.cvDS.connectAlias('yesnoCv').subscribe(data => {
-    //   this.yesnoCvList = data;
-    // });
-    // this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
-    //   this.soTankStatusCvList = data;
-    // });
-    // this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-    //   this.purposeOptionCvList = data;
-    // });
-    // this.cvDS.connectAlias('testTypeCv').subscribe(data => {
-    //   this.testTypeCvList = data;
-    // });
-    // this.cvDS.connectAlias('testClassCv').subscribe(data => {
-    //   this.testClassCvList = data;
-    // });
-    // this.cvDS.connectAlias('partLocationCv').subscribe(data => {
-    //   this.partLocationCvList = data;
-    // });
-    // this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
-    //   this.damageCodeCvList = data;
-    // });
-    // this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
-    //   this.repairCodeCvList = data;
-    // });
+   
   }
 
   
@@ -916,102 +869,95 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     // Add any additional logic if needed
   }
 
-  onTempFormSubmit() {
+  onBillingBranchSubmit() {
     this.ccForm!.get('repList')?.setErrors(null);
     if (this.ccForm?.valid) {
       if (!this.repList.data.length) {
         this.ccForm.get('repList')?.setErrors({ required: true });
       } else {
 
-        var tempName = this.ccForm?.get("template_name")?.value;
+        var customerCode = this.ccForm?.get("branch_code")?.value;
         const where: any = {};
-        where.template_name = { eq: tempName };
-        // this.estTempDS.SearchEstimateTemplateOnly(where).subscribe(result => {
+        where.code = { eq: customerCode };
+        this.ccDS.search(where).subscribe(result => {
 
-        //   if (result.length == 0 && this.selectedTempEst == undefined) {
-
-        //     let temp: MasterTemplateItem = new MasterTemplateItem();
-        //     temp.labour_cost_discount = this.ccForm?.get("labour_discount")?.value;
-        //     temp.material_cost_discount = this.ccForm?.get("material_discount")?.value;
-        //     temp.template_name = this.ccForm?.get("template_name")?.value;
-        //     delete temp.totalMaterialCost;
-        //     temp.type_cv = "GENERAL";
-        //     if (this.ccForm?.get("customer_code")?.value?.length > 0) {
-
-        //       temp.type_cv = "EXCLUSIVE";
-        //       var customerCodes: CustomerCompanyItem[] = this.ccForm?.get("customer_code")?.value;
-        //       temp.template_est_customer = [];
-        //       customerCodes.forEach(data => {
-        //         var custItem: TemplateEstimateCustomerItem = new TemplateEstimateCustomerItem();
-        //         custItem.action = "NEW";
-        //         custItem.customer_company_guid = data.guid;
-        //         custItem.customer_company = undefined;
-        //         custItem.guid = "";
-        //         temp.template_est_customer?.push(custItem)
-        //       });
-        //     }
-        //     if (this.repList.data.length) {
-        //       temp.template_est_part = [];
-        //       this.repList.data.forEach(data => {
-        //         var repEstItem: any = data;
-        //         var tempEstPartItem: TemplateEstPartItem = new TemplateEstPartItem();
-        //         tempEstPartItem.action = "NEW";
-        //         tempEstPartItem.guid = "";
-        //         tempEstPartItem.tariff_repair_guid = data.tariff_repair_guid;
-        //         tempEstPartItem.hour = repEstItem.hour;
-        //         tempEstPartItem.quantity = repEstItem.quantity;
-        //         tempEstPartItem.location_cv = repEstItem.location_cv;
-        //         tempEstPartItem.remarks = repEstItem.remarks;
-        //         tempEstPartItem.description = repEstItem.description;
-        //         tempEstPartItem.tep_damage_repair = [];
-        //         let dmg: TepDamageRepairItem[] = repEstItem.tep_damage_repair!;
-        //         dmg.forEach(d => {
-        //           let tepDamageRepairItm: TepDamageRepairItem = new TepDamageRepairItem();
-        //           tepDamageRepairItm.code_cv = d.code_cv;
-        //           tepDamageRepairItm.code_type = d.code_type;
-        //           tepDamageRepairItm.action = "NEW";
-        //           tempEstPartItem.tep_damage_repair?.push(tepDamageRepairItm);
-        //         });
-        //         temp.template_est_part?.push(tempEstPartItem);
-        //         // data.
-        //         // tempEstPartItem.tep_damage_repair?.push()
-        //         // temp.template_est_part?.push()
-        //       });
-        //     }
-
-        //     this.estTempDS.AddMasterTemplate(temp).subscribe(result => {
-        //       var count = result.data.addTemplateEstimation;
-        //       if (count > 0) {
-        //         this.handleSaveSuccess(count);
-        //       }
-        //     });
-
-        //   }
-        //   else if (result.length > 0) {
-        //     if (this.selectedTempEst == undefined) {
-        //       this.ccForm?.get('template_name')?.setErrors({ existed: true });
-        //     }
-        //     else {
-
-        //       this.updateExistTemplate();
-
-        //     }
-
+          if (result.length == 0 && this.branch_guid == undefined) {
+              this.insertNewBillingBranch();
+            
+          }
+          else if (result.length > 0 && this.branch_guid == undefined) {
           
-        //   }
-        //   else if(result.length==0 && this.selectedTempEst!=undefined)
-        //   {
-        //     this.updateExistTemplate();
-        //   }
-
-
-        // });
-
-
+              this.ccForm?.get('branch_code')?.setErrors({ existed: true });
+          }
+    });
+       
       }
     } else {
       console.log('Invalid soForm', this.ccForm?.value);
     }
+  }
+
+  insertNewBillingBranch() {
+
+    var cust:CustomerCompanyItem=new CustomerCompanyItem();
+    cust.address_line1=this.ccForm?.get("address1")?.value;
+    cust.address_line2=this.ccForm?.get("address2")?.value;
+    cust.code=this.ccForm?.get("branch_code")?.value;
+    cust.name=this.ccForm?.get("branch_name")?.value;
+    cust.city=this.ccForm?.get("city_name")?.value;
+    cust.country=this.ccForm?.get("country")?.value;
+    cust.currency=this.ccForm?.get("currency")?.value;
+    cust.email=this.ccForm?.get("email")?.value;
+    cust.remarks=this.ccForm?.get("remarks")?.value;
+    cust.website=this.ccForm?.get("web")?.value;
+    cust.type_cv="BRANCH";
+    cust.phone=this.ccForm?.get("phone")?.value;
+    cust.postal=this.ccForm?.get("postal_code")?.value;
+    
+    if(this.ccForm?.get("customer_code")?.value)
+    {
+       const customer:CustomerCompanyItem = this.ccForm?.get("customer_code")?.value!;
+      cust.main_customer_guid=customer.guid;
+    }
+
+    if(this.ccForm?.get("default_profile")?.value)
+    {
+      let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
+      cust.def_tank_guid=defTank.guid;
+    }
+    if(this.ccForm?.get("currency")?.value)
+    {
+      cust.currency_guid= cust.currency?.guid;
+    }
+    else
+    {
+      cust.currency_guid="-";
+      
+    }
+    delete cust.currency;
+  //  cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
+
+    var contactPerson =  this.repList.data.map((row) => ({
+      ...row,
+      title_cv : row.title_cv,
+      action:'NEW'
+    }));
+
+    
+    var billingBranches:BillingBranchesItem[]=[]; 
+    if(this.ccForm?.get("billing_branches")?.value)
+    {
+   
+    }
+    this.ccDS.AddCustomerCompany(cust,contactPerson,billingBranches).subscribe(result => {
+
+
+      var count = result.data.addCustomerCompany;
+      if (count > 0) {
+        this.handleSaveSuccess(count);
+      }
+    });
+  
   }
 
   updateExistTemplate() {
@@ -1199,12 +1145,22 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
         //this.router.navigate(['/admin/master/estimate-template']);
 
-        // Navigate to the route and pass the JSON object
-        this.router.navigate(['/admin/master/estimate-template'], {
-          state: this.historyState
+        if(this.isFromBranch)
+        {
+          this.router.navigate(['/admin/master/customer/new/ '], {
+            state: this.historyState
 
+          }
+          );
         }
-        );
+        else{
+          // Navigate to the route and pass the JSON object
+          this.router.navigate(['/admin/master/billing-branch'], {
+            state: this.historyState
+
+          }
+          );
+        }
       });
     }
   }
@@ -1339,11 +1295,22 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/master/billing-branch'], {
-      state: this.historyState
+    if(this.isFromBranch)
+    {
+      this.router.navigate(['/admin/master/billing-branch'], {
+        state: this.historyState
 
+      }
+      );
     }
-    );
+    else
+    {
+      this.router.navigate(['/admin/master/customer/new/ '], {
+        state: this.historyState
+
+      }
+      );
+    }
   }
 
   GetEstimationPrice(row: any): string {
@@ -1382,5 +1349,21 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     this.initCCForm();
     
 
+  }
+
+  getCurrency(guid:string):CurrencyItem|undefined
+  {
+    if(this.currencyList?.length!>0 && guid)
+    {
+      const curItm= this.currencyList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;});
+        if(curItm?.length!>0)
+          return curItm![0];
+        else
+          return undefined;
+
+    }
+    return undefined;
+    
   }
 }

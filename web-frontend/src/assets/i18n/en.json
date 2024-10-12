@@ -262,6 +262,7 @@
     "NO-RESULT": "No results",
     "SAVE-SUCCESS": "Saved Successfully.",
     "CANCELED-SUCCESS": "Canceled Successfully.",
+    "ROLLBACK-SUCCESS": "Rollback Successfully.",
     "BACK": "Back",
     "SAVE-AND-SUBMIT": "Save & Submit",
     "ARE-YOU-SURE-DELETE": "Are you sure to delete?",
@@ -587,7 +588,8 @@
     "NO-CONTACT-PERSON":"No Contact Person",
     "BRANCH-CODE":"Branch Code",
     "BRANCH-NAME":"Branch Name",
-    "ALL-REMARKS":"All Remarks"
+    "ALL-REMARKS":"All Remarks",
+    "DUPLICATE-ESTIMATION-DETECTED":"Duplicate Estimation detected"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

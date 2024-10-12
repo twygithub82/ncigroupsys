@@ -25,8 +25,9 @@ import { MatCardModule } from '@angular/material/card';
 
 export interface DialogData {
   action?: string;
+  dialogTitle?: string;
   item: RepairEstItem[];
-  langText?: any;
+  translatedLangText?: any;
   index: number;
 }
 
@@ -52,6 +53,7 @@ export interface DialogData {
   ],
 })
 export class CancelFormDialogComponent {
+  action?: string;
   index: number;
   dialogTitle?: string;
   repairEstList: RepairEstItem[];
@@ -62,15 +64,13 @@ export class CancelFormDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<CancelFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-    private fb: UntypedFormBuilder,
-    private translate: TranslateService
+    private fb: UntypedFormBuilder
   ) {
     // Set the defaults
     this.repairEstList = data.item;
     this.cancelForm = this.createCancelForm();
-    this.translate.get(data.langText.ARE_YOU_SURE_CANCEL).subscribe((res: string) => {
-      this.dialogTitle = res;
-    });
+    this.action = this.data.action;
+    this.dialogTitle = this.data.dialogTitle;
     this.index = data.index;
   }
   createCancelForm(): UntypedFormGroup {
@@ -81,6 +81,7 @@ export class CancelFormDialogComponent {
   }
   createOrderGroup(re: any): UntypedFormGroup {
     return this.fb.group({
+      customer_company_guid: [re?.storing_order_tank?.storing_order?.customer_company_guid],
       guid: [re.guid],
       estimate_no: [re.estimate_no],
       sot_guid: [re.sot_guid],

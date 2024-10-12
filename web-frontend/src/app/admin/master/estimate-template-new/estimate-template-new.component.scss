@@ -11,3 +11,15 @@
   cursor: pointer; /* Change cursor to pointer (hand) */
 }
 
+
+
+::ng-deep {
+  .custom-tooltip {
+    white-space: pre-line;
+    
+
+    .mdc-tooltip__surface {
+      max-width: unset;
+    }
+  }
+}

@@ -17,7 +17,7 @@
             <mat-label>{{data.translatedLangText.SALUTATION}}</mat-label>
             <mat-select formControlName="title_cv" required>
               @for (codeValue of data.populateData.satulationCvList; track codeValue) {
-              <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
+              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
               }
             </mat-select>
             @if (contactPersonForm?.get('title_cv')?.hasError('required')) {
