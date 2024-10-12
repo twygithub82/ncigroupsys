@@ -587,7 +587,8 @@
     "NO-CONTACT-PERSON":"No Contact Person",
     "BRANCH-CODE":"Branch Code",
     "BRANCH-NAME":"Branch Name",
-    "ALL-REMARKS":"All Remarks"
+    "ALL-REMARKS":"All Remarks",
+    "DUPLICATE-ESTIMATION-DETECTED":"Duplicate Estimation detected"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

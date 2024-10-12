@@ -61,6 +61,7 @@ import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-fiel
 import { elements } from 'chart.js';
 import { TariffRepairItem } from 'app/data-sources/tariff-repair';
 import {DisplayPartGroupSection, groupByTariffRepairGroup} from 'app/shared/DisplayGroupSection';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-estimate-new',
@@ -218,6 +219,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     PART: 'COMMON-FORM.PART',
     COMMENTS:'COMMON-FORM.COMMENTS',
     ADD_ANOTHER:'COMMON-FORM.ADD-ANOTHER',
+    ADD:"COMMON-FORM.ADD",
+    
+    DUPLICATE_ESTIMATION_DETECTED:"COMMON-FORM.DUPLICATE-ESTIMATION-DETECTED"
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -266,6 +270,9 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
   
   showHeader: boolean = false; 
+
+  //returnedString:string = `1 \n 2 \n 3 \n 4`;
+
   constructor(
 
     public httpClient: HttpClient,
@@ -275,7 +282,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private sanitizer: DomSanitizer
   ) {
     super();
     this.translateLangText();
@@ -702,7 +710,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
           repairCodeCvList: this.repairCodeCvList,
-          unitTypeCvList:this.unitTypeCvList
+          unitTypeCvList:this.unitTypeCvList,
+          currentParts:this.repList.data
         },
         index: -1,
         customer_company_guid: '' //this.sotItem?.storing_order?.customer_company_guid
@@ -768,7 +777,8 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
           repairCodeCvList: this.repairCodeCvList,
-          unitTypeCvList:this.unitTypeCvList
+          unitTypeCvList:this.unitTypeCvList,
+          currentParts:this.repList.data
         },
         index: index,
         customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
@@ -780,6 +790,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
         const data: any[] = [...this.repList.data];
         const updatedItem = new TemplateEstPartItem({
           ...result.item,
+          material_cost:result.item.material_cost
         });
         if (result.index >= 0) {
           data[result.index] = updatedItem;
@@ -1431,12 +1442,15 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     }).join('/');
   }
 
+
+
   displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-    return damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
+    let retval = damageRepair.filter((x: any) => x.code_type === filterCode).map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';
-    }).join('/');
+    }).join('\n');
+    return retval;
   }
 
   displayDateTime(input: number | undefined): string | undefined {
