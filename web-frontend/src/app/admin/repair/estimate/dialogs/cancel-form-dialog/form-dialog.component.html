@@ -1,6 +1,6 @@
 <div class="container">
   <div class="modalHeader">
-    <h3 mat-dialog-title>{{data.langText.ARE_YOU_SURE_CANCEL | translate}}</h3>
+    <h3 mat-dialog-title>{{dialogTitle}}</h3>
   </div>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
@@ -8,7 +8,7 @@
       <div class="row pt-3">
         <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.langText.ALL_REMARKS | translate}}</mat-label>
+            <mat-label>{{data.translatedLangText.ALL_REMARKS}}</mat-label>
             <textarea matInput formControlName="remarks"></textarea>
           </mat-form-field>
         </div>
@@ -20,15 +20,15 @@
             <mat-card-content>
               <div class="row">
                 <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12">
-                  <h5>{{data.langText.ESTIMATE_NO | translate}}: {{re.get('estimate_no')?.value}}</h5>
+                  <h5>{{data.translatedLangText.ESTIMATE_NO}}: {{re.get('estimate_no')?.value}}</h5>
                 </div>
                 <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
+                    <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
                     <textarea matInput formControlName="remarks"></textarea>
                     @if (re?.get('remarks')?.hasError('required')) {
                     <mat-error>
-                      {{data.langText.REMARKS | translate}} {{data.langText.SO_REQUIRED | translate}}
+                      {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
                     </mat-error>
                     }
                   </mat-form-field>
@@ -45,10 +45,10 @@
   </div>
   <div mat-dialog-actions class="mb-3 align-right">
     <button mat-flat-button color="warn" class="me-2" (click)="confirmCancel()">
-      {{data.langText.CONFIRM | translate}}
+      {{data.translatedLangText.CONFIRM}}
     </button>
     <button mat-flat-button (click)="onNoClick()" tabindex="-1">
-      {{data.langText.CLOSE | translate}}
+      {{data.translatedLangText.CLOSE}}
     </button>
   </div>
 </div>

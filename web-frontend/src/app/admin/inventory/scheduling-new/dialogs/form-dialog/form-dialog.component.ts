@@ -91,7 +91,7 @@ export class FormDialogComponent {
   startDateToday = new Date();
   scheduling_guid?: string;
   scheduling?: SchedulingItem;
-  existingBookTypeCvs: (string | undefined)[] | undefined = [];
+  existingBookTypeCvs: (SchedulingSotItem | undefined)[] | undefined = [];
 
   ccDS: CustomerCompanyDS;
   schedulingDS: SchedulingDS;
@@ -121,7 +121,7 @@ export class FormDialogComponent {
     this.existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>
       (tank.scheduling_sot || [])
         .filter(scheduling_sot => scheduling_sot.delete_dt === null)
-        .map(scheduling_sot => scheduling_sot.scheduling?.book_type_cv)
+        .map(scheduling_sot => scheduling_sot)
     );
     this.schedulingForm = this.createForm();
     this.initializeValueChange();
@@ -265,24 +265,105 @@ export class FormDialogComponent {
     this.dialogRef.close();
   }
 
+  // TODO :: check scheduling like booking
   initializeValueChange() {
     this.schedulingForm!.get('book_type_cv')!.valueChanges.pipe(
       startWith(''),
       debounceTime(100),
       tap(value => {
         const control = this.schedulingForm!.get('book_type_cv');
+        const schedulingSot = this.getSchedulingArray().controls;
+        schedulingSot.forEach(s_sotForm => {
+          s_sotForm!.get('scheduling_dt')?.setErrors(null);
+        });
         control?.setErrors(null);
-        if (this.action === 'edit') {
-          if (this.scheduling && this.scheduling.book_type_cv !== value && this.existingBookTypeCvs!.includes(value)) {
-            control?.setErrors({ existed: true });
-          }
-        } else {
-          if (this.existingBookTypeCvs!.includes(value)) {
-            control?.setErrors({ existed: true });
+        if (value) {
+          if (this.action === 'edit') {
+            if (this.scheduling && this.scheduling.book_type_cv !== value && this.existingBookTypeCvs!.some(schedulingSot => schedulingSot?.scheduling?.book_type_cv === value)) {
+              schedulingSot.forEach(s_sotForm => {
+                s_sotForm!.get('scheduling_dt')?.setErrors(null);
+                const s_sot = s_sotForm.value
+                if (s_sot.scheduling_dt) {
+                  const dateOnly = Utility.convertDate(s_sot.scheduling_dt) as number;
+                  if (this.existingBookTypeCvs!.some(
+                    schedulingSot => schedulingSot?.scheduling?.book_type_cv === value && (schedulingSot?.scheduling_dt ?? 0) >= dateOnly
+                  )) {
+                    s_sotForm!.get('scheduling_dt')?.setErrors({ existed: true });
+                  }
+                }
+              });
+              // control?.setErrors({ existed: true });
+            }
+          } else {
+            if (this.existingBookTypeCvs!.some(book_type_cv => book_type_cv?.scheduling?.book_type_cv === value)) {
+              schedulingSot.forEach(s_sotForm => {
+                s_sotForm!.get('scheduling_dt')?.setErrors(null);
+                const s_sot = s_sotForm.value
+                if (s_sot.scheduling_dt) {
+                  const dateOnly = Utility.convertDate(s_sot.scheduling_dt) as number;
+                  if (this.existingBookTypeCvs!.some(
+                    schedulingSot => schedulingSot?.scheduling?.book_type_cv === value && (schedulingSot?.scheduling_dt ?? 0) >= dateOnly
+                  )) {
+                    s_sotForm!.get('scheduling_dt')?.setErrors({ existed: true });
+                  }
+                }
+              });
+              // control?.setErrors({ existed: true });
+            }
           }
         }
       })
     ).subscribe();
+
+    this.getSchedulingArray().controls.forEach(
+      schedulingSotForm => {
+        schedulingSotForm!.get('scheduling_dt')!.valueChanges.pipe(
+          startWith(''),
+          debounceTime(100),
+          tap(value => {
+            schedulingSotForm!.get('scheduling_dt')?.setErrors(null);
+            const control = this.schedulingForm!.get('book_type_cv');
+            control?.setErrors(null);
+            if (value) {
+              if (this.action === 'edit') {
+                // && this.existingBookTypeCvs!.some(schedulingSot => schedulingSot?.scheduling?.book_type_cv === value)
+                if (this.scheduling && this.scheduling.book_type_cv !== control?.value) {
+                  const dateOnly = Utility.convertDate(value) as number;
+                  if (this.existingBookTypeCvs!.some(
+                    schedulingSot => schedulingSot?.scheduling?.book_type_cv === control?.value && (schedulingSot?.scheduling_dt ?? 0) >= dateOnly
+                  )) {
+                    schedulingSotForm!.get('scheduling_dt')?.setErrors({ existed: true });
+                  }
+                  // control?.setErrors({ existed: true });
+                }
+              } else {
+                const dateOnly = Utility.convertDate(value) as number;
+                if (this.existingBookTypeCvs!.some(
+                  schedulingSot => schedulingSot?.scheduling?.book_type_cv === control?.value && (schedulingSot?.scheduling_dt ?? 0) >= dateOnly
+                )) {
+                  schedulingSotForm!.get('scheduling_dt')?.setErrors({ existed: true });
+                }
+                // if (this.existingBookTypeCvs!.some(book_type_cv => book_type_cv?.scheduling?.book_type_cv === control?.value)) {
+                //   schedulingSot.forEach(s_sotForm => {
+                //     const s_sot = s_sotForm.value
+                //     if (s_sot.scheduling_dt) {
+                //       debugger
+                //       const dateOnly = Utility.convertDate(s_sot.scheduling_dt) as number;
+                //       if (this.existingBookTypeCvs!.some(
+                //         schedulingSot => schedulingSot?.scheduling?.book_type_cv === value && (schedulingSot?.scheduling_dt ?? 0) >= dateOnly
+                //       )) {
+                //         s_sotForm?.setErrors({ existed: true });
+                //       }
+                //     }
+                //   });
+                //   // control?.setErrors({ existed: true });
+                // }
+              }
+            }
+          })
+        ).subscribe();
+      }
+    )
 
     this.schedulingForm?.get('scheduling_dt')!.valueChanges.pipe(
       startWith(''),
@@ -299,6 +380,26 @@ export class FormDialogComponent {
       })
     ).subscribe();
   }
+
+  // validateBookingType(book_type_cv: string, scheduling_dt: any): void {
+  //   const control = this.schedulingForm!.get('book_type_cv');
+  //   control?.setErrors(null);
+
+  //   const dateOnly = Utility.convertDate(scheduling_dt) as number;
+
+  //   const condition = this.action === 'edit'
+  //     ? this.booking && this.booking.book_type_cv !== book_type_cv
+  //     : true;
+
+  //   if (
+  //     condition &&
+  //     this.existingBookTypeCvs!.some(
+  //       booking => booking?.book_type_cv === book_type_cv && (booking?.booking_dt ?? 0) >= dateOnly
+  //     )
+  //   ) {
+  //     control?.setErrors({ existed: true });
+  //   }
+  // }
 
   findInvalidControls() {
     const controls = this.schedulingForm.controls;

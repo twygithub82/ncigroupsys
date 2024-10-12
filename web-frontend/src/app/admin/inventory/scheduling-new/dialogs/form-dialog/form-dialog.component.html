@@ -78,6 +78,11 @@
                         {{data.translatedLangText.SCHEDULING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
                       </mat-error>
                       }
+                      @if (row.get('scheduling_dt')?.hasError('existed')) {
+                      <mat-error>
+                        {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
+                      </mat-error>
+                      }
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">

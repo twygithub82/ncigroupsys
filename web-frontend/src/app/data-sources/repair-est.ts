@@ -21,6 +21,7 @@ export class RepairEstGO {
   public status_cv?: string;
   public remarks?: string;
   public owner_enable?: boolean;
+  public bill_to_guid?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -39,6 +40,7 @@ export class RepairEstGO {
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
     this.owner_enable = item.owner_enable || false;
+    this.bill_to_guid = item.bill_to_guid;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -277,6 +279,18 @@ export const CANCEL_REPAIR_EST = gql`
   }
 `
 
+export const ROLLBACK_REPAIR_EST = gql`
+  mutation RollbackRepairEstimate($repairEstimate: [RepairEstimateRequestInput!]!) {
+    rollbackRepairEstimate(repairEstimate: $repairEstimate)
+  }
+`
+
+export const APPROVE_REPAIR_EST = gql`
+  mutation ApproveRepairEstimate($repairEstimate: repair_estInput!) {
+    approveRepairEstimate(repairEstimate: $repairEstimate)
+  }
+`
+
 export class RepairEstDS extends BaseDataSource<RepairEstItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -356,8 +370,38 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
     });
   }
 
+  rollbackRepairEstimate(repairEstimate: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_REPAIR_EST,
+      variables: {
+        repairEstimate
+      }
+    });
+  }
+
+  approveRepairEstimate(repairEstimate: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: APPROVE_REPAIR_EST,
+      variables: {
+        repairEstimate
+      }
+    });
+  }
+
   canAmend(re: RepairEstItem): boolean {
     return re.status_cv === 'PENDING';
+  }
+
+  canApprove(re: RepairEstItem): boolean {
+    return re.status_cv === 'PENDING';
+  }
+
+  canCancel(re: RepairEstItem): boolean {
+    return re.status_cv === 'PENDING';
+  }
+
+  canRollback(re: RepairEstItem): boolean {
+    return re.status_cv === 'CANCELED' || re.status_cv === 'APPROVED';
   }
 
   getTotal(repairEstPartList: any[] | undefined): any {
