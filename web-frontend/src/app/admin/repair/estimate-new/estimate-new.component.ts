@@ -558,9 +558,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         { type_cv: { eq: "GENERAL" } }
       ]
     }
-    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, {}, customer_company_guid).subscribe(data => {
+    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
       if (data?.length > 0) {
-        this.templateList = [new MasterTemplateItem({ template_name: "-" }), ...data];
+        this.templateList = [...data];
         const def_guid = this.getCustomer()?.def_template_guid;
         if (!this.repair_est_guid) {
           if (def_guid) {
@@ -570,6 +570,11 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           const def_template = this.templateList.find(x =>
             def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
           );
+
+          if (def_guid !== def_template?.guid) {
+            this.getCustomer()!.def_template_guid = def_guid;
+            this.repairEstForm?.get('is_default_template')?.setValue(true);
+          }
 
           this.repairEstForm?.get('est_template')?.setValue(def_template);
         }
@@ -1126,11 +1131,13 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-    return damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
+    const concate = damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';
-    }).join('/');
+    }).join('\n');
+
+    return concate;
   }
 
   displayDateTime(input: number | undefined): string | undefined {

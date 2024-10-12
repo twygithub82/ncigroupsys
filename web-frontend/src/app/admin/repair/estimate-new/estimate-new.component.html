@@ -225,7 +225,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 0)">
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 0)" matTooltipClass="multiline-tooltip">
                               {{displayDamageRepairCode(row.rep_damage_repair, 0)}}
                             </span>
                           </span>
@@ -240,7 +240,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 1)">
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 1)" matTooltipClass="multiline-tooltip">
                             {{displayDamageRepairCode(row.rep_damage_repair, 1)}}
                           </span>
                         </mat-cell>
@@ -343,9 +343,8 @@
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: ['group_name_cv'];"
-                        [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-purple font-bold': true}"
-                        [style.cursor]="'pointer'" matRipple>
+                      <mat-row *matRowDef="let row; columns: ['group_name_cv'];" [hidden]="!row.isGroupHeader"
+                        [ngClass]="{'bg-lightest-purple font-bold': true}" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                       <mat-row *matRowDef="let row; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"

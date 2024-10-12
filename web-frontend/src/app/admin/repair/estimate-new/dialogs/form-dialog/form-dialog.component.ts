@@ -260,8 +260,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '500px',
       data: {
-        headerText: this.data.translatedLangText.CONFIRM_RESET,
+        headerText: this.data.translatedLangText.DUPLICATE_PART_DETECTED,
         action: 'new',
       },
       direction: tempDirection
@@ -532,7 +533,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   validateExistedPart(toValidatePart: RepairEstPartItem): boolean | undefined {
     return this.existedPart?.some((part: RepairEstPartItem) => {
-      return this.extractDescription(toValidatePart) === this.extractDescription(part);
+      return toValidatePart.guid !== part.guid && this.extractDescription(toValidatePart) === this.extractDescription(part);
     }) || false;
   }
 }

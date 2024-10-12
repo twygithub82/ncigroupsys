@@ -72,6 +72,7 @@ export class CancelFormDialogComponent {
     this.action = this.data.action;
     this.dialogTitle = this.data.dialogTitle;
     this.index = data.index;
+    this.initializeValuesChange();
   }
   createCancelForm(): UntypedFormGroup {
     return this.fb.group({
@@ -110,5 +111,19 @@ export class CancelFormDialogComponent {
   }
   cancelItemArray(): UntypedFormArray {
     return this.cancelForm.get('cancelItemList') as UntypedFormArray;
+  }
+
+  initializeValuesChange() {
+    this.cancelForm!.get('remarks')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          this.cancelItemArray().controls.forEach(rowCancelForm => {
+            rowCancelForm.get('remarks')?.setValue(value);
+          })
+        }
+      })
+    ).subscribe();
   }
 }
