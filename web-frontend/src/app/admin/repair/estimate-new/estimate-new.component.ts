@@ -208,7 +208,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     ADD_ANOTHER: 'COMMON-FORM.ADD-ANOTHER',
     SAVE: 'COMMON-FORM.SAVE',
     ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
-    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE'
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -636,7 +637,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           unitTypeCvList: this.unitTypeCvList
         },
         index: -1,
-        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
+        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
+        existedPart: this.repList
       },
       direction: tempDirection
     });
@@ -674,7 +676,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           unitTypeCvList: this.unitTypeCvList
         },
         index: index,
-        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
+        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
+        existedPart: this.repList
       },
       direction: tempDirection
     });
@@ -895,16 +898,17 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         if (this.repairEstForm?.get('is_default_template')?.value && this.repairEstForm.get('est_template')?.value?.guid) {
           cc = this.getCustomer();
           cc!.def_template_guid = this.repairEstForm.get('est_template')?.value?.guid;
+          cc = new CustomerCompanyGO({ ...cc });
           console.log(cc);
         }
         console.log(re);
         if (re.guid) {
-          this.repairEstDS.updateRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
+          this.repairEstDS.updateRepairEstimate(re, cc).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.updateRepairEstimate);
           });
         } else {
-          this.repairEstDS.addRepairEstimate(re, new CustomerCompanyGO({ ...cc })).subscribe(result => {
+          this.repairEstDS.addRepairEstimate(re, cc).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.addRepairEstimate);
           });
@@ -931,7 +935,6 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         ...row,
         index: index
       }));
-      console.log(newData)
       this.repList = [...this.sortREP(newData)];
       this.calculateCost();
     }

@@ -743,4 +743,15 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   getSoStatusDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.soTankStatusCvList);
   }
+
+  hasMenuItems(row: any): boolean {
+    return (
+      this.soDS.canAdd(this.storingOrderItem) ||
+      this.sotDS.canAddRemove(row) ||
+      (!row.actions.includes('cancel') && this.sotDS.canCancel(row)) ||
+      (!row.actions.includes('rollback') && this.sotDS.canRollbackStatus(row)) ||
+      row.actions.includes('cancel') ||
+      row.actions.includes('rollback')
+    );
+  }
 }

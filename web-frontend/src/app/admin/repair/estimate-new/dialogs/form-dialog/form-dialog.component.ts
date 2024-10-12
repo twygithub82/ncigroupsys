@@ -32,6 +32,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 
 export interface DialogData {
@@ -41,6 +42,7 @@ export interface DialogData {
   populateData?: any;
   index: number;
   customer_company_guid?: string;
+  existedPart?: RepairEstPartItem[]
 }
 
 @Component({
@@ -88,6 +90,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lengthList?: any[];
   valueChangesDisabled: boolean = false;
   subgroupNameCvList?: CodeValuesItem[];
+  existedPart?: RepairEstPartItem[];
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
@@ -120,6 +123,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
     this.repairPart = data.item ? data.item : new RepairEstPartItem();
     this.index = data.index;
+    this.existedPart = data.existedPart;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
     this.repairPartForm = this.createForm();
     this.initializeValueChange();
@@ -225,21 +229,61 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const concludeLength = rep.tariff_repair?.length
         ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
         : '';
-      rep.description = `${this.getLocationDescription(rep.location_cv)} (${rep.comment}) - ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
+      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment ? `{${rep.comment}} - ` : ''}${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
-      const returnDialog: DialogData = {
-        item: rep,
-        index: this.index
-      }
-      if (addAnother) {
-        this.dataSubject.next(returnDialog);
-        this.addedSuccessfully();
-        this.resetForm();
+      if (this.validateExistedPart(rep)) {
+        this.resetDialog(addAnother, rep);
       } else {
-        this.dialogRef.close(returnDialog);
+        this.returnAndCloseDialog(addAnother, rep);
+        // const returnDialog: DialogData = {
+        //   item: rep,
+        //   index: this.index
+        // }
+        // if (addAnother) {
+        //   this.dataSubject.next(returnDialog);
+        //   this.addedSuccessfully();
+        //   this.resetForm();
+        // } else {
+        //   this.dialogRef.close(returnDialog);
+        // }
       }
     } else {
       this.findInvalidControls();
+    }
+  }
+  
+  resetDialog(addAnother: boolean, rep: any) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.data.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.returnAndCloseDialog(addAnother, rep);
+      }
+    });
+  }
+
+  returnAndCloseDialog(addAnother: boolean, rep: any) {
+    const returnDialog: DialogData = {
+      item: rep,
+      index: this.index
+    }
+    if (addAnother) {
+      this.dataSubject.next(returnDialog);
+      this.addedSuccessfully();
+      this.resetForm();
+    } else {
+      this.dialogRef.close(returnDialog);
     }
   }
 
@@ -477,5 +521,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   addedSuccessfully() {
     ComponentUtil.showNotification('snackbar-success', this.data.translatedLangText.ADD_SUCCESS, 'top', 'center', this.snackBar);
+  }
+
+  extractDescription(rep: RepairEstPartItem) {
+    const concludeLength = rep.tariff_repair?.length
+      ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
+      : '';
+    return `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
+  }
+
+  validateExistedPart(toValidatePart: RepairEstPartItem): boolean | undefined {
+    return this.existedPart?.some((part: RepairEstPartItem) => {
+      return this.extractDescription(toValidatePart) === this.extractDescription(part);
+    }) || false;
   }
 }

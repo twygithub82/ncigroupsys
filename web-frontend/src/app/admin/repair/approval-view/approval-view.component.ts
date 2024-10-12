@@ -984,7 +984,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
         return 'badge-solid-green';
       case 'PENDING':
         return 'badge-solid-cyan';
-      case 'cancel':
+      case 'CANCEL':
         return 'badge-solid-red';
       default:
         return '';
