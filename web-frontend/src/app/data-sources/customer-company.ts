@@ -131,6 +131,7 @@ export const SEARCH_COMPANY_QUERY = gql`
         update_by
         update_dt
         website
+        main_customer_guid
         remarks
          cc_contact_person {
           create_by
@@ -149,6 +150,7 @@ export const SEARCH_COMPANY_QUERY = gql`
           update_by
           update_dt
         }
+        currency_guid
         currency {
             create_by
             create_dt
@@ -195,7 +197,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
         this.loadingSubject.next(true);
         return this.apollo
             .watchQuery<any>({
-                query: GET_COMPANY_QUERY,
+                query: SEARCH_COMPANY_QUERY,
                 variables: { where, order, first, after, last, before },
                 fetchPolicy: 'no-cache' // Ensure fresh data
             })
