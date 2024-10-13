@@ -68,7 +68,8 @@
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
-                    <table mat-table [dataSource]="sotList" matSort class="mat-cell advance-table striped-rows hover-highlight">
+                    <table mat-table [dataSource]="sotList" matSort
+                      class="mat-cell advance-table striped-rows hover-highlight">
                       <!-- Checkbox Column -->
                       <ng-container matColumnDef="select">
                         <mat-header-cell *matHeaderCellDef
@@ -102,7 +103,8 @@
                             {{translatedLangText.TANK_NO}}:
                           </span>
                           {{row.tank_no}}
-                          <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.actions)) + ' ms-1'">{{ getLastAction(row.actions) | uppercase }}</div>
+                          <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.actions)) + ' ms-1'">{{
+                            getLastAction(row.actions) | uppercase }}</div>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="tank_no_validity">
@@ -252,7 +254,8 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
-                          <span [matTooltip]="row.remarks ? ('Remarks: ' + row.remarks) : ''">{{getSoStatusDescription(row.status_cv)}}</span>
+                          <span
+                            [matTooltip]="row.remarks ? ('Remarks: ' + row.remarks) : ''">{{getSoStatusDescription(row.status_cv)}}</span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="certificate_cv">
@@ -272,6 +275,8 @@
                         <mat-header-cell [ngClass]="'pr-0'" *matHeaderCellDef>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
+                          @if (hasMenuItems(row)) {
+
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
                           </button>
@@ -315,6 +320,7 @@
                             </button>
                             }
                           </mat-menu>
+                          }
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -347,14 +353,15 @@
               }
               <div class="row m-t-10">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                  <button mat-flat-button type="button" aria-label="Back to previous page" (click)="$event.preventDefault();"
-                    [routerLink]="['/admin/inventory/storing-order']">
+                  <button mat-flat-button type="button" aria-label="Back to previous page"
+                    (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/storing-order']">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (soDS.canAdd(storingOrderItem)) {
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'" (click)="addOrderDetails($event)">
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addOrderDetails($event)">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ORDER_DETAILS}}
                   </button>
                   }

@@ -265,7 +265,6 @@ export class FormDialogComponent {
     this.dialogRef.close();
   }
 
-  // TODO :: check scheduling like booking
   initializeValueChange() {
     this.schedulingForm!.get('book_type_cv')!.valueChanges.pipe(
       startWith(''),

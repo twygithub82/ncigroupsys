@@ -192,6 +192,7 @@ export const GET_SCHEDULING_FOR_RO = gql`
               eir_no
               eir_dt
               yard_cv
+              delete_dt
             }
             tariff_cleaning {
               cargo
