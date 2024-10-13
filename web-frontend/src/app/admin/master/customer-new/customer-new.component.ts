@@ -61,7 +61,7 @@ import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-fiel
 import { elements } from 'chart.js';
 import { ContactPersonItem, ContactPersonItemAction } from 'app/data-sources/contact-person';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { BillingBranchesItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
+import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
 import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 
 @Component({
@@ -284,6 +284,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   tankItemList?:TankItem[]=[];
   customerTypeControl = new UntypedFormControl();
+  customerCodeControl = new UntypedFormControl();
 
   // soDS: StoringOrderDS;
   // sotDS: StoringOrderTankDS;
@@ -376,110 +377,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   initializeValueChange() {
-    //this.repList.data
-
-    // this.ccForm?.get('labour_hour')?.valueChanges.subscribe(value => {
-    //   this.ccForm?.patchValue({
-    //     labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
-    //   });
-    // });
-
-    // this.ccForm?.get('labour_total')!.valueChanges.subscribe(value => {
-
-    //   var discCostAmt: number = 0;
-    //   if (this.ccForm?.get('labour_discount')?.value > 0) {
-    //     discCostAmt = Number(this.ccForm?.get('labour_total')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
-    //   }
-    //   this.ccForm?.patchValue({
-    //     total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
-    //     labour_discount_amount: discCostAmt.toFixed(2),
-
-    //   });
-    // });
-
-    // this.ccForm?.get('total_cost')!.valueChanges.subscribe(value => {
-
-
-    //   this.ccForm?.patchValue({
-    //     net_cost: this.GetNetCost()
-
-
-    //   });
-    // });
-
-    // this.ccForm?.get('labour_rate')!.valueChanges.subscribe(value => {
-
-    //   this.ccForm?.patchValue({
-
-    //     //labour_total : (Number(this.ccForm?.get('labour_rate')?.value)+Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
-    //     labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
-
-    //   });
-    // });
-    // this.ccForm?.get('labour_additional')!.valueChanges.subscribe(value => {
-
-    //   this.ccForm?.patchValue({
-    //     labour_total: (Number(this.ccForm?.get('labour_rate')?.value) + Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
-
-    //   });
-    // });
-
-    // this.ccForm?.get('labour_discount_amount')!.valueChanges.subscribe(value => {
-
-
-    //   this.ccForm?.patchValue({
-    //     net_cost: this.GetNetCost()
-
-
-    //   });
-    // });
-
-    // this.ccForm?.get('material_discount_amount')!.valueChanges.subscribe(value => {
-
-
-    //   this.ccForm?.patchValue({
-    //     net_cost: this.GetNetCost()
-
-
-    //   });
-    // });
-
-
-
-    // this.ccForm?.get('labour_discount')!.valueChanges.subscribe(value => {
-    //   var discCostAmt: number = 0;
-    //   if (this.ccForm?.get('labour_discount')?.value > 0) {
-    //     discCostAmt = Number(this.ccForm?.get('labour_rate')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
-    //   }
-    //   this.ccForm?.patchValue({
-    //     labour_discount_amount: discCostAmt.toFixed(2),
-    //     //net_cost:this.GetNetCost()
-    //   });
-    // });
-
-
-    // this.ccForm?.get('material_discount')!.valueChanges.subscribe(value => {
-    //   var discCostAmt: number = 0;
-    //   if (this.ccForm?.get('material_discount')?.value > 0) {
-    //     discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
-    //   }
-    //   this.ccForm?.patchValue({
-    //     material_discount_amount: discCostAmt.toFixed(2),
-    //     // net_cost:this.GetNetCost()
-    //   });
-    // });
-
-    // this.ccForm?.get('total_material_cost')!.valueChanges.subscribe(value => {
-    //   var discCostAmt: number = 0;
-    //   if (this.ccForm?.get('material_discount')?.value > 0) {
-    //     discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
-    //   }
-    //   this.ccForm?.patchValue({
-    //     total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
-    //     material_discount_amount: discCostAmt.toFixed(2),
-
-    //   });
-    // });
+  
 
   }
 
@@ -522,6 +420,11 @@ PatchSelectedRowValue(){
 
     this.selectedCustomerCmp = this.historyState.selectedRow;
 
+    // if(this.customer_companyList)
+    //   {
+    //     this.customer_companyList = this.customer_companyList.filter(data=>data.guid!==this.selectedCustomerCmp?.guid);
+    //   }
+
     if(this.historyState.customerCompany)
     {
 
@@ -534,6 +437,7 @@ PatchSelectedRowValue(){
         customer_code:cust.code,
         customer_name:cust.name,
         city_name:cust.city,
+        billing_branches:this.getBillingBranches(cust.guid!),
         country:cust.country,
         email:cust.email,
         remarks:cust.remarks,
@@ -548,6 +452,7 @@ PatchSelectedRowValue(){
         ...row
       }));
       this.updateData(existContact!);
+      this.refreshBillingBranches();
     
     }
     else
@@ -562,6 +467,7 @@ PatchSelectedRowValue(){
         phone: this.selectedCustomerCmp?.phone,
         email: this.selectedCustomerCmp?.email,
         web: this.selectedCustomerCmp?.website,
+        billing_branches:this.getBillingBranches(this.selectedCustomerCmp?.guid!),
         currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
         default_profile:this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
         address1: this.selectedCustomerCmp?.address_line1,
@@ -577,7 +483,12 @@ PatchSelectedRowValue(){
       action:''
       }));
       this.updateData(existContact1!);
+      this.refreshBillingBranches();
     }
+  }
+  else
+  {
+    this.refreshBillingBranches();
   }
 
 }
@@ -611,22 +522,23 @@ PatchSelectedRowValue(){
   
     });
 
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
-      this.customer_companyList = data
-      if (data.length) {
-        const selectedCustomerGuids = this.selectedTempEst?.template_est_customer?.map(customer => customer.customer_company_guid);
-        const selectedCustomers = data.filter(customer =>
-          selectedCustomerGuids?.includes(customer.guid)
-        );
 
-        // this.ccForm?.patchValue({
-        //   customer_code: selectedCustomers
-        // });
-        // this.ccForm?.patchValue({
-        //   customer_code: this.GetCustomerCompanyForDownDrop(this.selectedTempEst?.template_est_customer!),
-        // });
-      }
-    });
+    // let selGuid=undefined;
+    // let selBillingCode=undefined;
+    // if(this.historyState.customerCompany)
+    // {
+    //   selGuid=this.historyState.customerCompany.customerCompanyData.guid;
+    //   selBillingCode=this.historyState.customerCompany.newBillingBranchCode;
+
+    // }
+    // else if(this.selectedCustomerCmp)
+    // {
+    //   selGuid=this.selectedCustomerCmp.guid!;
+    // }
+
+    // this.refreshBillingBranches(selGuid,selBillingCode);
+
+  
 
     this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
       this.tankItemList = data;
@@ -761,7 +673,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
   }
 
   
-  editEstDetails(event: Event, row: ContactPersonItem, index: number) {
+  editContactPerson(event: Event, row: ContactPersonItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -1133,43 +1045,44 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
 
     if(this.selectedCustomerCmp)
     {
-      this.selectedCustomerCmp = new CustomerCompanyItem(this.selectedCustomerCmp);
+      var selectedCusCmp = new CustomerCompanyItem(this.selectedCustomerCmp);
 
-      this.selectedCustomerCmp.address_line1=this.ccForm?.get("address1")?.value;
-      this.selectedCustomerCmp.address_line2=this.ccForm?.get("address2")?.value;
-      this.selectedCustomerCmp.code=this.ccForm?.get("customer_code")?.value;
-      this.selectedCustomerCmp.name=this.ccForm?.get("customer_name")?.value;
-      this.selectedCustomerCmp.city=this.ccForm?.get("city_name")?.value;
-      this.selectedCustomerCmp.country=this.ccForm?.get("country")?.value;
-      this.selectedCustomerCmp.currency=this.ccForm?.get("currency")?.value;
-      this.selectedCustomerCmp.email=this.ccForm?.get("email")?.value;
-      this.selectedCustomerCmp.remarks=this.ccForm?.get("remarks")?.value;
-      this.selectedCustomerCmp.website=this.ccForm?.get("web")?.value;
+      selectedCusCmp.address_line1=this.ccForm?.get("address1")?.value;
+      selectedCusCmp.address_line2=this.ccForm?.get("address2")?.value;
+      selectedCusCmp.code=this.ccForm?.get("customer_code")?.value;
+      selectedCusCmp.name=this.ccForm?.get("customer_name")?.value;
+      selectedCusCmp.city=this.ccForm?.get("city_name")?.value;
+      selectedCusCmp.country=this.ccForm?.get("country")?.value;
+      selectedCusCmp.currency=this.ccForm?.get("currency")?.value;
+      selectedCusCmp.email=this.ccForm?.get("email")?.value;
+      selectedCusCmp.remarks=this.ccForm?.get("remarks")?.value;
+      selectedCusCmp.website=this.ccForm?.get("web")?.value;
       
-      this.selectedCustomerCmp.phone=this.ccForm?.get("phone")?.value;
-      this.selectedCustomerCmp.postal=this.ccForm?.get("postal_code")?.value;
+      
+      selectedCusCmp.phone=this.ccForm?.get("phone")?.value;
+      selectedCusCmp.postal=this.ccForm?.get("postal_code")?.value;
 
       
       if(this.ccForm?.get("default_profile")?.value)
         {
           let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
-          this.selectedCustomerCmp.def_tank_guid=defTank.guid;
+          selectedCusCmp.def_tank_guid=defTank.guid;
         }
 
       if(this.ccForm?.get("currency")?.value)
       {
         let currency=this.ccForm?.get("currency")?.value;
-        this.selectedCustomerCmp.currency_guid= currency?.guid;
+        selectedCusCmp.currency_guid= currency?.guid;
       }
       else
       {
-        this.selectedCustomerCmp.currency_guid="-";
+        selectedCusCmp.currency_guid="-";
         
       }
-      delete this.selectedCustomerCmp.currency;
+      delete selectedCusCmp.currency;
+      selectedCusCmp.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
 
-
-      var existContactPerson =  this.selectedCustomerCmp?.cc_contact_person?.map((row) => ({
+      var existContactPerson =  selectedCusCmp?.cc_contact_person?.map((row) => ({
         ...row,
         title_cv : row.title_cv,
         action:'CANCEL'
@@ -1215,24 +1128,88 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       });
 
 
+      
+
       var billingBranches:BillingBranchesItem[]=[]; 
       if(this.ccForm?.get("billing_branches")?.value)
       {
-     
+           
+         
+            var b =this.ccForm?.get("billing_branches")?.value as CustomerCompanyItem;
+            let billing_branch = new BillingBranchesItem();
+            billing_branch.branchCustomer= new BillingCustomerItem(b);
+
+            if(b.main_customer_guid!==this.selectedCustomerCmp.guid)
+            {
+              billing_branch.branchCustomer.action=b.guid==""?"NEW":"EDIT";
+              billing_branch.branchCustomer.main_customer_guid= this.selectedCustomerCmp?.guid;
+
+              
+            }
+            else
+            {
+              billing_branch.branchCustomer.action="";
+            }
+            
+
+            delete billing_branch.branchCustomer.update_by;
+            delete billing_branch.branchCustomer.update_dt;
+            delete billing_branch.branchCustomer.create_by;
+            delete billing_branch.branchCustomer.create_dt;
+            delete billing_branch.branchCustomer.delete_dt;
+            delete billing_branch.branchCustomer.cc_contact_person;
+            delete billing_branch.branchCustomer.currency;
+
+            b.cc_contact_person?.forEach(p=>{
+
+              let person = new BillingContactPersonItem(p);
+              person.action=p.guid==""?"NEW":"";
+              billing_branch.branchContactPerson=[];
+              billing_branch.branchContactPerson?.push(person);
+            }); 
+
+
+            //check and remove the existing Billing branch if new billing branch selected.
+            var existingBillingBranchCust= this.getBillingBranches(selectedCusCmp?.guid!);
+            if(existingBillingBranchCust)
+            {
+              if(existingBillingBranchCust?.guid!==billing_branch?.branchCustomer.guid!)
+              {
+                let exist_billing_branch = new BillingBranchesItem();
+                exist_billing_branch.branchCustomer= new BillingCustomerItem(existingBillingBranchCust);
+                exist_billing_branch.branchCustomer.action="EDIT";
+                exist_billing_branch.branchCustomer.main_customer_guid="";
+
+                delete exist_billing_branch.branchCustomer.update_by;
+                delete exist_billing_branch.branchCustomer.update_dt;
+                delete exist_billing_branch.branchCustomer.create_by;
+                delete exist_billing_branch.branchCustomer.create_dt;
+                delete exist_billing_branch.branchCustomer.delete_dt;
+                delete exist_billing_branch.branchCustomer.cc_contact_person;
+                delete exist_billing_branch.branchCustomer.currency;
+    
+                billingBranches.push(exist_billing_branch);
+              }
+            }
+
+            billingBranches.push(billing_branch);
+
+         
+
       }
 
       
-      delete this.selectedCustomerCmp.update_by;
-      delete this.selectedCustomerCmp.update_dt;
-      delete this.selectedCustomerCmp.create_by;
-      delete this.selectedCustomerCmp.create_dt;
-      delete this.selectedCustomerCmp.delete_dt;
-      delete this.selectedCustomerCmp.cc_contact_person;
+      delete selectedCusCmp.update_by;
+      delete selectedCusCmp.update_dt;
+      delete selectedCusCmp.create_by;
+      delete selectedCusCmp.create_dt;
+      delete selectedCusCmp.delete_dt;
+      delete selectedCusCmp.cc_contact_person;
 
 
       var existContactPersons=existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
 
-      this.ccDS.UpdateCustomerCompany(this.selectedCustomerCmp,existContactPersons,billingBranches).subscribe(result => {
+      this.ccDS.UpdateCustomerCompany(selectedCusCmp,existContactPersons,billingBranches).subscribe(result => {
   
   
         var count = result.data.updateCustomerCompany;
@@ -1496,7 +1473,8 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     let custCmp:any={
       customerCompanyData :cust,
       contactPerson:updContactPerson,
-      billingBranches:billingBranches
+      billingBranches:billingBranches,
+      newBillingBranchCode:''
     } ;
     this.historyState.customerCompany=custCmp;
     
@@ -1585,5 +1563,81 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     }
     return undefined;
     
+  }
+
+  getBillingBranches(guid:string):CustomerCompanyItem|undefined{
+    if(this.customer_companyList?.length)
+    {
+      const custCmp= this.customer_companyList?.filter((x: any) => x.main_customer_guid === guid).map(item => {
+        return item;});
+        if(custCmp?.length!>0)
+          return custCmp[0];
+        else
+          return undefined;
+    }
+    return undefined;
+  }
+
+  getBillingBranchesCode(code:string):CustomerCompanyItem|undefined{
+    if(this.customer_companyList?.length)
+    {
+      const custCmp= this.customer_companyList?.filter((x: any) => x.code === code).map(item => {
+        return item;});
+        if(custCmp?.length!>0)
+          return custCmp[0];
+        else
+          return undefined;
+    }
+    return undefined;
+  }
+
+
+
+  refreshBillingBranches()
+  {
+
+     let selGuid:string| undefined = undefined;
+    let selBillingCode:string| undefined = undefined;
+    if(this.historyState.customerCompany)
+    {
+      selGuid=this.historyState.customerCompany.customerCompanyData.guid;
+      selBillingCode=this.historyState.customerCompany.newBillingBranchCode;
+
+    }
+    else if(this.selectedCustomerCmp)
+    {
+      selGuid=this.selectedCustomerCmp.guid!;
+    }
+
+
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
+   
+      if (data.length) {
+        if(this.selectedCustomerCmp)
+        {
+          data = data.filter(item => item.guid !== this.selectedCustomerCmp?.guid);
+
+        
+        }
+
+
+        this.customer_companyList = data
+    
+        if(selBillingCode)
+        {
+          this.ccForm?.patchValue({
+            billing_branches:this.getBillingBranchesCode(selBillingCode),
+          })
+        }
+        else if(selGuid!)
+        {
+          this.ccForm?.patchValue({
+            billing_branches:this.getBillingBranches(selGuid),
+          })
+        }
+
+      
+      }
+    });
   }
 }

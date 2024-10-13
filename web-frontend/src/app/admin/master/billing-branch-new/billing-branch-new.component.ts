@@ -61,7 +61,7 @@ import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-fiel
 import { elements } from 'chart.js';
 import { ContactPersonItem } from 'app/data-sources/contact-person';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { BillingBranchesItem } from 'app/data-sources/billingBranches';
+import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
 import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 
 @Component({
@@ -375,111 +375,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initializeValueChange() {
-    //this.repList.data
-
-    // this.ccForm?.get('labour_hour')?.valueChanges.subscribe(value => {
-    //   this.ccForm?.patchValue({
-    //     labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
-    //   });
-    // });
-
-    // this.ccForm?.get('labour_total')!.valueChanges.subscribe(value => {
-
-    //   var discCostAmt: number = 0;
-    //   if (this.ccForm?.get('labour_discount')?.value > 0) {
-    //     discCostAmt = Number(this.ccForm?.get('labour_total')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
-    //   }
-    //   this.ccForm?.patchValue({
-    //     total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
-    //     labour_discount_amount: discCostAmt.toFixed(2),
-
-    //   });
-    // });
-
-    // this.ccForm?.get('total_cost')!.valueChanges.subscribe(value => {
-
-
-    //   this.ccForm?.patchValue({
-    //     net_cost: this.GetNetCost()
-
-
-    //   });
-    // });
-
-    // this.ccForm?.get('labour_rate')!.valueChanges.subscribe(value => {
-
-    //   this.ccForm?.patchValue({
-
-    //     //labour_total : (Number(this.ccForm?.get('labour_rate')?.value)+Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
-    //     labour_total: Number(Number(this.ccForm?.get('labour_hour')!.value) * Number(this.ccForm?.get('labour_rate')!.value)).toFixed(2)
-
-    //   });
-    // });
-    // this.ccForm?.get('labour_additional')!.valueChanges.subscribe(value => {
-
-    //   this.ccForm?.patchValue({
-    //     labour_total: (Number(this.ccForm?.get('labour_rate')?.value) + Number(this.ccForm?.get('labour_additional')?.value)).toFixed(2),
-
-    //   });
-    // });
-
-    // this.ccForm?.get('labour_discount_amount')!.valueChanges.subscribe(value => {
-
-
-    //   this.ccForm?.patchValue({
-    //     net_cost: this.GetNetCost()
-
-
-    //   });
-    // });
-
-    // this.ccForm?.get('material_discount_amount')!.valueChanges.subscribe(value => {
-
-
-    //   this.ccForm?.patchValue({
-    //     net_cost: this.GetNetCost()
-
-
-    //   });
-    // });
-
-
-
-    // this.ccForm?.get('labour_discount')!.valueChanges.subscribe(value => {
-    //   var discCostAmt: number = 0;
-    //   if (this.ccForm?.get('labour_discount')?.value > 0) {
-    //     discCostAmt = Number(this.ccForm?.get('labour_rate')!.value) * Number(Number(this.ccForm?.get('labour_discount')?.value / 100));
-    //   }
-    //   this.ccForm?.patchValue({
-    //     labour_discount_amount: discCostAmt.toFixed(2),
-    //     //net_cost:this.GetNetCost()
-    //   });
-    // });
-
-
-    // this.ccForm?.get('material_discount')!.valueChanges.subscribe(value => {
-    //   var discCostAmt: number = 0;
-    //   if (this.ccForm?.get('material_discount')?.value > 0) {
-    //     discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
-    //   }
-    //   this.ccForm?.patchValue({
-    //     material_discount_amount: discCostAmt.toFixed(2),
-    //     // net_cost:this.GetNetCost()
-    //   });
-    // });
-
-    // this.ccForm?.get('total_material_cost')!.valueChanges.subscribe(value => {
-    //   var discCostAmt: number = 0;
-    //   if (this.ccForm?.get('material_discount')?.value > 0) {
-    //     discCostAmt = Number(this.ccForm?.get('total_material_cost')?.value) * Number(Number(this.ccForm?.get('material_discount')?.value / 100));
-    //   }
-    //   this.ccForm?.patchValue({
-    //     total_cost: Number(Number(this.ccForm?.get('labour_total')!.value) + Number(this.ccForm?.get('total_material_cost')!.value)).toFixed(2),
-    //     material_discount_amount: discCostAmt.toFixed(2),
-
-    //   });
-    // });
-
   }
 
   initCCForm() {
@@ -681,7 +576,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
   }
 
   
-  editEstDetails(event: Event, row: RepairEstPartItem, index: number) {
+  editContactPerson(event: Event, row: ContactPersonItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -737,18 +632,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        // if (result.item.guid) {
-        //   const data: any[] = [...this.repList.data];
-        //   const updatedItem = {
-        //     ...result.item,
-        //     delete_dt: Utility.getDeleteDtEpoch(),
-        //     actions: Array.isArray(data[index].actions!)
-        //       ? [...new Set([...data[index].actions!, 'delete'])]
-        //       : ['delete']
-        //   };
-        //   data[result.index] = updatedItem;
-        //   this.updateData(data); // Refresh the data source
-        // } else {
+      
           const data = [...this.repList.data];
           data.splice(index, 1);
           this.updateData(data); // Refresh the data source
@@ -882,7 +766,23 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         this.ccDS.search(where).subscribe(result => {
 
           if (result.length == 0 && this.branch_guid == undefined) {
+             if(this.ccForm?.get("customer_code")?.value)
+             {
+               let mainCust =this.ccForm?.get("customer_code")?.value as CustomerCompanyItem;
+               if(mainCust.guid)
+               {
+                  this.UpdateCustomerBillingBranches();                
+               }
+               else
+               {
+                this.insertNewBillingBranch();
+               }
+
+             }
+             else
+             {
               this.insertNewBillingBranch();
+             }
             
           }
           else if (result.length > 0 && this.branch_guid == undefined) {
@@ -894,6 +794,102 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       }
     } else {
       console.log('Invalid soForm', this.ccForm?.value);
+    }
+  }
+
+  UpdateCustomerBillingBranches(){
+
+    const mainCustomer:CustomerCompanyItem = new CustomerCompanyItem(this.ccForm?.get("customer_code")?.value!);
+    if(mainCustomer.guid)
+    {
+
+      
+      delete mainCustomer.update_by;
+      delete mainCustomer.update_dt;
+      delete mainCustomer.create_by;
+      delete mainCustomer.create_dt;
+      delete mainCustomer.delete_dt;
+      delete mainCustomer.cc_contact_person;
+      delete mainCustomer.currency;
+
+
+      var cust:CustomerCompanyItem=new CustomerCompanyItem();
+      cust.address_line1=this.ccForm?.get("address1")?.value;
+      cust.address_line2=this.ccForm?.get("address2")?.value;
+      cust.code=this.ccForm?.get("branch_code")?.value;
+      cust.name=this.ccForm?.get("branch_name")?.value;
+      cust.city=this.ccForm?.get("city_name")?.value;
+      cust.country=this.ccForm?.get("country")?.value;
+      cust.currency=this.ccForm?.get("currency")?.value;
+      cust.email=this.ccForm?.get("email")?.value;
+      cust.remarks=this.ccForm?.get("remarks")?.value;
+      cust.website=this.ccForm?.get("web")?.value;
+      cust.type_cv="BRANCH";
+      cust.phone=this.ccForm?.get("phone")?.value;
+      cust.postal=this.ccForm?.get("postal_code")?.value;
+      if(this.ccForm?.get("default_profile")?.value)
+        {
+          let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
+          cust.def_tank_guid=defTank.guid;
+        }
+        if(this.ccForm?.get("currency")?.value)
+        {
+          cust.currency_guid= cust.currency?.guid;
+        }
+      
+        delete cust.currency;
+        var contactPerson =  this.repList.data.map((row) => ({
+          ...row,
+          title_cv : row.title_cv,
+          action:'NEW'
+        }));
+
+        var billingBranches:BillingBranchesItem[]=[]; 
+
+        var exist_billing_branch:BillingBranchesItem= new BillingBranchesItem();
+        let customerCmp=  this.getBillingBranches(mainCustomer.guid!);
+        if(customerCmp)
+        {
+          exist_billing_branch.branchCustomer = new BillingCustomerItem(customerCmp);
+          exist_billing_branch.branchCustomer!.action="EDIT";
+          exist_billing_branch.branchCustomer!.main_customer_guid="";
+
+          delete exist_billing_branch.branchCustomer.update_by;
+          delete exist_billing_branch.branchCustomer.update_dt;
+          delete exist_billing_branch.branchCustomer.create_by;
+          delete exist_billing_branch.branchCustomer.create_dt;
+          delete exist_billing_branch.branchCustomer.delete_dt;
+          delete exist_billing_branch.branchCustomer.cc_contact_person;
+          delete exist_billing_branch.branchCustomer.currency;
+          
+          billingBranches.push(exist_billing_branch);
+        }
+
+        var new_billing_branch:BillingBranchesItem= new BillingBranchesItem();
+        new_billing_branch.branchCustomer = new BillingCustomerItem(cust);
+        new_billing_branch.branchCustomer.main_customer_guid=mainCustomer.guid;
+        new_billing_branch.branchCustomer.action="NEW";
+        new_billing_branch.branchContactPerson =contactPerson as BillingContactPersonItem[];
+        delete new_billing_branch.branchCustomer.update_by;
+        delete new_billing_branch.branchCustomer.update_dt;
+        delete new_billing_branch.branchCustomer.create_by;
+        delete new_billing_branch.branchCustomer.create_dt;
+        delete new_billing_branch.branchCustomer.delete_dt;
+        delete new_billing_branch.branchCustomer.cc_contact_person;
+        delete new_billing_branch.branchCustomer.currency;
+
+        billingBranches.push(new_billing_branch);
+        this.ccDS.UpdateCustomerCompany(mainCustomer,undefined,billingBranches).subscribe(result => {
+
+
+          var count = result.data.updateCustomerCompany;
+          if (count > 0) {
+            this.historyState.customerCompany.newBillingBranchCode=cust.code;
+            this.handleSaveSuccess(count);
+          }
+        });
+
+
     }
   }
 
@@ -914,10 +910,11 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     cust.phone=this.ccForm?.get("phone")?.value;
     cust.postal=this.ccForm?.get("postal_code")?.value;
     
-    if(this.ccForm?.get("customer_code")?.value)
+    const mainCustomer:CustomerCompanyItem = this.ccForm?.get("customer_code")?.value!;
+    if(mainCustomer)
     {
-       const customer:CustomerCompanyItem = this.ccForm?.get("customer_code")?.value!;
-      cust.main_customer_guid=customer.guid;
+      
+      cust.main_customer_guid=mainCustomer.guid;
     }
 
     if(this.ccForm?.get("default_profile")?.value)
@@ -929,11 +926,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     {
       cust.currency_guid= cust.currency?.guid;
     }
-    else
-    {
-      cust.currency_guid="-";
-      
-    }
+  
     delete cust.currency;
   //  cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem).code_val;
 
@@ -945,15 +938,37 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
 
     
     var billingBranches:BillingBranchesItem[]=[]; 
-    if(this.ccForm?.get("billing_branches")?.value)
-    {
-   
-    }
+    // if(mainCustomer?.guid)
+    // {
+    //   var exist_billing_branch:BillingBranchesItem= new BillingBranchesItem();
+    //   let customerCmp=  this.getBillingBranches(mainCustomer.guid!);
+    //   if(customerCmp)
+    //   {
+    //     exist_billing_branch.branchCustomer = new BillingCustomerItem(customerCmp);
+    //     exist_billing_branch.branchCustomer!.action="EDIT";
+    //     exist_billing_branch.branchCustomer!.main_customer_guid="";
+
+    //     delete exist_billing_branch.branchCustomer.update_by;
+    //     delete exist_billing_branch.branchCustomer.update_dt;
+    //     delete exist_billing_branch.branchCustomer.create_by;
+    //     delete exist_billing_branch.branchCustomer.create_dt;
+    //     delete exist_billing_branch.branchCustomer.delete_dt;
+    //     delete exist_billing_branch.branchCustomer.cc_contact_person;
+    //     delete exist_billing_branch.branchCustomer.currency;
+        
+    //     billingBranches.push(exist_billing_branch);
+    //   }
+    
+
+    // }
+
+
     this.ccDS.AddCustomerCompany(cust,contactPerson,billingBranches).subscribe(result => {
 
 
       var count = result.data.addCustomerCompany;
       if (count > 0) {
+        this.historyState.customerCompany.newBillingBranchCode=cust.code;
         this.handleSaveSuccess(count);
       }
     });
@@ -1145,7 +1160,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
         //this.router.navigate(['/admin/master/estimate-template']);
 
-        if(this.isFromBranch)
+        if(!this.isFromBranch)
         {
           this.router.navigate(['/admin/master/customer/new/ '], {
             state: this.historyState
@@ -1366,4 +1381,18 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     return undefined;
     
   }
+
+  getBillingBranches(guid:string):CustomerCompanyItem|undefined{
+    if(this.customer_companyList?.length)
+    {
+      const custCmp= this.customer_companyList?.filter((x: any) => x.main_customer_guid === guid).map(item => {
+        return item;});
+        if(custCmp?.length!>0)
+          return custCmp[0];
+        else
+          return undefined;
+    }
+    return undefined;
+  }
+
 }

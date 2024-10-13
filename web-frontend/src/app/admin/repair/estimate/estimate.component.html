@@ -358,18 +358,23 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
-                      <mat-header-cell [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matHeaderCellDef></mat-header-cell>
-                      <mat-cell *matCellDef="let repair_estRow; let i=index;" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                      <mat-header-cell
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        *matHeaderCellDef></mat-header-cell>
+                      <mat-cell *matCellDef="let repair_estRow; let i=index;"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                         <button mat-icon-button [matMenuTriggerFor]="menu">
                           <mat-icon>more_vert</mat-icon>
                         </button>
                         <mat-menu #menu="matMenu">
-                          @if (repairEstDS.canAmend(repair_estRow)) {
+                          <!-- @if (repairEstDS.canAmend(repair_estRow)) {
                           <button mat-menu-item
                             [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]">
                             <mat-icon>edit</mat-icon>
                             <span>{{translatedLangText.AMEND}}</span>
                           </button>
+                          } -->
+                          @if (repairEstDS.canCancel(repair_estRow)) {
                           <button mat-menu-item (click)="cancelRow(repair_estRow)">
                             <mat-icon>cancel</mat-icon>
                             <span>{{translatedLangText.CANCEL}}</span>
@@ -386,7 +391,7 @@
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let repair_estRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                      matRipple>
+                      [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]" matRipple>
                     </mat-row>
                   </table>
                 </div>
