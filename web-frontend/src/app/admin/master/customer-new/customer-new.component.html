@@ -65,15 +65,15 @@
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
 
-                      <!-- <input matInput formControlName="billing_branches"  [formControl]="branchCodeControl" [matAutocomplete]="customerCode">
+                      <input matInput formControlName="billing_branches"  [matAutocomplete]="customerCode">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
                         {{ccDS.displayName(cc)}}
                       </mat-option>
                       }
-                    </mat-autocomplete> -->
-                      <mat-select  formControlName="billing_branches">
+                    </mat-autocomplete>
+                      <!-- <mat-select  formControlName="billing_branches">
                         <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
                          
                           <ng-container *ngIf="cc !== null">
@@ -81,7 +81,7 @@
                           </ng-container>
                          
                         </mat-option>
-                      </mat-select>
+                      </mat-select> -->
                      
                   </mat-form-field>
                   

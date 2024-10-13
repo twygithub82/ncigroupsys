@@ -11,7 +11,7 @@
           <div class="card">
             <div class="header">
               <h2>
-                {{translatedLangText.CUSTOMER_DETAILS}}
+                {{translatedLangText.BILLING_BRANCH_DETAILS}}
               </h2>
             </div>
             <div class="body">
@@ -21,7 +21,15 @@
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                    <mat-select  formControlName="customer_code" required>
+                    <input matInput formControlName="customer_code"  [matAutocomplete]="customerCode">
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                      @for (cc of customer_companyList; track cc) {
+                      <mat-option [value]="cc">
+                        {{ccDS.displayName(cc)}}
+                      </mat-option>
+                      }
+                    </mat-autocomplete>
+                    <!-- <mat-select  formControlName="customer_code" required>
                       <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
                        
                         <ng-container *ngIf="cc !== null">
@@ -29,7 +37,7 @@
                         </ng-container>
                        
                       </mat-option>
-                    </mat-select>
+                    </mat-select> -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">

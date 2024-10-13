@@ -105,13 +105,13 @@
                   <ng-container matColumnDef="mobile">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PHONE }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> {{row.phone}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.PHONE }}:</span> {{row.phone}}</mat-cell>
                   </ng-container>
-                  <ng-container matColumnDef="gender">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.FAX_NO }}</mat-header-cell>
+                  <!-- <ng-container matColumnDef="gender">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DID }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.fax}}</mat-cell>
-                  </ng-container>
+                      <span class="mobile-label">{{this.translatedLangText.DID}}:</span> {{row.did}}</mat-cell>
+                  </ng-container> -->
                   <ng-container matColumnDef="bDate">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.EMAIL }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

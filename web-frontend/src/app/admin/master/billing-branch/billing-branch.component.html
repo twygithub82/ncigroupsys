@@ -16,12 +16,12 @@
                   </mat-panel-title>
                   <mat-panel-description>
                     <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                      <button mat-mini-fab color="primary" (click)="addCall($event)"  (click)="$event.stopPropagation()">
+                      <button mat-mini-fab color="primary" (click)="addBillingBranch($event)"  (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">add</mat-icon>
                       </button>
                     </div>
                     <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
-                      <button mat-mini-fab color="primary" (click)="adjustCost()"  (click)="$event.stopPropagation()">
+                      <button mat-mini-fab color="primary" (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">edit</mat-icon>
                       </button>
                     </div>
@@ -126,7 +126,7 @@
                   <ng-container matColumnDef="actions">
                     <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                      <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
+                      <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editBillingBranch(row)"
                         class="tbl-action-btn">
                         <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
                       </button>
@@ -137,7 +137,7 @@
                     </mat-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editBillingBranch(row)"
                     [style.cursor]="'pointer'" matRipple>
                   </mat-row>
                 </table>
@@ -167,7 +167,7 @@
                     <mat-icon>add_box</mat-icon>
                     <span>Add Record</span>
                   </button>
-                  <button mat-menu-item (click)="editCall(item)">
+                  <button mat-menu-item (click)="editBillingBranch(item)">
                     <mat-icon>create</mat-icon>
                     <span>Edit Record</span>
                   </button>

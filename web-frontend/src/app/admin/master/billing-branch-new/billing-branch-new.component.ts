@@ -250,7 +250,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     ADD:"COMMON-FORM.ADD",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     BRANCH_CODE:"COMMON-FORM.BRANCH-CODE",
-    BRANCH_NAME:"COMMON-FORM.BRANCH-NAME"
+    BRANCH_NAME:"COMMON-FORM.BRANCH-NAME",
+    BILLING_BRANCH_DETAILS:"COMMON-FORM.BILLING-BRANCH-DETAILS",
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -395,7 +396,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       postal_code: [''],
       city_name: [''],
       country: ['Singapore'],
-      remarks:['']
+      remarks:[''],
+      repList:['']
     });
   }
 
@@ -410,6 +412,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
 }
 
   public loadData() {
+    this.initializeFilterCustomerCompany();
     this.historyState = history.state;
 
     if(this.historyState.customerCompany)
@@ -1393,6 +1396,41 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
           return undefined;
     }
     return undefined;
+  }
+
+  initializeFilterCustomerCompany() {
+    this.ccForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems(
+          {
+            and: [
+              {
+                or: [
+                  { main_customer_guid: { eq: '' } },
+                  { main_customer_guid: { eq: null } }
+                ]
+              },
+              {
+                or: [
+                  { name: { contains: searchCriteria } },
+                  { code: { contains: searchCriteria } }
+                ]
+              }
+            ]
+          },
+          { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
   }
 
 }

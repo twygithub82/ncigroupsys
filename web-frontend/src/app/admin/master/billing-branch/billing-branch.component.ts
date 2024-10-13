@@ -107,7 +107,7 @@ implements OnInit {
      'fName',
      'lName',
      'mobile',
-     'gender',
+    // 'gender',
      'bDate',
      
      'email',
@@ -380,7 +380,7 @@ implements OnInit {
       });
   }
   
-  addCall(event: Event)
+  addBillingBranch(event: Event)
   {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
@@ -405,41 +405,25 @@ implements OnInit {
 
   
 
-  editCall(row: PackageResidueItem) {
-   // this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    var rows :PackageResidueItem[] =[] ;
-    rows.push(row);
-    const dialogRef = this.dialog.open(FormDialogComponent,{
-      
-      width: '720px',
-      height:'auto',
-      data: {
-        action: 'update',
-        langText: this.langText,
-        selectedItems:rows
-      },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+  editBillingBranch(row: CustomerCompanyItem) {
+    this.router.navigate([`/admin/master/billing-branch/new/${row.guid} `], {
+      state: { id: row.guid ,
+        type:'billing-branch',
+        selectedRow:row,
+        pagination:{
+          where :this.lastSearchCriteria,
+          pageSize:this.pageSize,
+          pageIndex:this.pageIndex,
+          hasPreviousPage:this.hasPreviousPage,
+          startCursor:this.startCursor,
+          endCursor:this.endCursor,
+          previous_endCursor:this.previous_endCursor,
+          
+          showResult: this.ccDS.totalCount>0
+          
+        }
       }
-        
     });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         //if (result) {
-          if(result>0)
-            {
-              this.handleSaveSuccess(result);
-              //this.search();
-              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-            }
-      //}
-      });
    
   }
 
@@ -644,7 +628,7 @@ implements OnInit {
   }
   public loadData() {
 
-    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' },100).subscribe(data => {
      // this.customer_companyList1 = data
     });
 

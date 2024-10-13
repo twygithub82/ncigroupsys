@@ -285,6 +285,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   tankItemList?:TankItem[]=[];
   customerTypeControl = new UntypedFormControl();
   customerCodeControl = new UntypedFormControl();
+  
 
   // soDS: StoringOrderDS;
   // sotDS: StoringOrderTankDS;
@@ -355,18 +356,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
   calculateCostSummary() {
-    // var totalMaterialCost: number = 0;
-    // var totalLabourHours: number = 0;
-    // this.repList.data.forEach(data => {
-    //   totalMaterialCost += (data.tariff_repair?.material_cost ?? 0) * (data.quantity ?? 0);
-    //   totalLabourHours += (data.hour ?? 0);
-    // });
-    // this.ccForm?.patchValue({
-    //   total_material_cost: Number(totalMaterialCost).toFixed(2),
-    //   labour_hour: totalLabourHours
-    // });
-
-    //const totalCost= this.repList.data.reduce((total,part)=>total+(part.material_cost??0));
+  
   }
 
   GetNetCost(): string {
@@ -400,7 +390,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       postal_code: [''],
       city_name: [''],
       country: ['Singapore'],
-      remarks:['']
+      remarks:[''],
+      repList:[]
     });
   }
 
@@ -413,6 +404,40 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   return retval;
 }
 
+PatchCustomerCompanyData()
+{
+  if(this.historyState.customerCompany.customerCompanyData)
+  {
+    
+    var cust:CustomerCompanyItem=this.historyState.customerCompany.customerCompanyData;
+    var contactPsn:ContactPersonItem[]=this.historyState.customerCompany.contactPerson;
+    this.ccForm?.patchValue({
+
+      address1:cust.address_line1,
+      address2:cust.address_line2,
+      customer_code:cust.code,
+      customer_name:cust.name,
+      city_name:cust.city,
+      billing_branches:this.getBillingBranches(cust.guid!),
+      country:cust.country,
+      email:cust.email,
+      remarks:cust.remarks,
+      web:cust.website,
+      phone:cust.phone,
+      postal_code:cust.postal,
+      default_profile:this.getDefaultTank(cust.def_tank_guid!),
+      customer_type:this.getCustomerTypeCvObject(cust.type_cv!)
+
+    });
+    var existContact = contactPsn?.map((row) => ({
+      ...row
+    }));
+    this.customer_guid=cust.guid;
+    this.updateData(existContact!);
+    this.refreshBillingBranches();
+  }
+
+}
 PatchSelectedRowValue(){
   this.historyState = history.state;
 
@@ -427,33 +452,7 @@ PatchSelectedRowValue(){
 
     if(this.historyState.customerCompany)
     {
-
-      var cust:CustomerCompanyItem=this.historyState.customerCompany.customerCompanyData;
-      var contactPsn:ContactPersonItem[]=this.historyState.customerCompany.contactPerson;
-      this.ccForm?.patchValue({
-
-        address1:cust.address_line1,
-        address2:cust.address_line2,
-        customer_code:cust.code,
-        customer_name:cust.name,
-        city_name:cust.city,
-        billing_branches:this.getBillingBranches(cust.guid!),
-        country:cust.country,
-        email:cust.email,
-        remarks:cust.remarks,
-        web:cust.website,
-        phone:cust.phone,
-        postal_code:cust.postal,
-        default_profile:this.getDefaultTank(cust.def_tank_guid!),
-        customer_type:this.getCustomerTypeCvObject(cust.type_cv!)
-
-      });
-      var existContact = contactPsn?.map((row) => ({
-        ...row
-      }));
-      this.updateData(existContact!);
-      this.refreshBillingBranches();
-    
+        this.PatchCustomerCompanyData();
     }
     else
     {
@@ -486,6 +485,10 @@ PatchSelectedRowValue(){
       this.refreshBillingBranches();
     }
   }
+  else if(this.historyState.customerCompany) // New Customer Company and New Billing Branch
+  {
+    this.PatchCustomerCompanyData();
+  }
   else
   {
     this.refreshBillingBranches();
@@ -496,6 +499,7 @@ PatchSelectedRowValue(){
 
   public loadData() {
   
+    this.initializeFilterCustomerCompany();
 
     this.customer_guid = this.route.snapshot.paramMap.get('id');
     if (this.customer_guid?.trim() == '') {
@@ -570,7 +574,7 @@ PatchSelectedRowValue(){
     this.cvDS.connectAlias('customerTypeCv').subscribe(data => {
       this.customerTypeCvList = data;
       this.customerTypeCvList= this.customerTypeCvList
-      .filter(data => data.code_val !== "BRANCH") // Filters out items where data.value is not "branch"
+     // .filter(data => data.code_val !== "BRANCH") // Filters out items where data.value is not "branch"
       .map(data => {
         // You can apply a transformation here if needed
         return data;  // Or transform data in some way
@@ -1433,6 +1437,13 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
   addBillingBranch(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
+
+    if(!this.ccForm?.get("customer_code")?.value!)
+    {
+
+      return;
+    }
+    
     var updContactPerson =  this.repList.data.map((row) => ({
       ...row,
       title_cv : row.title_cv
@@ -1592,6 +1603,23 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
   }
 
 
+  initializeFilterCustomerCompany() {
+    this.ccForm!.get('billing_branches')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+  }
 
   refreshBillingBranches()
   {

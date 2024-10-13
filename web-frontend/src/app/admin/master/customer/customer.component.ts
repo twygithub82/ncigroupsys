@@ -107,7 +107,7 @@ implements OnInit {
      'fName',
      'lName',
      'mobile',
-     'gender',
+    // 'gender',
      'bDate',
      
      'email',
@@ -261,6 +261,7 @@ implements OnInit {
     ALIAS_NAME:'COMMON-FORM.ALIAS-NAME',
     CONTACT_PERSON:"COMMON-FORM.CONTACT-PERSON",
     MOBILE_NO:"COMMON-FORM.MOBILE-NO",
+    DID:"COMMON-FORM.DID",
     COUNTRY:"COMMON-FORM.COUNTRY",
     LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
     FAX_NO:"COMMON-FORM.FAX-NO",
@@ -680,7 +681,7 @@ implements OnInit {
   }
   public loadData() {
 
-    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
+    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' },100).subscribe(data => {
      // this.customer_companyList1 = data
     });
 
