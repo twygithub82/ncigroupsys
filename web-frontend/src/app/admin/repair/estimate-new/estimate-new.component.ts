@@ -906,6 +906,9 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           cc = new CustomerCompanyGO({ ...cc });
           console.log(cc);
         }
+
+        re.aspnetsuser = undefined;
+
         console.log(re);
         if (re.guid) {
           this.repairEstDS.updateRepairEstimate(re, cc).subscribe(result => {

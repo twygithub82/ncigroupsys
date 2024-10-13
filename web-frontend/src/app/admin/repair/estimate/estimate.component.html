@@ -97,7 +97,7 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.BILL_COMPLETED}}</mat-label>
                       <mat-select formControlName="bill_completed_cv">
-                        @for (codeValue of soStatusCvList; track codeValue) {
+                        @for (codeValue of reStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
@@ -109,7 +109,7 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.STATUS}}</mat-label>
                       <mat-select formControlName="status_cv">
-                        @for (codeValue of soStatusCvList; track codeValue) {
+                        @for (codeValue of reStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
@@ -167,7 +167,7 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                       <mat-select formControlName="est_status_cv">
-                        @for (codeValue of soStatusCvList; track codeValue) {
+                        @for (codeValue of reStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
@@ -179,7 +179,7 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CURRENT_STATUS}}</mat-label>
                       <mat-select formControlName="current_status_cv">
-                        @for (codeValue of soStatusCvList; track codeValue) {
+                        @for (codeValue of tankStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
@@ -363,7 +363,7 @@
                         *matHeaderCellDef></mat-header-cell>
                       <mat-cell *matCellDef="let repair_estRow; let i=index;"
                         [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                           <mat-icon>more_vert</mat-icon>
                         </button>
                         <mat-menu #menu="matMenu">

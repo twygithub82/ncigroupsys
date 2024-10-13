@@ -169,7 +169,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   sotList: StoringOrderTankItem[] = [];
   reSelection = new SelectionModel<RepairEstItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
-  soStatusCvList: CodeValuesItem[] = [];
+  reStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
 
@@ -361,13 +361,13 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     this.search();
 
     const queries = [
-      { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
+      { alias: 'reStatusCv', codeValType: 'REP_EST_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-      this.soStatusCvList = addDefaultSelectOption(data, 'All');
+    this.cvDS.connectAlias('reStatusCv').subscribe(data => {
+      this.reStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
@@ -426,35 +426,60 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
       tank_status_cv: { in: ['IN_SURVEY', 'CLEANING', 'STORAGE', 'STEAM', 'REPAIR'] }
     };
 
-    if (this.searchForm!.value['so_no']) {
-      where.so_no = { contains: this.searchForm!.value['so_no'] };
+    if (this.searchForm!.value['tank_no']) {
+      where.tank_no = { contains: this.searchForm!.value['tank_no'] };
     }
 
-    if (this.searchForm!.value['so_status']) {
-      where.status_cv = { contains: this.searchForm!.value['so_status'] };
+    if (this.searchForm!.value['last_cargo']) {
+      where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
+    }
+
+    if (this.searchForm!.value['eir_no']) {
+      where.eir_no = { contains: this.searchForm!.value['eir_no'] };
+    }
+
+    if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
+      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    }
+
+    if (this.searchForm!.value['job_no']) {
+      where.job_no = { contains: this.searchForm!.value['job_no'] };
     }
 
     if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+      const soSome: any = {};
+
+      if (this.searchForm!.value['customer_code']) {
+        soSome.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+      }
+    }
+
+    if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
+      let reSome: any = {};
+
+      if (this.searchForm!.value['part_name']) {
+        reSome = {
+          repair_est_part: {
+            some: {
+              tariff_repair: {
+                part_name: { contains: this.searchForm!.value['part_name'] }
+              }
+            }
+          }
+        };
+      }
+
+      if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
+        reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
+      }
+      where.repair_est = { some: reSome };
     }
 
     if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
       const sotSome: any = {};
 
-      if (this.searchForm!.value['last_cargo']) {
-        where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
-      }
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
-      }
-
       if (this.searchForm!.value['job_no']) {
         sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
-      }
-
-      if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
-        sotSome.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
       }
 
       if (this.searchForm!.value['purpose']) {
@@ -667,5 +692,18 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
 
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
   }
 }
