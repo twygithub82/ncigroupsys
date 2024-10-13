@@ -95,7 +95,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   // ];
 
   displayedColumns = [
-    'select',
+    // 'select',
     'estimate_no',
     'net_cost',
     'status_cv',

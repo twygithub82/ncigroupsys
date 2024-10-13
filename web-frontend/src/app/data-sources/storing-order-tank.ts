@@ -690,6 +690,7 @@ const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
         in_gate {
           eir_no
           eir_dt
+          delete_dt
         }
         repair_est {
           guid
@@ -1231,6 +1232,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
   canRollbackStatus(sot: StoringOrderTankItem): boolean {
-    return sot && sot.status_cv === 'CANCELED' || sot.status_cv === 'ACCEPTED';
+    const status_cv = ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE", "OUT_SURVEY", "OUT_GATE"];
+    return sot && (sot.status_cv === 'CANCELED' || sot.status_cv === 'ACCEPTED') && !status_cv.includes(sot.tank_status_cv || '');
   }
 }

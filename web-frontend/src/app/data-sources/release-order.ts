@@ -240,6 +240,7 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
               eir_dt
               eir_no
               yard_cv
+              delete_dt
             }
           }
         }
