@@ -236,7 +236,7 @@ namespace IDMS.Repair.GqlTypes
                     if (estRepair != null && !string.IsNullOrEmpty(estRepair.guid))
                     {
                         var est = new repair_est() { guid = estRepair.guid };
-                        context.Attach(est);
+                        context.repair_est.Attach(est);
 
                         est.update_by = user;
                         est.update_dt = currentDateTime;
@@ -247,20 +247,19 @@ namespace IDMS.Repair.GqlTypes
                             throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
 
                         var customerGuid = estRepair.customer_guid;
-                        var repairEstPart = context.repair_est_part.Where(r => r.repair_est_guid == estRepair.guid).ToList();
-                        var estPartGuid = repairEstPart.Select(x => x.tariff_repair_guid).ToArray();
+                        var repairEstPart = await context.repair_est_part.Where(r => r.repair_est_guid == estRepair.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+                        var partsTarifRepairGuids = repairEstPart.Select(x => x.tariff_repair_guid).ToArray();
                         //var estPartGuid = estRepair.repair_est_part.Select(x => x.tariff_repair_guid).ToArray();
-                        var packageRepair = context.package_repair.Where(r => estPartGuid.Contains(r.guid) &&
-                                            r.customer_company_guid == customerGuid).ToList();
+                        var packageRepair = await context.package_repair.Where(r => partsTarifRepairGuids.Contains(r.tariff_repair_guid) &&
+                                            r.customer_company_guid == customerGuid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
 
                         foreach (var part in repairEstPart)
                         {
-                            var estPart = new repair_est_part() { guid = part.guid };
-                            context.Attach(estPart);
-
-                            estPart.update_by = user;
-                            estPart.update_dt = currentDateTime;
-                            estPart.material_cost = packageRepair.Where(r => r.tariff_repair_guid == part.tariff_repair_guid).Select(r => r.material_cost).First();
+                            //var estPart = new repair_est_part() { guid = part.guid };
+                            //context.repair_est_part.Attach(estPart);
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                            part.material_cost = packageRepair.Where(r => r.tariff_repair_guid == part.tariff_repair_guid).Select(r => r.material_cost).First();
                         }
                     }
                 }
