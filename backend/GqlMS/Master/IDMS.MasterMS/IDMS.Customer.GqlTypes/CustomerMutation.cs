@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory;
 using static IDMS.Customer.GqlTypes.LocalModel.StatusConstant;
 using System.Xml.Schema;
+using System.Runtime.CompilerServices;
 
 namespace IDMS.Customer.GqlTypes
 {
@@ -70,13 +71,16 @@ namespace IDMS.Customer.GqlTypes
 
                             await context.customer_company.AddAsync(branchCustomer);
 
-                            foreach (var ccPerson in branch.BranchContactPerson)
+                            if(branch.BranchContactPerson != null)
                             {
-                                ccPerson.guid = Util.GenerateGUID();
-                                ccPerson.create_dt = currentDateTime;
-                                ccPerson.create_by = user;
-                                ccPerson.customer_guid = branchCustomer.guid;
-                                branchContactPersonList.Add(ccPerson);
+                                foreach (var ccPerson in branch.BranchContactPerson)
+                                {
+                                    ccPerson.guid = Util.GenerateGUID();
+                                    ccPerson.create_dt = currentDateTime;
+                                    ccPerson.create_by = user;
+                                    ccPerson.customer_guid = branchCustomer.guid;
+                                    branchContactPersonList.Add(ccPerson);
+                                }
                             }
                         }
                     }
@@ -117,55 +121,7 @@ namespace IDMS.Customer.GqlTypes
                 updateCustomer.update_by = user;
                 updateCustomer.update_dt = currentDateTime;
 
-                ProcessContantPerson(context, currentDateTime, user, customer.guid, contactPersons);
-                //if (contactPersons != null)
-                //{
-                //    foreach (var contactPerson in contactPersons)
-                //    {
-                //        if (ObjectAction.NEW.EqualsIgnore(contactPerson.action))
-                //        {
-                //            //customer_company_contact_person newContactPerson = new();
-                //            //mapper.Map(cc, newContactPerson);
-
-                //            contactPerson.guid = Util.GenerateGUID();
-                //            contactPerson.create_dt = currentDateTime;
-                //            contactPerson.create_by = user;
-                //            contactPerson.customer_guid = customer.guid;
-
-                //            await context.customer_company_contact_person.AddAsync(contactPerson);
-                //        }
-
-                //        if (ObjectAction.EDIT.EqualsIgnore(contactPerson.action))
-                //        {
-                //            var extPerson = await context.customer_company_contact_person.FindAsync(contactPerson.guid);
-                //            if (extPerson != null)
-                //            {
-                //                extPerson.update_by = user;
-                //                extPerson.update_dt = currentDateTime;
-                //                extPerson.customer_guid = contactPerson.customer_guid;
-                //                extPerson.email = contactPerson.email;
-                //                extPerson.title_cv = contactPerson.title_cv;
-                //                extPerson.department = contactPerson.department;
-                //                extPerson.did = contactPerson.did;
-                //                extPerson.name = contactPerson.name;
-                //                extPerson.phone = contactPerson.phone;
-                //                extPerson.job_title = contactPerson.job_title;
-                //                extPerson.email_alert = contactPerson.email_alert;
-                //            }
-                //        }
-
-                //        if (ObjectAction.CANCEL.EqualsIgnore(contactPerson.action))
-                //        {
-                //            var deletedPerson = new customer_company_contact_person() { guid = contactPerson.guid };
-                //            context.Attach(deletedPerson);
-
-                //            deletedPerson.update_by = user;
-                //            deletedPerson.update_dt = currentDateTime;
-                //            deletedPerson.delete_dt = currentDateTime;
-                //        }
-                //    }
-                //}
-
+                await ProcessContantPerson(context, currentDateTime, user, customer.guid, contactPersons);
 
                 if (billingBranches != null)
                 {
@@ -203,10 +159,11 @@ namespace IDMS.Customer.GqlTypes
                                 delCustomer.update_by = user;
                                 delCustomer.update_dt = currentDateTime;
                                 delCustomer.delete_dt = currentDateTime;
+                                delCustomer.main_customer_guid = 
                                 delCustomer.remarks = branch.BranchCustomer.remarks;
                             }
 
-                            ProcessContantPerson(context, currentDateTime, user, branch.BranchCustomer.guid, branch.BranchContactPerson);
+                            await ProcessContantPerson(context, currentDateTime, user, branch.BranchCustomer.guid, branch.BranchContactPerson);
                         }
                     }
                     if (branchContactPersonList.Count > 0)
@@ -258,56 +215,64 @@ namespace IDMS.Customer.GqlTypes
 
         }
 
-        private async void ProcessContantPerson(ApplicationMasterDBContext context, long currentDateTime, string user, string mainCustomerGuid,
+        private async Task<bool> ProcessContantPerson(ApplicationMasterDBContext context, long currentDateTime, string user, string mainCustomerGuid,
                                             List<customer_company_contact_person> contactPersons)
         {
-            if (contactPersons != null)
+            try
             {
-                foreach (var contactPerson in contactPersons)
+                if (contactPersons != null)
                 {
-                    if (ObjectAction.NEW.EqualsIgnore(contactPerson.action))
+                    foreach (var contactPerson in contactPersons)
                     {
-                        //customer_company_contact_person newContactPerson = new();
-                        //mapper.Map(cc, newContactPerson);
-
-                        contactPerson.guid = Util.GenerateGUID();
-                        contactPerson.create_dt = currentDateTime;
-                        contactPerson.create_by = user;
-                        contactPerson.customer_guid = mainCustomerGuid;
-                        await context.customer_company_contact_person.AddAsync(contactPerson);
-                    }
-
-                    if (ObjectAction.EDIT.EqualsIgnore(contactPerson.action))
-                    {
-                        var extPerson = await context.customer_company_contact_person.FindAsync(contactPerson.guid);
-                        if (extPerson != null)
+                        if (ObjectAction.NEW.EqualsIgnore(contactPerson.action))
                         {
-                            extPerson.update_by = user;
-                            extPerson.update_dt = currentDateTime;
-                            extPerson.customer_guid = contactPerson.customer_guid;
-                            extPerson.email = contactPerson.email;
-                            extPerson.title_cv = contactPerson.title_cv;
-                            extPerson.department = contactPerson.department;
-                            extPerson.did = contactPerson.did;
-                            extPerson.name = contactPerson.name;
-                            extPerson.phone = contactPerson.phone;
-                            extPerson.job_title = contactPerson.job_title;
-                            extPerson.email_alert = contactPerson.email_alert;
+                            //customer_company_contact_person newContactPerson = new();
+                            //mapper.Map(cc, newContactPerson);
+
+                            contactPerson.guid = Util.GenerateGUID();
+                            contactPerson.create_dt = currentDateTime;
+                            contactPerson.create_by = user;
+                            contactPerson.customer_guid = mainCustomerGuid;
+                            await context.customer_company_contact_person.AddAsync(contactPerson);
+                        }
+
+                        if (ObjectAction.EDIT.EqualsIgnore(contactPerson.action))
+                        {
+                            var extPerson = await context.customer_company_contact_person.FindAsync(contactPerson.guid);
+                            if (extPerson != null)
+                            {
+                                extPerson.update_by = user;
+                                extPerson.update_dt = currentDateTime;
+                                extPerson.customer_guid = contactPerson.customer_guid;
+                                extPerson.email = contactPerson.email;
+                                extPerson.title_cv = contactPerson.title_cv;
+                                extPerson.department = contactPerson.department;
+                                extPerson.did = contactPerson.did;
+                                extPerson.name = contactPerson.name;
+                                extPerson.phone = contactPerson.phone;
+                                extPerson.job_title = contactPerson.job_title;
+                                extPerson.email_alert = contactPerson.email_alert;
+                            }
+                        }
+
+                        if (ObjectAction.CANCEL.EqualsIgnore(contactPerson.action))
+                        {
+                            var deletedPerson = new customer_company_contact_person() { guid = contactPerson.guid };
+                            context.Attach(deletedPerson);
+
+                            deletedPerson.update_by = user;
+                            deletedPerson.update_dt = currentDateTime;
+                            deletedPerson.delete_dt = currentDateTime;
                         }
                     }
-
-                    if (ObjectAction.CANCEL.EqualsIgnore(contactPerson.action))
-                    {
-                        var deletedPerson = new customer_company_contact_person() { guid = contactPerson.guid };
-                        context.Attach(deletedPerson);
-
-                        deletedPerson.update_by = user;
-                        deletedPerson.update_dt = currentDateTime;
-                        deletedPerson.delete_dt = currentDateTime;
-                    }
                 }
-            }
-        }
 
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+            return true; 
+        }
     }
 }
