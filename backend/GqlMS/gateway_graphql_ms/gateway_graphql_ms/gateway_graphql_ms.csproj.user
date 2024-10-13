@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>http</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>D:\Useful Doc\Personal\Project\ncigroupsys\backend\GqlMS\gateway_graphql_ms\gateway_graphql_ms\Properties\PublishProfiles\tlx-idms-gateway - Zip Deploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\Useful Doc\Personal\Project\ncigroupsys\backend\GqlMS\gateway_graphql_ms\gateway_graphql_ms\Properties\PublishProfiles\tlx-idms-gateway - Web Deploy.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
