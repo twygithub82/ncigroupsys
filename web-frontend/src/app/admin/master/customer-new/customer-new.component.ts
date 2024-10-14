@@ -305,7 +305,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   selectedCustomerCmp?: CustomerCompanyItem;
   billingBranch?:CustomerCompanyItem[]=[];
   currencyList?:CurrencyItem[]=[];
-
+  phone_regex:any =/^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   constructor(
 
     public httpClient: HttpClient,
@@ -380,7 +380,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       customer_type: [''],
       billing_branches:[''],
       phone:    ['',[Validators.required,
-        Validators.pattern(/^\+?[1-9]\d{7,10}$/)]], // Adjust regex for your format,
+        Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['',[Validators.required, Validators.email]],
       web: [''],
       currency: [''],
@@ -477,11 +477,11 @@ PatchSelectedRowValue(){
         remarks:this.selectedCustomerCmp?.remarks,
       });
 
-      var existContact1 = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
+      var existContact = this.selectedCustomerCmp?.cc_contact_person!.map((row) => ({
         ...row,
       action:''
       }));
-      this.updateData(existContact1!);
+      this.updateData(existContact!);
       this.refreshBillingBranches();
     }
   }
@@ -526,23 +526,6 @@ PatchSelectedRowValue(){
   
     });
 
-
-    // let selGuid=undefined;
-    // let selBillingCode=undefined;
-    // if(this.historyState.customerCompany)
-    // {
-    //   selGuid=this.historyState.customerCompany.customerCompanyData.guid;
-    //   selBillingCode=this.historyState.customerCompany.newBillingBranchCode;
-
-    // }
-    // else if(this.selectedCustomerCmp)
-    // {
-    //   selGuid=this.selectedCustomerCmp.guid!;
-    // }
-
-    // this.refreshBillingBranches(selGuid,selBillingCode);
-
-  
 
     this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
       this.tankItemList = data;
@@ -1164,11 +1147,11 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
             delete billing_branch.branchCustomer.cc_contact_person;
             delete billing_branch.branchCustomer.currency;
 
+            billing_branch.branchContactPerson=[];
             b.cc_contact_person?.forEach(p=>{
 
               let person = new BillingContactPersonItem(p);
               person.action=p.guid==""?"NEW":"";
-              billing_branch.branchContactPerson=[];
               billing_branch.branchContactPerson?.push(person);
             }); 
 

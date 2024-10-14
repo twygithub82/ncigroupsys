@@ -491,7 +491,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       this.temp_guid = undefined;
     }
 
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 20).subscribe(data => {
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 200).subscribe(data => {
       this.customer_companyList = data
       if (data.length) {
         const selectedCustomerGuids = this.selectedTempEst?.template_est_customer?.map(customer => customer.customer_company_guid);

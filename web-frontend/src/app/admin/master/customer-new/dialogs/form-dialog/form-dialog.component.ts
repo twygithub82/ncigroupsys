@@ -91,7 +91,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   trDS: TariffRepairDS;
   repDrDS: REPDamageRepairDS;
   prDS: PackageRepairDS;
-
+  phone_regex:any =/^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   title_control = new UntypedFormControl();
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -142,11 +142,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       customer_guid: [this.contactPerson.customer_guid],
       did : [ this.contactPerson.did,
         [Validators.required,
-        Validators.pattern(/^\+?[1-9]\d{7,10}$/)] // Adjust regex for your format
+        Validators.pattern(this.phone_regex)] // Adjust regex for your format
       ],
       phone: [this.contactPerson.phone,[
         Validators.required,
-        Validators.pattern(/^\+?[1-9]\d{7,10}$/)] // Adjust regex for your format
+        Validators.pattern(this.phone_regex)] // Adjust regex for your format
       ]
 
     });

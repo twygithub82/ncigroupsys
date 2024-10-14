@@ -59,7 +59,7 @@ import { EstimateComponent } from 'app/admin/repair/estimate/estimate.component'
 import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { elements } from 'chart.js';
-import { ContactPersonItem } from 'app/data-sources/contact-person';
+import { ContactPersonItem, ContactPersonItemAction } from 'app/data-sources/contact-person';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
 import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
@@ -252,6 +252,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     BRANCH_CODE:"COMMON-FORM.BRANCH-CODE",
     BRANCH_NAME:"COMMON-FORM.BRANCH-NAME",
     BILLING_BRANCH_DETAILS:"COMMON-FORM.BILLING-BRANCH-DETAILS",
+    SAME:"COMMON-FORM.SAME",
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -267,7 +268,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   selectedTempEst?: MasterTemplateItem;
   sotItem?: StoringOrderTankItem;
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
-  repList = new MatTableDataSource<ContactPersonItem>();
+  repList = new MatTableDataSource<ContactPersonItemAction>();
   sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
   groupNameCvList: CodeValuesItem[] = [];
@@ -302,8 +303,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   profileControl=new UntypedFormControl();
   customerTypeCvList: CodeValuesItem[]=[];
   currencyList?:CurrencyItem[]=[];
-  selectedCustomerCmp: any;
-
+  selectedBillingBranch: any;
+  phone_regex:any =/^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   constructor(
 
     public httpClient: HttpClient,
@@ -381,12 +382,12 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   initCCForm() {
     this.ccForm = this.fb.group({
       guid: [''],
-      customer_company_guid: [''],
+     // customer_company_guid: [''],
       customer_code:[''],
       branch_code: [''],
       branch_name: [''],
       phone:    ['',[Validators.required,
-        Validators.pattern(/^\+?[1-9]\d{7,10}$/)]], // Adjust regex for your format,
+        Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['',[Validators.required, Validators.email]],
       web: [''],
       currency: [''],
@@ -411,6 +412,36 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
   return retval;
 }
 
+  patchData(currentBillingBranch:CustomerCompanyItem){
+
+    if(currentBillingBranch)
+    {
+      this.ccForm?.patchValue({
+        guid: currentBillingBranch.guid,
+       // customer_company_guid: [''],
+        customer_code:this.getCustomerCompanyItem(currentBillingBranch.main_customer_guid!),
+        branch_code: currentBillingBranch.code,
+        branch_name: currentBillingBranch.name,
+        phone:    currentBillingBranch.phone,
+        email: currentBillingBranch.email,
+        web: currentBillingBranch.email,
+        currency: this.getCurrency(currentBillingBranch?.currency?.guid!),
+        default_profile:this.getDefaultTank(currentBillingBranch.def_tank_guid!),
+        address1: currentBillingBranch.address_line1,
+        address2: currentBillingBranch.address_line2,
+        postal_code: currentBillingBranch.postal,
+        city_name: currentBillingBranch.city,
+        country: currentBillingBranch.country,
+        remarks:currentBillingBranch.remarks,
+      });
+
+      var existContact = currentBillingBranch?.cc_contact_person!.map((row) => ({
+        ...row,
+      action:''
+      }));
+      this.updateData(existContact!);
+    }
+  }
   public loadData() {
     this.initializeFilterCustomerCompany();
     this.historyState = history.state;
@@ -419,6 +450,12 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     {
       this.isFromBranch=false;
       
+    } else if(this.historyState)
+    {
+      this.selectedBillingBranch= this.historyState.selectedRow;
+
+      this.patchData(this.selectedBillingBranch);
+
     }
 
   
@@ -426,10 +463,10 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       this.currencyList=data;
 
       
-     if(this.selectedCustomerCmp)
+     if(this.selectedBillingBranch)
       {
         this.ccForm?.patchValue({
-          currency:this.getCurrency(this.selectedCustomerCmp?.currency?.guid!),
+          currency:this.getCurrency(this.selectedBillingBranch?.currency?.guid!),
         })
       }
   
@@ -444,7 +481,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       this.customer_companyList = data
       if (data.length) {
 
-        if(!this.isFromBranch)
+        if(!this.isFromBranch) // data from Customer company
         {
           let selectedCustomer = this.historyState.customerCompany.customerCompanyData;
           if(selectedCustomer.guid)
@@ -464,12 +501,29 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
             });
             this.ccForm?.get('customer_code')?.disable();
         }
+        else if(this.selectedBillingBranch) // data from billing branch
+        {
+          var selectedCustomers=data.filter(customer=>customer.guid==this.selectedBillingBranch.main_customer_guid);
+          if(selectedCustomers.length)
+          {
+            this.ccForm?.patchValue({
+              customer_code: selectedCustomers[0]
+            });
+          }
+
+        }
     
       }
     });
 
     this.tDS.search({}, { unit_type: 'ASC' }).subscribe(data => {
       this.tankItemList = data;
+      if(this.selectedBillingBranch)
+        {
+          this.ccForm?.patchValue({
+            default_profile:this.getDefaultTank(this.selectedBillingBranch?.def_tank_guid!),
+          })
+        }
     })
 
 
@@ -567,8 +621,9 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const data: any = [...this.repList.data];
-        const newItem = new ContactPersonItem({
+        const newItem = new ContactPersonItemAction({
           ...result.item,
+          action:"NEW"
         });
         data.unshift(newItem);
         this.updateData(data);
@@ -603,8 +658,9 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const data: any[] = [...this.repList.data];
-        const updatedItem = new ContactPersonItem({
+        const updatedItem = new ContactPersonItemAction({
           ...result.item,
+          action:"EDIT"
         });
         if (result.index >= 0) {
           data[result.index] = updatedItem;
@@ -763,7 +819,15 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         this.ccForm.get('repList')?.setErrors({ required: true });
       } else {
 
+        
         var customerCode = this.ccForm?.get("branch_code")?.value;
+        var mainCustomer = this.ccForm?.get("customer_code")?.value as CustomerCompanyItem;
+        if(customerCode==mainCustomer?.code)
+        {
+          this.ccForm.get('branch_code')?.setErrors({ duplicated: true });
+          return;
+        }
+
         const where: any = {};
         where.code = { eq: customerCode };
         this.ccDS.search(where).subscribe(result => {
@@ -792,12 +856,131 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
           
               this.ccForm?.get('branch_code')?.setErrors({ existed: true });
           }
+          else if(result.length>0 && this.branch_guid!=undefined)
+          {
+
+            if(this.ccForm?.get("customer_code")?.value)
+            {
+              this.UpdateCustomerBillingBranches();
+            }
+            else
+            {
+               this.UpdateBillingBranches();
+            }
+          }
     });
        
       }
     } else {
       console.log('Invalid soForm', this.ccForm?.value);
     }
+  }
+
+  UpdateBillingBranches(){
+
+   
+
+    var selectedBillingBranch:CustomerCompanyItem = new CustomerCompanyItem(this.selectedBillingBranch);
+      var cust:CustomerCompanyItem=new CustomerCompanyItem(selectedBillingBranch);
+      
+      cust.address_line1=this.ccForm?.get("address1")?.value;
+      cust.address_line2=this.ccForm?.get("address2")?.value;
+      cust.code=this.ccForm?.get("branch_code")?.value;
+      cust.name=this.ccForm?.get("branch_name")?.value;
+      cust.city=this.ccForm?.get("city_name")?.value;
+      cust.country=this.ccForm?.get("country")?.value;
+      cust.currency=this.ccForm?.get("currency")?.value;
+      cust.email=this.ccForm?.get("email")?.value;
+      cust.remarks=this.ccForm?.get("remarks")?.value;
+      cust.website=this.ccForm?.get("web")?.value;
+      cust.type_cv="BRANCH";
+      cust.phone=this.ccForm?.get("phone")?.value;
+      cust.postal=this.ccForm?.get("postal_code")?.value;
+      cust.main_customer_guid='';
+      if(this.ccForm?.get("default_profile")?.value)
+        {
+          let defTank =this.ccForm?.get("default_profile")?.value as TankItem;
+          cust.def_tank_guid=defTank.guid;
+        }
+        if(this.ccForm?.get("currency")?.value)
+        {
+          cust.currency_guid= cust.currency?.guid;
+        }
+
+       // cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem)?.code_val;
+
+       
+        var existContactPerson =  selectedBillingBranch?.cc_contact_person?.map((row) => ({
+          ...row,
+          title_cv : row.title_cv,
+          action:'CANCEL'
+        }));
+  
+        var updContactPerson =  this.repList.data.map((row) => ({
+          ...row,
+          title_cv : row.title_cv
+          
+        }));
+  
+        updContactPerson.forEach(data=>{
+  
+          var matchContact= existContactPerson?.filter(d=>d.guid===data.guid);
+          let Cnt :any = new ContactPersonItem();
+  
+          if(matchContact?.length!>0)
+          {
+            Cnt=matchContact![0];
+            Cnt.action=data.action;
+           
+          }
+          else
+          {
+           
+            Cnt.action="NEW";
+  
+          }
+          Cnt.did=data.did;
+          Cnt.email=data.email;
+          Cnt.job_title=data.job_title;
+          Cnt.name=data.name;
+          Cnt.phone=data.phone;
+          Cnt.title_cv=data.title_cv;
+          Cnt.department=data.department;
+          
+          if(Cnt.action==="NEW")
+          {
+            existContactPerson?.push(Cnt);
+          }
+        
+  
+        });
+        
+        delete cust.update_by;
+        delete cust.update_dt;
+        delete cust.create_by;
+        delete cust.create_dt;
+        delete cust.delete_dt;
+        delete cust.cc_contact_person;
+        delete cust.currency;
+        
+        var existContactPersons=existContactPerson?.map((node: any) => new ContactPersonItemAction(node));
+        
+
+        
+
+        
+        this.ccDS.UpdateCustomerCompany(cust,existContactPersons,undefined).subscribe(result => {
+
+
+          var count = result.data.updateCustomerCompany;
+          if (count > 0) {
+            
+            this.handleSaveSuccess(count);
+          }
+        });
+
+
+    
   }
 
   UpdateCustomerBillingBranches(){
@@ -814,9 +997,12 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       delete mainCustomer.delete_dt;
       delete mainCustomer.cc_contact_person;
       delete mainCustomer.currency;
-
-
       var cust:CustomerCompanyItem=new CustomerCompanyItem();
+      if(this.selectedBillingBranch)
+      {
+        cust=new CustomerCompanyItem(this.selectedBillingBranch);
+      }
+    
       cust.address_line1=this.ccForm?.get("address1")?.value;
       cust.address_line2=this.ccForm?.get("address2")?.value;
       cust.code=this.ccForm?.get("branch_code")?.value;
@@ -841,11 +1027,58 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         }
       
         delete cust.currency;
-        var contactPerson =  this.repList.data.map((row) => ({
+
+        var selectedBillingBranch:CustomerCompanyItem = new CustomerCompanyItem(this.selectedBillingBranch);
+        var existContactPerson =  selectedBillingBranch?.cc_contact_person?.map((row) => ({
           ...row,
           title_cv : row.title_cv,
-          action:'NEW'
+          action:'CANCEL'
         }));
+  
+        if(!existContactPerson) existContactPerson=[];
+        var updContactPerson =  this.repList.data.map((row) => ({
+          ...row,
+          title_cv : row.title_cv
+          
+        }));
+  
+        updContactPerson.forEach(data=>{
+  
+          var matchContact= existContactPerson?.filter(d=>d.guid===data.guid);
+          let Cnt :any = new ContactPersonItem();
+  
+          if(matchContact?.length!>0)
+          {
+            Cnt=matchContact![0];
+            Cnt.action=data.action;
+           
+          }
+          else
+          {
+           
+            Cnt.action="NEW";
+  
+          }
+          Cnt.did=data.did;
+          Cnt.email=data.email;
+          Cnt.job_title=data.job_title;
+          Cnt.name=data.name;
+          Cnt.phone=data.phone;
+          Cnt.title_cv=data.title_cv;
+          Cnt.department=data.department;
+          
+          if(Cnt.action==="NEW")
+          {
+            existContactPerson?.push(Cnt);
+          }
+        
+  
+        });
+        // var contactPerson =  this.repList.data.map((row) => ({
+        //   ...row,
+        //   title_cv : row.title_cv,
+        //   action:'NEW'
+        // }));
 
         var billingBranches:BillingBranchesItem[]=[]; 
 
@@ -871,8 +1104,20 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         var new_billing_branch:BillingBranchesItem= new BillingBranchesItem();
         new_billing_branch.branchCustomer = new BillingCustomerItem(cust);
         new_billing_branch.branchCustomer.main_customer_guid=mainCustomer.guid;
-        new_billing_branch.branchCustomer.action="NEW";
-        new_billing_branch.branchContactPerson =contactPerson as BillingContactPersonItem[];
+        if(this.selectedBillingBranch)
+        { new_billing_branch.branchCustomer.action= "EDIT";}
+        else
+        {new_billing_branch.branchCustomer.action="NEW";}
+       
+        new_billing_branch.branchContactPerson=[];
+        existContactPerson?.forEach(p=>{
+
+          let person = new BillingContactPersonItem(p);
+          person.action=p.action;
+          
+          new_billing_branch.branchContactPerson?.push(person);
+        }); 
+     
         delete new_billing_branch.branchCustomer.update_by;
         delete new_billing_branch.branchCustomer.update_dt;
         delete new_billing_branch.branchCustomer.create_by;
@@ -887,12 +1132,19 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
 
           var count = result.data.updateCustomerCompany;
           if (count > 0) {
+            if(this.historyState.customerCompany)
+            {
             this.historyState.customerCompany.newBillingBranchCode=cust.code;
+            }
             this.handleSaveSuccess(count);
           }
         });
 
 
+    }
+    else
+    {
+      this.ccForm?.get('customer_code')?.setErrors({ required: true });
     }
   }
 
@@ -940,7 +1192,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     }));
 
     
-    var billingBranches:BillingBranchesItem[]=[]; 
+    //var billingBranches:BillingBranchesItem[]=[]; 
     // if(mainCustomer?.guid)
     // {
     //   var exist_billing_branch:BillingBranchesItem= new BillingBranchesItem();
@@ -966,12 +1218,15 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     // }
 
 
-    this.ccDS.AddCustomerCompany(cust,contactPerson,billingBranches).subscribe(result => {
+    this.ccDS.AddCustomerCompany(cust,contactPerson,undefined).subscribe(result => {
 
 
       var count = result.data.addCustomerCompany;
       if (count > 0) {
-        this.historyState.customerCompany.newBillingBranchCode=cust.code;
+        if(this.historyState.customerCompany)
+        {
+          this.historyState.customerCompany.newBillingBranchCode=cust.code;
+        }
         this.handleSaveSuccess(count);
       }
     });
@@ -1385,6 +1640,19 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
     
   }
 
+  getCustomerCompanyItem(guid:string):CustomerCompanyItem|undefined{
+    if(this.customer_companyList?.length)
+    {
+      const custCmp= this.customer_companyList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;});
+        if(custCmp?.length!>0)
+          return custCmp[0];
+        else
+          return undefined;
+    }
+    return undefined;
+  }
+
   getBillingBranches(guid:string):CustomerCompanyItem|undefined{
     if(this.customer_companyList?.length)
     {
@@ -1407,7 +1675,7 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value?.code;
         }
         this.subs.sink = this.ccDS.loadItems(
           {
@@ -1432,5 +1700,22 @@ addContactPerson(event: Event, row?: ContactPersonItem) {
       })
     ).subscribe();
   }
+
+  getDefaultTank(guid:string):TankItem|undefined
+  {
+    if(this.tankItemList?.length!>0)
+    {
+      const tnkItm= this.tankItemList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;});
+        if(tnkItm?.length!>0)
+          return tnkItm![0];
+        else
+          return undefined;
+
+    }
+    return undefined;
+    
+  }
+
 
 }
