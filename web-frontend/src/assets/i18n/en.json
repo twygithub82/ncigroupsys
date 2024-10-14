@@ -591,7 +591,8 @@
     "BRANCH-NAME":"Branch Name",
     "ALL-REMARKS":"All Remarks",
     "DUPLICATE-PART-DETECTED": "Duplicate part detected, Are you sure to add?",
-    "DUPLICATE-ESTIMATION-DETECTED":"Duplicate Estimation detected"
+    "DUPLICATE-ESTIMATION-DETECTED":"Duplicate Estimation detected",
+    "SAME":"are same"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

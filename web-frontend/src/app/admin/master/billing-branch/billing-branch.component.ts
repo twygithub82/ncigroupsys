@@ -268,6 +268,7 @@ implements OnInit {
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     BILLING_BRANCH:"COMMON-FORM.BILLING-BRANCH",
     BRANCH_CODE:"COMMON-FORM.BRANCH-CODE",
+    SAME:"COMMON-FORM.SAME",
      }
   
   constructor(
@@ -300,6 +301,25 @@ implements OnInit {
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    var state = history.state;
+    if(state.type=="billing-branch")
+    {
+      let showResult = state.pagination.showResult;
+      if(showResult)
+      {
+      this.searchCriteriaService=state.pagination.where;
+      this.pageIndex=state.pagination.pageIndex;
+      this.pageSize= state.pagination.pageSize;
+      this.hasPreviousPage=state.pagination.hasPreviousPage;
+      this.startCursor=state.pagination.startCursor;
+      this.endCursor=state.pagination.endCursor;
+      this.previous_endCursor=state.pagination.previous_endCursor;
+      this.paginator.pageSize=this.pageSize;
+      this.paginator.pageIndex=this.pageIndex;
+      this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+      }
+
+    }
   }
 
   initPcForm() {

@@ -29,6 +29,11 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
+                    @if (ccForm?.get('customer_code')?.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
                     <!-- <mat-select  formControlName="customer_code" required>
                       <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
                        
@@ -46,14 +51,19 @@
                       <input matInput formControlName="branch_code" required >
                       @if (ccForm?.get('branch_code')?.hasError('required')) {
                       <mat-error>
-                        {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.SO_REQUIRED}}
+                        {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
                       }
                     @if (ccForm?.get('branch_code')?.hasError('existed')) {
                         <mat-error>
-                          {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.EXISTED}}
+                          {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.EXISTED}}
                         </mat-error>
                         }
+                    @if (ccForm?.get('branch_code')?.hasError('duplicated')) {
+                          <mat-error>
+                            {{this.translatedLangText.CUSTOMER_CODE}} & {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.SAME}}
+                          </mat-error>
+                          }
                   </mat-form-field>
                   
                 </div>
