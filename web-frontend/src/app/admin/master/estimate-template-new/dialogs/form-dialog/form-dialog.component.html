@@ -68,7 +68,7 @@
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.SUBGROUP_NAME}}</mat-label>
             <mat-select formControlName="subgroup_name_cv" >
-              @for (codeValue of data.populateData.subgroupNameCvList; track codeValue) {
+              @for (codeValue of this.subgroupNameCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
               }
             </mat-select>
@@ -158,10 +158,11 @@
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
-        @if (canEdit()) {
-        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit()">{{buttonContent}}</button>
+        @if (canAddAnother()) {
+        <button mat-flat-button color="accent" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(true)">{{data.translatedLangText.ADD_ANOTHER}}</button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(false)"  class="m-l-5">{{buttonContent}}</button>
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1" class="m-l-5">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
   </div>

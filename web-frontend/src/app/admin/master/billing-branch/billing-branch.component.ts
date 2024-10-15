@@ -103,7 +103,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
    // 'select',
-     //'desc',
+     'desc',
      'fName',
      'lName',
      'mobile',
@@ -156,6 +156,7 @@ implements OnInit {
  
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList: CustomerCompanyItem[]=[];
+  all_customer_companyList:CustomerCompanyItem[]=[];
   cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
@@ -269,6 +270,7 @@ implements OnInit {
     BILLING_BRANCH:"COMMON-FORM.BILLING-BRANCH",
     BRANCH_CODE:"COMMON-FORM.BRANCH-CODE",
     SAME:"COMMON-FORM.SAME",
+    MAIN_CUSTOMER:"COMMON-FORM.MAIN-CUSTOMER"
      }
   
   constructor(
@@ -609,7 +611,7 @@ implements OnInit {
    searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
     previousPageIndex?:number)
     {
-      this.previous_endCursor=this.endCursor;
+      this.previous_endCursor=after;
       this.subs.sink = this.ccDS.search(where,order,first,after,last,before).subscribe(data => {
         this.customer_companyList=data;
         this.endCursor = this.ccDS.pageInfo?.endCursor;
@@ -649,7 +651,7 @@ implements OnInit {
   public loadData() {
 
     this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' },100).subscribe(data => {
-     // this.customer_companyList1 = data
+      this.all_customer_companyList = data
     });
 
     // this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});
@@ -765,6 +767,26 @@ implements OnInit {
     this.customerCodeControl.reset();
   }
 
+  getMainCustomerCode(row:CustomerCompanyItem):String|undefined
+  {
+
+    const mainCustItem =this.getCustomerCompanyItem(row.main_customer_guid!);
+    if(mainCustItem) return mainCustItem.code;
+
+    return "-";
+  }
+  getCustomerCompanyItem(guid:string):CustomerCompanyItem|undefined{
+    if(this.customer_companyList?.length)
+    {
+      const custCmp= this.all_customer_companyList?.filter((x: any) => x.guid === guid).map(item => {
+        return item;});
+        if(custCmp?.length!>0)
+          return custCmp[0];
+        else
+          return undefined;
+    }
+    return undefined;
+  }
  
 
 }

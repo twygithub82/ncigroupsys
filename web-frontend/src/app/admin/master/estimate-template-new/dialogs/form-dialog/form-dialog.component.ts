@@ -22,7 +22,7 @@ import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
-import { CodeValuesDS } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
@@ -87,6 +87,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dimensionList?: string[];
   lengthList?: any[];
   valueChangesDisabled: boolean = false;
+  subgroupNameCvList?: CodeValuesItem[];
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
@@ -123,7 +124,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.buttonContent = `${data.translatedLangText.UPDATE}`;
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
-      this.buttonContent = `${data.translatedLangText.ADD}`;
+      this.buttonContent = `${data.translatedLangText.SAVE}`;
     }
     this.currentParts=data.populateData.currentParts?data.populateData.currentParts: [];
     this.repairPart = data.item ? data.item : new RepairEstPartItem();
@@ -191,7 +192,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     let existPart=this.currentParts.filter((data,index)=>{ return data.description===rep.description && index!=this.data.index});
     return existPart.length>0;
   }
-  submit() {
+  submit(addAnother: boolean) {
     if (this.repairPartForm?.valid) {
       let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
       if (this.action === 'new') {
@@ -244,37 +245,46 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         });
         this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
           if (result.action === 'confirmed') {
-            if(this.buttonContent==this.data.translatedLangText.UPDATE)
-              { 
+            // if(this.buttonContent==this.data.translatedLangText.UPDATE)
+            //   { 
+            if(addAnother)
+            {
+              this.InsertEstimationPartEvent.emit(rep);
+              this.repairPart =  new RepairEstPartItem();
+              this.repairPart.tariff_repair= new TariffRepairItem();
+              this.repairPartForm = this.createForm();
+              this.initializeValueChange();
+              this.patchForm();
+              this.initializePartNameValueChange();
+              this.handleSaveSuccess(1);
+              this.currentParts.push(rep);
+            }
+            else
+            {
                 this.handleSaveSuccess(1);
                 this.dialogRef.close(returnDialog);
+            }
     
-              }
-              else
-              {
-                this.InsertEstimationPartEvent.emit(rep);
-                this.repairPart =  new RepairEstPartItem();
-                this.repairPart.tariff_repair= new TariffRepairItem();
-                this.repairPartForm = this.createForm();
-                this.initializeValueChange();
-                this.patchForm();
-                this.initializePartNameValueChange();
-                this.handleSaveSuccess(1);
-                this.currentParts.push(rep);
-              }
+              // }
+              // else
+              // {
+              //   this.InsertEstimationPartEvent.emit(rep);
+              //   this.repairPart =  new RepairEstPartItem();
+              //   this.repairPart.tariff_repair= new TariffRepairItem();
+              //   this.repairPartForm = this.createForm();
+              //   this.initializeValueChange();
+              //   this.patchForm();
+              //   this.initializePartNameValueChange();
+              //   this.handleSaveSuccess(1);
+              //   this.currentParts.push(rep);
+              // }
           }
         });
      }
       else
       {
 
-          if(this.buttonContent==this.data.translatedLangText.UPDATE)
-          { 
-            this.handleSaveSuccess(1);
-            this.dialogRef.close(returnDialog);
-
-          }
-          else
+        if(addAnother)
           {
             this.InsertEstimationPartEvent.emit(rep);
             this.repairPart =  new RepairEstPartItem();
@@ -285,7 +295,31 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             this.initializePartNameValueChange();
             this.handleSaveSuccess(1);
             this.currentParts.push(rep);
+
           }
+          else
+          {
+              this.handleSaveSuccess(1);
+              this.dialogRef.close(returnDialog);
+          }
+          // if(this.buttonContent==this.data.translatedLangText.UPDATE)
+          // { 
+            // this.handleSaveSuccess(1);
+            // this.dialogRef.close(returnDialog);
+
+          // }
+          // else
+          // {
+          //   this.InsertEstimationPartEvent.emit(rep);
+          //   this.repairPart =  new RepairEstPartItem();
+          //   this.repairPart.tariff_repair= new TariffRepairItem();
+          //   this.repairPartForm = this.createForm();
+          //   this.initializeValueChange();
+          //   this.patchForm();
+          //   this.initializePartNameValueChange();
+          //   this.handleSaveSuccess(1);
+          //   this.currentParts.push(rep);
+          // }
       }
     } else {
       this.findInvalidControls();
@@ -327,25 +361,38 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       debounceTime(300),
       tap(value => {
         
+        this.partNameList=[];
+        this.subgroupNameCvList=[];
+        this.resetPartSelectedDetail();
+        this.repairPartForm.patchValue({
+          subgroup_name_cv:undefined,
+          part_name:undefined
+        });
+        
         if (value?.child_code) {
-          const queries = [
-            { alias: 'subgroupNameCv', codeValType: value.child_code },
-          ];
-          this.cvDS.getCodeValuesByType(queries);
-          this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
-            this.data.populateData.subgroupNameCvList = data;
-          });
+
+          this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
+          this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '');
+          // const queries = [
+          //   { alias: 'subgroupNameCv', codeValType: value.child_code },
+          // ];
+          // this.cvDS.getCodeValuesByType(queries);
+          // this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
+          //   this.data.populateData.subgroupNameCvList = data;
+          // });
 
         }
-        else
+        else if(value)
         {
-          this.data.populateData.subgroupNameCvList=[];
+          this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
+            this.partNameList = data;
+          }); 
         }
-        if(value){
-        this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
-          this.partNameList = data;
-        }); 
-      }
+        // if(value){
+        // this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
+        //   this.partNameList = data;
+        // }); 
+      //}
 
       })
     ).subscribe();
@@ -354,8 +401,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       startWith(''),
       debounceTime(300),
       tap(value => {
+        const groupName = this.repairPartForm?.get('group_name_cv')?.value;
         if (value) {
-          const groupName = this.repairPartForm?.get('group_name_cv')?.value;
+          
+          
           this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
             this.partNameList = data;
             // this.partNameFilteredList = data
@@ -364,6 +413,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             //   this.handleValueChange(this.partNameControl.value)
             // }
           });
+        }
+        else if(groupName)
+        {
+          if(this.repairPartForm?.get('subgroup_name_cv')?.value!==undefined)
+          {
+            this.trDS.searchDistinctPartName(groupName.code_val, '').subscribe(data => {
+              this.partNameList = data;
+            }); 
+          }
         }
       })
     ).subscribe();
@@ -411,6 +469,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
 
     return isValid;
+  }
+
+  canAddAnother():boolean{
+    return this.buttonContent!==this.data.translatedLangText.EDIT;
   }
 
   canEdit(): boolean {

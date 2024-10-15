@@ -38,13 +38,11 @@
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
                             <mat-select formControlName="customer_code" multiple>
-                                <mat-option *ngFor="let cc of custCompDS.connect() | async" [value]="cc">
-                                 
-                                  <ng-container *ngIf="cc !== null">
-                                    {{ custCompDS.displayName(cc) }}
-                                  </ng-container>
-                                 
+                              @for (cc of all_customer_companyList; track cc) {
+                                <mat-option [value]="cc">
+                                  {{ccDS.displayName(cc)}}
                                 </mat-option>
+                                }
                               </mat-select>
                            
                         </mat-form-field>
@@ -91,7 +89,11 @@
               <div class="responsive_table">
                 <table mat-table [dataSource]="customer_companyList" matSort class="mat-cell advance-table">
             
-                  
+                  <ng-container matColumnDef="desc">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.MAIN_CUSTOMER }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-1'">
+                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE }}:</span>{{this.getMainCustomerCode(row)}}</mat-cell>
+                  </ng-container>
                   <ng-container matColumnDef="fName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-1'">

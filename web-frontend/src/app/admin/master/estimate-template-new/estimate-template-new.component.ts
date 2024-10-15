@@ -63,6 +63,9 @@ import { TariffRepairItem } from 'app/data-sources/tariff-repair';
 import {DisplayPartGroupSection, groupByTariffRepairGroup} from 'app/shared/DisplayGroupSection';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
+
+
+
 @Component({
   selector: 'app-estimate-new',
   standalone: true,
@@ -100,6 +103,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
+  
+    
   ]
 })
 export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -220,7 +225,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     COMMENTS:'COMMON-FORM.COMMENTS',
     ADD_ANOTHER:'COMMON-FORM.ADD-ANOTHER',
     ADD:"COMMON-FORM.ADD",
-    
+    SAVE:"COMMON-FORM.SAVE",
     DUPLICATE_ESTIMATION_DETECTED:"COMMON-FORM.DUPLICATE-ESTIMATION-DETECTED"
   }
 
@@ -270,6 +275,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
   
   showHeader: boolean = false; 
+  selectedCustomers: any[] = [];
 
   //returnedString:string = `1 \n 2 \n 3 \n 4`;
 
@@ -297,6 +303,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     this.trLabourDS = new TariffLabourDS(this.apollo);
     this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
   }
+  
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
@@ -491,7 +498,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       this.temp_guid = undefined;
     }
 
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 200).subscribe(data => {
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
       this.customer_companyList = data
       if (data.length) {
         const selectedCustomerGuids = this.selectedTempEst?.template_est_customer?.map(customer => customer.customer_company_guid);
@@ -705,7 +712,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
         translatedLangText: this.translatedLangText,
         populateData: {
           groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: [],
+          subgroupNameCvList: this.allSubGroupNameCvList,
           yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
@@ -772,7 +779,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
         translatedLangText: this.translatedLangText,
         populateData: {
           groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: [],
+          subgroupNameCvList: this.allSubGroupNameCvList,
           yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
