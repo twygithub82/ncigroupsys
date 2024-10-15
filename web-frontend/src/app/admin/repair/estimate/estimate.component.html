@@ -374,16 +374,22 @@
                             <span>{{translatedLangText.AMEND}}</span>
                           </button>
                           } -->
-                          @if (repairEstDS.canCancel(repair_estRow)) {
-                          <button mat-menu-item (click)="cancelRow(repair_estRow)">
-                            <mat-icon>cancel</mat-icon>
-                            <span>{{translatedLangText.CANCEL}}</span>
-                          </button>
-                          }
+                          @if (repairEstDS.canCopy(repair_estRow)) {
+                            <button mat-menu-item [routerLink]="['/admin/repair/estimate/duplicate', row.guid, repair_estRow.guid]">
+                              <mat-icon>add_to_photos</mat-icon>
+                              <span>{{translatedLangText.DUPLICATE}}</span>
+                            </button>
+                            }
                           @if (repairEstDS.canRollback(repair_estRow)) {
                           <button mat-menu-item (click)="rollbackRow(repair_estRow)">
                             <mat-icon>undo</mat-icon>
                             <span>{{translatedLangText.ROLLBACK}}</span>
+                          </button>
+                          }
+                          @if (repairEstDS.canCancel(repair_estRow)) {
+                          <button mat-menu-item (click)="cancelRow(repair_estRow)">
+                            <mat-icon>cancel</mat-icon>
+                            <span>{{translatedLangText.CANCEL}}</span>
                           </button>
                           }
                         </mat-menu>

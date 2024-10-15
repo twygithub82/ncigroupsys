@@ -702,15 +702,17 @@ const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
           total_cost
           sot_guid
           remarks
+          delete_dt
           storing_order_tank {
             storing_order {
               customer_company_guid
             }
           }
           repair_est_part {
-           hour
-           quantity
-           material_cost
+            hour
+            quantity
+            material_cost
+            delete_dt
           }
         }
       }

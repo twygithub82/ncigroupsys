@@ -88,6 +88,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   partNameFilteredList?: string[];
   dimensionList?: string[];
   lengthList?: any[];
+  requiredFields: string[] = ['damage', 'repair', 'group_name_cv', 'subgroup_name_cv'];
   valueChangesDisabled: boolean = false;
   subgroupNameCvList?: CodeValuesItem[];
   existedPart?: RepairEstPartItem[];
@@ -148,11 +149,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       hour: [{ value: this.repairPart.hour, disabled: !this.canEdit() }],
       group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.canEdit() }],
       subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
-      dimension: [''],
-      length: [''],
-      damage: [''],
-      repair: [''],
-      material_cost: [{ value: '' }]
+      dimension: [{ value: this.repairPart.tariff_repair?.dimension, disabled: !this.canEdit() }],
+      length: [{ value: this.repairPart.tariff_repair?.length, disabled: !this.canEdit() }],
+      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0)), disabled: !this.canEdit() }],
+      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1)), disabled: !this.canEdit() }],
+      material_cost: [{ value: this.repairPart.material_cost }]
     });
   }
 
@@ -182,25 +183,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   resetForm() {
-    this.repairPartForm.setValue({
-      guid: null,
-      tariff_repair_guid: null,
-      repair_est_guid: null,
-      description: null,
-      location_cv: null,
-      comment: null,
-      remarks: null,
-      quantity: null,
-      hour: null,
-      group_name_cv: null,
-      subgroup_name_cv: null,
-      part_name: null,
-      dimension: null,
-      length: null,
-      damage: null,
-      repair: null,
-      material_cost: null
-    });
+    
   }
 
   submit(addAnother: boolean) {
@@ -222,38 +205,27 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         rep_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
         quantity: this.repairPartForm.get('quantity')?.value,
         hour: this.repairPartForm.get('hour')?.value,
-        material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value),
+        material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value, 2),
         remarks: this.repairPartForm.get('remarks')?.value,
         create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
       }
       const concludeLength = rep.tariff_repair?.length
         ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
         : '';
-        debugger
+        
       rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment ? `{${rep.comment}} - ` : ''}${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       if (this.validateExistedPart(rep)) {
-        this.resetDialog(addAnother, rep);
+        this.confirmationDialog(addAnother, rep);
       } else {
         this.returnAndCloseDialog(addAnother, rep);
-        // const returnDialog: DialogData = {
-        //   item: rep,
-        //   index: this.index
-        // }
-        // if (addAnother) {
-        //   this.dataSubject.next(returnDialog);
-        //   this.addedSuccessfully();
-        //   this.resetForm();
-        // } else {
-        //   this.dialogRef.close(returnDialog);
-        // }
       }
     } else {
       this.findInvalidControls();
     }
   }
 
-  resetDialog(addAnother: boolean, rep: any) {
+  confirmationDialog(addAnother: boolean, rep: any) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -283,7 +255,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (addAnother) {
       this.dataSubject.next(returnDialog);
       this.addedSuccessfully();
-      this.resetForm();
+      this.repairPart = new RepairEstPartItem();
+      this.repairPartForm = this.createForm();
+      this.initializeValueChange();
+      this.initializePartNameValueChange();
     } else {
       this.dialogRef.close(returnDialog);
     }
@@ -311,13 +286,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tap(value => {
         console.log(value)
         if (value) {
+          const subgroupName = this.repairPartForm?.get('subgroup_name_cv');
+          this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
+          this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '');
           if (value.child_code) {
-            const subgroupName = this.repairPartForm?.get('subgroup_name_cv');
-            this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
-            this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '');
+            subgroupName?.enable();
           } else {
+            subgroupName?.disable();
+            const partName = this.repairPartForm?.get('part_name');
             this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
               this.partNameList = data;
+              // if (this.partNameList.length) {
+              //   partName?.enable()
+              // } else {
+              //   partName?.disable()
+              // }
             });
           }
         } else {
@@ -336,6 +319,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           const partName = this.repairPartForm?.get('part_name');
           this.trDS.searchDistinctPartName(groupName.code_val, value === '' ? null : value).subscribe(data => {
             this.partNameList = data;
+            // if (this.partNameList.length) {
+            //   partName?.enable()
+            // } else {
+            //   partName?.disable()
+            // }
           });
         }
       })

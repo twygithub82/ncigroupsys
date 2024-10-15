@@ -56,7 +56,7 @@ import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-fiel
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
-import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
+import { REPDamageRepairGO, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 
@@ -251,6 +251,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   prDS: PackageRepairDS;
   userDS: UserDS;
   isOwner = false;
+
+  isDuplicate = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -496,37 +498,68 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     this.repair_est_guid = this.route.snapshot.paramMap.get('repair_est_id');
-    console.log(`sot_guid: ${this.sot_guid}, repair_est_guid: ${this.repair_est_guid}`)
-    if (this.sot_guid) {
-      this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
-        if (this.sotDS.totalCount > 0) {
-          this.sotItem = data[0];
-          this.populateRepairEst(this.sotItem.repair_est);
-          console.log(this.sotItem.storing_order?.customer_company_guid);
-          this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
-          this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
+
+    this.route.data.subscribe(routeData => {
+      this.isDuplicate = routeData['action'] === 'duplicate';
+      if (this.sot_guid) {
+        this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
+          if (this.sotDS.totalCount > 0) {
+            this.sotItem = data[0];
+            this.populateRepairEst(this.sotItem.repair_est, this.isDuplicate);
+            console.log("Customer company: " + this.sotItem.storing_order?.customer_company_guid);
+            this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
+            this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
+          }
+        });
+      }
+    });
+  }
+
+  populateRepairEst(repair_est: RepairEstItem[] | undefined, isDuplicate: boolean) {
+    if (this.isDuplicate) {
+      if (this.repair_est_guid) {
+        this.repairEstDS.getRepairEstByID(this.repair_est_guid).subscribe(data => {
+          if (this.repairEstDS.totalCount > 0) {
+            const found = data;
+            if (found?.length) {
+              this.populateFoundRepairEst(found[0]!, isDuplicate);
+            }
+          }
+        });
+      }
+    } else {
+      if (repair_est?.length) {
+        const found = repair_est.filter(x => x.guid === this.repair_est_guid);
+        if (found?.length) {
+          this.populateFoundRepairEst(found[0]!, isDuplicate);
         }
-      });
+      }
     }
   }
 
-  populateRepairEst(repair_est: RepairEstItem[] | undefined) {
-    if (repair_est?.length) {
-      const found = repair_est.filter(x => x.guid === this.repair_est_guid);
-      if (found?.length) {
-        this.repairEstItem = found[0];
-        this.isOwner = this.repairEstItem.owner_enable ?? false;
-        this.repairEstItem.repair_est_part = this.filterDeleted(this.repairEstItem.repair_est_part)
-        this.updateData(this.repairEstItem.repair_est_part);
-        this.repairEstForm?.patchValue({
-          guid: this.repairEstItem.guid,
-          remarks: this.repairEstItem.remarks,
-          surveyor_id: this.repairEstItem.aspnetusers_guid,
-          labour_cost_discount: this.repairEstItem.labour_cost_discount,
-          material_cost_discount: this.repairEstItem.material_cost_discount
-        });
+  populateFoundRepairEst(repairEst: RepairEstItem, isDuplicate: boolean) {
+    this.repairEstItem = repairEst;
+    this.isOwner = !isDuplicate ? (this.repairEstItem!.owner_enable ?? false) : false;
+    this.repairEstItem!.repair_est_part = this.filterDeleted(this.repairEstItem!.repair_est_part).map((rep: any) => {
+      if (isDuplicate) {
+        return {
+          ...rep,
+          guid: null,
+          repair_est_guid: null,
+          action: 'new'
+        };
       }
-    }
+
+      return rep;
+    });
+    this.updateData(this.repairEstItem!.repair_est_part);
+    this.repairEstForm?.patchValue({
+      guid: !isDuplicate ? this.repairEstItem!.guid : '',
+      remarks: this.repairEstItem!.remarks,
+      surveyor_id: this.repairEstItem!.aspnetusers_guid,
+      labour_cost_discount: this.repairEstItem!.labour_cost_discount,
+      material_cost_discount: this.repairEstItem!.material_cost_discount
+    });
   }
 
   getCustomerLabourPackage(customer_company_guid: string) {
@@ -547,7 +580,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   getTemplateList(customer_company_guid: string) {
-    const where = {
+    let where: any = {
       or: [
         {
           and: [
@@ -558,9 +591,10 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         { type_cv: { eq: "GENERAL" } }
       ]
     }
+    where = this.mtDS.addDeleteDtCriteria(where);
     this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
       if (data?.length > 0) {
-        this.templateList = [...data];
+        this.templateList = this.filterDeletedTemplate(data, customer_company_guid);
         const def_guid = this.getCustomer()?.def_template_guid;
         if (!this.repair_est_guid) {
           if (def_guid) {
@@ -867,7 +901,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       if (!this.repList.length) {
         this.repairEstForm.get('repList')?.setErrors({ required: true });
       } else {
-        let re: RepairEstItem = new RepairEstItem(this.repairEstItem);
+        let re: RepairEstItem = new RepairEstGO(this.repairEstItem);
 
         const rep: RepairEstPartItem[] = this.repList.map((item: any) => {
           // Ensure action is an array and take the last action only
@@ -894,8 +928,8 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         re.aspnetusers_guid = this.repairEstForm.get('surveyor_id')?.value;
         re.labour_cost_discount = Utility.convertNumber(this.repairEstForm.get('labour_cost_discount')?.value);
         re.material_cost_discount = Utility.convertNumber(this.repairEstForm.get('material_cost_discount')?.value);
-        re.labour_cost = re.labour_cost || this.packageLabourItem?.cost;
-        re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value);
+        re.labour_cost = this.getLabourCost();
+        re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value, 2);
         re.remarks = this.repairEstForm.get('remarks')?.value;
         re.owner_enable = this.isOwner;
 
@@ -1201,7 +1235,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
     const totalOwner = this.repairEstDS.getTotal(ownerList);
     const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.packageLabourItem?.cost);
+    const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
     const total_owner_mat_cost = totalOwner.total_mat_cost;
     const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
     const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
@@ -1226,7 +1260,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
 
     const totalLessee = this.repairEstDS.getTotal(lesseeList);
     const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.packageLabourItem?.cost);
+    const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
     const total_lessee_mat_cost = totalLessee.total_mat_cost;
     const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
     const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
@@ -1258,11 +1292,27 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.repairEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
   }
 
+  filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
+    return (resultList || [])
+      .filter((row: MasterTemplateItem) =>
+        !row.delete_dt && (
+          row.type_cv === 'GENERAL' || (row.type_cv === 'EXCLUSIVE' &&
+            row.template_est_customer?.some(customer =>
+              customer.customer_company_guid === customer_company_guid && !customer.delete_dt
+            ))
+        )
+      );
+  }
+
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 
   canExport(): boolean {
     return !!this.repair_est_guid;
+  }
+
+  getLabourCost(): number | undefined {
+    return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
   }
 }
