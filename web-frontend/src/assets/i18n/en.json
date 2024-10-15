@@ -593,6 +593,8 @@
     "DUPLICATE-PART-DETECTED": "Duplicate part detected, Are you sure to add?",
     "DUPLICATE-ESTIMATION-DETECTED":"Duplicate Estimation detected",
     "SAME":"are same",
+    "COPY":"Copy",
+    "SELECT-TANK":"Select Tank"
     "MAIN-CUSTOMER":"Main Customer"
   },
   "CLEAN-PROCEDURES": {

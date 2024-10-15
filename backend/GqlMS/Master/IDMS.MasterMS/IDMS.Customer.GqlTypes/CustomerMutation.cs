@@ -130,6 +130,7 @@ namespace IDMS.Customer.GqlTypes
                     {
                         if (branch.BranchCustomer != null)
                         {
+                            var mainCustomerGuid = "";
                             if (branch.BranchCustomer.action.EqualsIgnore(ObjectAction.NEW))
                             {
                                 customer_company branchCustomer = new();
@@ -137,7 +138,7 @@ namespace IDMS.Customer.GqlTypes
                                 branchCustomer.guid = Util.GenerateGUID();
                                 branchCustomer.create_dt = currentDateTime;
                                 branchCustomer.create_by = user; ;
-
+                                mainCustomerGuid = branchCustomer.guid;
                                 await context.customer_company.AddAsync(branchCustomer);
                             }
 
@@ -148,7 +149,7 @@ namespace IDMS.Customer.GqlTypes
                 
                                 branchCustomer.update_dt = currentDateTime;
                                 branchCustomer.update_by = user; ;
-
+                                mainCustomerGuid = branch.BranchCustomer.guid;
                                 context.customer_company.Update(branchCustomer);
                             }
 
@@ -159,11 +160,11 @@ namespace IDMS.Customer.GqlTypes
                                 delCustomer.update_by = user;
                                 delCustomer.update_dt = currentDateTime;
                                 delCustomer.delete_dt = currentDateTime;
-                                delCustomer.main_customer_guid = 
                                 delCustomer.remarks = branch.BranchCustomer.remarks;
+                                mainCustomerGuid = branch.BranchCustomer.guid;
                             }
 
-                            await ProcessContantPerson(context, currentDateTime, user, branch.BranchCustomer.guid, branch.BranchContactPerson);
+                            await ProcessContantPerson(context, currentDateTime, user, mainCustomerGuid, branch.BranchContactPerson);
                         }
                     }
                     if (branchContactPersonList.Count > 0)

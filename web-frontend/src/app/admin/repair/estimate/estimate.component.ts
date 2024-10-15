@@ -153,7 +153,11 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
     ALL_REMARKS: 'COMMON-FORM.ALL-REMARKS',
-    ROLLBACK: 'COMMON-FORM.ROLLBACK'
+    ROLLBACK: 'COMMON-FORM.ROLLBACK',
+    DUPLICATE: 'COMMON-FORM.DUPLICATE',
+    SELECT_TANK: 'COMMON-FORM.SELECT-TANK',
+    NEW: 'COMMON-FORM.NEW',
+    COPY: 'COMMON-FORM.COPY'
   }
 
   searchForm?: UntypedFormGroup;
@@ -177,6 +181,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   lastCargoControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
+
+  copiedRepairEst?: RepairEstItem;
 
   pageIndex = 0;
   pageSize = 10;
@@ -357,6 +363,10 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     });
   }
 
+  copyRepairEst(repairEst: RepairEstItem) {
+    this.copiedRepairEst = repairEst;
+  }
+
   public loadData() {
     this.search();
 
@@ -475,38 +485,38 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
       where.repair_est = { some: reSome };
     }
 
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
-      const sotSome: any = {};
+    // if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
+    //   const sotSome: any = {};
 
-      if (this.searchForm!.value['job_no']) {
-        sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
-      }
+    //   if (this.searchForm!.value['job_no']) {
+    //     sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
+    //   }
 
-      if (this.searchForm!.value['purpose']) {
-        const purposes = this.searchForm!.value['purpose'];
-        if (purposes.includes('STORAGE')) {
-          sotSome.purpose_storage = { eq: true }
-        }
-        if (purposes.includes('CLEANING')) {
-          sotSome.purpose_cleaning = { eq: true }
-        }
-        if (purposes.includes('STEAM')) {
-          sotSome.purpose_steam = { eq: true }
-        }
+    //   if (this.searchForm!.value['purpose']) {
+    //     const purposes = this.searchForm!.value['purpose'];
+    //     if (purposes.includes('STORAGE')) {
+    //       sotSome.purpose_storage = { eq: true }
+    //     }
+    //     if (purposes.includes('CLEANING')) {
+    //       sotSome.purpose_cleaning = { eq: true }
+    //     }
+    //     if (purposes.includes('STEAM')) {
+    //       sotSome.purpose_steam = { eq: true }
+    //     }
 
-        const repairPurposes = [];
-        if (purposes.includes('REPAIR')) {
-          repairPurposes.push('REPAIR');
-        }
-        if (purposes.includes('OFFHIRE')) {
-          repairPurposes.push('OFFHIRE');
-        }
-        if (repairPurposes.length > 0) {
-          sotSome.purpose_repair_cv = { in: repairPurposes };
-        }
-      }
-      where.storing_order_tank = { some: sotSome };
-    }
+    //     const repairPurposes = [];
+    //     if (purposes.includes('REPAIR')) {
+    //       repairPurposes.push('REPAIR');
+    //     }
+    //     if (purposes.includes('OFFHIRE')) {
+    //       repairPurposes.push('OFFHIRE');
+    //     }
+    //     if (repairPurposes.length > 0) {
+    //       sotSome.purpose_repair_cv = { in: repairPurposes };
+    //     }
+    //   }
+    //   where.storing_order_tank = { some: sotSome };
+    // }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {

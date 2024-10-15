@@ -268,6 +268,11 @@
                 </mat-row>
               </table>
             </div> -->
+            @if (copiedRepairEst) {
+            <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
+
+            </mat-card>
+            }
             @for(row of sotList; track row){
             <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
               <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
@@ -275,9 +280,18 @@
                   {{row.tank_no}}
                 </mat-card-title>
                 <mat-card-actions class="pt-0 pb-0">
-                  <button mat-mini-fab color="primary" [routerLink]="['/admin/repair/estimate/new', row.guid]">
+                  @if (!copiedRepairEst) {
+                  <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW"
+                    [routerLink]="['/admin/repair/estimate/new', row.guid]">
                     <mat-icon class="col-white">add</mat-icon>
                   </button>
+                  }
+                  @else {
+                  <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
+                    [routerLink]="['/admin/repair/estimate/duplicate', row.guid, copiedRepairEst!.guid]">
+                    <mat-icon class="col-white">content_paste</mat-icon>
+                  </button>
+                  }
                 </mat-card-actions>
               </mat-card-header>
               <mat-card-content>
@@ -374,16 +388,22 @@
                             <span>{{translatedLangText.AMEND}}</span>
                           </button>
                           } -->
-                          @if (repairEstDS.canCancel(repair_estRow)) {
-                          <button mat-menu-item (click)="cancelRow(repair_estRow)">
-                            <mat-icon>cancel</mat-icon>
-                            <span>{{translatedLangText.CANCEL}}</span>
+                          @if (repairEstDS.canCopy(repair_estRow)) {
+                          <button mat-menu-item (click)="copyRepairEst(repair_estRow)">
+                            <mat-icon>content_copy</mat-icon>
+                            <span>{{translatedLangText.COPY}}</span>
                           </button>
                           }
                           @if (repairEstDS.canRollback(repair_estRow)) {
                           <button mat-menu-item (click)="rollbackRow(repair_estRow)">
                             <mat-icon>undo</mat-icon>
                             <span>{{translatedLangText.ROLLBACK}}</span>
+                          </button>
+                          }
+                          @if (repairEstDS.canCancel(repair_estRow)) {
+                          <button mat-menu-item (click)="cancelRow(repair_estRow)">
+                            <mat-icon>cancel</mat-icon>
+                            <span>{{translatedLangText.CANCEL}}</span>
                           </button>
                           }
                         </mat-menu>

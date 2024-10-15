@@ -451,7 +451,6 @@ export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          debugger
           const retResult = result.inGatesSurvey || { nodes: [], totalCount: 0 };
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
