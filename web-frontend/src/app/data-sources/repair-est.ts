@@ -108,7 +108,7 @@ export const GET_REPAIR_EST = gql`
 `;
 
 export const GET_REPAIR_EST_BY_ID = gql`
-  query QueryRepairEstimate($where: repair_estFilterInput) {
+  query QueryRepairEstimate($where: repair_estFilterInput, $customer_company_guid: String) {
     resultList: queryRepairEstimate(where: $where) {
       nodes {
         aspnetusers_guid
@@ -180,6 +180,9 @@ export const GET_REPAIR_EST_BY_ID = gql`
             update_dt
             width_diameter
             width_diameter_unit_cv
+            package_repair(where: { customer_company_guid: { eq: $customer_company_guid } }) {
+              material_cost
+            }
           }
         }
         aspnetsuser {
@@ -472,13 +475,13 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
-  getRepairEstByID(id: string): Observable<RepairEstItem[]> {
+  getRepairEstByID(id: string, customer_company_guid: string): Observable<RepairEstItem[]> {
     this.loadingSubject.next(true);
     const where: any = { guid: { eq: id } }
     return this.apollo
       .query<any>({
         query: GET_REPAIR_EST_BY_ID,
-        variables: { where },
+        variables: { where, customer_company_guid },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
