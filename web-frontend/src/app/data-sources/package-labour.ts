@@ -120,7 +120,7 @@ export const GET_PACKAGE_LABOUR_QUERY = gql`
 
 
 export const GET_CUSTOMER_COST = gql`
-  query  queryPackageLabour($where: package_labourFilterInput) {
+  query queryPackageLabour($where: package_labourFilterInput) {
    resultList: queryPackageLabour(where: $where) {
       totalCount
       pageInfo {
