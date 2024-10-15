@@ -592,7 +592,9 @@
     "ALL-REMARKS":"All Remarks",
     "DUPLICATE-PART-DETECTED": "Duplicate part detected, Are you sure to add?",
     "DUPLICATE-ESTIMATION-DETECTED":"Duplicate Estimation detected",
-    "SAME":"are same"
+    "SAME":"are same",
+    "COPY":"Copy",
+    "SELECT-TANK":"Select Tank"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

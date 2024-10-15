@@ -292,16 +292,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           if (value.child_code) {
             subgroupName?.enable();
           } else {
+            subgroupName?.setValue('');
             subgroupName?.disable();
             const partName = this.repairPartForm?.get('part_name');
-            this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
-              this.partNameList = data;
-              // if (this.partNameList.length) {
-              //   partName?.enable()
-              // } else {
-              //   partName?.disable()
-              // }
-            });
+            // this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
+            //   this.partNameList = data;
+            //   // if (this.partNameList.length) {
+            //   //   partName?.enable()
+            //   // } else {
+            //   //   partName?.disable()
+            //   // }
+            // });
           }
         } else {
           this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '')

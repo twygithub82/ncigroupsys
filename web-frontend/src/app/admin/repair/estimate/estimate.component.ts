@@ -154,7 +154,10 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     AMEND: 'COMMON-FORM.AMEND',
     ALL_REMARKS: 'COMMON-FORM.ALL-REMARKS',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
-    DUPLICATE: 'COMMON-FORM.DUPLICATE'
+    DUPLICATE: 'COMMON-FORM.DUPLICATE',
+    SELECT_TANK: 'COMMON-FORM.SELECT-TANK',
+    NEW: 'COMMON-FORM.NEW',
+    COPY: 'COMMON-FORM.COPY'
   }
 
   searchForm?: UntypedFormGroup;
@@ -178,6 +181,8 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   lastCargoControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
+
+  copiedRepairEst?: RepairEstItem;
 
   pageIndex = 0;
   pageSize = 10;
@@ -356,6 +361,10 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
         });
       }
     });
+  }
+
+  copyRepairEst(repairEst: RepairEstItem) {
+    this.copiedRepairEst = repairEst;
   }
 
   public loadData() {

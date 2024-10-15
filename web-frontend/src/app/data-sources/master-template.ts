@@ -313,7 +313,9 @@ export const GET_ESTIMATE_TEMPLATE_FOR_REPAIR = gql`
         type_cv
         update_by
         update_dt
-        template_est_customer {
+        template_est_customer(
+          where: { customer_company_guid: { eq: $customer_company_guid }, delete_dt: { eq: null } }
+        ) {
           customer_company_guid
           delete_dt
           guid

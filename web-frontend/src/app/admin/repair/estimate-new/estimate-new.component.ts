@@ -584,7 +584,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       or: [
         {
           and: [
-            { template_est_customer: { some: { customer_company_guid: { eq: customer_company_guid } } } },
+            { template_est_customer: { some: { customer_company_guid: { eq: customer_company_guid }, delete_dt: { eq: null } } } },
             { type_cv: { eq: "EXCLUSIVE" } }
           ]
         },
@@ -594,7 +594,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     where = this.mtDS.addDeleteDtCriteria(where);
     this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
       if (data?.length > 0) {
-        this.templateList = this.filterDeletedTemplate(data, customer_company_guid);
+        this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
         const def_guid = this.getCustomer()?.def_template_guid;
         if (!this.repair_est_guid) {
           if (def_guid) {
