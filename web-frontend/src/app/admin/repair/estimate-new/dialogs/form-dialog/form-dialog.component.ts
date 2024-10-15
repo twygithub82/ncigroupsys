@@ -296,11 +296,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             const partName = this.repairPartForm?.get('part_name');
             this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
               this.partNameList = data;
-              if (this.partNameList.length) {
-                partName?.enable()
-              } else {
-                partName?.disable()
-              }
+              // if (this.partNameList.length) {
+              //   partName?.enable()
+              // } else {
+              //   partName?.disable()
+              // }
             });
           }
         } else {
@@ -319,11 +319,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           const partName = this.repairPartForm?.get('part_name');
           this.trDS.searchDistinctPartName(groupName.code_val, value === '' ? null : value).subscribe(data => {
             this.partNameList = data;
-            if (this.partNameList.length) {
-              partName?.enable()
-            } else {
-              partName?.disable()
-            }
+            // if (this.partNameList.length) {
+            //   partName?.enable()
+            // } else {
+            //   partName?.disable()
+            // }
           });
         }
       })
