@@ -96,7 +96,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   repDrDS: REPDamageRepairDS;
   prDS: PackageRepairDS;
   currentParts:TemplateEstPartItem[]=[];
-  
+  //popupPartSelectionDialog:boolean=true;
   
   @Output() InsertEstimationPartEvent = new EventEmitter<any>();
 
@@ -133,8 +133,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.index = data.index;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
     this.repairPartForm = this.createForm();
-    this.initializeValueChange();
     this.patchForm();
+    this.initializeValueChange();
     this.initializePartNameValueChange();
 
   }
@@ -165,6 +165,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const selectedCodeValue = this.data.populateData.groupNameCvList.find(
       (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
     );
+    if(selectedCodeValue)
+    {
+      this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === selectedCodeValue.child_code)
+      this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', ''); 
+    }
     this.repairPartForm.patchValue({
       guid: this.repairPart.guid,
       tariff_repair_guid: this.repairPart.tariff_repair_guid,
@@ -184,6 +189,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       material_cost: this.repairPart.tariff_repair?.material_cost,
       comment:this.repairPart.comment
     });
+    
   }
 
  
@@ -348,8 +354,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       debounceTime(300),
       tap(value => {
         if (value) {
-          this.resetPartSelectedDetail();
-          this.searchPart();
+         // if(this.popupPartSelectionDialog)
+          {
+            
+            this.resetPartSelectedDetail();
+            this.searchPart();
+          }
+          //this.popupPartSelectionDialog=true;
         }
       })
     ).subscribe();
@@ -361,12 +372,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       debounceTime(300),
       tap(value => {
         
+        if(!value) return;
         this.partNameList=[];
         this.subgroupNameCvList=[];
         this.resetPartSelectedDetail();
         this.repairPartForm.patchValue({
           subgroup_name_cv:undefined,
-          part_name:undefined
+          part_name: undefined
         });
         
         if (value?.child_code) {
@@ -382,7 +394,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           // });
 
         }
-        else if(value)
+        
+        if(value)
         {
           this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
             this.partNameList = data;

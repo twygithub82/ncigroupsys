@@ -141,8 +141,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       job_title: [this.contactPerson.job_title],
       customer_guid: [this.contactPerson.customer_guid],
       did : [ this.contactPerson.did,
-        [Validators.required,
-        Validators.pattern(this.phone_regex)] // Adjust regex for your format
+        [Validators.required] 
       ],
       phone: [this.contactPerson.phone,[
         Validators.required,
@@ -221,125 +220,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   initializeValueChange() {
-    // this.contactPersonFrom?.get('group_name_cv')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-        
-    //     if (value?.child_code) {
-    //       const queries = [
-    //         { alias: 'subgroupNameCv', codeValType: value.child_code },
-    //       ];
-    //       this.cvDS.getCodeValuesByType(queries);
-    //       this.cvDS.connectAlias('subgroupNameCv').subscribe(data => {
-    //         this.data.populateData.subgroupNameCvList = data;
-    //       });
-
-    //     }
-    //     else
-    //     {
-    //       this.data.populateData.subgroupNameCvList=[];
-    //     }
-    //     if(value){
-    //     this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
-    //       this.partNameList = data;
-    //     }); 
-    //   }
-
-    //   })
-    // ).subscribe();
-
-    // this.repairPartForm?.get('subgroup_name_cv')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       const groupName = this.repairPartForm?.get('group_name_cv')?.value;
-    //       this.trDS.searchDistinctPartName(groupName.code_val, value).subscribe(data => {
-    //         this.partNameList = data;
-    //         // this.partNameFilteredList = data
-    //         // this.updateValidators(this.partNameList);
-    //         // if (this.partNameControl.value) {
-    //         //   this.handleValueChange(this.partNameControl.value)
-    //         // }
-    //       });
-    //     }
-    //   })
-    // ).subscribe();
-
-    // this.repairPartForm?.get('part_name')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       //this.searchPart();
-    //     }
-    //   })
-    // ).subscribe();
-
-    // this.partNameControl.valueChanges.subscribe(value => {
-    //   if (!this.valueChangesDisabled) {
-    //     this.handleValueChange(value);
-    //   }
-    // });
-
-    // this.repairPartForm?.get('dimension')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       const partName = this.partNameControl.value;
-    //       this.trDS.searchDistinctLength(partName, value).subscribe(data => {
-    //         this.lengthList = data;
-    //         if (!this.lengthList.length) {
-    //           this.repairPartForm?.get('length')?.disable();
-    //           this.getCustomerCost(partName, value, undefined);
-    //         } else {
-    //           this.repairPartForm?.get('length')?.enable();
-    //         }
-    //       });
-    //     }
-    //   })
-    // ).subscribe();
-
-    // this.repairPartForm?.get('length')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       const partName = this.partNameControl.value;
-    //       const dimension = this.repairPartForm?.get('dimension')?.value;
-    //       this.getCustomerCost(partName, dimension, value);
-    //     }
-    //   })
-    // ).subscribe();
+    
   }
 
-  // handleValueChange(value: any) {
-  //   this.valueChangesDisabled = true;
-  //   if (value) {
-  //     this.partNameFilteredList = this.partNameList?.filter(item =>
-  //       item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
-  //     );
-  //     const isValid = this.partNameList?.some(item => item === value);
-  //     if (isValid) {
-  //       // Only search if the value exists in the partNameList
-  //       this.trDS.searchDistinctDimension(value).subscribe(data => {
-  //         this.dimensionList = data;
-  //         if (!this.dimensionList.length) {
-  //           this.repairPartForm?.get('dimension')?.disable();
-  //           this.getCustomerCost(value, undefined, undefined);
-  //         } else {
-  //           this.repairPartForm?.get('dimension')?.enable();
-  //         }
-  //       });
-  //     }
-  //   } else {
-  //     // If no value is entered, reset the filtered list to the full list
-  //     this.partNameFilteredList = this.partNameList;
-  //   }
-  //   this.valueChangesDisabled = false;
-  // }
+  
 
   findInvalidControls() {
     const controls = this.contactPersonForm?.controls;
@@ -403,61 +287,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.cvDS.getCodeObject(codeValType,this.data.populateData.satulationCvList);
   }
 
-  // getCustomerCost(partName: string | undefined, dimension: string | undefined, length: number | undefined) {
-  //   const group_name_cv = this.repairPartForm.get('group_name_cv')?.value
-  //   const subgroup_name_cv = this.repairPartForm.get('subgroup_name_cv')?.value
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: this.customer_company_guid } },
-  //       {
-  //         or: [
-  //           { tariff_repair_guid: { eq: null } },
-  //           {
-  //             tariff_repair: {
-  //               group_name_cv: { eq: group_name_cv.code_val },
-  //               subgroup_name_cv: { eq: subgroup_name_cv },
-  //               part_name: { eq: partName },
-  //               dimension: { eq: dimension },
-  //               length: { eq: length }
-  //             }
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   }
-  //   this.prDS.getCustomerPackageCost(where).subscribe(data => {
-  //     if (data.length) {
-  //       // this.selectedPackageRepair = data[0];
-  //       // this.repairPartForm.get('material_cost')?.setValue(this.selectedPackageRepair?.material_cost!.toFixed(2));
-  //     }
-  //   });
-  // }
+  
 
   searchPart() {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {  
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(SearchFormDialogComponent, {
-    //   width: '1050px',
-    //   data: {
-    //     customer_company_guid: this.customer_company_guid,
-    //     group_name_cv: this.repairPartForm?.get('group_name_cv')!.value?.code_val,
-    //     subgroup_name_cv: this.repairPartForm?.get('subgroup_name_cv')!.value,
-    //     part_name: this.repairPartForm?.get('part_name')!.value,
-    //     translatedLangText: this.data.translatedLangText,
-    //     populateData: this.data.populateData,
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     console.log(result);
-    //     this.repairPart = result.selected_repair_est_part;
-    //     this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
-    //   }
-    // });
+   
   }
 }

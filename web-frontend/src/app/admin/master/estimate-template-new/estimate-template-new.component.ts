@@ -1468,15 +1468,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     return Utility.convertDateToStr(input);
   }
 
-  getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
-    if (igs) {
-      const test_type = igs.last_test_cv;
-      const test_class = igs.test_class_cv;
-      const testDt = igs.test_dt as number;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
-    }
-    return "";
-  }
+ 
 
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
@@ -1503,6 +1495,20 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
       return figure.toFixed(2);
     }
     return "";
+  }
+
+  getDescription(row:TemplateEstPartItem):String{
+    var retval:String="";
+
+    if(row?.tariff_repair)
+    {
+      const partName = row?.tariff_repair?.part_name!;
+      let dimension =row?.tariff_repair.alias?.replace(partName,'')!;
+      if(dimension) dimension =` - ${dimension} `;
+      retval = `${row.description} ${dimension}`;
+    }
+
+    return retval;
   }
   
 }

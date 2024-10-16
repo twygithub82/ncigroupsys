@@ -42,6 +42,8 @@
                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
+
+                     
                       <mat-select  formControlName="customer_code" multiple>
                           <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
                            
@@ -148,12 +150,12 @@
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
-                          {{translatedLangText.DESCRIPTION}}
+                          {{translatedLangText.DESCRIPTION}} 
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
-                          {{row.description}}
+                          {{getDescription(row)}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="quantity">

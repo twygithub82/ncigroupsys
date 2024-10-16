@@ -3,6 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule } from '@ngx-translate/core';
+import { TemplateEstPartItem } from 'app/data-sources/master-template';
 
 export interface DialogData {
   action: string;
@@ -26,14 +27,14 @@ export interface DialogData {
     ],
 })
 export class DeleteDialogComponent {
-  storingOrderTank: StoringOrderTankItem;
+  rep: any;
   index: number;
   constructor(
     public dialogRef: MatDialogRef<DeleteDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
     // Set the defaults
-    this.storingOrderTank = data.item;
+    this.rep = data.item;
     this.index = data.index;
   }
   onNoClick(): void {
@@ -42,9 +43,24 @@ export class DeleteDialogComponent {
   confirmDelete(): void {
     const returnDialog: DialogData = {
       action: 'confirmed',
-      item: this.storingOrderTank,
+      item: this.rep,
       index: this.index
     }
     this.dialogRef.close(returnDialog);
+  }
+
+  
+  getDescription(row:TemplateEstPartItem):String{
+    var retval:String="";
+
+    if(row?.tariff_repair)
+    {
+      const partName = row?.tariff_repair?.part_name!;
+      let dimension =row?.tariff_repair.alias?.replace(partName,'')!;
+      if(dimension) dimension =` - ${dimension} `;
+      retval = `${row.description} ${dimension}`;
+    }
+
+    return retval;
   }
 }

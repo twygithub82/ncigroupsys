@@ -26,14 +26,14 @@ export interface DialogData {
     ],
 })
 export class DeleteDialogComponent {
-  storingOrderTank: StoringOrderTankItem;
+  rep: any;
   index: number;
   constructor(
     public dialogRef: MatDialogRef<DeleteDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
     // Set the defaults
-    this.storingOrderTank = data.item;
+    this.rep = data.item;
     this.index = data.index;
   }
   onNoClick(): void {
@@ -42,9 +42,10 @@ export class DeleteDialogComponent {
   confirmDelete(): void {
     const returnDialog: DialogData = {
       action: 'confirmed',
-      item: this.storingOrderTank,
+      item: this.rep,
       index: this.index
     }
     this.dialogRef.close(returnDialog);
   }
+  
 }

@@ -339,7 +339,7 @@ implements OnInit {
       this.paginator.pageSize=this.pageSize;
       this.paginator.pageIndex=this.pageIndex;
       this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-    }
+      }
 
     }
     
@@ -659,7 +659,7 @@ implements OnInit {
    searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
     previousPageIndex?:number)
     {
-      this.previous_endCursor=this.endCursor;
+      this.previous_endCursor=after;
       this.subs.sink = this.masterEstTempDS.SearchEstimateTemplate(where,order,first,after,last,before).subscribe(data => {
         this.masterTemplateItem=data;
         this.endCursor = this.masterEstTempDS.pageInfo?.endCursor;
@@ -832,6 +832,7 @@ implements OnInit {
     this.customerCodeControl.reset();
     this.templateNameControl.reset();
   }
-
+  
+ 
 }
 
