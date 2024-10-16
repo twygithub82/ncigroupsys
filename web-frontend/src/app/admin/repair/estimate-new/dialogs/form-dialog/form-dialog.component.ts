@@ -212,8 +212,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const concludeLength = rep.tariff_repair?.length
         ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
         : '';
-        debugger
-      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment ? `${rep.comment} - ` : ''}${rep.tariff_repair?.alias} ${concludeLength} ${rep.remarks ?? ''}`.trim();
+        
+      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment ? `{${rep.comment}} - ` : ''}${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       if (this.validateExistedPart(rep)) {
         this.confirmationDialog(addAnother, rep);
@@ -285,8 +285,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       debounceTime(300),
       tap(value => {
         console.log(value)
+        const subgroupName = this.repairPartForm?.get('subgroup_name_cv');
         if (value) {
-          const subgroupName = this.repairPartForm?.get('subgroup_name_cv');
           this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
           this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '');
           if (value.child_code) {
@@ -305,7 +305,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             // });
           }
         } else {
-          this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '')
+          subgroupName?.disable();
+          // this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '')
         }
       })
     ).subscribe();
@@ -318,7 +319,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         if (groupName) {
           console.log(`${groupName.code_val}, ${value}`)
           const partName = this.repairPartForm?.get('part_name');
-          this.trDS.searchDistinctPartName(groupName.code_val, value === '' ? null : value).subscribe(data => {
+          this.trDS.searchDistinctPartName(groupName.code_val, value || '').subscribe(data => {
             this.partNameList = data;
             // if (this.partNameList.length) {
             //   partName?.enable()
