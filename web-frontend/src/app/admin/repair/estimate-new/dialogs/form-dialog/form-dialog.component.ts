@@ -212,8 +212,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const concludeLength = rep.tariff_repair?.length
         ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
         : '';
-        
-      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment ? `{${rep.comment}} - ` : ''}${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
+        debugger
+      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment ? `${rep.comment} - ` : ''}${rep.tariff_repair?.alias} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       if (this.validateExistedPart(rep)) {
         this.confirmationDialog(addAnother, rep);
