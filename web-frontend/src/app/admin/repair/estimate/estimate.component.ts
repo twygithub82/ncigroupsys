@@ -157,7 +157,9 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     DUPLICATE: 'COMMON-FORM.DUPLICATE',
     SELECT_TANK: 'COMMON-FORM.SELECT-TANK',
     NEW: 'COMMON-FORM.NEW',
-    COPY: 'COMMON-FORM.COPY'
+    COPY: 'COMMON-FORM.COPY',
+    NO_OF_PARTS: 'COMMON-FORM.NO-OF-PARTS',
+    REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED'
   }
 
   searchForm?: UntypedFormGroup;
@@ -365,6 +367,10 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
 
   copyRepairEst(repairEst: RepairEstItem) {
     this.copiedRepairEst = repairEst;
+  }
+
+  clearCopiedRepairEst() {
+    this.copiedRepairEst = undefined;
   }
 
   public loadData() {

@@ -518,7 +518,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   populateRepairEst(repair_est: RepairEstItem[] | undefined, isDuplicate: boolean) {
     if (this.isDuplicate) {
       if (this.repair_est_guid) {
-        this.repairEstDS.getRepairEstByID(this.repair_est_guid).subscribe(data => {
+        this.repairEstDS.getRepairEstByID(this.repair_est_guid, this.sotItem?.storing_order?.customer_company_guid!).subscribe(data => {
           if (this.repairEstDS.totalCount > 0) {
             const found = data;
             if (found?.length) {
@@ -538,12 +538,26 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   populateFoundRepairEst(repairEst: RepairEstItem, isDuplicate: boolean) {
-    this.repairEstItem = repairEst;
-    this.isOwner = !isDuplicate ? (this.repairEstItem!.owner_enable ?? false) : false;
-    this.repairEstItem!.repair_est_part = this.filterDeleted(this.repairEstItem!.repair_est_part).map((rep: any) => {
+    this.repairEstItem = isDuplicate ? new RepairEstItem() : repairEst;
+    this.isOwner = !isDuplicate ? (repairEst!.owner_enable ?? false) : false;
+    this.repairEstItem!.repair_est_part = this.filterDeleted(repairEst!.repair_est_part).map((rep: any) => {
       if (isDuplicate) {
+        const package_repair = rep.tariff_repair?.package_repair;
+        let material_cost = rep.material_cost;
+        if (isDuplicate && package_repair?.length) {
+          material_cost = package_repair[0].material_cost;
+        }
+
+        const rep_damage_repair = this.filterDeleted(rep.rep_damage_repair).map((rep_d_r: any) => {
+          rep_d_r.guid = undefined;
+          rep_d_r.action = 'new';
+          return rep_d_r;
+        });
+
         return {
           ...rep,
+          rep_damage_repair: rep_damage_repair,
+          material_cost: material_cost,
           guid: null,
           repair_est_guid: null,
           action: 'new'
