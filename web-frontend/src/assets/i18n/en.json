@@ -146,6 +146,7 @@
         "BILLING-BRANCH-EDIT": "Edit Billing Branch"
       }
     },
+   
     "NEW": {
       "TEXT": "New"
     },
@@ -180,6 +181,13 @@
         "ESTIMATE-EDIT": "Edit Estimate",
         "APPROVAL": "Estimate Approval",
         "APPROVAL-DETAILS": "Estimate Approval Details"
+      }
+    },
+    "CLEANING": {
+      "TEXT": "Cleaning",
+      "LIST": {
+        "APPROVAL": "Approval",
+        "JOB-COMPLETION": "Job Completion"
       }
     }
   },

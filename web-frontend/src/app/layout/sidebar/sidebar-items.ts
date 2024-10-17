@@ -521,6 +521,41 @@ export const ROUTES: RouteInfo[] = [
       }
     ]
   },
+  {
+    path: "admin/cleaning-management",
+    title: "MENUITEMS.CLEANING.TEXT",
+    iconType: "material",
+    icon: "opacity",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/cleaning/approval",
+        title: "MENUITEMS.CLEANING.LIST.APPROVAL",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/cleaning/job-completion",
+        title: "MENUITEMS.CLEANING.LIST.JOB-COMPLETION",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: false
+      }
+    ].filter(item => item.visible !== false),
+  },
   // {
   //   path: "advance-table",
   //   title: "MENUITEMS.ADVANCE-TABLE.TEXT",
