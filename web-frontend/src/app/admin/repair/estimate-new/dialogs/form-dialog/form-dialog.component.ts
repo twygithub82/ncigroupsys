@@ -288,9 +288,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         const subgroupName = this.repairPartForm?.get('subgroup_name_cv');
         if (value) {
           this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
-          this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '');
           if (value.child_code) {
             subgroupName?.enable();
+            if ((this.subgroupNameCvList?.length ?? 0) > 1) {
+              this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, 'All', '');
+            } else {
+              subgroupName?.disable();
+            }
           } else {
             subgroupName?.setValue('');
             subgroupName?.disable();

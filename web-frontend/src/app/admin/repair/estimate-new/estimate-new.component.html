@@ -344,7 +344,7 @@
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; columns: ['group_name_cv'];" [hidden]="!row.isGroupHeader"
-                        [ngClass]="{'bg-lightest-purple font-bold': true}" [style.cursor]="'pointer'" matRipple>
+                        [ngClass]="{'bg-lightest-blue font-bold': true}" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                       <mat-row *matRowDef="let row; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
