@@ -86,7 +86,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     'eir_dt',
     'last_cargo',
     'purpose',
-    'eir_status_cv'
+    'eir_status_cv',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY'
@@ -121,7 +122,10 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    KIV:"COMMON-FORM.KIV",
+    NO_ACTION:"COMMON-FORM.NO-ACTION",
+    APPROVE:"COMMON-FORM.APPROVE"
   }
 
   searchForm?: UntypedFormGroup;
@@ -464,5 +468,17 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       eir_status_cv: ''
     });
     this.customerCodeControl.reset('');
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
   }
 }

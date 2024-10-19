@@ -40,7 +40,8 @@ import { ApprovalComponent } from './repair/approval/approval.component';
 import { ApprovalViewComponent } from './repair/approval-view/approval-view.component';
 import { BillingBranchComponent } from './master/billing-branch/billing-branch.component';
 import { BillingBranchNewComponent } from './master/billing-branch-new/billing-branch-new.component';
-import { CleaningApprovalComponent } from './cleaning/approval/approval.component';
+import { CleaningApprovalComponent } from './cleaning/cleaning-approval/approval.component';
+import { ResidueDisposalApprovalComponent } from './cleaning/residue-disposal/residue-disposal.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -244,6 +245,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path:"cleaning/approval",
     component:CleaningApprovalComponent,
+  },
+  {
+    path:"residue-disposal/approval",
+    component:ResidueDisposalApprovalComponent,
   },
 ];
 

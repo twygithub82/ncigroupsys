@@ -210,6 +210,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     SDS_FILE :"COMMON-FORM.SDS-FILE"
   }
 
+  historyState: any = {};
+
   sdsFiles: (string | ArrayBuffer)[] = [];
   cCategoryList : CleaningCategoryItem[]=[];
   cMethodList : CleaningMethodItem[]=[];
@@ -313,6 +315,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   ngOnInit() {
     //this.initializeFilter();
   
+    
         this.tcForm!.get('un_no')?.valueChanges.subscribe(value=>{
 
           if (value && !value.startsWith(this.prefix) && value!='-') {
@@ -397,6 +400,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.natureCvList = data;
     });
 
+    this.historyState = history.state;
     this.tc_guid = this.route.snapshot.paramMap.get('id');
     if(this.tc_guid)
     {
@@ -565,7 +569,13 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        this.router.navigate(['/admin/tariff/tariff-cleaning']);
+        //this.router.navigate(['/admin/tariff/tariff-cleaning']);
+        this.router.navigate(['/admin/tariff/tariff-cleaning'], {
+          state: this.historyState
+    
+        }
+        );
+
       });
     }
   }
@@ -817,6 +827,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.selectedFile =files[0];
           this.existingSDSFiles=files;
           this.existingSDSFilesUrls=response;
+          const fileSizeInMB = this.selectedFile.size / (1024 * 1024); // Convert bytes to MB
+          this.tcForm?.patchValue({
+            file_size:fileSizeInMB
+          });
         }
       }
       this.sdsFileLoading=false;
@@ -923,6 +937,16 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     return tr;
   }
   
+  GoBackPrevious(event: Event) {
+    event.stopPropagation(); // Stop the click event from propagating
+    // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/tariff/tariff-cleaning'], {
+      state: this.historyState
+
+    }
+    );
+  }
+
   // InsertClassNoToUnNoTable(){
 
   //   var classNoValue:string = this.tcForm?.get("class_no")?.value;

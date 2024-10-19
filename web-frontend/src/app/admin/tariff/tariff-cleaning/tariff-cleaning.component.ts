@@ -26,7 +26,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -154,7 +154,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   
   
-  
+  previous_endCursor: string | undefined = undefined;
   soList: StoringOrderItem[] = [];
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
   soStatusCvList: CodeValuesItem[] = [];
@@ -186,6 +186,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   private regex: RegExp = new RegExp(/^[0-9-]*$/);
 
   constructor(
+    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -216,6 +217,25 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
    // this.initializeFilterCustomerCompany();
     this.loadData();
     
+    var state = history.state;
+    if(state.type=="tariff-cleaning")
+    {
+      let showResult = state.pagination.showResult;
+      if(showResult)
+      {
+      this.searchCriteriaService=state.pagination.where;
+      this.pageIndex=state.pagination.pageIndex;
+      this.pageSize= state.pagination.pageSize;
+      this.hasPreviousPage=state.pagination.hasPreviousPage;
+      this.startCursor=state.pagination.startCursor;
+      this.endCursor=state.pagination.endCursor;
+      this.previous_endCursor=state.pagination.previous_endCursor;
+      this.paginator.pageSize=this.pageSize;
+      this.paginator.pageIndex=this.pageIndex;
+      this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+      }
+
+    }
   }
   refresh() {
     this.loadData();
@@ -274,27 +294,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     let lastSrchCriteria = this.searchCriteriaService.getCriteria();
 
     this.lastSearchCriteria=this.tcDS.addDeleteDtCriteria({});
-    // let where:any = this.lastSearchCriteria;
    
-    
-    // let first = this.pageSize;
-    // let after: string | undefined = undefined;
-    // let last: number | undefined = undefined;
-    // let before: string | undefined = undefined;
-    // let order:any|undefined=undefined;
-    // if(lastSrchCriteria.where)
-    //   {
-    //     this.lastSearchCriteria=lastSrchCriteria.where;
-    //     where=this.lastSearchCriteria; 
-    //   }
-
-    //   if(lastSrchCriteria.first) {first= lastSrchCriteria.first;
-    //     this.pageSize=lastSrchCriteria.first;
-    //   };
-    //  if(lastSrchCriteria.after) after=lastSrchCriteria.after;
-    //  if(lastSrchCriteria.last)last=lastSrchCriteria.last;
-    //  if(lastSrchCriteria.before) before=lastSrchCriteria.before;
-    //  if(lastSrchCriteria.order) order=lastSrchCriteria.order;
      if(lastSrchCriteria.pageIndex) 
       {
         this.pageIndex=lastSrchCriteria.pageIndex;
@@ -316,26 +316,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
       this.onPageEvent({pageIndex:lastSrchCriteria.pageIndex,pageSize:this.pageSize,length:lastSrchCriteria.length})
 
-      // if(this.pageIndex==0)
-      // {
-        
-      //    this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:0});
-      // }
-      // else
-      // {
-      //  // this.pageIndex=lastSrchCriteria.pageIndex;
-       
-      //   this.onPageEvent({pageIndex:lastSrchCriteria.pageIndex,pageSize:this.pageSize,length:lastSrchCriteria.length})
-
-      // }
-    //this.searchTC(where,order,first,after,last,before,this.pageIndex);
-    // this.tcDS.SearchTariffCleaning(this.lastSearchCriteria).subscribe(data => {
-    //   this.tcList = data;
-    //   this.endCursor = this.tcDS.pageInfo?.endCursor;
-    //   this.startCursor = this.tcDS.pageInfo?.startCursor;
-    //   this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
-    //   this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
-    // });
 
     this.cCategoryDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
       if(this.cCategoryDS.totalCount>0)
@@ -388,20 +368,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   // export table data in excel file
   exportExcel() {
-    // key name with space add in brackets
-    // const exportData: Partial<TableElement>[] =
-    //   this.dataSource.filteredData.map((x) => ({
-    //     'First Name': x.fName,
-    //     'Last Name': x.lName,
-    //     Email: x.email,
-    //     Gender: x.gender,
-    //     'Birth Date': formatDate(new Date(x.bDate), 'yyyy-MM-dd', 'en') || '',
-    //     Mobile: x.mobile,
-    //     Address: x.address,
-    //     Country: x.country,
-    //   }));
-
-    // TableExportUtil.exportToExcel(exportData, 'excel');
+   
   }
 
   // context menu
@@ -415,6 +382,25 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.contextMenu.openMenu();
     }
   }
+
+
+  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number) {
+    this.previous_endCursor = after;
+    this.subs.sink = this.tcDS.SearchTariffCleaning(where, order, first, after, last, before).subscribe(data => {
+      this.tcList = data;
+      this.endCursor = this.tcDS.pageInfo?.endCursor;
+      this.startCursor = this.tcDS.pageInfo?.startCursor;
+      this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
+      this.pageIndex = pageIndex;
+      this.paginator.pageIndex = this.pageIndex;
+      //this.selection.clear();
+      if (!this.hasPreviousPage)
+        this.previous_endCursor = undefined;
+    });
+  }
+
 
   searchTC(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number,
     previousPageIndex?:number)
@@ -436,17 +422,19 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
   
+
   onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
+    const { pageIndex, pageSize, previousPageIndex } = event;
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-    let order:any|undefined=undefined;
+    let order: any | undefined = undefined;
     // Check if the page size has changed
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
+      this.pageSize = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
@@ -461,28 +449,17 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
         last = pageSize;
         before = this.startCursor;
       }
-      else if (pageIndex==this.pageIndex)
-      {
-        last = pageSize;
-        after = this.endCursor;
-        //this.paginator.pageIndex=this.pageIndex;
-        
+      else if (pageIndex == this.pageIndex) {
+        first = pageSize;
+        after = this.previous_endCursor;
       }
     }
 
-    //this.paginator.pageIndex=1;
-    this.pageIndex = pageIndex;
-    this.pageSize = pageSize;
-    this.searchTC(this.lastSearchCriteria,order,first,after,last,before,this.pageIndex,previousPageIndex,);
-    // this.tcDS.SearchTariffCleaning(this.lastSearchCriteria,order, first, after, last, before).subscribe(data => {
-    //   this.tcList = data;
-    //   this.endCursor = this.tcDS.pageInfo?.endCursor;
-    //   this.startCursor = this.tcDS.pageInfo?.startCursor;
-    //   this.hasNextPage = this.tcDS.pageInfo?.hasNextPage ?? false;
-    //   this.hasPreviousPage = this.tcDS.pageInfo?.hasPreviousPage ?? false;
-    //   this.storeSearchCriteria(this.lastSearchCriteria,order,first,after,last,before);
-    // });
+    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
+    //}
   }
+
+ 
 
   storeSearchCriteria(where :any, order:any, first:any, after:any, last:any,before:any, pageIndex:number,
     previousPageIndex?:number,length?:number,hasNextPage?:boolean, hasPreviousPage?:boolean)
@@ -656,4 +633,54 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     //this.customerCodeControl.reset('');
    
   }
+
+  editCall(row: TariffCleaningItem) {
+
+    
+    // Navigate to the route and pass the JSON object
+       this.router.navigate(['/admin/tariff/tariff-cleaning/edit/'+row.guid], {
+         state: { id: row.guid ,
+           type:'tariff-cleaning',
+           selectedRow:row,
+           pagination:{
+             where :this.lastSearchCriteria,
+             pageSize:this.pageSize,
+             pageIndex:this.pageIndex,
+             hasPreviousPage:this.hasPreviousPage,
+             startCursor:this.startCursor,
+             endCursor:this.endCursor,
+             previous_endCursor:this.previous_endCursor,
+             
+             showResult: this.tcDS.totalCount>0
+             
+           }
+         }
+       });
+  
+   
+  }
+
+  addCallSelection(event: Event)
+  {
+    event.stopPropagation(); // Stop the click event from propagating
+ // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/tariff/tariff-cleaning/new/ '], {
+      state: { id: '' ,
+        type:'tariff-cleaning',
+        pagination:{
+          where :this.lastSearchCriteria,
+          pageSize:this.pageSize,
+          pageIndex:this.pageIndex,
+          hasPreviousPage:this.hasPreviousPage,
+          startCursor:this.startCursor,
+          endCursor:this.endCursor,
+          previous_endCursor:this.previous_endCursor,
+          
+          showResult: this.tcDS.totalCount>0
+          
+        }
+      }
+    });
+  }
+
 }

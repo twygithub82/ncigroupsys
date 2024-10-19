@@ -543,8 +543,8 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },
       {
-        path: "admin/cleaning/job-completion",
-        title: "MENUITEMS.CLEANING.LIST.JOB-COMPLETION",
+        path: "admin/residue-disposal/approval",
+        title: "MENUITEMS.CLEANING.LIST.RESIDUE-DISPOSAL-APPROVAL",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -552,9 +552,8 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: false
       }
-    ].filter(item => item.visible !== false),
+    ]
   },
   // {
   //   path: "advance-table",

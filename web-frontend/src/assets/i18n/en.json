@@ -186,8 +186,8 @@
     "CLEANING": {
       "TEXT": "Cleaning",
       "LIST": {
-        "APPROVAL": "Approval",
-        "JOB-COMPLETION": "Job Completion"
+        "APPROVAL": "Cleaning  Approval",
+        "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval"
       }
     }
   },
@@ -588,6 +588,7 @@
     "CHANGE-REQUEST": "Change Request",
     "APPROVE": "Approve",
     "NO-ACTION": "No Action",
+    "KIV":"KIV",
     "BILLING-BRANCH": "Billing Branch",
     "SALUTATION": "Salutation",
     "NAME": "Name",
