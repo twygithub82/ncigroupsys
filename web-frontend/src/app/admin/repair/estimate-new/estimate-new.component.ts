@@ -986,12 +986,13 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
       }));
 
       newData = this.sortAndGroupByGroupName(newData);
-
-      newData = newData.map((row, index) => ({
+      newData = [...this.sortREP(newData)];
+      
+      this.repList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
-      this.repList = [...this.sortREP(newData)];
+      
       this.calculateCost();
     }
   }
