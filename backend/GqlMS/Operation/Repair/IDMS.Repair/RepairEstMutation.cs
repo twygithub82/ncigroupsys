@@ -9,6 +9,7 @@ using static IDMS.Repair.GqlTypes.StatusConstant;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using IDMS.Repair.GqlTypes.LocalModel;
+using IDMS.Models.Inventory;
 
 namespace IDMS.Repair.GqlTypes
 {
@@ -36,6 +37,8 @@ namespace IDMS.Repair.GqlTypes
                 repEstimate.labour_cost = RepairEstimate.labour_cost;
                 repEstimate.owner_enable = RepairEstimate.owner_enable;
                 repEstimate.remarks = RepairEstimate.remarks;
+                repEstimate.total_hour = RepairEstimate.total_hour; 
+                repEstimate.job_no = RepairEstimate.job_no;
                 repEstimate.status_cv = RepairEstStatus.PENDING;
                 await context.repair_est.AddAsync(repEstimate);
 
@@ -112,6 +115,8 @@ namespace IDMS.Repair.GqlTypes
                 repTemplate.labour_cost = RepairEstimate.labour_cost;
                 repTemplate.estimate_no = RepairEstimate.estimate_no;
                 repTemplate.remarks = RepairEstimate.remarks;
+                repTemplate.total_hour = RepairEstimate.total_hour;
+                repTemplate.job_no = RepairEstimate.job_no;
 
                 if (RepairEstimate.repair_est_part != null)
                 {
@@ -285,13 +290,19 @@ namespace IDMS.Repair.GqlTypes
                 if (RepairEstimate != null && !string.IsNullOrEmpty(RepairEstimate.guid) && !string.IsNullOrEmpty(RepairEstimate.bill_to_guid))
                 {
                     var est = new repair_est() { guid = RepairEstimate.guid };
-                    context.Attach(est);
+                    context.repair_est.Attach(est);
 
                     est.bill_to_guid = RepairEstimate.bill_to_guid;
                     est.update_by = user;
                     est.update_dt = currentDateTime;
                     est.status_cv = RepairEstStatus.APPROVED;
                     est.remarks = RepairEstimate.remarks;
+
+                    if (RepairEstimate.storing_order_tank != null && !string.IsNullOrEmpty(RepairEstimate.storing_order_tank.guid))
+                    {
+                        var sot = new storing_order_tank() { guid = RepairEstimate.storing_order_tank.guid };
+                        
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
