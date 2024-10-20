@@ -42,11 +42,11 @@ namespace IDMS.Models.Package.All.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
-        public IQueryable<customer_company_cleaning_category_with_customer_company?> QueryPackageCleaning(ApplicationPackageDBContext context,
+        public IQueryable<customer_company_cleaning_category?> QueryPackageCleaning(ApplicationPackageDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
 
-            IQueryable<customer_company_cleaning_category_with_customer_company> query = null;
+            IQueryable<customer_company_cleaning_category> query = null;
             try
             {
 
