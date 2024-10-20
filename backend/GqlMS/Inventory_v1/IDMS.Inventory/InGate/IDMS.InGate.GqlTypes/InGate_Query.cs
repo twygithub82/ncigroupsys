@@ -25,7 +25,7 @@ namespace IDMS.InGate.GqlTypes
 
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        // [UseProjection]
+        [UseProjection]
         [UseFiltering(typeof(IDMS.Models.Filters.in_gate_filtertype))]
         [UseSorting]
         public IQueryable<in_gate> QueryInGates(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
