@@ -587,6 +587,7 @@
     "ADD-SUCCESS": "Add Successfully",
     "CHANGE-REQUEST": "Change Request",
     "APPROVE": "Approve",
+    "APPROVED-DATE": "Approved Date",
     "NO-ACTION": "No Action",
     "KIV":"KIV",
     "BILLING-BRANCH": "Billing Branch",
@@ -606,7 +607,11 @@
     "SELECT-TANK": "Select Tank",
     "NO-OF-PARTS": "No of Parts",
     "REMOVE-COPIED": "Remove Copied Estimate",
-    "MAIN-CUSTOMER": "Main Customer"
+    "MAIN-CUSTOMER": "Main Customer",
+    "FLAMMABLE-NOTIFICATION":"FEMMABLE - Do not open manlid or releasee pressure at in Gate",
+    "QUOTATION-DATE":"Quotation Date",
+    "DEPOT-ESTIMATE":"Depot Estimate",
+    "CUSTOMER-APPROVAL":"Customer Approval"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

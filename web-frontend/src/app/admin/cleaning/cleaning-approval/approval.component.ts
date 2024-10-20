@@ -43,6 +43,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-in-gate',
@@ -90,9 +91,9 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     'actions'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY'
+  pageTitle = 'MENUITEMS.CLEANING.LIST.APPROVAL'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.CLEANING.TEXT'
   ]
 
   translatedLangText: any = {};
@@ -125,7 +126,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     KIV:"COMMON-FORM.KIV",
     NO_ACTION:"COMMON-FORM.NO-ACTION",
-    APPROVE:"COMMON-FORM.APPROVE"
+    APPROVE:"COMMON-FORM.APPROVE",
+    
   }
 
   searchForm?: UntypedFormGroup;
@@ -481,4 +483,62 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
+
+  ApproveTank(row:InGateItem)
+  {
+    this.popupDialogForm(row,"approve");
+   
+  }
+
+  NoActionTank(row:InGateItem)
+  {
+    this.popupDialogForm(row,"noaction");
+   
+  }
+
+  KIVTank(row:InGateItem)
+  {
+    this.popupDialogForm(row,"kiv");
+   
+  }
+  
+  popupDialogForm(row:InGateItem, action:string)
+  {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    var rows :InGateItem[] =[] ;
+    rows.push(row);
+    const dialogRef = this.dialog.open(FormDialogComponent,{
+      
+      width: '1000px',
+      data: {
+        action: action,
+        langText: this.langText,
+        selectedItems:rows
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      }
+        
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         //if (result) {
+         //  if(result>0)
+         //    {
+         //      this.handleSaveSuccess(result);
+         //      //this.search();
+         //      this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+         //    }
+      //}
+      });
+   
+   }
+
+  
+  
 }

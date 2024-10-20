@@ -211,16 +211,16 @@
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #menu="matMenu">
-                      <button mat-menu-item >
+                      <button mat-menu-item (click)="ApproveTank(row)">
                         <mat-icon>check_circle</mat-icon>
                         <span>{{translatedLangText.APPROVE}}</span>
                       </button>
-                      <button mat-menu-item >
+                      <button mat-menu-item (click)="KIVTank(row)">
                           <mat-icon>block</mat-icon>
                           <span>{{translatedLangText.KIV}}</span>
                         </button>
                      
-                          <button mat-menu-item >
+                          <button mat-menu-item (click)="NoActionTank(row)" >
                             <mat-icon>remove_circle_outline</mat-icon>
                             <span>{{translatedLangText.NO_ACTION}}</span>
                           </button>
@@ -229,8 +229,7 @@
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/inventory/in-gate-survey/survey-form', row.guid]" [style.cursor]="'pointer'"
+                <mat-row *matRowDef="let row; columns: displayedColumns;"                
                   matRipple>
                 </mat-row>
               </table>

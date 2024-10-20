@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ResidueDisposalApprovalComponent } from './approval.component';
+import { ResidueDisposalApprovalComponent } from './residue-disposal.component';
 
 describe('CleaningProceduresComponent', () => {
   let component: ResidueDisposalApprovalComponent;

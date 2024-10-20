@@ -462,41 +462,7 @@ implements OnInit {
            }
          }
        });
-  //  // this.preventDefault(event);  // Prevents the form submission
-  //   let tempDirection: Direction;
-  //   if (localStorage.getItem('isRtl') === 'true') {
-  //     tempDirection = 'rtl';
-  //   } else {
-  //     tempDirection = 'ltr';
-  //   }
-  //   var rows :PackageRepairItem[] =[] ;
-  //   rows.push(row);
-  //   const dialogRef = this.dialog.open(FormDialogComponent,{
-      
-  //     width: '800px',
-     
-  //     data: {
-  //       action: 'update',
-  //       langText: this.langText,
-  //       selectedItems:rows
-  //     },
-  //     position: {
-  //       top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-  //     }
-        
-    // });
-
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //      //if (result) {
-    //       if(result>0)
-    //         {
-    //           this.handleSaveSuccess(result);
-    //           //this.search();
-    //           if(this.masterTemplateItem.length>1)
-    //               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-    //         }
-    //   //}
-    //   });
+  
    
   }
 
