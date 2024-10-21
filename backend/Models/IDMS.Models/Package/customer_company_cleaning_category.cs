@@ -20,7 +20,6 @@ namespace IDMS.Models.Package
 
         [ForeignKey("cleaning_category")]
         public string? cleaning_category_guid { get; set; }
-
         public double? initial_price { get; set; }
         public double? adjusted_price { get; set; }
         public string? remarks { get; set; }
