@@ -28,6 +28,10 @@ namespace IDMS.Models.Inventory
         public long? allocate_dt { get; set; }  
         public string? complete_by { get; set; }    
         public long? complete_dt { get; set; }
+        public long? na_dt { get; set; }    
+
+        [NotMapped]
+        public string action { get; set; } 
 
         [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; } = null;
