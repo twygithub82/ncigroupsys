@@ -298,11 +298,11 @@ namespace IDMS.Repair.GqlTypes
                     est.status_cv = RepairEstStatus.APPROVED;
                     est.remarks = RepairEstimate.remarks;
 
-                    if (RepairEstimate.storing_order_tank != null && !string.IsNullOrEmpty(RepairEstimate.storing_order_tank.guid))
-                    {
-                        var sot = new storing_order_tank() { guid = RepairEstimate.storing_order_tank.guid };
+                    //if (RepairEstimate.storing_order_tank != null && !string.IsNullOrEmpty(RepairEstimate.storing_order_tank.guid))
+                    //{
+                    //    var sot = new storing_order_tank() { guid = RepairEstimate.storing_order_tank.guid };
                         
-                    }
+                    //}
                 }
 
                 var res = await context.SaveChangesAsync();
