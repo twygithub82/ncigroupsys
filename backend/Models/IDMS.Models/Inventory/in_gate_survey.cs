@@ -1,5 +1,6 @@
 ﻿using HotChocolate;
 using IDMS.Models.Master;
+using IDMS.Models.Tariff;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
@@ -35,8 +36,9 @@ namespace IDMS.Models.Inventory
         public string? max_weight_cv { get; set; }
         public string? height_cv { get; set; }
         public string? walkway_cv { get; set; }
-        public string? tank_comp_cv { get; set; }
-        //public string? take_in_status_cv { get; set; }
+
+        [ForeignKey("tariff_buffer")]
+        public string? tank_comp_guid { get; set; }
         public string? btm_dis_comp_cv { get; set; }
         public string? btm_dis_valve_cv { get; set; }
         public string? btm_dis_valve_spec_cv { get; set; }
@@ -82,6 +84,6 @@ namespace IDMS.Models.Inventory
         public string? left_remarks { get; set; }
         public string? right_remarks { get; set; }
         public in_gate? in_gate { get; set; }
-
+        public tariff_buffer? tariff_buffer {  get; set; } 
     }
 }
