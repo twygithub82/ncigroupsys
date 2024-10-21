@@ -203,6 +203,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     APPROVED_DATE:"COMMON-FORM.APPROVED-DATE",
     DATE:"COMMON-FORM.DATE",
     FLAMMABLE_NOTIFICATION:"COMMON-FORM.FLAMMABLE-NOTIFICATION",
+    REMARKS_NOTIFICATION:"COMMON-FORM.REMARK-NOTIFICATION",
     DETAILS:"COMMON-FORM.DETAILS",
     EIR_NO:"COMMON-FORM.EIR-NO",
     EIR_DATE:"COMMON-FORM.EIR-DATE",
@@ -210,6 +211,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     CARGO_NAME:"COMMON-FORM.CARGO-NAME",
     DEPOT_ESTIMATE:"COMMON-FORM.DEPOT-ESTIMATE",
     CUSTOMER_APPROVAL:"COMMON-FORM.CUSTOMER-APPROVAL",
+    UPDATED_BY:"COMMON-FORM.UPDATED-BY",
+    UPDATED_ON:"COMMON-FORM.UPDATED-ON",
+    APPROVAL:"COMMON-FORM.APPROVAL",
+    JOB_ALLOCATION:"COMMON-FORM.JOB-ALLOCATION",
+    JOB_COMPLETION:"COMMON-FORM.JOB-COMPLETION",
+    BILLING_DETAILS:"COMMON-FORM.BILLING-DETAILS",
+    INOUT_GATE:"COMMON-FORM.INTOUT-GATE",
+    CLEANING_COST_FOR:"COMMON-FORM.CLEANING-COST-FOR"
 
   };
 
@@ -285,6 +294,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
 }
+
 
   displayDateFromEpoch(epoch: any) {
     if(epoch)
@@ -509,5 +519,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     var validActions :string[]= ["noaction"];
     return validActions.includes(this.action);
+  }
+
+  getDescription()
+  {
+    return this.translatedLangText.CLEANING_COST_FOR;
   }
 }

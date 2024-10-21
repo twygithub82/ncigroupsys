@@ -9,6 +9,7 @@
       <mat-icon>close</mat-icon>
     </button> -->
   </div>
+  
   <div mat-dialog-content class="auto-height">
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row justify-content-center">
@@ -22,11 +23,7 @@
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                         <input matInput formControlName="preinspection_cost_cust" type="number" [required]="this.selectedItems.length===1">
-                        @if (pcForm.get('preinspection_cost_cust')?.hasError('required')) {
-                          <mat-error>
-                            {{translatedLangText.PREINSPECTION_COST }} {{translatedLangText.CARGO_REQUIRED }}
-                          </mat-error>
-                          }
+                    
                       </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApprovedDate()">
@@ -49,11 +46,7 @@
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.REMARKS}}</mat-label>
                       <input matInput formControlName="lolo_cost_cust" type="number" [required]="this.selectedItems.length===1" >
-                      @if (pcForm.get('lolo_cost_cust')?.hasError('required')) {
-                        <mat-error>
-                          {{translatedLangText.LOLO_COST }} {{translatedLangText.CARGO_REQUIRED | translate}}
-                        </mat-error>
-                        }
+                  
                     </mat-form-field>
                 </div>
               </div>
@@ -76,13 +69,13 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-                        <input matInput formControlName="preinspection_cost_cust" type="number" readonly>
+                        <input matInput formControlName="preinspection_cost_cust"  readonly="true">
                       </mat-form-field>
                 </div>
                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                        <input matInput formControlName="lolo_cost_cust" type="number" readonly>
+                        <input matInput formControlName="lolo_cost_cust"  readonly="true">
                       </mat-form-field>
                 </div>
                
@@ -95,19 +88,14 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
-                        <input matInput formControlName="gate_in_cost_cust" type="number" readonly="true">
-                        @if (pcForm.get('gate_in_cost_cust')?.hasError('required')) {
-                          <mat-error>
-                            {{translatedLangText.GATE_IN_COST }} {{translatedLangText.CARGO_REQUIRED }}
-                          </mat-error>
-                          }
+                        <input matInput formControlName="gate_in_cost_cust"  readonly="true">
                       </mat-form-field>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       
-                      <input matInput formControlName="gate_out_cost_cust" type="number" readonly="true" >
+                      <input matInput formControlName="gate_out_cost_cust" readonly="true" >
                       
                     </mat-form-field>
               </div>
@@ -151,163 +139,213 @@
           
           
           </div>
-        
           <div class="row">
-            <div class="materialTableHeader">
-            </div>
-            <div class="body overflow-auto">
-              <div class="responsive_table">
-                <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
-                  
-                  <ng-container matColumnDef="fName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>#</mat-header-cell>
-                    <mat-cell *matCellDef="let row" >
-                      <span class="mobile-label">#:</span>{{row.customer_company.code}}</mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="lName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.DESCRIPTION }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row" >
-                      <span class="mobile-label">{{translatedLangText.DESCRIPTION }}:</span>{{row.customer_company.name}}</mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="email">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.DEPOT_ESTIMATE }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row" >
-                      <span class="mobile-label">{{translatedLangText.DEPOT_ESTIMATE }}:</span>{{row.tariff_depot?.profile_name}}</mat-cell>
-                  </ng-container>
-                  <ng-container matColumnDef="gender">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_APPROVAL }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row" >
-                      <span class="mobile-label">{{translatedLangText.CUSTOMER_APPROVAL }}:</span>{{row.tariff_depot?.storage_cost.toFixed(2)}}</mat-cell>
-                  </ng-container>
-                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                  <mat-row *matRowDef="let row; columns: displayedColumns;" 
-                    [style.cursor]="'pointer'" matRipple>
-                  </mat-row>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-xl-5-5 col-lg-5-5 col-md-12 col-sm-12 m-b-0">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
               <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                  <mat-form-field class="example-full-width full-height">
-                    <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                    <textarea matInput formControlName="remarks"  style="height:220px ;"></textarea>
-                  </mat-form-field>
-                </div>
-              </div>
-              <!-- <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.SURVEYOR_NAME}}</mat-label>
-                    <mat-select formControlName="surveyor_name_cv" required>
-                      @for (codeValue of groupNameCvList; track codeValue) {
-                      <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
-                      }
-                    </mat-select>
-                    @if (tempForm?.get('surveyor_name_cv')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.SURVEYOR_NAME}} {{translatedLangText.SO_REQUIRED}}
-                    </mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.INTERNAL_QC_BY}}</mat-label>
-                    <mat-select formControlName="internal_qc_by" required>
-                      @for (codeValue of groupNameCvList; track codeValue) {
-                      <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
-                      }
-                    </mat-select>
-                    @if (tempForm?.get('internal_qc_by')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.INTERNAL_QC_BY}} {{translatedLangText.SO_REQUIRED}}
-                    </mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                  {{translatedLangText.ESTIMATE_NO}}
-                </div>
-              </div> -->
-            </div>
-            <div class="col-xl-6-5 col-lg-6-5 col-md-12 col-sm-12 m-b-0">
-              <div class="row">
-                <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 m-b-0">
+                <div class="col-xl-0_5 col-lg-0_5 col-md-1 col-sm-1 m-b-0">
                   <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border">
-                      <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{translatedLangText.LABOUR}}
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{translatedLangText.MATERIAL_COST}}
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{translatedLangText.TOTAL_COST}}
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{translatedLangText.LABOUR_DISCOUNT}}
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{translatedLangText.MATERIAL_DISCOUNT}}s
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{translatedLangText.NET_COST}}
-                    </div>
-                   
-                  </div>
-                </div>
-                <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
-                      <span class="font-bold">{{translatedLangText.RATE}}</span>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                      <div class="table-label cost-label">
-                        <span>$</span><span>-</span>
-                      </div>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                      <div class="table-label"></div>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                      <div class="table-label"></div>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                      <tlx-form-field customClass="example-full-width">
-                     
-                      </tlx-form-field>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                      <tlx-form-field customClass="example-full-width">
-                      
-                      </tlx-form-field>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                      <div class="table-label"></div>
-                    </div>
-                   
-                  </div>
-                </div>
-                <div class="col-xl col-lg col-md col-sm m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
-                      <span class="font-bold">{{translatedLangText.TOTAL}}</span>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                      <span class="font-bold">#</span>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="table-label cost-label">
+                               1
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-0">
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                      <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="table-label cost-label">
+                               {{this.getDescription()}}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 m-b-0">
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                      <span class="font-bold">{{translatedLangText.DEPOT_ESTIMATE}}</span>
+                    </div>
+                  </div>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <div class="row">
+                              <div
+                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>-</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                   
+                  
+                </div>
+                <div class="col-xl col-lg col-md col-sm m-b-0">
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                      <span class="font-bold">{{translatedLangText.CUSTOMER_APPROVAL}}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="table-label cost-label">
+                                <span></span><span>-</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
+              <mat-label style="display: flex; justify-content: left;">{{translatedLangText.REMARKS_NOTIFICATION}}</mat-label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
+              <mat-label style="display: flex; justify-content: left;">&nbsp;</mat-label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+              <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                      <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="table-label cost-label">
+                               {{translatedLangText.APPROVAL}}
+                              </div>
+                            </div>
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="table-label cost-label">
+                                {{translatedLangText.JOB_ALLOCATION}}
+                              </div>
+                            </div>
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="table-label cost-label">
+                                {{translatedLangText.JOB_COMPLETION}}
+                              </div>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                              <div class="table-label cost-label">
+                                {{translatedLangText.BILLING_DETAILS}}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                      <span class="font-bold">{{translatedLangText.UPDATED_BY}}</span>
+                    </div>
+                  </div>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <div class="row">
+                              <div
+                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>-</span>
+                                </div>
+                              </div>
+                              <div
+                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>-</span>
+                                </div>
+                              </div>
+                              <div
+                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>-</span>
+                                </div>
+                              </div>
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                <div class="table-label cost-label">
+                                  <span></span><span>-</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                   
+                  
+                </div>
+                <div class="col-xl col-lg col-md col-sm m-b-0">
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                      <span class="font-bold">{{translatedLangText.UPDATED_ON}}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                           <div class="row">
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -317,64 +355,21 @@
                             </div>
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                           
-                          </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                               <div class="table-label cost-label">
-                                <span>$</span><span>-</span>
+                                <span></span><span>-</span>
                               </div>
                             </div>
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                               <div class="table-label cost-label">
-                                <span>$</span><span>-</span>
+                                <span></span><span>-</span>
                               </div>
                             </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                               <div class="table-label cost-label">
-                                <span>$</span><span>-</span>
+                                <span></span><span>-</span>
                               </div>
                             </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span style="color: #af0404;">-</span>
-                              </div>
-                            </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span style="color:  #af0404;">-</span>
-                              </div>
-                            </div>
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>-</span>
-                              </div>
-                            </div>
-                            
                           </div>
                         </div>
                       </div>

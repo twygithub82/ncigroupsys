@@ -539,6 +539,14 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
    
    }
 
+   onRowClick(event: MouseEvent, row: any, menuTrigger: MatMenuTrigger) {
+    // You can handle any logic here before opening the menu, e.g., storing the clicked row data.
+    //console.log('Row clicked:', row);
+
+    // Open the MatMenu
+    menuTrigger.openMenu();
+  }
+
   
   
 }
