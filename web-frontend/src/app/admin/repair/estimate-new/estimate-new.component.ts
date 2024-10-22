@@ -584,6 +584,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
     this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
       if (data?.length > 0) {
+        debugger
         this.packageLabourItem = data[0];
       }
     });

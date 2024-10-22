@@ -494,6 +494,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
         if (data?.length) {
           this.repairEstItem = data[0];
           this.sotItem = this.repairEstItem?.storing_order_tank;
+          this.getCustomerLabourPackage(this.sotItem?.storing_order?.customer_company?.guid!);
           this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
             if (cc?.length) {
               this.customer_companyList = cc;
@@ -1167,7 +1168,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
     const totalOwner = this.repairEstDS.getTotal(ownerList);
     const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.packageLabourItem?.cost);
+    const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
     const total_owner_mat_cost = totalOwner.total_mat_cost;
     const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
     const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
@@ -1192,7 +1193,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
     const totalLessee = this.repairEstDS.getTotal(lesseeList);
     const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.packageLabourItem?.cost);
+    const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
     const total_lessee_mat_cost = totalLessee.total_mat_cost;
     const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
     const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
@@ -1230,5 +1231,9 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   canExport(): boolean {
     return !!this.repair_est_guid;
+  }
+
+  getLabourCost(): number | undefined {
+    return this.repairEstItem?.labour_cost;
   }
 }
