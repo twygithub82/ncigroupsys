@@ -49,7 +49,7 @@ namespace IDMS.InGateCleaning.GqlTypes
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
-     
+
         }
 
 
@@ -62,31 +62,41 @@ namespace IDMS.InGateCleaning.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var updateIngateCleaning = await context.in_gate_cleaning.FindAsync(inGateCleaning.guid);
-                if(updateIngateCleaning == null)
-                    throw new GraphQLException(new Error("Ingate cleaning not found.", "ERROR"));
+                if (inGateCleaning == null)
+                    throw new GraphQLException(new Error("in_gate_cleaning cannot be null or empty.", "ERROR"));
+
+                var updateIngateCleaning = new in_gate_cleaning() { guid = inGateCleaning.guid };
+                context.in_gate_cleaning.Attach(updateIngateCleaning);
 
                 updateIngateCleaning.update_by = user;
                 updateIngateCleaning.update_dt = currentDateTime;
-
-                updateIngateCleaning.sot_guid = inGateCleaning.sot_guid;
-                updateIngateCleaning.bill_to_guid = inGateCleaning.bill_to_guid;
-                updateIngateCleaning.cleaning_cost = inGateCleaning.cleaning_cost;
-                updateIngateCleaning.buffer_cost = inGateCleaning.buffer_cost;
-                updateIngateCleaning.status_cv = inGateCleaning.status_cv;
-                updateIngateCleaning.remarks = inGateCleaning.remarks;  
                 updateIngateCleaning.job_no = inGateCleaning.job_no;
-                updateIngateCleaning.approve_by = inGateCleaning.approve_by;
-                updateIngateCleaning.approve_dt = inGateCleaning.approve_dt;
-                updateIngateCleaning.allocate_by = inGateCleaning.allocate_by;
-                updateIngateCleaning.allocate_dt = inGateCleaning.allocate_dt;
-                updateIngateCleaning.complete_by = inGateCleaning.complete_by;
-                updateIngateCleaning.complete_dt = inGateCleaning.complete_dt;
+                updateIngateCleaning.remarks = inGateCleaning.remarks;
+               
+                if (ObjectAction.APPROVE.EqualsIgnore(inGateCleaning.action))
+                {
+                    updateIngateCleaning.status_cv = ProcessStatus.APPROVE;
+                    updateIngateCleaning.approve_dt = currentDateTime;
+                    updateIngateCleaning.approve_by = inGateCleaning?.storing_order_tank?.storing_order?.customer_company_guid;
+                }
+                else if (ObjectAction.KIV.EqualsIgnore(inGateCleaning.action))
+                {
+                    updateIngateCleaning.status_cv = ProcessStatus.KIV;
+                }
+                else if (ObjectAction.NA.EqualsIgnore(inGateCleaning.action))
+                {
+                    updateIngateCleaning.na_dt = currentDateTime;
+                    updateIngateCleaning.status_cv = ProcessStatus.NO_ACTION;
 
-                if (!string.IsNullOrEmpty(inGateCleaning.job_no))
-                    updateIngateCleaning.job_no = inGateCleaning.job_no;
-                else
-                    updateIngateCleaning.job_no = inGateCleaning.storing_order_tank.job_no;
+                    if (string.IsNullOrEmpty(inGateCleaning.sot_guid))
+                        throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
+
+                    var sot = new storing_order_tank() { guid = inGateCleaning.sot_guid };
+                    context.storing_order_tank.Attach(sot);
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;
+                    sot.tank_status_cv = "STORAGE";
+                }
 
                 var res = await context.SaveChangesAsync();
                 return res;
@@ -111,7 +121,7 @@ namespace IDMS.InGateCleaning.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 var ingate_cleaning = context.in_gate_cleaning.Where(i => inGateCleaningGuids.Contains(i.guid));
-                foreach(var cleaning in ingate_cleaning)
+                foreach (var cleaning in ingate_cleaning)
                 {
                     cleaning.delete_dt = currentDateTime;
                     cleaning.update_by = user;
