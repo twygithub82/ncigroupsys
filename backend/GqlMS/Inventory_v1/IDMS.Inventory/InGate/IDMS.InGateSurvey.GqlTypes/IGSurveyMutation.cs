@@ -24,6 +24,7 @@ namespace IDMS.InGateSurvey.GqlTypes
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper,
             InGateSurveyRequest inGateSurveyRequest, in_gate inGateRequest)
         {
+            bool needAddCleaning = false;
             int retval = 0;
             List<string> retGuids = new List<string>();
             Record record = new();
@@ -68,13 +69,15 @@ namespace IDMS.InGateSurvey.GqlTypes
                 if ((tnk.purpose_cleaning ?? false) || (tnk.purpose_steam ?? false))
                 {
                     sot.tank_status_cv = TankMovementStatus.CLEANING;
+                    needAddCleaning = true;
                 }
 
                 //Add the newly created guid into list for return
                 retGuids.Add(ingateSurvey.guid);
 
                 //Add into in_gate_cleaning
-                await AddIngateCleaning(context, config, httpContextAccessor, tnk.guid, ingate.create_dt, ingateSurvey.tank_comp_cv);
+                if (needAddCleaning)
+                    await AddIngateCleaning(context, config, httpContextAccessor, tnk.guid, ingate.create_dt, ingateSurvey.tank_comp_guid);
 
                 retval = await context.SaveChangesAsync();
                 //TODO
@@ -230,7 +233,7 @@ namespace IDMS.InGateSurvey.GqlTypes
         }
 
         private async Task<int> AddIngateCleaning(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-        [Service] IHttpContextAccessor httpContextAccessor, string sot_Guid, long? ingate_date, string baffleType)
+        [Service] IHttpContextAccessor httpContextAccessor, string sot_Guid, long? ingate_date, string tariffBufferGuid)
         {
             int retval = 0;
             try
@@ -259,8 +262,8 @@ namespace IDMS.InGateSurvey.GqlTypes
                                .Select(c => c.adjusted_price).FirstOrDefaultAsync();
                 ingateCleaning.cleaning_cost = adjustedPrice;
 
-                var tariffBufferGuid = await context.Set<tariff_buffer>().Where(t => t.buffer_type.ToUpper() == baffleType.ToUpper())
-                                                    .Select(t => t.guid).FirstOrDefaultAsync();
+                //var tariffBufferGuid = await context.Set<tariff_buffer>().Where(t => t.buffer_type.ToUpper() == baffleType.ToUpper())
+                //                                    .Select(t => t.guid).FirstOrDefaultAsync();
                 var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
                                                    .Select(b => b.cost).FirstOrDefaultAsync();
                 ingateCleaning.buffer_cost = bufferPrice;
