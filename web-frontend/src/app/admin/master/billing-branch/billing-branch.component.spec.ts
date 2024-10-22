@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PackageResidueComponent } from './package-residue.component';
+import { BillingBranchComponent } from './billing-branch.component';
 
 describe('PackageResidueComponent', () => {
-  let component: PackageResidueComponent;
-  let fixture: ComponentFixture<PackageResidueComponent>;
+  let component: BillingBranchComponent;
+  let fixture: ComponentFixture<BillingBranchComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PackageResidueComponent]
+      imports: [BillingBranchComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(PackageResidueComponent);
+    fixture = TestBed.createComponent(BillingBranchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -748,6 +748,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         this.previous_endCursor = undefined;
     });
   }
+
+
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
@@ -798,7 +800,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
-    this.previous_endCursor = this.endCursor;
+    this.previous_endCursor = after;
     this.subs.sink = this.trfRepairDS.SearchTariffRepair(where, order, first, after, last, before).subscribe(data => {
       this.trfRepairItems = data;
       this.endCursor = this.trfRepairDS.pageInfo?.endCursor;

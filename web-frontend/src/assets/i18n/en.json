@@ -587,6 +587,7 @@
     "ADD-SUCCESS": "Add Successfully",
     "CHANGE-REQUEST": "Change Request",
     "APPROVE": "Approve",
+    "APPROVED-DATE": "Approved Date",
     "NO-ACTION": "No Action",
     "KIV":"KIV",
     "BILLING-BRANCH": "Billing Branch",
@@ -606,7 +607,20 @@
     "SELECT-TANK": "Select Tank",
     "NO-OF-PARTS": "No of Parts",
     "REMOVE-COPIED": "Remove Copied Estimate",
-    "MAIN-CUSTOMER": "Main Customer"
+    "MAIN-CUSTOMER": "Main Customer",
+    "FLAMMABLE-NOTIFICATION":"FEMMABLE - Do not open manlid or release pressure at in Gate",
+    "REMARK-NOTIFICATION":"* Remarks - DO NOT OPEN OR RELEASE PRESSURE AT IN GATE",
+    "QUOTATION-DATE":"Quotation Date",
+    "DEPOT-ESTIMATE":"Depot Estimate",
+    "CUSTOMER-APPROVAL":"Customer Approval",
+    "UPDATED-BY":"Updated By",
+    "UPDATED-ON":"Updated On",
+    "APPROVAL":"Approval",
+    "JOB-ALLOCATION":"Job Allocation",
+    "JOB-COMPLETION":"Job Completion",
+    "BILLING-DETAILS":"Billing Details",
+    "CLEANING-COST-FOR":"Cleaning cost for the cargo"
+
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

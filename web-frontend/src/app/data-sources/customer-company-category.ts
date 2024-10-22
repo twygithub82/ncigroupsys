@@ -62,7 +62,7 @@ query {
 }`;
 
 export const GET_COMPANY_CATEGORY_QUERY = gql`
-  query  queryPackageCleaning($where: customer_company_cleaning_category_with_customer_companyFilterInput, $order: [customer_company_cleaning_category_with_customer_companySortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+  query  queryPackageCleaning($where: customer_company_cleaning_categoryFilterInput, $order: [customer_company_cleaning_categorySortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     companycategoryList:  queryPackageCleaning(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
        totalCount
       pageInfo {
