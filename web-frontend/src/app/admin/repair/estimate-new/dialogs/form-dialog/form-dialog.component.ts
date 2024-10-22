@@ -150,8 +150,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
       dimension: [{ value: this.repairPart.tariff_repair?.dimension, disabled: !this.canEdit() }],
       length: [{ value: this.repairPart.tariff_repair?.length, disabled: !this.canEdit() }],
-      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel')), disabled: !this.canEdit() }],
-      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel')), disabled: !this.canEdit() }],
+      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.canEdit() }],
+      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.canEdit() }],
       material_cost: [{ value: this.repairPart.material_cost }]
     });
   }
@@ -175,8 +175,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       part_name: this.repairPart.tariff_repair?.part_name,
       dimension: this.repairPart.tariff_repair?.dimension,
       length: this.repairPart.tariff_repair?.length,
-      damage: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel')),
-      repair: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel')),
+      damage: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel' && !x.delete_dt)),
+      repair: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)),
       material_cost: this.repairPart.material_cost
     });
   }
