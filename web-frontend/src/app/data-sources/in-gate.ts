@@ -299,7 +299,7 @@ export const GET_IN_GATE_BY_ID = gql`
           residue
           safety_handrail
           take_in_reference
-          tank_comp_cv
+          tank_comp_guid
           tare_weight
           test_class_cv
           test_dt

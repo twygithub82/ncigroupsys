@@ -268,5 +268,4 @@ export class PackageLabourDS extends BaseDataSource<PackageLabourItem> {
       }),
     );
   }
-
 }

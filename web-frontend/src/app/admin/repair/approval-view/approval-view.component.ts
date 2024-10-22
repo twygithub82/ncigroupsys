@@ -517,7 +517,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     repair_est.repair_est_part = this.filterDeleted(repair_est.repair_est_part)
     this.updateData(repair_est.repair_est_part);
     this.repairEstForm?.patchValue({
-      job_no: this.sotItem?.job_no,
+      job_no: repair_est.job_no || this.sotItem?.job_no,
       guid: repair_est.guid,
       remarks: repair_est.remarks,
       surveyor_id: repair_est.aspnetusers_guid,

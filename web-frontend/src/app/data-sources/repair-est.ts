@@ -22,6 +22,8 @@ export class RepairEstGO {
   public remarks?: string;
   public owner_enable?: boolean;
   public bill_to_guid?: string;
+  public job_no?: string;
+  public total_hour?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -41,6 +43,8 @@ export class RepairEstGO {
     this.remarks = item.remarks;
     this.owner_enable = item.owner_enable || false;
     this.bill_to_guid = item.bill_to_guid;
+    this.job_no = item.job_no;
+    this.total_hour = item.total_hour || 0;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;

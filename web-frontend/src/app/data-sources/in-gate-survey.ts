@@ -28,7 +28,7 @@ export class InGateSurveyGO {
   public max_weight_cv?: string;
   public height_cv?: string;
   public walkway_cv?: string;
-  public tank_comp_cv?: string;
+  public tank_comp_guid?: string;
   public btm_dis_comp_cv?: string;
   public btm_dis_valve_cv?: string;
   public btm_dis_valve_spec_cv?: string;
@@ -97,7 +97,7 @@ export class InGateSurveyGO {
     this.max_weight_cv = item.max_weight_cv;
     this.height_cv = item.height_cv;
     this.walkway_cv = item.walkway_cv;
-    this.tank_comp_cv = item.tank_comp_cv;
+    this.tank_comp_guid = item.tank_comp_guid;
     this.btm_dis_comp_cv = item.btm_dis_comp_cv;
     this.btm_dis_valve_cv = item.btm_dis_valve_cv;
     this.btm_dis_valve_spec_cv = item.btm_dis_valve_spec_cv;
@@ -288,7 +288,7 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
         residue
         safety_handrail
         take_in_reference
-        tank_comp_cv
+        tank_comp_guid
         tare_weight
         thermometer
         thermometer_cv
