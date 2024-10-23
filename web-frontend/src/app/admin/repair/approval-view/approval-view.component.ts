@@ -1268,10 +1268,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   toggleApprovePart(rep: RepairEstPartItem) {
+    if (!this.canApprove()) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
-    // approve_qty: row.approve_qty ?? ((this.repairEstPartDS.is4X(row.rep_damage_repair) || this.repairEstPartDS.isApprove(row)) ? row.quantity : 1),
-    // approve_hour: row.approve_hour ?? ((this.repairEstPartDS.is4X(row.rep_damage_repair) || this.repairEstPartDS.isApprove(row)) ? row.hour : 0),
-    // approve_cost: row.approve_cost ?? ((this.repairEstPartDS.is4X(row.rep_damage_repair) || this.repairEstPartDS.isApprove(row)) ? row.material_cost : 0),
   }
 
   displayApproveQty(rep: RepairEstPartItem) {
