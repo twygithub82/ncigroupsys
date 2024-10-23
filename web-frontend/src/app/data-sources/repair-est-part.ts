@@ -19,8 +19,13 @@ export class RepairEstPartGO {
   public remarks?: string;
   public quantity?: number;
   public hour?: number;
-  public material_cost?: number;
   public owner?: boolean;
+  public material_cost?: number;
+  public approve_qty?: number;
+  public approve_hour?: number;
+  public approve_cost?: number;
+  public approve_part?: boolean;
+  public complete_dt?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -37,8 +42,13 @@ export class RepairEstPartGO {
     this.remarks = item.remarks;
     this.quantity = item.quantity;
     this.hour = item.hour;
-    this.material_cost = item.material_cost;
     this.owner = item.owner || false;
+    this.material_cost = item.material_cost;
+    this.approve_qty = item.approve_qty;
+    this.approve_hour = item.approve_hour;
+    this.approve_cost = item.approve_cost;
+    this.approve_part = item.approve_part;
+    this.complete_dt = item.complete_dt;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -148,26 +158,12 @@ export class RepairEstPartDS extends BaseDataSource<RepairEstPartItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchSchedulingSot(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<SchedulingItem[]> {
-    this.loadingSubject.next(true);
 
-    return this.apollo
-      .query<any>({
-        query: GET_SCHEDULING_SOT,
-        variables: { where, order, first, after, last, before },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const resultList = result.resultList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(resultList.nodes);
-          this.totalCount = resultList.totalCount;
-          this.pageInfo = resultList.pageInfo;
-          return resultList.nodes;
-        })
-      );
+  isApprove(rep: RepairEstPartItem) {
+    return rep.approve_part;
+  }
+
+  is4X(repDmgRepair: REPDamageRepairItem[] | undefined): boolean | undefined {
+    return repDmgRepair && !repDmgRepair.some((item: REPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
   }
 }

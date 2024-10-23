@@ -56,7 +56,7 @@ import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-fiel
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
-import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
+import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 
@@ -110,7 +110,11 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     'hour',
     'price',
     'material',
-    'isOwner'
+    'isOwner',
+    'approve_part',
+    'approve_qty',
+    'approve_hour',
+    'approve_cost'
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
   breadcrumsMiddleList = [
@@ -243,6 +247,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   plDS: PackageLabourDS;
   repairEstDS: RepairEstDS;
   repairEstPartDS: RepairEstPartDS;
+  repDmgRepairDS: REPDamageRepairDS;
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
   userDS: UserDS;
@@ -268,6 +273,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     this.plDS = new PackageLabourDS(this.apollo);
     this.repairEstDS = new RepairEstDS(this.apollo);
     this.repairEstPartDS = new RepairEstPartDS(this.apollo);
+    this.repDmgRepairDS = new REPDamageRepairDS(this.apollo);
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
@@ -804,6 +810,31 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
       re.guid = this.repairEstItem?.guid;
       re.sot_guid = this.repairEstItem?.sot_guid;
       re.bill_to_guid = this.repairEstForm!.get('bill_to')?.value?.guid;
+
+      this.repList?.forEach((rep: RepairEstPartItem) => {
+        rep.approve_part = rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair);
+        rep.approve_qty = (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
+        rep.approve_hour = (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
+        rep.approve_cost = (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
+      })
+
+      re.repair_est_part = this.repList?.map((rep: RepairEstPartItem) => {
+        return new RepairEstPartItem({
+          ...rep,
+          tariff_repair: undefined,
+          rep_damage_repair: undefined,
+          approve_part: rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair),
+          approve_qty: (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1,
+          approve_hour: (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0,
+          approve_cost: (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0
+        })
+        // rep.approve_part = rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair);
+        // rep.approve_qty = (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
+        // rep.approve_hour = (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
+        // rep.approve_cost = (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
+      });
+
+      console.log(re)
       this.repairEstDS.approveRepairEstimate(re).subscribe(result => {
         console.log(result)
         this.handleSaveSuccess(result?.data?.approveRepairEstimate);
@@ -884,13 +915,12 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
       }));
 
       newData = this.sortAndGroupByGroupName(newData);
+      newData = [...this.sortREP(newData)];
 
-      newData = newData.map((row, index) => ({
+      this.repList = newData.map((row, index) => ({
         ...row,
-        index: index + 1 // Add the index starting from 1
+        index: index
       }));
-      console.log(newData)
-      this.repList = [...this.sortREP(newData)];
       this.calculateCost();
     }
   }
@@ -1143,7 +1173,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     Utility.selectText(event)
   }
 
-  parse2Decimal(figure: number | string) {
+  parse2Decimal(figure: number | string | undefined) {
     if (typeof (figure) === 'string') {
       return parseFloat(figure).toFixed(2);
     } else if (typeof (figure) === 'number') {
@@ -1235,5 +1265,24 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   getLabourCost(): number | undefined {
     return this.repairEstItem?.labour_cost;
+  }
+
+  toggleApprovePart(rep: RepairEstPartItem) {
+    rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
+    // approve_qty: row.approve_qty ?? ((this.repairEstPartDS.is4X(row.rep_damage_repair) || this.repairEstPartDS.isApprove(row)) ? row.quantity : 1),
+    // approve_hour: row.approve_hour ?? ((this.repairEstPartDS.is4X(row.rep_damage_repair) || this.repairEstPartDS.isApprove(row)) ? row.hour : 0),
+    // approve_cost: row.approve_cost ?? ((this.repairEstPartDS.is4X(row.rep_damage_repair) || this.repairEstPartDS.isApprove(row)) ? row.material_cost : 0),
+  }
+
+  displayApproveQty(rep: RepairEstPartItem) {
+    return (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
+  }
+
+  displayApproveHour(rep: RepairEstPartItem) {
+    return (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
+  }
+
+  displayApproveCost(rep: RepairEstPartItem) {
+    return this.parse2Decimal((rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
   }
 }

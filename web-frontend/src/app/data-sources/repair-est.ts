@@ -306,6 +306,11 @@ export const GET_REPAIR_EST_FOR_APPROVAL = gql`
           tariff_repair_guid
           update_by
           update_dt
+          approve_cost
+          approve_hour
+          approve_part
+          approve_qty
+          complete_dt
           rep_damage_repair {
             action
             code_cv

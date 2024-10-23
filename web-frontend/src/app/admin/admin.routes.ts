@@ -42,6 +42,7 @@ import { BillingBranchComponent } from './master/billing-branch/billing-branch.c
 import { BillingBranchNewComponent } from './master/billing-branch-new/billing-branch-new.component';
 import { CleaningApprovalComponent } from './cleaning/cleaning-approval/approval.component';
 import { ResidueDisposalApprovalComponent } from './cleaning/residue-disposal/residue-disposal.component';
+import { JobOrderComponent } from './repair/job-order/job-order.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -217,6 +218,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "repair/approval/view/:id",
     component: ApprovalViewComponent,
+  },
+  {
+    path: "repair/job_order",
+    component: JobOrderComponent,
   },
   {
     path:"master/estimate-template",
