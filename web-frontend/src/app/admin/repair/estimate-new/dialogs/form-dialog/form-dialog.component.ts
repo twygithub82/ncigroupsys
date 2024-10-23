@@ -88,7 +88,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   partNameFilteredList?: string[];
   dimensionList?: string[];
   lengthList?: any[];
-  requiredFields: string[] = ['damage', 'repair', 'group_name_cv', 'subgroup_name_cv'];
   valueChangesDisabled: boolean = false;
   subgroupNameCvList?: CodeValuesItem[];
   existedPart?: RepairEstPartItem[];
@@ -151,8 +150,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
       dimension: [{ value: this.repairPart.tariff_repair?.dimension, disabled: !this.canEdit() }],
       length: [{ value: this.repairPart.tariff_repair?.length, disabled: !this.canEdit() }],
-      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0)), disabled: !this.canEdit() }],
-      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1)), disabled: !this.canEdit() }],
+      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel')), disabled: !this.canEdit() }],
+      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel')), disabled: !this.canEdit() }],
       material_cost: [{ value: this.repairPart.material_cost }]
     });
   }
@@ -176,8 +175,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       part_name: this.repairPart.tariff_repair?.part_name,
       dimension: this.repairPart.tariff_repair?.dimension,
       length: this.repairPart.tariff_repair?.length,
-      damage: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0)),
-      repair: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1)),
+      damage: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel')),
+      repair: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel')),
       material_cost: this.repairPart.material_cost
     });
   }
@@ -199,7 +198,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       var rep: any = {
         ...this.repairPart,
         location_cv: this.repairPartForm.get('location_cv')?.value,
-        comment: this.repairPartForm.get('comment')?.value,
+        comment: this.repairPartForm.get('comment')?.value?.trim(),
         tariff_repair_guid: this.repairPart?.tariff_repair_guid,
         tariff_repair: this.repairPart?.tariff_repair,
         rep_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
@@ -212,8 +211,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const concludeLength = rep.tariff_repair?.length
         ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
         : '';
-        
-      rep.description = `${this.getLocationDescription(rep.location_cv)} ${rep.comment ? `${rep.comment} - ` : ''}${rep.tariff_repair?.alias} ${concludeLength} ${rep.remarks ?? ''}`.trim();
+      
+      let prefix = (`${this.getLocationDescription(rep.location_cv)}` + ' ' + (rep.comment ? rep.comment : '')).trim();
+      prefix = prefix ? `${prefix} - ` : '';
+
+      rep.description = `${prefix}${rep.tariff_repair?.alias} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
       if (this.validateExistedPart(rep)) {
         this.confirmationDialog(addAnother, rep);
@@ -334,6 +336,20 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         }
       })
     ).subscribe();
+
+    this.repairPartForm?.get('repair')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        console.log(`${value}`)
+        if (value.includes('4X')) {
+          this.SetRepair4X(false);
+        } else {
+          this.SetRepair4X(true);
+          this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2) ?? 0.00);
+        }
+      })
+    ).subscribe();
   }
 
   initializePartNameValueChange() {
@@ -396,6 +412,24 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   //     return this.repDrDS.createREPDamage(undefined, undefined, dmg)
   //   });
   // }
+
+  SetRepair4X(isEnable: boolean) {
+    const quantity = this.repairPartForm?.get('quantity');
+    const hour = this.repairPartForm?.get('hour');
+    const material_cost = this.repairPartForm?.get('material_cost');
+    if (!isEnable) {
+      quantity?.setValue(1);
+      quantity?.disable();
+      hour?.setValue(0);
+      hour?.disable();
+      material_cost?.setValue(0);
+      material_cost?.disable();
+    } else {
+      quantity?.enable();
+      hour?.enable();
+      material_cost?.enable();
+    }
+  }
 
   REPDamage(damages: string[]): REPDamageRepairItem[] {
     const existingDamage = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0);

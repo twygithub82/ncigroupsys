@@ -53,6 +53,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
+import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 
 @Component({
   selector: 'app-in-gate',
@@ -222,6 +223,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   igsDS: InGateSurveyDS;
   cvDS: CodeValuesDS;
   tDS: TankDS;
+  pbDS: PackageBufferDS;
 
   customerCodeControl = new UntypedFormControl();
   ownerControl = new UntypedFormControl();
@@ -250,6 +252,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   tankCompTypeCvList: CodeValuesItem[] = [];
   valveBrandCvList: CodeValuesItem[] = [];
   tankSideCvList: CodeValuesItem[] = [];
+  packageBufferList?: PackageBufferItem[];
 
   unit_typeList: TankItem[] = []
 
@@ -316,6 +319,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.igsDS = new InGateSurveyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
+    this.pbDS = new PackageBufferDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -351,7 +355,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       max_weight_cv: [''],
       height_cv: [''],
       walkway_cv: [''],
-      tank_comp_cv: [''],
+      tank_comp_guid: [''],
       vehicle_no: [''],
       driver_name: [''],
       haulier: [''],
@@ -605,6 +609,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           // this.ccDS.getOwnerList().subscribe(data => {
           //   this.ownerList = data;
           // });
+          this.getCustomerLabourPackage(this.in_gate.tank?.storing_order?.customer_company?.guid);
+          
           if (this.in_gate!.in_gate_survey?.guid) {
             this.fileManagerService.getFileUrlByGroupGuid([this.in_gate!.in_gate_survey?.guid]).subscribe({
               next: (response) => {
@@ -622,6 +628,21 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         }
       });
     }
+  }
+
+  getCustomerLabourPackage(customer_company_guid: string | undefined) {
+    if (!customer_company_guid) return;
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    }
+    this.subs.sink = this.pbDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data?.length > 0) {
+        console.log(data)
+        this.packageBufferList = data;
+      }
+    });
   }
 
   populateInGateForm(ig: InGateItem): void {
@@ -646,7 +667,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       max_weight_cv: ig.in_gate_survey?.max_weight_cv,
       height_cv: ig.in_gate_survey?.height_cv,
       walkway_cv: ig.in_gate_survey?.walkway_cv,
-      tank_comp_cv: ig.in_gate_survey?.tank_comp_cv,
+      tank_comp_guid: ig.in_gate_survey?.tank_comp_guid,
       comments: ig.in_gate_survey?.comments,
       leftRemarks: ig.in_gate_survey?.left_remarks,
       rearRemarks: ig.in_gate_survey?.rear_remarks,
@@ -821,7 +842,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.max_weight_cv = this.surveyForm.get('max_weight_cv')?.value;
       igs.height_cv = this.surveyForm.get('height_cv')?.value;
       igs.walkway_cv = this.surveyForm.get('walkway_cv')?.value;
-      igs.tank_comp_cv = this.surveyForm.get('tank_comp_cv')?.value;
+      igs.tank_comp_guid = this.surveyForm.get('tank_comp_guid')?.value;
       igs.comments = this.surveyForm.get('comments')?.value;
 
       const bottomFormGroup = this.surveyForm.get('bottomFormGroup') as UntypedFormGroup;

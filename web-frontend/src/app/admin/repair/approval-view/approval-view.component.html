@@ -326,7 +326,7 @@
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; let i = index; columns: ['group_name_cv'];"
-                        [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-purple font-bold': true}"
+                        [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-blue font-bold': true}"
                         [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                       <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
@@ -441,7 +441,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label cost-label">
-                            <span>$</span><span>{{packageLabourItem?.cost | number: '1.2-2'}}</span>
+                            <span>$</span><span>{{getLabourCost() | number: '1.2-2'}}</span>
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">

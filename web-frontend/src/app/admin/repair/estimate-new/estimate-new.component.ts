@@ -943,6 +943,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
         re.labour_cost_discount = Utility.convertNumber(this.repairEstForm.get('labour_cost_discount')?.value);
         re.material_cost_discount = Utility.convertNumber(this.repairEstForm.get('material_cost_discount')?.value);
         re.labour_cost = this.getLabourCost();
+        re.total_hour = Utility.convertNumber(this.repairEstForm.get('total_hour')?.value, 2);
         re.total_cost = Utility.convertNumber(this.repairEstForm.get('total_cost')?.value, 2);
         re.remarks = this.repairEstForm.get('remarks')?.value;
         re.owner_enable = this.isOwner;
@@ -955,6 +956,7 @@ export class EstimateNewComponent extends UnsubscribeOnDestroyAdapter implements
           console.log(cc);
         }
 
+        // remove the object
         re.aspnetsuser = undefined;
 
         console.log(re);
