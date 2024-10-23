@@ -1,4 +1,5 @@
-﻿using IDMS.Models.Package;
+﻿using IDMS.Models.Inventory;
+using IDMS.Models.Package;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -20,5 +21,7 @@ namespace IDMS.Models.Tariff
         public string? remarks { get; set; }
 
         public IEnumerable<package_buffer?>? package_buffer { get; set; }
+
+        public IEnumerable<in_gate_survey?>? in_gate_survey { get; set; }
     }
 }

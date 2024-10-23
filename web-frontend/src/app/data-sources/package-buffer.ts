@@ -15,8 +15,8 @@ import { CustomerCompanyItem } from './customer-company';
 import { TariffBufferItem } from './tariff-buffer';
 export class PackageBufferItem {
   public guid?: string;
-  
-  
+
+
   public cost?: number;
   public remarks?: string;
   public create_dt?: number;
@@ -24,26 +24,26 @@ export class PackageBufferItem {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  public customer_company_guid?:string;
-  public customer_company?:CustomerCompanyItem
-  public tariff_buffer_guid?:string;
-  public tariff_buffer?:TariffBufferItem;
+  public customer_company_guid?: string;
+  public customer_company?: CustomerCompanyItem
+  public tariff_buffer_guid?: string;
+  public tariff_buffer?: TariffBufferItem;
 
   constructor(item: Partial<PackageBufferItem> = {}) {
     this.guid = item.guid;
     if (!this.guid) this.guid = '';
     this.customer_company_guid = item.customer_company_guid;
-    this.customer_company=item.customer_company;
-    this.tariff_buffer_guid=item.tariff_buffer_guid;
-    this.tariff_buffer=item.tariff_buffer;
+    this.customer_company = item.customer_company;
+    this.tariff_buffer_guid = item.tariff_buffer_guid;
+    this.tariff_buffer = item.tariff_buffer;
     this.cost = item.cost;
-    this.remarks=item.remarks;
+    this.remarks = item.remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-   // Object.assign(this, { guid: '', ...item });
+    // Object.assign(this, { guid: '', ...item });
   }
 }
 
@@ -51,8 +51,6 @@ export interface PackageBufferResult {
   items: PackageBufferItem[];
   totalCount: number;
 }
-
-
 
 export const GET_PACKAGE_BUFFER_QUERY = gql`
   query queryPackageBuffer($where: package_bufferFilterInput, $order:[package_bufferSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
@@ -106,10 +104,44 @@ export const GET_PACKAGE_BUFFER_QUERY = gql`
       totalCount
     }
   }
-
 `;
 
-
+export const GET_CUSTOMER_COST = gql`
+  query queryPackageBuffer($where: package_bufferFilterInput) {
+    resultList: queryPackageBuffer(where: $where) {
+      nodes {
+        cost
+        create_by
+        create_dt
+        customer_company_guid
+        delete_dt
+        guid
+        remarks
+        tariff_buffer_guid
+        update_by
+        update_dt
+        tariff_buffer {
+          buffer_type
+          cost
+          create_by
+          create_dt
+          delete_dt
+          guid
+          remarks
+          update_by
+          update_dt
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
 
 export const UPDATE_PACKAGE_BUFFERS = gql`
    mutation updatePackageBuffers($guids: [String!]!,$cost:Float!,$remarks:String!) {
@@ -129,7 +161,7 @@ export class PackageBufferDS extends BaseDataSource<PackageBufferItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  
+
   SearchPackageBuffer(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<PackageBufferItem[]> {
     this.loadingSubject.next(true);
     if (!last)
@@ -158,7 +190,31 @@ export class PackageBufferDS extends BaseDataSource<PackageBufferItem> {
       );
   }
 
-  updatePackageBuffers(guids: any,cost:any,remarks:any): Observable<any> {
+  getCustomerPackageCost(where: any) {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_CUSTOMER_COST,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as PackageBufferItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  updatePackageBuffers(guids: any, cost: any, remarks: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_PACKAGE_BUFFERS,
       variables: {
@@ -174,19 +230,17 @@ export class PackageBufferDS extends BaseDataSource<PackageBufferItem> {
     );
   }
 
-  
-
-    updatePackageBuffer(pb: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_PACKAGE_BUFFER,
-        variables: {
-          pb
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  updatePackageBuffer(pb: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_PACKAGE_BUFFER,
+      variables: {
+        pb
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 }

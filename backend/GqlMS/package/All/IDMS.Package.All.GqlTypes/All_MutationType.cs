@@ -51,7 +51,7 @@ namespace IDMS.Models.Package.All.GqlTypes
         }
 
         public async Task<int> UpdatePackageClean(ApplicationPackageDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, customer_company_cleaning_category_with_customer_company UpdatePackageClean)
+            [Service] IHttpContextAccessor httpContextAccessor, customer_company_cleaning_category UpdatePackageClean)
         {
             int retval = 0;
             try

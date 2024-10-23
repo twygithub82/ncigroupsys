@@ -29,6 +29,8 @@ namespace IDMS.Models.Service
         public string? remarks { get; set; }
         public bool? owner_enable { get; set; } = false;
         public string? status_cv { get; set; }
+        public string? job_no { get; set; }
+        public double? total_hour { get; set; } 
 
         [ForeignKey("customer_company")]
         public string? bill_to_guid { get; set; }

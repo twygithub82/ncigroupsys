@@ -474,10 +474,10 @@ export class ApprovalComponent extends UnsubscribeOnDestroyAdapter implements On
         this.repEstList = data.map(re => {
           return {...re, net_cost: this.calculateNetCost(re)}
         });
-        this.endCursor = this.sotDS.pageInfo?.endCursor;
-        this.startCursor = this.sotDS.pageInfo?.startCursor;
-        this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.repairEstDS.pageInfo?.endCursor;
+        this.startCursor = this.repairEstDS.pageInfo?.startCursor;
+        this.hasNextPage = this.repairEstDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.repairEstDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSize = pageSize;

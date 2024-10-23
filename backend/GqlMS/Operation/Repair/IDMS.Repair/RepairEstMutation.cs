@@ -9,6 +9,7 @@ using static IDMS.Repair.GqlTypes.StatusConstant;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using IDMS.Repair.GqlTypes.LocalModel;
+using IDMS.Models.Inventory;
 
 namespace IDMS.Repair.GqlTypes
 {
@@ -36,6 +37,8 @@ namespace IDMS.Repair.GqlTypes
                 repEstimate.labour_cost = RepairEstimate.labour_cost;
                 repEstimate.owner_enable = RepairEstimate.owner_enable;
                 repEstimate.remarks = RepairEstimate.remarks;
+                repEstimate.total_hour = RepairEstimate.total_hour;
+                repEstimate.job_no = RepairEstimate.job_no;
                 repEstimate.status_cv = RepairEstStatus.PENDING;
                 await context.repair_est.AddAsync(repEstimate);
 
@@ -112,6 +115,8 @@ namespace IDMS.Repair.GqlTypes
                 repTemplate.labour_cost = RepairEstimate.labour_cost;
                 repTemplate.estimate_no = RepairEstimate.estimate_no;
                 repTemplate.remarks = RepairEstimate.remarks;
+                repTemplate.total_hour = RepairEstimate.total_hour;
+                repTemplate.job_no = RepairEstimate.job_no;
 
                 if (RepairEstimate.repair_est_part != null)
                 {
@@ -148,7 +153,8 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.hour = part.hour;
                             existingPart.material_cost = part.material_cost;
                             existingPart.remarks = part.remarks;
-                            await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rep_damage_repair);
                             continue;
                         }
 
@@ -160,7 +166,8 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.delete_dt = currentDateTime;
                             existingPart.update_dt = currentDateTime;
                             existingPart.update_by = user;
-                            await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rep_damage_repair);
                             continue;
                         }
                     }
@@ -285,13 +292,29 @@ namespace IDMS.Repair.GqlTypes
                 if (RepairEstimate != null && !string.IsNullOrEmpty(RepairEstimate.guid) && !string.IsNullOrEmpty(RepairEstimate.bill_to_guid))
                 {
                     var est = new repair_est() { guid = RepairEstimate.guid };
-                    context.Attach(est);
+                    context.repair_est.Attach(est);
 
                     est.bill_to_guid = RepairEstimate.bill_to_guid;
                     est.update_by = user;
                     est.update_dt = currentDateTime;
                     est.status_cv = RepairEstStatus.APPROVED;
                     est.remarks = RepairEstimate.remarks;
+
+                    if (RepairEstimate.repair_est_part != null)
+                    {
+                        foreach (var item in RepairEstimate.repair_est_part)
+                        {
+                            var part = new repair_est_part() { guid = item.guid };
+                            context.repair_est_part.Attach(part);
+
+                            part.approve_qty = item.approve_qty;
+                            part.approve_hour = item.approve_hour;
+                            part.approve_part = item.approve_part; 
+                            part.approve_cost = item.approve_cost;
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                        }
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -364,6 +387,23 @@ namespace IDMS.Repair.GqlTypes
                             if (repDamage != null)
                             {
                                 repDamage.delete_dt = currentDateTime;
+                                repDamage.update_by = user;
+                                repDamage.update_dt = currentDateTime;
+                            }
+                            continue;
+                        }
+
+                        if (ObjectAction.ROLLBACK.EqualsIgnore(item.action))
+                        {
+                            if (string.IsNullOrEmpty(item.guid))
+                                throw new GraphQLException(new Error($"Rep_damage_repair guid cannot null or empty for rollback", "ERROR"));
+
+                            //var repDamage = new rep_damage_repair() { guid = item.guid };
+                            //context.Attach(repDamage);
+                            var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            if (repDamage != null)
+                            {
+                                repDamage.delete_dt = null;
                                 repDamage.update_by = user;
                                 repDamage.update_dt = currentDateTime;
                             }

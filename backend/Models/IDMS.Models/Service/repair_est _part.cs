@@ -30,6 +30,11 @@ namespace IDMS.Models.Service
         public double? hour { get; set; }
         public bool owner { get; set; } = false;
         public double? material_cost { get; set; }
+        public int? approve_qty { get; set; }   
+        public double? approve_hour { get; set; }
+        public double? approve_cost { get; set; }
+        public bool? approve_part { get; set; }
+        public long? complete_dt { get; set; }  
 
         [NotMapped]
         public string? action { get; set; }

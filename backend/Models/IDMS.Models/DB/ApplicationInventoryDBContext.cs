@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Master;
+using IDMS.Models.Package;
 using IDMS.Models.Parameter;
 using IDMS.Models.Shared;
 using IDMS.Models.Tariff;
@@ -21,6 +22,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
 
         public DbSet<in_gate> in_gate { get; set; }
         public DbSet<in_gate_survey> in_gate_survey { get; set; }
+        public DbSet<in_gate_cleaning> in_gate_cleaning { get; set; }
         public DbSet<out_gate> out_gate { get; set; }
         public DbSet<out_gate_survey> out_gate_survey { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
@@ -67,6 +69,10 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
             modelBuilder.Entity<in_gate_survey>()
                  .Property(e => e.right_coord)
                  .HasColumnType("json"); // Specify the column type as JSON for MySQL
+
+            modelBuilder.Entity<customer_company_cleaning_category>();
+            modelBuilder.Entity<tariff_buffer>();
+            modelBuilder.Entity<package_buffer>();
 
         }
     }
