@@ -392,6 +392,23 @@ namespace IDMS.Repair.GqlTypes
                             }
                             continue;
                         }
+
+                        if (ObjectAction.ROLLBACK.EqualsIgnore(item.action))
+                        {
+                            if (string.IsNullOrEmpty(item.guid))
+                                throw new GraphQLException(new Error($"Rep_damage_repair guid cannot null or empty for rollback", "ERROR"));
+
+                            //var repDamage = new rep_damage_repair() { guid = item.guid };
+                            //context.Attach(repDamage);
+                            var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            if (repDamage != null)
+                            {
+                                repDamage.delete_dt = null;
+                                repDamage.update_by = user;
+                                repDamage.update_dt = currentDateTime;
+                            }
+                            continue;
+                        }
                     }
                 }
             }
