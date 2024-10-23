@@ -619,7 +619,9 @@
     "JOB-ALLOCATION":"Job Allocation",
     "JOB-COMPLETION":"Job Completion",
     "BILLING-DETAILS":"Billing Details",
-    "CLEANING-COST-FOR":"Cleaning cost for the cargo"
+    "CLEANING-COST-FOR":"Cleaning cost for the cargo",
+    "APPROVAL-STATUS":"Approval Status",
+    "METHOD":"Method"
 
   },
   "CLEAN-PROCEDURES": {

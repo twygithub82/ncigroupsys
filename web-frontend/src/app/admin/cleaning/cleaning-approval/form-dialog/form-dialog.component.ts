@@ -34,6 +34,7 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 
 export interface DialogData {
   action?: string;
@@ -223,7 +224,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   };
 
   
-  selectedItems: PackageDepotItem[];
+  selectedItems: any;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -250,50 +251,52 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   createPackageCleaning(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      preinspection_cost_cust:[],
-      lolo_cost_cust:[],
-      lolo_cost_standard:['-'],
-      storage_cal_cv:this.storageCalControl,
-      storage_cost_cust:[],
-      storage_cost_standard:['-'],
-      free_storage_days:[],
+      job_no_input:[''],
+      approved_dt:[''],
+      no_action_dt:[''],
       remarks:[''],
-      preinspection_cost_standard:['-'],
-      gate_in_cost_cust:[''],
-      gate_in_cost_standard:['-'],
-      gate_out_cost_cust:[''],
-      gate_out_cost_standard:['-'],
+      tank_no:[''],
+      customer:[''],
+      eir_no:[''],
+      eir_dt:[''],
+      quotation_dt:[''],
+      cargo:[''],
+      job_no:['-'],
+      depot_estimate_cost:[''],
+      customer_approval_cost:['-'],
+      update_by:[''],
+      update_on:[''],
       
-      profile_name:this.profileNameControl,
+      
 
     });
   }
-  profileChanged()
-  {
-    if(this.profileNameControl.value)
-    {
-      const selectedProfile:PackageDepotItem= this.profileNameControl.value;
-      this.pcForm.patchValue({
-        preinspection_cost_cust: selectedProfile.preinspection_cost,
-        preinspection_cost_standard:selectedProfile.preinspection_cost,
-        lolo_cost_cust:selectedProfile.lolo_cost,
-        lolo_cost_standard: selectedProfile.tariff_depot?.lolo_cost,
-        storage_cost_cust:selectedProfile.storage_cost,
-        storage_cost_standard:selectedProfile.tariff_depot?.storage_cost,
-        free_storage_days:selectedProfile.free_storage,
-        gate_in_cost:selectedProfile.gate_in_cost,
-        gate_out_cost:selectedProfile.gate_out_cost,
-        remarks:selectedProfile.remarks,
-        //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
-      });
-      this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
+//   profileChanged()
+//   {
+//     if(this.profileNameControl.value)
+//     {
+//       const selectedProfile:PackageDepotItem= this.profileNameControl.value;
+//       this.pcForm.patchValue({
+//         preinspection_cost_cust: selectedProfile.preinspection_cost,
+//         preinspection_cost_standard:selectedProfile.preinspection_cost,
+//         lolo_cost_cust:selectedProfile.lolo_cost,
+//         lolo_cost_standard: selectedProfile.tariff_depot?.lolo_cost,
+//         storage_cost_cust:selectedProfile.storage_cost,
+//         storage_cost_standard:selectedProfile.tariff_depot?.storage_cost,
+//         free_storage_days:selectedProfile.free_storage,
+//         gate_in_cost:selectedProfile.gate_in_cost,
+//         gate_out_cost:selectedProfile.gate_out_cost,
+//         remarks:selectedProfile.remarks,
+//         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
+//       });
+//       this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
     
 
-    }
-  }
-  displayName(cc?: CustomerCompanyItem): string {
-    return cc?.code ? `${cc.code} (${cc.name})` : '';
-}
+//     }
+//   }
+//   displayName(cc?: CustomerCompanyItem): string {
+//     return cc?.code ? `${cc.code} (${cc.name})` : '';
+// }
 
 
   displayDateFromEpoch(epoch: any) {
@@ -322,7 +325,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   loadData()
   {
-    this.queryDepotCost();
+    //this.queryDepotCost();
 
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
@@ -335,24 +338,25 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if(this.selectedItems.length==1)
     {
-      var pckDepotItm = this.selectedItems[0];
+      var inGateClnItem = this.selectedItems[0];
 
       this.pcForm.patchValue({
-        preinspection_cost_cust: pckDepotItm.preinspection_cost?.toFixed(2),
-        preinspection_cost_standard:pckDepotItm.tariff_depot?.preinspection_cost?.toFixed(2),
-        lolo_cost_cust:pckDepotItm.lolo_cost?.toFixed(2),
-        lolo_cost_standard: pckDepotItm.tariff_depot?.lolo_cost?.toFixed(2),
-        storage_cost_cust:pckDepotItm.storage_cost?.toFixed(2),
-        storage_cost_standard:pckDepotItm.tariff_depot?.storage_cost?.toFixed(2),
-        free_storage_days:pckDepotItm.free_storage,
-        gate_in_cost_cust:pckDepotItm.gate_in_cost?.toFixed(2),
-        gate_out_cost_cust:pckDepotItm.gate_out_cost?.toFixed(2),
-        gate_in_cost_standard:pckDepotItm.tariff_depot?.gate_in_cost?.toFixed(2),
-        gate_out_cost_standard:pckDepotItm.tariff_depot?.gate_out_cost?.toFixed(2),
-        remarks:pckDepotItm.remarks,
-        //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
+
+        
+        tank_no:inGateClnItem.storing_order_tank?.tank_no,
+        customer:this.displayCustomerName(inGateClnItem.storing_order_tank?.customer_company),
+         eir_no:inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
+         eir_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+         quotation_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+         cargo:inGateClnItem.storing_order_tank?.tariff_cleaning.cargo,
+         job_no:inGateClnItem.job_no,
+         depot_estimate_cost:['0.00'],
+         customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
+         update_by:inGateClnItem.update_by,
+         update_on:this.displayDateFromEpoch(inGateClnItem.update_on),
+        
       });
-      this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
+    //  this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
 
     }
   });
@@ -360,6 +364,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     
     
   }
+
+  displayCustomerName(cc?: CustomerCompanyItem): string {
+    return String(cc?.code ? `${cc.code} (${cc.name})` : '');
+}
 
   queryDepotCost()
   {
@@ -416,52 +424,52 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (!this.pcForm?.valid) return;
 
     let pd_guids:string[] = this.selectedItems
-    .map(cc => cc.guid)
-    .filter((guid): guid is string => guid !== undefined);
+    // .map(cc => cc.guid)
+    // .filter((guid): guid is string => guid !== undefined);
 
-    var lolo_cost = -1;
-    if (this.pcForm!.value["lolo_cost_cust"]) lolo_cost=Number(this.pcForm!.value["lolo_cost_cust"]);
+    // var lolo_cost = -1;
+    // if (this.pcForm!.value["lolo_cost_cust"]) lolo_cost=Number(this.pcForm!.value["lolo_cost_cust"]);
 
-    var preinspection_cost =-1;
-    if (this.pcForm!.value["preinspection_cost_cust"]) preinspection_cost= Number(this.pcForm!.value["preinspection_cost_cust"]);
-    var free_storage = -1;
-    if(this.pcForm!.value["free_storage_days"]) free_storage= Number(this.pcForm!.value["free_storage_days"]);
+    // var preinspection_cost =-1;
+    // if (this.pcForm!.value["preinspection_cost_cust"]) preinspection_cost= Number(this.pcForm!.value["preinspection_cost_cust"]);
+    // var free_storage = -1;
+    // if(this.pcForm!.value["free_storage_days"]) free_storage= Number(this.pcForm!.value["free_storage_days"]);
 
     
-    var storage_cost =-1;
-    if(this.pcForm!.value["storage_cost_cust"]) storage_cost=Number(this.pcForm!.value["storage_cost_cust"]);
+    // var storage_cost =-1;
+    // if(this.pcForm!.value["storage_cost_cust"]) storage_cost=Number(this.pcForm!.value["storage_cost_cust"]);
 
-    var gate_in_cost=-1;
-    if(this.pcForm!.value["gate_in_cost_cust"]) gate_in_cost=Number(this.pcForm!.value["gate_in_cost_cust"]);
+    // var gate_in_cost=-1;
+    // if(this.pcForm!.value["gate_in_cost_cust"]) gate_in_cost=Number(this.pcForm!.value["gate_in_cost_cust"]);
 
-    var gate_out_cost=-1;
-    if(this.pcForm!.value["gate_out_cost_cust"]) gate_out_cost=Number(this.pcForm!.value["gate_out_cost_cust"]);
+    // var gate_out_cost=-1;
+    // if(this.pcForm!.value["gate_out_cost_cust"]) gate_out_cost=Number(this.pcForm!.value["gate_out_cost_cust"]);
 
-    var storageCalValue:String="";
-    if(this.storageCalControl.value)
-    {
-        const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-        storageCalValue = storage_calCv.code_val||"";
-    }
+    // var storageCalValue:String="";
+    // if(this.storageCalControl.value)
+    // {
+    //     const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
+    //     storageCalValue = storage_calCv.code_val||"";
+    // }
 
-    var storage_cal_cv = storageCalValue;
-    var remarks = this.pcForm!.value["remarks"]||"";
-     if(pd_guids.length==1)
-     {
-       if(!remarks)
-       {
-          remarks="--";
-       }
-     }
-      this.packageDepotDS?.updatePackageDepots(pd_guids,free_storage,lolo_cost,preinspection_cost,storage_cost,gate_in_cost, gate_out_cost,remarks,storage_cal_cv).subscribe(result=>{
-      if(result.data.updatePackageDepots>0)
-      {
+    // var storage_cal_cv = storageCalValue;
+    // var remarks = this.pcForm!.value["remarks"]||"";
+    //  if(pd_guids.length==1)
+    //  {
+    //    if(!remarks)
+    //    {
+    //       remarks="--";
+    //    }
+    //  }
+    //   this.packageDepotDS?.updatePackageDepots(pd_guids,free_storage,lolo_cost,preinspection_cost,storage_cost,gate_in_cost, gate_out_cost,remarks,storage_cal_cv).subscribe(result=>{
+    //   if(result.data.updatePackageDepots>0)
+    //   {
        
-                console.log('valid');
-                this.dialogRef.close(result.data.updatePackageDepots);
+    //             console.log('valid');
+    //             this.dialogRef.close(result.data.updatePackageDepots);
 
-      }
-    });
+    //   }
+    // });
 
   }
   
@@ -523,6 +531,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   getDescription()
   {
-    return this.translatedLangText.CLEANING_COST_FOR;
+    return `${this.translatedLangText.CLEANING_COST_FOR}` ;
   }
 }

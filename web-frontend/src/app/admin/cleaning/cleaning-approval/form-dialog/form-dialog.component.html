@@ -22,14 +22,14 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowJobNo()">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                        <input matInput formControlName="preinspection_cost_cust" type="number" [required]="this.selectedItems.length===1">
+                        <input matInput formControlName="job_no_input"  >
                     
                       </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApprovedDate()">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
-                      <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date" formControlName="lolo_cost_cust">
+                      <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date" formControlName="approved_dt">
                       <mat-datepicker-toggle matSuffix [for]="clean_dt_picker"></mat-datepicker-toggle>
                       <mat-datepicker #clean_dt_picker></mat-datepicker>
                     </mat-form-field>
@@ -37,15 +37,15 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDate()">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.NO_ACTION}} {{translatedLangText.DATE}}</mat-label>
-                      <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date" formControlName="lolo_cost_cust">
-                      <mat-datepicker-toggle matSuffix [for]="clean_dt_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #clean_dt_picker></mat-datepicker>
+                      <input matInput [matDatepicker]="noaction_dt_picker" placeholder="Select date" formControlName="no_action_dt">
+                      <mat-datepicker-toggle matSuffix [for]="noaction_dt_picker"></mat-datepicker-toggle>
+                      <mat-datepicker #noaction_dt_picker></mat-datepicker>
                     </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowRemarks()">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                      <input matInput formControlName="lolo_cost_cust" type="number" [required]="this.selectedItems.length===1" >
+                      <input matInput formControlName="remarks" >
                   
                     </mat-form-field>
                 </div>
@@ -69,13 +69,13 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-                        <input matInput formControlName="preinspection_cost_cust"  readonly="true">
+                        <input matInput formControlName="tank_no"  readonly="true">
                       </mat-form-field>
                 </div>
                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                        <input matInput formControlName="lolo_cost_cust"  readonly="true">
+                        <input matInput formControlName="customer"  readonly="true">
                       </mat-form-field>
                 </div>
                
@@ -88,21 +88,21 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
-                        <input matInput formControlName="gate_in_cost_cust"  readonly="true">
+                        <input matInput formControlName="eir_no"  readonly="true">
                       </mat-form-field>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       
-                      <input matInput formControlName="gate_out_cost_cust" readonly="true" >
+                      <input matInput formControlName="eir_dt" readonly="true" >
                       
                     </mat-form-field>
               </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.QUOTATION_DATE }}</mat-label>
-                      <input matInput formControlName="gate_in_cost_standard" type="text" readonly="true">
+                      <input matInput formControlName="quotation_dt" type="text" readonly="true">
                     
                     </mat-form-field>
                 </div>
@@ -117,22 +117,15 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CARGO_NAME}}</mat-label>
-                        <input matInput formControlName="storage_cost_cust" type="number" readonly="true" >
+                        <input matInput formControlName="cargo"  readonly="true" >
                       </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                    <input matInput formControlName="free_storage_days" type="number"  readonly="true" >
+                    <input matInput formControlName="job_no"  readonly="true" >
                   
                   </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>
-                  <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.STORAGE_COST }}</mat-label>
-                      <input matInput formControlName="storage_cost_standard" type="text" readonly="true">
-                    
-                    </mat-form-field>
                 </div>
               </div>
           </div>
@@ -202,7 +195,7 @@
                               <div
                                 class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>-</span>
+                                  <span></span><span>{{this.pcForm.get('depot_estimate_cost')!.value}}</span>
                                 </div>
                               </div>
                             </div>
@@ -227,7 +220,7 @@
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                               <div class="table-label cost-label">
-                                <span></span><span>-</span>
+                                <span></span><span>{{this.pcForm.get('customer_approval_cost')!.value}}</span>
                               </div>
                             </div>
                           </div>
@@ -308,7 +301,8 @@
                               <div
                                 class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>-</span>
+                                  <span></span><span>{{this.pcForm.get('update_by')?.value?this.pcForm.get('update_by')?.value:'-'}}</span>
+                                  <!-- <span></span><span>+</span> -->
                                 </div>
                               </div>
                               <div
@@ -350,7 +344,7 @@
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                               <div class="table-label cost-label">
-                                <span></span><span>-</span>
+                                <span></span><span>{{this.pcForm.get('update_on')?.value!=='-'?this.displayDateFromEpoch(this.pcForm.get('update_on')?.value):'-'}}</span>
                               </div>
                             </div>
                             <div

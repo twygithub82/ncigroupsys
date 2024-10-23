@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -44,6 +44,8 @@ import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
   selector: 'app-in-gate',
@@ -86,8 +88,9 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     'eir_no',
     'eir_dt',
     'last_cargo',
+    'method',
     'purpose',
-    'eir_status_cv',
+    'tank_status_cv',
     'actions'
   ];
 
@@ -127,6 +130,10 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     KIV:"COMMON-FORM.KIV",
     NO_ACTION:"COMMON-FORM.NO-ACTION",
     APPROVE:"COMMON-FORM.APPROVE",
+    APPROVED_DATE:"COMMON-FORM.APPROVED-DATE",
+    QUOTATION_DATE:"COMMON-FORM.QUOTATION-DATE",
+    APPROVAL_STATUS:"COMMON-FORM.APPROVAL-STATUS",
+    METHOD:"COMMON-FORM.METHOD"
     
   }
 
@@ -137,12 +144,19 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   cvDS: CodeValuesDS;
+  igCleanDS:InGateCleaningDS;
+  tcDS: TariffCleaningDS;
 
   inGateList: InGateItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  processStatusCvList:CodeValuesItem[]=[];
+
+  lastCargoControl = new UntypedFormControl();
+  last_cargoList?: TariffCleaningItem[];
+
 
   pageIndex = 0;
   pageSize = 10;
@@ -152,6 +166,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  previous_endCursor: any;
 
   constructor(
     public httpClient: HttpClient,
@@ -167,6 +182,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
+    this.igCleanDS= new InGateCleaningDS(this.apollo);
+    this.tcDS= new TariffCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -175,6 +192,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.lastCargoControl = new UntypedFormControl('', [ AutocompleteSelectionValidator(this.last_cargoList)]);
     this.initSearchForm();
     this.initializeValueChanges();
     this.loadData();
@@ -182,16 +200,17 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   initSearchForm() {
     this.searchForm = this.fb.group({
-      so_no: [''],
+      tank_no: [''],
       customer_code: this.customerCodeControl,
       eir_no: [''],
-      eir_dt_start: [''],
-      eir_dt_end: [''],
-      tank_no: [''],
       job_no: [''],
-      purpose: [''],
-      tank_status_cv: [''],
-      eir_status_cv: ['']
+      start_approved_date: [''],
+      end_approved_date: [''],
+      last_cargo: this.lastCargoControl,
+      start_quotation_date: [''],
+      end_quotation_date: [''],
+      approval_status: [''],
+      
     });
   }
 
@@ -212,10 +231,28 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
         });
       })
     ).subscribe();
+
+    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.cargo;
+        }
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+          this.last_cargoList = data
+          this.updateValidators(this.lastCargoControl,this.last_cargoList);
+        });
+      })
+    ).subscribe();
   }
 
   public loadData() {
     const queries = [
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
@@ -229,6 +266,10 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+    });
+
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.search();
   }
@@ -279,85 +320,75 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   search() {
     const where: any = {};
 
+    
+    if(this.searchForm!.get('tank_no')?.value)
+    {
+      where.storing_order_tank={};
+      where.storing_order_tank.tank_no={contains:this.searchForm!.get('tank_no')?.value};
+
+    }
+
+
     if (this.searchForm!.get('eir_no')?.value) {
-      where.eir_no = { contains: this.searchForm!.value['eir_no'] };
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      if(!where.storing_order_tank.in_gate)where.storing_order_tank.in_gate={};
+      where.storing_order_tank.in_gate = {some:{eir_no:{ contains: this.searchForm!.value['eir_no'] }}};
     }
 
-    if (this.searchForm!.get('eir_status_cv')?.value) {
-      where.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
+    if (this.searchForm!.get('approval_status')?.value) {
+      let appStatus =this.searchForm!.get('approval_status')?.value;
+      if(appStatus!="")
+      {
+         where.status_cv = { eq: appStatus };
+      }
     }
 
-    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    if (this.searchForm!.get('start_approved_date')?.value && this.searchForm!.get('end_approved_date')?.value) {
+      where.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['start_approved_date']), lte: Utility.convertDate(this.searchForm!.value['end_approved_date']) };
     }
 
-    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
-      const sotSearch: any = {};
-
-      if (this.searchForm!.get('tank_no')?.value) {
-        sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-      }
-
-      if (this.searchForm!.get('tank_status_cv')?.value) {
-        sotSearch.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
-      }
-
-      if (this.searchForm!.get('purpose')?.value) {
-        const purposes = this.searchForm!.get('purpose')?.value;
-        if (purposes.includes('STORAGE')) {
-          sotSearch.purpose_storage = { eq: true }
-        }
-        if (purposes.includes('CLEANING')) {
-          sotSearch.purpose_cleaning = { eq: true }
-        }
-        if (purposes.includes('STEAM')) {
-          sotSearch.purpose_steam = { eq: true }
-        }
-
-        const repairPurposes = [];
-        if (purposes.includes('REPAIR')) {
-          repairPurposes.push('REPAIR');
-        }
-        if (purposes.includes('OFFHIRE')) {
-          repairPurposes.push('OFFHIRE');
-        }
-        if (repairPurposes.length > 0) {
-          sotSearch.purpose_repair_cv = { in: repairPurposes };
-        }
-      }
-
-      if (this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value) {
-        const soSearch: any = {};
-
-        if (this.searchForm!.get('so_no')?.value) {
-          soSearch.so_no = { contains: this.searchForm!.get('so_no')?.value };
-        }
-
-        if (this.searchForm!.get('customer_code')?.value) {
-          soSearch.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-        }
-        sotSearch.storing_order = soSearch;
-      }
-      where.tank = sotSearch;
+    if (this.searchForm!.get('start_quotation_date')?.value && this.searchForm!.get('end_quotation_date')?.value) {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      if(!where.storing_order_tank.in_gate)where.storing_order_tank.in_gate={};
+      where.storing_order_tank.in_gate ={some:{ eir_dt :{gte: Utility.convertDate(this.searchForm!.value['start_quotation_date']), lte: Utility.convertDate(this.searchForm!.value['end_quotation_date']) }}};
     }
 
-    this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    if (this.searchForm!.get('customer_code')?.value) {
+        where.customer_company={};
+        where.customer_company= { code: { contains: this.searchForm!.value['customer_code'].code } };
+    }
+
+    if (this.searchForm!.get('job_no')?.value) {
+     
+      where.job_no= { contains: this.searchForm!.value['job_no'].code } ;
+    }
+
+    if (this.searchForm!.get('approval_status')?.value) {
+     
+      where.status_cv= { eq: this.searchForm!.value['approval_status'] } ;
+    }
+
+ 
+  this.lastSearchCriteria=where;
+  this.searchData( this.lastSearchCriteria,this.lastOrderBy,this.pageSize,undefined,undefined,undefined,0);
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.subs.sink = this.igDS.searchInGateForSurvey(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-      .subscribe(data => {
-        this.inGateList = data;
-        this.endCursor = this.igDS.pageInfo?.endCursor;
-        this.startCursor = this.igDS.pageInfo?.startCursor;
-        this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
-      });
-
-    this.pageSize = pageSize;
-    this.pageIndex = pageIndex;
-  }
+  searchData(where :any, order:any, first:any, after:any, last:any,before:any , pageIndex:number)
+    {
+      this.previous_endCursor=after;
+      this.subs.sink = this.igCleanDS.search(where,order,first,after,last,before).subscribe(data => {
+        this.inGateList= data;
+        //this.inGateList=data;
+        this.endCursor = this.igCleanDS.pageInfo?.endCursor;
+        this.startCursor = this.igCleanDS.pageInfo?.startCursor;
+        this.hasNextPage = this.igCleanDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.igCleanDS.pageInfo?.hasPreviousPage ?? false;
+        this.pageIndex=pageIndex;
+        this.paginator.pageIndex=this.pageIndex;
+        if(!this.hasPreviousPage)
+          this.previous_endCursor=undefined;
+     });
+    }
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
@@ -386,7 +417,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before);
+    this.searchData(this.lastSearchCriteria,{},first,after,last,before,pageIndex);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -407,7 +438,9 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     if (sot?.purpose_repair_cv) {
       purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
     }
-    return purposes.join('; ');
+    let retval=purposes.join('; ');
+    retval = (retval?retval:'-');
+    return retval;
   }
 
   getPurposeOptionDescription(codeValType: string): string | undefined {
@@ -419,7 +452,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   displayDate(input: number | undefined): string | undefined {
-    return Utility.convertEpochToDateStr(input);
+    let retval = (input?Utility.convertEpochToDateStr(input):'-');
+    return retval;
   }
 
   translateLangText() {
@@ -459,17 +493,18 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   resetForm() {
     this.searchForm?.patchValue({
-      so_no: '',
-      eir_no: '',
-      eir_dt_start: '',
-      eir_dt_end: '',
       tank_no: '',
+      eir_no: '',
       job_no: '',
-      purpose: '',
-      tank_status_cv: '',
-      eir_status_cv: ''
+      start_approved_date: '',
+      end_approved_date: '',
+      start_quotation_date: '',
+      end_quotation_date: '',
+      approval_status: '',
+      
     });
     this.customerCodeControl.reset('');
+    this.lastCargoControl.reset('');
   }
 
   stopEventTrigger(event: Event) {
@@ -510,7 +545,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     } else {
       tempDirection = 'ltr';
     }
-    var rows :InGateItem[] =[] ;
+    var rows :InGateCleaningItem[] =[] ;
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent,{
       
@@ -547,6 +582,26 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     menuTrigger.openMenu();
   }
 
-  
+  displayLastCargoFn(tc: TariffCleaningItem): string {
+    return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  displayTankStatus(status:string):string{
+    var retval:string="-";
+
+    retval= this.processStatusCvList!
+    .filter(item => item.code_val === status)
+    .map(item => item.description)[0]!; // Returns the description of the first match
+
+    if(retval==="") retval="-"
+    return retval;
+  }
+  // updateValidators(validOptions: any[]) {
+  //   this.lastCargoControl.setValidators([
+  //     Validators.required,
+  //     AutocompleteSelectionValidator(validOptions)
+  //   ]);
+  // }
+
   
 }
