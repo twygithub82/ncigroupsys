@@ -37,7 +37,7 @@ namespace IDMS.Repair.GqlTypes
                 repEstimate.labour_cost = RepairEstimate.labour_cost;
                 repEstimate.owner_enable = RepairEstimate.owner_enable;
                 repEstimate.remarks = RepairEstimate.remarks;
-                repEstimate.total_hour = RepairEstimate.total_hour; 
+                repEstimate.total_hour = RepairEstimate.total_hour;
                 repEstimate.job_no = RepairEstimate.job_no;
                 repEstimate.status_cv = RepairEstStatus.PENDING;
                 await context.repair_est.AddAsync(repEstimate);
@@ -153,7 +153,8 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.hour = part.hour;
                             existingPart.material_cost = part.material_cost;
                             existingPart.remarks = part.remarks;
-                            await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rep_damage_repair);
                             continue;
                         }
 
@@ -165,7 +166,8 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.delete_dt = currentDateTime;
                             existingPart.update_dt = currentDateTime;
                             existingPart.update_by = user;
-                            await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rep_damage_repair);
                             continue;
                         }
                     }
@@ -298,11 +300,21 @@ namespace IDMS.Repair.GqlTypes
                     est.status_cv = RepairEstStatus.APPROVED;
                     est.remarks = RepairEstimate.remarks;
 
-                    //if (RepairEstimate.storing_order_tank != null && !string.IsNullOrEmpty(RepairEstimate.storing_order_tank.guid))
-                    //{
-                    //    var sot = new storing_order_tank() { guid = RepairEstimate.storing_order_tank.guid };
-                        
-                    //}
+                    if (RepairEstimate.repair_est_part != null)
+                    {
+                        foreach (var item in RepairEstimate.repair_est_part)
+                        {
+                            var part = new repair_est_part() { guid = item.guid };
+                            context.repair_est_part.Attach(part);
+
+                            part.approve_qty = item.approve_qty;
+                            part.approve_hour = item.approve_hour;
+                            part.approve_part = item.approve_part; 
+                            part.approve_cost = item.approve_cost;
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                        }
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
