@@ -29,7 +29,6 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
-import { TemplateEstPartItem } from 'app/data-sources/master-template';
 
 
 export interface DialogData {
@@ -90,21 +89,13 @@ export class SearchFormDialogComponent {
   subgroup_name_cv: string;
   selected_repair_est_part: RepairEstPartItem;
 
-  repairPartForm: UntypedFormGroup;
-  templateRepairList: TariffRepairItem[] = [];
-  partNameControl: UntypedFormControl;
-  partNameList?: string[];
-  partNameFilteredList?: string[];
-  dimensionList?: string[];
-  lengthList?: any[];
-  valueChangesDisabled: boolean = false;
+  filterTableForm: UntypedFormGroup;
+  packageRepairList: PackageRepairItem[] = [];
+  packageRepairFilteredList: PackageRepairItem[] = [];
 
-  
-  tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
-  repDrDS: REPDamageRepairDS;
   prDS: PackageRepairDS;
   constructor(
     public dialogRef: MatDialogRef<SearchFormDialogComponent>,
@@ -114,11 +105,9 @@ export class SearchFormDialogComponent {
 
   ) {
     // Set the defaults
-    this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
-    this.repDrDS = new REPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
@@ -127,10 +116,9 @@ export class SearchFormDialogComponent {
     this.part_name = data.part_name!;
     this.selected_repair_est_part = data.selected_repair_est_part!;
     this.dialogTitle = `${data.translatedLangText.PART_NAME}`;
-    this.partNameControl = new UntypedFormControl('', [Validators.required]);
-    this.repairPartForm = this.createForm();
+    this.filterTableForm = this.createForm();
     this.loadData();
-    // this.initializeValueChange();
+    this.initializeValueChange();
     // this.patchForm();
     // if (this.repairPart.tariff_cleaning) {
     //   this.lastCargoControl.setValue(this.storingOrderTank.tariff_cleaning);
@@ -139,23 +127,23 @@ export class SearchFormDialogComponent {
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      filter: [''],
+      filterTable: [''],
       selected_tariff_repair: ['']
     });
   }
 
   loadData() {
-    this.getTariffRepairCost();
+    this.getCustomerCost();
   }
 
   patchForm() {
   }
 
-  submit(row: TariffRepairItem) {
+  submit(row: PackageRepairItem) {
     var rep: RepairEstPartItem = {
       ...this.selected_repair_est_part,
-      tariff_repair_guid: row?.guid,
-      tariff_repair: row,
+      tariff_repair_guid: row?.tariff_repair_guid,
+      tariff_repair: row?.tariff_repair,
       material_cost: row?.material_cost
     }
     const returnDialog: DialogData = {
@@ -180,10 +168,22 @@ export class SearchFormDialogComponent {
   }
 
   initializeValueChange() {
+    this.filterTableForm.get('filterTable')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          this.packageRepairFilteredList = this.packageRepairList
+          .filter(x => x.tariff_repair?.alias?.toLowerCase().includes(value.toLowerCase()) || `${x.tariff_repair?.length}`.toLowerCase().includes(value.toLowerCase()));
+        } else {
+          this.packageRepairFilteredList = [...this.packageRepairList];
+        }
+      })
+    ).subscribe();
   }
 
   findInvalidControls() {
-    const controls = this.repairPartForm.controls;
+    const controls = this.filterTableForm.controls;
     for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);
@@ -191,79 +191,39 @@ export class SearchFormDialogComponent {
     }
   }
 
-  validateLength(): boolean {
-    let isValid = true;
-    const length = this.repairPartForm.get('length')?.value;
-    const remarks = this.repairPartForm.get('remarks')?.value;
-
-    // Validate that at least one of the purpose checkboxes is checked
-    if (!length && !remarks) {
-      isValid = false; // At least one purpose must be selected
-      this.repairPartForm.get('remarks')?.setErrors({ required: true });
-    }
-
-    return isValid;
-  }
-
   canEdit(): boolean {
     return true;
-  }
-
-  updateValidators(validOptions: any[]) {
-    this.partNameControl.setValidators([
-      Validators.required,
-      AutocompleteSelectionValidator(validOptions)
-    ]);
   }
 
   getLocationDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData?.partLocationCvList);
   }
 
-  getTariffRepairCost() {
- 
-    const group_name_cv =  this.group_name_cv;
-    const subgroup_name_cv = this.subgroup_name_cv;
-    const partName=this.part_name;
+  getCustomerCost() {
     const where = {
-      group_name_cv: { eq: group_name_cv },
-      subgroup_name_cv: { eq: subgroup_name_cv },
-      part_name: { eq: partName },
-      
+      and: [
+        { customer_company_guid: { eq: this.customer_company_guid } },
+        {
+          or: [
+            { tariff_repair_guid: { eq: null } },
+            {
+              tariff_repair: {
+                group_name_cv: { eq: this.group_name_cv },
+                subgroup_name_cv: { eq: this.subgroup_name_cv || undefined },
+                part_name: { eq: this.part_name }
+              }
+            }
+          ]
+        }
+      ]
     }
-    this.trDS.SearchTariffRepair(where).subscribe(data => {
-      this.templateRepairList=data;
-      // if (data.length) {
-      //   this.selectedTariffRepair = data[0];
-      //   this.repairPartForm.get('material_cost')?.setValue(this.selectedTariffRepair?.material_cost!.toFixed(2));
-      // }
+    this.prDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data.length) {
+        this.packageRepairList = data;
+        this.packageRepairFilteredList = this.packageRepairList;
+      }
     });
   }
-
-  // getCustomerCost() {
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: this.customer_company_guid } },
-  //       {
-  //         or: [
-  //           { tariff_repair_guid: { eq: null } },
-  //           {
-  //             tariff_repair: {
-  //               group_name_cv: { eq: this.group_name_cv },
-  //               subgroup_name_cv: { eq: this.subgroup_name_cv },
-  //               part_name: { eq: this.part_name }
-  //             }
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   }
-  //   this.prDS.getCustomerPackageCost(where).subscribe(data => {
-  //     if (data.length) {
-  //       this.packageRepairList = data;
-  //     }
-  //   });
-  // }
 
   getUnitTypeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);

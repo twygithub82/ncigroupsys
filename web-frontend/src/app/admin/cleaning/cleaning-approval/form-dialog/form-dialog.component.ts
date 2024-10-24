@@ -34,7 +34,7 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
-import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 
 export interface DialogData {
   action?: string;
@@ -225,6 +225,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   
   selectedItems: any;
+  igCleanDS:InGateCleaningDS;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -240,6 +241,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     super();
     this.selectedItems = data.selectedItems;
     this.pcForm = this.createPackageCleaning();
+    this.igCleanDS=new InGateCleaningDS(this.apollo);
     this.packageDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
@@ -350,7 +352,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
          quotation_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
          cargo:inGateClnItem.storing_order_tank?.tariff_cleaning.cargo,
          job_no:inGateClnItem.job_no,
-         depot_estimate_cost:['0.00'],
+         depot_estimate_cost:Number(inGateClnItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
          customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
          update_by:inGateClnItem.update_by,
          update_on:this.displayDateFromEpoch(inGateClnItem.update_on),
@@ -414,6 +416,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        this.dialogRef.close(count);
         
       });
     }
@@ -423,7 +426,38 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
 
-    let pd_guids:string[] = this.selectedItems
+    var selItem =this.selectedItems[0];
+    delete selItem.storing_order_tank;
+    var rep: InGateCleaningItem = new InGateCleaningItem(selItem);
+    rep.action=this.action.toUpperCase();
+    switch(this.action.toUpperCase())
+    {
+      case "APPROVE":
+        rep.approve_dt=Utility.convertDate(this.pcForm.get("approved_dt")?.value) as number;
+        rep.job_no=this.pcForm.get("job_no")?.value;
+        break;
+      case "KIV":
+        rep.job_no= this.pcForm.get("job_no_input")?.value;
+        rep.remarks=this.pcForm.get("remarks")?.value;
+        break;
+      case "NO_ACTION":
+        rep.na_dt=Utility.convertDate(this.pcForm.get("no_action_dt")?.value)as number;
+        rep.remarks=this.pcForm.get("remarks")?.value;
+        break;
+    }
+    
+    this.igCleanDS.updateInGateCleaning(rep).subscribe(result=>{
+        if(result.data.updateInGateCleaning>0)
+        {
+         
+                  console.log('valid');
+                  this.handleSaveSuccess(result.data.updateInGateCleaning);
+  
+        }
+      });
+
+    //let pd_guids:string[] = this.selectedItems
+
     // .map(cc => cc.guid)
     // .filter((guid): guid is string => guid !== undefined);
 
@@ -505,6 +539,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return retval;
   }
 
+  
   ShowJobNo()
   {
      var validActions :string[]= ["kiv","approve"];
@@ -533,4 +568,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     return `${this.translatedLangText.CLEANING_COST_FOR}` ;
   }
+
+
+  
 }
