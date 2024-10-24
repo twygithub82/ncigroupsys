@@ -26,7 +26,9 @@ namespace IDMS.Residue.GqlTypes
             {
                 var residue = context.residue.Where(d => d.delete_dt == null || d.delete_dt == 0)
                     .Include(r => r.residue_part)
-                    .Include(r => r.storing_order_tank);
+                    .Include(r => r.storing_order_tank)
+                        .ThenInclude(t => t.storing_order)
+                            .ThenInclude(s => s.customer_company);
 
                 return residue;
             }
