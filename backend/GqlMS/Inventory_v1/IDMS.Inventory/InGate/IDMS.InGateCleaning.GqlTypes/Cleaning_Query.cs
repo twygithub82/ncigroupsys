@@ -18,7 +18,6 @@ namespace IDMS.InGateCleaning.GqlTypes
             IQueryable<in_gate_cleaning> query = null;
             try
             {
-
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.in_gate_cleaning.Where(i => i.delete_dt == null || i.delete_dt == 0);
             }

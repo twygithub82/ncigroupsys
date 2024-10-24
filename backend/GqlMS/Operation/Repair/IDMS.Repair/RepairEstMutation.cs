@@ -37,7 +37,7 @@ namespace IDMS.Repair.GqlTypes
                 repEstimate.remarks = RepairEstimate.remarks;
                 repEstimate.total_hour = RepairEstimate.total_hour;
                 repEstimate.job_no = RepairEstimate.job_no;
-                repEstimate.status_cv = RepairEstStatus.PENDING;
+                repEstimate.status_cv = StatusConstant.CurrentServiceStatus.PENDING;
                 await context.repair_est.AddAsync(repEstimate);
 
                 //Handling For Template_est_part
@@ -213,7 +213,7 @@ namespace IDMS.Repair.GqlTypes
 
                         est.update_by = user;
                         est.update_dt = currentDateTime;
-                        est.status_cv = RepairEstStatus.CANCEL;
+                        est.status_cv = StatusConstant.CurrentServiceStatus.CANCEL;
                         est.remarks = estRepair.remarks;
                     }
                 }
@@ -245,7 +245,7 @@ namespace IDMS.Repair.GqlTypes
 
                         est.update_by = user;
                         est.update_dt = currentDateTime;
-                        est.status_cv = RepairEstStatus.PENDING;
+                        est.status_cv = StatusConstant.CurrentServiceStatus.PENDING;
                         est.remarks = estRepair.remarks;
 
                         if (string.IsNullOrEmpty(estRepair.customer_guid))
@@ -295,7 +295,7 @@ namespace IDMS.Repair.GqlTypes
                     est.bill_to_guid = RepairEstimate.bill_to_guid;
                     est.update_by = user;
                     est.update_dt = currentDateTime;
-                    est.status_cv = RepairEstStatus.APPROVED;
+                    est.status_cv = StatusConstant.CurrentServiceStatus.APPROVED;
                     est.remarks = RepairEstimate.remarks;
 
                     if (RepairEstimate.repair_est_part != null)
