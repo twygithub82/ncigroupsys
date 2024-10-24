@@ -10,19 +10,19 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <form class="register-form" [formGroup]="repairPartForm" #formDirective="ngForm">
+    <form class="register-form" [formGroup]="filterTableForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.FILTER}}</mat-label>
-            <input matInput formControlName="filter">
+            <input matInput formControlName="filterTable">
           </mat-form-field>
         </div>
       </div>
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
           <div class="responsive_table">
-            <table mat-table [dataSource]="templateRepairList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
+            <table mat-table [dataSource]="packageRepairFilteredList" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
               <!-- ID Column -->
               <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -33,7 +33,7 @@
                   {{data.translatedLangText.PART_NAME}}
                 </mat-header-cell>
                 <mat-cell mat-cell *matCellDef="let row" class="">
-                  <span class="mobile-label">{{data.translatedLangText.PART_NAME}}:</span>{{row.part_name}}
+                  <span class="mobile-label">{{data.translatedLangText.PART_NAME}}:</span>{{row.tariff_repair.part_name}}
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="dimension">
@@ -41,7 +41,7 @@
                   {{data.translatedLangText.DIMENSION}}
                 </mat-header-cell>
                 <mat-cell mat-cell *matCellDef="let row" class="">
-                  <span class="mobile-label">{{data.translatedLangText.DIMENSION}}:</span>{{row.dimension}}
+                  <span class="mobile-label">{{data.translatedLangText.DIMENSION}}:</span>{{row.tariff_repair.dimension}}
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="length">
@@ -49,7 +49,7 @@
                   {{data.translatedLangText.LENGTH}}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  <span class="mobile-label">{{data.translatedLangText.LENGTH}}:</span>{{row.length}}{{getUnitTypeDescription(row.length_unit_cv)}}
+                  <span class="mobile-label">{{data.translatedLangText.LENGTH}}:</span>{{row.tariff_repair.length}}{{getUnitTypeDescription(row.tariff_repair.length_unit_cv)}}
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="material_cost">
@@ -69,9 +69,9 @@
             </table>
           </div>
           <!-- No result -->
-          @if (!(sotDS.loading$ | async) && !templateRepairList.length) {
+          @if (!(sotDS.loading$ | async) && !packageRepairList.length) {
           <mat-divider></mat-divider>
-          <div class="no-results m-l-20 pt-3" [style.display]="templateRepairList.length === 0 ? '' : 'none'">
+          <div class="no-results m-l-20 pt-3" [style.display]="packageRepairList.length === 0 ? '' : 'none'">
             <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
           </div>
           }

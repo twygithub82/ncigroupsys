@@ -543,6 +543,17 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },
       {
+        path: "admin/residue-disposal/estimate",
+        title: "MENUITEMS.CLEANING.LIST.RESIDUE-DISPOSAL-ESTIMATE",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
         path: "admin/residue-disposal/approval",
         title: "MENUITEMS.CLEANING.LIST.RESIDUE-DISPOSAL-APPROVAL",
         iconType: "",

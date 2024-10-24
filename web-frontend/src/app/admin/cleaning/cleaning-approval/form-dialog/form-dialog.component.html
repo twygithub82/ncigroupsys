@@ -22,24 +22,38 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowJobNo()">
                     <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                        <input matInput formControlName="job_no_input"  >
-                    
+                        <input matInput formControlName="job_no_input" [required]="this.ShowJobNo()"  >
+                        @if (pcForm.get('job_no_input')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.APPROVED_DATE }} {{translatedLangText.CARGO_REQUIRED }}
+                          </mat-error>
+                          }
                       </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApprovedDate()">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
-                      <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date" formControlName="approved_dt">
+                      <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date" formControlName="approved_dt" [required]="this.ShowApprovedDate()">
                       <mat-datepicker-toggle matSuffix [for]="clean_dt_picker"></mat-datepicker-toggle>
                       <mat-datepicker #clean_dt_picker></mat-datepicker>
+                      @if (pcForm.get('approved_dt')?.hasError('required')) {
+                        <mat-error>
+                          {{translatedLangText.APPROVED_DATE }} {{translatedLangText.CARGO_REQUIRED }}
+                        </mat-error>
+                        }
                     </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDate()">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.NO_ACTION}} {{translatedLangText.DATE}}</mat-label>
-                      <input matInput [matDatepicker]="noaction_dt_picker" placeholder="Select date" formControlName="no_action_dt">
+                      <input matInput [matDatepicker]="noaction_dt_picker" placeholder="Select date" formControlName="no_action_dt" [required]="this.ShowNoActionDate()">
                       <mat-datepicker-toggle matSuffix [for]="noaction_dt_picker"></mat-datepicker-toggle>
                       <mat-datepicker #noaction_dt_picker></mat-datepicker>
+                      @if (pcForm.get('approved_dt')?.hasError('required')) {
+                        <mat-error>
+                          {{translatedLangText.NO_ACTION }} {{translatedLangText.CARGO_REQUIRED }}
+                        </mat-error>
+                        }
                     </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowRemarks()">

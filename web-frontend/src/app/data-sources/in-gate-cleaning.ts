@@ -9,8 +9,10 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 import { AnyObject } from 'chart.js/dist/types/basic';
 import { InGateSurveyItem } from './in-gate-survey';
+import { CustomerCompanyItem } from './customer-company';
 
 export class InGateCleaningGO {
+  public action?:string='';
   public guid?: string = '';
   public job_no?: string;
   public allocate_by?: string;
@@ -33,6 +35,7 @@ export class InGateCleaningGO {
   public delete_dt?: number;
 
   constructor(item: Partial<InGateCleaningGO> = {}) {
+    this.action=item.action||'';
     this.guid = item.guid || '';
     this.job_no = item.job_no;
     this.allocate_by = item.allocate_by;
@@ -58,7 +61,7 @@ export class InGateCleaningGO {
 
 export class InGateCleaningItem extends InGateCleaningGO {
   public storing_order_tank?: StoringOrderTankGO;
-  public customer_company?: InGateSurveyItem;
+  public customer_company?: CustomerCompanyItem;
 
   constructor(item: Partial<InGateCleaningItem> = {}) {
     super(item)
@@ -204,6 +207,12 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
               guid
               name
             }
+            cleaning_category {
+            cost
+            description
+            guid
+            name
+            } 
           }
         }
       }
