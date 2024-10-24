@@ -6,6 +6,7 @@ using IDMS.Models.Service.GqlTypes.DB;
 using HotChocolate.Data;
 using IDMS.Repair;
 using IDMS.Repair.GqlTypes;
+using IDMS.Residue.GqlTypes;
 
 namespace IDMS.ServiceMS
 {
@@ -57,8 +58,8 @@ namespace IDMS.ServiceMS
                        .RegisterDbContext<ApplicationServiceDBContext>(DbContextKind.Pooled)
                        .AddQueryType<RepairEstQuery>()
                        .AddMutationType<RepairEstMutation>()
-                       //.AddTypeExtension<CustomerQuery>()
-                       //.AddTypeExtension<SchedulingQuery>()
+                       .AddTypeExtension<ResidueQuery>()
+                       .AddTypeExtension<ResidueMutation>()
                        //.AddTypeExtension<ReleaseOrderQuery>()
                        //.AddSubscriptionType<BookingSubscription>()
                        //.AddMutationType<TemplateEstMutation>()

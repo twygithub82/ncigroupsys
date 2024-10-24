@@ -7,9 +7,7 @@ using CommonUtil.Core.Service;
 using IDMS.Models.Service;
 using static IDMS.Repair.GqlTypes.StatusConstant;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 using IDMS.Repair.GqlTypes.LocalModel;
-using IDMS.Models.Inventory;
 
 namespace IDMS.Repair.GqlTypes
 {
