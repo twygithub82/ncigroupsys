@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Inventory;
+using IDMS.Models.Package;
 using IDMS.Models.Shared;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,11 @@ namespace IDMS.Models.Tariff
         public double? storage_cost { get; set; }
         //public double? gate_charges { get; set; }
         public int? free_storage {  get; set; }
+
+        [UseFiltering]
         public IEnumerable<tank?>? tanks { get; set; }
 
+        [UseFiltering]
+        public IEnumerable<package_depot?>? package_depot {  get; set; }
     }
 }

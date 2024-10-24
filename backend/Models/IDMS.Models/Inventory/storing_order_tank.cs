@@ -1,6 +1,7 @@
 ﻿using HotChocolate;
 using IDMS.Models.Master;
 using IDMS.Models.Service;
+using IDMS.Models.Shared;
 using IDMS.Models.Tariff;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace IDMS.Models.Inventory
 
         [ForeignKey("storing_order")]
         public string? so_guid {  get; set; }
+
+        [ForeignKey("tank")]
         public string? unit_type_guid { get; set; }
 
         [ForeignKey("tariff_cleaning")]
@@ -29,14 +32,11 @@ namespace IDMS.Models.Inventory
         public string? owner_guid { get; set; } 
         public string? tank_no { get; set; }
         public string? job_no { get; set; }
-
         public string? preinspect_job_no { get; set; }
         public string? liftoff_job_no { get; set; }
         public string? lifton_job_no { get; set; }
         public string? takein_job_no { get; set; }
         public string? release_job_no { get; set; } 
-
-
         public long? eta_dt { get; set; }
         public bool? purpose_steam { get; set; }
         public bool? purpose_storage { get; set; }
@@ -53,6 +53,9 @@ namespace IDMS.Models.Inventory
         public storing_order? storing_order { get; set; }
         public tariff_cleaning? tariff_cleaning { get; set; }
         public customer_company? customer_company { get; set; }
+
+        [UseFiltering]
+        public tank? tank { get; set; }
 
         [UseFiltering]
         public IEnumerable<in_gate>? in_gate { get; set; }

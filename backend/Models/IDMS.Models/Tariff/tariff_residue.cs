@@ -19,6 +19,7 @@ namespace IDMS.Models.Tariff
 
         public string? remarks { get; set; }
 
+        [UseFiltering]
         public IEnumerable<package_residue>? package_residue { get; set; }
     }
 }
