@@ -27,7 +27,8 @@ namespace IDMS.Models.Service
         public long? allocate_dt { get; set; }  
         public string? complete_by { get; set; }    
         public long? complete_dt { get; set; }
-        public long? na_dt { get; set; }    
+        public long? na_dt { get; set; }
+        public string? job_order_guid { get; set; }
 
         [NotMapped]
         public string action { get; set; } 

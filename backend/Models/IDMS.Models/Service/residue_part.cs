@@ -18,6 +18,7 @@ namespace IDMS.Models.Service
         public int? quantity { get; set; }
         public double? cost { get; set; }
         public bool? approve_part { get; set; } 
+        public string? job_order_guid { get; set; }
 
         [UseFiltering]
         public residue? residue { get; set; }
