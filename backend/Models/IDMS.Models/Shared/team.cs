@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IDMS.Models.Service;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,5 +16,8 @@ namespace IDMS.Models.Shared
         public string? guid {  get; set; }
         public string? description { get; set; }
         public string? department_cv { get; set; }
+
+        [UseFiltering]
+        public IEnumerable<job_order?>? job_order {  get; set; } 
     }
 }

@@ -16,6 +16,9 @@ namespace IDMS.Models.Service
 
         [ForeignKey("customer_company")]
         public string? bill_to_guid { get; set; }
+
+        [ForeignKey("job_order")]
+        public string? job_order_guid { get; set; }
         public double? cleaning_cost { get; set; } = 0;
         public double? buffer_cost { get; set; } = 0;
         public string? status_cv { get; set; }
@@ -28,7 +31,7 @@ namespace IDMS.Models.Service
         public string? complete_by { get; set; }    
         public long? complete_dt { get; set; }
         public long? na_dt { get; set; }
-        public string? job_order_guid { get; set; }
+
 
         [NotMapped]
         public string action { get; set; } 
@@ -38,5 +41,8 @@ namespace IDMS.Models.Service
 
         [UseFiltering]
         public customer_company? customer_company { get; set; }
+
+        [UseFiltering]
+        public job_order? job_order { get; set; }
     }
 }
