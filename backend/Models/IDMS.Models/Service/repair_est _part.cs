@@ -34,7 +34,8 @@ namespace IDMS.Models.Service
         public double? approve_hour { get; set; }
         public double? approve_cost { get; set; }
         public bool? approve_part { get; set; }
-        public long? complete_dt { get; set; }  
+        public long? complete_dt { get; set; }
+        public string? job_order_guid { get; set; }
 
         [NotMapped]
         public string? action { get; set; }

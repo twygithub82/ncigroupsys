@@ -530,6 +530,29 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
+  getRepairEstByIDForJobOrder(id: string): Observable<RepairEstItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { guid: { eq: id }, status_cv: { eq: "APPROVED" } }
+    return this.apollo
+      .query<any>({
+        query: GET_REPAIR_EST_FOR_APPROVAL,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
   addRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_REPAIR_EST,
@@ -577,20 +600,24 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
     });
   }
 
-  canAmend(re: RepairEstItem): boolean {
-    return re.status_cv === 'PENDING';
+  canAmend(re: RepairEstItem | undefined): boolean {
+    return re?.status_cv === 'PENDING';
   }
 
-  canApprove(re: RepairEstItem): boolean {
-    return re.status_cv === 'PENDING';
+  canApprove(re: RepairEstItem | undefined): boolean {
+    return re?.status_cv === 'PENDING';
   }
 
-  canCancel(re: RepairEstItem): boolean {
-    return re.status_cv === 'PENDING';
+  canCancel(re: RepairEstItem | undefined): boolean {
+    return re?.status_cv === 'PENDING';
   }
 
-  canRollback(re: RepairEstItem): boolean {
-    return re.status_cv === 'CANCELED' || re.status_cv === 'APPROVED';
+  canRollback(re: RepairEstItem | undefined): boolean {
+    return re?.status_cv === 'CANCELED' || re?.status_cv === 'APPROVED';
+  }
+
+  canAssign(re: RepairEstItem | undefined): boolean {
+    return re?.status_cv === 'APPROVED';
   }
 
   canCopy(re: RepairEstItem): boolean {

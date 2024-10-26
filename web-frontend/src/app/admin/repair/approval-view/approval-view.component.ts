@@ -326,107 +326,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   initializeValueChanges() {
-    this.repairEstForm?.get('est_template')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          console.log(value);
-          if (this.getCustomer()?.def_template_guid) {
-            this.repairEstForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
-          }
-          // estimate
-          this.repairEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
-          this.repairEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
-          this.repairEstForm?.get('remarks')?.setValue(value.remarks);
-          const repList: RepairEstPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
-            const package_repair = tep.tariff_repair?.package_repair;
-            let material_cost = 0;
-            if (package_repair?.length) {
-              material_cost = package_repair[0].material_cost
-            }
-            const tep_damage_repair = this.filterDeleted(tep.tep_damage_repair).map((item: any) => {
-              return new REPDamageRepairItem({
-                code_cv: item.code_cv,
-                code_type: item.code_type,
-                action: 'new'
-              });
-            })
-            return new RepairEstPartItem({
-              repair_est_guid: this.repair_est_guid || undefined,
-              description: tep.description,
-              hour: tep.hour,
-              location_cv: tep.location_cv,
-              comment: tep.comment,
-              quantity: tep.quantity,
-              remarks: tep.remarks,
-              material_cost: material_cost,
-              tariff_repair_guid: tep.tariff_repair_guid,
-              tariff_repair: tep.tariff_repair,
-              rep_damage_repair: tep_damage_repair,
-              action: "new"
-            });
-          });
-          this.updateData(repList);
-
-          // estimate part
-          // const tariff_repair_guid = value.template_est_part.map((tep: any) => tep.tariff_repair_guid);
-          // this.getCustomerCost(this.sotItem?.storing_order?.customer_company_guid, tariff_repair_guid).pipe(
-          //   switchMap(data => {
-          //     let material_cost = 0;
-          //     if (data && data.length) {
-          //       material_cost = data[0].material_cost;
-          //       console.log('Customer Package Cost Data:', data);
-          //     }
-
-          //     const repList: RepairEstPartItem[] = value.template_est_part.map((tep: any) => {
-          //       const tep_damage_repair = tep.tep_damage_repair.map((item: any) => {
-          //         return new REPDamageRepairItem({
-          //           guid: item.guid,
-          //           rep_guid: item.rep_guid,
-          //           code_cv: item.code_cv,
-          //           code_type: item.code_type,
-          //           action: 'new'
-          //         });
-          //       })
-
-          //       return new RepairEstPartItem({
-          //         description: tep.description,
-          //         hour: tep.hour,
-          //         location_cv: tep.location_cv,
-          //         quantity: tep.quantity,
-          //         remarks: tep.remarks,
-          //         material_cost: material_cost,
-          //         tariff_repair_guid: tep.tariff_repair_guid,
-          //         tariff_repair: tep.tariff_repair,
-          //         rep_damage_repair: tep_damage_repair,
-          //         action: 'new',
-          //       });
-          //     });
-          //     console.log(repList);
-          //     this.updateData(repList);
-          //     return of(repList);
-          //   })
-          // ).subscribe();
-        }
-      })
-    ).subscribe();
-
-    this.repairEstForm?.get('labour_cost_discount')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        this.calculateCost();
-      })
-    ).subscribe();
-
-    this.repairEstForm?.get('material_cost_discount')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        this.calculateCost();
-      })
-    ).subscribe();
   }
 
   public loadData() {
@@ -507,7 +406,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
               if (this.customer_companyList?.length == 1) {
                 const bill_to = this.repairEstForm?.get('bill_to');
                 bill_to?.setValue(this.customer_companyList[0]);
-                if (!this.canApprove()) {
+                if (!this.repairEstDS.canApprove(this.repairEstItem)) {
                   bill_to?.disable();
                 }
               }
@@ -991,22 +890,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     event.preventDefault(); // Prevents the form submission
   }
 
-  canRollback(): boolean {
-    return this.repairEstItem?.status_cv === 'CANCELED' || this.repairEstItem?.status_cv === 'APPROVED';
-  }
-
-  canApprove(): boolean {
-    return this.repairEstItem?.status_cv === 'PENDING';
-  }
-
-  canCancel(): boolean {
-    return this.repairEstItem?.status_cv === 'PENDING';
-  }
-
-  canSave(): boolean {
-    return this.repairEstItem?.status_cv === 'PENDING';
-  }
-
   isOwnerChange() {
     this.isOwner = !this.isOwner;
   }
@@ -1137,7 +1020,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';
-    }).join('/');
+    }).join('\n');
   }
 
   displayDateTime(input: number | undefined): string | undefined {
@@ -1268,7 +1151,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   toggleApprovePart(rep: RepairEstPartItem) {
-    if (!this.canApprove()) return;
+    if (!this.repairEstDS.canApprove(this.repairEstItem)) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
   }
 

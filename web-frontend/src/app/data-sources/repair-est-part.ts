@@ -8,11 +8,13 @@ import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
 import { RepairEstItem } from './repair-est';
 import { REPDamageRepairItem } from './rep-damage-repair';
+import { JobOrderItem } from './job-order';
 
 export class RepairEstPartGO {
   public guid?: string;
   public tariff_repair_guid?: string;
   public repair_est_guid?: string;
+  public job_order_guid?: string;
   public description?: string;
   public location_cv?: string;
   public comment?: string;
@@ -36,6 +38,7 @@ export class RepairEstPartGO {
     this.guid = item.guid;
     this.tariff_repair_guid = item.tariff_repair_guid;
     this.repair_est_guid = item.repair_est_guid;
+    this.job_order_guid = item.job_order_guid;
     this.description = item.description;
     this.location_cv = item.location_cv;
     this.comment = item.comment;
@@ -61,12 +64,14 @@ export class RepairEstPartItem extends RepairEstPartGO {
   public tariff_repair?: TariffRepairItem;
   public repair_est?: RepairEstItem;
   public rep_damage_repair?: REPDamageRepairItem[];
+  public job_order?: JobOrderItem;
   public action?: string
   constructor(item: Partial<RepairEstPartItem> = {}) {
     super(item)
     this.tariff_repair = item.tariff_repair;
     this.repair_est = item.repair_est;
     this.rep_damage_repair = item.rep_damage_repair;
+    this.job_order = item.job_order;
     this.action = item.action;
   }
 }
@@ -164,6 +169,6 @@ export class RepairEstPartDS extends BaseDataSource<RepairEstPartItem> {
   }
 
   is4X(repDmgRepair: REPDamageRepairItem[] | undefined): boolean | undefined {
-    return repDmgRepair && !repDmgRepair.some((item: REPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
+    return repDmgRepair && repDmgRepair.some((item: REPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
   }
 }

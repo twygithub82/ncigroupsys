@@ -43,6 +43,7 @@ import { BillingBranchNewComponent } from './master/billing-branch-new/billing-b
 import { CleaningApprovalComponent } from './cleaning/cleaning-approval/approval.component';
 import { ResidueDisposalApprovalComponent } from './residue-disposal/approval/approval.component';
 import { JobOrderComponent } from './repair/job-order/job-order.component';
+import { JobOrderAllocationComponent } from './repair/job-order-allocation/job-order-allocation.component';
 import { ResidueDisposalEstimateComponent } from './residue-disposal/estimate/estimate.component';
 export const ADMIN_ROUTE: Routes = [
   {
@@ -221,44 +222,48 @@ export const ADMIN_ROUTE: Routes = [
     component: ApprovalViewComponent,
   },
   {
-    path: "repair/job_order",
+    path: "repair/job-order",
     component: JobOrderComponent,
   },
   {
-    path:"master/estimate-template",
-    component:EstimateTemplateComponent,
+    path: "repair/job-order/allocation/:id",
+    component: JobOrderAllocationComponent,
   },
   {
-    path:"master/estimate-template/new/:id",
-    component:EstimateTemplateNewComponent,
+    path: "master/estimate-template",
+    component: EstimateTemplateComponent,
   },
   {
-    path:"master/customer",
-    component:CustomerComponent,
+    path: "master/estimate-template/new/:id",
+    component: EstimateTemplateNewComponent,
   },
   {
-    path:"master/customer/new/:id",
-    component:CustomerNewComponent,
+    path: "master/customer",
+    component: CustomerComponent,
   },
   {
-    path:"master/billing-branch",
-    component:BillingBranchComponent,
+    path: "master/customer/new/:id",
+    component: CustomerNewComponent,
   },
   {
-    path:"master/billing-branch/new/:id",
-    component:BillingBranchNewComponent,
+    path: "master/billing-branch",
+    component: BillingBranchComponent,
   },
   {
-    path:"cleaning/approval",
-    component:CleaningApprovalComponent,
+    path: "master/billing-branch/new/:id",
+    component: BillingBranchNewComponent,
   },
   {
-    path:"residue-disposal/approval",
-    component:ResidueDisposalApprovalComponent,
+    path: "cleaning/approval",
+    component: CleaningApprovalComponent,
   },
   {
-    path:"residue-disposal/estimate",
-    component:ResidueDisposalEstimateComponent,
+    path: "residue-disposal/approval",
+    component: ResidueDisposalApprovalComponent,
+  },
+  {
+    path: "residue-disposal/estimate",
+    component: ResidueDisposalEstimateComponent,
   },
 ];
 

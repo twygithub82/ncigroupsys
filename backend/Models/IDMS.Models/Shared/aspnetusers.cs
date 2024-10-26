@@ -20,6 +20,8 @@ namespace IDMS.Models.Shared
         public string? UserName { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
+        
+        [UseFiltering]
         public IEnumerable<aspnetuserroles?>? aspnetuserroles { get; set; }
     }
 
@@ -30,6 +32,7 @@ namespace IDMS.Models.Shared
         [GraphQLName("Role")]
         public string? Name { get; set; }
 
+        [UseFiltering]
         public IEnumerable<aspnetuserroles?>? aspnetuserroles { get; set; }
     }
 
@@ -39,7 +42,9 @@ namespace IDMS.Models.Shared
         public string userID { get; set; }
         public string roleID { get; set; }
 
+        [UseFiltering]
         public aspnetusers? aspnetusers { get; set; }
+        [UseFiltering]
         public aspnetroles? aspnetroles { get; set; }
     }
 }
