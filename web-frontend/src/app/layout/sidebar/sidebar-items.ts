@@ -518,6 +518,17 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+      },
+      {
+        path: "admin/repair/job-order",
+        title: "MENUITEMS.REPAIR.LIST.JOB-ORDER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
       }
     ]
   },

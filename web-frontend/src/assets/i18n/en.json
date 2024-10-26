@@ -146,7 +146,6 @@
         "BILLING-BRANCH-EDIT": "Edit Billing Branch"
       }
     },
-   
     "NEW": {
       "TEXT": "New"
     },
@@ -180,7 +179,8 @@
         "ESTIMATE-NEW": "New Estimate",
         "ESTIMATE-EDIT": "Edit Estimate",
         "APPROVAL": "Estimate Approval",
-        "APPROVAL-DETAILS": "Estimate Approval Details"
+        "APPROVAL-DETAILS": "Estimate Approval Details",
+        "JOB-ORDER": "Job Order"
       }
     },
     "CLEANING": {
@@ -590,7 +590,7 @@
     "APPROVE": "Approve",
     "APPROVED-DATE": "Approved Date",
     "NO-ACTION": "No Action",
-    "KIV":"KIV",
+    "KIV": "KIV",
     "BILLING-BRANCH": "Billing Branch",
     "SALUTATION": "Salutation",
     "NAME": "Name",
@@ -609,22 +609,31 @@
     "NO-OF-PARTS": "No of Parts",
     "REMOVE-COPIED": "Remove Copied Estimate",
     "MAIN-CUSTOMER": "Main Customer",
-    "FLAMMABLE-NOTIFICATION":"FEMMABLE - Do not open manlid or release pressure at in Gate",
-    "REMARK-NOTIFICATION":"* Remarks - DO NOT OPEN OR RELEASE PRESSURE AT IN GATE",
-    "QUOTATION-DATE":"Quotation Date",
-    "DEPOT-ESTIMATE":"Depot Estimate",
-    "CUSTOMER-APPROVAL":"Customer Approval",
-    "UPDATED-BY":"Updated By",
-    "UPDATED-ON":"Updated On",
-    "APPROVAL":"Approval",
-    "JOB-ALLOCATION":"Job Allocation",
-    "JOB-COMPLETION":"Job Completion",
-    "BILLING-DETAILS":"Billing Details",
-    "CLEANING-COST-FOR":"Cleaning cost for the cargo",
-    "APPROVAL-STATUS":"Approval Status",
-    "METHOD":"Method",
-    "LAST-CARGO-CLEANING-QUOTATION":"LAST CARGO CLEANING QUOTATION"
-
+    "FLAMMABLE-NOTIFICATION": "FEMMABLE - Do not open manlid or release pressure at in Gate",
+    "REMARK-NOTIFICATION": "* Remarks - DO NOT OPEN OR RELEASE PRESSURE AT IN GATE",
+    "QUOTATION-DATE": "Quotation Date",
+    "DEPOT-ESTIMATE": "Depot Estimate",
+    "CUSTOMER-APPROVAL": "Customer Approval",
+    "UPDATED-BY": "Updated By",
+    "UPDATED-ON": "Updated On",
+    "APPROVAL": "Approval",
+    "JOB-ALLOCATION": "Job Allocation",
+    "JOB-COMPLETION": "Job Completion",
+    "BILLING-DETAILS": "Billing Details",
+    "CLEANING-COST-FOR": "Cleaning cost for the cargo",
+    "APPROVAL-STATUS": "Approval Status",
+    "METHOD": "Method",
+    "LAST-CARGO-CLEANING-QUOTATION": "LAST CARGO CLEANING QUOTATION",
+    "TEAM-DETAILS": "Team Details",
+    "TEAM": "Team",
+    "UPDATE-BY": "Update By",
+    "UPDATE-DATE": "Update Date",
+    "JOBS": "Jobs",
+    "ESTIMATE": "Estimate",
+    "QC-DETAILS": "QC Details",
+    "ASSIGN": "Assign",
+    "SAVE-ANOTHER": "Save Another",
+    "TEAM-ALLOCATION": "Team Allocation"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -59,12 +59,14 @@ import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/m
 import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { JobOrderItem } from 'app/data-sources/job-order';
 
 @Component({
-  selector: 'app-approval-view',
+  selector: 'app-job-order-allocation',
   standalone: true,
-  templateUrl: './approval-view.component.html',
-  styleUrl: './approval-view.component.scss',
+  templateUrl: './job-order-allocation.component.html',
+  styleUrl: './job-order-allocation.component.scss',
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -99,7 +101,7 @@ import { UserDS, UserItem } from 'app/data-sources/user';
     TlxFormFieldComponent
   ]
 })
-export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
     'subgroup_name_cv',
@@ -108,18 +110,13 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     'description',
     'quantity',
     'hour',
-    'price',
-    'material',
-    'isOwner',
     'approve_part',
-    'approve_qty',
-    'approve_hour',
-    'approve_cost'
+    'team'
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
+  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.APPROVAL'
+    'MENUITEMS.REPAIR.TEXT'
   ]
   translatedLangText: any = {}
   langText = {
@@ -210,8 +207,17 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     APPROVE: 'COMMON-FORM.APPROVE',
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
-    BILL_DETAILS: 'COMMON-FORM.BILL-DETAILS',
-    BILL_TO: 'COMMON-FORM.BILL-TO'
+    TEAM_DETAILS: 'COMMON-FORM.TEAM-DETAILS',
+    TEAM: 'COMMON-FORM.TEAM',
+    UPDATE_BY: 'COMMON-FORM.UPDATE-BY',
+    UPDATE_DATE: 'COMMON-FORM.UPDATE-DATE',
+    ESTIMATE: 'COMMON-FORM.ESTIMATE',
+    APPROVAL: 'COMMON-FORM.APPROVAL',
+    JOB_ALLOCATION: 'COMMON-FORM.JOB-ALLOCATION',
+    QC_DETAILS: 'COMMON-FORM.QC-DETAILS',
+    SAVE_ANOTHER: 'COMMON-FORM.SAVE-ANOTHER',
+    TEAM_ALLOCATION: 'COMMON-FORM.TEAM-ALLOCATION',
+    ASSIGN: 'COMMON-FORM.ASSIGN'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -223,6 +229,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   sotItem?: StoringOrderTankItem;
   repairEstItem?: RepairEstItem;
   packageLabourItem?: PackageLabourItem;
+  repSelection = new SelectionModel<RepairEstPartItem>(true, []);
   repList: RepairEstPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
@@ -236,7 +243,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
 
-  customer_companyList?: CustomerCompanyItem[];
+  teamList?: TeamItem[];
 
   customerCodeControl = new UntypedFormControl();
 
@@ -250,7 +257,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
   repDmgRepairDS: REPDamageRepairDS;
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
-  userDS: UserDS;
+  teamDS: TeamDS;
   isOwner = false;
 
   constructor(
@@ -276,7 +283,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     this.repDmgRepairDS = new REPDamageRepairDS(this.apollo);
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
-    this.userDS = new UserDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -291,8 +298,7 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   initForm() {
     this.repairEstForm = this.fb.group({
-      bill_to: [''],
-      job_no: [''],
+      team_allocation: [''],
       guid: [''],
       remarks: [{ value: '', disabled: true }],
       surveyor_id: [''],
@@ -395,24 +401,29 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
     this.repair_est_guid = this.route.snapshot.paramMap.get('id');
     if (this.repair_est_guid) {
-      this.subs.sink = this.repairEstDS.getRepairEstByIDForApproval(this.repair_est_guid).subscribe(data => {
+      this.subs.sink = this.repairEstDS.getRepairEstByIDForJobOrder(this.repair_est_guid).subscribe(data => {
         if (data?.length) {
           this.repairEstItem = data[0];
           this.sotItem = this.repairEstItem?.storing_order_tank;
-          this.getCustomerLabourPackage(this.sotItem?.storing_order?.customer_company?.guid!);
-          this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
-            if (cc?.length) {
-              this.customer_companyList = cc;
-              if (this.customer_companyList?.length == 1) {
-                const bill_to = this.repairEstForm?.get('bill_to');
-                bill_to?.setValue(this.customer_companyList[0]);
-                if (!this.repairEstDS.canApprove(this.repairEstItem)) {
-                  bill_to?.disable();
-                }
-              }
-            }
-          });
+          // this.getCustomerLabourPackage(this.sotItem?.storing_order?.customer_company?.guid!);
+          // this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+          //   if (cc?.length) {
+          //     this.customer_companyList = cc;
+          //     // if (this.customer_companyList?.length == 1) {
+          //     //   const bill_to = this.repairEstForm?.get('bill_to');
+          //     //   bill_to?.setValue(this.customer_companyList[0]);
+          //     //   if (!this.canApprove()) {
+          //     //     bill_to?.disable();
+          //     //   }
+          //     // }
+          //   }
+          // });
           this.populateRepairEst(this.repairEstItem);
+        }
+      });
+      this.subs.sink = this.teamDS.getTeamListByDepartment(["REPAIR"]).subscribe(data => {
+        if (data?.length) {
+          this.teamList = data;
         }
       });
     }
@@ -466,12 +477,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   displayCustomerCompanyName(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv}` : '';
-  }
-
-  selectOwner($event: Event, row: RepairEstPartItem) {
-    this.stopPropagation($event);
-    row.owner = !(row.owner || false);
-    this.calculateCost();
   }
 
   addEstDetails(event: Event, row?: RepairEstPartItem) {
@@ -626,6 +631,20 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
         });
       }
     });
+  }
+
+  assignTeam(event: Event) {
+    const selectedRep = this.repSelection.selected;
+    const selectedTeam = this.repairEstForm?.get('team_allocation');
+    selectedRep.forEach(rep => {
+      rep.job_order = new JobOrderItem({
+        ...rep.job_order,
+        team: selectedTeam?.value
+      });
+    })
+    console.log(selectedRep)
+    this.repSelection.clear();
+    selectedTeam?.setValue('')
   }
 
   onRollback(event: Event) {
@@ -820,7 +839,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
         ...row,
         index: index
       }));
-      this.calculateCost();
     }
   }
 
@@ -890,8 +908,8 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     event.preventDefault(); // Prevents the form submission
   }
 
-  isOwnerChange() {
-    this.isOwner = !this.isOwner;
+  canRollback(): boolean {
+    return this.repairEstItem?.status_cv === 'CANCELED' || this.repairEstItem?.status_cv === 'APPROVED';
   }
 
   getBadgeClass(status: string | undefined): string {
@@ -1052,10 +1070,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     return "";
   }
 
-  selectText(event: FocusEvent) {
-    Utility.selectText(event)
-  }
-
   parse2Decimal(figure: number | string | undefined) {
     if (typeof (figure) === 'string') {
       return parseFloat(figure).toFixed(2);
@@ -1063,79 +1077,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
       return figure.toFixed(2);
     }
     return "";
-  }
-
-  calculateCost() {
-    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
-    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
-    const labourDiscount = this.repairEstForm?.get('labour_cost_discount')?.value;
-    const matDiscount = this.repairEstForm?.get('material_cost_discount')?.value;
-
-    let total_hour = 0;
-    let total_labour_cost = 0;
-    let total_mat_cost = 0;
-    let total_cost = 0;
-    let discount_labour_cost = 0;
-    let discount_mat_cost = 0;
-    let net_cost = 0;
-
-    const totalOwner = this.repairEstDS.getTotal(ownerList);
-    const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-    const total_owner_mat_cost = totalOwner.total_mat_cost;
-    const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    const discount_mat_owner_cost = this.repairEstDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    const net_owner_cost = this.repairEstDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
-
-    this.repairEstForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-    this.repairEstForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-    this.repairEstForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-    this.repairEstForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-    this.repairEstForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-    this.repairEstForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-    this.repairEstForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
-
-    total_hour += total_owner_hour;
-    total_labour_cost += total_owner_labour_cost;
-    total_mat_cost += total_owner_mat_cost;
-    total_cost += total_owner_cost;
-    discount_labour_cost += discount_labour_owner_cost;
-    discount_mat_cost += discount_mat_owner_cost;
-    net_cost += net_owner_cost;
-
-    const totalLessee = this.repairEstDS.getTotal(lesseeList);
-    const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-    const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    const discount_mat_lessee_cost = this.repairEstDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    const net_lessee_cost = this.repairEstDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
-
-    this.repairEstForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-    this.repairEstForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-    this.repairEstForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-    this.repairEstForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-    this.repairEstForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-    this.repairEstForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-    this.repairEstForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
-
-    total_hour += total_lessee_hour;
-    total_labour_cost += total_lessee_labour_cost;
-    total_mat_cost += total_lessee_mat_cost;
-    total_cost += total_lessee_cost;
-    discount_labour_cost += discount_labour_lessee_cost;
-    discount_mat_cost += discount_mat_lessee_cost;
-    net_cost += net_lessee_cost;
-
-    this.repairEstForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-    this.repairEstForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-    this.repairEstForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-    this.repairEstForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-    this.repairEstForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-    this.repairEstForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-    this.repairEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
   }
 
   filterDeleted(resultList: any[] | undefined): any {
@@ -1150,11 +1091,6 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
     return this.repairEstItem?.labour_cost;
   }
 
-  toggleApprovePart(rep: RepairEstPartItem) {
-    if (!this.repairEstDS.canApprove(this.repairEstItem)) return;
-    rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
-  }
-
   displayApproveQty(rep: RepairEstPartItem) {
     return (rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
   }
@@ -1165,5 +1101,14 @@ export class ApprovalViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   displayApproveCost(rep: RepairEstPartItem) {
     return this.parse2Decimal((rep.approve_part ?? this.repairEstPartDS.is4X(rep.rep_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
+  }
+
+  toggleRep(row: RepairEstPartItem) {
+    if (this.repairEstPartDS.is4X(row.rep_damage_repair) || row.job_order_guid) return;
+    this.repSelection.toggle(row);
+  }
+
+  isAssignEnabled() {
+    return this.repSelection.hasValue() && this.repairEstForm?.get('team_allocation')?.value;
   }
 }

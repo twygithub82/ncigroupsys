@@ -47,6 +47,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairEstDS, RepairEstItem } from 'app/data-sources/repair-est';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-job-order',
@@ -81,6 +82,7 @@ import { RepairEstDS, RepairEstItem } from 'app/data-sources/repair-est';
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+    MatTabsModule,
   ]
 })
 export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -101,7 +103,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.REPAIR.LIST.APPROVAL'
+  pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -148,10 +150,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
-    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
+    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
+    repairEstTabTitle: 'COMMON-FORM.JOB-ALLOCATION',
+    jobOrderTabTitle: 'COMMON-FORM.JOBS'
   }
 
-  searchForm?: UntypedFormGroup;
+  filterRepairEstForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
@@ -218,22 +222,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   initSearchForm() {
-    this.searchForm = this.fb.group({
-      tank_no: [''],
-      customer_code: this.customerCodeControl,
-      last_cargo: this.lastCargoControl,
-      eir_dt_start: [''],
-      eir_dt_end: [''],
-      part_name: [''],
-      change_request_cv: [''],
-      eir_no: [''],
-      repair_job_no: [''],
-      repair_type_cv: [''],
-      est_dt_start: [''],
-      est_dt_end: [''],
-      approval_dt_start: [''],
-      approval_dt_end: [''],
-      est_status_cv: ['']
+    this.filterRepairEstForm = this.fb.group({
+      filterRepairEst: [''],
     });
   }
 
@@ -338,7 +328,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   public loadData() {
-    this.search();
+    this.onFilterRepairEst();
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
@@ -401,65 +391,13 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     }
   }
 
-  search() {
+  onFilterRepairEst() {
     const where: any = {
+      status_cv: { eq: "APPROVED" }
     };
 
-    if (this.searchForm!.value['so_no']) {
-      where.so_no = { contains: this.searchForm!.value['so_no'] };
-    }
-
-    if (this.searchForm!.value['so_status']) {
-      where.status_cv = { contains: this.searchForm!.value['so_status'] };
-    }
-
-    if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-    }
-    
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
-      const sotSome: any = {};
-
-      if (this.searchForm!.value['last_cargo']) {
-        where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
-      }
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
-      }
-
-      if (this.searchForm!.value['job_no']) {
-        sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
-      }
-
-      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
-      }
-
-      if (this.searchForm!.value['purpose']) {
-        const purposes = this.searchForm!.value['purpose'];
-        if (purposes.includes('STORAGE')) {
-          sotSome.purpose_storage = { eq: true }
-        }
-        if (purposes.includes('CLEANING')) {
-          sotSome.purpose_cleaning = { eq: true }
-        }
-        if (purposes.includes('STEAM')) {
-          sotSome.purpose_steam = { eq: true }
-        }
-
-        const repairPurposes = [];
-        if (purposes.includes('REPAIR')) {
-          repairPurposes.push('REPAIR');
-        }
-        if (purposes.includes('OFFHIRE')) {
-          repairPurposes.push('OFFHIRE');
-        }
-        if (repairPurposes.length > 0) {
-          sotSome.purpose_repair_cv = { in: repairPurposes };
-        }
-      }
-      where.storing_order_tank = { some: sotSome };
+    if (this.filterRepairEstForm!.get('filterRepairEst')?.value) {
+      where.so_no = { contains: this.filterRepairEstForm!.get('filterRepairEst')?.value };
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
@@ -472,7 +410,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.subs.sink = this.repairEstDS.searchRepairEst(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.repEstList = data.map(re => {
-          return {...re, net_cost: this.calculateNetCost(re)}
+          return { ...re, net_cost: this.calculateNetCost(re) }
         });
         this.endCursor = this.repairEstDS.pageInfo?.endCursor;
         this.startCursor = this.repairEstDS.pageInfo?.startCursor;
@@ -530,38 +468,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   initializeFilterCustomerCompany() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.code;
-        }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-        });
-      })
-    ).subscribe();
-
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-        }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-          this.updateValidators(this.last_cargoList);
-        });
-      })
-    ).subscribe();
   }
 
   translateLangText() {
@@ -578,7 +484,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     const total = this.repairEstDS.getTotal(repair_est?.repair_est_part)
     const labourDiscount = repair_est.labour_cost_discount;
     const matDiscount = repair_est.material_cost_discount;
-    
+
     const total_hour = total.hour;
     const total_labour_cost = this.repairEstDS.getTotalLabourCost(total_hour, repair_est?.labour_cost);
     const total_mat_cost = total.total_mat_cost;
@@ -628,17 +534,9 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   resetForm() {
-    this.searchForm?.patchValue({
-      so_no: '',
-      so_status: '',
-      tank_no: '',
-      job_no: '',
-      purpose: '',
-      eta_dt_start: '',
-      eta_dt_end: ''
+    this.filterRepairEstForm?.patchValue({
+      filterRepairEst: '',
     });
-    this.customerCodeControl.reset('');
-    this.lastCargoControl.reset('');
   }
 
   filterDeleted(resultList: any[] | undefined): any {

@@ -806,7 +806,9 @@ $breakpoints: (
 @include generate-width("tbl-col-width-per-2_25", 2.25);
 @include generate-width("tbl-col-width-per-2_5", 2.5);
 @include generate-width("tbl-col-width-per-2_75", 2.75);
+@include generate-width("tbl-col-width-per-3_25", 3.25);
 @include generate-width("tbl-col-width-per-3_5", 3.5);
+@include generate-width("tbl-col-width-per-3_75", 3.75);
 @include generate-width("tbl-col-width-per-4_5", 4.5);
 @include generate-width("tbl-col-width-per-5_5", 5.5);
 @include generate-width("tbl-col-width-per-6_5", 6.5);
@@ -832,6 +834,40 @@ $breakpoints: (
   }
 
   .advance-table .mdc-data-table__row {
+    flex-direction: column;
+    align-items: start;
+    padding: 8px 24px;
+    display: grid;
+  }
+
+  mat-cell:first-of-type,
+  mat-header-cell:first-of-type,
+  mat-footer-cell:first-of-type {
+    padding-left: 10px;
+  }
+
+  .flex-item-right,
+  .flex-item-left {
+    flex: 100%;
+  }
+}
+
+.mobile-tab-label {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mobile-tab-label {
+    width: 100px;
+    display: inline-block;
+    font-weight: bold;
+  }
+
+  .advance-tab-table .mdc-data-table__header-row {
+    display: none;
+  }
+
+  .advance-tab-table .mdc-data-table__row {
     flex-direction: column;
     align-items: start;
     padding: 8px 24px;
@@ -939,9 +975,12 @@ $breakpoints: (
 }
 
 .menu-button:hover {
-  background-color: #ffffff; /* Make the background fully opaque */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
-  transform: scale(1.1); /* Slightly enlarge the button */
+  background-color: #ffffff;
+  /* Make the background fully opaque */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Add a shadow for emphasis */
+  transform: scale(1.1);
+  /* Slightly enlarge the button */
 }
 
 .preview-img {

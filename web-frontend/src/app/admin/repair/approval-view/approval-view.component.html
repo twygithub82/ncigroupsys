@@ -199,7 +199,8 @@
                           [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>No.</mat-header-cell>
                         <mat-cell *matCellDef="let row;"
-                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{row.index + 1}}</mat-cell>
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{row.index
+                          + 1}}</mat-cell>
                       </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">
@@ -228,7 +229,7 @@
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 0)">
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 0)" matTooltipClass="multiline-tooltip">
                               {{displayDamageRepairCode(row.rep_damage_repair, 0)}}
                             </span>
                           </span>
@@ -243,7 +244,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 1)">
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 1)" matTooltipClass="multiline-tooltip">
                             {{displayDamageRepairCode(row.rep_damage_repair, 1)}}
                           </span>
                         </mat-cell>
@@ -316,18 +317,13 @@
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
-                          <mat-icon>more_horiz</mat-icon>
+                          <mat-icon>more_vert</mat-icon>
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-                          @if (row.approve_part === undefined || row.approve_part === null) {
                           @if (repairEstPartDS.is4X(row.rep_damage_repair)){
-                          <mat-icon class="col-green font-bold" (click)="toggleApprovePart(row)">check</mat-icon>
-                          }
-                          @else {
-                          <mat-icon class="col-red font-bold">close</mat-icon>
-                          }
+                          <mat-icon class="font-bold">close</mat-icon>
                           }
                           @else {
                           @if (repairEstPartDS.isApprove(row)){
@@ -840,7 +836,7 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (canRollback()) {
+                  @if (repairEstDS.canRollback(repairEstItem)) {
                   <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)"
                     (click)="onRollback($event)">
                     <mat-icon>
@@ -853,7 +849,7 @@
                     {{translatedLangText.ROLLBACK}}
                   </button>
                   }
-                  @if (canApprove()) {
+                  @if (repairEstDS.canApprove(repairEstItem)) {
                   <button mat-flat-button color="basic" [disabled]="(repairEstDS.loading$ | async)"
                     class="m-l-5 bg-green" (click)="onApprove($event)">
                     <mat-icon>
@@ -866,7 +862,7 @@
                     {{translatedLangText.APPROVE}}
                   </button>
                   }
-                  @if (canCancel()) {
+                  @if (repairEstDS.canCancel(repairEstItem)) {
                   <button mat-flat-button color="warn" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5"
                     (click)="onCancel($event)">
                     <mat-icon>
