@@ -49,5 +49,36 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
+        public async Task<int> UpdateJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IConfiguration config, job_order jobOrder)
+        {
+            try
+            {
+                if (jobOrder == null)
+                    throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
+
+                if (string.IsNullOrEmpty(jobOrder.guid))
+                    throw new GraphQLException(new Error($"Job order not found", "NOT FOUND"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var job = new job_order() { guid = jobOrder.guid };
+                context.Attach(job);
+
+                job.update_by = user;
+                job.update_dt = currentDateTime;
+                job.remarks = jobOrder.remarks;
+
+                var res = await context.SaveChangesAsync();
+                //TODO
+                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
     }
 }
