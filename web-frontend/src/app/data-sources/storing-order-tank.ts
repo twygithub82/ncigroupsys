@@ -16,6 +16,7 @@ import { ReleaseOrderSotItem } from './release-order-sot';
 import { OutGateItem } from './out-gate';
 import { CustomerCompanyItem } from './customer-company';
 import { RepairEstItem } from './repair-est';
+import { ResidueEstItem } from './residue-est';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -99,6 +100,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public out_gate?: OutGateItem[];
   public customer_company?: CustomerCompanyItem;
   public repair_est?: RepairEstItem[];
+  public residue_est?:ResidueEstItem[];
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -662,6 +664,83 @@ const GET_STORING_ORDER_TANK_BY_ID_OUT_GATE = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        guid
+        tank_no
+        so_guid
+        tank_status_cv
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+        }
+        storing_order {
+          customer_company {
+            code
+            name
+          }
+        }
+        in_gate {
+          eir_no
+          eir_dt
+          delete_dt
+        }
+      residue {
+          allocate_by
+          allocate_dt
+          approve_by
+          approve_dt
+          bill_to_guid
+          complete_by
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_no
+          remarks
+          sot_guid
+          status_cv
+          update_by
+          update_dt
+          residue_part {
+            action
+            approve_part
+            cost
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            job_order_guid
+            quantity
+            residue_guid
+            tariff_residue_guid
+            update_by
+            update_dt
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -1002,6 +1081,29 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  searchStoringOrderTanksResidueEstimate(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

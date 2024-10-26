@@ -46,8 +46,7 @@
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                      <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
-                        [matAutocomplete]="customerCode">
+                      <input matInput formControlName="customer_code" [matAutocomplete]="customerCode">
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc">
@@ -60,7 +59,7 @@
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                      <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
+                      <input matInput [matAutocomplete]="lastCargo"
                         formControlName="last_cargo">
                       <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
                         @for (tc of last_cargoList; track tc) {
@@ -86,7 +85,7 @@
                       <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                       <mat-date-range-picker #eir_picker></mat-date-range-picker>
                     </mat-form-field>
-                  </div>
+                  </div> 
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.PART_NAME}}</mat-label>

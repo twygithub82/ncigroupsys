@@ -233,8 +233,8 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   initSearchForm() {
     this.searchForm = this.fb.group({
       tank_no: [''],
-      customer_code: this.customerCodeControl,
-      last_cargo: this.lastCargoControl,
+      customer_code: [''],
+      last_cargo:[''],
       eir_dt_start: [''],
       eir_dt_end: [''],
       part_name: [''],
@@ -447,7 +447,9 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     }
 
     if (this.searchForm!.value['last_cargo']) {
-      where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
+      if(!where.tariff_cleaning) where.tariff_cleaning={};
+
+      where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].code };
     }
 
     if (this.searchForm!.value['eir_no']) {
@@ -491,38 +493,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       where.repair_est = { some: reSome };
     }
 
-    // if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
-    //   const sotSome: any = {};
-
-    //   if (this.searchForm!.value['job_no']) {
-    //     sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
-    //   }
-
-    //   if (this.searchForm!.value['purpose']) {
-    //     const purposes = this.searchForm!.value['purpose'];
-    //     if (purposes.includes('STORAGE')) {
-    //       sotSome.purpose_storage = { eq: true }
-    //     }
-    //     if (purposes.includes('CLEANING')) {
-    //       sotSome.purpose_cleaning = { eq: true }
-    //     }
-    //     if (purposes.includes('STEAM')) {
-    //       sotSome.purpose_steam = { eq: true }
-    //     }
-
-    //     const repairPurposes = [];
-    //     if (purposes.includes('REPAIR')) {
-    //       repairPurposes.push('REPAIR');
-    //     }
-    //     if (purposes.includes('OFFHIRE')) {
-    //       repairPurposes.push('OFFHIRE');
-    //     }
-    //     if (repairPurposes.length > 0) {
-    //       sotSome.purpose_repair_cv = { in: repairPurposes };
-    //     }
-    //   }
-    //   where.storing_order_tank = { some: sotSome };
-    // }
+   
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
@@ -531,7 +502,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data.map(sot => {
           sot.repair_est = sot.repair_est?.map(rep => {
