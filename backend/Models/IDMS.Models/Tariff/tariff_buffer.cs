@@ -20,8 +20,10 @@ namespace IDMS.Models.Tariff
 
         public string? remarks { get; set; }
 
+        [UseFiltering]
         public IEnumerable<package_buffer?>? package_buffer { get; set; }
 
+        [UseFiltering]
         public IEnumerable<in_gate_survey?>? in_gate_survey { get; set; }
     }
 }

@@ -76,7 +76,7 @@ namespace IDMS.InGateCleaning.GqlTypes
                 if (ObjectAction.APPROVE.EqualsIgnore(inGateCleaning.action))
                 {
                     updateIngateCleaning.status_cv = ProcessStatus.APPROVE;
-                    updateIngateCleaning.approve_dt = currentDateTime;
+                    updateIngateCleaning.approve_dt = inGateCleaning.approve_dt;
                     updateIngateCleaning.approve_by = inGateCleaning?.storing_order_tank?.storing_order?.customer_company_guid;
                 }
                 else if (ObjectAction.KIV.EqualsIgnore(inGateCleaning.action))
@@ -85,7 +85,7 @@ namespace IDMS.InGateCleaning.GqlTypes
                 }
                 else if (ObjectAction.NA.EqualsIgnore(inGateCleaning.action))
                 {
-                    updateIngateCleaning.na_dt = currentDateTime;
+                    updateIngateCleaning.na_dt = inGateCleaning.na_dt;
                     updateIngateCleaning.status_cv = ProcessStatus.NO_ACTION;
 
                     if (string.IsNullOrEmpty(inGateCleaning.sot_guid))

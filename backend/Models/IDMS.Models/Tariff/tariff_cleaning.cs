@@ -52,15 +52,13 @@ namespace IDMS.Models.Tariff
 
         public string? open_on_gate_cv { get; set; }
 
-        //public string? rebate_type_cv { get; set; }
-        //[GraphQLName("cleaning_method_with_tariff")]
+        [UseFiltering]
         public cleaning_method? cleaning_method { get; set; }
-        //public CleaningMethodWithTariff? cleaning_method { get; set; }
 
-        //[GraphQLName("cleaning_category_with_tariff")]
+        [UseFiltering]
         public cleaning_category? cleaning_category { get; set; }
-        //public CleaningCategoryWithTariff? cleaning_category { get; set; }
 
+        [UseFiltering]
         [GraphQLName("storing_order_tank")]
         public IEnumerable<storing_order_tank>? sot { get; set; }
 

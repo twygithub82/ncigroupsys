@@ -33,8 +33,10 @@ namespace IDMS.Models.Tariff
 
         [UseFiltering]
         public IEnumerable<template_est_part>? template_est_part { get; set; }
+        
         [UseFiltering]
         public IEnumerable<repair_est_part>? repair_est_part { get; set; }
+
         [UseFiltering]
         public IEnumerable<package_repair>? package_repair { get; set; }
 
