@@ -1,19 +1,23 @@
-﻿using IDMS.Inventory.GqlTypes;
-using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.Models.Inventory;
+﻿using HotChocolate.Types;
+using HotChocolate;
+using IDMS.Repair.GqlTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using IDMS.Repair;
+using IDMS.Models.Service.GqlTypes.DB;
+using IDMS.Models.Service;
 
-namespace IDMS.InGateCleaning.GqlTypes
+namespace IDMS.Cleaning.GqlTypes
 {
-    [ExtendObjectType(typeof(Query))]
-    public class Cleaning_Query
+    [ExtendObjectType(typeof(RepairEstQuery))]
+    public class CleaningQuery
     {
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<in_gate_cleaning> QueryInGateCleaning(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<in_gate_cleaning> QueryInGateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             IQueryable<in_gate_cleaning> query = null;
             try

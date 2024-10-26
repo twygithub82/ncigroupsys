@@ -69,5 +69,7 @@ namespace IDMS.Models.Inventory
         public IEnumerable<release_order_sot>? release_order_sot { get; set; }
         [UseFiltering]
         public IEnumerable<repair_est>? repair_est { get; set; }
+        [UseFiltering]
+        public IEnumerable<residue?>? residue { get; set; }
     }
 }

@@ -1,12 +1,12 @@
 using AutoMapper;
 using HotChocolate.Types.Pagination;
 using Microsoft.EntityFrameworkCore;
-using System.Net.NetworkInformation;
 using IDMS.Models.Service.GqlTypes.DB;
 using HotChocolate.Data;
 using IDMS.Repair;
 using IDMS.Repair.GqlTypes;
 using IDMS.Residue.GqlTypes;
+using IDMS.Cleaning.GqlTypes;
 
 namespace IDMS.ServiceMS
 {
@@ -60,8 +60,8 @@ namespace IDMS.ServiceMS
                        .AddMutationType<RepairEstMutation>()
                        .AddTypeExtension<ResidueQuery>()
                        .AddTypeExtension<ResidueMutation>()
-                       //.AddTypeExtension<ReleaseOrderQuery>()
-                       //.AddSubscriptionType<BookingSubscription>()
+                       .AddTypeExtension<CleaningQuery>()
+                       .AddTypeExtension<CleaningMutation>()
                        //.AddMutationType<TemplateEstMutation>()
                        //.AddTypeExtension<ReleaseOrderMutation>()
                        //.AddTypeExtension<SchedulingMutation>()

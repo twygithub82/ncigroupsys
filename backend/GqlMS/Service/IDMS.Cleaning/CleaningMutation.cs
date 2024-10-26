@@ -1,25 +1,22 @@
 ﻿using AutoMapper;
 using CommonUtil.Core.Service;
-using IDMS.Inventory.GqlTypes;
-using IDMS.Models.Inventory.InGate.GqlTypes.DB;
-using IDMS.Models.Inventory;
-using IDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IDMS.InGateCleaning.GqlTypes.LocalModel;
+using HotChocolate;
+using HotChocolate.Types;
+using IDMS.Repair.GqlTypes;
+using static IDMS.Repair.GqlTypes.StatusConstant;
+using IDMS.Models.Service.GqlTypes.DB;
+using IDMS.Models.Service;
+using IDMS.Models.Inventory;
 
-namespace IDMS.InGateCleaning.GqlTypes
+namespace IDMS.Cleaning.GqlTypes
 {
-    [ExtendObjectType(typeof(Mutation))]
-    public class Cleaning_Mutation
+    [ExtendObjectType(typeof(RepairEstMutation))]
+    public class CleaningMutation
     {
         //[Authorize]
-        public async Task<int> AddInGateCleaning(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<int> AddInGateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, in_gate_cleaning inGateCleaning)
         {
 
@@ -33,7 +30,7 @@ namespace IDMS.InGateCleaning.GqlTypes
                 newIngateCleaning.create_by = user;
                 newIngateCleaning.create_dt = currentDateTime;
 
-                newIngateCleaning.status_cv = string.IsNullOrEmpty(inGateCleaning.status_cv) ? ProcessStatus.APPROVE : inGateCleaning.status_cv;
+                newIngateCleaning.status_cv = string.IsNullOrEmpty(inGateCleaning.status_cv) ? CurrentServiceStatus.APPROVE : inGateCleaning.status_cv;
 
                 if (!string.IsNullOrEmpty(inGateCleaning.job_no))
                     newIngateCleaning.job_no = inGateCleaning.job_no;
@@ -53,7 +50,7 @@ namespace IDMS.InGateCleaning.GqlTypes
         }
 
 
-        public async Task<int> UpdateInGateCleaning(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<int> UpdateInGateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
         [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, in_gate_cleaning inGateCleaning)
         {
 
@@ -75,18 +72,18 @@ namespace IDMS.InGateCleaning.GqlTypes
                
                 if (ObjectAction.APPROVE.EqualsIgnore(inGateCleaning.action))
                 {
-                    updateIngateCleaning.status_cv = ProcessStatus.APPROVE;
+                    updateIngateCleaning.status_cv = CurrentServiceStatus.APPROVE;
                     updateIngateCleaning.approve_dt = inGateCleaning.approve_dt;
                     updateIngateCleaning.approve_by = inGateCleaning?.storing_order_tank?.storing_order?.customer_company_guid;
                 }
                 else if (ObjectAction.KIV.EqualsIgnore(inGateCleaning.action))
                 {
-                    updateIngateCleaning.status_cv = ProcessStatus.KIV;
+                    updateIngateCleaning.status_cv = CurrentServiceStatus.KIV;
                 }
                 else if (ObjectAction.NA.EqualsIgnore(inGateCleaning.action))
                 {
                     updateIngateCleaning.na_dt = inGateCleaning.na_dt;
-                    updateIngateCleaning.status_cv = ProcessStatus.NO_ACTION;
+                    updateIngateCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
 
                     if (string.IsNullOrEmpty(inGateCleaning.sot_guid))
                         throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
@@ -109,7 +106,7 @@ namespace IDMS.InGateCleaning.GqlTypes
         }
 
 
-        public async Task<int> DeleteInGateCleaning(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<int> DeleteInGateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> inGateCleaningGuids)
         {
             int retval = 0;

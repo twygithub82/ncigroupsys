@@ -11,12 +11,13 @@ namespace IDMS.Repair.GqlTypes
         public static class CurrentServiceStatus
         {
             public const string PENDING = "PENDING";
-            public const string APPROVED = "APPROVED";
+            public const string APPROVE = "APPROVE";
             public const string IN_PROGRESS = "JOB_IN_PROGRESS";
             public const string QC = "QC_COMPLETED";
             public const string BILL = "BILL_COMPLETED";
             public const string CANCEL = "CANCELED";
-
+            public const string NO_ACTION = "NO_ACTION";
+            public const string KIV = "KIV";
         }
 
         //public static class ResidueQuoteStatus
@@ -35,7 +36,9 @@ namespace IDMS.Repair.GqlTypes
             public const string EDIT = "EDIT";
             public const string ROLLBACK = "ROLLBACK";
             public const string CANCEL = "CANCEL";
-            //public const string PREORDER = "PREORDER";
+            public const string KIV = "KIV";
+            public const string APPROVE = "APPROVE";
+            public const string NA = "NA";
         }
     }
 

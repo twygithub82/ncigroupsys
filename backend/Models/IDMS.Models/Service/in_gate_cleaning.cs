@@ -1,10 +1,9 @@
-﻿using HotChocolate;
-using HotChocolate.Data;
+﻿using IDMS.Models.Inventory;
 using IDMS.Models.Master;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IDMS.Models.Inventory
+namespace IDMS.Models.Service
 {
 
     public class in_gate_cleaning : Dates

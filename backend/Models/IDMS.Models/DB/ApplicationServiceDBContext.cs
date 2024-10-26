@@ -37,13 +37,13 @@ namespace IDMS.Models.Service.GqlTypes.DB
         public DbSet<aspnetusers> aspnetusers { get; set; }
         public DbSet<aspnetroles> aspnetroles { get; set; }
         public DbSet<aspnetuserroles> aspnetuserroles { get; set; }
-
         public DbSet<package_repair> package_repair { get; set; }
+        public DbSet<storing_order_tank> storing_order_tank { get; set; }
         public DbSet<repair_est> repair_est { get; set; }
         public DbSet<repair_est_part> repair_est_part { get; set; }
         public DbSet<rep_damage_repair> rep_damage_repair { get; set; }
-
         public DbSet<residue> residue { get; set; }
         public DbSet<residue_part> residue_part { get; set; }
+        public DbSet<in_gate_cleaning> in_gate_cleaning { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Parameter;
+using IDMS.Models.Service;
 using IDMS.Models.Shared;
 using IDMS.Models.Tariff;
 using Microsoft.EntityFrameworkCore;

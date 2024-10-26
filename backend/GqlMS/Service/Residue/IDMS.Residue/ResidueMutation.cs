@@ -146,7 +146,7 @@ namespace IDMS.Residue.GqlTypes
                     approveResidue.bill_to_guid = residueQuote.bill_to_guid;
                     approveResidue.update_by = user;
                     approveResidue.update_dt = currentDateTime;
-                    approveResidue.status_cv = CurrentServiceStatus.APPROVED;
+                    approveResidue.status_cv = CurrentServiceStatus.APPROVE;
                     approveResidue.job_no = residueQuote.job_no;
                     approveResidue.remarks = residueQuote.remarks;
                     approveResidue.approve_by = user;

@@ -295,7 +295,7 @@ namespace IDMS.Repair.GqlTypes
                     est.bill_to_guid = RepairEstimate.bill_to_guid;
                     est.update_by = user;
                     est.update_dt = currentDateTime;
-                    est.status_cv = StatusConstant.CurrentServiceStatus.APPROVED;
+                    est.status_cv = StatusConstant.CurrentServiceStatus.APPROVE;
                     est.remarks = RepairEstimate.remarks;
 
                     if (RepairEstimate.repair_est_part != null)
