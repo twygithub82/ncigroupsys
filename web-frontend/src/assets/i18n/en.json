@@ -622,7 +622,8 @@
     "BILLING-DETAILS":"Billing Details",
     "CLEANING-COST-FOR":"Cleaning cost for the cargo",
     "APPROVAL-STATUS":"Approval Status",
-    "METHOD":"Method"
+    "METHOD":"Method",
+    "LAST-CARGO-CLEANING-QUOTATION":"LAST CARGO CLEANING QUOTATION"
 
   },
   "CLEAN-PROCEDURES": {

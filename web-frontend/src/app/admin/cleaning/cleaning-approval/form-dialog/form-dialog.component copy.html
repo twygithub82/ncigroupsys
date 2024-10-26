@@ -147,73 +147,6 @@
           
           </div>
           <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 text-center">
-                  <mat-label style="text-decoration: underline; font-weight: bold;">{{translatedLangText.LAST_CARGO_CLEANING_QUOTATION }}</mat-label>
-            </div>
-          </div>
-          <div class="body overflow-auto">
-            <div class="responsive_table">
-              <table mat-table [dataSource]="igCleanItems" matSort
-                class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                <!-- ID Column -->
-                <ng-container matColumnDef="id">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="index">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
-                   #
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row ; let i = index " class="" [ngClass]="'tbl-col-width-per-1'">
-                    <span class="mobile-label">#:</span>  {{ i + 1 }}
-                  </mat-cell>
-                  <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                </ng-container>
-                <ng-container matColumnDef="desc">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-7'">
-                    {{translatedLangText.DESCRIPTION}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="" [ngClass]="'tbl-col-width-per-7'">
-                    <span
-                      class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
-                  </mat-cell>
-                  <mat-footer-cell *matFooterCellDef style="text-align: right;">
-                    <mat-label style="font-weight: bold;"> {{this.translatedLangText.TOTAL_COST}}</mat-label>
-                  </mat-footer-cell>
-                </ng-container>
-                <ng-container matColumnDef="depot">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
-                    {{translatedLangText.DEPOT_ESTIMATE}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="" [ngClass]="'tbl-col-width-per-2'">
-                    <span class="mobile-label">{{translatedLangText.DEPOT_ESTIMATE}}:</span>{{row.depotEstimate}}
-                  </mat-cell>
-                  <mat-footer-cell *matFooterCellDef [ngClass]="'tbl-col-width-per-2'">{{this.totalCost_depot.toFixed(2)}}</mat-footer-cell>
-                </ng-container>
-                <ng-container matColumnDef="package">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
-                    {{translatedLangText.CUSTOMER_APPROVAL}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="" [ngClass]="'tbl-col-width-per-2'">
-                    <span class="mobile-label">{{translatedLangText.CUSTOMER_APPROVAL}}:</span>{{row.customerApproval}}
-                  </mat-cell>
-                  <mat-footer-cell *matFooterCellDef [ngClass]="'tbl-col-width-per-2'">{{this.totalCost_customer.toFixed(2)}}</mat-footer-cell>
-                </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" matRipple>
-                </mat-row>
-                <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
-              </table>
-            </div>
-            <!-- No result -->
-            @if (!igCleanItems.length) {
-            <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="igCleanItems.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-            </div>
-            }
-          </div>
-          <!-- <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
               <div class="row">
                 <div class="col-xl-0_5 col-lg-0_5 col-md-1 col-sm-1 m-b-0">
@@ -312,7 +245,7 @@
                 </div>
               </div>
             </div>
-          </div> -->
+          </div>
           
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
