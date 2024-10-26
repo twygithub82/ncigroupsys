@@ -35,6 +35,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { MatDividerModule } from '@angular/material/divider';
 
 export interface DialogData {
   action?: string;
@@ -82,17 +83,19 @@ export interface DialogData {
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    TlxFormFieldComponent
+    TlxFormFieldComponent,
+    MatDividerModule,
 ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     //  'select',
       // 'img',
-       'fName',
-       'lName',
-       'email',
-       'gender',
+       'index',
+       'desc',
+       'depot',
+       'package',
+      // 'total',
       // 'bDate',
       // 'mobile',
       // 'actions',
@@ -219,13 +222,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     JOB_COMPLETION:"COMMON-FORM.JOB-COMPLETION",
     BILLING_DETAILS:"COMMON-FORM.BILLING-DETAILS",
     INOUT_GATE:"COMMON-FORM.INTOUT-GATE",
-    CLEANING_COST_FOR:"COMMON-FORM.CLEANING-COST-FOR"
-
+    CLEANING_COST_FOR:"COMMON-FORM.CLEANING-COST-FOR",
+    LAST_CARGO_CLEANING_QUOTATION :"COMMON-FORM.LAST-CARGO-CLEANING-QUOTATION",
+    TOTAL_COST:"COMMON-FORM.TOTAL-COST"
   };
 
   
   selectedItems: any;
   igCleanDS:InGateCleaningDS;
+  igCleanItems:any=[];
+  totalCost_depot: number = 0;
+  totalCost_customer: number = 0;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -248,6 +255,24 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
+    
+  }
+
+  createCleaningChargesItem(){
+
+    this.igCleanItems=[
+      {
+        description:this.getDescription(),
+        depotEstimate:this.pcForm?.get('depot_estimate_cost')?.value,
+        customerApproval:this.pcForm?.get('customer_approval_cost')?.value,
+      }
+    ]
+    this.calculateTotalCost();
+  }
+
+  calculateTotalCost() {
+    this.totalCost_depot = this.igCleanItems.reduce((acc:number, item:any) => acc + (Number(item.depotEstimate) || 0), 0);
+    this.totalCost_customer = this.igCleanItems.reduce((acc:number, item:any) => acc + (Number(item.customerApproval) || 0), 0);
   }
 
   createPackageCleaning(): UntypedFormGroup {
@@ -273,33 +298,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     });
   }
-//   profileChanged()
-//   {
-//     if(this.profileNameControl.value)
-//     {
-//       const selectedProfile:PackageDepotItem= this.profileNameControl.value;
-//       this.pcForm.patchValue({
-//         preinspection_cost_cust: selectedProfile.preinspection_cost,
-//         preinspection_cost_standard:selectedProfile.preinspection_cost,
-//         lolo_cost_cust:selectedProfile.lolo_cost,
-//         lolo_cost_standard: selectedProfile.tariff_depot?.lolo_cost,
-//         storage_cost_cust:selectedProfile.storage_cost,
-//         storage_cost_standard:selectedProfile.tariff_depot?.storage_cost,
-//         free_storage_days:selectedProfile.free_storage,
-//         gate_in_cost:selectedProfile.gate_in_cost,
-//         gate_out_cost:selectedProfile.gate_out_cost,
-//         remarks:selectedProfile.remarks,
-//         //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
-//       });
-//       this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
-    
-
-//     }
-//   }
-//   displayName(cc?: CustomerCompanyItem): string {
-//     return cc?.code ? `${cc.code} (${cc.name})` : '';
-// }
-
 
   displayDateFromEpoch(epoch: any) {
     if(epoch)
@@ -358,6 +356,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
          update_on:this.displayDateFromEpoch(inGateClnItem.update_on),
         
       });
+
+      this.createCleaningChargesItem();
     //  this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
 
     }
@@ -456,55 +456,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         }
       });
 
-    //let pd_guids:string[] = this.selectedItems
-
-    // .map(cc => cc.guid)
-    // .filter((guid): guid is string => guid !== undefined);
-
-    // var lolo_cost = -1;
-    // if (this.pcForm!.value["lolo_cost_cust"]) lolo_cost=Number(this.pcForm!.value["lolo_cost_cust"]);
-
-    // var preinspection_cost =-1;
-    // if (this.pcForm!.value["preinspection_cost_cust"]) preinspection_cost= Number(this.pcForm!.value["preinspection_cost_cust"]);
-    // var free_storage = -1;
-    // if(this.pcForm!.value["free_storage_days"]) free_storage= Number(this.pcForm!.value["free_storage_days"]);
-
-    
-    // var storage_cost =-1;
-    // if(this.pcForm!.value["storage_cost_cust"]) storage_cost=Number(this.pcForm!.value["storage_cost_cust"]);
-
-    // var gate_in_cost=-1;
-    // if(this.pcForm!.value["gate_in_cost_cust"]) gate_in_cost=Number(this.pcForm!.value["gate_in_cost_cust"]);
-
-    // var gate_out_cost=-1;
-    // if(this.pcForm!.value["gate_out_cost_cust"]) gate_out_cost=Number(this.pcForm!.value["gate_out_cost_cust"]);
-
-    // var storageCalValue:String="";
-    // if(this.storageCalControl.value)
-    // {
-    //     const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-    //     storageCalValue = storage_calCv.code_val||"";
-    // }
-
-    // var storage_cal_cv = storageCalValue;
-    // var remarks = this.pcForm!.value["remarks"]||"";
-    //  if(pd_guids.length==1)
-    //  {
-    //    if(!remarks)
-    //    {
-    //       remarks="--";
-    //    }
-    //  }
-    //   this.packageDepotDS?.updatePackageDepots(pd_guids,free_storage,lolo_cost,preinspection_cost,storage_cost,gate_in_cost, gate_out_cost,remarks,storage_cal_cv).subscribe(result=>{
-    //   if(result.data.updatePackageDepots>0)
-    //   {
-       
-    //             console.log('valid');
-    //             this.dialogRef.close(result.data.updatePackageDepots);
-
-    //   }
-    // });
-
+   
   }
   
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -566,7 +518,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   getDescription()
   {
-    return `${this.translatedLangText.CLEANING_COST_FOR}` ;
+    return `${this.translatedLangText.CLEANING_COST_FOR} ${this.pcForm?.value["cargo"]}` ;
   }
 
 
