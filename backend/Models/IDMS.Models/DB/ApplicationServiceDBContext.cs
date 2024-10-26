@@ -34,6 +34,9 @@ namespace IDMS.Models.Service.GqlTypes.DB
 
         }
 
+        public DbSet<team> team { get; set; }
+        public DbSet<job_order> job_order { get; set; }
+        public DbSet<time_table> time_table { get; set; }
         public DbSet<aspnetusers> aspnetusers { get; set; }
         public DbSet<aspnetroles> aspnetroles { get; set; }
         public DbSet<aspnetuserroles> aspnetuserroles { get; set; }
