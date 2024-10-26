@@ -19,6 +19,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
+	  <ProjectReference Include="..\..\IDMS.Service.GqlTypes\IDMS.Service.GqlTypes.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

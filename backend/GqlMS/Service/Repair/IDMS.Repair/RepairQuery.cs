@@ -3,12 +3,14 @@ using HotChocolate.Types;
 using IDMS.Models.Service;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Shared;
+using IDMS.Service.GqlTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Repair
 {
-    public class RepairEstQuery
+    [ExtendObjectType(typeof(ServiceQuery))]
+    public class RepairQuery
     {
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
@@ -25,23 +27,6 @@ namespace IDMS.Repair
                         .ThenInclude(p => p.in_gate);
 
                 return repairEst;
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-            }
-        }
-
-        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        [UseProjection]
-        [UseFiltering]
-        [UseSorting]
-        public IQueryable<aspnetusers> QueryUsers(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
-        {
-            try
-            {
-                var user = context.aspnetusers.Include(a => a.aspnetuserroles);
-                return user;
             }
             catch (Exception ex)
             {

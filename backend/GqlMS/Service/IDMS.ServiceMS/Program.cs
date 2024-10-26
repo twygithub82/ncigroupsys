@@ -7,6 +7,7 @@ using IDMS.Repair;
 using IDMS.Repair.GqlTypes;
 using IDMS.Residue.GqlTypes;
 using IDMS.Cleaning.GqlTypes;
+using IDMS.Service.GqlTypes;
 
 namespace IDMS.ServiceMS
 {
@@ -56,8 +57,10 @@ namespace IDMS.ServiceMS
             builder.Services.AddGraphQLServer()
                        .InitializeOnStartup()
                        .RegisterDbContext<ApplicationServiceDBContext>(DbContextKind.Pooled)
-                       .AddQueryType<RepairEstQuery>()
-                       .AddMutationType<RepairEstMutation>()
+                       .AddQueryType<ServiceQuery>()
+                       .AddMutationType<ServiceMutation>()
+                       .AddTypeExtension<RepairQuery>()
+                       .AddTypeExtension<RepairMutation>()
                        .AddTypeExtension<ResidueQuery>()
                        .AddTypeExtension<ResidueMutation>()
                        .AddTypeExtension<CleaningQuery>()

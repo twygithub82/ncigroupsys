@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Residue.GqlTypes", "Re
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cleaning", "Cleaning", "{87802D6A-7D07-4867-9BFA-CBA981554031}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDMS.Cleaning.GqlTypes", "IDMS.Cleaning\IDMS.Cleaning.GqlTypes.csproj", "{38A0A51E-7F62-4A80-944A-6C1D78B8AC6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Cleaning.GqlTypes", "IDMS.Cleaning\IDMS.Cleaning.GqlTypes.csproj", "{38A0A51E-7F62-4A80-944A-6C1D78B8AC6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDMS.Service.GqlTypes", "IDMS.Service.GqlTypes\IDMS.Service.GqlTypes.csproj", "{14B76433-E387-41C7-BB42-B8F7EEBD5EE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{38A0A51E-7F62-4A80-944A-6C1D78B8AC6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38A0A51E-7F62-4A80-944A-6C1D78B8AC6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38A0A51E-7F62-4A80-944A-6C1D78B8AC6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14B76433-E387-41C7-BB42-B8F7EEBD5EE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14B76433-E387-41C7-BB42-B8F7EEBD5EE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14B76433-E387-41C7-BB42-B8F7EEBD5EE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14B76433-E387-41C7-BB42-B8F7EEBD5EE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

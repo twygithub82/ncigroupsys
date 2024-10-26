@@ -5,14 +5,14 @@ using Microsoft.Extensions.Configuration;
 using HotChocolate;
 using HotChocolate.Types;
 using IDMS.Repair.GqlTypes;
-using static IDMS.Repair.GqlTypes.StatusConstant;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
 using IDMS.Models.Inventory;
+using IDMS.Service.GqlTypes;
 
 namespace IDMS.Cleaning.GqlTypes
 {
-    [ExtendObjectType(typeof(RepairEstMutation))]
+    [ExtendObjectType(typeof(ServiceMutation))]
     public class CleaningMutation
     {
         //[Authorize]

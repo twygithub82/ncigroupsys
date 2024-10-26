@@ -1,15 +1,15 @@
 ﻿using HotChocolate.Types;
 using HotChocolate;
-using IDMS.Repair.GqlTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using IDMS.Repair;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
+using IDMS.Service.GqlTypes;
 
 namespace IDMS.Cleaning.GqlTypes
 {
-    [ExtendObjectType(typeof(RepairEstQuery))]
+    [ExtendObjectType(typeof(ServiceQuery))]
     public class CleaningQuery
     {
 

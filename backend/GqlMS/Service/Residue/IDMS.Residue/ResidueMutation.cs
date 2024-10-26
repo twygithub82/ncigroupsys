@@ -2,23 +2,15 @@
 using HotChocolate.Types;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
-using IDMS.Repair;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using IDMS.Repair.GqlTypes;
-using IDMS.Models.Master;
 using Microsoft.Extensions.Configuration;
 using CommonUtil.Core.Service;
-using static IDMS.Repair.GqlTypes.StatusConstant;
+using IDMS.Service.GqlTypes;
 
 namespace IDMS.Residue.GqlTypes
 {
-    [ExtendObjectType(typeof(RepairEstMutation))]
+    [ExtendObjectType(typeof(ServiceMutation))]
     public class ResidueMutation
     {
         public async Task<int> AddResidueQuotation(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,

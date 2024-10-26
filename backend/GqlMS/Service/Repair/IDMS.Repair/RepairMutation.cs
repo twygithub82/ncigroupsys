@@ -5,13 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using CommonUtil.Core.Service;
 using IDMS.Models.Service;
-using static IDMS.Repair.GqlTypes.StatusConstant;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Repair.GqlTypes.LocalModel;
+using IDMS.Service.GqlTypes;
+using HotChocolate.Types;
 
 namespace IDMS.Repair.GqlTypes
 {
-    public class RepairEstMutation
+    [ExtendObjectType(typeof(ServiceMutation))]
+    public class RepairMutation
     {
         public async Task<int> AddRepairEstimate(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, repair_est RepairEstimate, customer_company? customerCompany)
@@ -37,7 +39,7 @@ namespace IDMS.Repair.GqlTypes
                 repEstimate.remarks = RepairEstimate.remarks;
                 repEstimate.total_hour = RepairEstimate.total_hour;
                 repEstimate.job_no = RepairEstimate.job_no;
-                repEstimate.status_cv = StatusConstant.CurrentServiceStatus.PENDING;
+                repEstimate.status_cv = CurrentServiceStatus.PENDING;
                 await context.repair_est.AddAsync(repEstimate);
 
                 //Handling For Template_est_part
@@ -213,7 +215,7 @@ namespace IDMS.Repair.GqlTypes
 
                         est.update_by = user;
                         est.update_dt = currentDateTime;
-                        est.status_cv = StatusConstant.CurrentServiceStatus.CANCEL;
+                        est.status_cv = CurrentServiceStatus.CANCEL;
                         est.remarks = estRepair.remarks;
                     }
                 }
@@ -245,7 +247,7 @@ namespace IDMS.Repair.GqlTypes
 
                         est.update_by = user;
                         est.update_dt = currentDateTime;
-                        est.status_cv = StatusConstant.CurrentServiceStatus.PENDING;
+                        est.status_cv = CurrentServiceStatus.PENDING;
                         est.remarks = estRepair.remarks;
 
                         if (string.IsNullOrEmpty(estRepair.customer_guid))
@@ -295,7 +297,7 @@ namespace IDMS.Repair.GqlTypes
                     est.bill_to_guid = RepairEstimate.bill_to_guid;
                     est.update_by = user;
                     est.update_dt = currentDateTime;
-                    est.status_cv = StatusConstant.CurrentServiceStatus.APPROVE;
+                    est.status_cv = CurrentServiceStatus.APPROVE;
                     est.remarks = RepairEstimate.remarks;
 
                     if (RepairEstimate.repair_est_part != null)

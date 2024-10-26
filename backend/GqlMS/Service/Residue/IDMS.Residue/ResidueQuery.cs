@@ -2,18 +2,13 @@
 using HotChocolate.Types;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
-using IDMS.Repair;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using IDMS.Service.GqlTypes;
 
 namespace IDMS.Residue.GqlTypes
 {
-    [ExtendObjectType(typeof(RepairEstQuery))]
+    [ExtendObjectType(typeof(ServiceQuery))]
     public class ResidueQuery
     {
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
