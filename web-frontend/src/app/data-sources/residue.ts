@@ -63,13 +63,13 @@ export class ResidueEstGO {
   }
 }
 
-export class ResidueEstItem extends ResidueEstGO {
-  public residue_est_part?: ResidueEstItem[];
+export class ResidueItem extends ResidueEstGO {
+  public residue_est_part?: ResidueItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?:CustomerCompanyItem;
   //public aspnetsuser?: UserItem;
   public actions?: string[]
-  constructor(item: Partial<ResidueEstItem> = {}) {
+  constructor(item: Partial<ResidueItem> = {}) {
     super(item)
     this.residue_est_part = item.residue_est_part;
     this.storing_order_tank = item.storing_order_tank;
@@ -468,7 +468,7 @@ export class ResidueEstItem extends ResidueEstGO {
 //   }
 //`
 
-export class RepairEstDS extends BaseDataSource<ResidueEstItem> {
+export class ResidueDS extends BaseDataSource<ResidueItem> {
   constructor(private apollo: Apollo) {
     super();
   }
@@ -588,23 +588,23 @@ export class RepairEstDS extends BaseDataSource<ResidueEstItem> {
   //   });
   // }
 
-  canAmend(re: ResidueEstItem): boolean {
+  canAmend(re: ResidueItem): boolean {
     return re.status_cv === 'PENDING';
   }
 
-  canApprove(re: ResidueEstItem): boolean {
+  canApprove(re: ResidueItem): boolean {
     return re.status_cv === 'PENDING';
   }
 
-  canCancel(re: ResidueEstItem): boolean {
+  canCancel(re: ResidueItem): boolean {
     return re.status_cv === 'PENDING';
   }
 
-  canRollback(re: ResidueEstItem): boolean {
+  canRollback(re: ResidueItem): boolean {
     return re.status_cv === 'CANCELED' || re.status_cv === 'APPROVED';
   }
 
-  canCopy(re: ResidueEstItem): boolean {
+  canCopy(re: ResidueItem): boolean {
     return true;
   }
 

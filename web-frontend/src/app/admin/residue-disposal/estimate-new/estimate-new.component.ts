@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -51,15 +51,18 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { MatCardModule } from '@angular/material/card';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { RepairEstPartDS, RepairEstPartItem } from 'app/data-sources/repair-part';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair';
+import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
-import { REPDamageRepairGO, REPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
+import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
+import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 
 @Component({
   selector: 'app-estimate-new',
@@ -104,16 +107,12 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   displayedColumns = [
     'seq',
     // 'group_name_cv',
-    'subgroup_name_cv',
-    'damange',
-    'repair',
-    'description',
-    'quantity',
-    'hour',
-    'price',
-    'material',
-    'isOwner',
-    'actions'
+     'desc',
+     'qty',
+     'unit_price',
+     'cost',
+     "actions"
+   
   ];
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
@@ -214,7 +213,10 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     BILLING_PROFILE:'COMMON-FORM.BILLING-PROFILE',
     BILLING_TO:'COMMON-FORM.BILLING-TO',
     BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    DEPOT_REFERENCE:'COMMON-FORM.DEPOT-REFERENCE'
+    DEPOT_REFERENCE:'COMMON-FORM.DEPOT-REFERENCE',
+    QUANTITY:'COMMON-FORM.QTY',
+    UNIT_PRICE:'COMMON-FORM.UNIT-PRICE',
+    COST:'COMMON-FORM.COST',
 
   }
 
@@ -227,9 +229,9 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
-  repairEstItem?: RepairEstItem;
+  repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
-  repList: RepairEstPartItem[] = [];
+  repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
   yesnoCvList: CodeValuesItem[] = []
@@ -245,6 +247,9 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   surveyorList: UserItem[] = []
   billingBranchList:CustomerCompanyItem[]=[];
   packResidueList:PackageResidueItem[]=[];
+  displayPackResidueList:PackageResidueItem[]=[];
+  deList:any[]=[];
+  
 
   customerCodeControl = new UntypedFormControl();
 
@@ -253,8 +258,9 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   plDS: PackageLabourDS;
-  repairEstDS: RepairEstDS;
-  repairEstPartDS: RepairEstPartDS;
+  repairEstDS: RepairDS;
+  repairEstPartDS: RepairPartDS;
+  residueDS:ResidueDS;
   
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
@@ -267,6 +273,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   isDuplicate = false;
 
   historyState: any = {};
+  updateSelectedItem:any={};
 
   constructor(
     public httpClient: HttpClient,
@@ -286,12 +293,13 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.plDS = new PackageLabourDS(this.apollo);
-    this.repairEstDS = new RepairEstDS(this.apollo);
-    this.repairEstPartDS = new RepairEstPartDS(this.apollo);
+    this.repairEstDS = new RepairDS(this.apollo);
+    this.repairEstPartDS = new RepairPartDS(this.apollo);
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
     this.packResidueDS= new PackageResidueDS(this.apollo);
+    this.residueDS=new ResidueDS(this.apollo);
 
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -319,93 +327,115 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       material_cost_discount: [0],
       last_test: [''],
       next_test: [''],
-      total_owner_hour: [0],
-      total_lessee_hour: [0],
-      total_hour: [0],
-      total_owner_labour_cost: [0],
-      total_lessee_labour_cost: [0],
-      total_labour_cost: [0],
-      total_owner_mat_cost: [0],
-      total_lessee_mat_cost: [0],
-      total_mat_cost: [0],
-      total_owner_cost: [0],
-      total_lessee_cost: [0],
-      total_cost: [0],
-      discount_labour_owner_cost: [0],
-      discount_labour_lessee_cost: [0],
-      discount_labour_cost: [0],
-      discount_mat_owner_cost: [0],
-      discount_mat_lessee_cost: [0],
-      discount_mat_cost: [0],
-      net_owner_cost: [0],
-      net_lessee_cost: [0],
-      net_cost: [0],
-      repList: ['']
+      desc:[''],
+      qty:[''],
+      unit_price:[''],
+      // total_owner_hour: [0],
+      // total_lessee_hour: [0],
+      // total_hour: [0],
+      // total_owner_labour_cost: [0],
+      // total_lessee_labour_cost: [0],
+      // total_labour_cost: [0],
+      // total_owner_mat_cost: [0],
+      // total_lessee_mat_cost: [0],
+      // total_mat_cost: [0],
+      // total_owner_cost: [0],
+      // total_lessee_cost: [0],
+      // total_cost: [0],
+      // discount_labour_owner_cost: [0],
+      // discount_labour_lessee_cost: [0],
+      // discount_labour_cost: [0],
+      // discount_mat_owner_cost: [0],
+      // discount_mat_lessee_cost: [0],
+      // discount_mat_cost: [0],
+      // net_owner_cost: [0],
+      // net_lessee_cost: [0],
+      // net_cost: [0],
+      deList: ['']
     });
   }
 
   initializeValueChanges() {
-    this.residueEstForm?.get('est_template')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          console.log(value);
-          if (this.getCustomer()?.def_template_guid) {
-            this.residueEstForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
-          }
-          // estimate
-          this.residueEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
-          this.residueEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
-          this.residueEstForm?.get('remarks')?.setValue(value.remarks);
-          const repList: RepairEstPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
-            const package_repair = tep.tariff_repair?.package_repair;
-            let material_cost = 0;
-            if (package_repair?.length) {
-              material_cost = package_repair[0].material_cost
-            }
-            const tep_damage_repair = this.filterDeleted(tep.tep_damage_repair).map((item: any) => {
-              return new REPDamageRepairItem({
-                code_cv: item.code_cv,
-                code_type: item.code_type,
-                action: 'new'
-              });
-            })
-            return new RepairEstPartItem({
-              repair_est_guid: this.repair_est_guid || undefined,
-              description: tep.description,
-              hour: tep.hour,
-              location_cv: tep.location_cv,
-              comment: tep.comment,
-              quantity: tep.quantity,
-              remarks: tep.remarks,
-              material_cost: material_cost,
-              tariff_repair_guid: tep.tariff_repair_guid,
-              tariff_repair: tep.tariff_repair,
-              rep_damage_repair: tep_damage_repair,
-              action: "new"
-            });
-          });
-          this.updateData(repList);
+    // this.residueEstForm?.get('est_template')?.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     if (value) {
+    //       console.log(value);
+    //       if (this.getCustomer()?.def_template_guid) {
+    //         this.residueEstForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
+    //       }
+    //       // estimate
+    //       this.residueEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
+    //       this.residueEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
+    //       this.residueEstForm?.get('remarks')?.setValue(value.remarks);
+    //       const repList: RepairPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
+    //         const package_repair = tep.tariff_repair?.package_repair;
+    //         let material_cost = 0;
+    //         if (package_repair?.length) {
+    //           material_cost = package_repair[0].material_cost
+    //         }
+    //         const tep_damage_repair = this.filterDeleted(tep.tep_damage_repair).map((item: any) => {
+    //           return new RPDamageRepairItem({
+    //             code_cv: item.code_cv,
+    //             code_type: item.code_type,
+    //             action: 'new'
+    //           });
+    //         })
+    //         return new RepairPartItem({
+    //           repair_guid: this.repair_est_guid || undefined,
+    //           description: tep.description,
+    //           hour: tep.hour,
+    //           location_cv: tep.location_cv,
+    //           comment: tep.comment,
+    //           quantity: tep.quantity,
+    //           remarks: tep.remarks,
+    //           material_cost: material_cost,
+    //           tariff_repair_guid: tep.tariff_repair_guid,
+    //           tariff_repair: tep.tariff_repair,
+    //           rp_damage_repair: tep_damage_repair,
+    //           action: "new"
+    //         });
+    //       });
+    //       this.updateData(repList);
 
       
+    //     }
+    //   })
+    // ).subscribe();
+
+    // this.residueEstForm?.get('labour_cost_discount')?.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     this.calculateCost();
+    //   })
+    // ).subscribe();
+
+    // this.residueEstForm?.get('material_cost_discount')?.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     this.calculateCost();
+    //   })
+    // ).subscribe();
+
+
+    this.residueEstForm?.get('desc')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var desc_value = this.residueEstForm?.get("desc")?.value;
+        this.displayPackResidueList= this.packResidueList.filter(data=> data.description && data.description.includes(desc_value));
+        if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
+        else if(typeof desc_value==='object')
+        {
+          this.residueEstForm?.patchValue({
+
+             unit_price: desc_value?.cost.toFixed(2)
+          });
         }
-      })
-    ).subscribe();
 
-    this.residueEstForm?.get('labour_cost_discount')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        this.calculateCost();
-      })
-    ).subscribe();
-
-    this.residueEstForm?.get('material_cost_discount')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        this.calculateCost();
       })
     ).subscribe();
   }
@@ -500,65 +530,65 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
 
 
-  populateRepairEst(repair_est: RepairEstItem[] | undefined, isDuplicate: boolean) {
-    if (this.isDuplicate) {
-      if (this.repair_est_guid) {
-        this.repairEstDS.getRepairEstByID(this.repair_est_guid, this.sotItem?.storing_order?.customer_company_guid!).subscribe(data => {
-          if (this.repairEstDS.totalCount > 0) {
-            const found = data;
-            if (found?.length) {
-              this.populateFoundRepairEst(found[0]!, isDuplicate);
-            }
-          }
-        });
-      }
-    } else {
-      if (repair_est?.length) {
-        const found = repair_est.filter(x => x.guid === this.repair_est_guid);
-        if (found?.length) {
-          this.populateFoundRepairEst(found[0]!, isDuplicate);
-        }
-      }
-    }
+  populateRepairEst(repair_est: RepairItem[] | undefined, isDuplicate: boolean) {
+    // if (this.isDuplicate) {
+    //   if (this.repair_est_guid) {
+    //     this.res.getRepairEstByID(this.repair_est_guid, this.sotItem?.storing_order?.customer_company_guid!).subscribe(data => {
+    //       if (this.repairEstDS.totalCount > 0) {
+    //         const found = data;
+    //         if (found?.length) {
+    //           this.populateFoundRepairEst(found[0]!, isDuplicate);
+    //         }
+    //       }
+    //     });
+    //   }
+    // } else {
+    //   if (repair_est?.length) {
+    //     const found = repair_est.filter(x => x.guid === this.repair_est_guid);
+    //     if (found?.length) {
+    //       this.populateFoundRepairEst(found[0]!, isDuplicate);
+    //     }
+    //   }
+    // }
   }
 
-  populateFoundRepairEst(repairEst: RepairEstItem, isDuplicate: boolean) {
-    this.repairEstItem = isDuplicate ? new RepairEstItem() : repairEst;
-    this.isOwner = !isDuplicate ? (repairEst!.owner_enable ?? false) : false;
-    this.repairEstItem!.repair_est_part = this.filterDeleted(repairEst!.repair_est_part).map((rep: any) => {
-      if (isDuplicate) {
-        const package_repair = rep.tariff_repair?.package_repair;
-        let material_cost = rep.material_cost;
-        if (isDuplicate && package_repair?.length) {
-          material_cost = package_repair[0].material_cost;
-        }
+  populateFoundRepairEst(repairEst: RepairPartItem, isDuplicate: boolean) {
+    // this.repairEstItem = isDuplicate ? new RepairPartItem() : repairEst;
+    // this.isOwner = !isDuplicate ? (repairEst!.owner ?? false) : false;
+    // this.repairEstItem!.repair_part = this.filterDeleted(repairEst!.repair_part).map((rep: any) => {
+    //   if (isDuplicate) {
+    //     const package_repair = rep.tariff_repair?.package_repair;
+    //     let material_cost = rep.material_cost;
+    //     if (isDuplicate && package_repair?.length) {
+    //       material_cost = package_repair[0].material_cost;
+    //     }
 
-        const rep_damage_repair = this.filterDeleted(rep.rep_damage_repair).map((rep_d_r: any) => {
-          rep_d_r.guid = undefined;
-          rep_d_r.action = 'new';
-          return rep_d_r;
-        });
+    //     const rep_damage_repair = this.filterDeleted(rep.rep_damage_repair).map((rep_d_r: any) => {
+    //       rep_d_r.guid = undefined;
+    //       rep_d_r.action = 'new';
+    //       return rep_d_r;
+    //     });
 
-        return {
-          ...rep,
-          rep_damage_repair: rep_damage_repair,
-          material_cost: material_cost,
-          guid: null,
-          repair_est_guid: null,
-          action: 'new'
-        };
-      }
+    //     return {
+    //       ...rep,
+    //       rep_damage_repair: rep_damage_repair,
+    //       material_cost: material_cost,
+    //       guid: null,
+    //       repair_est_guid: null,
+    //       action: 'new'
+    //     };
+    //   }
 
-      return rep;
-    });
-    this.updateData(this.repairEstItem!.repair_est_part);
-    this.residueEstForm?.patchValue({
-      guid: !isDuplicate ? this.repairEstItem!.guid : '',
-      remarks: this.repairEstItem!.remarks,
-      surveyor_id: this.repairEstItem!.aspnetusers_guid,
-      labour_cost_discount: this.repairEstItem!.labour_cost_discount,
-      material_cost_discount: this.repairEstItem!.material_cost_discount
-    });
+    //   return rep;
+    // });
+    // this.updateData(this.repairEstItem!.repair_est_part);
+    // this.residueEstForm?.patchValue({
+    //   guid: !isDuplicate ? this.repairEstItem!.guid : '',
+    //   remarks: this.repairEstItem!.remarks,
+    //   surveyor_id: this.repairEstItem!.aspnetusers_guid,
+    //   labour_cost_discount: this.repairEstItem!.labour_cost_discount,
+    //   material_cost_discount: this.repairEstItem!.material_cost_discount
+    // });
   }
 
   getCustomerLabourPackage(customer_company_guid: string) {
@@ -643,99 +673,153 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  selectOwner($event: Event, row: RepairEstPartItem) {
+  selectOwner($event: Event, row: RepairPartItem) {
     this.stopPropagation($event);
     row.owner = !(row.owner || false);
     this.calculateCost();
   }
 
-  addEstDetails(event: Event, row?: RepairEstPartItem) {
+
+  checkCompulsoryEst(fields:string[])
+  {
+    fields.forEach(name=>{
+    if( !this.residueEstForm?.get(name)?.value)
+      {
+        this.residueEstForm?.get(name)?.setErrors({ required: true });
+        this.residueEstForm?.get(name)?.markAsTouched(); // Trigger validation display
+      }
+    });
+  }
+
+  checkDuplicationEst(item:PackageResidueItem ,index:number=-1)
+  {
+    var existItems = this.deList.filter(data=>data.description===item?.description)
+    if(existItems.length>0)
+    {
+      if(index==-1 || index!=existItems[0].index)
+      {
+        this.residueEstForm?.get("desc")?.setErrors({ duplicated: true });
+      }
+    }
+  }
+
+  addEstDetails(event: Event) {
+    
     this.preventDefault(event);  // Prevents the form submission
+    
+    var descObject :PackageResidueItem;
+
+    if(typeof this.residueEstForm?.get("desc")?.value==="object")
+    {
+      descObject = new PackageResidueItem(this.residueEstForm?.get("desc")?.value);
+      descObject.description = descObject.tariff_residue?.description;
+    }
+    else
+    {
+      descObject = new PackageResidueItem();
+      descObject.description= this.residueEstForm?.get("desc")?.value;
+      descObject.cost= Number(this.residueEstForm?.get("unit_price")?.value);
+    }
+
+
+    this.checkCompulsoryEst(["desc","qty","unit_price"]);
+    this.checkDuplicationEst(descObject);
+    if(!this.residueEstForm?.valid)return;
+    
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const addSot = row ?? new RepairEstPartItem();
-    addSot.repair_est_guid = addSot.repair_est_guid;
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
-      data: {
-        item: row ? row : addSot,
-        action: 'new',
-        translatedLangText: this.translatedLangText,
-        populateData: {
-          groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: this.subgroupNameCvList,
-          yesnoCvList: this.yesnoCvList,
-          partLocationCvList: this.partLocationCvList,
-          damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList,
-          unitTypeCvList: this.unitTypeCvList
-        },
-        index: -1,
-        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
-        existedPart: this.repList
-      },
-      direction: tempDirection
-    });
-    dialogRef.componentInstance.dataSubject.subscribe((result) => {
-      this.addRepairEstPart(result)
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.addRepairEstPart(result)
-      }
-    });
+
+  
+    let residuePartItem = new ResiduePartItem();
+    residuePartItem.action="NEW",
+    residuePartItem.cost= Number(this.residueEstForm?.get("unit_price")?.value);
+    residuePartItem.description= descObject.description;
+    residuePartItem.quantity=this.residueEstForm?.get("qty")?.value;
+    if(this.sotItem?.residue_est?.length!>0)residuePartItem.residue_guid = this.sotItem?.residue_est![0]!.guid!;
+    residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
+
+    var newData =[residuePartItem ,...this.deList];
+    this.updateData(newData);
+    this.resetValue();
   }
 
-  editEstDetails(event: Event, row: RepairEstPartItem, index: number) {
+  editEstDetails(event: Event, row: ResiduePartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
+
+    this.updateSelectedItem ={
+      item:row,
+      index:index,
+      action:"update"
     }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
-      data: {
-        item: row,
-        action: 'edit',
-        translatedLangText: this.translatedLangText,
-        populateData: {
-          groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: this.subgroupNameCvList,
-          yesnoCvList: this.yesnoCvList,
-          partLocationCvList: this.partLocationCvList,
-          damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList,
-          unitTypeCvList: this.unitTypeCvList
-        },
-        index: index,
-        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
-        existedPart: this.repList
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const data = [...this.repList];
-        const updatedItem = new RepairEstPartItem({
-          ...result.item,
-        });
-        if (result.index >= 0) {
-          data[result.index] = updatedItem;
-          this.updateData(data);
-        } else {
-          this.updateData([...this.repList, result.item]);
-        }
-      }
-    });
+    // var descObject :PackageResidueItem;
+
+    // if(typeof this.residueEstForm?.get("desc")?.value==="object")
+    // {
+    //   descObject = new PackageResidueItem(this.residueEstForm?.get("desc")?.value);
+    //   descObject.description = descObject.tariff_residue?.description;
+    // }
+    // else
+    // {
+    //   descObject = new PackageResidueItem();
+    //   descObject.description= this.residueEstForm?.get("desc")?.value;
+    //   descObject.cost= Number(this.residueEstForm?.get("unit_price")?.value);
+    // }
+
+
+    // this.checkCompulsoryEst(["desc","qty","unit_price"]);
+    // this.checkDuplicationEst(descObject);
+    // if(!this.residueEstForm?.valid)return;
+
+
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(FormDialogComponent, {
+    //   width: '1000px',
+    //   data: {
+    //     item: row,
+    //     action: 'edit',
+    //     translatedLangText: this.translatedLangText,
+    //     populateData: {
+    //       groupNameCvList: this.groupNameCvList,
+    //       subgroupNameCvList: this.subgroupNameCvList,
+    //       yesnoCvList: this.yesnoCvList,
+    //       partLocationCvList: this.partLocationCvList,
+    //       damageCodeCvList: this.damageCodeCvList,
+    //       repairCodeCvList: this.repairCodeCvList,
+    //       unitTypeCvList: this.unitTypeCvList
+    //     },
+    //     index: index,
+    //     customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
+    //     existedPart: this.repList
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result) {
+    //     const data = [...this.repList];
+    //     const updatedItem = new RepairPartItem({
+    //       ...result.item,
+    //     });
+    //     if (result.index >= 0) {
+    //       data[result.index] = updatedItem;
+    //       this.updateData(data);
+    //     } else {
+    //       this.updateData([...this.repList, result.item]);
+    //     }
+    //   }
+    // });
   }
 
-  deleteItem(event: Event, row: RepairEstPartItem, index: number) {
+  deleteItem(event: Event, row: ResiduePartItem, index: number) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -754,7 +838,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         if (result.item.guid) {
-          const data: any[] = [...this.repList];
+          const data: any[] = [...this.deList];
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
@@ -763,7 +847,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
         } else {
-          const data = [...this.repList];
+          const data = [...this.deList];
           data.splice(index, 1);
           this.updateData(data); // Refresh the data source
         }
@@ -771,7 +855,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     });
   }
 
-  cancelSelectedRows(row: RepairEstPartItem[]) {
+  cancelSelectedRows(row: RepairPartItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -791,7 +875,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairEstPartItem) => {
+        result.item.forEach((newItem: RepairPartItem) => {
           // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
@@ -811,7 +895,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     });
   }
 
-  rollbackSelectedRows(row: RepairEstPartItem[]) {
+  rollbackSelectedRows(row: RepairPartItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -831,7 +915,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairEstPartItem) => {
+        result.item.forEach((newItem: RepairPartItem) => {
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
           if (index !== -1) {
@@ -869,7 +953,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
   addRepairEstPart(result: any) {
     const data = [...this.repList];
-    const newItem = new RepairEstPartItem({
+    const newItem = new RepairPartItem({
       ...result.item,
     });
     data.push(newItem);
@@ -895,92 +979,86 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
   onFormSubmit() {
-    this.residueEstForm!.get('repList')?.setErrors(null);
-    if (this.residueEstForm?.valid) {
-      if (!this.repList.length) {
-        this.residueEstForm.get('repList')?.setErrors({ required: true });
-      } else {
-        let re: RepairEstItem = new RepairEstGO(this.repairEstItem);
+    // this.residueEstForm!.get('repList')?.setErrors(null);
+    // if (this.residueEstForm?.valid) {
+    //   if (!this.repList.length) {
+    //     this.residueEstForm.get('repList')?.setErrors({ required: true });
+    //   } else {
+    //     let re: RepairEstItem = new RepairEstGO(this.repairEstItem);
 
-        const rep: RepairEstPartItem[] = this.repList.map((item: any) => {
-          // Ensure action is an array and take the last action only
-          const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
-            return new REPDamageRepairItem({
-              guid: item.guid,
-              rep_guid: item.rep_guid,
-              code_cv: item.code_cv,
-              code_type: item.code_type,
-              action: item.action
-            });
-          });
+    //     const rep: ResiduePartItem[] = this.repList.map((item: any) => {
+    //       // Ensure action is an array and take the last action only
+    //       const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
+    //         return new REPDamageRepairItem({
+    //           guid: item.guid,
+    //           rep_guid: item.rep_guid,
+    //           code_cv: item.code_cv,
+    //           code_type: item.code_type,
+    //           action: item.action
+    //         });
+    //       });
 
-          console.log(item)
-          return new RepairEstPartItem({
-            ...item,
-            tariff_repair: undefined,
-            rep_damage_repair: rep_damage_repair,
-            action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
-          });
-        });
-        re.repair_est_part = rep;
-        re.sot_guid = this.sotItem?.guid;
-        re.aspnetusers_guid = this.residueEstForm.get('surveyor_id')?.value;
-        re.labour_cost_discount = Utility.convertNumber(this.residueEstForm.get('labour_cost_discount')?.value);
-        re.material_cost_discount = Utility.convertNumber(this.residueEstForm.get('material_cost_discount')?.value);
-        re.labour_cost = this.getLabourCost();
-        re.total_hour = Utility.convertNumber(this.residueEstForm.get('total_hour')?.value, 2);
-        re.total_cost = Utility.convertNumber(this.residueEstForm.get('total_cost')?.value, 2);
-        re.remarks = this.residueEstForm.get('remarks')?.value;
-        re.owner_enable = this.isOwner;
+    //       console.log(item)
+    //       return new ResiduePartItem({
+    //         ...item,
+    //         tariff_repair: undefined,
+    //         rep_damage_repair: rep_damage_repair,
+    //         action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
+    //       });
+    //     });
+    //     re.repair_est_part = rep;
+    //     re.sot_guid = this.sotItem?.guid;
+    //     re.aspnetusers_guid = this.residueEstForm.get('surveyor_id')?.value;
+    //     re.labour_cost_discount = Utility.convertNumber(this.residueEstForm.get('labour_cost_discount')?.value);
+    //     re.material_cost_discount = Utility.convertNumber(this.residueEstForm.get('material_cost_discount')?.value);
+    //     re.labour_cost = this.getLabourCost();
+    //     re.total_hour = Utility.convertNumber(this.residueEstForm.get('total_hour')?.value, 2);
+    //     re.total_cost = Utility.convertNumber(this.residueEstForm.get('total_cost')?.value, 2);
+    //     re.remarks = this.residueEstForm.get('remarks')?.value;
+    //     re.owner_enable = this.isOwner;
 
-        let cc: any = undefined;
-        if (this.residueEstForm?.get('is_default_template')?.value && this.residueEstForm.get('est_template')?.value?.guid) {
-          cc = this.getCustomer();
-          cc!.def_template_guid = this.residueEstForm.get('est_template')?.value?.guid;
-          cc = new CustomerCompanyGO({ ...cc });
-          console.log(cc);
-        }
+    //     let cc: any = undefined;
+    //     if (this.residueEstForm?.get('is_default_template')?.value && this.residueEstForm.get('est_template')?.value?.guid) {
+    //       cc = this.getCustomer();
+    //       cc!.def_template_guid = this.residueEstForm.get('est_template')?.value?.guid;
+    //       cc = new CustomerCompanyGO({ ...cc });
+    //       console.log(cc);
+    //     }
 
-        // remove the object
-        re.aspnetsuser = undefined;
+    //     // remove the object
+    //     re.aspnetsuser = undefined;
 
-        console.log(re);
-        if (re.guid) {
-          this.repairEstDS.updateRepairEstimate(re, cc).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.updateRepairEstimate);
-          });
-        } else {
-          this.repairEstDS.addRepairEstimate(re, cc).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.addRepairEstimate);
-          });
-        }
-      }
-    } else {
-      console.log('Invalid residueEstForm', this.residueEstForm?.value);
-    }
+    //     console.log(re);
+    //     if (re.guid) {
+    //       this.repairEstDS.updateRepairEstimate(re, cc).subscribe(result => {
+    //         console.log(result)
+    //         this.handleSaveSuccess(result?.data?.updateRepairEstimate);
+    //       });
+    //     } else {
+    //       this.repairEstDS.addRepairEstimate(re, cc).subscribe(result => {
+    //         console.log(result)
+    //         this.handleSaveSuccess(result?.data?.addRepairEstimate);
+    //       });
+    //     }
+    //   }
+    // } else {
+    //   console.log('Invalid residueEstForm', this.residueEstForm?.value);
+    // }
   }
 
-  updateData(newData: RepairEstPartItem[] | undefined): void {
+  updateData(newData: ResiduePartItem[] | undefined): void {
     if (newData?.length) {
-      newData = newData.map((row) => ({
-        ...row,
-        tariff_repair: {
-          ...row.tariff_repair,
-          sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
-        }
-      }));
-
-      newData = this.sortAndGroupByGroupName(newData);
-      newData = [...this.sortREP(newData)];
-      
-      this.repList = newData.map((row, index) => ({
+      this.deList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
       
-      this.calculateCost();
+      //this.calculateCost();
+    }
+    else
+    {
+      this.deList=[];
+      
     }
   }
 
@@ -1158,7 +1236,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return groupedRepList;
   }
 
-  sortREP(newData: RepairEstPartItem[]): any[] {
+  sortREP(newData: RepairPartItem[]): any[] {
     newData.sort((a, b) => b.create_dt! - a.create_dt!);
     return newData;
   }
@@ -1327,6 +1405,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
 
       this.packResidueList=data;
+      this.displayPackResidueList=data;
     });
 
   }
@@ -1397,6 +1476,69 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     ccItem.name=name;
     return ccItem
 
+  }
+
+  displayResiduePart(cc: any): string {
+    return cc && cc.tariff_residue ? cc.tariff_residue.description : '';
+  }
+
+  // enableRequire(item:string)
+  // {
+  //   const itmControl = this.residueEstForm?.get(item);
+  //   itmControl?.clearValidators();
+  //   itmControl?.updateValueAndValidity({ emitEvent: false });
+  // }
+
+  // disableRequire(item:string)
+  // {
+  //   const itmControl = this.residueEstForm?.get(item);
+  //   itmControl?.clearValidators();
+  //   itmControl?.updateValueAndValidity({ emitEvent: true });
+  // }
+  // disableRequiredCheck(items:string[])
+  // {
+  //    items.forEach(itm=>
+      
+
+     
+  //    );
+  // } 
+
+  resetValue(){
+//     this.residueEstForm?.get('desc')?.clearValidators();
+// this.residueEstForm?.get('qty')?.clearValidators();
+// this.residueEstForm?.get('unit_price')?.clearValidators();
+
+// // Update validity to ensure changes are applied
+// this.residueEstForm?.get('desc')?.updateValueAndValidity();
+// this.residueEstForm?.get('qty')?.updateValueAndValidity();
+// this.residueEstForm?.get('unit_price')?.updateValueAndValidity();
+
+//     this.residueEstForm?.get('desc')?.setValue('', { emitEvent: false });
+//     this.residueEstForm?.get('qty')?.setValue('', { emitEvent: false });
+//    this.residueEstForm?.get('unit_price')?.setValue('', { emitEvent: false });
+
+//    this.residueEstForm?.get('desc')?.setValidators([Validators.required]);
+// this.residueEstForm?.get('qty')?.setValidators([Validators.required]);
+// this.residueEstForm?.get('unit_price')?.setValidators([Validators.required]);
+
+// this.residueEstForm?.get('desc')?.updateValueAndValidity();
+// this.residueEstForm?.get('qty')?.updateValueAndValidity();
+// this.residueEstForm?.get('unit_price')?.updateValueAndValidity();
+    // this.residueEstForm?.get('desc')?.disable({ emitEvent: false });
+    // this.residueEstForm?.get('qty')?.disable({ emitEvent: false });
+    // this.residueEstForm?.get('unit_price')?.disable({ emitEvent: false });
+    this.residueEstForm?.patchValue({
+      desc:'',
+      qty:'',
+      unit_price:''
+    },{emitEvent:false});
+    this.residueEstForm?.get('desc')?.setErrors(null);
+    this.residueEstForm?.get('qty')?.setErrors(null);
+    this.residueEstForm?.get('unit_price')?.setErrors(null);
+    // this.residueEstForm?.get('desc')?.enable({ emitEvent: false });
+    // this.residueEstForm?.get('qty')?.enable({ emitEvent: false });
+    // this.residueEstForm?.get('unit_price')?.enable({ emitEvent: false });
   }
   
 }

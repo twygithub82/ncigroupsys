@@ -47,7 +47,7 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                       <input matInput formControlName="customer_code" [matAutocomplete]="customerCode">
-                      <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                      <mat-autocomplete #customerCode="matAutocomplete">
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc">
                           {{ccDS.displayName(cc)}}
@@ -277,7 +277,7 @@
                       <mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                          [checked]="reSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                           [ngClass]="'tbl-checkbox'">
                         </mat-checkbox>
                       </mat-cell>
                     </ng-container>
@@ -336,19 +336,19 @@
                             <span>{{translatedLangText.AMEND}}</span>
                           </button>
                           } -->
-                          @if (repairEstDS.canCopy(repair_estRow)) {
+                          @if (residueDS.canCopy(repair_estRow)) {
                           <button mat-menu-item (click)="copyRepairEst(repair_estRow)">
                             <mat-icon>content_copy</mat-icon>
                             <span>{{translatedLangText.COPY}}</span>
                           </button>
                           }
-                          @if (repairEstDS.canRollback(repair_estRow)) {
+                          @if (residueDS.canRollback(repair_estRow)) {
                           <button mat-menu-item (click)="rollbackRow(repair_estRow)">
                             <mat-icon>undo</mat-icon>
                             <span>{{translatedLangText.ROLLBACK}}</span>
                           </button>
                           }
-                          @if (repairEstDS.canCancel(repair_estRow)) {
+                          @if (residueDS.canCancel(repair_estRow)) {
                           <button mat-menu-item (click)="cancelRow(repair_estRow)">
                             <mat-icon>cancel</mat-icon>
                             <span>{{translatedLangText.CANCEL}}</span>

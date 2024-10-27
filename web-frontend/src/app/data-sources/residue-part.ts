@@ -7,7 +7,7 @@ import { StoringOrderTankItem } from './storing-order-tank';
 import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
 import { RepairItem } from './repair';
-import { RPDamageRepairItem } from './rp-damage-repair';
+//import { REPDamageRepairItem } from './rep-damage-repair';
 import { TariffResidueItem } from './tariff-residue';
 
 export class ResidueEstPartGO {
@@ -72,10 +72,11 @@ export class ResidueEstPartGO {
   }
 }
 
-export class ResidueEstPartItem extends ResidueEstPartGO {
+export class ResiduePartItem extends ResidueEstPartGO {
   public tariff_residue?: TariffResidueItem;
   
-  constructor(item: Partial<ResidueEstPartItem> = {}) {
+  
+  constructor(item: Partial<ResiduePartItem> = {}) {
     super(item)
     this.tariff_residue = item.tariff_residue;
   }
@@ -164,16 +165,16 @@ export const GET_SCHEDULING_SOT = gql`
   }
 `;
 
-export class RepairEstPartDS extends BaseDataSource<RepairEstPartItem> {
+export class ResiduePartDS extends BaseDataSource<ResiduePartItem> {
   constructor(private apollo: Apollo) {
     super();
   }
 
-  isApprove(rep: RepairEstPartItem) {
+  isApprove(rep: ResiduePartItem) {
     return rep.approve_part;
   }
 
-  is4X(repDmgRepair: REPDamageRepairItem[] | undefined): boolean | undefined {
-    return repDmgRepair && !repDmgRepair.some((item: REPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
-  }
+  // is4X(repDmgRepair: REPDamageRepairItem[] | undefined): boolean | undefined {
+  //   return repDmgRepair && !repDmgRepair.some((item: REPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
+  // }
 }

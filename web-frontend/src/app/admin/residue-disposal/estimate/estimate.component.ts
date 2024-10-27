@@ -46,9 +46,11 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
-import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
-import { ResidueEstItem } from 'app/data-sources/residue-est';
+
+// import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
+// import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { ResidueDS,ResidueItem } from 'app/data-sources/residue';
+import { RepairItem } from 'app/data-sources/repair';
 
 @Component({
   selector: 'app-estimate',
@@ -171,10 +173,11 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  repairEstDS: RepairDS;
+  residueDS:ResidueDS;
+ // repairEstDS: RepairDS;
 
   sotList: StoringOrderTankItem[] = [];
-  reSelection = new SelectionModel<RepairItem>(true, []);
+  //reSelection = new SelectionModel<RepairItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   reStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -185,7 +188,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  copiedResidueEst?: ResidueEstItem;
+  copiedResidueEst?: ResidueItem;
 
   pageIndex = 0;
   pageSize = 10;
@@ -218,7 +221,8 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.repairEstDS = new RepairDS(this.apollo);
+    this.residueDS= new ResidueDS(this.apollo);
+    //this.repairEstDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -261,39 +265,39 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.paginator._changePageSize(this.paginator.pageSize);
   }
 
-  toggleRow(row: RepairItem) {
-    this.reSelection.toggle(row);
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    if (this.reSelection.isSelected(row)) {
-      selectedItems.add(row.guid!);
-    } else {
-      selectedItems.delete(row.guid!);
-    }
-    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  toggleRow(row: ResidueItem) {
+    // this.reSelection.toggle(row);
+    // const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    // if (this.reSelection.isSelected(row)) {
+    //   selectedItems.add(row.guid!);
+    // } else {
+    //   selectedItems.delete(row.guid!);
+    // }
+    // this.selectedItemsPerPage[this.pageIndex] = selectedItems;
   }
 
   /** Update selection for the current page */
   updatePageSelection() {
-    this.reSelection.clear();
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.sotList.forEach(row => {
-      if (selectedItems.has(row.guid!)) {
-        this.reSelection.select(row);
-      }
-    });
+    // this.reSelection.clear();
+    // const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    // this.sotList.forEach(row => {
+    //   if (selectedItems.has(row.guid!)) {
+    //     this.reSelection.select(row);
+    //   }
+    // });
   }
 
-  cancelRow(row: RepairItem) {
-    const found = this.reSelection.selected.some(x => x.guid === row.guid);
-    let selectedList = [...this.reSelection.selected];
-    if (!found) {
-      // this.toggleRow(row);
-      selectedList.push(row);
-    }
-    this.cancelSelectedRows(selectedList)
+  cancelRow(row: ResidueItem) {
+    // const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    // let selectedList = [...this.reSelection.selected];
+    // if (!found) {
+    //   // this.toggleRow(row);
+    //   selectedList.push(row);
+    // }
+    // this.cancelSelectedRows(selectedList)
   }
 
-  cancelSelectedRows(row: RepairItem[]) {
+  cancelSelectedRows(row: ResidueItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -312,65 +316,65 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: RepairItem) => new RepairGO(item));
-        console.log(reList);
-        this.repairEstDS.cancelRepair(reList).subscribe((result: { data: { cancelRepair: any; }; }) => {
-          this.handleCancelSuccess(result?.data?.cancelRepair)
-          this.performSearch(this.pageSize, 0, this.pageSize);
-        });
+        // const reList = result.item.map((item: RepairItem) => new RepairGO(item));
+        // console.log(reList);
+        // this.repairEstDS.cancelRepair(reList).subscribe((result: { data: { cancelRepair: any; }; }) => {
+        //   this.handleCancelSuccess(result?.data?.cancelRepair)
+        //   this.performSearch(this.pageSize, 0, this.pageSize);
+        // });
       }
     });
   }
 
   rollbackRow(row: RepairItem) {
-    const found = this.reSelection.selected.some(x => x.guid === row.guid);
-    let selectedList = [...this.reSelection.selected];
-    if (!found) {
-      // this.toggleRow(row);
-      selectedList.push(row);
-    }
-    this.rollbackSelectedRows(selectedList)
+    // const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    // let selectedList = [...this.reSelection.selected];
+    // if (!found) {
+    //   // this.toggleRow(row);
+    //   selectedList.push(row);
+    // }
+    // this.rollbackSelectedRows(selectedList)
   }
 
   rollbackSelectedRows(row: RepairItem[]) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [...row],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: any) => {
-          const RepairEstimateRequestInput = {
-            customer_guid: item.customer_company_guid,
-            estimate_no: item.estimate_no,
-            guid: item.guid,
-            remarks: item.remarks,
-            sot_guid: item.sot_guid
-          }
-          return RepairEstimateRequestInput
-        });
-        console.log(reList);
-        this.repairEstDS.rollbackRepair(reList).subscribe((result: { data: { rollbackRepair: any; }; }) => {
-          this.handleRollbackSuccess(result?.data?.rollbackRepair)
-          this.performSearch(this.pageSize, 0, this.pageSize);
-        });
-      }
-    });
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    //   width: '1000px',
+    //   data: {
+    //     action: 'rollback',
+    //     dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+    //     item: [...row],
+    //     translatedLangText: this.translatedLangText
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result?.action === 'confirmed') {
+    //     const reList = result.item.map((item: any) => {
+    //       const RepairEstimateRequestInput = {
+    //         customer_guid: item.customer_company_guid,
+    //         estimate_no: item.estimate_no,
+    //         guid: item.guid,
+    //         remarks: item.remarks,
+    //         sot_guid: item.sot_guid
+    //       }
+    //       return RepairEstimateRequestInput
+    //     });
+    //     console.log(reList);
+    //     this.repairEstDS.rollbackRepair(reList).subscribe((result: { data: { rollbackRepair: any; }; }) => {
+    //       this.handleRollbackSuccess(result?.data?.rollbackRepair)
+    //       this.performSearch(this.pageSize, 0, this.pageSize);
+    //     });
+    //   }
+    // });
   }
 
-  copyRepairEst(residueEst: ResidueEstItem) {
+  copyRepairEst(residueEst: ResidueItem) {
     this.copiedResidueEst = residueEst;
   }
 
@@ -615,18 +619,18 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   }
 
   calculateNetCost(repair_est: RepairItem): any {
-    const total = this.repairEstDS.getTotal(repair_est?.repair_part)
-    const labourDiscount = repair_est.labour_cost_discount;
-    const matDiscount = repair_est.material_cost_discount;
+    // const total = this.repairDS.getTotal(repair_est?.repair_part)
+    // const labourDiscount = repair_est.labour_cost_discount;
+    // const matDiscount = repair_est.material_cost_discount;
 
-    const total_hour = total.hour;
-    const total_labour_cost = this.repairEstDS.getTotalLabourCost(total_hour, repair_est?.labour_cost);
-    const total_mat_cost = total.total_mat_cost;
-    const total_cost = repair_est?.total_cost;
-    const discount_labour_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_labour_cost);
-    const discount_mat_cost = this.repairEstDS.getDiscountCost(matDiscount, total_mat_cost);
-    const net_cost = this.repairEstDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
-    return net_cost.toFixed(2);
+    // const total_hour = total.hour;
+    // const total_labour_cost = this.repairEstDS.getTotalLabourCost(total_hour, repair_est?.labour_cost);
+    // const total_mat_cost = total.total_mat_cost;
+    // const total_cost = repair_est?.total_cost;
+    // const discount_labour_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_labour_cost);
+    // const discount_mat_cost = this.repairEstDS.getDiscountCost(matDiscount, total_mat_cost);
+    // const net_cost = this.repairEstDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
+     return 0.00;
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
@@ -698,7 +702,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     event.preventDefault(); // Prevents the form submission
   }
 
-  addResidueEstimate(event: Event, row:ResidueEstItem)
+  addResidueEstimate(event: Event, row:ResidueItem)
   {
     event.stopPropagation(); // Stop the click event from propagating
  // Navigate to the route and pass the JSON object
