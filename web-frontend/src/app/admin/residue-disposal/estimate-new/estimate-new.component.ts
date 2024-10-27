@@ -223,7 +223,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   clean_statusList: CodeValuesItem[] = [];
 
   sot_guid?: string | null;
-  repair_est_guid?: string | null;
+  repair_guid?: string | null;
 
   residueEstForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
@@ -509,7 +509,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     //this.getSurveyorList();
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
-    this.repair_est_guid = this.route.snapshot.paramMap.get('repair_est_id');
+    this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
 
     this.route.data.subscribe(routeData => {
       this.isDuplicate = routeData['action'] === 'duplicate';
@@ -625,7 +625,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       if (data?.length > 0) {
         this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
         const def_guid = this.getCustomer()?.def_template_guid;
-        if (!this.repair_est_guid) {
+        if (!this.repair_guid) {
           if (def_guid) {
             this.residueEstForm?.get('is_default_template')?.setValue(true);
           }
@@ -1389,7 +1389,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
   canExport(): boolean {
-    return !!this.repair_est_guid;
+    return !!this.repair_guid;
   }
 
   getLabourCost(): number | undefined {

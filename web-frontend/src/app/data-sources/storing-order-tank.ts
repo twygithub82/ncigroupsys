@@ -952,7 +952,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR = gql`
             tariff_repair_guid
             update_by
             update_dt
-            rep_damage_repair {
+            rp_damage_repair {
               action
               code_cv
               code_type

@@ -518,7 +518,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       { alias: 'pvSpecCv', codeValType: 'PV_SPEC' },
       { alias: 'pvTypeCv', codeValType: 'PV_TYPE' },
       { alias: 'thermometerCv', codeValType: 'THERMOMETER' },
-      { alias: 'tankCompTypeCv', codeValType: 'TANK_COMP_TYPE' },
       { alias: 'valveBrandCv', codeValType: 'VALVE_BRAND' },
       { alias: 'tankSideCv', codeValType: 'TANK_SIDE' },
     ];
