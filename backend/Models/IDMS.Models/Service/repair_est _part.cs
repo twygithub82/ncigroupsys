@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Service
 {
-    public class repair_est_part : Dates
+    public class repair_part : Dates
     {
         [Key]
         public string? guid { get; set; }

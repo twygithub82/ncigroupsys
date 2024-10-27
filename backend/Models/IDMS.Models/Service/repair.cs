@@ -43,6 +43,6 @@ namespace IDMS.Models.Service
         public aspnetusers? aspnetsuser { get; set; }
 
         [UseFiltering]
-        public IEnumerable<repair_est_part>? repair_est_part { get; set; }
+        public IEnumerable<repair_part>? repair_part { get; set; }
     }
 }

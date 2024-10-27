@@ -36,7 +36,7 @@ namespace IDMS.Models.Service
         public IEnumerable<time_table?>? time_table { get; set; }
 
         [UseFiltering]
-        public IEnumerable<repair_est_part?>? repair_est_part {  get; set; }
+        public IEnumerable<repair_part?>? repair_part {  get; set; }
 
         [UseFiltering]
         public IEnumerable<residue_part?>? residue_part { get; set; }

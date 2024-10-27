@@ -43,8 +43,8 @@ namespace IDMS.Repair.GqlTypes
                 await context.repair.AddAsync(newRepair);
 
                 //Handling For Template_est_part
-                IList<repair_est_part> partList = new List<repair_est_part>();
-                foreach (var newPart in repair.repair_est_part)
+                IList<repair_part> partList = new List<repair_part>();
+                foreach (var newPart in repair.repair_part)
                 {
                     newPart.guid = Util.GenerateGUID();
                     newPart.create_by = user;
@@ -54,7 +54,7 @@ namespace IDMS.Repair.GqlTypes
 
                     await UpdateRepairDamageCode(context, user, currentDateTime, newPart);
                 }
-                await context.repair_est_part.AddRangeAsync(partList);
+                await context.repair_part.AddRangeAsync(partList);
 
 
                 //Handlind For Customer Default Template
@@ -95,7 +95,7 @@ namespace IDMS.Repair.GqlTypes
                     throw new GraphQLException(new Error($"Repair guid used for update cannot be null or empty", "ERROR"));
 
                 var updateRepair = await context.repair.Where(t => t.guid == repair.guid && (t.delete_dt == null || t.delete_dt == 0))
-                                                          .Include(t => t.repair_est_part)
+                                                          .Include(t => t.repair_part)
                                                             .ThenInclude(tp => tp.rep_damage_repair)
                                                           .FirstOrDefaultAsync();
 
@@ -115,9 +115,9 @@ namespace IDMS.Repair.GqlTypes
                 updateRepair.total_hour = repair.total_hour;
                 updateRepair.job_no = repair.job_no;
 
-                if (repair.repair_est_part != null)
+                if (repair.repair_part != null)
                 {
-                    foreach (var part in repair.repair_est_part)
+                    foreach (var part in repair.repair_part)
                     {
                         if (ObjectAction.NEW.EqualsIgnore(part.action))
                         {
@@ -127,12 +127,12 @@ namespace IDMS.Repair.GqlTypes
                             newRepairPart.create_dt = currentDateTime;
                             newRepairPart.repair_guid = updateRepair.guid;
                             await UpdateRepairDamageCode(context, user, currentDateTime, part);
-                            await context.repair_est_part.AddAsync(newRepairPart);
+                            await context.repair_part.AddAsync(newRepairPart);
                             continue;
                         }
 
 
-                        var existingPart = updateRepair.repair_est_part?.Where(p => p.guid == part.guid && (p.delete_dt == null || p.delete_dt == 0)).FirstOrDefault();
+                        var existingPart = updateRepair.repair_part?.Where(p => p.guid == part.guid && (p.delete_dt == null || p.delete_dt == 0)).FirstOrDefault();
                         if (existingPart == null)
                             throw new GraphQLException(new Error($"Repair_part guid used for update cannot be null or empty", "ERROR"));
 
@@ -251,13 +251,13 @@ namespace IDMS.Repair.GqlTypes
                             throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
 
                         var customerGuid = item.customer_guid;
-                        var repairEstPart = await context.repair_est_part.Where(r => r.repair_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
-                        var partsTarifRepairGuids = repairEstPart.Select(x => x.tariff_repair_guid).ToArray();
+                        var repairPart = await context.repair_part.Where(r => r.repair_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+                        var partsTarifRepairGuids = repairPart.Select(x => x.tariff_repair_guid).ToArray();
                         //var estPartGuid = estRepair.repair_est_part.Select(x => x.tariff_repair_guid).ToArray();
                         var packageRepair = await context.package_repair.Where(r => partsTarifRepairGuids.Contains(r.tariff_repair_guid) &&
                                             r.customer_company_guid == customerGuid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
 
-                        foreach (var part in repairEstPart)
+                        foreach (var part in repairPart)
                         {
                             //var estPart = new repair_est_part() { guid = part.guid };
                             //context.repair_est_part.Attach(estPart);
@@ -297,12 +297,12 @@ namespace IDMS.Repair.GqlTypes
                     appvRepair.status_cv = CurrentServiceStatus.APPROVE;
                     appvRepair.remarks = repair.remarks;
 
-                    if (repair.repair_est_part != null)
+                    if (repair.repair_part != null)
                     {
-                        foreach (var item in repair.repair_est_part)
+                        foreach (var item in repair.repair_part)
                         {
-                            var part = new repair_est_part() { guid = item.guid };
-                            context.repair_est_part.Attach(part);
+                            var part = new repair_part() { guid = item.guid };
+                            context.repair_part.Attach(part);
 
                             part.approve_qty = item.approve_qty;
                             part.approve_hour = item.approve_hour;
@@ -325,7 +325,7 @@ namespace IDMS.Repair.GqlTypes
 
 
         private async Task UpdateRepairDamageCode(ApplicationServiceDBContext context, string user, long currentDateTime,
-                                          repair_est_part estPart, IEnumerable<rep_damage_repair>? repDamageRepair = null)
+                                          repair_part estPart, IEnumerable<rep_damage_repair>? repDamageRepair = null)
         {
             try
             {

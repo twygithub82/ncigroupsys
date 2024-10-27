@@ -16,13 +16,13 @@ namespace IDMS.Models.Master
         [Key]
         public string? guid { get; set; }
 
-        [ForeignKey("repair_est_part")]
+        [ForeignKey("repair_part")]
         public string? rep_guid { get; set; }
         public string code_cv { get; set; }
         public int code_type { get; set; }
 
         [NotMapped]
         public string? action { get; set; }
-        public repair_est_part? repair_est_part { get; set; }
+        public repair_part? repair_part { get; set; }
     }
 }
