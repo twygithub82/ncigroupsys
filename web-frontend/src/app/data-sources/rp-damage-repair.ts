@@ -8,7 +8,7 @@ import { RepairPartItem } from './repair-part';
 
 export class RPDamageRepairGO {
   public guid?: string;
-  public rep_guid?: string;
+  public rp_guid?: string;
   public code_cv?: string;
   public code_type?: number;
   public create_dt?: number;
@@ -19,7 +19,7 @@ export class RPDamageRepairGO {
 
   constructor(item: Partial<RPDamageRepairGO> = {}) {
     this.guid = item.guid;
-    this.rep_guid = item.rep_guid;
+    this.rp_guid = item.rp_guid;
     this.code_cv = item.code_cv;
     this.code_type = item.code_type;
     this.create_dt = item.create_dt;
@@ -75,11 +75,11 @@ export class RPDamageRepairDS extends BaseDataSource<RPDamageRepairItem> {
       );
   }
 
-  createREPDamage(guid: string | undefined, rep_guid: string | undefined, code_val: string): RPDamageRepairItem {
-    return new RPDamageRepairItem({guid: guid, rep_guid: rep_guid, code_cv: code_val, code_type: 0, action: 'new'})
+  createREPDamage(guid: string | undefined, rp_guid: string | undefined, code_val: string): RPDamageRepairItem {
+    return new RPDamageRepairItem({guid: guid, rp_guid: rp_guid, code_cv: code_val, code_type: 0, action: 'new'})
   }
 
-  createREPRepair(guid: string | undefined, rep_guid: string | undefined, code_val: string): RPDamageRepairItem {
-    return new RPDamageRepairItem({guid: guid, rep_guid: rep_guid, code_cv: code_val, code_type: 1, action: 'new'})
+  createREPRepair(guid: string | undefined, rp_guid: string | undefined, code_val: string): RPDamageRepairItem {
+    return new RPDamageRepairItem({guid: guid, rp_guid: rp_guid, code_cv: code_val, code_type: 1, action: 'new'})
   }
 }

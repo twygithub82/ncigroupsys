@@ -383,7 +383,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
           //       const tep_damage_repair = tep.tep_damage_repair.map((item: any) => {
           //         return new RPDamageRepairItem({
           //           guid: item.guid,
-          //           rep_guid: item.rep_guid,
+          //           rp_guid: item.rp_guid,
           //           code_cv: item.code_cv,
           //           code_type: item.code_type,
           //           action: 'new'
@@ -922,7 +922,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
           const rp_damage_repair = item.rep_damage_repair.map((item: any) => {
             return new RPDamageRepairItem({
               guid: item.guid,
-              rep_guid: item.rep_guid,
+              rp_guid: item.rp_guid,
               code_cv: item.code_cv,
               code_type: item.code_type,
               action: item.action
