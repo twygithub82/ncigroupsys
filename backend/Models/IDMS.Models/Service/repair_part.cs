@@ -1,14 +1,8 @@
-﻿using IDMS.Models.Inventory;
-using IDMS.Models.Master;
-using IDMS.Models.Shared;
+﻿using IDMS.Models.Master;
 using IDMS.Models.Tariff;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace IDMS.Models.Service
 {
