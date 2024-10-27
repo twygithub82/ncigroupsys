@@ -14,13 +14,13 @@
             </h2>
           </div>
           <div class="body">
-            @if (repairEstDS.loading$ | async) {
+            @if (repairDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            @if (!(repairEstDS.loading$ | async)) {
+            @if (!(repairDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -123,7 +123,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="repairEstForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="repairForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -133,13 +133,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (repairEstDS.loadingSubject | async) {
+              @if (repairDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(repairEstDS.loadingSubject | async)) {
+              @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
                   <mat-form-field class="example-full-width">
@@ -172,13 +172,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (repairEstDS.loadingSubject | async) {
+              @if (repairDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(repairEstDS.loadingSubject | async)) {
+              @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
@@ -322,11 +322,11 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-                          @if (repairEstPartDS.is4X(row.rep_damage_repair)){
+                          @if (repairPartDS.is4X(row.rep_damage_repair)){
                           <mat-icon class="font-bold">close</mat-icon>
                           }
                           @else {
-                          @if (repairEstPartDS.isApprove(row)){
+                          @if (repairPartDS.isApprove(row)){
                           <mat-icon class="col-green font-bold" (click)="toggleApprovePart(row)">check</mat-icon>
                           }
                           @else {
@@ -419,13 +419,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (repairEstDS.loadingSubject | async) {
+              @if (repairDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(repairEstDS.loadingSubject | async)) {
+              @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
@@ -439,7 +439,7 @@
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-10">
                       {{translatedLangText.SURVEYOR_NAME}}: <span
-                        class="font-bold">{{repairEstItem?.aspnetsuser?.userName}}</span>
+                        class="font-bold">{{repairItem?.aspnetsuser?.userName}}</span>
                     </div>
                     <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <mat-form-field class="example-full-width">
@@ -449,7 +449,7 @@
                           <mat-option [value]="user.id">{{user.userName}}</mat-option>
                           }
                         </mat-select>
-                        @if (repairEstForm?.get('surveyor_id')?.hasError('required')) {
+                        @if (repairForm?.get('surveyor_id')?.hasError('required')) {
                         <mat-error>
                           {{translatedLangText.SURVEYOR_NAME}} {{translatedLangText.SO_REQUIRED}}
                         </mat-error>
@@ -459,15 +459,15 @@
                   </div>
                   <div class="row">
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
-                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairEstItem?.estimate_no}}</span>
+                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
                     </div>
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
                       {{translatedLangText.ESTIMATE_DATE}}: <span
-                        class="font-bold">{{displayDate(repairEstItem?.create_dt)}}</span>
+                        class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
                     </div>
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
                       {{translatedLangText.STATUS}}: <span
-                        [ngClass]="'font-bold badge ' + getBadgeClass(repairEstItem?.status_cv)">{{repairEstItem?.status_cv}}</span>
+                        [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
                     </div>
                   </div>
                 </div>
@@ -560,7 +560,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span></span><span>{{repairEstForm?.get('total_owner_hour')?.value}}</span>
+                                    <span></span><span>{{repairForm?.get('total_owner_hour')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -592,39 +592,39 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_owner_labour_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_owner_mat_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_owner_cost')?.value}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>-
-                                      {{repairEstForm?.get('discount_labour_owner_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
                                     <span>$</span><span>-
-                                      {{repairEstForm?.get('discount_mat_owner_cost')?.value}}</span>
+                                      {{repairForm?.get('discount_labour_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('net_owner_cost')?.value}}</span>
+                                    <span>$</span><span>-
+                                      {{repairForm?.get('discount_mat_owner_cost')?.value}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{repairForm?.get('net_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <!-- <div
@@ -653,7 +653,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span></span><span>{{repairEstForm?.get('total_lessee_hour')?.value}}</span>
+                                    <span></span><span>{{repairForm?.get('total_lessee_hour')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -685,39 +685,39 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_lessee_labour_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_lessee_mat_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_lessee_cost')?.value}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>-
-                                      {{repairEstForm?.get('discount_labour_lessee_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
                                     <span>$</span><span>-
-                                      {{repairEstForm?.get('discount_mat_lessee_cost')?.value}}</span>
+                                      {{repairForm?.get('discount_labour_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('net_lessee_cost')?.value}}</span>
+                                    <span>$</span><span>-
+                                      {{repairForm?.get('discount_mat_lessee_cost')?.value}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{repairForm?.get('net_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <!-- <div
@@ -747,7 +747,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span></span><span>{{repairEstForm?.get('total_hour')?.value}}</span>
+                                    <span></span><span>{{repairForm?.get('total_hour')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -779,37 +779,37 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_labour_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_mat_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>- {{repairEstForm?.get('discount_labour_cost')?.value}}</span>
+                                    <span>$</span><span>- {{repairForm?.get('discount_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>- {{repairEstForm?.get('discount_mat_cost')?.value}}</span>
+                                    <span>$</span><span>- {{repairForm?.get('discount_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('net_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('net_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <!-- <div
@@ -836,39 +836,39 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (repairEstDS.canRollback(repairEstItem)) {
-                  <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)"
+                  @if (repairDS.canRollback(repairItem)) {
+                  <button mat-flat-button color="accent" [disabled]="(repairDS.loading$ | async)"
                     (click)="onRollback($event)">
                     <mat-icon>
-                      @if (!(repairEstDS.loading$ | async)) {
+                      @if (!(repairDS.loading$ | async)) {
                       undo
-                      } @else if ((repairEstDS.loading$ | async)) {
+                      } @else if ((repairDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
                     {{translatedLangText.ROLLBACK}}
                   </button>
                   }
-                  @if (repairEstDS.canApprove(repairEstItem)) {
-                  <button mat-flat-button color="basic" [disabled]="(repairEstDS.loading$ | async)"
+                  @if (repairDS.canApprove(repairItem)) {
+                  <button mat-flat-button color="basic" [disabled]="(repairDS.loading$ | async)"
                     class="m-l-5 bg-green" (click)="onApprove($event)">
                     <mat-icon>
-                      @if (!(repairEstDS.loading$ | async)) {
+                      @if (!(repairDS.loading$ | async)) {
                       done
-                      } @else if ((repairEstDS.loading$ | async)) {
+                      } @else if ((repairDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
                     {{translatedLangText.APPROVE}}
                   </button>
                   }
-                  @if (repairEstDS.canCancel(repairEstItem)) {
-                  <button mat-flat-button color="warn" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5"
+                  @if (repairDS.canCancel(repairItem)) {
+                  <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-l-5"
                     (click)="onCancel($event)">
                     <mat-icon>
-                      @if (!(repairEstDS.loading$ | async)) {
+                      @if (!(repairDS.loading$ | async)) {
                       close
-                      } @else if ((repairEstDS.loading$ | async)) {
+                      } @else if ((repairDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
@@ -876,11 +876,11 @@
                   </button>
                   }
                   <!-- @if (canSave()) {
-                  <button mat-flat-button color="primary" [disabled]="(repairEstDS.loading$ | async)" class="m-l-5">
+                  <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)" class="m-l-5">
                     <mat-icon>
-                      @if (!(repairEstDS.loading$ | async)) {
+                      @if (!(repairDS.loading$ | async)) {
                       save
-                      } @else if ((repairEstDS.loading$ | async)) {
+                      } @else if ((repairDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>

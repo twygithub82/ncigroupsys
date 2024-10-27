@@ -3,7 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule } from '@ngx-translate/core';
-import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { RepairEstPartItem } from 'app/data-sources/repair-part';
 
 export interface DialogData {
   action: string;

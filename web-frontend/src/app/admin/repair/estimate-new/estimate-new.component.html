@@ -2,8 +2,8 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="repair_est_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
-        [active_item]="repair_est_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
+      <app-breadcrumb [title]="repair_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
+        [active_item]="repair_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -123,7 +123,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="repairEstForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="repairForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -152,7 +152,7 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-                @if (repairEstForm?.get('est_template')?.value?.guid) {
+                @if (repairForm?.get('est_template')?.value?.guid) {
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-checkbox class="m-r-5" color="primary" formControlName="is_default_template">
                     {{translatedLangText.DEFAULT}}
@@ -160,12 +160,6 @@
                 </div>
                 }
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                  <!-- @if (repairEstDS.canAdd(row)) {
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addEstDetails($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ESTIMATE_DETAILS}}
-                  </button>
-                  } -->
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                     (click)="addEstDetails($event)" [disabled]="!(groupNameCvList.length)">
                     <mat-icon class="col-white">
@@ -225,8 +219,8 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 0)" matTooltipClass="multiline-tooltip">
-                              {{displayDamageRepairCode(row.rep_damage_repair, 0)}}
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)" matTooltipClass="multiline-tooltip">
+                              {{displayDamageRepairCode(row.rp_damage_repair, 0)}}
                             </span>
                           </span>
                         </mat-cell>
@@ -240,8 +234,8 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 1)" matTooltipClass="multiline-tooltip">
-                            {{displayDamageRepairCode(row.rep_damage_repair, 1)}}
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)" matTooltipClass="multiline-tooltip">
+                            {{displayDamageRepairCode(row.rp_damage_repair, 1)}}
                           </span>
                         </mat-cell>
                       </ng-container>
@@ -362,7 +356,7 @@
               </div>
               }
               <mat-divider></mat-divider>
-              @if (repairEstForm?.get('sotList')?.hasError('required')) {
+              @if (repairForm?.get('sotList')?.hasError('required')) {
               <mat-error class="ps-3">
                 {{translatedLangText.ADD_ATLEAST_ONE}}
               </mat-error>
@@ -406,7 +400,7 @@
                           <mat-option [value]="user.id">{{user.userName}}</mat-option>
                           }
                         </mat-select>
-                        @if (repairEstForm?.get('surveyor_id')?.hasError('required')) {
+                        @if (repairForm?.get('surveyor_id')?.hasError('required')) {
                         <mat-error>
                           {{translatedLangText.SURVEYOR_NAME}} {{translatedLangText.SO_REQUIRED}}
                         </mat-error>
@@ -416,11 +410,11 @@
                   </div>
                   <div class="row">
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairEstItem?.estimate_no}}</span>
+                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
                     </div>
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       {{translatedLangText.ESTIMATE_DATE}}: <span
-                        class="font-bold">{{displayDate(repairEstItem?.create_dt)}}</span>
+                        class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
                     </div>
                   </div>
                 </div>
@@ -513,7 +507,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span></span><span>{{repairEstForm?.get('total_owner_hour')?.value}}</span>
+                                    <span></span><span>{{repairForm?.get('total_owner_hour')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -545,39 +539,39 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_owner_labour_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_owner_mat_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_owner_cost')?.value}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>-
-                                      {{repairEstForm?.get('discount_labour_owner_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
                                     <span>$</span><span>-
-                                      {{repairEstForm?.get('discount_mat_owner_cost')?.value}}</span>
+                                      {{repairForm?.get('discount_labour_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('net_owner_cost')?.value}}</span>
+                                    <span>$</span><span>-
+                                      {{repairForm?.get('discount_mat_owner_cost')?.value}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{repairForm?.get('net_owner_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <!-- <div
@@ -606,7 +600,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span></span><span>{{repairEstForm?.get('total_lessee_hour')?.value}}</span>
+                                    <span></span><span>{{repairForm?.get('total_lessee_hour')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -638,39 +632,39 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_lessee_labour_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_lessee_mat_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_lessee_cost')?.value}}</span>
-                                  </div>
-                                </div>
-                                <div
-                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                  <div class="table-label cost-label">
-                                    <span>$</span><span>-
-                                      {{repairEstForm?.get('discount_labour_lessee_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
                                     <span>$</span><span>-
-                                      {{repairEstForm?.get('discount_mat_lessee_cost')?.value}}</span>
+                                      {{repairForm?.get('discount_labour_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('net_lessee_cost')?.value}}</span>
+                                    <span>$</span><span>-
+                                      {{repairForm?.get('discount_mat_lessee_cost')?.value}}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                                  <div class="table-label cost-label">
+                                    <span>$</span><span>{{repairForm?.get('net_lessee_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <!-- <div
@@ -700,7 +694,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span></span><span>{{repairEstForm?.get('total_hour')?.value}}</span>
+                                    <span></span><span>{{repairForm?.get('total_hour')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -732,37 +726,37 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_labour_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_mat_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('total_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('total_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>- {{repairEstForm?.get('discount_labour_cost')?.value}}</span>
+                                    <span>$</span><span>- {{repairForm?.get('discount_labour_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>- {{repairEstForm?.get('discount_mat_cost')?.value}}</span>
+                                    <span>$</span><span>- {{repairForm?.get('discount_mat_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairEstForm?.get('net_cost')?.value}}</span>
+                                    <span>$</span><span>{{repairForm?.get('net_cost')?.value}}</span>
                                   </div>
                                 </div>
                                 <!-- <div
@@ -790,10 +784,10 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (canExport()) {
-                  <button mat-flat-button color="accent" [disabled]="(repairEstDS.loading$ | async)" class="m-r-5">
-                    @if (!(repairEstDS.loading$ | async)) {
+                  <button mat-flat-button color="accent" [disabled]="(repairDS.loading$ | async)" class="m-r-5">
+                    @if (!(repairDS.loading$ | async)) {
                     <i class="fas fa-file-export"></i>
-                    } @else if ((repairEstDS.loading$ | async)) {
+                    } @else if ((repairDS.loading$ | async)) {
                     <mat-icon>
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                     </mat-icon>
@@ -802,11 +796,11 @@
                   </button>
                   }
                   @if (isAnyItemEdited()) {
-                  <button mat-flat-button color="primary" [disabled]="(repairEstDS.loading$ | async)">
+                  <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)">
                     <mat-icon>
-                      @if (!(repairEstDS.loading$ | async)) {
+                      @if (!(repairDS.loading$ | async)) {
                       save
-                      } @else if ((repairEstDS.loading$ | async)) {
+                      } @else if ((repairDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>

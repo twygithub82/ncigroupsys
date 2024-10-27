@@ -6,10 +6,10 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
-import { RepairEstPartItem } from './repair-est-part';
+import { RepairPartItem } from './repair-part';
 import { UserItem } from './user';
 
-export class RepairEstGO {
+export class RepairGO {
   public guid?: string;
   public sot_guid?: string;
   public aspnetusers_guid?: string;
@@ -30,7 +30,7 @@ export class RepairEstGO {
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<RepairEstGO> = {}) {
+  constructor(item: Partial<RepairGO> = {}) {
     this.guid = item.guid;
     this.sot_guid = item.sot_guid;
     this.aspnetusers_guid = item.aspnetusers_guid;
@@ -53,23 +53,23 @@ export class RepairEstGO {
   }
 }
 
-export class RepairEstItem extends RepairEstGO {
-  public repair_est_part?: RepairEstPartItem[];
+export class RepairItem extends RepairGO {
+  public repair_part?: RepairPartItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public aspnetsuser?: UserItem;
   public actions?: string[]
-  constructor(item: Partial<RepairEstItem> = {}) {
+  constructor(item: Partial<RepairItem> = {}) {
     super(item)
-    this.repair_est_part = item.repair_est_part;
+    this.repair_part = item.repair_part;
     this.storing_order_tank = item.storing_order_tank;
     this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
   }
 }
 
-export const GET_REPAIR_EST = gql`
-  query QueryRepairEstimate($where: repair_estFilterInput, $order: [repair_estSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    resultList: queryRepairEstimate(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+export const GET_REPAIR = gql`
+  query QueryRepair($where: repairFilterInput, $order: [repairSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryRepair(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         aspnetusers_guid
         create_by
@@ -111,9 +111,9 @@ export const GET_REPAIR_EST = gql`
   }
 `;
 
-export const GET_REPAIR_EST_BY_ID = gql`
-  query QueryRepairEstimate($where: repair_estFilterInput, $customer_company_guid: String) {
-    resultList: queryRepairEstimate(where: $where) {
+export const GET_REPAIR_BY_ID = gql`
+  query QueryRepair($where: repairFilterInput, $customer_company_guid: String) {
+    resultList: queryRepair(where: $where) {
       nodes {
         aspnetusers_guid
         create_by
@@ -131,7 +131,7 @@ export const GET_REPAIR_EST_BY_ID = gql`
         total_cost
         update_by
         update_dt
-        repair_est_part {
+        repair_part {
           action
           create_by
           create_dt
@@ -145,7 +145,7 @@ export const GET_REPAIR_EST_BY_ID = gql`
           owner
           quantity
           remarks
-          repair_est_guid
+          repair_guid
           tariff_repair_guid
           update_by
           update_dt
@@ -268,9 +268,9 @@ export const GET_REPAIR_EST_BY_ID = gql`
   }
 `;
 
-export const GET_REPAIR_EST_FOR_APPROVAL = gql`
-  query QueryRepairEstimate($where: repair_estFilterInput) {
-    resultList: queryRepairEstimate(where: $where) {
+export const GET_REPAIR_FOR_APPROVAL = gql`
+  query QueryRepair($where: repairFilterInput) {
+    resultList: queryRepair(where: $where) {
       nodes {
         aspnetusers_guid
         create_by
@@ -288,7 +288,7 @@ export const GET_REPAIR_EST_FOR_APPROVAL = gql`
         total_cost
         update_by
         update_dt
-        repair_est_part {
+        repair_part {
           action
           create_by
           create_dt
@@ -302,7 +302,7 @@ export const GET_REPAIR_EST_FOR_APPROVAL = gql`
           owner
           quantity
           remarks
-          repair_est_guid
+          repair_guid
           tariff_repair_guid
           update_by
           update_dt
@@ -427,46 +427,46 @@ export const GET_REPAIR_EST_FOR_APPROVAL = gql`
   }
 `;
 
-export const ADD_REPAIR_EST = gql`
-  mutation AddRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
-    addRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
+export const ADD_REPAIR = gql`
+  mutation AddRepair($repair: repairInput!, $customerCompany: customer_companyInput) {
+    addRepair(repair: $repair, customerCompany: $customerCompany)
   }
 `;
 
-export const UPDATE_REPAIR_EST = gql`
-  mutation UpdateRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
-    updateRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
+export const UPDATE_REPAIR = gql`
+  mutation UpdateRepair($repair: repairInput!, $customerCompany: customer_companyInput) {
+    updateRepair(repair: $repair, customerCompany: $customerCompany)
   }
 `;
 
-export const CANCEL_REPAIR_EST = gql`
-  mutation CancelRepairEstimate($repairEstimate: [repair_estInput!]!) {
-    cancelRepairEstimate(repairEstimate: $repairEstimate)
+export const CANCEL_REPAIR = gql`
+  mutation CancelRepair($repair: [repairInput!]!) {
+    cancelRepair(repair: $repair)
   }
 `
 
-export const ROLLBACK_REPAIR_EST = gql`
-  mutation RollbackRepairEstimate($repairEstimate: [RepairEstimateRequestInput!]!) {
-    rollbackRepairEstimate(repairEstimate: $repairEstimate)
+export const ROLLBACK_REPAIR = gql`
+  mutation RollbackRepair($repair: [RepairRequestInput!]!) {
+    rollbackRepair(repair: $repair)
   }
 `
 
-export const APPROVE_REPAIR_EST = gql`
-  mutation ApproveRepairEstimate($repairEstimate: repair_estInput!) {
-    approveRepairEstimate(repairEstimate: $repairEstimate)
+export const APPROVE_REPAIR = gql`
+  mutation ApproveRepair($repair: repairInput!) {
+    approveRepair(repair: $repair)
   }
 `
 
-export class RepairEstDS extends BaseDataSource<RepairEstItem> {
+export class RepairDS extends BaseDataSource<RepairItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchRepairEst(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RepairEstItem[]> {
+  searchRepair(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
-        query: GET_REPAIR_EST,
+        query: GET_REPAIR,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -484,12 +484,12 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
-  getRepairEstByID(id: string, customer_company_guid: string): Observable<RepairEstItem[]> {
+  getRepairByID(id: string, customer_company_guid: string): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
     const where: any = { guid: { eq: id } }
     return this.apollo
       .query<any>({
-        query: GET_REPAIR_EST_BY_ID,
+        query: GET_REPAIR_BY_ID,
         variables: { where, customer_company_guid },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -507,12 +507,12 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
-  getRepairEstByIDForApproval(id: string): Observable<RepairEstItem[]> {
+  getRepairByIDForApproval(id: string): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
     const where: any = { guid: { eq: id } }
     return this.apollo
       .query<any>({
-        query: GET_REPAIR_EST_FOR_APPROVAL,
+        query: GET_REPAIR_FOR_APPROVAL,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -530,12 +530,12 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
-  getRepairEstByIDForJobOrder(id: string): Observable<RepairEstItem[]> {
+  getRepairByIDForJobOrder(id: string): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
     const where: any = { guid: { eq: id }, status_cv: { eq: "APPROVED" } }
     return this.apollo
       .query<any>({
-        query: GET_REPAIR_EST_FOR_APPROVAL,
+        query: GET_REPAIR_FOR_APPROVAL,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -553,79 +553,79 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
-  addRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
+  addRepair(repair: any, customerCompany: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: ADD_REPAIR_EST,
+      mutation: ADD_REPAIR,
       variables: {
-        repairEstimate,
+        repair,
         customerCompany
       }
     });
   }
 
-  updateRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
+  updateRepair(repair: any, customerCompany: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: UPDATE_REPAIR_EST,
+      mutation: UPDATE_REPAIR,
       variables: {
-        repairEstimate,
+        repair,
         customerCompany
       }
     });
   }
 
-  cancelRepairEstimate(repairEstimate: any): Observable<any> {
+  cancelRepair(repair: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: CANCEL_REPAIR_EST,
+      mutation: CANCEL_REPAIR,
       variables: {
-        repairEstimate
+        repair
       }
     });
   }
 
-  rollbackRepairEstimate(repairEstimate: any): Observable<any> {
+  rollbackRepair(repair: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: ROLLBACK_REPAIR_EST,
+      mutation: ROLLBACK_REPAIR,
       variables: {
-        repairEstimate
+        repair
       }
     });
   }
 
-  approveRepairEstimate(repairEstimate: any): Observable<any> {
+  approveRepair(repair: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: APPROVE_REPAIR_EST,
+      mutation: APPROVE_REPAIR,
       variables: {
-        repairEstimate
+        repair
       }
     });
   }
 
-  canAmend(re: RepairEstItem | undefined): boolean {
+  canAmend(re: RepairItem | undefined): boolean {
     return re?.status_cv === 'PENDING';
   }
 
-  canApprove(re: RepairEstItem | undefined): boolean {
+  canApprove(re: RepairItem | undefined): boolean {
     return re?.status_cv === 'PENDING';
   }
 
-  canCancel(re: RepairEstItem | undefined): boolean {
+  canCancel(re: RepairItem | undefined): boolean {
     return re?.status_cv === 'PENDING';
   }
 
-  canRollback(re: RepairEstItem | undefined): boolean {
+  canRollback(re: RepairItem | undefined): boolean {
     return re?.status_cv === 'CANCELED' || re?.status_cv === 'APPROVED';
   }
 
-  canAssign(re: RepairEstItem | undefined): boolean {
+  canAssign(re: RepairItem | undefined): boolean {
     return re?.status_cv === 'APPROVED';
   }
 
-  canCopy(re: RepairEstItem): boolean {
+  canCopy(re: RepairItem): boolean {
     return true;
   }
 
-  getTotal(repairEstPartList: any[] | undefined): any {
-    const totalSums = repairEstPartList?.filter(data => !data.delete_dt)?.reduce((totals: any, owner) => {
+  getTotal(repairPartList: any[] | undefined): any {
+    const totalSums = repairPartList?.filter(data => !data.delete_dt)?.reduce((totals: any, owner) => {
       return {
         hour: (totals.hour ?? 0) + (owner.hour ?? 0),
         total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.material_cost ?? 0)))

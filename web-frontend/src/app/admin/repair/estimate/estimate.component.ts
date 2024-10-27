@@ -46,8 +46,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
-import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
 
 @Component({
   selector: 'app-estimate',
@@ -84,7 +83,7 @@ import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
     MatCardModule,
   ]
 })
-export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // displayedColumns = [
   //   'tank_no',
   //   'customer',
@@ -170,10 +169,10 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  repairEstDS: RepairEstDS;
+  repairDS: RepairDS;
 
   sotList: StoringOrderTankItem[] = [];
-  reSelection = new SelectionModel<RepairEstItem>(true, []);
+  reSelection = new SelectionModel<RepairItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   reStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -184,7 +183,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  copiedRepairEst?: RepairEstItem;
+  copiedRepair?: RepairItem;
 
   pageIndex = 0;
   pageSize = 10;
@@ -213,7 +212,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.repairEstDS = new RepairEstDS(this.apollo);
+    this.repairDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -256,7 +255,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     this.paginator._changePageSize(this.paginator.pageSize);
   }
 
-  toggleRow(row: RepairEstItem) {
+  toggleRow(row: RepairItem) {
     this.reSelection.toggle(row);
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     if (this.reSelection.isSelected(row)) {
@@ -278,7 +277,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     });
   }
 
-  cancelRow(row: RepairEstItem) {
+  cancelRow(row: RepairItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
     if (!found) {
@@ -288,7 +287,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     this.cancelSelectedRows(selectedList)
   }
 
-  cancelSelectedRows(row: RepairEstItem[]) {
+  cancelSelectedRows(row: RepairItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -307,17 +306,17 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: RepairEstItem) => new RepairEstGO(item));
+        const reList = result.item.map((item: RepairItem) => new RepairGO(item));
         console.log(reList);
-        this.repairEstDS.cancelRepairEstimate(reList).subscribe(result => {
-          this.handleCancelSuccess(result?.data?.cancelRepairEstimate)
+        this.repairDS.cancelRepair(reList).subscribe(result => {
+          this.handleCancelSuccess(result?.data?.cancelRepair)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
     });
   }
 
-  rollbackRow(row: RepairEstItem) {
+  rollbackRow(row: RepairItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
     if (!found) {
@@ -327,7 +326,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     this.rollbackSelectedRows(selectedList)
   }
 
-  rollbackSelectedRows(row: RepairEstItem[]) {
+  rollbackSelectedRows(row: RepairItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -347,30 +346,30 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: any) => {
-          const RepairEstimateRequestInput = {
+          const RepairRequestInput = {
             customer_guid: item.customer_company_guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
             remarks: item.remarks,
             sot_guid: item.sot_guid
           }
-          return RepairEstimateRequestInput
+          return RepairRequestInput
         });
         console.log(reList);
-        this.repairEstDS.rollbackRepairEstimate(reList).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackRepairEstimate)
+        this.repairDS.rollbackRepair(reList).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackRepair)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
     });
   }
 
-  copyRepairEst(repairEst: RepairEstItem) {
-    this.copiedRepairEst = repairEst;
+  copyRepair(repair: RepairItem) {
+    this.copiedRepair = repair;
   }
 
-  clearCopiedRepairEst() {
-    this.copiedRepairEst = undefined;
+  clearCopiedRepair() {
+    this.copiedRepair = undefined;
   }
 
   public loadData() {
@@ -475,7 +474,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
 
       if (this.searchForm!.value['part_name']) {
         reSome = {
-          repair_est_part: {
+          repair_part: {
             some: {
               tariff_repair: {
                 part_name: { contains: this.searchForm!.value['part_name'] }
@@ -488,7 +487,7 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
       if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
         reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
       }
-      where.repair_est = { some: reSome };
+      where.repair = { some: reSome };
     }
 
     // if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
@@ -531,10 +530,10 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data.map(sot => {
-          sot.repair_est = sot.repair_est?.map(rep => {
+          sot.repair = sot.repair?.map(rep => {
             return { ...rep, net_cost: this.calculateNetCost(rep) }
           })
           return sot;
@@ -639,18 +638,18 @@ export class EstimateComponent extends UnsubscribeOnDestroyAdapter implements On
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  calculateNetCost(repair_est: RepairEstItem): any {
-    const total = this.repairEstDS.getTotal(repair_est?.repair_est_part)
-    const labourDiscount = repair_est.labour_cost_discount;
-    const matDiscount = repair_est.material_cost_discount;
+  calculateNetCost(repair: RepairItem): any {
+    const total = this.repairDS.getTotal(repair?.repair_part)
+    const labourDiscount = repair.labour_cost_discount;
+    const matDiscount = repair.material_cost_discount;
 
     const total_hour = total.hour;
-    const total_labour_cost = this.repairEstDS.getTotalLabourCost(total_hour, repair_est?.labour_cost);
+    const total_labour_cost = this.repairDS.getTotalLabourCost(total_hour, repair?.labour_cost);
     const total_mat_cost = total.total_mat_cost;
-    const total_cost = repair_est?.total_cost;
-    const discount_labour_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_labour_cost);
-    const discount_mat_cost = this.repairEstDS.getDiscountCost(matDiscount, total_mat_cost);
-    const net_cost = this.repairEstDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
+    const total_cost = repair?.total_cost;
+    const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
+    const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
+    const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
     return net_cost.toFixed(2);
   }
 

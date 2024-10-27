@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ApprovalViewComponent } from './approval-view.component';
+import { RepairApprovalViewComponent } from './approval-view.component';
 
-describe('ApprovalViewComponent', () => {
-  let component: ApprovalViewComponent;
-  let fixture: ComponentFixture<ApprovalViewComponent>;
+describe('RepairApprovalViewComponent', () => {
+  let component: RepairApprovalViewComponent;
+  let fixture: ComponentFixture<RepairApprovalViewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApprovalViewComponent]
+      imports: [RepairApprovalViewComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(ApprovalViewComponent);
+    fixture = TestBed.createComponent(RepairApprovalViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

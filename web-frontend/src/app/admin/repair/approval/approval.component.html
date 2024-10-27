@@ -180,7 +180,7 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="repEstList" matSort
+              <table mat-table [dataSource]="repList" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <ng-container matColumnDef="id">
                   <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -246,20 +246,20 @@
               </table>
             </div>
             <!-- No result -->
-            @if (!(repairEstDS.loading$ | async) && !repEstList.length) {
+            @if (!(repairDS.loading$ | async) && !repList.length) {
             <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="repEstList.length === 0 ? '' : 'none'">
+            <div class="no-results m-l-20 pt-3" [style.display]="repList.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if (repairEstDS.loading$ | async) {
+            @if (repairDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            <mat-paginator #paginator [length]="repairEstDS.totalCount" [pageIndex]="0" [pageSize]="10"
+            <mat-paginator #paginator [length]="repairDS.totalCount" [pageIndex]="0" [pageSize]="10"
               [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
             </mat-paginator>
           </div>

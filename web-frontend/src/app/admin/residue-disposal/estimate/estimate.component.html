@@ -210,7 +210,7 @@
                     <strong>{{translatedLangText.ESTIMATE_NO}}</strong>: {{copiedRepairEst.estimate_no}}
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
-                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>: {{filterDeleted(copiedRepairEst.repair_est_part)?.length}}
+                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>: {{filterDeleted(copiedRepairEst.repair_part)?.length}}
                   </div>
                   <div class="col-xl col-lg col-md-12 col-sm-12 m-b-0 d-flex justify-content-end">
                     <mat-icon (click)="clearCopiedRepairEst()" [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>
@@ -266,9 +266,9 @@
                   </div>
                 </div>
                 <mat-divider></mat-divider>
-                @if ((filterDeleted(row.repair_est || [])?.length ?? 0) > 0) {
+                @if ((filterDeleted(row.repair || [])?.length ?? 0) > 0) {
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="filterDeleted(row.repair_est || [])" matSort
+                  <table mat-table [dataSource]="filterDeleted(row.repair || [])" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="select">
                       <mat-header-cell *matHeaderCellDef

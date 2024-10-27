@@ -23,8 +23,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { CodeValuesDS } from 'app/data-sources/code-values';
-import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
-import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
+import { RepairPartItem } from 'app/data-sources/repair-part';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -39,7 +38,7 @@ export interface DialogData {
   group_name_cv?: string;
   subgroup_name_cv?: string;
   part_name?: string;
-  selected_repair_est_part?: RepairEstPartItem;
+  selected_repair_part?: RepairPartItem;
 }
 
 @Component({
@@ -87,7 +86,7 @@ export class SearchFormDialogComponent {
   part_name: string;
   group_name_cv: string;
   subgroup_name_cv: string;
-  selected_repair_est_part: RepairEstPartItem;
+  selected_repair_part: RepairPartItem;
 
   filterTableForm: UntypedFormGroup;
   packageRepairList: PackageRepairItem[] = [];
@@ -114,7 +113,7 @@ export class SearchFormDialogComponent {
     this.group_name_cv = data.group_name_cv!;
     this.subgroup_name_cv = data.subgroup_name_cv!;
     this.part_name = data.part_name!;
-    this.selected_repair_est_part = data.selected_repair_est_part!;
+    this.selected_repair_part = data.selected_repair_part!;
     this.dialogTitle = `${data.translatedLangText.PART_NAME}`;
     this.filterTableForm = this.createForm();
     this.loadData();
@@ -140,14 +139,14 @@ export class SearchFormDialogComponent {
   }
 
   submit(row: PackageRepairItem) {
-    var rep: RepairEstPartItem = {
-      ...this.selected_repair_est_part,
+    var rep: RepairPartItem = {
+      ...this.selected_repair_part,
       tariff_repair_guid: row?.tariff_repair_guid,
       tariff_repair: row?.tariff_repair,
       material_cost: row?.material_cost
     }
     const returnDialog: DialogData = {
-      selected_repair_est_part: rep
+      selected_repair_part: rep
     }
     this.dialogRef.close(returnDialog);
   }

@@ -43,10 +43,10 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairEstDS, RepairEstItem } from 'app/data-sources/repair-est';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
@@ -155,7 +155,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     jobOrderTabTitle: 'COMMON-FORM.JOBS'
   }
 
-  filterRepairEstForm?: UntypedFormGroup;
+  filterRepairForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
@@ -163,10 +163,10 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  repairEstDS: RepairEstDS;
+  repairDS: RepairDS;
 
-  repEstList: RepairEstItem[] = [];
-  reSelection = new SelectionModel<RepairEstItem>(true, []);
+  repEstList: RepairItem[] = [];
+  reSelection = new SelectionModel<RepairItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -204,7 +204,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.repairEstDS = new RepairEstDS(this.apollo);
+    this.repairDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -222,8 +222,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   initSearchForm() {
-    this.filterRepairEstForm = this.fb.group({
-      filterRepairEst: [''],
+    this.filterRepairForm = this.fb.group({
+      filterRepair: [''],
     });
   }
 
@@ -274,7 +274,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   /** Handle row selection */
-  toggleRow(row: RepairEstItem) {
+  toggleRow(row: RepairItem) {
     this.reSelection.toggle(row);
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     if (this.reSelection.isSelected(row)) {
@@ -328,7 +328,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   public loadData() {
-    this.onFilterRepairEst();
+    this.onFilterRepair();
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
@@ -391,13 +391,13 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     }
   }
 
-  onFilterRepairEst() {
+  onFilterRepair() {
     const where: any = {
       status_cv: { eq: "APPROVED" }
     };
 
-    if (this.filterRepairEstForm!.get('filterRepairEst')?.value) {
-      where.so_no = { contains: this.filterRepairEstForm!.get('filterRepairEst')?.value };
+    if (this.filterRepairForm!.get('filterRepair')?.value) {
+      where.so_no = { contains: this.filterRepairForm!.get('filterRepair')?.value };
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
@@ -407,15 +407,15 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.repairEstDS.searchRepairEst(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.repairDS.searchRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.repEstList = data.map(re => {
           return { ...re, net_cost: this.calculateNetCost(re) }
         });
-        this.endCursor = this.repairEstDS.pageInfo?.endCursor;
-        this.startCursor = this.repairEstDS.pageInfo?.startCursor;
-        this.hasNextPage = this.repairEstDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.repairEstDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.repairDS.pageInfo?.endCursor;
+        this.startCursor = this.repairDS.pageInfo?.startCursor;
+        this.hasNextPage = this.repairDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.repairDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSize = pageSize;
@@ -480,18 +480,18 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  calculateNetCost(repair_est: RepairEstItem): any {
-    const total = this.repairEstDS.getTotal(repair_est?.repair_est_part)
-    const labourDiscount = repair_est.labour_cost_discount;
-    const matDiscount = repair_est.material_cost_discount;
+  calculateNetCost(repair: RepairItem): any {
+    const total = this.repairDS.getTotal(repair?.repair_part)
+    const labourDiscount = repair.labour_cost_discount;
+    const matDiscount = repair.material_cost_discount;
 
     const total_hour = total.hour;
-    const total_labour_cost = this.repairEstDS.getTotalLabourCost(total_hour, repair_est?.labour_cost);
+    const total_labour_cost = this.repairDS.getTotalLabourCost(total_hour, repair?.labour_cost);
     const total_mat_cost = total.total_mat_cost;
-    const total_cost = repair_est?.total_cost;
-    const discount_labour_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_labour_cost);
-    const discount_mat_cost = this.repairEstDS.getDiscountCost(matDiscount, total_mat_cost);
-    const net_cost = this.repairEstDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
+    const total_cost = repair?.total_cost;
+    const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
+    const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
+    const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
     return net_cost.toFixed(2);
   }
 
@@ -534,8 +534,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   resetForm() {
-    this.filterRepairEstForm?.patchValue({
-      filterRepairEst: '',
+    this.filterRepairForm?.patchValue({
+      filterRepair: '',
     });
   }
 
