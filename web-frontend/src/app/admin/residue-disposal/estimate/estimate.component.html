@@ -210,7 +210,7 @@
                     <strong>{{translatedLangText.ESTIMATE_NO}}</strong>: {{copiedResidueEst.estimate_no}}
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
-                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>: {{filterDeleted(copiedResidueEst.residue_est_part)?.length}}
+                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>: {{filterDeleted(copiedResidueEst.residue_part)?.length}}
                   </div>
                   <div class="col-xl col-lg col-md-12 col-sm-12 m-b-0 d-flex justify-content-end">
                     <mat-icon (click)="clearCopiedRepairEst()" [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>

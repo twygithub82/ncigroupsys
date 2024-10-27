@@ -64,63 +64,102 @@ export class ResidueEstGO {
 }
 
 export class ResidueItem extends ResidueEstGO {
-  public residue_est_part?: ResidueItem[];
+  public residue_part?: ResidueItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?:CustomerCompanyItem;
   //public aspnetsuser?: UserItem;
   public actions?: string[]
   constructor(item: Partial<ResidueItem> = {}) {
     super(item)
-    this.residue_est_part = item.residue_est_part;
+    this.residue_part = item.residue_part;
     this.storing_order_tank = item.storing_order_tank;
    // this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
   }
 }
 
-// export const GET_REPAIR_EST = gql`
-//   query QueryResidueEstimate($where: residue_estFilterInput, $order: [repair_estSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-//     resultList: queryRepairEstimate(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-//       nodes {
-//         aspnetusers_guid
-//         create_by
-//         create_dt
-//         delete_dt
-//         estimate_no
-//         guid
-//         labour_cost
-//         labour_cost_discount
-//         material_cost_discount
-//         owner_enable
-//         remarks
-//         sot_guid
-//         status_cv
-//         total_cost
-//         update_by
-//         update_dt
-//         storing_order_tank {
-//           guid
-//           job_no
-//           tank_no
-//           storing_order {
-//             customer_company {
-//               code
-//               name
-//               guid
-//             }
-//           }
-//         }
-//       }
-//       pageInfo {
-//         endCursor
-//         hasNextPage
-//         hasPreviousPage
-//         startCursor
-//       }
-//       totalCount
-//     }
-//   }
-// `;
+export const GET_RESIDUE_EST = gql`
+  query QueryResidue($where: residueFilterInput, $order: [residueSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryResidue(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        allocate_by
+      allocate_dt
+      approve_by
+      approve_dt
+      bill_to_guid
+      complete_by
+      complete_dt
+      create_by
+      create_dt
+      delete_dt
+      estimate_no
+      guid
+      job_no
+      remarks
+      sot_guid
+      status_cv
+      update_by
+      update_dt
+        storing_order_tank {
+        certificate_cv
+        clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        eta_dt
+        etr_dt
+        guid
+        job_no
+        last_cargo_guid
+        last_test_guid
+        liftoff_job_no
+        lifton_job_no
+        owner_guid
+        preinspect_job_no
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        release_job_no
+        remarks
+        required_temp
+        so_guid
+        status_cv
+        takein_job_no
+        tank_no
+        tank_status_cv
+        unit_type_guid
+        update_by
+        update_dt
+      }
+      residue_part {
+          action
+          approve_part
+          cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          job_order_guid
+          quantity
+          residue_guid
+          tariff_residue_guid
+          update_by
+          update_dt
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
 
 // export const GET_REPAIR_EST_BY_ID = gql`
 //   query QueryRepairEstimate($where: repair_estFilterInput, $customer_company_guid: String) {
@@ -438,11 +477,11 @@ export class ResidueItem extends ResidueEstGO {
 //   }
 // `;
 
-// export const ADD_REPAIR_EST = gql`
-//   mutation AddRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
-//     addRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
-//   }
-// `;
+export const ADD_RESIDUE_EST = gql`
+  mutation AddResidue($residue: residueInput!) {
+    addResidue(residue: $residue)
+  }
+`;
 
 // export const UPDATE_REPAIR_EST = gql`
 //   mutation UpdateRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
@@ -472,28 +511,28 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  // searchRepairEst(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ResidueEstItem[]> {
-  //   this.loadingSubject.next(true);
+  search(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ResidueItem[]> {
+    this.loadingSubject.next(true);
 
-  //   return this.apollo
-  //     .query<any>({
-  //       query: GET_REPAIR_EST,
-  //       variables: { where, order, first, after, last, before },
-  //       fetchPolicy: 'no-cache' // Ensure fresh data
-  //     })
-  //     .pipe(
-  //       map((result) => result.data),
-  //       catchError(() => of({ items: [], totalCount: 0 })),
-  //       finalize(() => this.loadingSubject.next(false)),
-  //       map((result) => {
-  //         const resultList = result.resultList || { nodes: [], totalCount: 0 };
-  //         this.dataSubject.next(resultList.nodes);
-  //         this.totalCount = resultList.totalCount;
-  //         this.pageInfo = resultList.pageInfo;
-  //         return resultList.nodes;
-  //       })
-  //     );
-  // }
+    return this.apollo
+      .query<any>({
+        query: GET_RESIDUE_EST,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
 
   // getRepairEstByID(id: string, customer_company_guid: string): Observable<ResidueEstItem[]> {
   //   this.loadingSubject.next(true);
@@ -541,15 +580,15 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   //     );
   // }
 
-  // addRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
-  //   return this.apollo.mutate({
-  //     mutation: ADD_REPAIR_EST,
-  //     variables: {
-  //       repairEstimate,
-  //       customerCompany
-  //     }
-  //   });
-  // }
+  addResidue(residue: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ADD_RESIDUE_EST,
+      variables: {
+        residue
+        
+      }
+    });
+  }
 
   // updateRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
   //   return this.apollo.mutate({

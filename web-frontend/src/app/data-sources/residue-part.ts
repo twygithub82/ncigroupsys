@@ -48,7 +48,7 @@ export class ResidueEstPartGO {
 
   constructor(item: Partial<ResidueEstPartGO> = {}) {
     this.action=item.action;
-    this.guid = item.guid;
+    this.guid = item.guid?item.guid:'';
     this.job_order_guid = item.job_order_guid;
     this.residue_guid = item.residue_guid;
     this.description = item.description;

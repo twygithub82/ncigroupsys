@@ -273,7 +273,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   isDuplicate = false;
 
   historyState: any = {};
-  updateSelectedItem:any={};
+  updateSelectedItem:any=undefined;
 
   constructor(
     public httpClient: HttpClient,
@@ -723,7 +723,12 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
 
     this.checkCompulsoryEst(["desc","qty","unit_price"]);
-    this.checkDuplicationEst(descObject);
+    var index :number =-1;
+    if(this.updateSelectedItem)
+    {
+      index = this.updateSelectedItem.index;
+    }
+    this.checkDuplicationEst(descObject,index);
     if(!this.residueEstForm?.valid)return;
     
 
@@ -734,17 +739,37 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       tempDirection = 'ltr';
     }
 
-  
+    
     let residuePartItem = new ResiduePartItem();
-    residuePartItem.action="NEW",
+    if(index==-1)
+    {
+      residuePartItem.action="NEW";
+    }
+    else
+    {
+      residuePartItem = this.deList[index];
+      residuePartItem.action = residuePartItem.guid?"EDIT":"NEW";
+    }
+
     residuePartItem.cost= Number(this.residueEstForm?.get("unit_price")?.value);
     residuePartItem.description= descObject.description;
     residuePartItem.quantity=this.residueEstForm?.get("qty")?.value;
     if(this.sotItem?.residue_est?.length!>0)residuePartItem.residue_guid = this.sotItem?.residue_est![0]!.guid!;
     residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
 
-    var newData =[residuePartItem ,...this.deList];
-    this.updateData(newData);
+    if(index===-1)
+    {
+      var newData =[residuePartItem ,...this.deList];
+      this.updateData(newData);
+    }
+    this.updateSelectedItem=undefined;
+    this.resetValue();
+  }
+
+  CancelEditEstDetails(event: Event)
+  {
+    this.preventDefault(event);  // Prevents the form submission
+    this.updateSelectedItem=undefined;
     this.resetValue();
   }
 
@@ -756,6 +781,28 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       index:index,
       action:"update"
     }
+
+    var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
+    var descValue:any;
+    if(descValues.length>0)
+    {
+      descValue = descValues[0];
+    }
+    else
+    {
+      descValue = new PackageResidueItem();
+      descValue.guid=row.guid;
+      descValue.description= row.description;
+      descValue.tariff_residue= new TariffResidueItem();
+      descValue.tariff_residue.description= row.description;
+      descValue.cost= Number(row.cost);
+      
+    }
+    this.residueEstForm?.patchValue({
+       desc:descValue,
+       qty:row.quantity,
+       unit_price:row.cost
+    });
     // var descObject :PackageResidueItem;
 
     // if(typeof this.residueEstForm?.get("desc")?.value==="object")
@@ -979,6 +1026,39 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
   onFormSubmit() {
+
+    this.residueEstForm!.get('deList')?.setErrors(null);
+
+    if(!this.deList.length){
+      this.residueEstForm?.get('deList')?.setErrors({ required: true });
+    }
+    if(!this.residueEstForm?.valid) return;
+
+
+    if(this.historyState.action==="NEW")
+    {
+       var newResidueItem :ResidueItem =new ResidueItem();
+       newResidueItem.bill_to_guid= this.sotItem?.storing_order?.customer_company?.guid;
+       newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
+       newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
+       newResidueItem.status_cv="CLEANING";
+       newResidueItem.residue_part= [];
+       this.deList.forEach(data=>{
+          var residuePart : ResiduePartItem = new ResiduePartItem(data);
+          newResidueItem.residue_part?.push(residuePart);
+
+       });
+
+       this.residueDS.addResidue(newResidueItem).subscribe(result=>{
+
+          if(result>0)
+          {
+
+          }
+       });
+    }
+    else
+    {}
     // this.residueEstForm!.get('repList')?.setErrors(null);
     // if (this.residueEstForm?.valid) {
     //   if (!this.repList.length) {
@@ -1505,29 +1585,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   // } 
 
   resetValue(){
-//     this.residueEstForm?.get('desc')?.clearValidators();
-// this.residueEstForm?.get('qty')?.clearValidators();
-// this.residueEstForm?.get('unit_price')?.clearValidators();
 
-// // Update validity to ensure changes are applied
-// this.residueEstForm?.get('desc')?.updateValueAndValidity();
-// this.residueEstForm?.get('qty')?.updateValueAndValidity();
-// this.residueEstForm?.get('unit_price')?.updateValueAndValidity();
-
-//     this.residueEstForm?.get('desc')?.setValue('', { emitEvent: false });
-//     this.residueEstForm?.get('qty')?.setValue('', { emitEvent: false });
-//    this.residueEstForm?.get('unit_price')?.setValue('', { emitEvent: false });
-
-//    this.residueEstForm?.get('desc')?.setValidators([Validators.required]);
-// this.residueEstForm?.get('qty')?.setValidators([Validators.required]);
-// this.residueEstForm?.get('unit_price')?.setValidators([Validators.required]);
-
-// this.residueEstForm?.get('desc')?.updateValueAndValidity();
-// this.residueEstForm?.get('qty')?.updateValueAndValidity();
-// this.residueEstForm?.get('unit_price')?.updateValueAndValidity();
-    // this.residueEstForm?.get('desc')?.disable({ emitEvent: false });
-    // this.residueEstForm?.get('qty')?.disable({ emitEvent: false });
-    // this.residueEstForm?.get('unit_price')?.disable({ emitEvent: false });
     this.residueEstForm?.patchValue({
       desc:'',
       qty:'',
@@ -1536,9 +1594,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.residueEstForm?.get('desc')?.setErrors(null);
     this.residueEstForm?.get('qty')?.setErrors(null);
     this.residueEstForm?.get('unit_price')?.setErrors(null);
-    // this.residueEstForm?.get('desc')?.enable({ emitEvent: false });
-    // this.residueEstForm?.get('qty')?.enable({ emitEvent: false });
-    // this.residueEstForm?.get('unit_price')?.enable({ emitEvent: false });
+    this.displayPackResidueList=[...this.packResidueList];
+  
   }
   
 }

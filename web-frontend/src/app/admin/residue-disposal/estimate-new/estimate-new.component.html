@@ -277,10 +277,24 @@
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                     (click)="addEstDetails($event)" [disabled]="!(groupNameCvList.length)">
                     <mat-icon class="col-white">
-                     add
+                      @if (!this.updateSelectedItem){
+                         add
+                      }
+                      @else {
+                        edit
+                      }
                     </mat-icon>
                     {{translatedLangText.ESTIMATE_DETAILS}}
                   </button>
+                  @if(this.updateSelectedItem){
+                    <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="CancelEditEstDetails($event)">
+                    <mat-icon class="col-white">
+                      cancel
+                    </mat-icon>
+                      {{translatedLangText.CANCEL}}
+                    </button>
+                  }
                 </div>
               </div>
               <div class="body overflow-auto">
@@ -344,7 +358,7 @@
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
-                    (click)="handleDelete($event, row, row.index)" [style.cursor]="'pointer'"
+                    (click)="editEstDetails($event, row, row.index)" [style.cursor]="'pointer'"  [ngClass]="{'selected-row': i === this.updateSelectedItem?.index}"
                       matRipple>
                     </mat-row>
                   </table>

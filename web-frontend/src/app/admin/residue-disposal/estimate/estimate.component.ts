@@ -708,6 +708,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
  // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
       state: { id: '' ,
+        action:"NEW",
         selectedRow:row,
         type:'residue-estimate',
         pagination:{
