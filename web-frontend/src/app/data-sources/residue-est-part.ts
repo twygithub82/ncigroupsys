@@ -6,8 +6,8 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
-import { RepairEstItem } from './repair-est';
-import { REPDamageRepairItem } from './rep-damage-repair';
+import { RepairItem } from './repair';
+import { RPDamageRepairItem } from './rp-damage-repair';
 import { TariffResidueItem } from './tariff-residue';
 
 export class ResidueEstPartGO {

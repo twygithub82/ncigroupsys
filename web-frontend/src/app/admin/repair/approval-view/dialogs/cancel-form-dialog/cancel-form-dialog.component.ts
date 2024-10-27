@@ -21,13 +21,13 @@ import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatDividerModule } from '@angular/material/divider';
-import { RepairEstItem } from 'app/data-sources/repair-est';
+import { RepairItem } from 'app/data-sources/repair';
 import { MatCardModule } from '@angular/material/card';
 
 export interface DialogData {
   action?: string;
   dialogTitle?: string;
-  item: RepairEstItem[];
+  item: RepairItem[];
   translatedLangText?: any;
   index: number;
 }
@@ -57,7 +57,7 @@ export class CancelFormDialogComponent {
   action?: string;
   index: number;
   dialogTitle?: string;
-  repairEstList: RepairEstItem[];
+  repairList: RepairItem[];
   cancelForm: UntypedFormGroup;
   startDate = new Date();
 
@@ -68,7 +68,7 @@ export class CancelFormDialogComponent {
     private fb: UntypedFormBuilder
   ) {
     // Set the defaults
-    this.repairEstList = data.item;
+    this.repairList = data.item;
     this.cancelForm = this.createCancelForm();
     this.action = this.data.action;
     this.dialogTitle = this.data.dialogTitle;
@@ -76,7 +76,7 @@ export class CancelFormDialogComponent {
   }
   createCancelForm(): UntypedFormGroup {
     return this.fb.group({
-      cancelItemList: this.fb.array(this.repairEstList.map(re => this.createOrderGroup(re))),
+      cancelItemList: this.fb.array(this.repairList.map(re => this.createOrderGroup(re))),
       remarks: ['']
     });
   }

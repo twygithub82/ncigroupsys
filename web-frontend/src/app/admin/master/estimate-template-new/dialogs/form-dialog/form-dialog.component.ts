@@ -23,8 +23,8 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
-import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
+import { RepairPartItem } from 'app/data-sources/repair-part';
+import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { Direction } from '@angular/cdk/bidi';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
@@ -93,7 +93,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
-  repDrDS: REPDamageRepairDS;
+  repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
   currentParts:TemplateEstPartItem[]=[];
   //popupPartSelectionDialog:boolean=true;
@@ -115,7 +115,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
-    this.repDrDS = new REPDamageRepairDS(this.apollo);
+    this.repDrDS = new RPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
@@ -127,7 +127,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.buttonContent = `${data.translatedLangText.SAVE}`;
     }
     this.currentParts=data.populateData.currentParts?data.populateData.currentParts: [];
-    this.repairPart = data.item ? data.item : new RepairEstPartItem();
+    this.repairPart = data.item ? data.item : new RepairPartItem();
     if(this.repairPart.tariff_repair.material_cost) this.repairPart.material_cost= this.repairPart.tariff_repair.material_cost.toFixed(2);
     
     this.index = data.index;
@@ -256,7 +256,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             if(addAnother)
             {
               this.InsertEstimationPartEvent.emit(rep);
-              this.repairPart =  new RepairEstPartItem();
+              this.repairPart =  new RepairPartItem();
               this.repairPart.tariff_repair= new TariffRepairItem();
               this.repairPartForm = this.createForm();
               this.initializeValueChange();
@@ -275,7 +275,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
               // else
               // {
               //   this.InsertEstimationPartEvent.emit(rep);
-              //   this.repairPart =  new RepairEstPartItem();
+              //   this.repairPart =  new RepairPartItem();
               //   this.repairPart.tariff_repair= new TariffRepairItem();
               //   this.repairPartForm = this.createForm();
               //   this.initializeValueChange();
@@ -293,7 +293,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         if(addAnother)
           {
             this.InsertEstimationPartEvent.emit(rep);
-            this.repairPart =  new RepairEstPartItem();
+            this.repairPart =  new RepairPartItem();
             this.repairPart.tariff_repair= new TariffRepairItem();
             this.repairPartForm = this.createForm();
             this.initializeValueChange();
@@ -317,7 +317,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           // else
           // {
           //   this.InsertEstimationPartEvent.emit(rep);
-          //   this.repairPart =  new RepairEstPartItem();
+          //   this.repairPart =  new RepairPartItem();
           //   this.repairPart.tariff_repair= new TariffRepairItem();
           //   this.repairPartForm = this.createForm();
           //   this.initializeValueChange();
@@ -454,15 +454,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  REPDamage(damages: any[]): REPDamageRepairItem[] {
+  REPDamage(damages: any[]): RPDamageRepairItem[] {
     return damages.map(dmg => this.repDrDS.createREPDamage(undefined, undefined, dmg));
   }
 
-  REPRepair(repairs: any[]): REPDamageRepairItem[] {
+  REPRepair(repairs: any[]): RPDamageRepairItem[] {
     return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
   }
 
-  REPDamageRepairToCV(damagesRepair: any[] | undefined): REPDamageRepairItem[] {
+  REPDamageRepairToCV(damagesRepair: any[] | undefined): RPDamageRepairItem[] {
     return damagesRepair?.map(dmgRp => dmgRp.code_cv) || [];
   }
 

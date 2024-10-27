@@ -6,7 +6,6 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
-import { RepairEstPartItem } from './repair-est-part';
 import { UserItem } from './user';
 import { CustomerCompanyItem } from './customer-company';
 
@@ -167,7 +166,7 @@ export const GET_REPAIR_EST_BY_ID = gql`
             create_dt
             delete_dt
             guid
-            rep_guid
+            rp_guid
             update_by
             update_dt
           }
@@ -329,7 +328,7 @@ export const GET_REPAIR_EST_FOR_APPROVAL = gql`
             create_dt
             delete_dt
             guid
-            rep_guid
+            rp_guid
             update_by
             update_dt
           }

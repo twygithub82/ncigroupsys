@@ -30,14 +30,14 @@ import { AuthGuard } from '@core/guard/auth.guard';
 import { PackageResidueComponent } from './package/package-residue/package-residue.component';
 import { PackageRepairComponent } from './package/package-repair/package-repair.component';
 import { PackageBufferComponent } from './package/package-buffer/package-buffer.component';
-import { EstimateComponent } from './repair/estimate/estimate.component';
-import { EstimateNewComponent } from './repair/estimate-new/estimate-new.component';
+import { RepairEstimateComponent } from './repair/estimate/estimate.component';
+import { RepairEstimateNewComponent } from './repair/estimate-new/estimate-new.component';
 import { EstimateTemplateComponent } from './master/estimate-template/estimate-template.component';
 import { EstimateTemplateNewComponent } from './master/estimate-template-new/estimate-template-new.component';
 import { CustomerComponent } from './master/customer/customer.component';
 import { CustomerNewComponent } from './master/customer-new/customer-new.component';
-import { ApprovalComponent } from './repair/approval/approval.component';
-import { ApprovalViewComponent } from './repair/approval-view/approval-view.component';
+import { RepairApprovalComponent } from './repair/approval/approval.component';
+import { RepairApprovalViewComponent } from './repair/approval-view/approval-view.component';
 import { BillingBranchComponent } from './master/billing-branch/billing-branch.component';
 import { BillingBranchNewComponent } from './master/billing-branch-new/billing-branch-new.component';
 import { CleaningApprovalComponent } from './cleaning/cleaning-approval/approval.component';
@@ -197,29 +197,29 @@ export const ADMIN_ROUTE: Routes = [
   },
   {
     path: "repair/estimate",
-    component: EstimateComponent,
+    component: RepairEstimateComponent,
   },
   {
     path: "repair/estimate/new/:id",
-    component: EstimateNewComponent,
+    component: RepairEstimateNewComponent,
   },
   {
     path: "repair/estimate/edit/:id/:repair_est_id",
-    component: EstimateNewComponent,
+    component: RepairEstimateNewComponent,
     data: { action: 'edit' }
   },
   {
     path: "repair/estimate/duplicate/:id/:repair_est_id",
-    component: EstimateNewComponent,
+    component: RepairEstimateNewComponent,
     data: { action: 'duplicate' }
   },
   {
     path: "repair/approval",
-    component: ApprovalComponent,
+    component: RepairApprovalComponent,
   },
   {
     path: "repair/approval/view/:id",
-    component: ApprovalViewComponent,
+    component: RepairApprovalViewComponent,
   },
   {
     path: "repair/job-order",

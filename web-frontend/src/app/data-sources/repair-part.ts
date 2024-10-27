@@ -6,14 +6,14 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
-import { RepairEstItem } from './repair-est';
-import { REPDamageRepairItem } from './rep-damage-repair';
+import { RepairItem } from './repair';
+import { RPDamageRepairItem } from './rp-damage-repair';
 import { JobOrderItem } from './job-order';
 
-export class RepairEstPartGO {
+export class RepairPartGO {
   public guid?: string;
   public tariff_repair_guid?: string;
-  public repair_est_guid?: string;
+  public repair_guid?: string;
   public job_order_guid?: string;
   public description?: string;
   public location_cv?: string;
@@ -34,10 +34,10 @@ export class RepairEstPartGO {
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<RepairEstPartGO> = {}) {
+  constructor(item: Partial<RepairPartGO> = {}) {
     this.guid = item.guid;
     this.tariff_repair_guid = item.tariff_repair_guid;
-    this.repair_est_guid = item.repair_est_guid;
+    this.repair_guid = item.repair_guid;
     this.job_order_guid = item.job_order_guid;
     this.description = item.description;
     this.location_cv = item.location_cv;
@@ -60,17 +60,17 @@ export class RepairEstPartGO {
   }
 }
 
-export class RepairEstPartItem extends RepairEstPartGO {
+export class RepairPartItem extends RepairPartGO {
   public tariff_repair?: TariffRepairItem;
-  public repair_est?: RepairEstItem;
-  public rep_damage_repair?: REPDamageRepairItem[];
+  public repair?: RepairItem;
+  public rp_damage_repair?: RPDamageRepairItem[];
   public job_order?: JobOrderItem;
   public action?: string
-  constructor(item: Partial<RepairEstPartItem> = {}) {
+  constructor(item: Partial<RepairPartItem> = {}) {
     super(item)
     this.tariff_repair = item.tariff_repair;
-    this.repair_est = item.repair_est;
-    this.rep_damage_repair = item.rep_damage_repair;
+    this.repair = item.repair;
+    this.rp_damage_repair = item.rp_damage_repair;
     this.job_order = item.job_order;
     this.action = item.action;
   }
@@ -159,16 +159,16 @@ export const GET_SCHEDULING_SOT = gql`
   }
 `;
 
-export class RepairEstPartDS extends BaseDataSource<RepairEstPartItem> {
+export class RepairPartDS extends BaseDataSource<RepairPartItem> {
   constructor(private apollo: Apollo) {
     super();
   }
 
-  isApprove(rep: RepairEstPartItem) {
-    return rep.approve_part;
+  isApprove(rp: RepairPartItem) {
+    return rp.approve_part;
   }
 
-  is4X(repDmgRepair: REPDamageRepairItem[] | undefined): boolean | undefined {
-    return repDmgRepair && repDmgRepair.some((item: REPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
+  is4X(rpDmgRepair: RPDamageRepairItem[] | undefined): boolean | undefined {
+    return rpDmgRepair && rpDmgRepair.some((item: RPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
   }
 }
