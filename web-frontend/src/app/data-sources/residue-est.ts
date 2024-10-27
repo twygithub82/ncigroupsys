@@ -8,43 +8,52 @@ import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
 import { RepairEstPartItem } from './repair-est-part';
 import { UserItem } from './user';
+import { CustomerCompanyItem } from './customer-company';
 
-export class RepairEstGO {
-  public guid?: string;
-  public sot_guid?: string;
-  public aspnetusers_guid?: string;
-  public estimate_no?: string;
-  public labour_cost_discount?: number;
-  public material_cost_discount?: number;
-  public labour_cost?: number;
-  public total_cost?: number;
-  public status_cv?: string;
-  public remarks?: string;
-  public owner_enable?: boolean;
+export class ResidueEstGO {
+  public allocate_by?:string;
+  public allocate_dt?:number;
+  public approve_by?:string;
+  public approve_dt?:number;
   public bill_to_guid?: string;
+  public complete_by?:string;
+  public complete_dt?:number;
+  public guid?: string;
   public job_no?: string;
-  public total_hour?: number;
+  public remarks?: string;
+  public sot_guid?: string;
+  public status_cv?: string;
+ 
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<RepairEstGO> = {}) {
+  // public aspnetusers_guid?: string;
+  // public estimate_no?: string;
+  // public labour_cost_discount?: number;
+  // public material_cost_discount?: number;
+  // public labour_cost?: number;
+  // public total_cost?: number;
+  // public owner_enable?: boolean;
+  // public total_hour?: number;
+
+  
+
+  constructor(item: Partial<ResidueEstGO> = {}) {
     this.guid = item.guid;
     this.sot_guid = item.sot_guid;
-    this.aspnetusers_guid = item.aspnetusers_guid;
-    this.estimate_no = item.estimate_no;
-    this.labour_cost_discount = item.labour_cost_discount || 0;
-    this.material_cost_discount = item.material_cost_discount || 0;
-    this.labour_cost = item.labour_cost || 0;
-    this.total_cost = item.total_cost || 0;
+    this.allocate_by = item.allocate_by;
+    this.allocate_dt = item.allocate_dt;
+    this.approve_by = item.approve_by;
+    this.approve_dt = item.approve_dt || 0;
+    this.complete_by = item.complete_by;
+    this.complete_dt = item.complete_dt || 0;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
-    this.owner_enable = item.owner_enable || false;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
-    this.total_hour = item.total_hour || 0;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -53,22 +62,23 @@ export class RepairEstGO {
   }
 }
 
-export class RepairEstItem extends RepairEstGO {
-  public repair_est_part?: RepairEstPartItem[];
+export class ResidueEstItem extends ResidueEstGO {
+  public residue_est_part?: ResidueEstItem[];
   public storing_order_tank?: StoringOrderTankItem;
-  public aspnetsuser?: UserItem;
+  public customer_company?:CustomerCompanyItem;
+  //public aspnetsuser?: UserItem;
   public actions?: string[]
-  constructor(item: Partial<RepairEstItem> = {}) {
+  constructor(item: Partial<ResidueEstItem> = {}) {
     super(item)
-    this.repair_est_part = item.repair_est_part;
+    this.residue_est_part = item.residue_est_part;
     this.storing_order_tank = item.storing_order_tank;
-    this.aspnetsuser = item.aspnetsuser;
+   // this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
   }
 }
 
 export const GET_REPAIR_EST = gql`
-  query QueryRepairEstimate($where: repair_estFilterInput, $order: [repair_estSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+  query QueryResidueEstimate($where: residue_estFilterInput, $order: [repair_estSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryRepairEstimate(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         aspnetusers_guid
@@ -457,11 +467,11 @@ export const APPROVE_REPAIR_EST = gql`
   }
 `
 
-export class RepairEstDS extends BaseDataSource<RepairEstItem> {
+export class RepairEstDS extends BaseDataSource<ResidueEstItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchRepairEst(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RepairEstItem[]> {
+  searchRepairEst(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ResidueEstItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
@@ -484,7 +494,7 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
-  getRepairEstByID(id: string, customer_company_guid: string): Observable<RepairEstItem[]> {
+  getRepairEstByID(id: string, customer_company_guid: string): Observable<ResidueEstItem[]> {
     this.loadingSubject.next(true);
     const where: any = { guid: { eq: id } }
     return this.apollo
@@ -507,32 +517,9 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
       );
   }
 
-  getRepairEstByIDForApproval(id: string): Observable<RepairEstItem[]> {
+  getRepairEstByIDForApproval(id: string): Observable<ResidueEstItem[]> {
     this.loadingSubject.next(true);
     const where: any = { guid: { eq: id } }
-    return this.apollo
-      .query<any>({
-        query: GET_REPAIR_EST_FOR_APPROVAL,
-        variables: { where },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const resultList = result.resultList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(resultList.nodes);
-          this.totalCount = resultList.totalCount;
-          this.pageInfo = resultList.pageInfo;
-          return resultList.nodes;
-        })
-      );
-  }
-
-  getRepairEstByIDForJobOrder(id: string): Observable<RepairEstItem[]> {
-    this.loadingSubject.next(true);
-    const where: any = { guid: { eq: id }, status_cv: { eq: "APPROVED" } }
     return this.apollo
       .query<any>({
         query: GET_REPAIR_EST_FOR_APPROVAL,
@@ -600,32 +587,28 @@ export class RepairEstDS extends BaseDataSource<RepairEstItem> {
     });
   }
 
-  canAmend(re: RepairEstItem | undefined): boolean {
-    return re?.status_cv === 'PENDING';
+  canAmend(re: ResidueEstItem): boolean {
+    return re.status_cv === 'PENDING';
   }
 
-  canApprove(re: RepairEstItem | undefined): boolean {
-    return re?.status_cv === 'PENDING';
+  canApprove(re: ResidueEstItem): boolean {
+    return re.status_cv === 'PENDING';
   }
 
-  canCancel(re: RepairEstItem | undefined): boolean {
-    return re?.status_cv === 'PENDING';
+  canCancel(re: ResidueEstItem): boolean {
+    return re.status_cv === 'PENDING';
   }
 
-  canRollback(re: RepairEstItem | undefined): boolean {
-    return re?.status_cv === 'CANCELED' || re?.status_cv === 'APPROVED';
+  canRollback(re: ResidueEstItem): boolean {
+    return re.status_cv === 'CANCELED' || re.status_cv === 'APPROVED';
   }
 
-  canAssign(re: RepairEstItem | undefined): boolean {
-    return re?.status_cv === 'APPROVED';
-  }
-
-  canCopy(re: RepairEstItem): boolean {
+  canCopy(re: ResidueEstItem): boolean {
     return true;
   }
 
-  getTotal(repairEstPartList: any[] | undefined): any {
-    const totalSums = repairEstPartList?.filter(data => !data.delete_dt)?.reduce((totals: any, owner) => {
+  getTotal(residueEstPartList: any[] | undefined): any {
+    const totalSums = residueEstPartList?.filter(data => !data.delete_dt)?.reduce((totals: any, owner) => {
       return {
         hour: (totals.hour ?? 0) + (owner.hour ?? 0),
         total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.material_cost ?? 0)))

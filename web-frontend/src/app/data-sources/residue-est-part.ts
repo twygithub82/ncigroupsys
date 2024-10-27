@@ -8,50 +8,62 @@ import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
 import { RepairEstItem } from './repair-est';
 import { REPDamageRepairItem } from './rep-damage-repair';
-import { JobOrderItem } from './job-order';
+import { TariffResidueItem } from './tariff-residue';
 
-export class RepairEstPartGO {
-  public guid?: string;
-  public tariff_repair_guid?: string;
-  public repair_est_guid?: string;
-  public job_order_guid?: string;
-  public description?: string;
-  public location_cv?: string;
-  public comment?: string;
-  public remarks?: string;
-  public quantity?: number;
-  public hour?: number;
-  public owner?: boolean;
-  public material_cost?: number;
-  public approve_qty?: number;
-  public approve_hour?: number;
-  public approve_cost?: number;
-  public approve_part?: boolean;
-  public complete_dt?: number;
+export class ResidueEstPartGO {
+  
+  
+  
+  
+  
+  // public location_cv?: string;
+  // public comment?: string;
+  // public remarks?: string;
+  
+  // public hour?: number;
+  // public owner?: boolean;
+  // public material_cost?: number;
+  // public approve_qty?: number;
+  // public approve_hour?: number;
+  // public approve_cost?: number;
+  
+  //public complete_dt?: number;
+
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<RepairEstPartGO> = {}) {
+  public guid?: string;
+  public action?:string;
+  public approve_part?: boolean;
+  public cost?:number;
+  public job_order_guid?: string;
+  public quantity?: number;
+  public residue_guid?: string;
+  public tariff_residue_guid?: string;
+  public description?: string;
+
+
+  constructor(item: Partial<ResidueEstPartGO> = {}) {
+    this.action=item.action;
     this.guid = item.guid;
-    this.tariff_repair_guid = item.tariff_repair_guid;
-    this.repair_est_guid = item.repair_est_guid;
     this.job_order_guid = item.job_order_guid;
+    this.residue_guid = item.residue_guid;
     this.description = item.description;
-    this.location_cv = item.location_cv;
-    this.comment = item.comment;
-    this.remarks = item.remarks;
+    this.tariff_residue_guid = item.tariff_residue_guid;
+    // this.comment = item.comment;
+    // this.remarks = item.remarks;
     this.quantity = item.quantity;
-    this.hour = item.hour;
-    this.owner = item.owner || false;
-    this.material_cost = item.material_cost;
-    this.approve_qty = item.approve_qty;
-    this.approve_hour = item.approve_hour;
-    this.approve_cost = item.approve_cost;
+    // this.hour = item.hour;
+    // this.owner = item.owner || false;
+    this.cost = item.cost;
+    // this.approve_qty = item.approve_qty;
+    // this.approve_hour = item.approve_hour;
+    // this.approve_cost = item.approve_cost;
     this.approve_part = item.approve_part;
-    this.complete_dt = item.complete_dt;
+    // this.complete_dt = item.complete_dt;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -60,19 +72,12 @@ export class RepairEstPartGO {
   }
 }
 
-export class RepairEstPartItem extends RepairEstPartGO {
-  public tariff_repair?: TariffRepairItem;
-  public repair_est?: RepairEstItem;
-  public rep_damage_repair?: REPDamageRepairItem[];
-  public job_order?: JobOrderItem;
-  public action?: string
-  constructor(item: Partial<RepairEstPartItem> = {}) {
+export class ResidueEstPartItem extends ResidueEstPartGO {
+  public tariff_residue?: TariffResidueItem;
+  
+  constructor(item: Partial<ResidueEstPartItem> = {}) {
     super(item)
-    this.tariff_repair = item.tariff_repair;
-    this.repair_est = item.repair_est;
-    this.rep_damage_repair = item.rep_damage_repair;
-    this.job_order = item.job_order;
-    this.action = item.action;
+    this.tariff_residue = item.tariff_residue;
   }
 }
 
@@ -169,6 +174,6 @@ export class RepairEstPartDS extends BaseDataSource<RepairEstPartItem> {
   }
 
   is4X(repDmgRepair: REPDamageRepairItem[] | undefined): boolean | undefined {
-    return repDmgRepair && repDmgRepair.some((item: REPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
+    return repDmgRepair && !repDmgRepair.some((item: REPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
   }
 }
