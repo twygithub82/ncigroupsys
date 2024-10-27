@@ -15,7 +15,7 @@ namespace IDMS.Residue.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<residue> QueryResidueQuotation(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<residue> QueryResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
