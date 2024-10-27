@@ -205,12 +205,12 @@ export const ADMIN_ROUTE: Routes = [
     component: RepairEstimateNewComponent,
   },
   {
-    path: "repair/estimate/edit/:id/:repair_est_id",
+    path: "repair/estimate/edit/:id/:repair_id",
     component: RepairEstimateNewComponent,
     data: { action: 'edit' }
   },
   {
-    path: "repair/estimate/duplicate/:id/:repair_est_id",
+    path: "repair/estimate/duplicate/:id/:repair_id",
     component: RepairEstimateNewComponent,
     data: { action: 'duplicate' }
   },
