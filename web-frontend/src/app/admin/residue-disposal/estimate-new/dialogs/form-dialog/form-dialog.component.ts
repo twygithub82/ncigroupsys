@@ -23,8 +23,8 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { RepairEstPartItem } from 'app/data-sources/repair-part';
-import { REPDamageRepairDS, REPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
+import { RepairPartItem } from 'app/data-sources/repair-part';
+import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { Direction } from '@angular/cdk/bidi';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
@@ -37,12 +37,12 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 
 export interface DialogData {
   action?: string;
-  item?: RepairEstPartItem;
+  item?: RepairPartItem;
   translatedLangText?: any;
   populateData?: any;
   index: number;
   customer_company_guid?: string;
-  existedPart?: RepairEstPartItem[]
+  existedPart?: RepairPartItem[]
 }
 
 @Component({
@@ -90,13 +90,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lengthList?: any[];
   valueChangesDisabled: boolean = false;
   subgroupNameCvList?: CodeValuesItem[];
-  existedPart?: RepairEstPartItem[];
+  existedPart?: RepairPartItem[];
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
-  repDrDS: REPDamageRepairDS;
+  repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -112,7 +112,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
-    this.repDrDS = new REPDamageRepairDS(this.apollo);
+    this.repDrDS = new RPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
@@ -121,7 +121,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     }
-    this.repairPart = data.item ? data.item : new RepairEstPartItem();
+    this.repairPart = data.item ? data.item : new RepairPartItem();
     this.index = data.index;
     this.existedPart = data.existedPart;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
@@ -257,7 +257,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (addAnother) {
       this.dataSubject.next(returnDialog);
       this.addedSuccessfully();
-      this.repairPart = new RepairEstPartItem();
+      this.repairPart = new RepairPartItem();
       this.repairPartForm = this.createForm();
       this.initializeValueChange();
       this.initializePartNameValueChange();
@@ -399,7 +399,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  // REPDamage(damages: any[]): REPDamageRepairItem[] {
+  // REPDamage(damages: any[]): RPDamageRepairItem[] {
   //   const damage = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0);
 
   //   damage.forEach((x: any) => {
@@ -431,10 +431,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  REPDamage(damages: string[]): REPDamageRepairItem[] {
+  REPDamage(damages: string[]): RPDamageRepairItem[] {
     const existingDamage = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0);
 
-    const finalDamages: REPDamageRepairItem[] = [];
+    const finalDamages: RPDamageRepairItem[] = [];
 
     existingDamage?.forEach((x: any) => {
       if (damages.includes(x.code_cv)) {
@@ -457,10 +457,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return finalDamages;
   }
 
-  REPRepair(repairs: any[]): REPDamageRepairItem[] {
+  REPRepair(repairs: any[]): RPDamageRepairItem[] {
     const existingRepair = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1);
 
-    const finalRepairs: REPDamageRepairItem[] = [];
+    const finalRepairs: RPDamageRepairItem[] = [];
 
     existingRepair?.forEach((x: any) => {
       if (repairs.includes(x.code_cv)) {
@@ -483,7 +483,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return finalRepairs;
   }
 
-  REPDamageRepairToCV(damagesRepair: any[] | undefined): REPDamageRepairItem[] {
+  REPDamageRepairToCV(damagesRepair: any[] | undefined): RPDamageRepairItem[] {
     return damagesRepair?.map(dmgRp => dmgRp.code_cv) || [];
   }
 
@@ -553,15 +553,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     ComponentUtil.showNotification('snackbar-success', this.data.translatedLangText.ADD_SUCCESS, 'top', 'center', this.snackBar);
   }
 
-  extractDescription(rep: RepairEstPartItem) {
+  extractDescription(rep: RepairPartItem) {
     const concludeLength = rep.tariff_repair?.length
       ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
       : '';
     return `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
   }
 
-  validateExistedPart(toValidatePart: RepairEstPartItem): boolean | undefined {
-    return this.existedPart?.some((part: RepairEstPartItem) => {
+  validateExistedPart(toValidatePart: RepairPartItem): boolean | undefined {
+    return this.existedPart?.some((part: RepairPartItem) => {
       return toValidatePart.guid !== part.guid && this.extractDescription(toValidatePart) === this.extractDescription(part);
     }) || false;
   }

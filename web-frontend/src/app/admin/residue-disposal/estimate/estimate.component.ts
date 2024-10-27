@@ -46,8 +46,8 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
-import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
+import { RepairPartItem } from 'app/data-sources/repair-part';
 import { ResidueEstItem } from 'app/data-sources/residue-est';
 
 @Component({

@@ -51,12 +51,12 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { MatCardModule } from '@angular/material/card';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { RepairEstPartDS, RepairEstPartItem } from 'app/data-sources/repair-part';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair';
+import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
-import { REPDamageRepairGO, REPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
+import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
@@ -221,15 +221,15 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   clean_statusList: CodeValuesItem[] = [];
 
   sot_guid?: string | null;
-  repair_est_guid?: string | null;
+  repair_guid?: string | null;
 
   residueEstForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
-  repairEstItem?: RepairEstItem;
+  repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
-  repList: RepairEstPartItem[] = [];
+  repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
   yesnoCvList: CodeValuesItem[] = []
@@ -253,8 +253,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   plDS: PackageLabourDS;
-  repairEstDS: RepairEstDS;
-  repairEstPartDS: RepairEstPartDS;
+  repairEstDS: RepairDS;
+  repairEstPartDS: RepairPartDS;
   
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
@@ -286,8 +286,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.plDS = new PackageLabourDS(this.apollo);
-    this.repairEstDS = new RepairEstDS(this.apollo);
-    this.repairEstPartDS = new RepairEstPartDS(this.apollo);
+    this.repairEstDS = new RepairDS(this.apollo);
+    this.repairEstPartDS = new RepairPartDS(this.apollo);
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
@@ -358,21 +358,21 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
           this.residueEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
           this.residueEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
           this.residueEstForm?.get('remarks')?.setValue(value.remarks);
-          const repList: RepairEstPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
+          const repList: RepairPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
             const package_repair = tep.tariff_repair?.package_repair;
             let material_cost = 0;
             if (package_repair?.length) {
               material_cost = package_repair[0].material_cost
             }
             const tep_damage_repair = this.filterDeleted(tep.tep_damage_repair).map((item: any) => {
-              return new REPDamageRepairItem({
+              return new RPDamageRepairItem({
                 code_cv: item.code_cv,
                 code_type: item.code_type,
                 action: 'new'
               });
             })
-            return new RepairEstPartItem({
-              repair_est_guid: this.repair_est_guid || undefined,
+            return new RepairPartItem({
+              repair_guid: this.repair_guid || undefined,
               description: tep.description,
               hour: tep.hour,
               location_cv: tep.location_cv,
@@ -382,7 +382,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
               material_cost: material_cost,
               tariff_repair_guid: tep.tariff_repair_guid,
               tariff_repair: tep.tariff_repair,
-              rep_damage_repair: tep_damage_repair,
+              rp_damage_repair: tep_damage_repair,
               action: "new"
             });
           });
@@ -479,7 +479,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     //this.getSurveyorList();
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
-    this.repair_est_guid = this.route.snapshot.paramMap.get('repair_est_id');
+    this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
 
     this.route.data.subscribe(routeData => {
       this.isDuplicate = routeData['action'] === 'duplicate';
@@ -500,10 +500,10 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
 
 
-  populateRepairEst(repair_est: RepairEstItem[] | undefined, isDuplicate: boolean) {
+  populateRepairEst(repair_est: RepairItem[] | undefined, isDuplicate: boolean) {
     if (this.isDuplicate) {
-      if (this.repair_est_guid) {
-        this.repairEstDS.getRepairEstByID(this.repair_est_guid, this.sotItem?.storing_order?.customer_company_guid!).subscribe(data => {
+      if (this.repair_guid) {
+        this.repairEstDS.getRepairByID(this.repair_guid, this.sotItem?.storing_order?.customer_company_guid!).subscribe(data => {
           if (this.repairEstDS.totalCount > 0) {
             const found = data;
             if (found?.length) {
@@ -514,7 +514,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       }
     } else {
       if (repair_est?.length) {
-        const found = repair_est.filter(x => x.guid === this.repair_est_guid);
+        const found = repair_est.filter(x => x.guid === this.repair_guid);
         if (found?.length) {
           this.populateFoundRepairEst(found[0]!, isDuplicate);
         }
@@ -522,10 +522,10 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     }
   }
 
-  populateFoundRepairEst(repairEst: RepairEstItem, isDuplicate: boolean) {
-    this.repairEstItem = isDuplicate ? new RepairEstItem() : repairEst;
+  populateFoundRepairEst(repairEst: RepairItem, isDuplicate: boolean) {
+    this.repairEstItem = isDuplicate ? new RepairItem() : repairEst;
     this.isOwner = !isDuplicate ? (repairEst!.owner_enable ?? false) : false;
-    this.repairEstItem!.repair_est_part = this.filterDeleted(repairEst!.repair_est_part).map((rep: any) => {
+    this.repairEstItem!.repair_part = this.filterDeleted(repairEst!.repair_part).map((rep: any) => {
       if (isDuplicate) {
         const package_repair = rep.tariff_repair?.package_repair;
         let material_cost = rep.material_cost;
@@ -533,7 +533,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
           material_cost = package_repair[0].material_cost;
         }
 
-        const rep_damage_repair = this.filterDeleted(rep.rep_damage_repair).map((rep_d_r: any) => {
+        const rp_damage_repair = this.filterDeleted(rep.rp_damage_repair).map((rep_d_r: any) => {
           rep_d_r.guid = undefined;
           rep_d_r.action = 'new';
           return rep_d_r;
@@ -541,17 +541,17 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
         return {
           ...rep,
-          rep_damage_repair: rep_damage_repair,
+          rp_damage_repair: rp_damage_repair,
           material_cost: material_cost,
           guid: null,
-          repair_est_guid: null,
+          repair_guid: null,
           action: 'new'
         };
       }
 
       return rep;
     });
-    this.updateData(this.repairEstItem!.repair_est_part);
+    this.updateData(this.repairEstItem!.repair_part);
     this.residueEstForm?.patchValue({
       guid: !isDuplicate ? this.repairEstItem!.guid : '',
       remarks: this.repairEstItem!.remarks,
@@ -595,7 +595,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       if (data?.length > 0) {
         this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
         const def_guid = this.getCustomer()?.def_template_guid;
-        if (!this.repair_est_guid) {
+        if (!this.repair_guid) {
           if (def_guid) {
             this.residueEstForm?.get('is_default_template')?.setValue(true);
           }
@@ -643,13 +643,13 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  selectOwner($event: Event, row: RepairEstPartItem) {
+  selectOwner($event: Event, row: RepairPartItem) {
     this.stopPropagation($event);
     row.owner = !(row.owner || false);
     this.calculateCost();
   }
 
-  addEstDetails(event: Event, row?: RepairEstPartItem) {
+  addEstDetails(event: Event, row?: RepairPartItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -657,8 +657,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     } else {
       tempDirection = 'ltr';
     }
-    const addSot = row ?? new RepairEstPartItem();
-    addSot.repair_est_guid = addSot.repair_est_guid;
+    const addSot = row ?? new RepairPartItem();
+    addSot.repair_guid = addSot.repair_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
       data: {
@@ -690,7 +690,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     });
   }
 
-  editEstDetails(event: Event, row: RepairEstPartItem, index: number) {
+  editEstDetails(event: Event, row: RepairPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -722,7 +722,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const data = [...this.repList];
-        const updatedItem = new RepairEstPartItem({
+        const updatedItem = new RepairPartItem({
           ...result.item,
         });
         if (result.index >= 0) {
@@ -735,7 +735,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     });
   }
 
-  deleteItem(event: Event, row: RepairEstPartItem, index: number) {
+  deleteItem(event: Event, row: RepairPartItem, index: number) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -771,7 +771,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     });
   }
 
-  cancelSelectedRows(row: RepairEstPartItem[]) {
+  cancelSelectedRows(row: RepairPartItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -791,7 +791,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairEstPartItem) => {
+        result.item.forEach((newItem: RepairPartItem) => {
           // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
@@ -811,7 +811,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     });
   }
 
-  rollbackSelectedRows(row: RepairEstPartItem[]) {
+  rollbackSelectedRows(row: RepairPartItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -831,7 +831,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairEstPartItem) => {
+        result.item.forEach((newItem: RepairPartItem) => {
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
           if (index !== -1) {
@@ -869,7 +869,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
   addRepairEstPart(result: any) {
     const data = [...this.repList];
-    const newItem = new RepairEstPartItem({
+    const newItem = new RepairPartItem({
       ...result.item,
     });
     data.push(newItem);
@@ -900,14 +900,14 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       if (!this.repList.length) {
         this.residueEstForm.get('repList')?.setErrors({ required: true });
       } else {
-        let re: RepairEstItem = new RepairEstGO(this.repairEstItem);
+        let re: RepairItem = new RepairGO(this.repairEstItem);
 
-        const rep: RepairEstPartItem[] = this.repList.map((item: any) => {
+        const rep: RepairPartItem[] = this.repList.map((item: any) => {
           // Ensure action is an array and take the last action only
-          const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
-            return new REPDamageRepairItem({
+          const rp_damage_repair = item.rp_damage_repair.map((item: any) => {
+            return new RPDamageRepairItem({
               guid: item.guid,
-              rep_guid: item.rep_guid,
+              rp_guid: item.rp_guid,
               code_cv: item.code_cv,
               code_type: item.code_type,
               action: item.action
@@ -915,14 +915,14 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
           });
 
           console.log(item)
-          return new RepairEstPartItem({
+          return new RepairPartItem({
             ...item,
             tariff_repair: undefined,
-            rep_damage_repair: rep_damage_repair,
+            rp_damage_repair: rp_damage_repair,
             action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
           });
         });
-        re.repair_est_part = rep;
+        re.repair_part = rep;
         re.sot_guid = this.sotItem?.guid;
         re.aspnetusers_guid = this.residueEstForm.get('surveyor_id')?.value;
         re.labour_cost_discount = Utility.convertNumber(this.residueEstForm.get('labour_cost_discount')?.value);
@@ -946,14 +946,14 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
         console.log(re);
         if (re.guid) {
-          this.repairEstDS.updateRepairEstimate(re, cc).subscribe(result => {
+          this.repairEstDS.updateRepair(re, cc).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result?.data?.updateRepairEstimate);
+            this.handleSaveSuccess(result?.data?.updateRepair);
           });
         } else {
-          this.repairEstDS.addRepairEstimate(re, cc).subscribe(result => {
+          this.repairEstDS.addRepair(re, cc).subscribe(result => {
             console.log(result)
-            this.handleSaveSuccess(result?.data?.addRepairEstimate);
+            this.handleSaveSuccess(result?.data?.addRepair);
           });
         }
       }
@@ -962,7 +962,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     }
   }
 
-  updateData(newData: RepairEstPartItem[] | undefined): void {
+  updateData(newData: RepairPartItem[] | undefined): void {
     if (newData?.length) {
       newData = newData.map((row) => ({
         ...row,
@@ -1158,7 +1158,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return groupedRepList;
   }
 
-  sortREP(newData: RepairEstPartItem[]): any[] {
+  sortREP(newData: RepairPartItem[]): any[] {
     newData.sort((a, b) => b.create_dt! - a.create_dt!);
     return newData;
   }
@@ -1311,7 +1311,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
   canExport(): boolean {
-    return !!this.repair_est_guid;
+    return !!this.repair_guid;
   }
 
   getLabourCost(): number | undefined {
