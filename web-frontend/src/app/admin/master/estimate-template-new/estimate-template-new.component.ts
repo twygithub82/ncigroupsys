@@ -51,12 +51,10 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { MatCardModule } from '@angular/material/card';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { RepairPartItem } from 'app/data-sources/repair-part';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstimateCustomerItem, TemplateEstPartItem, TepDamageRepairItem } from 'app/data-sources/master-template';
-import { EstimateComponent } from 'app/admin/repair/estimate/estimate.component';
-import { REPDamageRepairItem } from 'app/data-sources/rep-damage-repair';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { elements } from 'chart.js';
 import { TariffRepairItem } from 'app/data-sources/tariff-repair';
@@ -242,7 +240,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   sotItem?: StoringOrderTankItem;
   storingOrderItem: StoringOrderItem = new StoringOrderItem();
   repList = new MatTableDataSource<TemplateEstPartItem>();
-  sotSelection = new SelectionModel<RepairEstPartItem>(true, []);
+  sotSelection = new SelectionModel<RepairPartItem>(true, []);
   customer_companyList?: CustomerCompanyItem[];
   groupNameCvList: CodeValuesItem[] = []
   allSubGroupNameCvList: CodeValuesItem[] = [];
@@ -614,7 +612,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
         template_name: this.selectedTempEst?.template_name,
         remarks: this.selectedTempEst?.remarks,
       });
-      var repairEstPartItem: RepairEstPartItem[] = [];
+      var repairEstPartItem: RepairPartItem[] = [];
       this.selectedTempEst?.template_est_part!=this.SortRepairEstPart(this.selectedTempEst?.template_est_part!);
       repairEstPartItem = this.selectedTempEst?.template_est_part
         ?.filter((item: Partial<TemplateEstPartItem> | undefined): item is Partial<TemplateEstPartItem> => item !== undefined)
@@ -641,7 +639,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
             
             // damage: this.GetRepairOrDamage(item.tep_damage_repair!, 0),
             // Map other fields as needed
-          } as RepairEstPartItem;
+          } as RepairPartItem;
         }) ?? []; // Use an empty array as a fallback if template_est_part is undefined
       this.populateSOT(repairEstPartItem!);
       this.calculateCostSummary();
@@ -662,7 +660,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
           update_dt: item.update_dt,
           update_by: item.update_by,
           delete_dt: item.delete_dt,
-        } as RepairEstPartItem;
+        } as RepairPartItem;
       }) ?? [];
     return retval.sort((a, b) => (a.code_cv ?? 0) - (b.code_cv ?? 0));
   }
@@ -692,7 +690,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     });
   }
 
-  addEstDetails(event: Event, row?: RepairEstPartItem) {
+  addEstDetails(event: Event, row?: RepairPartItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -702,7 +700,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     }
     var r :TemplateEstPartItem = new TemplateEstPartItem();
     r.tariff_repair= new TariffRepairItem();
-    //const addSot = row ?? new RepairEstPartItem();
+    //const addSot = row ?? new RepairPartItem();
     //addSot.repair_est_guid = addSot.repair_est_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
@@ -841,7 +839,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     });
   }
 
-  cancelSelectedRows(row: RepairEstPartItem[]) {
+  cancelSelectedRows(row: RepairPartItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -860,7 +858,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const data: any[] = [...this.repList.data];
-        result.item.forEach((newItem: RepairEstPartItem) => {
+        result.item.forEach((newItem: RepairPartItem) => {
           // Find the index of the item in data with the same id
           const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
 
@@ -880,7 +878,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     });
   }
 
-  rollbackSelectedRows(row: RepairEstPartItem[]) {
+  rollbackSelectedRows(row: RepairPartItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -899,7 +897,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const data: any[] = [...this.repList.data];
-        result.item.forEach((newItem: RepairEstPartItem) => {
+        result.item.forEach((newItem: RepairPartItem) => {
           const index = data.findIndex((existingItem: any) => existingItem.guid === newItem.guid);
 
           if (index !== -1) {
@@ -917,9 +915,9 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     });
   }
 
-  undoTempAction(row: RepairEstPartItem[], actionToBeRemove: string) {
+  undoTempAction(row: RepairPartItem[], actionToBeRemove: string) {
     const data: any[] = [...this.repList.data];
-    row.forEach((newItem: RepairEstPartItem) => {
+    row.forEach((newItem: RepairPartItem) => {
       const index = data.findIndex((existingItem: any) => existingItem.guid === newItem.guid);
 
       if (index !== -1) {
@@ -1264,7 +1262,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     this.deleteItem(row, index);
   }
 
-  cancelItem(event: Event, row: RepairEstPartItem) {
+  cancelItem(event: Event, row: RepairPartItem) {
     // this.id = row.id;
     if (this.sotSelection.hasValue()) {
       this.cancelSelectedRows(this.sotSelection.selected)
@@ -1273,7 +1271,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     }
   }
 
-  rollbackItem(event: Event, row: RepairEstPartItem) {
+  rollbackItem(event: Event, row: RepairPartItem) {
     // this.id = row.id;
     if (this.sotSelection.hasValue()) {
       this.rollbackSelectedRows(this.sotSelection.selected)
@@ -1282,7 +1280,7 @@ var retval:TemplateEstPartItem[]= items.sort((a, b) => b.create_dt! - a.create_d
     }
   }
 
-  undoAction(event: Event, row: RepairEstPartItem, action: string) {
+  undoAction(event: Event, row: RepairPartItem, action: string) {
     // this.id = row.id;
     this.stopPropagation(event);
     if (this.sotSelection.hasValue()) {

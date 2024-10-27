@@ -203,18 +203,18 @@
             </mat-expansion-panel>
           </mat-accordion>
           <div class="body overflow-auto">
-            @if (copiedRepairEst) {
+            @if (copiedRepair) {
             <mat-card [ngClass]="{'card-content p-0 m-b-10 bg-light-gold': true}" matRipple>
               <mat-card-content>
                 <div class="row">
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
-                    <strong>{{translatedLangText.ESTIMATE_NO}}</strong>: {{copiedRepairEst.estimate_no}}
+                    <strong>{{translatedLangText.ESTIMATE_NO}}</strong>: {{copiedRepair.estimate_no}}
                   </div>
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
-                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>: {{filterDeleted(copiedRepairEst.repair_est_part)?.length}}
+                    <strong>{{translatedLangText.NO_OF_PARTS}}</strong>: {{filterDeleted(copiedRepair.repair_part)?.length}}
                   </div>
                   <div class="col-xl col-lg col-md-12 col-sm-12 m-b-0 d-flex justify-content-end">
-                    <mat-icon (click)="clearCopiedRepairEst()" [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>
+                    <mat-icon (click)="clearCopiedRepair()" [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>
                   </div>
                 </div>
               </mat-card-content>
@@ -229,9 +229,9 @@
                   {{row.tank_no}}
                 </mat-card-title>
                 <mat-card-actions class="pt-0 pb-0">
-                  @if (copiedRepairEst) {
+                  @if (copiedRepair) {
                   <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
-                    [routerLink]="['/admin/repair/estimate/duplicate', row.guid, copiedRepairEst!.guid]">
+                    [routerLink]="['/admin/repair/estimate/duplicate', row.guid, copiedRepair!.guid]">
                     <mat-icon class="col-white">content_paste</mat-icon>
                   </button>
                   }
@@ -267,9 +267,9 @@
                   </div>
                 </div>
                 <mat-divider></mat-divider>
-                @if ((filterDeleted(row.repair_est || [])?.length ?? 0) > 0) {
+                @if ((filterDeleted(row.repair || [])?.length ?? 0) > 0) {
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="filterDeleted(row.repair_est || [])" matSort
+                  <table mat-table [dataSource]="filterDeleted(row.repair || [])" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="select">
                       <mat-header-cell *matHeaderCellDef
@@ -284,73 +284,66 @@
                     </ng-container>
                     <ng-container matColumnDef="id">
                       <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-                      <mat-cell *matCellDef="let repair_estRow">{{repair_estRow.guid}}</mat-cell>
+                      <mat-cell *matCellDef="let repairRow">{{repairRow.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="estimate_no">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.ESTIMATE_NO}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repair_estRow" class="">
+                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
                         <span
-                          class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repair_estRow.estimate_no}}
+                          class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.estimate_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="net_cost">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>
                         {{translatedLangText.NET_COST}}
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let repair_estRow">
+                      <mat-cell *matCellDef="let repairRow">
                         <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
-                        <span>$</span><span class="ms-3">{{repair_estRow.net_cost}}</span>
+                        <span>$</span><span class="ms-3">{{repairRow.net_cost}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="status_cv">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repair_estRow" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{repair_estRow.status_cv}}
+                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{repairRow.status_cv}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="remarks">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.REMARKS}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let repair_estRow" class="">
-                        <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{repair_estRow.remarks}}
+                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                        <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{repairRow.remarks}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
                       <mat-header-cell
                         [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matHeaderCellDef></mat-header-cell>
-                      <mat-cell *matCellDef="let repair_estRow; let i=index;"
+                      <mat-cell *matCellDef="let repairRow; let i=index;"
                         [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                         <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                           <mat-icon>more_vert</mat-icon>
                         </button>
                         <mat-menu #menu="matMenu">
-                          <!-- @if (repairEstDS.canAmend(repair_estRow)) {
-                          <button mat-menu-item
-                            [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]">
-                            <mat-icon>edit</mat-icon>
-                            <span>{{translatedLangText.AMEND}}</span>
-                          </button>
-                          } -->
-                          @if (repairEstDS.canCopy(repair_estRow)) {
-                          <button mat-menu-item (click)="copyRepairEst(repair_estRow)">
+                          @if (repairDS.canCopy(repairRow)) {
+                          <button mat-menu-item (click)="copyRepair(repairRow)">
                             <mat-icon>content_copy</mat-icon>
                             <span>{{translatedLangText.COPY}}</span>
                           </button>
                           }
-                          @if (repairEstDS.canRollback(repair_estRow)) {
-                          <button mat-menu-item (click)="rollbackRow(repair_estRow)">
+                          @if (repairDS.canRollback(repairRow)) {
+                          <button mat-menu-item (click)="rollbackRow(repairRow)">
                             <mat-icon>undo</mat-icon>
                             <span>{{translatedLangText.ROLLBACK}}</span>
                           </button>
                           }
-                          @if (repairEstDS.canCancel(repair_estRow)) {
-                          <button mat-menu-item (click)="cancelRow(repair_estRow)">
+                          @if (repairDS.canCancel(repairRow)) {
+                          <button mat-menu-item (click)="cancelRow(repairRow)">
                             <mat-icon>cancel</mat-icon>
                             <span>{{translatedLangText.CANCEL}}</span>
                           </button>
@@ -359,8 +352,8 @@
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let repair_estRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                      [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]" matRipple>
+                    <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'"
+                      [routerLink]="['/admin/repair/estimate/edit', row.guid, repairRow.guid]" matRipple>
                     </mat-row>
                   </table>
                 </div>

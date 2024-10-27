@@ -14,13 +14,13 @@
             </h2>
           </div>
           <div class="body">
-            @if (repairEstDS.loading$ | async) {
+            @if (repairDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            @if (!(repairEstDS.loading$ | async)) {
+            @if (!(repairDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -121,7 +121,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="repairEstForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="repairForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -131,13 +131,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (repairEstDS.loadingSubject | async) {
+              @if (repairDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(repairEstDS.loadingSubject | async)) {
+              @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                   <mat-form-field class="example-full-width">
@@ -171,13 +171,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (repairEstDS.loadingSubject | async) {
+              @if (repairDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(repairEstDS.loadingSubject | async)) {
+              @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
@@ -295,11 +295,11 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-tab-label">{{translatedLangText.APPROVED}}:</span>
-                          @if (repairEstPartDS.is4X(row.rep_damage_repair)) {
+                          @if (repairPartDS.is4X(row.rep_damage_repair)) {
                           <mat-icon class="font-bold">close</mat-icon>
                           }
                           @else {
-                          @if (repairEstPartDS.isApprove(row)) {
+                          @if (repairPartDS.isApprove(row)) {
                           <mat-icon class="col-green font-bold">check</mat-icon>
                           }
                           @else {
@@ -345,32 +345,32 @@
             <div class="header">
               <h2>
                 {{translatedLangText.ESTIMATE_SUMMARY}}
-                - <span class="font-bold m-r-5">{{repairEstItem?.estimate_no}}</span>
+                - <span class="font-bold m-r-5">{{repairItem?.estimate_no}}</span>
                 <span
-                  [ngClass]="'font-bold badge ' + getBadgeClass(repairEstItem?.status_cv)">{{repairEstItem?.status_cv}}</span>
+                  [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
               </h2>
             </div>
             <div class="body">
-              @if (repairEstDS.loadingSubject | async) {
+              @if (repairDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(repairEstDS.loadingSubject | async)) {
+              @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
                 <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
-                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairEstItem?.estimate_no}}</span>
+                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
                     </div>
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
                       {{translatedLangText.ESTIMATE_DATE}}: <span
-                        class="font-bold">{{displayDate(repairEstItem?.create_dt)}}</span>
+                        class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
                     </div>
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
                       {{translatedLangText.STATUS}}: <span
-                        [ngClass]="'font-bold badge ' + getBadgeClass(repairEstItem?.status_cv)">{{repairEstItem?.status_cv}}</span>
+                        [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
                     </div>
                   </div>
                 </div> -->
@@ -402,7 +402,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label">
-                            {{repairEstItem?.update_by}}
+                            {{repairItem?.update_by}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -423,7 +423,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{displayDate(repairEstItem?.update_dt)}}
+                            {{displayDate(repairItem?.update_dt)}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
@@ -444,7 +444,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                           <div class="table-label">
-                            {{repairEstItem?.remarks}}
+                            {{repairItem?.remarks}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
@@ -470,13 +470,13 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (repairEstDS.canAssign(repairEstItem)) {
-                  <button mat-flat-button color="primary" [disabled]="(repairEstDS.loading$ | async)"
+                  @if (repairDS.canAssign(repairItem)) {
+                  <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)"
                     (click)="onRollback($event)">
                     <mat-icon>
-                      @if (!(repairEstDS.loading$ | async)) {
+                      @if (!(repairDS.loading$ | async)) {
                       save
-                      } @else if ((repairEstDS.loading$ | async)) {
+                      } @else if ((repairDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>

@@ -15,7 +15,7 @@ import { SchedulingSotItem } from './scheduling-sot';
 import { ReleaseOrderSotItem } from './release-order-sot';
 import { OutGateItem } from './out-gate';
 import { CustomerCompanyItem } from './customer-company';
-import { RepairEstItem } from './repair-est';
+import { RepairItem } from './repair';
 import { ResidueEstItem } from './residue-est';
 
 export class StoringOrderTank {
@@ -99,7 +99,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public release_order_sot?: ReleaseOrderSotItem[];
   public out_gate?: OutGateItem[];
   public customer_company?: CustomerCompanyItem;
-  public repair_est?: RepairEstItem[];
+  public repair?: RepairItem[];
   public residue_est?:ResidueEstItem[];
   public actions?: string[] = [];
 
@@ -720,7 +720,7 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
             delete_dt
           }
         }
-      residue {
+        residue {
           allocate_by
           allocate_dt
           approve_by
@@ -767,7 +767,7 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
   }
 `;
 
-const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
+const GET_STORING_ORDER_TANKS_REPAIR = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -797,7 +797,7 @@ const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
           eir_dt
           delete_dt
         }
-        repair_est {
+        repair {
           guid
           estimate_no
           labour_cost
@@ -813,7 +813,7 @@ const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
               customer_company_guid
             }
           }
-          repair_est_part {
+          repair_part {
             hour
             quantity
             material_cost
@@ -832,7 +832,7 @@ const GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE = gql`
   }
 `;
 
-const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
+const GET_STORING_ORDER_TANK_BY_ID_REPAIR = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
       nodes {
@@ -917,7 +917,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
           name
           delete_dt
         }
-        repair_est {
+        repair {
           aspnetusers_guid
           create_by
           create_dt
@@ -934,7 +934,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
           total_cost
           update_by
           update_dt
-          repair_est_part {
+          repair_part {
             action
             create_by
             create_dt
@@ -948,7 +948,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
             owner
             quantity
             remarks
-            repair_est_guid
+            repair_guid
             tariff_repair_guid
             update_by
             update_dt
@@ -960,7 +960,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST = gql`
               create_dt
               delete_dt
               guid
-              rep_guid
+              rp_guid
               update_by
               update_dt
             }
@@ -1101,12 +1101,12 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  searchStoringOrderTanksEstimate(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksRepair(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANKS_REPAIR_ESTIMATE,
+        query: GET_STORING_ORDER_TANKS_REPAIR,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -1276,12 +1276,12 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  getStoringOrderTankByIDForRepairEst(id: string): Observable<StoringOrderTankItem[]> {
+  getStoringOrderTankByIDForRepair(id: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
     let where: any = { guid: { eq: id } }
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANK_BY_ID_REPAIR_EST,
+        query: GET_STORING_ORDER_TANK_BY_ID_REPAIR,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

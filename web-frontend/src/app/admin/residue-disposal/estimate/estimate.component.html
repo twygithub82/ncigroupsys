@@ -266,9 +266,9 @@
                   </div>
                 </div>
                 <mat-divider></mat-divider>
-                @if ((filterDeleted(row.repair_est || [])?.length ?? 0) > 0) {
+                @if ((filterDeleted(row.repair || [])?.length ?? 0) > 0) {
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="filterDeleted(row.repair_est || [])" matSort
+                  <table mat-table [dataSource]="filterDeleted(row.repair || [])" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="select">
                       <mat-header-cell *matHeaderCellDef

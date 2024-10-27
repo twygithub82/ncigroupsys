@@ -10,7 +10,7 @@
           <div class="body overflow-auto">
             <mat-tab-group dynamicHeight>
               <mat-tab [label]="translatedLangText.repairEstTabTitle">
-                <form class="ms-0" [formGroup]="filterRepairEstForm!" (ngSubmit)="onFilterRepairEst()" #formDirective="ngForm">
+                <form class="ms-0" [formGroup]="filterRepairForm!" (ngSubmit)="onFilterRepair()" #formDirective="ngForm">
                   <div class="row">
                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
@@ -18,11 +18,11 @@
                         <mat-label>
                           {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
                         </mat-label>
-                        <input matInput formControlName="filterRepairEst">
+                        <input matInput formControlName="filterRepair">
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
-                      <button mat-mini-fab color="primary" (click)="onFilterRepairEst()">
+                      <button mat-mini-fab color="primary" (click)="onFilterRepair()">
                         <mat-icon>search</mat-icon>
                       </button>
                     </div>
@@ -106,20 +106,20 @@
                   </table>
                 </div>
                 <!-- No result -->
-                @if (!(repairEstDS.loading$ | async) && !repEstList.length) {
+                @if (!(repairDS.loading$ | async) && !repEstList.length) {
                 <mat-divider></mat-divider>
                 <div class="no-results m-l-20 pt-3" [style.display]="repEstList.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>
                 }
                 <!-- Loading spinner -->
-                @if (repairEstDS.loading$ | async) {
+                @if (repairDS.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="repairEstDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                <mat-paginator #paginator [length]="repairDS.totalCount" [pageIndex]="0" [pageSize]="10"
                   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
               </mat-tab>

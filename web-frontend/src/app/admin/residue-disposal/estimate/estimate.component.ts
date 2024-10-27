@@ -171,10 +171,10 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  repairEstDS: RepairEstDS;
+  repairEstDS: RepairDS;
 
   sotList: StoringOrderTankItem[] = [];
-  reSelection = new SelectionModel<RepairEstItem>(true, []);
+  reSelection = new SelectionModel<RepairItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   reStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -218,7 +218,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.repairEstDS = new RepairEstDS(this.apollo);
+    this.repairEstDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -261,7 +261,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.paginator._changePageSize(this.paginator.pageSize);
   }
 
-  toggleRow(row: RepairEstItem) {
+  toggleRow(row: RepairItem) {
     this.reSelection.toggle(row);
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     if (this.reSelection.isSelected(row)) {
@@ -283,7 +283,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
-  cancelRow(row: RepairEstItem) {
+  cancelRow(row: RepairItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
     if (!found) {
@@ -293,7 +293,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.cancelSelectedRows(selectedList)
   }
 
-  cancelSelectedRows(row: RepairEstItem[]) {
+  cancelSelectedRows(row: RepairItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -312,17 +312,17 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: RepairEstItem) => new RepairEstGO(item));
+        const reList = result.item.map((item: RepairItem) => new RepairGO(item));
         console.log(reList);
-        this.repairEstDS.cancelRepairEstimate(reList).subscribe(result => {
-          this.handleCancelSuccess(result?.data?.cancelRepairEstimate)
+        this.repairEstDS.cancelRepair(reList).subscribe((result: { data: { cancelRepair: any; }; }) => {
+          this.handleCancelSuccess(result?.data?.cancelRepair)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
     });
   }
 
-  rollbackRow(row: RepairEstItem) {
+  rollbackRow(row: RepairItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
     if (!found) {
@@ -332,7 +332,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.rollbackSelectedRows(selectedList)
   }
 
-  rollbackSelectedRows(row: RepairEstItem[]) {
+  rollbackSelectedRows(row: RepairItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -362,8 +362,8 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
           return RepairEstimateRequestInput
         });
         console.log(reList);
-        this.repairEstDS.rollbackRepairEstimate(reList).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackRepairEstimate)
+        this.repairEstDS.rollbackRepair(reList).subscribe((result: { data: { rollbackRepair: any; }; }) => {
+          this.handleRollbackSuccess(result?.data?.rollbackRepair)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
@@ -509,7 +509,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data.map(sot => {
-          sot.repair_est = sot.repair_est?.map(rep => {
+          sot.repair = sot.repair?.map(rep => {
             return { ...rep, net_cost: this.calculateNetCost(rep) }
           })
           return sot;
@@ -614,8 +614,8 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  calculateNetCost(repair_est: RepairEstItem): any {
-    const total = this.repairEstDS.getTotal(repair_est?.repair_est_part)
+  calculateNetCost(repair_est: RepairItem): any {
+    const total = this.repairEstDS.getTotal(repair_est?.repair_part)
     const labourDiscount = repair_est.labour_cost_discount;
     const matDiscount = repair_est.material_cost_discount;
 

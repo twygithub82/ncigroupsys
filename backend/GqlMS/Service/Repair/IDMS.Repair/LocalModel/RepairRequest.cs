@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Repair.GqlTypes.LocalModel
 {
-    public class RepairEstimateRequest
+    public class RepairRequest
     {
         public string guid { get; set; }
         public string? sot_guid { get; set; }

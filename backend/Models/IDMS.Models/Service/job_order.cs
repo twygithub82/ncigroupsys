@@ -33,6 +33,15 @@ namespace IDMS.Models.Service
         public team? team { get; set; }
         
         [UseFiltering]
-        public IEnumerable<time_table?>? time_table { get; set; }   
+        public IEnumerable<time_table?>? time_table { get; set; }
+
+        [UseFiltering]
+        public IEnumerable<repair_part?>? repair_part {  get; set; }
+
+        [UseFiltering]
+        public IEnumerable<residue_part?>? residue_part { get; set; }
+
+        [UseFiltering]
+        public IEnumerable<cleaning?>? in_gate_cleaning { get; set; }
     }
 }

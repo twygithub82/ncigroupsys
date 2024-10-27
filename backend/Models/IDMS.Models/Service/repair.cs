@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Service
 {
-    public class repair_est : Dates
+    public class repair : Dates
     {
         [Key]
         public string? guid { get; set; }
@@ -43,6 +43,6 @@ namespace IDMS.Models.Service
         public aspnetusers? aspnetsuser { get; set; }
 
         [UseFiltering]
-        public IEnumerable<repair_est_part>? repair_est_part { get; set; }
+        public IEnumerable<repair_part>? repair_part { get; set; }
     }
 }

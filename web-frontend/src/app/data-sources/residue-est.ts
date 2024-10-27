@@ -6,7 +6,6 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
-import { RepairEstPartItem } from './repair-est-part';
 import { UserItem } from './user';
 import { CustomerCompanyItem } from './customer-company';
 

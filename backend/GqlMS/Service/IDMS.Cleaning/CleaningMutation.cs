@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using HotChocolate;
 using HotChocolate.Types;
-using IDMS.Repair.GqlTypes;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
 using IDMS.Models.Inventory;
@@ -16,8 +15,8 @@ namespace IDMS.Cleaning.GqlTypes
     public class CleaningMutation
     {
         //[Authorize]
-        public async Task<int> AddInGateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, in_gate_cleaning inGateCleaning)
+        public async Task<int> AddCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, cleaning cleaning)
         {
 
             try
@@ -25,19 +24,19 @@ namespace IDMS.Cleaning.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                in_gate_cleaning newIngateCleaning = inGateCleaning;
-                newIngateCleaning.guid = Util.GenerateGUID();
-                newIngateCleaning.create_by = user;
-                newIngateCleaning.create_dt = currentDateTime;
+                cleaning newCleaning = cleaning;
+                newCleaning.guid = Util.GenerateGUID();
+                newCleaning.create_by = user;
+                newCleaning.create_dt = currentDateTime;
 
-                newIngateCleaning.status_cv = string.IsNullOrEmpty(inGateCleaning.status_cv) ? CurrentServiceStatus.APPROVE : inGateCleaning.status_cv;
+                newCleaning.status_cv = string.IsNullOrEmpty(cleaning.status_cv) ? CurrentServiceStatus.APPROVE : cleaning.status_cv;
 
-                if (!string.IsNullOrEmpty(inGateCleaning.job_no))
-                    newIngateCleaning.job_no = inGateCleaning.job_no;
+                if (!string.IsNullOrEmpty(cleaning.job_no))
+                    newCleaning.job_no = cleaning.job_no;
                 else
-                    newIngateCleaning.job_no = inGateCleaning.storing_order_tank.job_no;
+                    newCleaning.job_no = cleaning.storing_order_tank.job_no;
 
-                await context.in_gate_cleaning.AddAsync(newIngateCleaning);
+                await context.cleaning.AddAsync(newCleaning);
                 var res = await context.SaveChangesAsync();
 
                 return res;
@@ -50,8 +49,8 @@ namespace IDMS.Cleaning.GqlTypes
         }
 
 
-        public async Task<int> UpdateInGateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-        [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, in_gate_cleaning inGateCleaning)
+        public async Task<int> UpdateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
+        [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, cleaning cleaning)
         {
 
             try
@@ -59,36 +58,36 @@ namespace IDMS.Cleaning.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                if (inGateCleaning == null)
+                if (cleaning == null)
                     throw new GraphQLException(new Error("in_gate_cleaning cannot be null or empty.", "ERROR"));
 
-                var updateIngateCleaning = new in_gate_cleaning() { guid = inGateCleaning.guid };
-                context.in_gate_cleaning.Attach(updateIngateCleaning);
+                var updateCleaning = new cleaning() { guid = cleaning.guid };
+                context.cleaning.Attach(updateCleaning);
 
-                updateIngateCleaning.update_by = user;
-                updateIngateCleaning.update_dt = currentDateTime;
-                updateIngateCleaning.job_no = inGateCleaning.job_no;
-                updateIngateCleaning.remarks = inGateCleaning.remarks;
+                updateCleaning.update_by = user;
+                updateCleaning.update_dt = currentDateTime;
+                updateCleaning.job_no = cleaning.job_no;
+                updateCleaning.remarks = cleaning.remarks;
                
-                if (ObjectAction.APPROVE.EqualsIgnore(inGateCleaning.action))
+                if (ObjectAction.APPROVE.EqualsIgnore(cleaning.action))
                 {
-                    updateIngateCleaning.status_cv = CurrentServiceStatus.APPROVE;
-                    updateIngateCleaning.approve_dt = inGateCleaning.approve_dt;
-                    updateIngateCleaning.approve_by = inGateCleaning?.storing_order_tank?.storing_order?.customer_company_guid;
+                    updateCleaning.status_cv = CurrentServiceStatus.APPROVE;
+                    updateCleaning.approve_dt = cleaning.approve_dt;
+                    updateCleaning.approve_by = cleaning?.storing_order_tank?.storing_order?.customer_company_guid;
                 }
-                else if (ObjectAction.KIV.EqualsIgnore(inGateCleaning.action))
+                else if (ObjectAction.KIV.EqualsIgnore(cleaning.action))
                 {
-                    updateIngateCleaning.status_cv = CurrentServiceStatus.KIV;
+                    updateCleaning.status_cv = CurrentServiceStatus.KIV;
                 }
-                else if (ObjectAction.NA.EqualsIgnore(inGateCleaning.action))
+                else if (ObjectAction.NA.EqualsIgnore(cleaning.action))
                 {
-                    updateIngateCleaning.na_dt = inGateCleaning.na_dt;
-                    updateIngateCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
+                    updateCleaning.na_dt = cleaning.na_dt;
+                    updateCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
 
-                    if (string.IsNullOrEmpty(inGateCleaning.sot_guid))
+                    if (string.IsNullOrEmpty(cleaning.sot_guid))
                         throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
-                    var sot = new storing_order_tank() { guid = inGateCleaning.sot_guid };
+                    var sot = new storing_order_tank() { guid = cleaning.sot_guid };
                     context.storing_order_tank.Attach(sot);
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
@@ -106,8 +105,8 @@ namespace IDMS.Cleaning.GqlTypes
         }
 
 
-        public async Task<int> DeleteInGateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, List<string> inGateCleaningGuids)
+        public async Task<int> DeleteCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, List<string> cleaningGuids)
         {
             int retval = 0;
             try
@@ -117,8 +116,8 @@ namespace IDMS.Cleaning.GqlTypes
                 //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var ingate_cleaning = context.in_gate_cleaning.Where(i => inGateCleaningGuids.Contains(i.guid));
-                foreach (var cleaning in ingate_cleaning)
+                var delCleaning = context.cleaning.Where(i => cleaningGuids.Contains(i.guid));
+                foreach (var cleaning in delCleaning)
                 {
                     cleaning.delete_dt = currentDateTime;
                     cleaning.update_by = user;
