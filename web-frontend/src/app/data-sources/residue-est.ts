@@ -11,6 +11,7 @@ import { UserItem } from './user';
 import { CustomerCompanyItem } from './customer-company';
 
 export class ResidueEstGO {
+  public estimate_no?:string;
   public allocate_by?:string;
   public allocate_dt?:number;
   public approve_by?:string;
@@ -43,6 +44,7 @@ export class ResidueEstGO {
 
   constructor(item: Partial<ResidueEstGO> = {}) {
     this.guid = item.guid;
+    this.estimate_no=item.estimate_no;
     this.sot_guid = item.sot_guid;
     this.allocate_by = item.allocate_by;
     this.allocate_dt = item.allocate_dt;
@@ -77,515 +79,515 @@ export class ResidueEstItem extends ResidueEstGO {
   }
 }
 
-export const GET_REPAIR_EST = gql`
-  query QueryResidueEstimate($where: residue_estFilterInput, $order: [repair_estSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    resultList: queryRepairEstimate(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-      nodes {
-        aspnetusers_guid
-        create_by
-        create_dt
-        delete_dt
-        estimate_no
-        guid
-        labour_cost
-        labour_cost_discount
-        material_cost_discount
-        owner_enable
-        remarks
-        sot_guid
-        status_cv
-        total_cost
-        update_by
-        update_dt
-        storing_order_tank {
-          guid
-          job_no
-          tank_no
-          storing_order {
-            customer_company {
-              code
-              name
-              guid
-            }
-          }
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      totalCount
-    }
-  }
-`;
+// export const GET_REPAIR_EST = gql`
+//   query QueryResidueEstimate($where: residue_estFilterInput, $order: [repair_estSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+//     resultList: queryRepairEstimate(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+//       nodes {
+//         aspnetusers_guid
+//         create_by
+//         create_dt
+//         delete_dt
+//         estimate_no
+//         guid
+//         labour_cost
+//         labour_cost_discount
+//         material_cost_discount
+//         owner_enable
+//         remarks
+//         sot_guid
+//         status_cv
+//         total_cost
+//         update_by
+//         update_dt
+//         storing_order_tank {
+//           guid
+//           job_no
+//           tank_no
+//           storing_order {
+//             customer_company {
+//               code
+//               name
+//               guid
+//             }
+//           }
+//         }
+//       }
+//       pageInfo {
+//         endCursor
+//         hasNextPage
+//         hasPreviousPage
+//         startCursor
+//       }
+//       totalCount
+//     }
+//   }
+// `;
 
-export const GET_REPAIR_EST_BY_ID = gql`
-  query QueryRepairEstimate($where: repair_estFilterInput, $customer_company_guid: String) {
-    resultList: queryRepairEstimate(where: $where) {
-      nodes {
-        aspnetusers_guid
-        create_by
-        create_dt
-        delete_dt
-        estimate_no
-        guid
-        labour_cost
-        labour_cost_discount
-        material_cost_discount
-        owner_enable
-        remarks
-        sot_guid
-        status_cv
-        total_cost
-        update_by
-        update_dt
-        repair_est_part {
-          action
-          create_by
-          create_dt
-          delete_dt
-          description
-          guid
-          hour
-          location_cv
-          comment
-          material_cost
-          owner
-          quantity
-          remarks
-          repair_est_guid
-          tariff_repair_guid
-          update_by
-          update_dt
-          rep_damage_repair {
-            action
-            code_cv
-            code_type
-            create_by
-            create_dt
-            delete_dt
-            guid
-            rep_guid
-            update_by
-            update_dt
-          }
-          tariff_repair {
-            alias
-            create_by
-            create_dt
-            delete_dt
-            dimension
-            group_name_cv
-            guid
-            height_diameter
-            height_diameter_unit_cv
-            labour_hour
-            length
-            length_unit_cv
-            material_cost
-            part_name
-            remarks
-            subgroup_name_cv
-            thickness
-            thickness_unit_cv
-            update_by
-            update_dt
-            width_diameter
-            width_diameter_unit_cv
-            package_repair(where: { customer_company_guid: { eq: $customer_company_guid } }) {
-              material_cost
-            }
-          }
-        }
-        aspnetsuser {
-          id
-          userName
-        }
-        storing_order_tank {
-          certificate_cv
-          clean_status_cv
-          create_by
-          create_dt
-          delete_dt
-          estimate_cv
-          etr_dt
-          guid
-          job_no
-          owner_guid
-          preinspect_job_no
-          liftoff_job_no
-          lifton_job_no
-          takein_job_no
-          release_job_no
-          last_cargo_guid
-          purpose_cleaning
-          purpose_repair_cv
-          purpose_steam
-          purpose_storage
-          so_guid
-          status_cv
-          tank_no
-          tank_status_cv
-          update_by
-          update_dt
-          storing_order {
-            customer_company {
-              code
-              name
-              guid
-            }
-          }
-          tariff_cleaning {
-            alias
-            cargo
-            class_cv
-            create_by
-            create_dt
-            delete_dt
-            guid
-            update_by
-            update_dt
-          }
-          customer_company {
-            code
-            guid
-            name
-            delete_dt
-          }
-          in_gate {
-            eir_no
-            eir_dt
-            delete_dt
-            in_gate_survey {
-              last_test_cv
-              next_test_cv
-              test_dt
-              test_class_cv
-            }
-          }
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      totalCount
-    }
-  }
-`;
+// export const GET_REPAIR_EST_BY_ID = gql`
+//   query QueryRepairEstimate($where: repair_estFilterInput, $customer_company_guid: String) {
+//     resultList: queryRepairEstimate(where: $where) {
+//       nodes {
+//         aspnetusers_guid
+//         create_by
+//         create_dt
+//         delete_dt
+//         estimate_no
+//         guid
+//         labour_cost
+//         labour_cost_discount
+//         material_cost_discount
+//         owner_enable
+//         remarks
+//         sot_guid
+//         status_cv
+//         total_cost
+//         update_by
+//         update_dt
+//         repair_est_part {
+//           action
+//           create_by
+//           create_dt
+//           delete_dt
+//           description
+//           guid
+//           hour
+//           location_cv
+//           comment
+//           material_cost
+//           owner
+//           quantity
+//           remarks
+//           repair_est_guid
+//           tariff_repair_guid
+//           update_by
+//           update_dt
+//           rep_damage_repair {
+//             action
+//             code_cv
+//             code_type
+//             create_by
+//             create_dt
+//             delete_dt
+//             guid
+//             rep_guid
+//             update_by
+//             update_dt
+//           }
+//           tariff_repair {
+//             alias
+//             create_by
+//             create_dt
+//             delete_dt
+//             dimension
+//             group_name_cv
+//             guid
+//             height_diameter
+//             height_diameter_unit_cv
+//             labour_hour
+//             length
+//             length_unit_cv
+//             material_cost
+//             part_name
+//             remarks
+//             subgroup_name_cv
+//             thickness
+//             thickness_unit_cv
+//             update_by
+//             update_dt
+//             width_diameter
+//             width_diameter_unit_cv
+//             package_repair(where: { customer_company_guid: { eq: $customer_company_guid } }) {
+//               material_cost
+//             }
+//           }
+//         }
+//         aspnetsuser {
+//           id
+//           userName
+//         }
+//         storing_order_tank {
+//           certificate_cv
+//           clean_status_cv
+//           create_by
+//           create_dt
+//           delete_dt
+//           estimate_cv
+//           etr_dt
+//           guid
+//           job_no
+//           owner_guid
+//           preinspect_job_no
+//           liftoff_job_no
+//           lifton_job_no
+//           takein_job_no
+//           release_job_no
+//           last_cargo_guid
+//           purpose_cleaning
+//           purpose_repair_cv
+//           purpose_steam
+//           purpose_storage
+//           so_guid
+//           status_cv
+//           tank_no
+//           tank_status_cv
+//           update_by
+//           update_dt
+//           storing_order {
+//             customer_company {
+//               code
+//               name
+//               guid
+//             }
+//           }
+//           tariff_cleaning {
+//             alias
+//             cargo
+//             class_cv
+//             create_by
+//             create_dt
+//             delete_dt
+//             guid
+//             update_by
+//             update_dt
+//           }
+//           customer_company {
+//             code
+//             guid
+//             name
+//             delete_dt
+//           }
+//           in_gate {
+//             eir_no
+//             eir_dt
+//             delete_dt
+//             in_gate_survey {
+//               last_test_cv
+//               next_test_cv
+//               test_dt
+//               test_class_cv
+//             }
+//           }
+//         }
+//       }
+//       pageInfo {
+//         endCursor
+//         hasNextPage
+//         hasPreviousPage
+//         startCursor
+//       }
+//       totalCount
+//     }
+//   }
+// `;
 
-export const GET_REPAIR_EST_FOR_APPROVAL = gql`
-  query QueryRepairEstimate($where: repair_estFilterInput) {
-    resultList: queryRepairEstimate(where: $where) {
-      nodes {
-        aspnetusers_guid
-        create_by
-        create_dt
-        delete_dt
-        estimate_no
-        guid
-        labour_cost
-        labour_cost_discount
-        material_cost_discount
-        owner_enable
-        remarks
-        sot_guid
-        status_cv
-        total_cost
-        update_by
-        update_dt
-        repair_est_part {
-          action
-          create_by
-          create_dt
-          delete_dt
-          description
-          guid
-          hour
-          location_cv
-          comment
-          material_cost
-          owner
-          quantity
-          remarks
-          repair_est_guid
-          tariff_repair_guid
-          update_by
-          update_dt
-          approve_cost
-          approve_hour
-          approve_part
-          approve_qty
-          complete_dt
-          rep_damage_repair {
-            action
-            code_cv
-            code_type
-            create_by
-            create_dt
-            delete_dt
-            guid
-            rep_guid
-            update_by
-            update_dt
-          }
-          tariff_repair {
-            alias
-            create_by
-            create_dt
-            delete_dt
-            dimension
-            group_name_cv
-            guid
-            height_diameter
-            height_diameter_unit_cv
-            labour_hour
-            length
-            length_unit_cv
-            material_cost
-            part_name
-            remarks
-            subgroup_name_cv
-            thickness
-            thickness_unit_cv
-            update_by
-            update_dt
-            width_diameter
-            width_diameter_unit_cv
-          }
-        }
-        aspnetsuser {
-          id
-          userName
-        }
-        storing_order_tank {
-          certificate_cv
-          clean_status_cv
-          create_by
-          create_dt
-          delete_dt
-          estimate_cv
-          etr_dt
-          guid
-          job_no
-          owner_guid
-          preinspect_job_no
-          liftoff_job_no
-          lifton_job_no
-          takein_job_no
-          release_job_no
-          last_cargo_guid
-          purpose_cleaning
-          purpose_repair_cv
-          purpose_steam
-          purpose_storage
-          so_guid
-          status_cv
-          tank_no
-          tank_status_cv
-          update_by
-          update_dt
-          storing_order {
-            customer_company {
-              code
-              name
-              guid
-            }
-          }
-          tariff_cleaning {
-            alias
-            cargo
-            class_cv
-            create_by
-            create_dt
-            delete_dt
-            guid
-            update_by
-            update_dt
-          }
-          customer_company {
-            code
-            guid
-            name
-            delete_dt
-          }
-          in_gate {
-            eir_no
-            eir_dt
-            delete_dt
-            in_gate_survey {
-              last_test_cv
-              next_test_cv
-              test_dt
-              test_class_cv
-            }
-          }
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      totalCount
-    }
-  }
-`;
+// export const GET_REPAIR_EST_FOR_APPROVAL = gql`
+//   query QueryRepairEstimate($where: repair_estFilterInput) {
+//     resultList: queryRepairEstimate(where: $where) {
+//       nodes {
+//         aspnetusers_guid
+//         create_by
+//         create_dt
+//         delete_dt
+//         estimate_no
+//         guid
+//         labour_cost
+//         labour_cost_discount
+//         material_cost_discount
+//         owner_enable
+//         remarks
+//         sot_guid
+//         status_cv
+//         total_cost
+//         update_by
+//         update_dt
+//         repair_est_part {
+//           action
+//           create_by
+//           create_dt
+//           delete_dt
+//           description
+//           guid
+//           hour
+//           location_cv
+//           comment
+//           material_cost
+//           owner
+//           quantity
+//           remarks
+//           repair_est_guid
+//           tariff_repair_guid
+//           update_by
+//           update_dt
+//           approve_cost
+//           approve_hour
+//           approve_part
+//           approve_qty
+//           complete_dt
+//           rep_damage_repair {
+//             action
+//             code_cv
+//             code_type
+//             create_by
+//             create_dt
+//             delete_dt
+//             guid
+//             rep_guid
+//             update_by
+//             update_dt
+//           }
+//           tariff_repair {
+//             alias
+//             create_by
+//             create_dt
+//             delete_dt
+//             dimension
+//             group_name_cv
+//             guid
+//             height_diameter
+//             height_diameter_unit_cv
+//             labour_hour
+//             length
+//             length_unit_cv
+//             material_cost
+//             part_name
+//             remarks
+//             subgroup_name_cv
+//             thickness
+//             thickness_unit_cv
+//             update_by
+//             update_dt
+//             width_diameter
+//             width_diameter_unit_cv
+//           }
+//         }
+//         aspnetsuser {
+//           id
+//           userName
+//         }
+//         storing_order_tank {
+//           certificate_cv
+//           clean_status_cv
+//           create_by
+//           create_dt
+//           delete_dt
+//           estimate_cv
+//           etr_dt
+//           guid
+//           job_no
+//           owner_guid
+//           preinspect_job_no
+//           liftoff_job_no
+//           lifton_job_no
+//           takein_job_no
+//           release_job_no
+//           last_cargo_guid
+//           purpose_cleaning
+//           purpose_repair_cv
+//           purpose_steam
+//           purpose_storage
+//           so_guid
+//           status_cv
+//           tank_no
+//           tank_status_cv
+//           update_by
+//           update_dt
+//           storing_order {
+//             customer_company {
+//               code
+//               name
+//               guid
+//             }
+//           }
+//           tariff_cleaning {
+//             alias
+//             cargo
+//             class_cv
+//             create_by
+//             create_dt
+//             delete_dt
+//             guid
+//             update_by
+//             update_dt
+//           }
+//           customer_company {
+//             code
+//             guid
+//             name
+//             delete_dt
+//           }
+//           in_gate {
+//             eir_no
+//             eir_dt
+//             delete_dt
+//             in_gate_survey {
+//               last_test_cv
+//               next_test_cv
+//               test_dt
+//               test_class_cv
+//             }
+//           }
+//         }
+//       }
+//       pageInfo {
+//         endCursor
+//         hasNextPage
+//         hasPreviousPage
+//         startCursor
+//       }
+//       totalCount
+//     }
+//   }
+// `;
 
-export const ADD_REPAIR_EST = gql`
-  mutation AddRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
-    addRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
-  }
-`;
+// export const ADD_REPAIR_EST = gql`
+//   mutation AddRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
+//     addRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
+//   }
+// `;
 
-export const UPDATE_REPAIR_EST = gql`
-  mutation UpdateRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
-    updateRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
-  }
-`;
+// export const UPDATE_REPAIR_EST = gql`
+//   mutation UpdateRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
+//     updateRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
+//   }
+// `;
 
-export const CANCEL_REPAIR_EST = gql`
-  mutation CancelRepairEstimate($repairEstimate: [repair_estInput!]!) {
-    cancelRepairEstimate(repairEstimate: $repairEstimate)
-  }
-`
+// export const CANCEL_REPAIR_EST = gql`
+//   mutation CancelRepairEstimate($repairEstimate: [repair_estInput!]!) {
+//     cancelRepairEstimate(repairEstimate: $repairEstimate)
+//   }
+// `
 
-export const ROLLBACK_REPAIR_EST = gql`
-  mutation RollbackRepairEstimate($repairEstimate: [RepairEstimateRequestInput!]!) {
-    rollbackRepairEstimate(repairEstimate: $repairEstimate)
-  }
-`
+// export const ROLLBACK_REPAIR_EST = gql`
+//   mutation RollbackRepairEstimate($repairEstimate: [RepairEstimateRequestInput!]!) {
+//     rollbackRepairEstimate(repairEstimate: $repairEstimate)
+//   }
+// `
 
-export const APPROVE_REPAIR_EST = gql`
-  mutation ApproveRepairEstimate($repairEstimate: repair_estInput!) {
-    approveRepairEstimate(repairEstimate: $repairEstimate)
-  }
-`
+// export const APPROVE_REPAIR_EST = gql`
+//   mutation ApproveRepairEstimate($repairEstimate: repair_estInput!) {
+//     approveRepairEstimate(repairEstimate: $repairEstimate)
+//   }
+//`
 
 export class RepairEstDS extends BaseDataSource<ResidueEstItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchRepairEst(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ResidueEstItem[]> {
-    this.loadingSubject.next(true);
+  // searchRepairEst(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ResidueEstItem[]> {
+  //   this.loadingSubject.next(true);
 
-    return this.apollo
-      .query<any>({
-        query: GET_REPAIR_EST,
-        variables: { where, order, first, after, last, before },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const resultList = result.resultList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(resultList.nodes);
-          this.totalCount = resultList.totalCount;
-          this.pageInfo = resultList.pageInfo;
-          return resultList.nodes;
-        })
-      );
-  }
+  //   return this.apollo
+  //     .query<any>({
+  //       query: GET_REPAIR_EST,
+  //       variables: { where, order, first, after, last, before },
+  //       fetchPolicy: 'no-cache' // Ensure fresh data
+  //     })
+  //     .pipe(
+  //       map((result) => result.data),
+  //       catchError(() => of({ items: [], totalCount: 0 })),
+  //       finalize(() => this.loadingSubject.next(false)),
+  //       map((result) => {
+  //         const resultList = result.resultList || { nodes: [], totalCount: 0 };
+  //         this.dataSubject.next(resultList.nodes);
+  //         this.totalCount = resultList.totalCount;
+  //         this.pageInfo = resultList.pageInfo;
+  //         return resultList.nodes;
+  //       })
+  //     );
+  // }
 
-  getRepairEstByID(id: string, customer_company_guid: string): Observable<ResidueEstItem[]> {
-    this.loadingSubject.next(true);
-    const where: any = { guid: { eq: id } }
-    return this.apollo
-      .query<any>({
-        query: GET_REPAIR_EST_BY_ID,
-        variables: { where, customer_company_guid },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const resultList = result.resultList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(resultList.nodes);
-          this.totalCount = resultList.totalCount;
-          this.pageInfo = resultList.pageInfo;
-          return resultList.nodes;
-        })
-      );
-  }
+  // getRepairEstByID(id: string, customer_company_guid: string): Observable<ResidueEstItem[]> {
+  //   this.loadingSubject.next(true);
+  //   const where: any = { guid: { eq: id } }
+  //   return this.apollo
+  //     .query<any>({
+  //       query: GET_REPAIR_EST_BY_ID,
+  //       variables: { where, customer_company_guid },
+  //       fetchPolicy: 'no-cache' // Ensure fresh data
+  //     })
+  //     .pipe(
+  //       map((result) => result.data),
+  //       catchError(() => of({ items: [], totalCount: 0 })),
+  //       finalize(() => this.loadingSubject.next(false)),
+  //       map((result) => {
+  //         const resultList = result.resultList || { nodes: [], totalCount: 0 };
+  //         this.dataSubject.next(resultList.nodes);
+  //         this.totalCount = resultList.totalCount;
+  //         this.pageInfo = resultList.pageInfo;
+  //         return resultList.nodes;
+  //       })
+  //     );
+  // }
 
-  getRepairEstByIDForApproval(id: string): Observable<ResidueEstItem[]> {
-    this.loadingSubject.next(true);
-    const where: any = { guid: { eq: id } }
-    return this.apollo
-      .query<any>({
-        query: GET_REPAIR_EST_FOR_APPROVAL,
-        variables: { where },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const resultList = result.resultList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(resultList.nodes);
-          this.totalCount = resultList.totalCount;
-          this.pageInfo = resultList.pageInfo;
-          return resultList.nodes;
-        })
-      );
-  }
+  // getRepairEstByIDForApproval(id: string): Observable<ResidueEstItem[]> {
+  //   this.loadingSubject.next(true);
+  //   const where: any = { guid: { eq: id } }
+  //   return this.apollo
+  //     .query<any>({
+  //       query: GET_REPAIR_EST_FOR_APPROVAL,
+  //       variables: { where },
+  //       fetchPolicy: 'no-cache' // Ensure fresh data
+  //     })
+  //     .pipe(
+  //       map((result) => result.data),
+  //       catchError(() => of({ items: [], totalCount: 0 })),
+  //       finalize(() => this.loadingSubject.next(false)),
+  //       map((result) => {
+  //         const resultList = result.resultList || { nodes: [], totalCount: 0 };
+  //         this.dataSubject.next(resultList.nodes);
+  //         this.totalCount = resultList.totalCount;
+  //         this.pageInfo = resultList.pageInfo;
+  //         return resultList.nodes;
+  //       })
+  //     );
+  // }
 
-  addRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: ADD_REPAIR_EST,
-      variables: {
-        repairEstimate,
-        customerCompany
-      }
-    });
-  }
+  // addRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
+  //   return this.apollo.mutate({
+  //     mutation: ADD_REPAIR_EST,
+  //     variables: {
+  //       repairEstimate,
+  //       customerCompany
+  //     }
+  //   });
+  // }
 
-  updateRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: UPDATE_REPAIR_EST,
-      variables: {
-        repairEstimate,
-        customerCompany
-      }
-    });
-  }
+  // updateRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
+  //   return this.apollo.mutate({
+  //     mutation: UPDATE_REPAIR_EST,
+  //     variables: {
+  //       repairEstimate,
+  //       customerCompany
+  //     }
+  //   });
+  // }
 
-  cancelRepairEstimate(repairEstimate: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: CANCEL_REPAIR_EST,
-      variables: {
-        repairEstimate
-      }
-    });
-  }
+  // cancelRepairEstimate(repairEstimate: any): Observable<any> {
+  //   return this.apollo.mutate({
+  //     mutation: CANCEL_REPAIR_EST,
+  //     variables: {
+  //       repairEstimate
+  //     }
+  //   });
+  // }
 
-  rollbackRepairEstimate(repairEstimate: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: ROLLBACK_REPAIR_EST,
-      variables: {
-        repairEstimate
-      }
-    });
-  }
+  // rollbackRepairEstimate(repairEstimate: any): Observable<any> {
+  //   return this.apollo.mutate({
+  //     mutation: ROLLBACK_REPAIR_EST,
+  //     variables: {
+  //       repairEstimate
+  //     }
+  //   });
+  // }
 
-  approveRepairEstimate(repairEstimate: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: APPROVE_REPAIR_EST,
-      variables: {
-        repairEstimate
-      }
-    });
-  }
+  // approveRepairEstimate(repairEstimate: any): Observable<any> {
+  //   return this.apollo.mutate({
+  //     mutation: APPROVE_REPAIR_EST,
+  //     variables: {
+  //       repairEstimate
+  //     }
+  //   });
+  // }
 
   canAmend(re: ResidueEstItem): boolean {
     return re.status_cv === 'PENDING';

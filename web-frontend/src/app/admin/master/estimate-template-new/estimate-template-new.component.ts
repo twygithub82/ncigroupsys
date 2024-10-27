@@ -463,7 +463,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     this.tempForm = this.fb.group({
       guid: [''],
       customer_company_guid: [''],
-      customer_code: this.customerCodeControl,
+      customer: [''],
       template_name: [''],
       remarks: [''],
       repList: [''],

@@ -323,7 +323,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     }
 
     displayName(cc?: CustomerCompanyItem): string {
-        return cc?.code ? `${cc.code} (${cc.name})` : '';
+        return cc?.code ? (cc?.name?`${cc.code} (${cc.name})`:`${cc.code}`) : '';
     }
 
     AddCustomerCompany(customer:any,contactPersons:any,billingBranches:any):Observable<any>

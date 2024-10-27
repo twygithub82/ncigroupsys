@@ -88,8 +88,8 @@ export interface InGateCleaningResult {
 // `;
 
 export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
-  query queryInGateCleaning($where: in_gate_cleaningFilterInput, $order: [in_gate_cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    inGates: queryInGateCleaning(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+  query queryInGateCleaning($where: cleaningFilterInput, $order: [cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    inGates: queryCleaning(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
       pageInfo {
         endCursor
@@ -151,29 +151,16 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
           update_by
           update_dt
           in_gate {
-            create_by
-            create_dt
-            delete_dt
-            driver_name
             eir_dt
             eir_no
             eir_status_cv
             guid
-            haulier
-            lolo_cv
-            preinspection_cv
-            remarks
-            so_tank_guid
-            update_by
-            update_dt
-            vehicle_no
-            yard_cv
+           
+          
+           
           }
           customer_company {
-            address_line1
-            address_line2
-            agreement_due_dt
-            city
+           
             code
             country
             create_by
@@ -185,15 +172,7 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
             effective_dt
             email
             guid
-            main_customer_guid
-            name
-            phone
-            postal
-            remarks
-            type_cv
-            update_by
-            update_dt
-            website
+            
           }
           tariff_cleaning {
             alias

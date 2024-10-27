@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EstimateNewComponent } from './estimate-new.component';
+import { ResidueDisposalEstimateNewComponent } from './estimate-new.component';
 
-describe('EstimateNewComponent', () => {
-  let component: EstimateNewComponent;
-  let fixture: ComponentFixture<EstimateNewComponent>;
+describe('ResidueDisposalEstimateNewComponent', () => {
+  let component: ResidueDisposalEstimateNewComponent;
+  let fixture: ComponentFixture<ResidueDisposalEstimateNewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EstimateNewComponent]
+      imports: [ResidueDisposalEstimateNewComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(EstimateNewComponent);
+    fixture = TestBed.createComponent(ResidueDisposalEstimateNewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

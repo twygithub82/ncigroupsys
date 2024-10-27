@@ -26,7 +26,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -48,6 +48,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
 import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { ResidueEstItem } from 'app/data-sources/residue-est';
 
 @Component({
   selector: 'app-estimate',
@@ -184,7 +185,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  copiedRepairEst?: RepairEstItem;
+  copiedResidueEst?: ResidueEstItem;
 
   pageIndex = 0;
   pageSize = 10;
@@ -194,14 +195,18 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  previous_endCursor:any;
+  
 
   constructor(
+    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+
   ) {
     super();
     this.translateLangText();
@@ -365,12 +370,12 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
-  copyRepairEst(repairEst: RepairEstItem) {
-    this.copiedRepairEst = repairEst;
+  copyRepairEst(residueEst: ResidueEstItem) {
+    this.copiedResidueEst = residueEst;
   }
 
   clearCopiedRepairEst() {
-    this.copiedRepairEst = undefined;
+    this.copiedResidueEst = undefined;
   }
 
   public loadData() {
@@ -448,7 +453,6 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
 
     if (this.searchForm!.value['last_cargo']) {
       if(!where.tariff_cleaning) where.tariff_cleaning={};
-
       where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].code };
     }
 
@@ -692,5 +696,29 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+  addResidueEstimate(event: Event, row:ResidueEstItem)
+  {
+    event.stopPropagation(); // Stop the click event from propagating
+ // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
+      state: { id: '' ,
+        selectedRow:row,
+        type:'residue-estimate',
+        pagination:{
+          where :this.lastSearchCriteria,
+          pageSize:this.pageSize,
+          pageIndex:this.pageIndex,
+          hasPreviousPage:this.hasPreviousPage,
+          startCursor:this.startCursor,
+          endCursor:this.endCursor,
+          previous_endCursor:this.previous_endCursor,
+          
+          showResult: this.sotDS.totalCount>0
+          
+        }
+      }
+    });
   }
 }

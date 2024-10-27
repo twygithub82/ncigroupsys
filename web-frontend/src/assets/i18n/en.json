@@ -592,6 +592,7 @@
     "NO-ACTION": "No Action",
     "KIV": "KIV",
     "BILLING-BRANCH": "Billing Branch",
+    "BILLING-TO": "Billing to",
     "SALUTATION": "Salutation",
     "NAME": "Name",
     "INVALID-FORMAT": "Invalid Format",
@@ -633,7 +634,8 @@
     "QC-DETAILS": "QC Details",
     "ASSIGN": "Assign",
     "SAVE-ANOTHER": "Save Another",
-    "TEAM-ALLOCATION": "Team Allocation"
+    "TEAM-ALLOCATION": "Team Allocation",
+    "DEPOT-REFERENCE":"Depot Reference"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
