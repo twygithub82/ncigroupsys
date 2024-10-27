@@ -199,7 +199,7 @@ export const GET_RESIDUE_EST = gql`
 //           tariff_repair_guid
 //           update_by
 //           update_dt
-//           rep_damage_repair {
+//           rp_damage_repair {
 //             action
 //             code_cv
 //             code_type
@@ -361,7 +361,7 @@ export const GET_RESIDUE_EST = gql`
 //           approve_part
 //           approve_qty
 //           complete_dt
-//           rep_damage_repair {
+//           rp_damage_repair {
 //             action
 //             code_cv
 //             code_type

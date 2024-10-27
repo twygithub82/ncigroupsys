@@ -399,7 +399,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
           //         material_cost: material_cost,
           //         tariff_repair_guid: tep.tariff_repair_guid,
           //         tariff_repair: tep.tariff_repair,
-          //         rep_damage_repair: tep_damage_repair,
+          //         rp_damage_repair: tep_damage_repair,
           //         action: 'new',
           //       });
           //     });
@@ -919,7 +919,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
         const rep: RepairPartItem[] = this.repList.map((item: any) => {
           // Ensure action is an array and take the last action only
-          const rp_damage_repair = item.rep_damage_repair.map((item: any) => {
+          const rp_damage_repair = item.rp_damage_repair.map((item: any) => {
             return new RPDamageRepairItem({
               guid: item.guid,
               rp_guid: item.rp_guid,
@@ -934,7 +934,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
             ...item,
             tariff_repair: undefined,
             rp_damage_repair: rp_damage_repair,
-            action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
+            action: (!item.guid || item.action === 'new') ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
           });
         });
         re.repair_part = rep;
@@ -988,7 +988,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       }));
 
       newData = this.sortAndGroupByGroupName(newData);
-      newData = [...this.sortREP(newData)];
+      // newData = [...this.sortREP(newData)];
       
       this.repList = newData.map((row, index) => ({
         ...row,
@@ -1172,7 +1172,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
+    return damageRepair?.filter((x: any) => x.code_type === filterCode && (!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'edit')).map(item => {
       return item.code_cv;
     }).join('/');
   }

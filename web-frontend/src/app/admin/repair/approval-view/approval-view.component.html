@@ -229,8 +229,8 @@
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 0)" matTooltipClass="multiline-tooltip">
-                              {{displayDamageRepairCode(row.rep_damage_repair, 0)}}
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)" matTooltipClass="multiline-tooltip">
+                              {{displayDamageRepairCode(row.rp_damage_repair, 0)}}
                             </span>
                           </span>
                         </mat-cell>
@@ -244,8 +244,8 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rep_damage_repair, 1)" matTooltipClass="multiline-tooltip">
-                            {{displayDamageRepairCode(row.rep_damage_repair, 1)}}
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)" matTooltipClass="multiline-tooltip">
+                            {{displayDamageRepairCode(row.rp_damage_repair, 1)}}
                           </span>
                         </mat-cell>
                       </ng-container>
@@ -322,7 +322,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-                          @if (repairPartDS.is4X(row.rep_damage_repair)){
+                          @if (repairPartDS.is4X(row.rp_damage_repair)){
                           <mat-icon class="font-bold">close</mat-icon>
                           }
                           @else {

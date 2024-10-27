@@ -162,8 +162,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       part_name: this.repairPart.tariff_repair?.part_name,
       dimension: this.repairPart.tariff_repair?.dimension,
       length: this.repairPart.tariff_repair?.length,
-      damage: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0)),
-      repair: this.REPDamageRepairToCV(this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1)),
+      damage: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0)),
+      repair: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1)),
       material_cost: this.repairPart.material_cost
     });
   }
@@ -184,7 +184,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         comment: this.repairPartForm.get('comment')?.value,
         tariff_repair_guid: this.repairPart?.tariff_repair_guid,
         tariff_repair: this.repairPart?.tariff_repair,
-        rep_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
+        rp_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
         quantity: this.repairPartForm.get('quantity')?.value,
         hour: this.repairPartForm.get('hour')?.value,
         material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value),
@@ -345,7 +345,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   // REPDamage(damages: any[]): RPDamageRepairItem[] {
-  //   const damage = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0);
+  //   const damage = this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0);
 
   //   damage.forEach((x: any) => {
   //     if (damages.includes(x.code_cv)) {
@@ -359,7 +359,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   // }
 
   REPDamage(damages: string[]): RPDamageRepairItem[] {
-    const existingDamage = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 0);
+    const existingDamage = this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0);
 
     const finalDamages: RPDamageRepairItem[] = [];
 
@@ -385,7 +385,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   REPRepair(repairs: any[]): RPDamageRepairItem[] {
-    const existingRepair = this.repairPart.rep_damage_repair?.filter((x: any) => x.code_type === 1);
+    const existingRepair = this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1);
 
     const finalRepairs: RPDamageRepairItem[] = [];
 
