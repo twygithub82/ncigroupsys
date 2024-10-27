@@ -934,7 +934,7 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR = gql`
               create_dt
               delete_dt
               guid
-              rep_guid
+              rp_guid
               update_by
               update_dt
             }
