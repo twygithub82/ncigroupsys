@@ -42,6 +42,6 @@ namespace IDMS.Models.Service
         public IEnumerable<residue_part?>? residue_part { get; set; }
 
         [UseFiltering]
-        public IEnumerable<in_gate_cleaning?>? in_gate_cleaning { get; set; }
+        public IEnumerable<cleaning?>? in_gate_cleaning { get; set; }
     }
 }

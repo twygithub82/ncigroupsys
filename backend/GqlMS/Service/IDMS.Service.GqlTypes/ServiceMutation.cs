@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommonUtil.Core.Service;
+using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -54,21 +55,21 @@ namespace IDMS.Service.GqlTypes
         {
             try
             {
-                if (jobOrder == null)
-                    throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
+                var job = await context.job_order.Where(j => j.guid == jobOrder.guid && (j.delete_dt == null || j.delete_dt == 0)).FirstOrDefaultAsync();
 
-                if (string.IsNullOrEmpty(jobOrder.guid))
+                if (jobOrder == null)
                     throw new GraphQLException(new Error($"Job order not found", "NOT FOUND"));
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var job = new job_order() { guid = jobOrder.guid };
-                context.Attach(job);
-
                 job.update_by = user;
                 job.update_dt = currentDateTime;
                 job.remarks = jobOrder.remarks;
+                job.working_hour = jobOrder.working_hour;
+                job.total_hour = jobOrder.total_hour;
+                job.team_guid = jobOrder.team_guid;
+                //job.sot_guid = jobOrder.sot_guid;
 
                 var res = await context.SaveChangesAsync();
                 //TODO

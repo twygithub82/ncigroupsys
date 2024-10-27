@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace IDMS.Models.Service
 {
 
-    public class in_gate_cleaning : Dates
+    public class cleaning : Dates
     {
         [Key]
         public string? guid { get; set; } = "";

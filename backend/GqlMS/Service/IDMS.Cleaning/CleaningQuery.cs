@@ -17,13 +17,13 @@ namespace IDMS.Cleaning.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<in_gate_cleaning> QueryInGateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<cleaning> QueryCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
-            IQueryable<in_gate_cleaning> query = null;
+            IQueryable<cleaning> query = null;
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                query = context.in_gate_cleaning.Where(i => i.delete_dt == null || i.delete_dt == 0);
+                query = context.cleaning.Where(i => i.delete_dt == null || i.delete_dt == 0);
             }
             catch (Exception ex)
             {
