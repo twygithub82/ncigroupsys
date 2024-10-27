@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Service
 {
-    public class repair_est : Dates
+    public class repair : Dates
     {
         [Key]
         public string? guid { get; set; }

@@ -50,7 +50,7 @@ namespace IDMS.Models.Master
         public template_est? template_est { get; set; }
 
         [UseFiltering]
-        public IEnumerable<repair_est>? repair_est { get; set; }
+        public IEnumerable<repair>? repair { get; set; }
         public IEnumerable<storing_order_tank>? storing_order_tank { get; set; }
         public IEnumerable<storing_order>? storing_orders { get; set; }
         

@@ -42,7 +42,7 @@ namespace IDMS.Models.Service.GqlTypes.DB
         public DbSet<aspnetuserroles> aspnetuserroles { get; set; }
         public DbSet<package_repair> package_repair { get; set; }
         public DbSet<storing_order_tank> storing_order_tank { get; set; }
-        public DbSet<repair_est> repair_est { get; set; }
+        public DbSet<repair> repair { get; set; }
         public DbSet<repair_est_part> repair_est_part { get; set; }
         public DbSet<rep_damage_repair> rep_damage_repair { get; set; }
         public DbSet<residue> residue { get; set; }

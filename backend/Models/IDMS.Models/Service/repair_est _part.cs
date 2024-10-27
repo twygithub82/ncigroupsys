@@ -20,8 +20,8 @@ namespace IDMS.Models.Service
         [ForeignKey("tariff_repair")]
         public string tariff_repair_guid { get; set; }
 
-        [ForeignKey("repair_est")]
-        public string? repair_est_guid { get; set; }
+        [ForeignKey("repair")]
+        public string? repair_guid { get; set; }
 
         [ForeignKey("job_order")]
         public string? job_order_guid { get; set; }
@@ -45,7 +45,7 @@ namespace IDMS.Models.Service
         public tariff_repair? tariff_repair { get; set; }
 
         [UseFiltering]
-        public repair_est? repair_est { get; set; }
+        public repair? repair { get; set; }
 
         [UseFiltering]
         public job_order? job_order { get; set; }
