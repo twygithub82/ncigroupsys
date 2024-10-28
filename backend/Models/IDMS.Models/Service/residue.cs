@@ -25,6 +25,7 @@ namespace IDMS.Models.Service
         public long? allocate_dt { get; set; }
         public string? complete_by { get; set; }
         public long? complete_dt { get; set; }
+        public string? estimate_no { get; set; }
 
         [UseFiltering]
         public customer_company? customer_company { get; set; }
