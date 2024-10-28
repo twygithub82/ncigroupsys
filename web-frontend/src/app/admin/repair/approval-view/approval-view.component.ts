@@ -754,7 +754,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       }));
 
       newData = this.sortAndGroupByGroupName(newData);
-      newData = [...this.sortREP(newData)];
+      // newData = [...this.sortREP(newData)];
 
       this.repList = newData.map((row, index) => ({
         ...row,

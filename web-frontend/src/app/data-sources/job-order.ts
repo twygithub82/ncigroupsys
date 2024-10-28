@@ -48,6 +48,40 @@ export class JobOrderGO {
   }
 }
 
+export class JobOrderRequest {
+  public guid?: string;
+  public job_type_cv?: string;
+  public part_guid?: (string | undefined)[];
+  public remarks?: string;
+  public sot_guid?: string;
+  public status_cv?: string;
+  public team_guid?: string;
+  public total_hour?: number;
+  public working_hour?: number;
+  public create_dt?: number;
+  public create_by?: string;
+  public update_dt?: number;
+  public update_by?: string;
+  public delete_dt?: number;
+
+  constructor(item: Partial<JobOrderRequest> = {}) {
+    this.guid = item.guid;
+    this.job_type_cv = item.job_type_cv;
+    this.part_guid = item.part_guid;
+    this.remarks = item.remarks;
+    this.sot_guid = item.sot_guid;
+    this.status_cv = item.status_cv;
+    this.team_guid = item.team_guid;
+    this.total_hour = item.total_hour;
+    this.working_hour = item.working_hour;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+  }
+}
+
 export class JobOrderItem extends JobOrderGO {
   public team?: TeamItem;
   constructor(item: Partial<JobOrderItem> = {}) {
@@ -94,6 +128,12 @@ export const GET_TEAM_BY_DEPARTMENT_QUERY = gql`
     }
   }
 `;
+
+export const ASSIGN_JOB_ORDER = gql`
+  mutation assignJobOrder($jobOrderRequest: [JobOrderRequestInput!]!) {
+    assignJobOrder(jobOrderRequest: $jobOrderRequest)
+  }
+`
 
 export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   constructor(private apollo: Apollo) {
@@ -157,5 +197,14 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
           return resultList.nodes;
         })
       );
+  }
+
+  assignJobOrder(jobOrderRequest: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ASSIGN_JOB_ORDER,
+      variables: {
+        jobOrderRequest
+      }
+    });
   }
 }

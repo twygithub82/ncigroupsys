@@ -60,7 +60,7 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobOrderItem } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderItem, JobOrderRequest } from 'app/data-sources/job-order';
 
 @Component({
   selector: 'app-job-order-allocation',
@@ -258,6 +258,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
   teamDS: TeamDS;
+  joDS: JobOrderDS;
   isOwner = false;
 
   constructor(
@@ -284,6 +285,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.teamDS = new TeamDS(this.apollo);
+    this.joDS = new JobOrderDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -479,212 +481,19 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv}` : '';
   }
 
-  addEstDetails(event: Event, row?: RepairPartItem) {
-    this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const addSot = row ?? new RepairPartItem();
-    addSot.repair_guid = addSot.repair_guid;
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
-      data: {
-        item: row ? row : addSot,
-        action: 'new',
-        translatedLangText: this.translatedLangText,
-        populateData: {
-          groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: this.subgroupNameCvList,
-          yesnoCvList: this.yesnoCvList,
-          partLocationCvList: this.partLocationCvList,
-          damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList,
-          unitTypeCvList: this.unitTypeCvList
-        },
-        index: -1,
-        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const data = [...this.repList];
-        const newItem = new RepairPartItem({
-          ...result.item,
-        });
-        data.push(newItem);
-
-        this.updateData(data);
-      }
-    });
-  }
-
-  editEstDetails(event: Event, row: RepairPartItem, index: number) {
-    this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
-      data: {
-        item: row,
-        action: 'edit',
-        translatedLangText: this.translatedLangText,
-        populateData: {
-          groupNameCvList: this.groupNameCvList,
-          subgroupNameCvList: this.subgroupNameCvList,
-          yesnoCvList: this.yesnoCvList,
-          partLocationCvList: this.partLocationCvList,
-          damageCodeCvList: this.damageCodeCvList,
-          repairCodeCvList: this.repairCodeCvList,
-          unitTypeCvList: this.unitTypeCvList
-        },
-        index: index,
-        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const data = [...this.repList];
-        const updatedItem = new RepairPartItem({
-          ...result.item,
-        });
-        if (result.index >= 0) {
-          data[result.index] = updatedItem;
-          this.updateData(data);
-        } else {
-          this.updateData([...this.repList, result.item]);
-        }
-      }
-    });
-  }
-
-  deleteItem(event: Event, row: RepairPartItem, index: number) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      width: '1000px',
-      data: {
-        item: row,
-        langText: this.langText,
-        index: index
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        if (result.item.guid) {
-          const data: any[] = [...this.repList];
-          const updatedItem = {
-            ...result.item,
-            delete_dt: Utility.getDeleteDtEpoch(),
-            action: 'cancel'
-          };
-          data[result.index] = updatedItem;
-          this.updateData(data); // Refresh the data source
-        } else {
-          const data = [...this.repList];
-          data.splice(index, 1);
-          this.updateData(data); // Refresh the data source
-        }
-      }
-    });
-  }
-
-  onCancel(event: Event) {
-    this.preventDefault(event);
-    console.log(this.repairItem)
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: RepairItem) => new RepairGO(item));
-        console.log(reList);
-        this.repairDS.cancelRepair(reList).subscribe(result => {
-          this.handleCancelSuccess(result?.data?.cancelRepair)
-        });
-      }
-    });
-  }
-
   assignTeam(event: Event) {
     const selectedRep = this.repSelection.selected;
     const selectedTeam = this.repairForm?.get('team_allocation');
     selectedRep.forEach(rep => {
       rep.job_order = new JobOrderItem({
         ...rep.job_order,
+        team_guid: selectedTeam?.value?.guid,
         team: selectedTeam?.value
       });
     })
     console.log(selectedRep)
     this.repSelection.clear();
     selectedTeam?.setValue('')
-  }
-
-  onRollback(event: Event) {
-    this.preventDefault(event);
-    console.log(this.repairItem)
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: any) => {
-          const RepairRequestInput = {
-            customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
-            estimate_no: item.estimate_no,
-            guid: item.guid,
-            remarks: item.remarks,
-            sot_guid: item.sot_guid
-          }
-          return RepairRequestInput
-        });
-        console.log(reList);
-        this.repairDS.rollbackRepair(reList).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackRepair)
-        });
-      }
-    });
   }
 
   undoTempAction(row: any[], actionToBeRemove: string) {
@@ -721,47 +530,46 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     event.preventDefault();
   }
 
-  onApprove(event: Event) {
-    event.preventDefault();
-    if (this.repairForm!.get('bill_to')?.valid) {
-      let re: RepairItem = new RepairItem();
-      re.guid = this.repairItem?.guid;
-      re.sot_guid = this.repairItem?.sot_guid;
-      re.bill_to_guid = this.repairForm!.get('bill_to')?.value?.guid;
-
-      this.repList?.forEach((rep: RepairPartItem) => {
-        rep.approve_part = rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair);
-        rep.approve_qty = (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
-        rep.approve_hour = (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
-        rep.approve_cost = (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
-      })
-
-      re.repair_part = this.repList?.map((rep: RepairPartItem) => {
-        return new RepairPartItem({
-          ...rep,
-          tariff_repair: undefined,
-          rp_damage_repair: undefined,
-          approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair),
-          approve_qty: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1,
-          approve_hour: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0,
-          approve_cost: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0
-        })
-        // rep.approve_part = rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair);
-        // rep.approve_qty = (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
-        // rep.approve_hour = (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
-        // rep.approve_cost = (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
-      });
-
-      console.log(re)
-      this.repairDS.approveRepair(re).subscribe(result => {
-        console.log(result)
-        this.handleSaveSuccess(result?.data?.approveRepair);
-      });
-    }
-  }
-
   onFormSubmit() {
-    this.repairForm!.get('repList')?.setErrors(null);
+    const distinctJobOrders = this.repList
+      .filter((item, index, self) =>
+        index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+          (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+            t.job_order?.team?.description === item?.job_order?.team?.description))
+      )
+      .filter(item => item !== null && item !== undefined)
+      .map(item => item.job_order);
+
+    const finalJobOrder: any[] = [];
+    distinctJobOrders.forEach(jo => {
+      if (jo) {
+        const filteredParts = this.repList.filter(part =>
+          part.job_order?.guid === jo?.guid &&
+          (part.job_order?.team?.guid === jo?.team_guid ||
+            part.job_order?.team?.description === jo?.team?.description)
+        );
+        console.log(filteredParts)
+        const partList = filteredParts.map(part => part.guid);
+        const totalApproveHours = filteredParts.reduce((total, part) => total + (part.approve_hour || 0), 0);
+
+        const joRequest = new JobOrderRequest();
+        joRequest.guid = jo.guid;
+        joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
+        joRequest.remarks = jo.remarks;
+        joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
+        joRequest.status_cv = jo.status_cv;
+        joRequest.team_guid = jo.team_guid;
+        joRequest.total_hour = jo.total_hour ?? totalApproveHours;
+        joRequest.working_hour = jo.working_hour ?? 0;
+        joRequest.part_guid = partList;
+        finalJobOrder.push(joRequest);
+      }
+    });
+    console.log(finalJobOrder);
+    this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
+      console.log(result)
+      this.handleSaveSuccess(result?.data?.assignJobOrder);
+    });
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
@@ -782,10 +590,6 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
         index: index
       }));
     }
-  }
-
-  handleDelete(event: Event, row: any, index: number): void {
-    this.deleteItem(event, row, index);
   }
 
   handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
@@ -811,23 +615,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/approval']);
-    }
-  }
-
-  handleCancelSuccess(count: any) {
-    if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/approval']);
-    }
-  }
-
-  handleRollbackSuccess(count: any) {
-    if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/approval']);
+      this.router.navigate(['/admin/repair/job-order']);
     }
   }
 

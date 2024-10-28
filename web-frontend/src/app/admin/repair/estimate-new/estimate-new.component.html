@@ -60,7 +60,8 @@
                       <div class="contact-detail-info font-bold pt-2">
                         {{ccDS.displayName(sotItem?.customer_company)}}
                       </div>
-                      <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner">
+                      <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner"
+                        [disabled]="!this.repairDS.canAmend(this.repairItem)">
                       </mat-checkbox>
                     </div>
                   </div>
@@ -141,6 +142,7 @@
               }
               @if (!(sotDS.loadingSubject | async)) {
               <div class="row">
+                @if (this.repairDS.canAmend(this.repairItem)) {
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
@@ -172,6 +174,7 @@
                     {{translatedLangText.ESTIMATE_DETAILS}}
                   </button>
                 </div>
+                }
               </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
@@ -219,7 +222,8 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)" matTooltipClass="multiline-tooltip">
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)"
+                              matTooltipClass="multiline-tooltip">
                               {{displayDamageRepairCode(row.rp_damage_repair, 0)}}
                             </span>
                           </span>
@@ -234,7 +238,8 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)" matTooltipClass="multiline-tooltip">
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)"
+                            matTooltipClass="multiline-tooltip">
                             {{displayDamageRepairCode(row.rp_damage_repair, 1)}}
                           </span>
                         </mat-cell>

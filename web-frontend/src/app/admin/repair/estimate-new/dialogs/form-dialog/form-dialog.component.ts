@@ -33,10 +33,12 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
 
 
 export interface DialogData {
   action?: string;
+  repair?: RepairItem;
   item?: RepairPartItem;
   translatedLangText?: any;
   populateData?: any;
@@ -83,6 +85,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   repairPartForm: UntypedFormGroup;
   repairPart: any;
+  repair: any;
   partNameControl: UntypedFormControl;
   partNameList?: string[];
   partNameFilteredList?: string[];
@@ -92,12 +95,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   subgroupNameCvList?: CodeValuesItem[];
   existedPart?: RepairPartItem[];
 
-  tcDS: TariffCleaningDS;
-  sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
   repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
+  repairDS: RepairDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -108,12 +110,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     super();
     // Set the defaults
-    this.tcDS = new TariffCleaningDS(this.apollo);
-    this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
     this.repDrDS = new RPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
+    this.repairDS = new RepairDS(this.apollo);
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
     if (this.action === 'edit') {
@@ -121,6 +122,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     }
+    this.repair = data.repair;
     this.repairPart = data.item ? data.item : new RepairPartItem();
     this.index = data.index;
     this.existedPart = data.existedPart;
@@ -138,21 +140,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.fb.group({
       guid: [this.repairPart.guid],
       tariff_repair_guid: [this.repairPart.tariff_repair_guid],
-      part_name: [this.repairPart.tariff_repair?.part_name],
+      part_name: [{ value: this.repairPart.tariff_repair?.part_name, disabled: !this.repairDS.canAmend(this.repair) }],
       repair_guid: [this.repairPart.repair_guid],
-      description: [{ value: this.repairPart.description, disabled: !this.canEdit() }],
-      location_cv: [{ value: this.repairPart.location_cv, disabled: !this.canEdit() }],
-      comment: [{ value: this.repairPart.comment, disabled: !this.canEdit() }],
-      remarks: [{ value: this.repairPart.remarks, disabled: !this.canEdit() }],
-      quantity: [{ value: this.repairPart.quantity, disabled: !this.canEdit() }],
-      hour: [{ value: this.repairPart.hour, disabled: !this.canEdit() }],
-      group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.canEdit() }],
-      subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
-      dimension: [{ value: this.repairPart.tariff_repair?.dimension, disabled: !this.canEdit() }],
-      length: [{ value: this.repairPart.tariff_repair?.length, disabled: !this.canEdit() }],
-      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.canEdit() }],
-      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.canEdit() }],
-      material_cost: [{ value: this.repairPart.material_cost }]
+      description: [{ value: this.repairPart.description, disabled: !this.repairDS.canAmend(this.repair) }],
+      location_cv: [{ value: this.repairPart.location_cv, disabled: !this.repairDS.canAmend(this.repair) }],
+      comment: [{ value: this.repairPart.comment, disabled: !this.repairDS.canAmend(this.repair) }],
+      remarks: [{ value: this.repairPart.remarks, disabled: !this.repairDS.canAmend(this.repair) }],
+      quantity: [{ value: this.repairPart.quantity, disabled: !this.repairDS.canAmend(this.repair) }],
+      hour: [{ value: this.repairPart.hour, disabled: !this.repairDS.canAmend(this.repair) }],
+      group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.repairDS.canAmend(this.repair) }],
+      subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.repairDS.canAmend(this.repair) }],
+      dimension: [{ value: this.repairPart.tariff_repair?.dimension, disabled: !this.repairDS.canAmend(this.repair) }],
+      length: [{ value: this.repairPart.tariff_repair?.length, disabled: !this.repairDS.canAmend(this.repair) }],
+      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.repairDS.canAmend(this.repair) }],
+      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.repairDS.canAmend(this.repair) }],
+      material_cost: [{ value: this.repairPart.material_cost, disabled: !this.repairDS.canAmend(this.repair) }]
     });
   }
 
@@ -182,7 +184,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   resetForm() {
-    
+
   }
 
   submit(addAnother: boolean) {
@@ -194,7 +196,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           this.repairPart.action = 'edit';
         }
       }
-      
+
       var rep: any = {
         ...this.repairPart,
         location_cv: this.repairPartForm.get('location_cv')?.value,
@@ -211,7 +213,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const concludeLength = rep.tariff_repair?.length
         ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
         : '';
-      
+
       let prefix = (`${this.getLocationDescription(rep.location_cv)}` + ' ' + (rep.comment ? rep.comment : '')).trim();
       prefix = prefix ? `${prefix} - ` : '';
 
@@ -291,7 +293,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         if (value) {
           this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
           if (value.child_code) {
-            subgroupName?.enable();
+            if (this.repairDS.canAmend(this.repair)) {
+              subgroupName?.enable();
+            }
             if ((this.subgroupNameCvList?.length ?? 0) > 1) {
               this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, 'All', '');
             } else {
@@ -300,19 +304,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           } else {
             subgroupName?.setValue('');
             subgroupName?.disable();
-            const partName = this.repairPartForm?.get('part_name');
-            // this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
-            //   this.partNameList = data;
-            //   // if (this.partNameList.length) {
-            //   //   partName?.enable()
-            //   // } else {
-            //   //   partName?.disable()
-            //   // }
-            // });
           }
         } else {
           subgroupName?.disable();
-          // this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '')
         }
       })
     ).subscribe();
@@ -324,14 +318,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         const groupName = this.repairPartForm?.get('group_name_cv')?.value;
         if (groupName) {
           console.log(`${groupName.code_val}, ${value}`)
-          const partName = this.repairPartForm?.get('part_name');
           this.trDS.searchDistinctPartName(groupName.code_val, value || '').subscribe(data => {
             this.partNameList = data;
-            // if (this.partNameList.length) {
-            //   partName?.enable()
-            // } else {
-            //   partName?.disable()
-            // }
           });
         }
       })
@@ -439,6 +427,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     existingDamage?.forEach((x: any) => {
       if (damages.includes(x.code_cv)) {
         x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
+        if (x.action === 'edit' && x.delete_dt) {
+          x.action = 'rollback'
+        }
       } else {
         x.action = 'cancel';
       }
@@ -459,16 +450,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   REPRepair(repairs: any[]): RPDamageRepairItem[] {
     const existingRepair = this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1);
-    
+
     const finalRepairs: RPDamageRepairItem[] = [];
 
     existingRepair?.forEach((x: any) => {
-      if (!x.guid || repairs.includes(x.code_cv)) {
+      if ((!x.guid && repairs.includes(x.code_cv)) || (x.guid && repairs.includes(x.code_cv))) {
         x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
+        if (x.action === 'edit' && x.delete_dt) {
+          x.action = 'rollback'
+        }
       } else {
         x.action = 'cancel';
       }
-      
+
       if (x.guid || !x.guid && x.action !== 'cancel') {
         finalRepairs.push(x);
       }
@@ -507,9 +501,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return isValid;
   }
 
-  canEdit(): boolean {
-    return true;
-  }
+  // canEdit(): boolean {
+  //   return true;
+  // }
 
   isEdit(): boolean {
     return this.action === 'edit';

@@ -574,6 +574,21 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       labour_cost_discount: this.repairItem!.labour_cost_discount,
       material_cost_discount: this.repairItem!.material_cost_discount
     });
+
+    const isEditable = this.repairDS.canAmend(this.repairItem);
+    this.repairForm?.get('surveyor_id')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('labour_cost_discount')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('material_cost_discount')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('remarks')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
+    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
   }
 
   getCustomerLabourPackage(customer_company_guid: string) {
@@ -989,12 +1004,12 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
       newData = this.sortAndGroupByGroupName(newData);
       // newData = [...this.sortREP(newData)];
-      
+
       this.repList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
-      
+
       this.calculateCost();
     }
   }
@@ -1172,13 +1187,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair?.filter((x: any) => x.code_type === filterCode && (!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'edit')).map(item => {
+    return damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
   displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-    const concate = damageRepair?.filter((x: any) => x.code_type === filterCode && (!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'edit')).map(item => {
+    const concate = damageRepair?.filter((x: any) => x.code_type === filterCode && ((!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'rollback'))).map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';
