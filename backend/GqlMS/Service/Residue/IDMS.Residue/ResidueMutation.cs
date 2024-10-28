@@ -138,7 +138,7 @@ namespace IDMS.Residue.GqlTypes
                     approveResidue.bill_to_guid = residue.bill_to_guid;
                     approveResidue.update_by = user;
                     approveResidue.update_dt = currentDateTime;
-                    approveResidue.status_cv = CurrentServiceStatus.APPROVE;
+                    approveResidue.status_cv = CurrentServiceStatus.APPROVED;
                     approveResidue.job_no = residue.job_no;
                     approveResidue.remarks = residue.remarks;
                     approveResidue.approve_by = user;
@@ -186,7 +186,7 @@ namespace IDMS.Residue.GqlTypes
 
                         resd.update_by = user;
                         resd.update_dt = currentDateTime;
-                        resd.status_cv = CurrentServiceStatus.CANCEL;
+                        resd.status_cv = CurrentServiceStatus.CANCELED;
                         resd.remarks = delResidue.remarks;
                     }
                 }
