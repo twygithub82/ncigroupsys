@@ -100,7 +100,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public out_gate?: OutGateItem[];
   public customer_company?: CustomerCompanyItem;
   public repair?: RepairItem[];
-  public residue_est?:ResidueItem[];
+  public residue?:ResidueItem[];
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -113,6 +113,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.out_gate = item.out_gate;
     this.customer_company = item.customer_company;
     this.actions = item.actions || [];
+    this.residue=item.residue;
   }
 }
 
@@ -721,6 +722,7 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
           }
         }
         residue {
+          estimate_no
           allocate_by
           allocate_dt
           approve_by

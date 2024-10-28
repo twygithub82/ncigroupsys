@@ -233,6 +233,26 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.loadData();
+    var state = history.state;
+
+    if(state.type=="residue-estimate")
+    {
+      let showResult = state.pagination.showResult;
+      if(showResult)
+      {
+      this.lastSearchCriteria=state.pagination.where;
+      this.pageIndex=state.pagination.pageIndex;
+      this.pageSize= state.pagination.pageSize;
+      this.hasPreviousPage=state.pagination.hasPreviousPage;
+      this.startCursor=state.pagination.startCursor;
+      this.endCursor=state.pagination.endCursor;
+      this.previous_endCursor=state.pagination.previous_endCursor;
+      this.paginator.pageSize=this.pageSize;
+      this.paginator.pageIndex=this.pageIndex;
+      this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+      }
+
+    }
   }
 
   refresh() {
@@ -374,7 +394,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     // });
   }
 
-  copyRepairEst(residueEst: ResidueItem) {
+  copyResidueEst(residueEst: ResidueItem) {
     this.copiedResidueEst = residueEst;
   }
 
@@ -513,9 +533,12 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data.map(sot => {
-          sot.repair = sot.repair?.map(rep => {
-            return { ...rep, net_cost: this.calculateNetCost(rep) }
+          sot.residue = sot.residue?.map(res => {
+             var res_part=[...res.residue_part!];
+             res.residue_part=res_part?.filter(data => !data.delete_dt);
+            return { ...res, net_cost: this.calculateNetCost(res) }
           })
+          
           return sot;
         });
         this.endCursor = this.sotDS.pageInfo?.endCursor;
@@ -529,22 +552,25 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   }
 
   onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
+
+    const { pageIndex, pageSize,previousPageIndex } = event;
+    let first : number| undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-
+    let order:any|undefined=this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
+      this.pageSize=pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
-      if (pageIndex > this.pageIndex && this.hasNextPage) {
+      //if (pageIndex > this.pageIndex && this.hasNextPage) {
+        if (pageIndex > this.pageIndex ) {
         // Navigate forward
         first = pageSize;
         after = this.endCursor;
@@ -553,21 +579,25 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
         last = pageSize;
         before = this.startCursor;
       }
+      else if (pageIndex==this.pageIndex)
+      {
+        
+          first = pageSize;
+          after = this.previous_endCursor;
+     
+          
+          //this.paginator.pageIndex=this.pageIndex;
+          
+      }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();
     });
+      
   }
 
-  // mergeCriteria(criteria: any) {
-  //   return {
-  //     and: [
-  //       { delete_dt: { eq: null } },
-  //       criteria
-  //     ]
-  //   };
-  // }
+ 
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -618,19 +648,12 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  calculateNetCost(repair_est: RepairItem): any {
-    // const total = this.repairDS.getTotal(repair_est?.repair_part)
-    // const labourDiscount = repair_est.labour_cost_discount;
-    // const matDiscount = repair_est.material_cost_discount;
+  calculateNetCost(residue: ResidueItem): any {
+    
 
-    // const total_hour = total.hour;
-    // const total_labour_cost = this.repairEstDS.getTotalLabourCost(total_hour, repair_est?.labour_cost);
-    // const total_mat_cost = total.total_mat_cost;
-    // const total_cost = repair_est?.total_cost;
-    // const discount_labour_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_labour_cost);
-    // const discount_mat_cost = this.repairEstDS.getDiscountCost(matDiscount, total_mat_cost);
-    // const net_cost = this.repairEstDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
-     return 0.00;
+    const total = this.residueDS.getTotal(residue?.residue_part)
+     
+     return total.total_mat_cost.toFixed(2);
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
@@ -702,14 +725,41 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     event.preventDefault(); // Prevents the form submission
   }
 
-  addResidueEstimate(event: Event, row:ResidueItem)
+  addResidueEstimate(event: Event, row:StoringOrderItem)
   {
     event.stopPropagation(); // Stop the click event from propagating
  // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
       state: { id: '' ,
         action:"NEW",
+        selectedResidue:undefined,
         selectedRow:row,
+        type:'residue-estimate',
+        pagination:{
+          where :this.lastSearchCriteria,
+          pageSize:this.pageSize,
+          pageIndex:this.pageIndex,
+          hasPreviousPage:this.hasPreviousPage,
+          startCursor:this.startCursor,
+          endCursor:this.endCursor,
+          previous_endCursor:this.previous_endCursor,
+          
+          showResult: this.sotDS.totalCount>0
+          
+        }
+      }
+    });
+  }
+
+  updateResidueEstimate(event: Event, sot:StoringOrderItem, row:ResidueItem)
+  {
+    event.stopPropagation(); // Stop the click event from propagating
+ // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
+      state: { id: '' ,
+        action:"UPDATE",
+        selectedResidue:row,
+        selectedRow:sot,
         type:'residue-estimate',
         pagination:{
           where :this.lastSearchCriteria,

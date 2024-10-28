@@ -23,6 +23,7 @@ export class ResidueEstGO {
   public remarks?: string;
   public sot_guid?: string;
   public status_cv?: string;
+  
  
   public create_dt?: number;
   public create_by?: string;
@@ -483,11 +484,11 @@ export const ADD_RESIDUE_EST = gql`
   }
 `;
 
-// export const UPDATE_REPAIR_EST = gql`
-//   mutation UpdateRepairEstimate($repairEstimate: repair_estInput!, $customerCompany: customer_companyInput) {
-//     updateRepairEstimate(repairEstimate: $repairEstimate, customerCompany: $customerCompany)
-//   }
-// `;
+export const UPDATE_RESIDUE_EST = gql`
+  mutation UpdateResidue($residue: residueInput!) {
+    updateResidue(residue: $residue)
+  }
+`;
 
 // export const CANCEL_REPAIR_EST = gql`
 //   mutation CancelRepairEstimate($repairEstimate: [repair_estInput!]!) {
@@ -534,51 +535,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       );
   }
 
-  // getRepairEstByID(id: string, customer_company_guid: string): Observable<ResidueEstItem[]> {
-  //   this.loadingSubject.next(true);
-  //   const where: any = { guid: { eq: id } }
-  //   return this.apollo
-  //     .query<any>({
-  //       query: GET_REPAIR_EST_BY_ID,
-  //       variables: { where, customer_company_guid },
-  //       fetchPolicy: 'no-cache' // Ensure fresh data
-  //     })
-  //     .pipe(
-  //       map((result) => result.data),
-  //       catchError(() => of({ items: [], totalCount: 0 })),
-  //       finalize(() => this.loadingSubject.next(false)),
-  //       map((result) => {
-  //         const resultList = result.resultList || { nodes: [], totalCount: 0 };
-  //         this.dataSubject.next(resultList.nodes);
-  //         this.totalCount = resultList.totalCount;
-  //         this.pageInfo = resultList.pageInfo;
-  //         return resultList.nodes;
-  //       })
-  //     );
-  // }
-
-  // getRepairEstByIDForApproval(id: string): Observable<ResidueEstItem[]> {
-  //   this.loadingSubject.next(true);
-  //   const where: any = { guid: { eq: id } }
-  //   return this.apollo
-  //     .query<any>({
-  //       query: GET_REPAIR_EST_FOR_APPROVAL,
-  //       variables: { where },
-  //       fetchPolicy: 'no-cache' // Ensure fresh data
-  //     })
-  //     .pipe(
-  //       map((result) => result.data),
-  //       catchError(() => of({ items: [], totalCount: 0 })),
-  //       finalize(() => this.loadingSubject.next(false)),
-  //       map((result) => {
-  //         const resultList = result.resultList || { nodes: [], totalCount: 0 };
-  //         this.dataSubject.next(resultList.nodes);
-  //         this.totalCount = resultList.totalCount;
-  //         this.pageInfo = resultList.pageInfo;
-  //         return resultList.nodes;
-  //       })
-  //     );
-  // }
+  
 
   addResidue(residue: any): Observable<any> {
     return this.apollo.mutate({
@@ -590,15 +547,14 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
-  // updateRepairEstimate(repairEstimate: any, customerCompany: any): Observable<any> {
-  //   return this.apollo.mutate({
-  //     mutation: UPDATE_REPAIR_EST,
-  //     variables: {
-  //       repairEstimate,
-  //       customerCompany
-  //     }
-  //   });
-  // }
+  updateResidue(residue: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_RESIDUE_EST,
+      variables: {
+        residue
+      }
+    });
+  }
 
   // cancelRepairEstimate(repairEstimate: any): Observable<any> {
   //   return this.apollo.mutate({
@@ -647,13 +603,13 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     return true;
   }
 
-  getTotal(residueEstPartList: any[] | undefined): any {
-    const totalSums = residueEstPartList?.filter(data => !data.delete_dt)?.reduce((totals: any, owner) => {
+  getTotal(residuePartList: any[] | undefined): any {
+    const totalSums = residuePartList?.filter(data => !data.delete_dt)?.reduce((totals: any, owner) => {
       return {
-        hour: (totals.hour ?? 0) + (owner.hour ?? 0),
-        total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.material_cost ?? 0)))
+        //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+        total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.cost ?? 0)))
       };
-    }, { hour: 0, total_mat_cost: 0 }) || 0;
+    }, {  total_mat_cost: 0 }) || 0;
     return totalSums;
   }
 

@@ -61,7 +61,7 @@ import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-rep
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
-import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 
 @Component({
@@ -229,6 +229,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
+  residueItem?:ResidueItem;
   repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
@@ -330,95 +331,13 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       desc:[''],
       qty:[''],
       unit_price:[''],
-      // total_owner_hour: [0],
-      // total_lessee_hour: [0],
-      // total_hour: [0],
-      // total_owner_labour_cost: [0],
-      // total_lessee_labour_cost: [0],
-      // total_labour_cost: [0],
-      // total_owner_mat_cost: [0],
-      // total_lessee_mat_cost: [0],
-      // total_mat_cost: [0],
-      // total_owner_cost: [0],
-      // total_lessee_cost: [0],
-      // total_cost: [0],
-      // discount_labour_owner_cost: [0],
-      // discount_labour_lessee_cost: [0],
-      // discount_labour_cost: [0],
-      // discount_mat_owner_cost: [0],
-      // discount_mat_lessee_cost: [0],
-      // discount_mat_cost: [0],
-      // net_owner_cost: [0],
-      // net_lessee_cost: [0],
-      // net_cost: [0],
+   
       deList: ['']
     });
   }
 
   initializeValueChanges() {
-    // this.residueEstForm?.get('est_template')?.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       console.log(value);
-    //       if (this.getCustomer()?.def_template_guid) {
-    //         this.residueEstForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
-    //       }
-    //       // estimate
-    //       this.residueEstForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
-    //       this.residueEstForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
-    //       this.residueEstForm?.get('remarks')?.setValue(value.remarks);
-    //       const repList: RepairPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
-    //         const package_repair = tep.tariff_repair?.package_repair;
-    //         let material_cost = 0;
-    //         if (package_repair?.length) {
-    //           material_cost = package_repair[0].material_cost
-    //         }
-    //         const tep_damage_repair = this.filterDeleted(tep.tep_damage_repair).map((item: any) => {
-    //           return new RPDamageRepairItem({
-    //             code_cv: item.code_cv,
-    //             code_type: item.code_type,
-    //             action: 'new'
-    //           });
-    //         })
-    //         return new RepairPartItem({
-    //           repair_guid: this.repair_est_guid || undefined,
-    //           description: tep.description,
-    //           hour: tep.hour,
-    //           location_cv: tep.location_cv,
-    //           comment: tep.comment,
-    //           quantity: tep.quantity,
-    //           remarks: tep.remarks,
-    //           material_cost: material_cost,
-    //           tariff_repair_guid: tep.tariff_repair_guid,
-    //           tariff_repair: tep.tariff_repair,
-    //           rp_damage_repair: tep_damage_repair,
-    //           action: "new"
-    //         });
-    //       });
-    //       this.updateData(repList);
-
-      
-    //     }
-    //   })
-    // ).subscribe();
-
-    // this.residueEstForm?.get('labour_cost_discount')?.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     this.calculateCost();
-    //   })
-    // ).subscribe();
-
-    // this.residueEstForm?.get('material_cost_discount')?.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     this.calculateCost();
-    //   })
-    // ).subscribe();
+   
 
 
     this.residueEstForm?.get('desc')?.valueChanges.pipe(
@@ -514,17 +433,6 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.route.data.subscribe(routeData => {
       this.isDuplicate = routeData['action'] === 'duplicate';
       this.loadHistoryState();
-      // if (this.sot_guid) {
-      //   this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepairEst(this.sot_guid).subscribe(data => {
-      //     if (this.sotDS.totalCount > 0) {
-      //       this.sotItem = data[0];
-      //       this.populateRepairEst(this.sotItem.repair_est, this.isDuplicate);
-      //       console.log("Customer company: " + this.sotItem.storing_order?.customer_company_guid);
-      //       this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
-      //       this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
-      //     }
-      //   });
-      // }
     });
   }
 
@@ -754,7 +662,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     residuePartItem.cost= Number(this.residueEstForm?.get("unit_price")?.value);
     residuePartItem.description= descObject.description;
     residuePartItem.quantity=this.residueEstForm?.get("qty")?.value;
-    if(this.sotItem?.residue_est?.length!>0)residuePartItem.residue_guid = this.sotItem?.residue_est![0]!.guid!;
+    residuePartItem.residue_guid = this.historyState.selectedResidue?.guid;
     residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
 
     if(index===-1)
@@ -762,25 +670,29 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       var newData =[residuePartItem ,...this.deList];
       this.updateData(newData);
     }
-    this.updateSelectedItem=undefined;
-    this.resetValue();
+  this.resetSelectedItemForUpdating();
   }
 
   CancelEditEstDetails(event: Event)
   {
     this.preventDefault(event);  // Prevents the form submission
-    this.updateSelectedItem=undefined;
-    this.resetValue();
+    this.resetSelectedItemForUpdating();
+    // this.updateSelectedItem=undefined;
+    // this.resetValue();
   }
 
   editEstDetails(event: Event, row: ResiduePartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
+    this.resetSelectedItemForUpdating();
+
     this.updateSelectedItem ={
-      item:row,
+      item:this.deList[index],
       index:index,
-      action:"update"
+      action:"update",
+      
     }
+    this.updateSelectedItem.item.edited=true;
 
     var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
     var descValue:any;
@@ -803,67 +715,9 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
        qty:row.quantity,
        unit_price:row.cost
     });
-    // var descObject :PackageResidueItem;
 
-    // if(typeof this.residueEstForm?.get("desc")?.value==="object")
-    // {
-    //   descObject = new PackageResidueItem(this.residueEstForm?.get("desc")?.value);
-    //   descObject.description = descObject.tariff_residue?.description;
-    // }
-    // else
-    // {
-    //   descObject = new PackageResidueItem();
-    //   descObject.description= this.residueEstForm?.get("desc")?.value;
-    //   descObject.cost= Number(this.residueEstForm?.get("unit_price")?.value);
-    // }
-
-
-    // this.checkCompulsoryEst(["desc","qty","unit_price"]);
-    // this.checkDuplicationEst(descObject);
-    // if(!this.residueEstForm?.valid)return;
-
-
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   width: '1000px',
-    //   data: {
-    //     item: row,
-    //     action: 'edit',
-    //     translatedLangText: this.translatedLangText,
-    //     populateData: {
-    //       groupNameCvList: this.groupNameCvList,
-    //       subgroupNameCvList: this.subgroupNameCvList,
-    //       yesnoCvList: this.yesnoCvList,
-    //       partLocationCvList: this.partLocationCvList,
-    //       damageCodeCvList: this.damageCodeCvList,
-    //       repairCodeCvList: this.repairCodeCvList,
-    //       unitTypeCvList: this.unitTypeCvList
-    //     },
-    //     index: index,
-    //     customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
-    //     existedPart: this.repList
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) {
-    //     const data = [...this.repList];
-    //     const updatedItem = new RepairPartItem({
-    //       ...result.item,
-    //     });
-    //     if (result.index >= 0) {
-    //       data[result.index] = updatedItem;
-    //       this.updateData(data);
-    //     } else {
-    //       this.updateData([...this.repList, result.item]);
-    //     }
-    //   }
-    // });
+   
+    
   }
 
   deleteItem(event: Event, row: ResiduePartItem, index: number) {
@@ -898,6 +752,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
           data.splice(index, 1);
           this.updateData(data); // Refresh the data source
         }
+
+        this.resetSelectedItemForUpdating();
       }
     });
   }
@@ -1027,6 +883,9 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
   onFormSubmit() {
 
+    this.residueEstForm!.get('desc')?.setErrors(null);
+    this.residueEstForm!.get('qty')?.setErrors(null);
+    this.residueEstForm!.get('unit_price')?.setErrors(null);
     this.residueEstForm!.get('deList')?.setErrors(null);
 
     if(!this.deList.length){
@@ -1038,10 +897,12 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     if(this.historyState.action==="NEW")
     {
        var newResidueItem :ResidueItem =new ResidueItem();
-       newResidueItem.bill_to_guid= this.sotItem?.storing_order?.customer_company?.guid;
+       var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
+       newResidueItem.bill_to_guid= billGuid;
        newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
        newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-       newResidueItem.status_cv="CLEANING";
+       newResidueItem.status_cv="PENDING";
+       newResidueItem.sot_guid=this.sotItem?.guid;
        newResidueItem.residue_part= [];
        this.deList.forEach(data=>{
           var residuePart : ResiduePartItem = new ResiduePartItem(data);
@@ -1049,81 +910,43 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
        });
 
+       delete newResidueItem.customer_company;
+      
        this.residueDS.addResidue(newResidueItem).subscribe(result=>{
 
-          if(result>0)
+          if(result.data.addResidue>0)
           {
-
+            this.handleSaveSuccess(result.data.addResidue);
           }
        });
     }
-    else
-    {}
-    // this.residueEstForm!.get('repList')?.setErrors(null);
-    // if (this.residueEstForm?.valid) {
-    //   if (!this.repList.length) {
-    //     this.residueEstForm.get('repList')?.setErrors({ required: true });
-    //   } else {
-    //     let re: RepairEstItem = new RepairEstGO(this.repairEstItem);
+    else if(this.historyState.action==="UPDATE")
+    {
+      var updResidueItem :ResidueItem =new ResidueItem(this.residueItem);
+      var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
+      updResidueItem.bill_to_guid= billGuid;
+      updResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
+      updResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
+      updResidueItem.sot_guid=this.sotItem?.guid;
+      updResidueItem.residue_part= [];
+      this.deList.forEach(data=>{
+         var residuePart : ResiduePartItem = new ResiduePartItem(data);
+         updResidueItem.residue_part?.push(residuePart);
 
-    //     const rep: ResiduePartItem[] = this.repList.map((item: any) => {
-    //       // Ensure action is an array and take the last action only
-    //       const rep_damage_repair = item.rep_damage_repair.map((item: any) => {
-    //         return new REPDamageRepairItem({
-    //           guid: item.guid,
-    //           rep_guid: item.rep_guid,
-    //           code_cv: item.code_cv,
-    //           code_type: item.code_type,
-    //           action: item.action
-    //         });
-    //       });
+      });
 
-    //       console.log(item)
-    //       return new ResiduePartItem({
-    //         ...item,
-    //         tariff_repair: undefined,
-    //         rep_damage_repair: rep_damage_repair,
-    //         action: item.action === 'new' ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
-    //       });
-    //     });
-    //     re.repair_est_part = rep;
-    //     re.sot_guid = this.sotItem?.guid;
-    //     re.aspnetusers_guid = this.residueEstForm.get('surveyor_id')?.value;
-    //     re.labour_cost_discount = Utility.convertNumber(this.residueEstForm.get('labour_cost_discount')?.value);
-    //     re.material_cost_discount = Utility.convertNumber(this.residueEstForm.get('material_cost_discount')?.value);
-    //     re.labour_cost = this.getLabourCost();
-    //     re.total_hour = Utility.convertNumber(this.residueEstForm.get('total_hour')?.value, 2);
-    //     re.total_cost = Utility.convertNumber(this.residueEstForm.get('total_cost')?.value, 2);
-    //     re.remarks = this.residueEstForm.get('remarks')?.value;
-    //     re.owner_enable = this.isOwner;
+      delete updResidueItem.customer_company;
 
-    //     let cc: any = undefined;
-    //     if (this.residueEstForm?.get('is_default_template')?.value && this.residueEstForm.get('est_template')?.value?.guid) {
-    //       cc = this.getCustomer();
-    //       cc!.def_template_guid = this.residueEstForm.get('est_template')?.value?.guid;
-    //       cc = new CustomerCompanyGO({ ...cc });
-    //       console.log(cc);
-    //     }
+      this.residueDS.updateResidue(updResidueItem).subscribe(result=>{
 
-    //     // remove the object
-    //     re.aspnetsuser = undefined;
+        if(result.data.updateResidue>0)
+        {
+          this.handleSaveSuccess(result.data.updateResidue);
+        }
+     });
 
-    //     console.log(re);
-    //     if (re.guid) {
-    //       this.repairEstDS.updateRepairEstimate(re, cc).subscribe(result => {
-    //         console.log(result)
-    //         this.handleSaveSuccess(result?.data?.updateRepairEstimate);
-    //       });
-    //     } else {
-    //       this.repairEstDS.addRepairEstimate(re, cc).subscribe(result => {
-    //         console.log(result)
-    //         this.handleSaveSuccess(result?.data?.addRepairEstimate);
-    //       });
-    //     }
-    //   }
-    // } else {
-    //   console.log('Invalid residueEstForm', this.residueEstForm?.value);
-    // }
+    }
+   
   }
 
   updateData(newData: ResiduePartItem[] | undefined): void {
@@ -1167,8 +990,19 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/estimate']);
+      let successMsg = this.langText.SAVE_SUCCESS;
+      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+        successMsg = res;
+        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        //this.router.navigate(['/admin/master/estimate-template']);
+
+        // Navigate to the route and pass the JSON object
+        this.router.navigate(['/admin/residue-disposal/estimate'], {
+          state: this.historyState
+
+        }
+        );
+      });
     }
   }
 
@@ -1501,7 +1335,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
       this.billingBranchList=[def, ...data];;
 
-      this.patchResidueEstForm();
+      this.patchResidueEstForm(this.residueItem!);
     });
 
   }
@@ -1513,6 +1347,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     if (this.historyState.selectedRow != null) {
 
       this.sotItem = this.historyState.selectedRow;
+      this.residueItem=this.historyState.selectedResidue;
       this.getPackageResidue();
       this.loadBillingBranch();
       
@@ -1520,18 +1355,20 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     }
   }
 
-  patchResidueEstForm()
+  patchResidueEstForm(residue:ResidueItem)
   {
     let billingGuid= "";
-    if(this.sotItem?.residue_est?.length!>0)
+    if(residue)
     {
-      billingGuid=this.sotItem?.residue_est![0].guid!;
+      billingGuid=residue.bill_to_guid!;
     }
+    this.populateResiduePartList(residue);
     this.residueEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
       job_no:this.sotItem?.job_no,
        billing_branch:this.getBillingBranch(billingGuid),
+       remarks:residue?.remarks
 
     });
   }
@@ -1562,27 +1399,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return cc && cc.tariff_residue ? cc.tariff_residue.description : '';
   }
 
-  // enableRequire(item:string)
-  // {
-  //   const itmControl = this.residueEstForm?.get(item);
-  //   itmControl?.clearValidators();
-  //   itmControl?.updateValueAndValidity({ emitEvent: false });
-  // }
-
-  // disableRequire(item:string)
-  // {
-  //   const itmControl = this.residueEstForm?.get(item);
-  //   itmControl?.clearValidators();
-  //   itmControl?.updateValueAndValidity({ emitEvent: true });
-  // }
-  // disableRequiredCheck(items:string[])
-  // {
-  //    items.forEach(itm=>
-      
-
-     
-  //    );
-  // } 
+  
 
   resetValue(){
 
@@ -1597,5 +1414,33 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.displayPackResidueList=[...this.packResidueList];
   
   }
+
+  GoBackPrevious(event: Event) {
+    event.stopPropagation(); // Stop the click event from propagating
+    // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/residue-disposal/estimate'], {
+      state: this.historyState
+
+    }
+    );
+  }
+
+  populateResiduePartList(residue:ResidueItem){
+
+    if(residue)
+    {
+      var dataList = residue.residue_part?.map(data=>new ResidueEstPartGO(data) );
+      this.updateData(dataList);
+    }
+  }
   
+  resetSelectedItemForUpdating()
+  {
+    if(this.updateSelectedItem)
+    {
+      this.updateSelectedItem.item.edited=false;
+      this.updateSelectedItem=null;
+      this.resetValue();
+    }
+  }
 }
