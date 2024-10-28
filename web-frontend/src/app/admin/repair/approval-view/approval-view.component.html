@@ -150,11 +150,16 @@
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
-                    <mat-select formControlName="bill_to">
+                    <mat-select formControlName="bill_to" required>
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">{{displayCustomerCompanyName(cc)}}</mat-option>
                       }
                     </mat-select>
+                    @if (repairForm?.get('bill_to')?.hasError('required')) {
+                    <mat-error>
+                      {{translatedLangText.BILL_TO}} {{translatedLangText.SO_REQUIRED}}
+                    </mat-error>
+                    }
                   </mat-form-field>
                 </div>
               </div>
@@ -229,7 +234,8 @@
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)" matTooltipClass="multiline-tooltip">
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)"
+                              matTooltipClass="multiline-tooltip">
                               {{displayDamageRepairCode(row.rp_damage_repair, 0)}}
                             </span>
                           </span>
@@ -244,7 +250,8 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)" matTooltipClass="multiline-tooltip">
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)"
+                            matTooltipClass="multiline-tooltip">
                             {{displayDamageRepairCode(row.rp_damage_repair, 1)}}
                           </span>
                         </mat-cell>
@@ -326,7 +333,8 @@
                           <mat-icon class="font-bold">close</mat-icon>
                           }
                           @else {
-                          @if (repairPartDS.isApprove(row)){
+                          @if (row.approve_part === null || row.approve_part === undefined ||
+                          repairPartDS.isApprove(row)){
                           <mat-icon class="col-green font-bold" (click)="toggleApprovePart(row)">check</mat-icon>
                           }
                           @else {
@@ -850,8 +858,8 @@
                   </button>
                   }
                   @if (repairDS.canApprove(repairItem)) {
-                  <button mat-flat-button color="basic" [disabled]="(repairDS.loading$ | async)"
-                    class="m-l-5 bg-green" (click)="onApprove($event)">
+                  <button mat-flat-button color="basic" [disabled]="(repairDS.loading$ | async)" class="m-l-5 bg-green"
+                    (click)="onApprove($event)">
                     <mat-icon>
                       @if (!(repairDS.loading$ | async)) {
                       done

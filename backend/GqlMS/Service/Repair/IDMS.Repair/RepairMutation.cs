@@ -96,7 +96,7 @@ namespace IDMS.Repair.GqlTypes
 
                 var updateRepair = await context.repair.Where(t => t.guid == repair.guid && (t.delete_dt == null || t.delete_dt == 0))
                                                           .Include(t => t.repair_part)
-                                                            .ThenInclude(tp => tp.rep_damage_repair)
+                                                            .ThenInclude(tp => tp.rp_damage_repair)
                                                           .FirstOrDefaultAsync();
 
                 if (updateRepair == null)
@@ -151,7 +151,7 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.material_cost = part.material_cost;
                             existingPart.remarks = part.remarks;
                             //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
-                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rep_damage_repair);
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rp_damage_repair);
                             continue;
                         }
 
@@ -164,7 +164,7 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.update_dt = currentDateTime;
                             existingPart.update_by = user;
                             //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
-                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rep_damage_repair);
+                            await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rp_damage_repair);
                             continue;
                         }
                     }
@@ -212,7 +212,7 @@ namespace IDMS.Repair.GqlTypes
 
                         cancelRepair.update_by = user;
                         cancelRepair.update_dt = currentDateTime;
-                        cancelRepair.status_cv = CurrentServiceStatus.CANCEL;
+                        cancelRepair.status_cv = CurrentServiceStatus.CANCELED;
                         cancelRepair.remarks = item.remarks;
                     }
                 }
@@ -294,7 +294,7 @@ namespace IDMS.Repair.GqlTypes
                     appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.update_by = user;
                     appvRepair.update_dt = currentDateTime;
-                    appvRepair.status_cv = CurrentServiceStatus.APPROVE;
+                    appvRepair.status_cv = CurrentServiceStatus.APPROVED;
                     appvRepair.remarks = repair.remarks;
 
                     if (repair.repair_part != null)
@@ -325,13 +325,13 @@ namespace IDMS.Repair.GqlTypes
 
 
         private async Task UpdateRepairDamageCode(ApplicationServiceDBContext context, string user, long currentDateTime,
-                                          repair_part estPart, IEnumerable<rep_damage_repair>? repDamageRepair = null)
+                                          repair_part repairPart, IEnumerable<rp_damage_repair>? rpDamageRepair = null)
         {
             try
             {
-                if (estPart.rep_damage_repair != null)
+                if (repairPart.rp_damage_repair != null)
                 {
-                    foreach (var item in estPart.rep_damage_repair)
+                    foreach (var item in repairPart.rp_damage_repair)
                     {
 
                         //if (string.IsNullOrEmpty(item.action) && !string.IsNullOrEmpty(item.guid))
@@ -342,15 +342,15 @@ namespace IDMS.Repair.GqlTypes
 
                         if (string.IsNullOrEmpty(item.guid) && (ObjectAction.NEW.EqualsIgnore(item.action) || string.IsNullOrEmpty(item.action)))
                         {
-                            var repDamage = item;//new tep_damage_repair();
-                            repDamage.guid = Util.GenerateGUID();
-                            repDamage.create_by = user;
-                            repDamage.create_dt = currentDateTime;
+                            var partDamage = item;//new tep_damage_repair();
+                            partDamage.guid = Util.GenerateGUID();
+                            partDamage.create_by = user;
+                            partDamage.create_dt = currentDateTime;
 
-                            repDamage.rep_guid = estPart.guid;
-                            repDamage.code_type = item.code_type;
-                            repDamage.code_cv = item.code_cv;
-                            await context.rep_damage_repair.AddAsync(repDamage);
+                            partDamage.rp_guid = repairPart.guid;
+                            partDamage.code_type = item.code_type;
+                            partDamage.code_cv = item.code_cv;
+                            await context.rp_damage_repair.AddAsync(partDamage);
                             continue;
                         }
 
@@ -359,15 +359,15 @@ namespace IDMS.Repair.GqlTypes
                             if (string.IsNullOrEmpty(item.guid))
                                 throw new GraphQLException(new Error($"Rep_damage_repair guid cannot null or empty for update", "ERROR"));
 
-                            var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            var partDamage = rpDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
                             //var repDamage = new rep_damage_repair() { guid = item.guid };
                             //context.Attach(repDamage);
-                            if (repDamage != null)
+                            if (partDamage != null)
                             {
-                                repDamage.update_dt = currentDateTime;
-                                repDamage.update_by = user;
-                                repDamage.code_cv = item.code_cv;
-                                repDamage.code_type = item.code_type;
+                                partDamage.update_dt = currentDateTime;
+                                partDamage.update_by = user;
+                                partDamage.code_cv = item.code_cv;
+                                partDamage.code_type = item.code_type;
                                 //await context.AddAsync(tepDamage)
                             }
                             continue;
@@ -380,12 +380,12 @@ namespace IDMS.Repair.GqlTypes
 
                             //var repDamage = new rep_damage_repair() { guid = item.guid };
                             //context.Attach(repDamage);
-                            var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
-                            if (repDamage != null)
+                            var partDamage = rpDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            if (partDamage != null)
                             {
-                                repDamage.delete_dt = currentDateTime;
-                                repDamage.update_by = user;
-                                repDamage.update_dt = currentDateTime;
+                                partDamage.delete_dt = currentDateTime;
+                                partDamage.update_by = user;
+                                partDamage.update_dt = currentDateTime;
                             }
                             continue;
                         }
@@ -397,12 +397,12 @@ namespace IDMS.Repair.GqlTypes
 
                             //var repDamage = new rep_damage_repair() { guid = item.guid };
                             //context.Attach(repDamage);
-                            var repDamage = repDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
-                            if (repDamage != null)
+                            var partDamage = rpDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            if (partDamage != null)
                             {
-                                repDamage.delete_dt = null;
-                                repDamage.update_by = user;
-                                repDamage.update_dt = currentDateTime;
+                                partDamage.delete_dt = null;
+                                partDamage.update_by = user;
+                                partDamage.update_dt = currentDateTime;
                             }
                             continue;
                         }

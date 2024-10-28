@@ -251,7 +251,7 @@ namespace IDMS.EstimateTemplate.GqlTypes
 
                         templateEstCustomer.template_est_guid = templateEst.guid;
                         templateEstCustomer.customer_company_guid = cus.customer_company_guid;
-                        context.template_est_customer.AddAsync(templateEstCustomer);
+                        await context.template_est_customer.AddAsync(templateEstCustomer);
                     }
                     else if (ObjectAction.CANCEL.EqualsIgnore(cus.action))
                     {

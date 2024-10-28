@@ -78,7 +78,7 @@ namespace IDMS.InGateSurvey.GqlTypes
 
                 //Add into in_gate_cleaning
                 if (needAddCleaning)
-                    await AddIngateCleaning(context, config, httpContextAccessor, tnk.guid, ingate.create_dt, ingateSurvey.tank_comp_guid);
+                    await AddCleaning(context, config, httpContextAccessor, tnk.guid, ingate.create_dt, ingateSurvey.tank_comp_guid);
 
                 retval = await context.SaveChangesAsync();
                 //TODO
@@ -233,7 +233,7 @@ namespace IDMS.InGateSurvey.GqlTypes
             return retval;
         }
 
-        private async Task<int> AddIngateCleaning(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        private async Task<int> AddCleaning(ApplicationInventoryDBContext context, [Service] IConfiguration config,
         [Service] IHttpContextAccessor httpContextAccessor, string sot_Guid, long? ingate_date, string tariffBufferGuid)
         {
             int retval = 0;
@@ -246,7 +246,7 @@ namespace IDMS.InGateSurvey.GqlTypes
                 var sot = context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
                     .Where(t => t.guid == sot_Guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefault();
 
-                var ingateCleaning = new in_gate_cleaning();
+                var ingateCleaning = new cleaning();
                 ingateCleaning.guid = Util.GenerateGUID();
                 ingateCleaning.create_by = user;
                 ingateCleaning.create_dt = currentDateTime;
