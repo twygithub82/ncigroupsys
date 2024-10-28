@@ -73,6 +73,37 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
+        public async Task<int> UpdateJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, UpdateJobOrderRequest jobOrderRequest)
+        {
+            try
+            {
+                if (jobOrderRequest == null)
+                    throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var jobOrder = new job_order() { guid = jobOrderRequest.guid };
+                context.Attach(jobOrder);
+
+                jobOrder.start_dt = jobOrderRequest.start_dt;
+                jobOrder.complete_dt = jobOrderRequest.complete_dt;
+                jobOrder.remarks = jobOrderRequest.remarks;
+                jobOrder.update_dt = currentDateTime;
+                jobOrder.update_by = user;
+
+                var res = await context.SaveChangesAsync();
+                //TODO
+                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
         private void AssignPartToJob(ApplicationServiceDBContext context, string jobType, string jobOrderGuid, List<string?>? partGuid)
         {
             switch (jobType.ToUpper())
@@ -186,6 +217,8 @@ namespace IDMS.Service.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+
+                await UpdateAccumalateHour(context, user, currentDateTime, timeTable.Select(t => t.job_order_guid).ToList());
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
@@ -194,6 +227,33 @@ namespace IDMS.Service.GqlTypes
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
+        }
+
+        private async Task<bool> UpdateAccumalateHour(ApplicationServiceDBContext context, string user, long currentDateTime, List<string?> jobOrderGuid)
+        {
+            try
+            {
+                foreach(var j_guid in jobOrderGuid)
+                {
+                    var totalTime = await context.time_table
+                        .Where(t => t.stop_time != null && t.start_time != null && t.job_order_guid == j_guid)
+                        .SumAsync(t => (t.stop_time - t.stop_time));
+
+                    var jobOrdr = new job_order() { guid = j_guid };
+                    context.job_order.Attach(jobOrdr);
+                    jobOrdr.total_hour = totalTime;
+                    jobOrdr.update_by = user;
+                    jobOrdr.update_dt = currentDateTime;    
+                }
+
+                await context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
 
         //public async Task<int> AddJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,

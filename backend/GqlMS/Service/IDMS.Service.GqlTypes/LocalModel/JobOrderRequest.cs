@@ -20,4 +20,12 @@ namespace IDMS.Service.GqlTypes.LocalModel
         public string? remarks { get; set; }
         public List<string?>? part_guid {  get; set; }
     }
+
+    public class UpdateJobOrderRequest
+    {
+        public string guid { get; set; }
+        public string? remarks { get; set; }
+        public long? start_dt { get; set; }
+        public long? complete_dt { get; set; }
+    }
 }
