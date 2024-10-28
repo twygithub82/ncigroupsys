@@ -29,7 +29,7 @@ namespace IDMS.Cleaning.GqlTypes
                 newCleaning.create_by = user;
                 newCleaning.create_dt = currentDateTime;
 
-                newCleaning.status_cv = string.IsNullOrEmpty(cleaning.status_cv) ? CurrentServiceStatus.APPROVE : cleaning.status_cv;
+                newCleaning.status_cv = string.IsNullOrEmpty(cleaning.status_cv) ? CurrentServiceStatus.APPROVED : cleaning.status_cv;
 
                 if (!string.IsNullOrEmpty(cleaning.job_no))
                     newCleaning.job_no = cleaning.job_no;
@@ -71,7 +71,7 @@ namespace IDMS.Cleaning.GqlTypes
                
                 if (ObjectAction.APPROVE.EqualsIgnore(cleaning.action))
                 {
-                    updateCleaning.status_cv = CurrentServiceStatus.APPROVE;
+                    updateCleaning.status_cv = CurrentServiceStatus.APPROVED;
                     updateCleaning.approve_dt = cleaning.approve_dt;
                     updateCleaning.approve_by = cleaning?.storing_order_tank?.storing_order?.customer_company_guid;
                 }
