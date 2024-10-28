@@ -104,6 +104,40 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
+        public async Task<int> CompleteJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<UpdateJobOrderRequest> jobOrderRequest)
+        {
+            try
+            {
+                if (jobOrderRequest == null)
+                    throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach(var item in jobOrderRequest)
+                {
+                    var jobOrder = new job_order() { guid = item.guid };
+                    context.Attach(jobOrder);
+
+                    jobOrder.complete_dt = currentDateTime;
+                    jobOrder.remarks = item.remarks;
+                    jobOrder.status_cv = JobStatus.COMPLETE;
+                    jobOrder.update_dt = currentDateTime;
+                    jobOrder.update_by = user;
+                }
+
+                var res = await context.SaveChangesAsync();
+                //TODO
+                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
         private void AssignPartToJob(ApplicationServiceDBContext context, string jobType, string jobOrderGuid, List<string?>? partGuid)
         {
             switch (jobType.ToUpper())
@@ -175,7 +209,7 @@ namespace IDMS.Service.GqlTypes
                 {
                     var job_order = new job_order() { guid = item };
                     context.job_order.Attach(job_order);
-                    job_order.status_cv = CurrentServiceStatus.IN_PROGRESS;
+                    job_order.status_cv = JobStatus.IN_PROGRESS;
                     job_order.update_by = user;
                     job_order.update_dt = currentDateTime;
                 }
