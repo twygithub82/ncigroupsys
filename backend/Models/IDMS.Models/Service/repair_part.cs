@@ -45,6 +45,6 @@ namespace IDMS.Models.Service
         public job_order? job_order { get; set; }
 
         [UseFiltering]
-        public IEnumerable<rep_damage_repair>? rep_damage_repair { get; set; }
+        public IEnumerable<rp_damage_repair>? rp_damage_repair { get; set; }
     }
 }

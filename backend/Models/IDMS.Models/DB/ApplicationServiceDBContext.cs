@@ -44,7 +44,7 @@ namespace IDMS.Models.Service.GqlTypes.DB
         public DbSet<storing_order_tank> storing_order_tank { get; set; }
         public DbSet<repair> repair { get; set; }
         public DbSet<repair_part> repair_part { get; set; }
-        public DbSet<rep_damage_repair> rep_damage_repair { get; set; }
+        public DbSet<rp_damage_repair> rp_damage_repair { get; set; }
         public DbSet<residue> residue { get; set; }
         public DbSet<residue_part> residue_part { get; set; }
         public DbSet<cleaning> cleaning { get; set; }

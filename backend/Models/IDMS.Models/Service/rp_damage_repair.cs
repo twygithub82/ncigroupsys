@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Master
 {
-    public class rep_damage_repair : Dates
+    public class rp_damage_repair : Dates
     {
         [Key]
         public string? guid { get; set; }
 
         [ForeignKey("repair_part")]
-        public string? rep_guid { get; set; }
+        public string? rp_guid { get; set; }
         public string code_cv { get; set; }
         public int code_type { get; set; }
 
