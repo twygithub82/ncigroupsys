@@ -101,7 +101,7 @@ export const GET_RESIDUE_EST = gql`
       status_cv
       update_by
       update_dt
-        storing_order_tank {
+      storing_order_tank {
         certificate_cv
         clean_status_cv
         create_by
@@ -133,6 +133,13 @@ export const GET_RESIDUE_EST = gql`
         unit_type_guid
         update_by
         update_dt
+        storing_order {
+          customer_company {
+            code
+            name
+            guid
+          }
+        }
       }
       residue_part {
           action
@@ -490,23 +497,23 @@ export const UPDATE_RESIDUE_EST = gql`
   }
 `;
 
-// export const CANCEL_REPAIR_EST = gql`
-//   mutation CancelRepairEstimate($repairEstimate: [repair_estInput!]!) {
-//     cancelRepairEstimate(repairEstimate: $repairEstimate)
-//   }
-// `
+export const CANCEL_RESIDUE_EST = gql`
+  mutation CancelResidue($residue: [residueInput!]!) {
+    cancelResidue(residue: $residue)
+  }
+`
 
-// export const ROLLBACK_REPAIR_EST = gql`
-//   mutation RollbackRepairEstimate($repairEstimate: [RepairEstimateRequestInput!]!) {
-//     rollbackRepairEstimate(repairEstimate: $repairEstimate)
-//   }
-// `
+export const ROLLBACK_RESIDUE_EST = gql`
+  mutation RollbackResidue($residue: [ResidueRequestInput!]!) {
+    rollbackResidue(residue: $residue)
+  }
+`
 
-// export const APPROVE_REPAIR_EST = gql`
-//   mutation ApproveRepairEstimate($repairEstimate: repair_estInput!) {
-//     approveRepairEstimate(repairEstimate: $repairEstimate)
-//   }
-//`
+export const APPROVE_RESIDUE_EST = gql`
+  mutation ApproveResidue($residue: residueInput!) {
+    approveResidue(residue: $residue)
+  }
+`
 
 export class ResidueDS extends BaseDataSource<ResidueItem> {
   constructor(private apollo: Apollo) {
@@ -556,32 +563,32 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
-  // cancelRepairEstimate(repairEstimate: any): Observable<any> {
-  //   return this.apollo.mutate({
-  //     mutation: CANCEL_REPAIR_EST,
-  //     variables: {
-  //       repairEstimate
-  //     }
-  //   });
-  // }
+  cancelResidue(residue: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: CANCEL_RESIDUE_EST,
+      variables: {
+        residue
+      }
+    });
+  }
 
-  // rollbackRepairEstimate(repairEstimate: any): Observable<any> {
-  //   return this.apollo.mutate({
-  //     mutation: ROLLBACK_REPAIR_EST,
-  //     variables: {
-  //       repairEstimate
-  //     }
-  //   });
-  // }
+  rollbackResidue(residue: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_RESIDUE_EST,
+      variables: {
+        residue
+      }
+    });
+  }
 
-  // approveRepairEstimate(repairEstimate: any): Observable<any> {
-  //   return this.apollo.mutate({
-  //     mutation: APPROVE_REPAIR_EST,
-  //     variables: {
-  //       repairEstimate
-  //     }
-  //   });
-  // }
+  approveResidue(residue: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: APPROVE_RESIDUE_EST,
+      variables: {
+        residue
+      }
+    });
+  }
 
   canAmend(re: ResidueItem): boolean {
     return re.status_cv === 'PENDING';

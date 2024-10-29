@@ -229,8 +229,8 @@
                 </mat-card-title>
                 <mat-card-actions class="pt-0 pb-0">
                   @if (copiedResidueEst) {
-                  <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
-                    [routerLink]="['/admin/repair/estimate/duplicate', row.guid, copiedResidueEst!.guid]">
+                  <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK" (click)="pasteResidueEstimate($event,row,copiedResidueEst)" >
+                    <!-- [routerLink]="['/admin/repair/estimate/duplicate', row.guid, copiedResidueEst!.guid]"> -->
                     <mat-icon class="col-white">content_paste</mat-icon>
                   </button>
                   }

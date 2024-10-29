@@ -156,7 +156,7 @@
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
                     <span
-                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.customer_company?ccDS.displayName(row.storing_order_tank?.customer_company):'-'}}
+                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company?ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company):'-'}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_no">
@@ -248,9 +248,8 @@
             
 
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" matRipple >
-                 
-                </mat-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" matRipple (click)="ViewTank(row)" [style.cursor]="'pointer'"/>
+                
               </table>
             </div>
             <!-- No result -->

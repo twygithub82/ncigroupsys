@@ -125,6 +125,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
+    CLOSE: 'COMMON-FORM.CLOSE',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
@@ -163,7 +164,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
-    CLOSE: 'COMMON-FORM.CLOSE',
     INVALID: 'COMMON-FORM.INVALID',
     EXISTED: 'COMMON-FORM.EXISTED',
     DUPLICATE: 'COMMON-FORM.DUPLICATE',
@@ -302,6 +302,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayDateFromEpoch(epoch: any) {
     if(epoch)
     {
+      if(typeof epoch==="string") return epoch;
     var updatedt= Number(epoch);
     
     const date = new Date(updatedt! * 1000);
@@ -352,8 +353,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
          job_no:inGateClnItem.job_no,
          depot_estimate_cost:Number(inGateClnItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
          customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
-         update_by:inGateClnItem.update_by,
-         update_on:this.displayDateFromEpoch(inGateClnItem.update_on),
+         update_by:inGateClnItem.approve_by,
+         update_on:this.displayDateFromEpoch(inGateClnItem.approve_dt),
         
       });
 
@@ -407,7 +408,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   canEdit()
   {
+    if(this.action!="view")
+    {
     return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 
   handleSaveSuccess(count: any) {
@@ -485,6 +493,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         break;
       case "noaction":
         retval = this.translatedLangText.NO_ACTION;
+        break;
+      case "view":
+        retval =this.translatedLangText.VIEW;
         break;
     }
 

@@ -636,7 +636,8 @@
     "ASSIGN": "Assign",
     "SAVE-ANOTHER": "Save Another",
     "TEAM-ALLOCATION": "Team Allocation",
-    "DEPOT-REFERENCE":"Depot Reference"
+    "DEPOT-REFERENCE":"Depot Reference",
+    "RESIDUE-JOB-NO":"Residue Job No"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

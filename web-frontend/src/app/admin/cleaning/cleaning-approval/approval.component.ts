@@ -354,7 +354,6 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
-        where.customer_company={};
         where.customer_company= { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
 
@@ -534,6 +533,12 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   KIVTank(row:InGateItem)
   {
     this.popupDialogForm(row,"kiv");
+   
+  }
+
+  ViewTank(row:InGateItem)
+  {
+    this.popupDialogForm(row,"view");
    
   }
   

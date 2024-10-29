@@ -669,7 +669,7 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-         certificate_cv
+        certificate_cv
         clean_status_cv
         create_by
         create_dt
@@ -730,8 +730,6 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
           bill_to_guid
           complete_by
           complete_dt
-          create_by
-          create_dt
           delete_dt
           guid
           job_no
@@ -740,21 +738,20 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
           status_cv
           update_by
           update_dt
+          storing_order_tank {
+            storing_order {
+              customer_company_guid
+            }
+          }
           residue_part {
             action
             approve_part
             cost
-            create_by
-            create_dt
             delete_dt
             description
             guid
-            job_order_guid
             quantity
-            residue_guid
-            tariff_residue_guid
-            update_by
-            update_dt
+           
           }
         }
       }
