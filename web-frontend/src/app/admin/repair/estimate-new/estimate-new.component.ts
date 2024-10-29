@@ -355,10 +355,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
             return new RepairPartItem({
               repair_guid: this.repair_guid || undefined,
               description: tep.description,
-              hour: tep.hour,
+              hour: !this.repairPartDS.is4X(tep_damage_repair) ? tep.hour : 0,
               location_cv: tep.location_cv,
               comment: tep.comment,
-              quantity: tep.quantity,
+              quantity: !this.repairPartDS.is4X(tep_damage_repair) ? tep.quantity : 0,
               remarks: tep.remarks,
               material_cost: material_cost,
               tariff_repair_guid: tep.tariff_repair_guid,
@@ -692,6 +692,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
       data: {
+        repair: this.repairItem,
         item: row ? row : addSot,
         action: 'new',
         translatedLangText: this.translatedLangText,
@@ -731,6 +732,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
       data: {
+        repair: this.repairItem,
         item: row,
         action: 'edit',
         translatedLangText: this.translatedLangText,
@@ -962,6 +964,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         re.total_cost = Utility.convertNumber(this.repairForm.get('total_cost')?.value, 2);
         re.remarks = this.repairForm.get('remarks')?.value;
         re.owner_enable = this.isOwner;
+        re.job_no = re.job_no ?? this.sotItem?.job_no;
 
         let cc: any = undefined;
         if (this.repairForm?.get('is_default_template')?.value && this.repairForm.get('est_template')?.value?.guid) {
@@ -1002,7 +1005,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         }
       }));
 
-      newData = this.sortAndGroupByGroupName(newData);
+      newData = this.repairPartDS.sortAndGroupByGroupName(newData);
       // newData = [...this.sortREP(newData)];
 
       this.repList = newData.map((row, index) => ({
@@ -1064,18 +1067,14 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.isOwner = !this.isOwner;
   }
 
-  getBadgeClass(action: string): string {
-    switch (action) {
-      case 'new':
+  getBadgeClass(status: string | undefined): string {
+    switch (status) {
+      case 'APPROVED':
         return 'badge-solid-green';
-      case 'edit':
+      case 'PENDING':
         return 'badge-solid-cyan';
-      case 'rollback':
-        return 'badge-solid-blue';
-      case 'cancel':
-        return 'badge-solid-orange';
-      case 'preorder':
-        return 'badge-solid-pink';
+      case 'CANCEL':
+        return 'badge-solid-red';
       default:
         return '';
     }
@@ -1140,45 +1139,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       return gncv[0].sequence;
     }
     return -1;
-  }
-
-  sortAndGroupByGroupName(repList: any[]): any[] {
-    const groupedRepList: any[] = [];
-    let currentGroup = '';
-
-    const sortedList = repList.sort((a, b) => {
-      if (a.tariff_repair!.sequence !== b.tariff_repair.sequence) {
-        return a.tariff_repair.sequence - b.tariff_repair.sequence;
-      }
-
-      if (a.tariff_repair.subgroup_name_cv !== b.tariff_repair.subgroup_name_cv) {
-        if (!a.tariff_repair.subgroup_name_cv) return 1;
-        if (!b.tariff_repair.subgroup_name_cv) return -1;
-
-        return a.tariff_repair.subgroup_name_cv.localeCompare(b.tariff_repair.subgroup_name_cv);
-      }
-
-      return b.create_dt! - a.create_dt!;
-    });
-
-    sortedList.forEach(item => {
-      const groupName = item.tariff_repair.group_name_cv;
-
-      const isGroupHeader = groupName !== currentGroup;
-
-      if (isGroupHeader) {
-        currentGroup = groupName;
-      }
-
-      groupedRepList.push({
-        ...item,
-        isGroupHeader: isGroupHeader,
-        group_name_cv: item.tariff_repair.group_name_cv,
-        subgroup_name_cv: item.tariff_repair.subgroup_name_cv,
-      });
-    });
-
-    return groupedRepList;
   }
 
   sortREP(newData: RepairPartItem[]): any[] {
