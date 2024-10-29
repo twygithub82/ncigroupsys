@@ -150,17 +150,40 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
           unit_type_guid
           update_by
           update_dt
+          storing_order {
+            customer_company_guid
+            guid
+            haulier
+            remarks
+            so_no
+            so_notes
+            status_cv
+            update_by
+            update_dt
+            customer_company {
+              code
+              currency_guid
+              def_tank_guid
+              def_template_guid
+              delete_dt
+              effective_dt
+              email
+              guid
+              main_customer_guid
+              name
+              remarks
+              type_cv
+              update_by
+              update_dt
+              }
+            }
           in_gate {
             eir_dt
             eir_no
             eir_status_cv
             guid
-           
-          
-           
           }
           customer_company {
-           
             code
             country
             create_by

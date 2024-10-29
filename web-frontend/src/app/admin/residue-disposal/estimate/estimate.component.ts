@@ -177,7 +177,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
  // repairEstDS: RepairDS;
 
   sotList: StoringOrderTankItem[] = [];
-  //reSelection = new SelectionModel<RepairItem>(true, []);
+  reSelection = new SelectionModel<ResidueItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   reStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -308,13 +308,13 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   }
 
   cancelRow(row: ResidueItem) {
-    // const found = this.reSelection.selected.some(x => x.guid === row.guid);
-    // let selectedList = [...this.reSelection.selected];
-    // if (!found) {
-    //   // this.toggleRow(row);
-    //   selectedList.push(row);
-    // }
-    // this.cancelSelectedRows(selectedList)
+     const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    let selectedList = [...this.reSelection.selected];
+    if (!found) {
+      // this.toggleRow(row);
+      selectedList.push(row);
+    }
+    this.cancelSelectedRows(selectedList)
   }
 
   cancelSelectedRows(row: ResidueItem[]) {
@@ -336,62 +336,62 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        // const reList = result.item.map((item: RepairItem) => new RepairGO(item));
-        // console.log(reList);
-        // this.repairEstDS.cancelRepair(reList).subscribe((result: { data: { cancelRepair: any; }; }) => {
-        //   this.handleCancelSuccess(result?.data?.cancelRepair)
-        //   this.performSearch(this.pageSize, 0, this.pageSize);
-        // });
+         const reList = result.item.map((item: ResidueItem) => new ResidueItem(item));
+         console.log(reList);
+         this.residueDS.cancelResidue(reList).subscribe((result: { data: { cancelResidue: any; }; }) => {
+           this.handleCancelSuccess(result?.data?.cancelResidue)
+           this.performSearch(this.pageSize, 0, this.pageSize);
+         });
       }
     });
   }
 
-  rollbackRow(row: RepairItem) {
-    // const found = this.reSelection.selected.some(x => x.guid === row.guid);
-    // let selectedList = [...this.reSelection.selected];
-    // if (!found) {
-    //   // this.toggleRow(row);
-    //   selectedList.push(row);
-    // }
-    // this.rollbackSelectedRows(selectedList)
+  rollbackRow(row: ResidueItem) {
+    const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    let selectedList = [...this.reSelection.selected];
+    if (!found) {
+      // this.toggleRow(row);
+      selectedList.push(row);
+    }
+    this.rollbackSelectedRows(selectedList)
   }
 
-  rollbackSelectedRows(row: RepairItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   width: '1000px',
-    //   data: {
-    //     action: 'rollback',
-    //     dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-    //     item: [...row],
-    //     translatedLangText: this.translatedLangText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const reList = result.item.map((item: any) => {
-    //       const RepairEstimateRequestInput = {
-    //         customer_guid: item.customer_company_guid,
-    //         estimate_no: item.estimate_no,
-    //         guid: item.guid,
-    //         remarks: item.remarks,
-    //         sot_guid: item.sot_guid
-    //       }
-    //       return RepairEstimateRequestInput
-    //     });
-    //     console.log(reList);
-    //     this.repairEstDS.rollbackRepair(reList).subscribe((result: { data: { rollbackRepair: any; }; }) => {
-    //       this.handleRollbackSuccess(result?.data?.rollbackRepair)
-    //       this.performSearch(this.pageSize, 0, this.pageSize);
-    //     });
-    //   }
-    // });
+  rollbackSelectedRows(row: ResidueItem[]) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        item: [...row],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const reList = result.item.map((item: any) => {
+          const ResidueEstimateRequestInput = {
+            customer_guid: item.customer_company_guid,
+            estimate_no: item.estimate_no,
+            guid: item.guid,
+            remarks: item.remarks,
+            sot_guid: item.sot_guid
+          }
+          return ResidueEstimateRequestInput;
+        });
+        console.log(reList);
+        this.residueDS.rollbackResidue(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
+          this.handleRollbackSuccess(result?.data?.rollbackResidue)
+          this.performSearch(this.pageSize, 0, this.pageSize);
+        });
+      }
+    });
   }
 
   copyResidueEst(residueEst: ResidueItem) {
@@ -751,6 +751,31 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
+  pasteResidueEstimate(event: Event, sot:StoringOrderItem, row:ResidueItem)
+  {
+    event.stopPropagation(); // Stop the click event from propagating
+ // Navigate to the route and pass the JSON object
+    this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
+      state: { id: '' ,
+        action:"NEW",
+        selectedResidue:row,
+        selectedRow:sot,
+        type:'residue-estimate',
+        pagination:{
+          where :this.lastSearchCriteria,
+          pageSize:this.pageSize,
+          pageIndex:this.pageIndex,
+          hasPreviousPage:this.hasPreviousPage,
+          startCursor:this.startCursor,
+          endCursor:this.endCursor,
+          previous_endCursor:this.previous_endCursor,
+          
+          showResult: this.sotDS.totalCount>0
+          
+        }
+      }
+    });
+  }
   updateResidueEstimate(event: Event, sot:StoringOrderItem, row:ResidueItem)
   {
     event.stopPropagation(); // Stop the click event from propagating

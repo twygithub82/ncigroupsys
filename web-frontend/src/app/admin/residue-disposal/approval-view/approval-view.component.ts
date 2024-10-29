@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -55,20 +55,15 @@ import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
-import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
-import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
+import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
-import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
-import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
-import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 
 @Component({
-  selector: 'app-estimate-new',
+  selector: 'app-approval-view',
   standalone: true,
-  templateUrl: './estimate-new.component.html',
-  styleUrl: './estimate-new.component.scss',
+  templateUrl: './approval-view.component.html',
+  styleUrl: './approval-view.component.scss',
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -103,27 +98,31 @@ import { TariffResidueItem } from 'app/data-sources/tariff-residue';
     TlxFormFieldComponent
   ]
 })
-export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
-     'desc',
-     'qty',
-     'unit_price',
-     'cost',
-     "actions"
-   
+    'subgroup_name_cv',
+    'damange',
+    'repair',
+    'description',
+    'quantity',
+    'hour',
+    'price',
+    'material',
+    'isOwner',
+    'approve_part',
+    'approve_qty',
+    'approve_hour',
+    'approve_cost'
   ];
-  pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
-  pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
+  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.ESTIMATE'
+    'MENUITEMS.REPAIR.LIST.APPROVAL'
   ]
   translatedLangText: any = {}
   langText = {
-    NEW: 'COMMON-FORM.NEW',
-    EDIT: 'COMMON-FORM.EDIT',
+    VIEW: 'COMMON-FORM.VIEW',
     HEADER: 'COMMON-FORM.HEADER',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
@@ -158,6 +157,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
@@ -205,32 +205,22 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     DEFAULT: 'COMMON-FORM.DEFAULT',
     COMMENT: 'COMMON-FORM.COMMENT',
     EXPORT: 'COMMON-FORM.EXPORT',
-    ADD_ANOTHER: 'COMMON-FORM.ADD-ANOTHER',
-    SAVE: 'COMMON-FORM.SAVE',
-    ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
-    DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
-    BILLING_PROFILE:'COMMON-FORM.BILLING-PROFILE',
-    BILLING_TO:'COMMON-FORM.BILLING-TO',
-    BILLING_BRANCH:'COMMON-FORM.BILLING-BRANCH',
-    DEPOT_REFERENCE:'COMMON-FORM.DEPOT-REFERENCE',
-    QUANTITY:'COMMON-FORM.QTY',
-    UNIT_PRICE:'COMMON-FORM.UNIT-PRICE',
-    COST:'COMMON-FORM.COST',
-
+    APPROVE: 'COMMON-FORM.APPROVE',
+    NO_ACTION: 'COMMON-FORM.NO-ACTION',
+    ROLLBACK: 'COMMON-FORM.ROLLBACK',
+    BILL_DETAILS: 'COMMON-FORM.BILL-DETAILS',
+    BILL_TO: 'COMMON-FORM.BILL-TO'
   }
 
   clean_statusList: CodeValuesItem[] = [];
 
-  sot_guid?: string | null;
   repair_guid?: string | null;
 
-  residueEstForm?: UntypedFormGroup;
-  sotForm?: UntypedFormGroup;
+  repairForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
-  residueItem?:ResidueItem;
-  repairEstItem?: RepairItem;
+  repairItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
@@ -244,13 +234,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
-  templateList: MasterTemplateItem[] = []
-  surveyorList: UserItem[] = []
-  billingBranchList:CustomerCompanyItem[]=[];
-  packResidueList:PackageResidueItem[]=[];
-  displayPackResidueList:PackageResidueItem[]=[];
-  deList:any[]=[];
-  
+
+  customer_companyList?: CustomerCompanyItem[];
 
   customerCodeControl = new UntypedFormControl();
 
@@ -259,22 +244,12 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   plDS: PackageLabourDS;
-  repairEstDS: RepairDS;
-  repairEstPartDS: RepairPartDS;
-  residueDS:ResidueDS;
-  
-  mtDS: MasterEstimateTemplateDS;
+  repairDS: RepairDS;
+  repairPartDS: RepairPartDS;
+  repDmgRepairDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
-  
-  packResidueDS:PackageResidueDS;
-
   userDS: UserDS;
   isOwner = false;
-
-  isDuplicate = false;
-
-  historyState: any = {};
-  updateSelectedItem:any=undefined;
 
   constructor(
     public httpClient: HttpClient,
@@ -294,14 +269,11 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.plDS = new PackageLabourDS(this.apollo);
-    this.repairEstDS = new RepairDS(this.apollo);
-    this.repairEstPartDS = new RepairPartDS(this.apollo);
-    this.mtDS = new MasterEstimateTemplateDS(this.apollo);
+    this.repairDS = new RepairDS(this.apollo);
+    this.repairPartDS = new RepairPartDS(this.apollo);
+    this.repDmgRepairDS = new RPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
-    this.packResidueDS= new PackageResidueDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
-
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -315,48 +287,42 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
   initForm() {
-    this.residueEstForm = this.fb.group({
+    this.repairForm = this.fb.group({
+      bill_to: [''],
+      job_no: [''],
       guid: [''],
-      customer_code:[''],
-      billing_branch:[''],
-      job_no:[''],
-      est_template: [''],
-      is_default_template: [''],
-      remarks: [''],
+      remarks: [{ value: '', disabled: true }],
       surveyor_id: [''],
-      labour_cost_discount: [0],
-      material_cost_discount: [0],
+      labour_cost_discount: [{ value: 0, disabled: true }],
+      material_cost_discount: [{ value: 0, disabled: true }],
       last_test: [''],
       next_test: [''],
-      desc:[''],
-      qty:[''],
-      unit_price:[''],
-   
-      deList: ['']
+      total_owner_hour: [0],
+      total_lessee_hour: [0],
+      total_hour: [0],
+      total_owner_labour_cost: [0],
+      total_lessee_labour_cost: [0],
+      total_labour_cost: [0],
+      total_owner_mat_cost: [0],
+      total_lessee_mat_cost: [0],
+      total_mat_cost: [0],
+      total_owner_cost: [0],
+      total_lessee_cost: [0],
+      total_cost: [0],
+      discount_labour_owner_cost: [0],
+      discount_labour_lessee_cost: [0],
+      discount_labour_cost: [0],
+      discount_mat_owner_cost: [0],
+      discount_mat_lessee_cost: [0],
+      discount_mat_cost: [0],
+      net_owner_cost: [0],
+      net_lessee_cost: [0],
+      net_cost: [0],
+      repList: ['']
     });
   }
 
   initializeValueChanges() {
-   
-
-
-    this.residueEstForm?.get('desc')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var desc_value = this.residueEstForm?.get("desc")?.value;
-        this.displayPackResidueList= this.packResidueList.filter(data=> data.description && data.description.includes(desc_value));
-        if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
-        else if(typeof desc_value==='object')
-        {
-          this.residueEstForm?.patchValue({
-
-             unit_price: desc_value?.cost.toFixed(2)
-          });
-        }
-
-      })
-    ).subscribe();
   }
 
   public loadData() {
@@ -424,79 +390,43 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       this.unitTypeCvList = data;
     });
 
+    this.repair_guid = this.route.snapshot.paramMap.get('id');
+    if (this.repair_guid) {
+      this.subs.sink = this.repairDS.getRepairByIDForApproval(this.repair_guid).subscribe(data => {
+        if (data?.length) {
+          this.repairItem = data[0];
+          this.sotItem = this.repairItem?.storing_order_tank;
+          this.getCustomerLabourPackage(this.sotItem?.storing_order?.customer_company?.guid!);
+          this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+            if (cc?.length) {
+              this.customer_companyList = cc;
+              if (this.customer_companyList?.length == 1) {
+                const bill_to = this.repairForm?.get('bill_to');
+                bill_to?.setValue(this.customer_companyList[0]);
+                if (!this.repairDS.canApprove(this.repairItem)) {
+                  bill_to?.disable();
+                }
+              }
+            }
+          });
+          this.populateRepair(this.repairItem);
+        }
+      });
+    }
+  }
 
-    //this.getSurveyorList();
-
-    this.sot_guid = this.route.snapshot.paramMap.get('id');
-    this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
-
-    this.route.data.subscribe(routeData => {
-      this.isDuplicate = routeData['action'] === 'duplicate';
-      this.loadHistoryState();
+  populateRepair(repair: RepairItem) {
+    this.isOwner = repair.owner_enable ?? false;
+    repair.repair_part = this.filterDeleted(repair.repair_part)
+    this.updateData(repair.repair_part);
+    this.repairForm?.patchValue({
+      job_no: repair.job_no || this.sotItem?.job_no,
+      guid: repair.guid,
+      remarks: repair.remarks,
+      surveyor_id: repair.aspnetusers_guid,
+      labour_cost_discount: repair.labour_cost_discount,
+      material_cost_discount: repair.material_cost_discount
     });
-  }
-
-
-
-  populateRepairEst(repair_est: RepairItem[] | undefined, isDuplicate: boolean) {
-    // if (this.isDuplicate) {
-    //   if (this.repair_est_guid) {
-    //     this.res.getRepairEstByID(this.repair_est_guid, this.sotItem?.storing_order?.customer_company_guid!).subscribe(data => {
-    //       if (this.repairEstDS.totalCount > 0) {
-    //         const found = data;
-    //         if (found?.length) {
-    //           this.populateFoundRepairEst(found[0]!, isDuplicate);
-    //         }
-    //       }
-    //     });
-    //   }
-    // } else {
-    //   if (repair_est?.length) {
-    //     const found = repair_est.filter(x => x.guid === this.repair_est_guid);
-    //     if (found?.length) {
-    //       this.populateFoundRepairEst(found[0]!, isDuplicate);
-    //     }
-    //   }
-    // }
-  }
-
-  populateFoundRepairEst(repairEst: RepairPartItem, isDuplicate: boolean) {
-    // this.repairEstItem = isDuplicate ? new RepairPartItem() : repairEst;
-    // this.isOwner = !isDuplicate ? (repairEst!.owner ?? false) : false;
-    // this.repairEstItem!.repair_part = this.filterDeleted(repairEst!.repair_part).map((rep: any) => {
-    //   if (isDuplicate) {
-    //     const package_repair = rep.tariff_repair?.package_repair;
-    //     let material_cost = rep.material_cost;
-    //     if (isDuplicate && package_repair?.length) {
-    //       material_cost = package_repair[0].material_cost;
-    //     }
-
-    //     const rep_damage_repair = this.filterDeleted(rep.rep_damage_repair).map((rep_d_r: any) => {
-    //       rep_d_r.guid = undefined;
-    //       rep_d_r.action = 'new';
-    //       return rep_d_r;
-    //     });
-
-    //     return {
-    //       ...rep,
-    //       rep_damage_repair: rep_damage_repair,
-    //       material_cost: material_cost,
-    //       guid: null,
-    //       repair_est_guid: null,
-    //       action: 'new'
-    //     };
-    //   }
-
-    //   return rep;
-    // });
-    // this.updateData(this.repairEstItem!.repair_est_part);
-    // this.residueEstForm?.patchValue({
-    //   guid: !isDuplicate ? this.repairEstItem!.guid : '',
-    //   remarks: this.repairEstItem!.remarks,
-    //   surveyor_id: this.repairEstItem!.aspnetusers_guid,
-    //   labour_cost_discount: this.repairEstItem!.labour_cost_discount,
-    //   material_cost_discount: this.repairEstItem!.material_cost_discount
-    // });
   }
 
   getCustomerLabourPackage(customer_company_guid: string) {
@@ -516,43 +446,6 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return this.sotItem?.storing_order?.customer_company;
   }
 
-  getTemplateList(customer_company_guid: string) {
-    let where: any = {
-      or: [
-        {
-          and: [
-            { template_est_customer: { some: { customer_company_guid: { eq: customer_company_guid }, delete_dt: { eq: null } } } },
-            { type_cv: { eq: "EXCLUSIVE" } }
-          ]
-        },
-        { type_cv: { eq: "GENERAL" } }
-      ]
-    }
-    where = this.mtDS.addDeleteDtCriteria(where);
-    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
-      if (data?.length > 0) {
-        this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
-        const def_guid = this.getCustomer()?.def_template_guid;
-        if (!this.repair_guid) {
-          if (def_guid) {
-            this.residueEstForm?.get('is_default_template')?.setValue(true);
-          }
-
-          const def_template = this.templateList.find(x =>
-            def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
-          );
-
-          if (def_guid !== def_template?.guid) {
-            this.getCustomer()!.def_template_guid = def_guid;
-            this.residueEstForm?.get('is_default_template')?.setValue(true);
-          }
-
-          this.residueEstForm?.get('est_template')?.setValue(def_template);
-        }
-      }
-    });
-  }
-
   getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {
     const where = {
       and: [
@@ -568,17 +461,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return this.prDS.getCustomerPackageCost(where);
   }
 
-  getSurveyorList() {
-    const where = { aspnetuserroles: { some: { aspnetroles: { Role: { eq: "Surveyor" } } } } }
-    this.subs.sink = this.userDS.searchUser(where).subscribe(data => {
-      if (data?.length > 0) {
-        this.surveyorList = data;
-      }
-    });
-  }
-
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+  displayCustomerCompanyName(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv}` : '';
   }
 
   selectOwner($event: Event, row: RepairPartItem) {
@@ -587,147 +471,94 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.calculateCost();
   }
 
-
-  checkCompulsoryEst(fields:string[])
-  {
-    fields.forEach(name=>{
-    if( !this.residueEstForm?.get(name)?.value)
-      {
-        this.residueEstForm?.get(name)?.setErrors({ required: true });
-        this.residueEstForm?.get(name)?.markAsTouched(); // Trigger validation display
-      }
-    });
-  }
-
-  checkDuplicationEst(item:PackageResidueItem ,index:number=-1)
-  {
-    var existItems = this.deList.filter(data=>data.description===item?.description)
-    if(existItems.length>0)
-    {
-      if(index==-1 || index!=existItems[0].index)
-      {
-        this.residueEstForm?.get("desc")?.setErrors({ duplicated: true });
-      }
-    }
-  }
-
-  addEstDetails(event: Event) {
-    
+  addEstDetails(event: Event, row?: RepairPartItem) {
     this.preventDefault(event);  // Prevents the form submission
-    
-    var descObject :PackageResidueItem;
-
-    if(typeof this.residueEstForm?.get("desc")?.value==="object")
-    {
-      descObject = new PackageResidueItem(this.residueEstForm?.get("desc")?.value);
-      descObject.description = descObject.tariff_residue?.description;
-    }
-    else
-    {
-      descObject = new PackageResidueItem();
-      descObject.description= this.residueEstForm?.get("desc")?.value;
-      descObject.cost= Number(this.residueEstForm?.get("unit_price")?.value);
-    }
-
-
-    this.checkCompulsoryEst(["desc","qty","unit_price"]);
-    var index :number =-1;
-    if(this.updateSelectedItem)
-    {
-      index = this.updateSelectedItem.index;
-    }
-    this.checkDuplicationEst(descObject,index);
-    if(!this.residueEstForm?.valid)return;
-    
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-
-    
-    let residuePartItem = new ResiduePartItem();
-    if(index==-1)
-    {
-      residuePartItem.action="NEW";
-    }
-    else
-    {
-      residuePartItem = this.deList[index];
-      residuePartItem.action = residuePartItem.guid?"EDIT":"NEW";
-    }
-
-    residuePartItem.cost= Number(this.residueEstForm?.get("unit_price")?.value);
-    residuePartItem.description= descObject.description;
-    residuePartItem.quantity=this.residueEstForm?.get("qty")?.value;
-    residuePartItem.residue_guid = this.historyState.selectedResidue?.guid;
-    residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
-
-    if(index===-1)
-    {
-      var newData =[residuePartItem ,...this.deList];
-      this.updateData(newData);
-    }
-  this.resetSelectedItemForUpdating();
-  }
-
-  CancelEditEstDetails(event: Event)
-  {
-    this.preventDefault(event);  // Prevents the form submission
-    this.resetSelectedItemForUpdating();
-    // this.updateSelectedItem=undefined;
-    // this.resetValue();
-  }
-
-  editEstDetails(event: Event, row: ResiduePartItem, index: number) {
-    this.preventDefault(event);  // Prevents the form submission
-
-    var itm =this.deList[index];
-    var IsEditedRow = itm.edited;
-  
-
-    this.resetSelectedItemForUpdating();
-
-    if(IsEditedRow) return;
-
-    
-    this.updateSelectedItem ={
-      item:this.deList[index],
-      index:index,
-      action:"update",
-      
-    }
-    this.updateSelectedItem.item.edited=true;
-
-    var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
-    var descValue:any;
-    if(descValues.length>0)
-    {
-      descValue = descValues[0];
-    }
-    else
-    {
-      descValue = new PackageResidueItem();
-      descValue.guid=row.guid;
-      descValue.description= row.description;
-      descValue.tariff_residue= new TariffResidueItem();
-      descValue.tariff_residue.description= row.description;
-      descValue.cost= Number(row.cost);
-      
-    }
-    this.residueEstForm?.patchValue({
-       desc:descValue,
-       qty:row.quantity,
-       unit_price:row.cost
+    const addSot = row ?? new RepairPartItem();
+    addSot.repair_guid = addSot.repair_guid;
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
+      data: {
+        item: row ? row : addSot,
+        action: 'new',
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          groupNameCvList: this.groupNameCvList,
+          subgroupNameCvList: this.subgroupNameCvList,
+          yesnoCvList: this.yesnoCvList,
+          partLocationCvList: this.partLocationCvList,
+          damageCodeCvList: this.damageCodeCvList,
+          repairCodeCvList: this.repairCodeCvList,
+          unitTypeCvList: this.unitTypeCvList
+        },
+        index: -1,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
+      },
+      direction: tempDirection
     });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const data = [...this.repList];
+        const newItem = new RepairPartItem({
+          ...result.item,
+        });
+        data.push(newItem);
 
-   
-    
+        this.updateData(data);
+      }
+    });
   }
 
-  deleteItem(event: Event, row: ResiduePartItem, index: number) {
+  editEstDetails(event: Event, row: RepairPartItem, index: number) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
+      data: {
+        item: row,
+        action: 'edit',
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          groupNameCvList: this.groupNameCvList,
+          subgroupNameCvList: this.subgroupNameCvList,
+          yesnoCvList: this.yesnoCvList,
+          partLocationCvList: this.partLocationCvList,
+          damageCodeCvList: this.damageCodeCvList,
+          repairCodeCvList: this.repairCodeCvList,
+          unitTypeCvList: this.unitTypeCvList
+        },
+        index: index,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const data = [...this.repList];
+        const updatedItem = new RepairPartItem({
+          ...result.item,
+        });
+        if (result.index >= 0) {
+          data[result.index] = updatedItem;
+          this.updateData(data);
+        } else {
+          this.updateData([...this.repList, result.item]);
+        }
+      }
+    });
+  }
+
+  deleteItem(event: Event, row: RepairPartItem, index: number) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -746,7 +577,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         if (result.item.guid) {
-          const data: any[] = [...this.deList];
+          const data: any[] = [...this.repList];
           const updatedItem = {
             ...result.item,
             delete_dt: Utility.getDeleteDtEpoch(),
@@ -755,18 +586,18 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
           data[result.index] = updatedItem;
           this.updateData(data); // Refresh the data source
         } else {
-          const data = [...this.deList];
+          const data = [...this.repList];
           data.splice(index, 1);
           this.updateData(data); // Refresh the data source
         }
-
-        this.resetSelectedItemForUpdating();
       }
     });
   }
 
-  cancelSelectedRows(row: RepairPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
+  onCancel(event: Event) {
+    this.preventDefault(event);
+    console.log(this.repairItem)
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -776,37 +607,28 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '1000px',
       data: {
-        action: "cancel",
-        item: [...row],
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        item: [this.repairItem],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairPartItem) => {
-          // Find the index of the item in data with the same id
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          // If the item is found, update the properties
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'cancel'])]
-                : ['cancel']
-            };
-          }
+        const reList = result.item.map((item: RepairItem) => new RepairGO(item));
+        console.log(reList);
+        this.repairDS.cancelRepair(reList).subscribe(result => {
+          this.handleCancelSuccess(result?.data?.cancelRepair)
         });
-        this.updateData(data);
       }
     });
   }
 
-  rollbackSelectedRows(row: RepairPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
+  onRollback(event: Event) {
+    this.preventDefault(event);
+    console.log(this.repairItem)
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -816,29 +638,29 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '1000px',
       data: {
-        action: "rollback",
-        item: [...row],
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        item: [this.repairItem],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairPartItem) => {
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'rollback'])]
-                : ['rollback']
-            };
+        const reList = result.item.map((item: any) => {
+          const RepairRequestInput = {
+            customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
+            estimate_no: item.estimate_no,
+            guid: item.guid,
+            remarks: item.remarks,
+            sot_guid: item.sot_guid
           }
+          return RepairRequestInput
         });
-        this.updateData(data);
+        console.log(reList);
+        this.repairDS.rollbackRepair(reList).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackRepair)
+        });
       }
     });
   }
@@ -861,16 +683,6 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.updateData(data);
   }
 
-  addRepairEstPart(result: any) {
-    const data = [...this.repList];
-    const newItem = new RepairPartItem({
-      ...result.item,
-    });
-    data.push(newItem);
-
-    this.updateData(data);
-  }
-
   // context menu
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
     this.preventDefault(event);
@@ -885,90 +697,70 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
   onEnterKey(event: Event) {
     event.preventDefault();
-    // Add any additional logic if needed
+  }
+
+  onApprove(event: Event) {
+    event.preventDefault();
+    const bill_to = this.repairForm!.get('bill_to');
+    bill_to?.setErrors(null);
+    if (bill_to?.value) {
+      let re: RepairItem = new RepairItem();
+      re.guid = this.repairItem?.guid;
+      re.sot_guid = this.repairItem?.sot_guid;
+      re.bill_to_guid = bill_to?.value?.guid;
+
+      this.repList?.forEach((rep: RepairPartItem) => {
+        rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
+        rep.approve_qty = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
+        rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
+        rep.approve_cost = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
+      })
+
+      re.repair_part = this.repList?.map((rep: RepairPartItem) => {
+        return new RepairPartItem({
+          ...rep,
+          tariff_repair: undefined,
+          rp_damage_repair: undefined,
+          approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair),
+          approve_qty: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1,
+          approve_hour: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0,
+          approve_cost: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0
+        })
+      });
+      console.log(re)
+      this.repairDS.approveRepair(re).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result?.data?.approveRepair);
+      });
+    } else {
+      bill_to?.setErrors({ required: true })
+      bill_to?.markAsTouched();
+      bill_to?.updateValueAndValidity();
+    }
   }
 
   onFormSubmit() {
-
-    this.residueEstForm!.get('desc')?.setErrors(null);
-    this.residueEstForm!.get('qty')?.setErrors(null);
-    this.residueEstForm!.get('unit_price')?.setErrors(null);
-    this.residueEstForm!.get('deList')?.setErrors(null);
-
-    if(!this.deList.length){
-      this.residueEstForm?.get('deList')?.setErrors({ required: true });
-    }
-    if(!this.residueEstForm?.valid) return;
-
-
-    if(this.historyState.action==="NEW")
-    {
-       var newResidueItem :ResidueItem =new ResidueItem();
-       var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
-       newResidueItem.bill_to_guid= billGuid;
-       newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
-       newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-       newResidueItem.status_cv="PENDING";
-       newResidueItem.sot_guid=this.sotItem?.guid;
-       newResidueItem.residue_part= [];
-       this.deList.forEach(data=>{
-          var residuePart : ResiduePartItem = new ResiduePartItem(data);
-          newResidueItem.residue_part?.push(residuePart);
-
-       });
-
-       delete newResidueItem.customer_company;
-      
-       this.residueDS.addResidue(newResidueItem).subscribe(result=>{
-
-          if(result.data.addResidue>0)
-          {
-            this.handleSaveSuccess(result.data.addResidue);
-          }
-       });
-    }
-    else if(this.historyState.action==="UPDATE")
-    {
-      var updResidueItem :ResidueItem =new ResidueItem(this.residueItem);
-      var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
-      updResidueItem.bill_to_guid= billGuid;
-      updResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
-      updResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-      updResidueItem.sot_guid=this.sotItem?.guid;
-      updResidueItem.residue_part= [];
-      this.deList.forEach(data=>{
-         var residuePart : ResiduePartItem = new ResiduePartItem(data);
-         updResidueItem.residue_part?.push(residuePart);
-
-      });
-
-      delete updResidueItem.customer_company;
-
-      this.residueDS.updateResidue(updResidueItem).subscribe(result=>{
-
-        if(result.data.updateResidue>0)
-        {
-          this.handleSaveSuccess(result.data.updateResidue);
-        }
-     });
-
-    }
-   
+    this.repairForm!.get('repList')?.setErrors(null);
   }
 
-  updateData(newData: ResiduePartItem[] | undefined): void {
+  updateData(newData: RepairPartItem[] | undefined): void {
     if (newData?.length) {
-      this.deList = newData.map((row, index) => ({
+      newData = newData.map((row) => ({
+        ...row,
+        tariff_repair: {
+          ...row.tariff_repair,
+          sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
+        }
+      }));
+
+      newData = this.sortAndGroupByGroupName(newData);
+      // newData = [...this.sortREP(newData)];
+
+      this.repList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
-      
-      //this.calculateCost();
-    }
-    else
-    {
-      this.deList=[];
-      
+      this.calculateCost();
     }
   }
 
@@ -997,19 +789,25 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.langText.SAVE_SUCCESS;
-      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-        successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-        //this.router.navigate(['/admin/master/estimate-template']);
+      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
+    }
+  }
 
-        // Navigate to the route and pass the JSON object
-        this.router.navigate(['/admin/residue-disposal/estimate'], {
-          state: this.historyState
+  handleCancelSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
+    }
+  }
 
-        }
-        );
-      });
+  handleRollbackSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
     }
   }
 
@@ -1032,26 +830,18 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     event.preventDefault(); // Prevents the form submission
   }
 
-  isAnyItemEdited(): boolean {
-    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
-  }
-
   isOwnerChange() {
     this.isOwner = !this.isOwner;
   }
 
-  getBadgeClass(action: string): string {
-    switch (action) {
-      case 'new':
+  getBadgeClass(status: string | undefined): string {
+    switch (status) {
+      case 'APPROVED':
         return 'badge-solid-green';
-      case 'edit':
+      case 'PENDING':
         return 'badge-solid-cyan';
-      case 'rollback':
-        return 'badge-solid-blue';
-      case 'cancel':
-        return 'badge-solid-orange';
-      case 'preorder':
-        return 'badge-solid-pink';
+      case 'CANCEL':
+        return 'badge-solid-red';
       default:
         return '';
     }
@@ -1128,9 +918,6 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       }
 
       if (a.tariff_repair.subgroup_name_cv !== b.tariff_repair.subgroup_name_cv) {
-        if (!a.tariff_repair.subgroup_name_cv) return 1;
-        if (!b.tariff_repair.subgroup_name_cv) return -1;
-
         return a.tariff_repair.subgroup_name_cv.localeCompare(b.tariff_repair.subgroup_name_cv);
       }
 
@@ -1163,13 +950,13 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
+    return damageRepair?.filter((x: any) => x.code_type === filterCode && (!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'edit')).map(item => {
       return item.code_cv;
     }).join('/');
   }
 
   displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-    const concate = damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
+    const concate = damageRepair?.filter((x: any) => x.code_type === filterCode && (!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'edit')).map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';
@@ -1211,7 +998,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     Utility.selectText(event)
   }
 
-  parse2Decimal(figure: number | string) {
+  parse2Decimal(figure: number | string | undefined) {
     if (typeof (figure) === 'string') {
       return parseFloat(figure).toFixed(2);
     } else if (typeof (figure) === 'number') {
@@ -1223,8 +1010,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   calculateCost() {
     const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
     const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
-    const labourDiscount = this.residueEstForm?.get('labour_cost_discount')?.value;
-    const matDiscount = this.residueEstForm?.get('material_cost_discount')?.value;
+    const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
+    const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
 
     let total_hour = 0;
     let total_labour_cost = 0;
@@ -1234,22 +1021,22 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     let discount_mat_cost = 0;
     let net_cost = 0;
 
-    const totalOwner = this.repairEstDS.getTotal(ownerList);
+    const totalOwner = this.repairDS.getTotal(ownerList);
     const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
+    const total_owner_labour_cost = this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
     const total_owner_mat_cost = totalOwner.total_mat_cost;
-    const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    const discount_mat_owner_cost = this.repairEstDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    const net_owner_cost = this.repairEstDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
+    const total_owner_cost = this.repairDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
+    const discount_labour_owner_cost = this.repairDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
+    const discount_mat_owner_cost = this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost);
+    const net_owner_cost = this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
 
-    this.residueEstForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-    this.residueEstForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-    this.residueEstForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-    this.residueEstForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-    this.residueEstForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-    this.residueEstForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-    this.residueEstForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
+    this.repairForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
+    this.repairForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
+    this.repairForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
+    this.repairForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
+    this.repairForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
+    this.repairForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
+    this.repairForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
 
     total_hour += total_owner_hour;
     total_labour_cost += total_owner_labour_cost;
@@ -1259,22 +1046,22 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     discount_mat_cost += discount_mat_owner_cost;
     net_cost += net_owner_cost;
 
-    const totalLessee = this.repairEstDS.getTotal(lesseeList);
+    const totalLessee = this.repairDS.getTotal(lesseeList);
     const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
+    const total_lessee_labour_cost = this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
     const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    const discount_mat_lessee_cost = this.repairEstDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    const net_lessee_cost = this.repairEstDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
+    const total_lessee_cost = this.repairDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
+    const discount_labour_lessee_cost = this.repairDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
+    const discount_mat_lessee_cost = this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
+    const net_lessee_cost = this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
 
-    this.residueEstForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-    this.residueEstForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-    this.residueEstForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-    this.residueEstForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-    this.residueEstForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-    this.residueEstForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-    this.residueEstForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
+    this.repairForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
+    this.repairForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
+    this.repairForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
+    this.repairForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
+    this.repairForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
+    this.repairForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
+    this.repairForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
 
     total_hour += total_lessee_hour;
     total_labour_cost += total_lessee_labour_cost;
@@ -1284,25 +1071,13 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     discount_mat_cost += discount_mat_lessee_cost;
     net_cost += net_lessee_cost;
 
-    this.residueEstForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-    this.residueEstForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-    this.residueEstForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-    this.residueEstForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-    this.residueEstForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-    this.residueEstForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-    this.residueEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
-  }
-
-  filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
-    return (resultList || [])
-      .filter((row: MasterTemplateItem) =>
-        !row.delete_dt && (
-          row.type_cv === 'GENERAL' || (row.type_cv === 'EXCLUSIVE' &&
-            row.template_est_customer?.some(customer =>
-              customer.customer_company_guid === customer_company_guid && !customer.delete_dt
-            ))
-        )
-      );
+    this.repairForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
+    this.repairForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
+    this.repairForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
+    this.repairForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
+    this.repairForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
+    this.repairForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
+    this.repairForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
   }
 
   filterDeleted(resultList: any[] | undefined): any {
@@ -1314,140 +1089,23 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   }
 
   getLabourCost(): number | undefined {
-    return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
+    return this.repairItem?.labour_cost;
   }
 
-  getPackageResidue()
-  {
-    let where:any={};
-    let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
-    where.customer_company_guid = {eq:custCompanyGuid};
-
-    this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
-
-      this.packResidueList=data;
-      this.displayPackResidueList=data;
-    });
-
+  toggleApprovePart(rep: RepairPartItem) {
+    if (!this.repairDS.canApprove(this.repairItem)) return;
+    rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
   }
 
-  loadBillingBranch()
-  {
-    let where:any={};
-    let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
-    where.main_customer_guid = {eq:custCompanyGuid};
-
-    this.ccDS.search(where,{}).subscribe(data=>{
-      var def =this.createDefaultCustomerCompany("--Select--","");
-
-      this.billingBranchList=[def, ...data];;
-
-      this.patchResidueEstForm(this.residueItem!);
-    });
-
+  displayApproveQty(rep: RepairPartItem) {
+    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
   }
 
-  loadHistoryState()
-  {
-    this.historyState = history.state;
-
-    if (this.historyState.selectedRow != null) {
-
-      this.sotItem = this.historyState.selectedRow;
-      this.residueItem=this.historyState.selectedResidue;
-      this.getPackageResidue();
-      this.loadBillingBranch();
-      
-      
-    }
+  displayApproveHour(rep: RepairPartItem) {
+    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
   }
 
-  patchResidueEstForm(residue:ResidueItem)
-  {
-    let billingGuid= "";
-    if(residue)
-    {
-      billingGuid=residue.bill_to_guid!;
-    }
-    this.populateResiduePartList(residue);
-    this.residueEstForm?.patchValue({
-
-      customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no:this.sotItem?.job_no,
-       billing_branch:this.getBillingBranch(billingGuid),
-       remarks:residue?.remarks
-
-    });
-  }
-
-  getBillingBranch(billingGuid:string):CustomerCompanyItem
-  {
-    let ccItem:CustomerCompanyItem= this.billingBranchList[0] ;
-     let ccItems=this.billingBranchList.filter(data=>data.guid==billingGuid);
-
-     if(ccItems.length>0)
-     {
-       ccItem=ccItems[0]!;
-     }
-
-     return ccItem;
-
-  }
-  createDefaultCustomerCompany(code:string, name:string):CustomerCompanyItem
-  {
-    let ccItem:CustomerCompanyItem=new CustomerCompanyItem();
-    ccItem.code=code;
-    ccItem.name=name;
-    return ccItem
-
-  }
-
-  displayResiduePart(cc: any): string {
-    return cc && cc.tariff_residue ? cc.tariff_residue.description : '';
-  }
-
-  
-
-  resetValue(){
-
-    this.residueEstForm?.patchValue({
-      desc:'',
-      qty:'',
-      unit_price:''
-    },{emitEvent:false});
-    this.residueEstForm?.get('desc')?.setErrors(null);
-    this.residueEstForm?.get('qty')?.setErrors(null);
-    this.residueEstForm?.get('unit_price')?.setErrors(null);
-    this.displayPackResidueList=[...this.packResidueList];
-  
-  }
-
-  GoBackPrevious(event: Event) {
-    event.stopPropagation(); // Stop the click event from propagating
-    // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/estimate'], {
-      state: this.historyState
-
-    }
-    );
-  }
-
-  populateResiduePartList(residue:ResidueItem){
-
-    if(residue)
-    {
-      var dataList = residue.residue_part?.map(data=>new ResidueEstPartGO(data) );
-      this.updateData(dataList);
-    }
-  }
-  
-  resetSelectedItemForUpdating()
-  {
-    if(this.updateSelectedItem)
-    {
-      this.updateSelectedItem.item.edited=false;
-      this.updateSelectedItem=null;
-      this.resetValue();
-    }
+  displayApproveCost(rep: RepairPartItem) {
+    return this.parse2Decimal((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
   }
 }

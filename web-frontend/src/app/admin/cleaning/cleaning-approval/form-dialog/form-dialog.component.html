@@ -25,7 +25,7 @@
                         <input matInput formControlName="job_no_input" [required]="this.ShowJobNo()"  >
                         @if (pcForm.get('job_no_input')?.hasError('required')) {
                           <mat-error>
-                            {{translatedLangText.APPROVED_DATE }} {{translatedLangText.CARGO_REQUIRED }}
+                            {{translatedLangText.JOB_NO }} {{translatedLangText.CARGO_REQUIRED }}
                           </mat-error>
                           }
                       </mat-form-field>
@@ -461,7 +461,14 @@
         @if (canEdit()) {
           <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.UPDATE}}</button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+          @if(canEdit()){
+          {{translatedLangText.CANCEL}}
+          }
+          @if(!canEdit()){
+            {{translatedLangText.CLOSE}}
+          }
+        </button>
       </div>
     </form>
   </div>

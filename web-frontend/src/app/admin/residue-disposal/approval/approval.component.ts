@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -32,20 +32,25 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { MatCardModule } from '@angular/material/card';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 
 @Component({
-  selector: 'app-in-gate',
+  selector: 'app-approval',
   standalone: true,
   templateUrl: './approval.component.html',
   styleUrl: './approval.component.scss',
@@ -76,20 +81,28 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatCardModule,
   ]
 })
 export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  // displayedColumns = [
+  //   'tank_no',
+  //   'customer',
+  //   'eir_no',
+  //   'eir_dt',
+  //   'last_cargo',
+  //   'tank_status_cv'
+  // ];
+
   displayedColumns = [
     'tank_no',
     'customer',
-    'eir_no',
-    'eir_dt',
-    'last_cargo',
-    'purpose',
-    'eir_status_cv'
+    'estimate_no',
+    'net_cost',
+    'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY'
+  pageTitle = 'MENUITEMS.REPAIR.LIST.APPROVAL'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -99,10 +112,9 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
-    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
-    SO_DATE: 'COMMON-FORM.SO-DATE',
-    NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    PART_NAME: 'COMMON-FORM.PART-NAME',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
@@ -114,34 +126,60 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
-    SEARCH: 'COMMON-FORM.SEARCH',
-    EIR_NO: 'COMMON-FORM.EIR-NO',
-    EIR_DATE: 'COMMON-FORM.EIR-DATE',
-    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
+    EXPORT: 'COMMON-FORM.EXPORT',
+    REMARKS: 'COMMON-FORM.REMARKS',
+    SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
+    ACCEPTED: 'COMMON-FORM.ACCEPTED',
+    WAITING: 'COMMON-FORM.WAITING',
+    CANCELED: 'COMMON-FORM.CANCELED',
+    TANKS: 'COMMON-FORM.TANKS',
+    CONFIRM: 'COMMON-FORM.CONFIRM',
+    BILL_COMPLETED: 'COMMON-FORM.BILL-COMPLETED',
+    REPAIR_JOB_NO: 'COMMON-FORM.REPAIR-JOB-NO',
+    RESIDUE_JOB_NO: 'COMMON-FORM.RESIDUE-JOB-NO',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
+    ESTIMATE_STATUS: 'COMMON-FORM.ESTIMATE-STATUS',
+    CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    NET_COST: 'COMMON-FORM.NET-COST',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
-    EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
-    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    AMEND: 'COMMON-FORM.AMEND',
+    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
   }
 
   searchForm?: UntypedFormGroup;
-  customerCodeControl = new UntypedFormControl();
 
+  cvDS: CodeValuesDS;
+  soDS: StoringOrderDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
+  tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  cvDS: CodeValuesDS;
+  repairDS: RepairDS;
+  residueDS:ResidueDS;
 
-  inGateList: InGateItem[] = [];
-  customer_companyList?: CustomerCompanyItem[];
+  repList: ResidueItem[] = [];
+  reSelection = new SelectionModel<RepairItem>(true, []);
+  selectedItemsPerPage: { [key: number]: Set<string> } = {};
+  soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
-  eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+
+  customerCodeControl = new UntypedFormControl();
+  lastCargoControl = new UntypedFormControl();
+  customer_companyList?: CustomerCompanyItem[];
+  last_cargoList?: TariffCleaningItem[];
 
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { create_dt: "DESC" };
+  lastOrderBy: any = { estimate_no: "DESC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -157,10 +195,16 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   ) {
     super();
     this.translateLangText();
+    this.initSearchForm();
+    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.tcDS = new TariffCleaningDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
+    this.repairDS = new RepairDS(this.apollo);
+    this.residueDS=new ResidueDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -169,63 +213,154 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initSearchForm();
-    this.initializeValueChanges();
+    this.initializeFilterCustomerCompany();
     this.loadData();
+  }
+
+  refresh() {
+    this.refreshTable();
   }
 
   initSearchForm() {
     this.searchForm = this.fb.group({
-      so_no: [''],
+      tank_no: [''],
       customer_code: this.customerCodeControl,
-      eir_no: [''],
+      last_cargo: this.lastCargoControl,
       eir_dt_start: [''],
       eir_dt_end: [''],
-      tank_no: [''],
-      job_no: [''],
-      purpose: [''],
-      tank_status_cv: [''],
-      eir_status_cv: ['']
+      part_name: [''],
+      change_request_cv: [''],
+      eir_no: [''],
+      residue_job_no: [''],
+     // repair_type_cv: [''],
+      est_dt_start: [''],
+      est_dt_end: [''],
+      approval_dt_start: [''],
+      approval_dt_end: [''],
+      est_status_cv: ['']
     });
   }
 
-  initializeValueChanges() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.code;
-        }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-          this.updateValidators(this.customerCodeControl, this.customer_companyList);
+  cancelItem(row: StoringOrderItem) {
+    // this.id = row.id;
+    this.cancelSelectedRows([row])
+  }
+
+  private refreshTable() {
+    this.paginator._changePageSize(this.paginator.pageSize);
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    const numSelected = selectedItems.size;
+    const numRows = this.repList.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    if (this.isAllSelected()) {
+      this.clearPageSelection();
+    } else {
+      this.selectAllOnPage();
+    }
+  }
+
+  /** Clear selection on the current page */
+  clearPageSelection() {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.repList.forEach(row => {
+      this.reSelection.deselect(row);
+      selectedItems.delete(row.guid!);
+    });
+    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  /** Select all items on the current page */
+  selectAllOnPage() {
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.repList.forEach(row => {
+      this.reSelection.select(row);
+      selectedItems.add(row.guid!);
+    });
+    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  /** Handle row selection */
+  toggleRow(row: RepairItem) {
+    this.reSelection.toggle(row);
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    if (this.reSelection.isSelected(row)) {
+      selectedItems.add(row.guid!);
+    } else {
+      selectedItems.delete(row.guid!);
+    }
+    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
+  }
+
+  /** Update selection for the current page */
+  updatePageSelection() {
+    this.reSelection.clear();
+    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
+    this.repList.forEach(row => {
+      if (selectedItems.has(row.guid!)) {
+        this.reSelection.select(row);
+      }
+    });
+  }
+
+  cancelSelectedRows(row: StoringOrderItem[]) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      data: {
+        item: [...row],
+        langText: this.langText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
+        this.soDS.cancelStoringOrder(so).subscribe(result => {
+          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
+            let successMsg = this.langText.CANCELED_SUCCESS;
+            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
+              successMsg = res;
+              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+              this.refreshTable();
+            });
+          }
         });
-      })
-    ).subscribe();
+      }
+    });
   }
 
   public loadData() {
+    this.search();
+
     const queries = [
+      { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
+    this.cvDS.connectAlias('soStatusCv').subscribe(data => {
+      this.soStatusCvList = addDefaultSelectOption(data, 'All');
+    });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
-    this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
-      this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
-    });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+      this.tankStatusCvList = data;
     });
-    this.search();
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -271,41 +406,50 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   search() {
-    const where: any = {};
+    const where: any = {
+    };
 
-    if (this.searchForm!.get('eir_no')?.value) {
-      where.eir_no = { contains: this.searchForm!.value['eir_no'] };
+    if (this.searchForm!.value['so_no']) {
+      where.so_no = { contains: this.searchForm!.value['so_no'] };
     }
 
-    if (this.searchForm!.get('eir_status_cv')?.value) {
-      where.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
+    if (this.searchForm!.value['so_status']) {
+      where.status_cv = { contains: this.searchForm!.value['so_status'] };
     }
 
-    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    if (this.searchForm!.value['customer_code']) {
+      where.storing_order_tank ={storing_order: { customer_company: { code: { contains: this.searchForm!.value['customer_code'].code } }}};
     }
+    
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
+      const sotSome: any = {};
 
-    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
-      const sotSearch: any = {};
-
-      if (this.searchForm!.get('tank_no')?.value) {
-        sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      if (this.searchForm!.value['last_cargo']) {
+        where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
       }
 
-      if (this.searchForm!.get('tank_status_cv')?.value) {
-        sotSearch.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
+      if (this.searchForm!.value['tank_no']) {
+        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
       }
 
-      if (this.searchForm!.get('purpose')?.value) {
-        const purposes = this.searchForm!.get('purpose')?.value;
+      if (this.searchForm!.value['job_no']) {
+        sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
+      }
+
+      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
+        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
+      }
+
+      if (this.searchForm!.value['purpose']) {
+        const purposes = this.searchForm!.value['purpose'];
         if (purposes.includes('STORAGE')) {
-          sotSearch.purpose_storage = { eq: true }
+          sotSome.purpose_storage = { eq: true }
         }
         if (purposes.includes('CLEANING')) {
-          sotSearch.purpose_cleaning = { eq: true }
+          sotSome.purpose_cleaning = { eq: true }
         }
         if (purposes.includes('STEAM')) {
-          sotSearch.purpose_steam = { eq: true }
+          sotSome.purpose_steam = { eq: true }
         }
 
         const repairPurposes = [];
@@ -316,37 +460,29 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
           repairPurposes.push('OFFHIRE');
         }
         if (repairPurposes.length > 0) {
-          sotSearch.purpose_repair_cv = { in: repairPurposes };
+          sotSome.purpose_repair_cv = { in: repairPurposes };
         }
       }
-
-      if (this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value) {
-        const soSearch: any = {};
-
-        if (this.searchForm!.get('so_no')?.value) {
-          soSearch.so_no = { contains: this.searchForm!.get('so_no')?.value };
-        }
-
-        if (this.searchForm!.get('customer_code')?.value) {
-          soSearch.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-        }
-        sotSearch.storing_order = soSearch;
-      }
-      where.tank = sotSearch;
+      where.storing_order_tank = { some: sotSome };
     }
 
-    this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+      this.updatePageSelection();
+    });
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.subs.sink = this.igDS.searchInGateForSurvey(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+   // this.subs.sink = this.repairDS.searchRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+   this.subs.sink=this.residueDS.search(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.inGateList = data;
-        this.endCursor = this.igDS.pageInfo?.endCursor;
-        this.startCursor = this.igDS.pageInfo?.startCursor;
-        this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
+        this.repList = data.map(re => {
+          return {...re, net_cost: this.calculateNetCost(re)}
+        });
+        this.endCursor = this.repairDS.pageInfo?.endCursor;
+        this.startCursor = this.repairDS.pageInfo?.startCursor;
+        this.hasNextPage = this.repairDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.repairDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSize = pageSize;
@@ -380,40 +516,57 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before);
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+      this.updatePageSelection();
+    });
   }
+
+  // mergeCriteria(criteria: any) {
+  //   return {
+  //     and: [
+  //       { delete_dt: { eq: null } },
+  //       criteria
+  //     ]
+  //   };
+  // }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  displayTankPurpose(sot: StoringOrderTankItem) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
-  }
+  initializeFilterCustomerCompany() {
+    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
 
-  getPurposeOptionDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-  }
-
-  getEirStatusDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.eirStatusCvList);
-  }
-
-  displayDate(input: number | undefined): string | undefined {
-    return Utility.convertEpochToDateStr(input);
+    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.cargo;
+        }
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+          this.last_cargoList = data
+          this.updateValidators(this.last_cargoList);
+        });
+      })
+    ).subscribe();
   }
 
   translateLangText() {
@@ -422,10 +575,32 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
-  updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
-    untypedFormControl.setValidators([
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  }
+
+  calculateNetCost(residue: ResidueItem): any {
+    
+
+    const total = this.residueDS.getTotal(residue?.residue_part)
+     
+     return total.total_mat_cost.toFixed(2);
+  }
+
+
+  displayLastCargoFn(tc: TariffCleaningItem): string {
+    return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.lastCargoControl.setValidators([
+      Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
   }
 
   resetDialog(event: Event) {
@@ -439,7 +614,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+        headerText: this.translatedLangText.CONFIRM_RESET,
         action: 'new',
       },
       direction: tempDirection
@@ -454,15 +629,31 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   resetForm() {
     this.searchForm?.patchValue({
       so_no: '',
-      eir_no: '',
-      eir_dt_start: '',
-      eir_dt_end: '',
+      so_status: '',
       tank_no: '',
       job_no: '',
       purpose: '',
-      tank_status_cv: '',
-      eir_status_cv: ''
+      eta_dt_start: '',
+      eta_dt_end: ''
     });
     this.customerCodeControl.reset('');
+    this.lastCargoControl.reset('');
+  }
+
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
   }
 }
