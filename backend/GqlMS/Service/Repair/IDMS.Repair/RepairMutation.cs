@@ -277,6 +277,34 @@ namespace IDMS.Repair.GqlTypes
             }
         }
 
+        public async Task<int> RollbackRepairStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+          [Service] IConfiguration config, RepairRequest repair)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (repair == null)
+                    throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+
+                var rollbackRepair = new repair() { guid = repair.guid };
+                context.repair.Attach(rollbackRepair);
+
+                rollbackRepair.update_by = user;
+                rollbackRepair.update_dt = currentDateTime;
+                rollbackRepair.status_cv = CurrentServiceStatus.PENDING;
+                rollbackRepair.remarks = repair.remarks;
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
         public async Task<int> ApproveRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, repair repair)
         {
@@ -306,7 +334,7 @@ namespace IDMS.Repair.GqlTypes
 
                             part.approve_qty = item.approve_qty;
                             part.approve_hour = item.approve_hour;
-                            part.approve_part = item.approve_part; 
+                            part.approve_part = item.approve_part;
                             part.approve_cost = item.approve_cost;
                             part.update_by = user;
                             part.update_dt = currentDateTime;
