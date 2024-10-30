@@ -96,6 +96,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   displayedColumns = [
     // 'select',
     'estimate_no',
+    'job_no',
     'net_cost',
     'status_cv',
     'remarks',
@@ -158,7 +159,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     NEW: 'COMMON-FORM.NEW',
     COPY: 'COMMON-FORM.COPY',
     NO_OF_PARTS: 'COMMON-FORM.NO-OF-PARTS',
-    REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED'
+    REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
+    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
   }
 
   searchForm?: UntypedFormGroup;
@@ -237,17 +239,15 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       eir_dt_start: [''],
       eir_dt_end: [''],
       part_name: [''],
-      bill_completed_cv: [''],
-      status_cv: [''],
-      eir_no: [''],
+      change_request_cv: [''],
       repair_job_no: [''],
+      eir_no: [''],
       repair_type_cv: [''],
       est_dt_start: [''],
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [''],
-      current_status_cv: ['']
+      est_status_cv: ['']
     });
   }
 
@@ -441,24 +441,23 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       tank_status_cv: { in: ['IN_SURVEY', 'CLEANING', 'STORAGE', 'STEAM', 'REPAIR'] }
     };
 
-    if (this.searchForm!.value['tank_no']) {
-      where.tank_no = { contains: this.searchForm!.value['tank_no'] };
+    if (this.searchForm!.get('tank_no')?.value) {
+      where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
-    if (this.searchForm!.value['last_cargo']) {
-      where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
+    if (this.searchForm!.get('last_cargo')?.value) {
+      where.last_cargo = { contains: this.searchForm!.get('last_cargo')?.value?.code };
     }
 
-    if (this.searchForm!.value['eir_no']) {
-      where.eir_no = { contains: this.searchForm!.value['eir_no'] };
-    }
+    if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
+      const igSome: any = {};
+      if (this.searchForm!.get('eir_no')?.value) {
+        igSome.eir_no = { contains: this.searchForm!.get('eir_no')?.value };
+      }
 
-    if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
-      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    }
-
-    if (this.searchForm!.value['job_no']) {
-      where.job_no = { contains: this.searchForm!.value['job_no'] };
+      if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
+        igSome.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value) };
+      }
     }
 
     if (this.searchForm!.value['customer_code']) {
@@ -469,23 +468,32 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
+    if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end'] || this.searchForm!.value['job_no']) {
       let reSome: any = {};
 
       if (this.searchForm!.value['part_name']) {
-        reSome = {
-          repair_part: {
-            some: {
-              tariff_repair: {
-                part_name: { contains: this.searchForm!.value['part_name'] }
-              }
-            }
+        // reSome = {
+        //   repair_part: {
+        //     some: {
+        //       tariff_repair: {
+        //         part_name: { contains: this.searchForm!.value['part_name'] }
+        //       }
+        //     }
+        //   }
+        // };
+        reSome.repair_part = {
+          some: {
+            description: { contains: this.searchForm!.value['part_name'] }
           }
         };
       }
 
       if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
         reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
+      }
+
+      if (this.searchForm!.value['job_no']) {
+        reSome.job_no = { contains: this.searchForm!.value['job_no'] };
       }
       where.repair = { some: reSome };
     }

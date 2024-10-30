@@ -799,6 +799,7 @@ const GET_STORING_ORDER_TANKS_REPAIR = gql`
         repair {
           guid
           estimate_no
+          job_no
           labour_cost
           labour_cost_discount
           material_cost_discount
