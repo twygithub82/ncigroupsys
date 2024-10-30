@@ -961,7 +961,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         re.material_cost_discount = Utility.convertNumber(this.repairForm.get('material_cost_discount')?.value);
         re.labour_cost = this.getLabourCost();
         re.total_hour = Utility.convertNumber(this.repairForm.get('total_hour')?.value, 2);
-        re.total_cost = Utility.convertNumber(this.repairForm.get('total_cost')?.value, 2);
+        re.total_cost = Utility.convertNumber(this.repairForm.get('net_cost')?.value, 2);
         re.remarks = this.repairForm.get('remarks')?.value;
         re.owner_enable = this.isOwner;
         re.job_no = re.job_no ?? this.sotItem?.job_no;
@@ -1205,8 +1205,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   calculateCost() {
-    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
-    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
+    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt && (item.approve_part ?? true));
+    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (item.approve_part ?? true));
     const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
     const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
 

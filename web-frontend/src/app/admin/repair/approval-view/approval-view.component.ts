@@ -221,7 +221,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   sotItem?: StoringOrderTankItem;
   repairItem?: RepairItem;
-  packageLabourItem?: PackageLabourItem;
+  // packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
@@ -396,7 +396,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         if (data?.length) {
           this.repairItem = data[0];
           this.sotItem = this.repairItem?.storing_order_tank;
-          this.getCustomerLabourPackage(this.sotItem?.storing_order?.customer_company?.guid!);
+          // this.getCustomerLabourPackage(this.sotItem?.storing_order?.customer_company?.guid!);
           this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
             if (cc?.length) {
               this.customer_companyList = cc;
@@ -429,18 +429,18 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     });
   }
 
-  getCustomerLabourPackage(customer_company_guid: string) {
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    }
-    this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
-      if (data?.length > 0) {
-        this.packageLabourItem = data[0];
-      }
-    });
-  }
+  // getCustomerLabourPackage(customer_company_guid: string) {
+  //   const where = {
+  //     and: [
+  //       { customer_company_guid: { eq: customer_company_guid } }
+  //     ]
+  //   }
+  //   this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
+  //     if (data?.length > 0) {
+  //       this.packageLabourItem = data[0];
+  //     }
+  //   });
+  // }
 
   getCustomer() {
     return this.sotItem?.storing_order?.customer_company;
@@ -469,6 +469,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.stopPropagation($event);
     row.owner = !(row.owner || false);
     this.calculateCost();
+    // this.getCalculateCost();
   }
 
   addEstDetails(event: Event, row?: RepairPartItem) {
@@ -708,6 +709,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       re.guid = this.repairItem?.guid;
       re.sot_guid = this.repairItem?.sot_guid;
       re.bill_to_guid = bill_to?.value?.guid;
+      re.total_cost = Utility.convertNumber(this.repairForm?.get('net_cost')?.value, 2);
 
       this.repList?.forEach((rep: RepairPartItem) => {
         rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
@@ -761,6 +763,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         index: index
       }));
       this.calculateCost();
+      // this.getCalculateCost();
     }
   }
 
@@ -971,9 +974,37 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     return "";
   }
 
+  // getCalculateCost() {
+  //   const output = this.repairDS.calculateCost(this.repairItem!, this.repList, undefined);
+
+  //   this.repairForm?.get('total_owner_hour')?.setValue(output.total_owner_hour);
+  //   this.repairForm?.get('total_owner_labour_cost')?.setValue(output.total_owner_labour_cost);
+  //   this.repairForm?.get('total_owner_mat_cost')?.setValue(output.total_owner_mat_cost);
+  //   this.repairForm?.get('total_owner_cost')?.setValue(output.total_owner_cost);
+  //   this.repairForm?.get('discount_labour_owner_cost')?.setValue(output.discount_labour_owner_cost);
+  //   this.repairForm?.get('discount_mat_owner_cost')?.setValue(output.discount_mat_owner_cost);
+  //   this.repairForm?.get('net_owner_cost')?.setValue(output.net_owner_cost);
+
+  //   this.repairForm?.get('total_lessee_hour')?.setValue(output.total_lessee_hour);
+  //   this.repairForm?.get('total_lessee_labour_cost')?.setValue(output.total_lessee_labour_cost);
+  //   this.repairForm?.get('total_lessee_mat_cost')?.setValue(output.total_lessee_mat_cost);
+  //   this.repairForm?.get('total_lessee_cost')?.setValue(output.total_lessee_cost);
+  //   this.repairForm?.get('discount_labour_lessee_cost')?.setValue(output.discount_labour_lessee_cost);
+  //   this.repairForm?.get('discount_mat_lessee_cost')?.setValue(output.discount_mat_lessee_cost);
+  //   this.repairForm?.get('net_lessee_cost')?.setValue(output.net_lessee_cost);
+
+  //   this.repairForm?.get('total_hour')?.setValue(output.total_hour_table);
+  //   this.repairForm?.get('total_labour_cost')?.setValue(output.total_labour_cost);
+  //   this.repairForm?.get('total_mat_cost')?.setValue(output.total_mat_cost);
+  //   this.repairForm?.get('total_cost')?.setValue(output.total_cost_table);
+  //   this.repairForm?.get('discount_labour_cost')?.setValue(output.discount_labour_cost);
+  //   this.repairForm?.get('discount_mat_cost')?.setValue(output.discount_mat_cost);
+  //   this.repairForm?.get('net_cost')?.setValue(output.net_cost);
+  // }
+
   calculateCost() {
-    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
-    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
+    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt && (item.approve_part ?? true));
+    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (item.approve_part ?? true));
     const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
     const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
 
@@ -1060,6 +1091,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     if (!this.repairDS.canApprove(this.repairItem)) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
     this.calculateCost();
+    // this.getCalculateCost();
   }
 
   displayApproveQty(rep: RepairPartItem) {

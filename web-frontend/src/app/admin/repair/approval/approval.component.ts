@@ -416,28 +416,28 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.searchForm!.value['customer_code']) {
       where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
-    
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
+
+    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('job_no')?.value || (this.searchForm!.get('eta_dt_start')?.value && this.searchForm!.get('eta_dt_end')?.value) || this.searchForm!.get('purpose')?.value) {
       const sotSome: any = {};
 
       if (this.searchForm!.value['last_cargo']) {
-        where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
+        sotSome.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
       }
 
-      if (this.searchForm!.value['tank_no']) {
-        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
+      if (this.searchForm!.get('tank_no')?.value) {
+        sotSome.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       }
 
-      if (this.searchForm!.value['job_no']) {
-        sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
+      if (this.searchForm!.get('job_no')?.value) {
+        sotSome.job_no = { contains: this.searchForm!.get('job_no')?.value };
       }
 
-      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
+      if (this.searchForm!.get('eta_dt_start')?.value && this.searchForm!.get('eta_dt_end')?.value) {
+        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.get('eta_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eta_dt_end')?.value) };
       }
 
-      if (this.searchForm!.value['purpose']) {
-        const purposes = this.searchForm!.value['purpose'];
+      if (this.searchForm!.get('purpose')?.value) {
+        const purposes = this.searchForm!.get('purpose')?.value;
         if (purposes.includes('STORAGE')) {
           sotSome.purpose_storage = { eq: true }
         }
@@ -459,7 +459,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
           sotSome.purpose_repair_cv = { in: repairPurposes };
         }
       }
-      where.storing_order_tank = { some: sotSome };
+      where.storing_order_tank = sotSome;
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
@@ -472,7 +472,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     this.subs.sink = this.repairDS.searchRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.repList = data.map(re => {
-          return {...re, net_cost: this.calculateNetCost(re)}
+          return { ...re, net_cost: this.calculateNetCost(re) }
         });
         this.endCursor = this.repairDS.pageInfo?.endCursor;
         this.startCursor = this.repairDS.pageInfo?.startCursor;
@@ -578,7 +578,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     const total = this.repairDS.getTotal(repair?.repair_part)
     const labourDiscount = repair.labour_cost_discount;
     const matDiscount = repair.material_cost_discount;
-    
+
     const total_hour = total.hour;
     const total_labour_cost = this.repairDS.getTotalLabourCost(total_hour, repair?.labour_cost);
     const total_mat_cost = total.total_mat_cost;
