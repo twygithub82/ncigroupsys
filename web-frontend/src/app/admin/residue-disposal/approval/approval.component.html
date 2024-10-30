@@ -220,6 +220,7 @@
                     <span>{{row.net_cost}}</span>
                   </mat-cell>
                 </ng-container>
+
                 <ng-container matColumnDef="status_cv">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                     {{translatedLangText.STATUS}}
@@ -240,8 +241,8 @@
                   </mat-cell>
                 </ng-container> -->
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/repair/approval/view', row.guid]" [style.cursor]="'pointer'" matRipple>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="ApproveResidueDisposalEstimate($event,row)"
+                  [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>

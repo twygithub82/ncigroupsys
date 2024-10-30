@@ -374,28 +374,28 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     ];
     this.cvDS.getCodeValuesByType(queries);
 
-    this.cvDS.connectAlias('groupNameCv').subscribe(data => {
-      this.groupNameCvList = data;
-      this.updateData(this.repList);
-      const subqueries: any[] = [];
-      data.map(d => {
-        if (d.child_code) {
-          let q = { alias: d.child_code, codeValType: d.child_code };
-          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-          if (!hasMatch) {
-            subqueries.push(q);
-          }
-        }
-      });
-      if (subqueries.length > 0) {
-        this.cvDS?.getCodeValuesByType(subqueries);
-        subqueries.map(s => {
-          this.cvDS?.connectAlias(s.alias).subscribe(data => {
-            this.subgroupNameCvList.push(...data);
-          });
-        });
-      }
-    });
+    // this.cvDS.connectAlias('groupNameCv').subscribe(data => {
+    //   this.groupNameCvList = data;
+    //   this.updateData(this.repList);
+    //   const subqueries: any[] = [];
+    //   data.map(d => {
+    //     if (d.child_code) {
+    //       let q = { alias: d.child_code, codeValType: d.child_code };
+    //       const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+    //       if (!hasMatch) {
+    //         subqueries.push(q);
+    //       }
+    //     }
+    //   });
+    //   if (subqueries.length > 0) {
+    //     this.cvDS?.getCodeValuesByType(subqueries);
+    //     subqueries.map(s => {
+    //       this.cvDS?.connectAlias(s.alias).subscribe(data => {
+    //         this.subgroupNameCvList.push(...data);
+    //       });
+    //     });
+    //   }
+    // });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
     });
@@ -904,7 +904,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     if(this.historyState.action==="NEW")
     {
        var newResidueItem :ResidueItem =new ResidueItem();
-       var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
+       var billGuid:string =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
        newResidueItem.bill_to_guid= billGuid;
        newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
        newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;

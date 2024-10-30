@@ -1,10 +1,13 @@
 ::ng-deep {
     .multiline-tooltip {
-        white-space: pre-line;
-
-
-        .mdc-tooltip__surface {
-            max-width: unset;
-        }
+      white-space: pre-line;
+      
+  
+      .mdc-tooltip__surface {
+        max-width: unset;
+      }
     }
-}
+  }
+  .selected-row {
+    background-color: #FF00FF; /* Change to your desired color */
+  }
