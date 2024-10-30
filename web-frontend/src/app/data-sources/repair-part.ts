@@ -171,4 +171,43 @@ export class RepairPartDS extends BaseDataSource<RepairPartItem> {
   is4X(rpDmgRepair: RPDamageRepairItem[] | undefined): boolean | undefined {
     return rpDmgRepair && rpDmgRepair.some((item: RPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
   }
+
+  sortAndGroupByGroupName(repList: any[]): any[] {
+    const groupedRepList: any[] = [];
+    let currentGroup = '';
+
+    const sortedList = repList.sort((a, b) => {
+      if (a.tariff_repair!.sequence !== b.tariff_repair.sequence) {
+        return a.tariff_repair.sequence - b.tariff_repair.sequence;
+      }
+
+      if (a.tariff_repair.subgroup_name_cv !== b.tariff_repair.subgroup_name_cv) {
+        if (!a.tariff_repair.subgroup_name_cv) return 1;
+        if (!b.tariff_repair.subgroup_name_cv) return -1;
+
+        return a.tariff_repair.subgroup_name_cv.localeCompare(b.tariff_repair.subgroup_name_cv);
+      }
+
+      return a.create_dt! - b.create_dt!;
+    });
+
+    sortedList.forEach(item => {
+      const groupName = item.tariff_repair.group_name_cv;
+
+      const isGroupHeader = groupName !== currentGroup;
+
+      if (isGroupHeader) {
+        currentGroup = groupName;
+      }
+
+      groupedRepList.push({
+        ...item,
+        isGroupHeader: isGroupHeader,
+        group_name_cv: item.tariff_repair.group_name_cv,
+        subgroup_name_cv: item.tariff_repair.subgroup_name_cv,
+      });
+    });
+
+    return groupedRepList;
+  }
 }

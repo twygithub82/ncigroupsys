@@ -95,20 +95,8 @@
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.BILL_COMPLETED}}</mat-label>
-                      <mat-select formControlName="bill_completed_cv">
-                        @for (codeValue of reStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.STATUS}}</mat-label>
-                      <mat-select formControlName="status_cv">
+                      <mat-label>{{translatedLangText.CHANGE_REQUEST}}</mat-label>
+                      <mat-select formControlName="change_request_cv">
                         @for (codeValue of reStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
@@ -168,18 +156,6 @@
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                       <mat-select formControlName="est_status_cv">
                         @for (codeValue of reStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.CURRENT_STATUS}}</mat-label>
-                      <mat-select formControlName="current_status_cv">
-                        @for (codeValue of tankStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
@@ -293,6 +269,15 @@
                       <mat-cell mat-cell *matCellDef="let repairRow" class="">
                         <span
                           class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.estimate_no}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="job_no">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        {{translatedLangText.JOB_NO}}
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let repairRow" class="">
+                        <span
+                          class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.job_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="net_cost">

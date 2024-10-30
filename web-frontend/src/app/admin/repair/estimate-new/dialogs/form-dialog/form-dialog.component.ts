@@ -406,16 +406,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const hour = this.repairPartForm?.get('hour');
     const material_cost = this.repairPartForm?.get('material_cost');
     if (!isEnable) {
-      quantity?.setValue(1);
+      quantity?.setValue(0);
       quantity?.disable();
       hour?.setValue(0);
       hour?.disable();
-      material_cost?.setValue(0);
-      material_cost?.disable();
     } else {
       quantity?.enable();
       hour?.enable();
-      material_cost?.enable();
     }
   }
 

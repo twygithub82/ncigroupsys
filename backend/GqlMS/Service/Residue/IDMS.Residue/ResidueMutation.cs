@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using CommonUtil.Core.Service;
 using IDMS.Service.GqlTypes;
+using IDMS.Residue.GqlTypes.LocalModel;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace IDMS.Residue.GqlTypes
 {
@@ -159,6 +162,84 @@ namespace IDMS.Residue.GqlTypes
                         }
                     }
                 }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> RollbackResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+             [Service] IConfiguration config, List<ResidueRequest> residue)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in residue)
+                {
+                    if (item != null && !string.IsNullOrEmpty(item.guid))
+                    {
+                        var rollbackResidue = new residue() { guid = item.guid };
+                        context.residue.Attach(rollbackResidue);
+
+                        rollbackResidue.update_by = user;
+                        rollbackResidue.update_dt = currentDateTime;
+                        rollbackResidue.status_cv = CurrentServiceStatus.PENDING;
+                        rollbackResidue.remarks = item.remarks;
+
+                        if (string.IsNullOrEmpty(item.customer_guid))
+                            throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+
+                        var customerGuid = item.customer_guid;
+                        var residuePart = await context.residue_part.Where(r => r.residue_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+                        var partsTarifResidueGuids = residuePart.Select(x => x.tariff_residue_guid).ToArray();
+
+                        var packageResidue = await context.package_residue.Where(r => partsTarifResidueGuids.Contains(r.tariff_residue_guid) &&
+                                            r.customer_company_guid == customerGuid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+
+                        foreach (var part in residuePart)
+                        {
+                            //var estPart = new repair_est_part() { guid = part.guid };
+                            //context.repair_est_part.Attach(estPart);
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                            part.cost = packageResidue.Where(r => r.tariff_residue_guid == part.tariff_residue_guid).Select(r => r.cost).First();
+                        }
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> RollbackRepairStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+                [Service] IConfiguration config, ResidueRequest residue)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (residue == null)
+                    throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+
+                var rollbackResidue = new residue() { guid = residue.guid };
+                context.residue.Attach(rollbackResidue);
+
+                rollbackResidue.update_by = user;
+                rollbackResidue.update_dt = currentDateTime;
+                rollbackResidue.status_cv = CurrentServiceStatus.PENDING;
+                rollbackResidue.remarks = residue.remarks;
 
                 var res = await context.SaveChangesAsync();
                 return res;

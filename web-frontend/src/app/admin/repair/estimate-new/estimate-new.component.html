@@ -421,6 +421,10 @@
                       {{translatedLangText.ESTIMATE_DATE}}: <span
                         class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
                     </div>
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      {{translatedLangText.STATUS}}: <span
+                        [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
+                    </div>
                   </div>
                 </div>
                 <div class="col-xl-8-5 col-lg-8-5 col-md-12 col-sm-12 m-b-0">

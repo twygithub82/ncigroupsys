@@ -5,14 +5,14 @@
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
     <form class="register-form" [formGroup]="cancelForm" #formDirective="ngForm">
-      <div class="row pt-3">
+      <!-- <div class="row pt-3">
         <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.ALL_REMARKS}}</mat-label>
             <textarea matInput formControlName="remarks"></textarea>
           </mat-form-field>
         </div>
-      </div>
+      </div> -->
       <div formArrayName="cancelItemList">
         @for (re of cancelItemArray().controls; track re; let index = $index) {
         <div [formGroupName]="index" [class]="'row'">

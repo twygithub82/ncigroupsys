@@ -582,8 +582,8 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
         }
       }));
 
-      newData = this.sortAndGroupByGroupName(newData);
-      newData = [...this.sortREP(newData)];
+      newData = this.repairPartDS.sortAndGroupByGroupName(newData);
+      // newData = [...this.sortREP(newData)];
 
       this.repList = newData.map((row, index) => ({
         ...row,
@@ -714,42 +714,6 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       return gncv[0].sequence;
     }
     return -1;
-  }
-
-  sortAndGroupByGroupName(repList: any[]): any[] {
-    const groupedRepList: any[] = [];
-    let currentGroup = '';
-
-    const sortedList = repList.sort((a, b) => {
-      if (a.tariff_repair!.sequence !== b.tariff_repair.sequence) {
-        return a.tariff_repair.sequence - b.tariff_repair.sequence;
-      }
-
-      if (a.tariff_repair.subgroup_name_cv !== b.tariff_repair.subgroup_name_cv) {
-        return a.tariff_repair.subgroup_name_cv.localeCompare(b.tariff_repair.subgroup_name_cv);
-      }
-
-      return b.create_dt! - a.create_dt!;
-    });
-
-    sortedList.forEach(item => {
-      const groupName = item.tariff_repair.group_name_cv;
-
-      const isGroupHeader = groupName !== currentGroup;
-
-      if (isGroupHeader) {
-        currentGroup = groupName;
-      }
-
-      groupedRepList.push({
-        ...item,
-        isGroupHeader: isGroupHeader,
-        group_name_cv: item.tariff_repair.group_name_cv,
-        subgroup_name_cv: item.tariff_repair.subgroup_name_cv,
-      });
-    });
-
-    return groupedRepList;
   }
 
   sortREP(newData: RepairPartItem[]): any[] {
