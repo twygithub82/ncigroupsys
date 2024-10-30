@@ -468,41 +468,32 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end'] || this.searchForm!.value['job_no']) {
+    if (this.searchForm!.get('part_name')?.value || this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value || this.searchForm!.get('job_no')?.value) {
       let reSome: any = {};
 
-      if (this.searchForm!.value['part_name']) {
-        // reSome = {
-        //   repair_part: {
-        //     some: {
-        //       tariff_repair: {
-        //         part_name: { contains: this.searchForm!.value['part_name'] }
-        //       }
-        //     }
-        //   }
-        // };
+      if (this.searchForm!.get('part_name')?.value) {
         reSome.repair_part = {
           some: {
-            description: { contains: this.searchForm!.value['part_name'] }
+            description: { contains: this.searchForm!.get('part_name')?.value }
           }
         };
       }
 
-      if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
-        reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
+      if (this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) {
+        reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value) };
       }
 
-      if (this.searchForm!.value['job_no']) {
-        reSome.job_no = { contains: this.searchForm!.value['job_no'] };
+      if (this.searchForm!.get('job_no')?.value) {
+        reSome.job_no = { contains: this.searchForm!.get('job_no')?.value };
       }
       where.repair = { some: reSome };
     }
 
-    // if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
+    // if (this.searchForm!.value['tank_no'] || this.searchForm!.get('job_no')?.value || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
     //   const sotSome: any = {};
 
-    //   if (this.searchForm!.value['job_no']) {
-    //     sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
+    //   if (this.searchForm!.get('job_no')?.value) {
+    //     sotSome.job_no = { contains: this.searchForm!.get('job_no')?.value };
     //   }
 
     //   if (this.searchForm!.value['purpose']) {

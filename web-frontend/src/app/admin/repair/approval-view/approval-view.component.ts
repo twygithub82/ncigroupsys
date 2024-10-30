@@ -658,8 +658,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
           return RepairRequestInput
         });
         console.log(reList);
-        this.repairDS.rollbackRepair(reList).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackRepair)
+        this.repairDS.rollbackRepairStatus(reList).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackRepairStatus)
         });
       }
     });

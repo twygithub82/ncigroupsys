@@ -638,6 +638,12 @@ export const ROLLBACK_REPAIR = gql`
   }
 `
 
+export const ROLLBACK_REPAIR_STATUS = gql`
+  mutation RollbackRepairStatus($repair: [RepairRequestInput!]!) {
+    rollbackRepairStatus(repair: $repair)
+  }
+`
+
 export const APPROVE_REPAIR = gql`
   mutation ApproveRepair($repair: repairInput!) {
     approveRepair(repair: $repair)
@@ -772,6 +778,15 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   rollbackRepair(repair: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_REPAIR,
+      variables: {
+        repair
+      }
+    });
+  }
+
+  rollbackRepairStatus(repair: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_REPAIR_STATUS,
       variables: {
         repair
       }
