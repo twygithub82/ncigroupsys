@@ -256,6 +256,51 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
+        public async Task<int> CompleteEntireJobProcess (ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<JobProcessRequest> jobProcessRequest)
+        {
+            try
+            {
+                if (jobProcessRequest == null)
+                    throw new GraphQLException(new Error($"Job process object cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                string tableName = "";
+                var jobType = jobProcessRequest.Select(j => j.job_type_cv).FirstOrDefault();
+                var jobOrderGuid = jobProcessRequest.Select(j => j.job_order_guid).FirstOrDefault();
+
+                switch (jobType.ToUpper())
+                {
+                    case JobType.REPAIR:
+                        tableName = "repair";
+                        break;
+                    case JobType.CLEANING:
+                        tableName = "cleaning";
+                        break;
+                    case JobType.RESIDUE:
+                        tableName = "residue";
+                        break;
+                    case JobType.STEAM:
+                        tableName = "steaming";
+                        break;
+                }
+
+                var guids = string.Join(",", jobProcessRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                string sql = $"UPDATE {tableName} SET complete_dt = {currentDateTime}, complete_by = '{user}' update_dt = {currentDateTime}, " +
+                             $"update_by = '{user}' WHERE guid IN ({guids})";
+
+                var ret = context.Database.ExecuteSqlRaw(sql);
+
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
         private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
                                                 string jobType, string jobOrderGuid, List<string?>? partGuid)
         {
