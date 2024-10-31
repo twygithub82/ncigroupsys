@@ -25,53 +25,125 @@ namespace IDMS.Service.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
                 var currentJobOrderGuid = "";
 
-                foreach (var item in jobOrderRequest)
+                using var transaction = context.Database.BeginTransaction();
+                try
                 {
-                    if (string.IsNullOrEmpty(item.guid))
+                    foreach (var item in jobOrderRequest)
                     {
-                        var newJobOrder = new job_order();
-                        newJobOrder.guid = Util.GenerateGUID();
-                        currentJobOrderGuid = newJobOrder.guid;
-                        newJobOrder.sot_guid = item.sot_guid;
-                        newJobOrder.team_guid = item.team_guid;
-                        newJobOrder.job_type_cv = item.job_type_cv;
-                        newJobOrder.status_cv = CurrentServiceStatus.PENDING;
-                        newJobOrder.total_hour = item.total_hour;
-                        newJobOrder.working_hour = item.working_hour;
-                        newJobOrder.remarks = item.remarks;
-                        newJobOrder.create_by = user;
-                        newJobOrder.create_dt = currentDateTime;
-                        await context.AddAsync(newJobOrder);
-                    }
-                    else
-                    {
-                        var updateJobOrder = new job_order() { guid = item.guid };
-                        context.Attach(updateJobOrder);
+                        if (string.IsNullOrEmpty(item.guid))
+                        {
+                            var newJobOrder = new job_order();
+                            newJobOrder.guid = Util.GenerateGUID();
+                            currentJobOrderGuid = newJobOrder.guid;
+                            newJobOrder.sot_guid = item.sot_guid;
+                            newJobOrder.team_guid = item.team_guid;
+                            newJobOrder.job_type_cv = item.job_type_cv;
+                            newJobOrder.status_cv = CurrentServiceStatus.PENDING;
+                            newJobOrder.total_hour = item.total_hour;
+                            newJobOrder.working_hour = item.working_hour;
+                            newJobOrder.remarks = item.remarks;
+                            newJobOrder.create_by = user;
+                            newJobOrder.create_dt = currentDateTime;
+                            await context.AddAsync(newJobOrder);
+                        }
+                        else
+                        {
+                            var updateJobOrder = new job_order() { guid = item.guid };
+                            context.Attach(updateJobOrder);
 
-                        currentJobOrderGuid = item.guid;
-                        updateJobOrder.remarks = item.remarks;
-                        updateJobOrder.team_guid = item.team_guid;
-                        updateJobOrder.job_type_cv = item.job_type_cv;
-                        updateJobOrder.total_hour = item.total_hour;
-                        updateJobOrder.working_hour = item.working_hour;
-                        updateJobOrder.remarks = item.remarks;
-                        updateJobOrder.update_by = user;
-                        updateJobOrder.update_dt = currentDateTime;
+                            currentJobOrderGuid = item.guid;
+                            updateJobOrder.remarks = item.remarks;
+                            updateJobOrder.team_guid = item.team_guid;
+                            updateJobOrder.job_type_cv = item.job_type_cv;
+                            updateJobOrder.total_hour = item.total_hour;
+                            updateJobOrder.working_hour = item.working_hour;
+                            updateJobOrder.remarks = item.remarks;
+                            updateJobOrder.update_by = user;
+                            updateJobOrder.update_dt = currentDateTime;
+                        }
+
+                        await AssignPartToJob(context, currentDateTime, user, item.job_type_cv, currentJobOrderGuid, item.part_guid);
                     }
 
-                    AssignPartToJob(context, item.job_type_cv, currentJobOrderGuid, item.part_guid);
+                    var res = await context.SaveChangesAsync();
+                    //TODO
+                    //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                    return res;
+                }
+                catch
+                {
+                    // Rollback in case of an error
+                    transaction.Rollback();
+                    throw;
                 }
 
-                var res = await context.SaveChangesAsync();
-                //TODO
-                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
-                return res;
+
             }
             catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
+
+        // public async Task<int> AssignJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        //[Service] IConfiguration config, List<JobOrderRequest> jobOrderRequest)
+        // {
+        //     try
+        //     {
+        //         if (jobOrderRequest == null)
+        //             throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
+
+        //         var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //         long currentDateTime = DateTime.Now.ToEpochTime();
+        //         var currentJobOrderGuid = "";
+
+        //         foreach (var item in jobOrderRequest)
+        //         {
+        //             if (string.IsNullOrEmpty(item.guid))
+        //             {
+        //                 var newJobOrder = new job_order();
+        //                 newJobOrder.guid = Util.GenerateGUID();
+        //                 currentJobOrderGuid = newJobOrder.guid;
+        //                 newJobOrder.sot_guid = item.sot_guid;
+        //                 newJobOrder.team_guid = item.team_guid;
+        //                 newJobOrder.job_type_cv = item.job_type_cv;
+        //                 newJobOrder.status_cv = CurrentServiceStatus.PENDING;
+        //                 newJobOrder.total_hour = item.total_hour;
+        //                 newJobOrder.working_hour = item.working_hour;
+        //                 newJobOrder.remarks = item.remarks;
+        //                 newJobOrder.create_by = user;
+        //                 newJobOrder.create_dt = currentDateTime;
+        //                 await context.AddAsync(newJobOrder);
+        //             }
+        //             else
+        //             {
+        //                 var updateJobOrder = new job_order() { guid = item.guid };
+        //                 context.Attach(updateJobOrder);
+
+        //                 currentJobOrderGuid = item.guid;
+        //                 updateJobOrder.remarks = item.remarks;
+        //                 updateJobOrder.team_guid = item.team_guid;
+        //                 updateJobOrder.job_type_cv = item.job_type_cv;
+        //                 updateJobOrder.total_hour = item.total_hour;
+        //                 updateJobOrder.working_hour = item.working_hour;
+        //                 updateJobOrder.remarks = item.remarks;
+        //                 updateJobOrder.update_by = user;
+        //                 updateJobOrder.update_dt = currentDateTime;
+        //             }
+
+        //             AssignPartToJob(context, item.job_type_cv, currentJobOrderGuid, item.part_guid);
+        //         }
+
+        //         var res = await context.SaveChangesAsync();
+        //         //TODO
+        //         //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+        //         return res;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+        //     }
+        // }
 
         public async Task<int> UpdateJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, UpdateJobOrderRequest jobOrderRequest)
@@ -115,7 +187,7 @@ namespace IDMS.Service.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                foreach(var item in jobOrderRequest)
+                foreach (var item in jobOrderRequest)
                 {
                     var jobOrder = new job_order() { guid = item.guid };
                     context.Attach(jobOrder);
@@ -138,44 +210,125 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        private void AssignPartToJob(ApplicationServiceDBContext context, string jobType, string jobOrderGuid, List<string?>? partGuid)
+
+        public async Task<int> CompleteJobItem(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<JobItemRequest> jobItemRequest)
         {
-            switch (jobType.ToUpper())
+            try
             {
-                case JobType.REPAIR:
-                    foreach (var item in partGuid)
-                    {
-                        var repPart = new repair_part() { guid = item };
-                        context.repair_part.Attach(repPart);
-                        repPart.job_order_guid = jobOrderGuid;
-                    }
-                    break;
-                case JobType.CLEANING:
-                    foreach (var item in partGuid)
-                    {
-                        var cleaningPart = new cleaning() { guid = item };
-                        context.cleaning.Attach(cleaningPart);
-                        cleaningPart.job_order_guid = jobOrderGuid;
-                    }
-                    break;
-                case JobType.RESIDUE:
-                    foreach (var item in partGuid)
-                    {
-                        var resPart = new residue_part() { guid = item };
-                        context.residue_part.Attach(resPart);
-                        resPart.job_order_guid = jobOrderGuid;
-                    }
-                    break;
-                case JobType.STEAM:
-                    //foreach (var item in partGuid)
-                    //{
-                    //    var resPart = new residue_part() { guid = item };
-                    //    context.residue_part.Attach(resPart);
-                    //    resPart.job_order_guid = jobOrderGuid;
-                    //}
-                    break;
+                if (jobItemRequest == null)
+                    throw new GraphQLException(new Error($"Job item object cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                string tableName = "";
+                var jobType = jobItemRequest.Select(j => j.job_type_cv).FirstOrDefault();
+                var jobOrderGuid = jobItemRequest.Select(j => j.job_order_guid).FirstOrDefault();
+
+                switch (jobType.ToUpper())
+                {
+                    case JobType.REPAIR:
+                        tableName = "repair_part";
+                        break;
+                    case JobType.CLEANING:
+                        tableName = "cleaning";
+                        break;
+                    case JobType.RESIDUE:
+                        tableName = "residue_part";
+                        break;
+                    case JobType.STEAM:
+                        tableName = "steaming";
+                        break;
+                }
+
+                var guids = string.Join(",", jobItemRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                string sql = $"UPDATE {tableName} SET complete_dt = {currentDateTime}, update_dt = {currentDateTime}, " +
+                             $"update_by = '{user}' WHERE guid IN ({guids})";
+
+                var ret = context.Database.ExecuteSqlRaw(sql);
+
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
+
+        private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
+                                                string jobType, string jobOrderGuid, List<string?>? partGuid)
+        {
+            string tableName = "";
+
+            try
+            {
+                switch (jobType.ToUpper())
+                {
+                    case JobType.REPAIR:
+                        tableName = "repair_part";
+                        break;
+                    case JobType.CLEANING:
+                        tableName = "cleaning";
+                        break;
+                    case JobType.RESIDUE:
+                        tableName = "residue_part";
+                        break;
+                    case JobType.STEAM:
+                        tableName = "steaming_temp";
+                        break;
+                }
+
+                var guids = string.Join(",", partGuid.Select(g => $"'{g}'"));
+                string sql = $"UPDATE {tableName} SET update_dt = {currentDateTime}, update_by = '{user}', job_order_guid = '{jobOrderGuid}' WHERE guid IN ({guids})";
+                var ret = context.Database.ExecuteSqlRaw(sql);
+
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        //private void AssignPartToJob(ApplicationServiceDBContext context, string jobType, string jobOrderGuid, List<string?>? partGuid)
+        //{
+        //    switch (jobType.ToUpper())
+        //    {
+        //        case JobType.REPAIR:
+        //            foreach (var item in partGuid)
+        //            {
+        //                var repPart = new repair_part() { guid = item };
+        //                context.repair_part.Attach(repPart);
+        //                repPart.job_order_guid = jobOrderGuid;
+        //            }
+        //            break;
+        //        case JobType.CLEANING:
+        //            foreach (var item in partGuid)
+        //            {
+        //                var cleaningPart = new cleaning() { guid = item };
+        //                context.cleaning.Attach(cleaningPart);
+        //                cleaningPart.job_order_guid = jobOrderGuid;
+        //            }
+        //            break;
+        //        case JobType.RESIDUE:
+        //            foreach (var item in partGuid)
+        //            {
+        //                var resPart = new residue_part() { guid = item };
+        //                context.residue_part.Attach(resPart);
+        //                resPart.job_order_guid = jobOrderGuid;
+        //            }
+        //            break;
+        //        case JobType.STEAM:
+        //            //foreach (var item in partGuid)
+        //            //{
+        //            //    var resPart = new residue_part() { guid = item };
+        //            //    context.residue_part.Attach(resPart);
+        //            //    resPart.job_order_guid = jobOrderGuid;
+        //            //}
+        //            break;
+        //    }
+        //}
 
 
 
@@ -267,7 +420,7 @@ namespace IDMS.Service.GqlTypes
         {
             try
             {
-                foreach(var j_guid in jobOrderGuid)
+                foreach (var j_guid in jobOrderGuid)
                 {
                     var totalTime = await context.time_table
                         .Where(t => t.stop_time != null && t.start_time != null && t.job_order_guid == j_guid)
@@ -277,7 +430,7 @@ namespace IDMS.Service.GqlTypes
                     context.job_order.Attach(jobOrdr);
                     jobOrdr.total_hour = totalTime;
                     jobOrdr.update_by = user;
-                    jobOrdr.update_dt = currentDateTime;    
+                    jobOrdr.update_dt = currentDateTime;
                 }
 
                 await context.SaveChangesAsync();
@@ -287,74 +440,6 @@ namespace IDMS.Service.GqlTypes
             {
                 throw;
             }
-
         }
-
-        //public async Task<int> AddJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        // [Service] IConfiguration config, job_order jobOrder)
-        //{
-        //    try
-        //    {
-        //        if (jobOrder == null)
-        //            throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
-
-        //        if (jobOrder.working_hour == null)
-        //            throw new GraphQLException(new Error($"Working hour cannot be null or empty", "ERROR"));
-
-        //        if (jobOrder.total_hour == null)
-        //            throw new GraphQLException(new Error($"Total hour cannot be null or empty", "ERROR"));
-
-
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-
-        //        jobOrder.guid = Util.GenerateGUID();
-        //        jobOrder.create_by = user;
-        //        jobOrder.create_dt = currentDateTime;
-        //        jobOrder.status_cv = CurrentServiceStatus.PENDING;
-        //        await context.job_order.AddAsync(jobOrder);
-
-        //        var res = await context.SaveChangesAsync();
-        //        //TODO
-        //        //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //}
-
-        //public async Task<int> UpdateJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        //[Service] IConfiguration config, job_order jobOrder)
-        //{
-        //    try
-        //    {
-        //        var job = await context.job_order.Where(j => j.guid == jobOrder.guid && (j.delete_dt == null || j.delete_dt == 0)).FirstOrDefaultAsync();
-
-        //        if (jobOrder == null)
-        //            throw new GraphQLException(new Error($"Job order not found", "NOT FOUND"));
-
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-
-        //        job.update_by = user;
-        //        job.update_dt = currentDateTime;
-        //        job.remarks = jobOrder.remarks;
-        //        job.working_hour = jobOrder.working_hour;
-        //        job.total_hour = jobOrder.total_hour;
-        //        job.team_guid = jobOrder.team_guid;
-        //        //job.sot_guid = jobOrder.sot_guid;
-
-        //        var res = await context.SaveChangesAsync();
-        //        //TODO
-        //        //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //}
     }
 }
