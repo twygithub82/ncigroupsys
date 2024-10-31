@@ -9,7 +9,7 @@ import { TariffRepairItem } from './tariff-repair';
 import { UserItem } from './user';
 import { CustomerCompanyItem } from './customer-company';
 
-export class ResidueEstGO {
+export class ResidueGO {
   public estimate_no?:string;
   public allocate_by?:string;
   public allocate_dt?:number;
@@ -42,7 +42,7 @@ export class ResidueEstGO {
 
   
 
-  constructor(item: Partial<ResidueEstGO> = {}) {
+  constructor(item: Partial<ResidueGO> = {}) {
     this.guid = item.guid;
     this.estimate_no=item.estimate_no;
     this.sot_guid = item.sot_guid;
@@ -64,7 +64,7 @@ export class ResidueEstGO {
   }
 }
 
-export class ResidueItem extends ResidueEstGO {
+export class ResidueItem extends ResidueGO {
   public residue_part?: ResidueItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?:CustomerCompanyItem;
@@ -133,11 +133,30 @@ export const GET_RESIDUE_EST = gql`
         unit_type_guid
         update_by
         update_dt
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+        }
         storing_order {
           customer_company {
+            guid
             code
             name
-            guid
+          }
+        }
+        in_gate {
+          eir_no
+          eir_dt
+          delete_dt
+          in_gate_survey {
+            next_test_cv
+            last_test_cv
+            test_class_cv
+            test_dt
+            update_by
+            update_dt
+            delete_dt
           }
         }
       }
@@ -611,9 +630,10 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   getTotal(residuePartList: any[] | undefined): any {
-    const totalSums = residuePartList?.filter(data => !data.delete_dt)?.reduce((totals: any, owner) => {
+    const totalSums = residuePartList?.filter(data => !data.delete_dt &&(data.approve_part==1 || data.approve_part==null))?.reduce((totals: any, owner) => {
       return {
         //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+        
         total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.cost ?? 0)))
       };
     }, {  total_mat_cost: 0 }) || 0;

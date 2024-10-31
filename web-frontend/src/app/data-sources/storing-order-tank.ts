@@ -818,6 +818,10 @@ const GET_STORING_ORDER_TANKS_REPAIR = gql`
             quantity
             material_cost
             delete_dt
+            approve_part
+            approve_hour
+            approve_qty
+            approve_cost
           }
         }
       }
@@ -952,6 +956,10 @@ const GET_STORING_ORDER_TANK_BY_ID_REPAIR = gql`
             tariff_repair_guid
             update_by
             update_dt
+            approve_part
+            approve_hour
+            approve_qty
+            approve_cost
             rp_damage_repair {
               action
               code_cv

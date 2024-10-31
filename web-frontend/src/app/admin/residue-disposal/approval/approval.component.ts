@@ -26,7 +26,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -48,6 +48,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
 
 @Component({
   selector: 'app-approval',
@@ -99,6 +100,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     'customer',
     'estimate_no',
     'net_cost',
+    // 'approve_part',
     'status_cv'
   ];
 
@@ -150,7 +152,9 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
-    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST'
+    CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
+    APPROVE: 'COMMON-FORM.APPROVE',
+    NO_ACTION: 'COMMON-FORM.NO-ACTION',
   }
 
   searchForm?: UntypedFormGroup;
@@ -184,8 +188,10 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  previous_endCursor:string| undefined = undefined;
 
   constructor(
+    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -656,4 +662,32 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
+
+  ApproveResidueDisposalEstimate(event:Event, row:ResidueItem)
+  {
+    event.stopPropagation(); // Stop the click event from propagating
+    // Navigate to the route and pass the JSON object
+       this.router.navigate(['/admin/residue-disposal/approval/view/',row.guid], {
+         state: { id: '' ,
+           action:"UPDATE",
+           selectedRow:row,
+           type:'residue-approval',
+           pagination:{
+             where :this.lastSearchCriteria,
+             pageSize:this.pageSize,
+             pageIndex:this.pageIndex,
+             hasPreviousPage:this.hasPreviousPage,
+             startCursor:this.startCursor,
+             endCursor:this.endCursor,
+             previous_endCursor:this.previous_endCursor,
+             
+             showResult: this.sotDS.totalCount>0
+             
+           }
+         }
+       });
+    
+  }
+
+ 
 }
