@@ -112,18 +112,44 @@ export const GET_TEAM_QUERY = gql`
   }
 `;
 
-export const GET_TEAM_BY_DEPARTMENT_QUERY = gql`
-  query queryTeams($where: teamFilterInput, $order: [teamSortInput!]) {
-    resultList: queryTeams(where: $where, order: $order) {
+export const GET_ALLOCATED_JOB_ORDER = gql`
+  query queryJobOrder($where: job_orderFilterInput, $order: [job_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryJobOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
+        complete_dt
         create_by
         create_dt
         delete_dt
-        department_cv
-        description
         guid
+        job_order_no
+        job_type_cv
+        remarks
+        sot_guid
+        start_dt
+        status_cv
+        team_guid
+        total_hour
         update_by
         update_dt
+        working_hour
+        team {
+          description
+          guid
+        }
+        storing_order_tank {
+          tank_no
+          storing_order {
+            customer_company {
+              name
+              code
+            }
+          }
+        }
+        repair_part {
+          repair {
+            estimate_no
+          }
+        }
       }
     }
   }
@@ -139,44 +165,12 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  loadItems(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<JobOrderItem[]> {
+  searchJobOrder(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<JobOrderItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .watchQuery<any>({
-        query: GET_TEAM_QUERY,
+        query: GET_ALLOCATED_JOB_ORDER,
         variables: { where, order, first, after, last, before },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .valueChanges
-      .pipe(
-        map((result) => result.data),
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of([] as JobOrderItem[]); // Return an empty array on error
-        }),
-        finalize(() =>
-          this.loadingSubject.next(false)
-        ),
-        map((result) => {
-          const resultList = result.resultList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(resultList.nodes);
-          this.totalCount = resultList.totalCount;
-          this.pageInfo = resultList.pageInfo;
-          return resultList.nodes;
-        })
-      );
-  }
-
-  getTeamListByDepartment(department_cv?: string[]): Observable<JobOrderItem[]> {
-    this.loadingSubject.next(true);
-    const where = {
-      department_cv: { in: department_cv }
-    }
-    const order = { description: "ASC" }
-    return this.apollo
-      .watchQuery<any>({
-        query: GET_TEAM_BY_DEPARTMENT_QUERY,
-        variables: { where, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .valueChanges

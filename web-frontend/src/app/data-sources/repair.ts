@@ -718,7 +718,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
   searchRepair(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
-
+    
     return this.apollo
       .query<any>({
         query: GET_REPAIR,
