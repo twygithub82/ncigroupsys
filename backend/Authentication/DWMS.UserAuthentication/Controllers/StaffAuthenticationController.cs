@@ -77,27 +77,10 @@ namespace DWMS.User.Authentication.API.Controllers
             if (staff != null && await _userManager.CheckPasswordAsync(staff, staffModel.Password))
             {
                
-                // claimlist creation
-                //var authClaims = new List<Claim>
-                //    {
-                //        new Claim(ClaimTypes.Name , staff.UserName),
-                //        new Claim(ClaimTypes.Email, staff.Email),
-                //        new Claim(ClaimTypes.GroupSid, "s1"),
-                //        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-
-                //    };
+             
 
                 var staffRoles = await _userManager.GetRolesAsync(staff);
-
-
-                
-                //foreach (var role in staffRoles)
-                //{
-                //    authClaims.Add(new Claim(ClaimTypes.Role, role));
-                //    if (role.Trim().ToLower() == "admin")
-                //        authClaims.Add(new Claim(ClaimTypes.PrimaryGroupSid, "a1"));
-                //}
-
+          
                 //generate the token with the claims
                 //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
                 var jwtToken = _jwtTokenService.GetToken(2, staff.UserName, staff.Email, staffRoles, staff.Id); //Utilities.utils.GetToken(_configuration,authClaims);
@@ -111,8 +94,86 @@ namespace DWMS.User.Authentication.API.Controllers
             return Unauthorized();
         }
 
+
+
+        [HttpPost("AssignStaffRolesAndTeams")]
+        public async Task<IActionResult> AssignUserCredential([FromBody] AssignRolesTeams assignRolesTeamsToUser)
+        {
+            //string role = "Customer";
+            try
+            {
+                var primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+                if (primarygroupSid != "a1")
+                {
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
+                }
+
+                var Username = assignRolesTeamsToUser.UserName;
+                var roles = assignRolesTeamsToUser.Roles;
+                var teams = assignRolesTeamsToUser.Teams;
+
+                var staffExist = await _userManager.FindByIdAsync(Username!);
+                if (staffExist == null) return StatusCode(StatusCodes.Status204NoContent, new Response() { Status = "Error", Message = new string[] { "The user not found" } });
+                
+                foreach (var role in roles)
+                {
+
+                    if (!await _roleManager.RoleExistsAsync(role))
+                    {
+                        var ctRoleRes = await this.CreateRole(role);
+
+                        if (ctRoleRes == -1)
+                        {
+                            return StatusCode(StatusCodes.Status403Forbidden,
+                           new Response { Status = "Error", Message = new string[] { "This role doesn't  exists!" } });
+                        }
+                        //_roleManager.
+
+                    }
+
+
+                }
+                var staffRoles = await _userManager.GetRolesAsync(staffExist);
+                List<string> rvRoles= new List<string>();
+                foreach(var role in staffRoles)
+                {
+                    if(!roles.Contains(role))
+                    {
+                        rvRoles.Add(role);
+                    }
+                }
+
+                if (rvRoles.Count > 0)
+                {
+                    await _userManager.RemoveFromRolesAsync(staffExist, rvRoles);
+                }
+
+                foreach (var role in roles)
+                {
+                    if (!staffRoles.Contains(role))
+                    {
+                        await _userManager.AddToRoleAsync(staffExist, role);
+                    }
+                }
+
+
+                return StatusCode(StatusCodes.Status200OK,
+                       new Response { Status = "Success", Message = new string[] { $"Staff roles and teams  successfully assigned - {Username}  !" } });
+
+                }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }
+
+            return Unauthorized();
+
+        }
+
+
         [HttpPost("CreateStaffCredential")]
-        public async Task<IActionResult> CreateStaffCredential([FromBody] RegisterStaff registerStaff,string role)
+        public async Task<IActionResult> CreateStaffCredential([FromBody] RegisterStaff registerStaff)
         {
             //string role = "Customer";
             try
@@ -153,17 +214,22 @@ namespace DWMS.User.Authentication.API.Controllers
                     EmailConfirmed=true
                 };
 
-                if (!await _roleManager.RoleExistsAsync(role))
+                var roles = registerStaff.Roles;
+                foreach (var role in roles)
                 {
-                   var ctRoleRes= await this.CreateRole(role);
 
-                    if(ctRoleRes==-1)
+                    if (!await _roleManager.RoleExistsAsync(role))
                     {
-                        return StatusCode(StatusCodes.Status403Forbidden,
-                       new Response { Status = "Error", Message = new string[] { "This role doesn't  exists!" } });
+                        var ctRoleRes = await this.CreateRole(role);
+
+                        if (ctRoleRes == -1)
+                        {
+                            return StatusCode(StatusCodes.Status403Forbidden,
+                           new Response { Status = "Error", Message = new string[] { "This role doesn't  exists!" } });
+                        }
+                        //_roleManager.
+
                     }
-                    //_roleManager.
-                    
                 }
 
                 
@@ -175,8 +241,10 @@ namespace DWMS.User.Authentication.API.Controllers
                         new Response { Status = "Error", Message = Errors });
                 }
 
-
-                await _userManager.AddToRoleAsync(staff, role);
+                foreach (var role in roles)
+                {
+                    await _userManager.AddToRoleAsync(staff, role);
+                }
 
                 
               

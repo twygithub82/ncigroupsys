@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DWMS.User.Authentication.API.Models.Authentication;
+using System.ComponentModel.DataAnnotations;
 
 namespace DWMS.UserAuthentication.Models.Authentication.SignUp
 {
-    public class RegisterStaff
+    public class RegisterStaff:RolesTeams
     {
         [Required(ErrorMessage = "User Name is required")]
         public string? Username { get; set; }
