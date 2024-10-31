@@ -20,8 +20,8 @@ namespace IDMS.Models.Service
         public string? description { get; set; }
         public int? quantity { get; set; }
         public double? cost { get; set; }
-        public bool? approve_part { get; set; } 
-
+        public bool? approve_part { get; set; }
+        public long? complete_dt { get; set; }
 
         [UseFiltering]
         public residue? residue { get; set; }
