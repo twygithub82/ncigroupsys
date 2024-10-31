@@ -319,9 +319,11 @@ namespace IDMS.Repair.GqlTypes
                     var appvRepair = new repair() { guid = repair.guid };
                     context.repair.Attach(appvRepair);
 
-                    appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.update_by = user;
                     appvRepair.update_dt = currentDateTime;
+
+                    appvRepair.total_cost = repair.total_cost;
+                    appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.status_cv = CurrentServiceStatus.APPROVED;
                     appvRepair.remarks = repair.remarks;
 
