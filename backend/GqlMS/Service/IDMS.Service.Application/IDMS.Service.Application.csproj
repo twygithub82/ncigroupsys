@@ -34,8 +34,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
     <ProjectReference Include="..\IDMS.Cleaning\IDMS.Cleaning.GqlTypes.csproj" />
-    <ProjectReference Include="..\Repair\IDMS.Repair\IDMS.Repair.GqlTypes.csproj" />
-    <ProjectReference Include="..\Residue\IDMS.Residue\IDMS.Residue.GqlTypes.csproj" />
+    <ProjectReference Include="..\IDMS.Repair\IDMS.Repair.GqlTypes.csproj" />
+    <ProjectReference Include="..\IDMS.Residue\IDMS.Residue.GqlTypes.csproj" />
+    <ProjectReference Include="..\IDMS.Service\IDMS.Service.GqlTypes.csproj" />
   </ItemGroup>
 
 </Project>

@@ -31,7 +31,6 @@ namespace IDMS.Models.Service.GqlTypes.DB
                 .HasOne(sc => sc.aspnetroles)
                 .WithMany(c => c.aspnetuserroles)
                 .HasForeignKey(sc => sc.roleID);
-
         }
 
         public DbSet<team> team { get; set; }
@@ -49,5 +48,7 @@ namespace IDMS.Models.Service.GqlTypes.DB
         public DbSet<residue> residue { get; set; }
         public DbSet<residue_part> residue_part { get; set; }
         public DbSet<cleaning> cleaning { get; set; }
+        public DbSet<steaming> steaming { get; set; }
+        public DbSet<steaming_temp> steaming_temp { get; set; }
     }
 }

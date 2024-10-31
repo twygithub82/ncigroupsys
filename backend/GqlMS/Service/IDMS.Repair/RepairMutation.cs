@@ -7,8 +7,8 @@ using CommonUtil.Core.Service;
 using IDMS.Models.Service;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Repair.GqlTypes.LocalModel;
-using IDMS.Service.GqlTypes;
 using HotChocolate.Types;
+using IDMS.Service.GqlTypes;
 
 namespace IDMS.Repair.GqlTypes
 {
@@ -319,9 +319,11 @@ namespace IDMS.Repair.GqlTypes
                     var appvRepair = new repair() { guid = repair.guid };
                     context.repair.Attach(appvRepair);
 
-                    appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.update_by = user;
                     appvRepair.update_dt = currentDateTime;
+
+                    appvRepair.total_cost = repair.total_cost;
+                    appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.status_cv = CurrentServiceStatus.APPROVED;
                     appvRepair.remarks = repair.remarks;
 

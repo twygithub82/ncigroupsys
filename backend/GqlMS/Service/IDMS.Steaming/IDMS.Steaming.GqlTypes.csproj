@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="HotChocolate.Authorization" Version="13.9.5" />
@@ -17,16 +18,15 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
-	  <ProjectReference Include="..\..\IDMS.Service.GqlTypes\IDMS.Service.GqlTypes.csproj" />
-	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="CommonUtil.Core.Service">
-	    <HintPath>..\..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
-	  </Reference>
+	  <ProjectReference Include="..\IDMS.Service\IDMS.Service.GqlTypes.csproj" />
 	</ItemGroup>
 
 
+	<ItemGroup>
+		<Reference Include="CommonUtil.Core.Service">
+			<HintPath>..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 </Project>

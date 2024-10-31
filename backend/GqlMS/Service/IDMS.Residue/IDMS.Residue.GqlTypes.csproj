@@ -20,12 +20,13 @@
 
 	<ItemGroup>
 		<Reference Include="CommonUtil.Core.Service">
-			<HintPath>..\..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
+			<HintPath>..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Repair\IDMS.Repair\IDMS.Repair.GqlTypes.csproj" />
+		<ProjectReference Include="..\IDMS.Service\IDMS.Service.GqlTypes.csproj" />
+		<ProjectReference Include="..\IDMS.Repair\IDMS.Repair.GqlTypes.csproj" />
 	</ItemGroup>
 
 </Project>

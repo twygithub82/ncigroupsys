@@ -30,7 +30,8 @@ namespace IDMS.Models.Service
         public bool? owner_enable { get; set; } = false;
         public string? status_cv { get; set; }
         public string? job_no { get; set; }
-        public double? total_hour { get; set; } 
+        public double? total_hour { get; set; }
+        public long? complete_dt { get; set; }
 
         [ForeignKey("customer_company")]
         public string? bill_to_guid { get; set; }

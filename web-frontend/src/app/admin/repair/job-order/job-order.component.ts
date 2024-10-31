@@ -48,6 +48,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
+import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
 
 @Component({
   selector: 'app-job-order',
@@ -95,11 +96,19 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   //   'tank_status_cv'
   // ];
 
-  displayedColumns = [
+  displayedColumnsRepair = [
     'tank_no',
     'customer',
     'estimate_no',
     'net_cost',
+    'status_cv'
+  ];
+
+  displayedColumnsJobOrder = [
+    'tank_no',
+    'job_order_no',
+    'customer',
+    'estimate_no',
     'status_cv'
   ];
 
@@ -151,11 +160,13 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
-    repairEstTabTitle: 'COMMON-FORM.JOB-ALLOCATION',
-    jobOrderTabTitle: 'COMMON-FORM.JOBS'
+    REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
+    JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
+    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO'
   }
 
   filterRepairForm?: UntypedFormGroup;
+  filterJobOrderForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
@@ -164,10 +175,10 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
   repairDS: RepairDS;
+  joDS: JobOrderDS;
 
   repEstList: RepairItem[] = [];
-  reSelection = new SelectionModel<RepairItem>(true, []);
-  selectedItemsPerPage: { [key: number]: Set<string> } = {};
+  jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
@@ -177,14 +188,23 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  pageIndex = 0;
-  pageSize = 10;
-  lastSearchCriteria: any;
-  lastOrderBy: any = { estimate_no: "DESC" };
-  endCursor: string | undefined = undefined;
-  startCursor: string | undefined = undefined;
-  hasNextPage = false;
-  hasPreviousPage = false;
+  pageIndexRepair = 0;
+  pageSizeRepair = 10;
+  lastSearchCriteriaRepair: any;
+  lastOrderByRepair: any = { estimate_no: "DESC" };
+  endCursorRepair: string | undefined = undefined;
+  startCursorRepair: string | undefined = undefined;
+  hasNextPageRepair = false;
+  hasPreviousPageRepair = false;
+
+  pageIndexJobOrder = 0;
+  pageSizeJobOrder = 10;
+  lastSearchCriteriaJobOrder: any;
+  lastOrderByJobOrder: any = { job_order_no: "DESC" };
+  endCursorJobOrder: string | undefined = undefined;
+  startCursorJobOrder: string | undefined = undefined;
+  hasNextPageJobOrder = false;
+  hasPreviousPageJobOrder = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -205,6 +225,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.repairDS = new RepairDS(this.apollo);
+    this.joDS = new JobOrderDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -225,6 +246,9 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.filterRepairForm = this.fb.group({
       filterRepair: [''],
     });
+    this.filterJobOrderForm = this.fb.group({
+      filterJobOrder: [''],
+    });
   }
 
   cancelItem(row: StoringOrderItem) {
@@ -234,66 +258,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
-  }
-
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    const numSelected = selectedItems.size;
-    const numRows = this.repEstList.length;
-    return numSelected === numRows;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    if (this.isAllSelected()) {
-      this.clearPageSelection();
-    } else {
-      this.selectAllOnPage();
-    }
-  }
-
-  /** Clear selection on the current page */
-  clearPageSelection() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.repEstList.forEach(row => {
-      this.reSelection.deselect(row);
-      selectedItems.delete(row.guid!);
-    });
-    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  }
-
-  /** Select all items on the current page */
-  selectAllOnPage() {
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.repEstList.forEach(row => {
-      this.reSelection.select(row);
-      selectedItems.add(row.guid!);
-    });
-    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  }
-
-  /** Handle row selection */
-  toggleRow(row: RepairItem) {
-    this.reSelection.toggle(row);
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    if (this.reSelection.isSelected(row)) {
-      selectedItems.add(row.guid!);
-    } else {
-      selectedItems.delete(row.guid!);
-    }
-    this.selectedItemsPerPage[this.pageIndex] = selectedItems;
-  }
-
-  /** Update selection for the current page */
-  updatePageSelection() {
-    this.reSelection.clear();
-    const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.repEstList.forEach(row => {
-      if (selectedItems.has(row.guid!)) {
-        this.reSelection.select(row);
-      }
-    });
   }
 
   cancelSelectedRows(row: StoringOrderItem[]) {
@@ -329,6 +293,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   public loadData() {
     this.onFilterRepair();
+    this.onFilterJobOrder();
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
@@ -393,36 +358,72 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   onFilterRepair() {
     const where: any = {
-      status_cv: { eq: "APPROVED" }
+      status_cv: { in: ["APPROVED"] }
     };
-
+    // or: [
+    //   { storing_order_tank: { tank_no: { contains: "" } } },
+    //   { estimate_no: { contains: "" } }
+    // ]
     if (this.filterRepairForm!.get('filterRepair')?.value) {
-      where.so_no = { contains: this.filterRepairForm!.get('filterRepair')?.value };
+      where.or = [
+        { storing_order_tank: { tank_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } },
+        { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
+      ];
     }
 
-    this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
-      this.updatePageSelection();
-    });
+    this.lastSearchCriteriaRepair = this.repairDS.addDeleteDtCriteria(where);
+    this.performSearchRepair(this.pageSizeRepair, this.pageIndexRepair, this.pageSizeRepair, undefined, undefined, undefined, () => { });
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.repairDS.searchRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+  onFilterJobOrder() {
+    const where: any = {
+      job_type_cv: { eq: "REPAIR" }
+    };
+
+    // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
+    //   where.so_no = { contains: this.filterRepairForm!.get('filterJobOrder')?.value };
+    // }
+
+    // TODO:: Get login user team
+    // if (false) {
+    //   where.team_guid = { eq: "" }
+    // }
+
+    this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
+    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+  }
+
+  performSearchRepair(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.subs.sink = this.repairDS.searchRepair(this.lastSearchCriteriaRepair, this.lastOrderByRepair, first, after, last, before)
       .subscribe(data => {
         this.repEstList = data.map(re => {
           return { ...re, net_cost: this.calculateNetCost(re) }
         });
-        this.endCursor = this.repairDS.pageInfo?.endCursor;
-        this.startCursor = this.repairDS.pageInfo?.startCursor;
-        this.hasNextPage = this.repairDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.repairDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursorRepair = this.repairDS.pageInfo?.endCursor;
+        this.startCursorRepair = this.repairDS.pageInfo?.startCursor;
+        this.hasNextPageRepair = this.repairDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageRepair = this.repairDS.pageInfo?.hasPreviousPage ?? false;
       });
 
-    this.pageSize = pageSize;
-    this.pageIndex = pageIndex;
+    this.pageSizeRepair = pageSize;
+    this.pageIndexRepair = pageIndex;
   }
 
-  onPageEvent(event: PageEvent) {
+  performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.subs.sink = this.joDS.searchJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+      .subscribe(data => {
+        this.jobOrderList = data;
+        this.endCursorJobOrder = this.repairDS.pageInfo?.endCursor;
+        this.startCursorJobOrder = this.repairDS.pageInfo?.startCursor;
+        this.hasNextPageJobOrder = this.repairDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageJobOrder = this.repairDS.pageInfo?.hasPreviousPage ?? false;
+      });
+
+    this.pageSizeJobOrder = pageSize;
+    this.pageIndexJobOrder = pageIndex;
+  }
+
+  onPageEventRepair(event: PageEvent) {
     const { pageIndex, pageSize } = event;
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;
@@ -430,28 +431,56 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     let before: string | undefined = undefined;
 
     // Check if the page size has changed
-    if (this.pageSize !== pageSize) {
+    if (this.pageSizeRepair !== pageSize) {
       // Reset pagination if page size has changed
-      this.pageIndex = 0;
+      this.pageIndexRepair = 0;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
-      if (pageIndex > this.pageIndex && this.hasNextPage) {
+      if (pageIndex > this.pageIndexRepair && this.hasNextPageRepair) {
         // Navigate forward
         first = pageSize;
-        after = this.endCursor;
-      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        after = this.endCursorRepair;
+      } else if (pageIndex < this.pageIndexRepair && this.hasPreviousPageRepair) {
         // Navigate backward
         last = pageSize;
-        before = this.startCursor;
+        before = this.startCursorRepair;
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
-      this.updatePageSelection();
-    });
+    this.performSearchRepair(pageSize, pageIndex, first, after, last, before, () => { });
+  }
+
+  onPageEventJobOrder(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSizeJobOrder !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndexJobOrder = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursorJobOrder;
+      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursorJobOrder;
+      }
+    }
+
+    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
   // mergeCriteria(criteria: any) {
