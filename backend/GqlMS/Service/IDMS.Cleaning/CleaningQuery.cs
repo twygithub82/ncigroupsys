@@ -2,7 +2,6 @@
 using HotChocolate;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using IDMS.Repair;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
 using IDMS.Service.GqlTypes;

@@ -7,8 +7,8 @@ using CommonUtil.Core.Service;
 using IDMS.Models.Service;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Repair.GqlTypes.LocalModel;
-using IDMS.Service.GqlTypes;
 using HotChocolate.Types;
+using IDMS.Service.GqlTypes;
 
 namespace IDMS.Repair.GqlTypes
 {

@@ -3,11 +3,11 @@ using HotChocolate.Types.Pagination;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Service.GqlTypes.DB;
 using HotChocolate.Data;
-using IDMS.Repair;
 using IDMS.Repair.GqlTypes;
 using IDMS.Residue.GqlTypes;
 using IDMS.Cleaning.GqlTypes;
 using IDMS.Service.GqlTypes;
+using IDMS.Repair;
 
 namespace IDMS.ServiceMS
 {

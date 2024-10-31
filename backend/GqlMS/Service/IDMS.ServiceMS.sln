@@ -3,23 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Service.Application", "IDMS.ServiceMS\IDMS.Service.Application.csproj", "{9B377F58-80EA-42B6-9BC3-D98FE7598492}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Service.Application", "IDMS.Service.Application\IDMS.Service.Application.csproj", "{9B377F58-80EA-42B6-9BC3-D98FE7598492}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Models", "..\..\Models\IDMS.Models\IDMS.Models.csproj", "{E72F9978-A824-4715-A40E-F8AC44227CB2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repair", "Repair", "{87557716-A479-4FA1-B6CE-B3CCF7F3B86E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Repair.GqlTypes", "Repair\IDMS.Repair\IDMS.Repair.GqlTypes.csproj", "{A5464503-5F1B-4AB5-A557-77495333AD48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Repair.GqlTypes", "IDMS.Repair\IDMS.Repair.GqlTypes.csproj", "{A5464503-5F1B-4AB5-A557-77495333AD48}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Residue", "Residue", "{7D7B4A64-AC0E-44CE-8851-E7285A8C56D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Residue.GqlTypes", "Residue\IDMS.Residue\IDMS.Residue.GqlTypes.csproj", "{484C10A1-D00E-4EEB-815C-E7458FFB82B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Residue.GqlTypes", "IDMS.Residue\IDMS.Residue.GqlTypes.csproj", "{484C10A1-D00E-4EEB-815C-E7458FFB82B3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cleaning", "Cleaning", "{87802D6A-7D07-4867-9BFA-CBA981554031}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Cleaning.GqlTypes", "IDMS.Cleaning\IDMS.Cleaning.GqlTypes.csproj", "{38A0A51E-7F62-4A80-944A-6C1D78B8AC6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDMS.Service.GqlTypes", "IDMS.Service.GqlTypes\IDMS.Service.GqlTypes.csproj", "{14B76433-E387-41C7-BB42-B8F7EEBD5EE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Service.GqlTypes", "IDMS.Service\IDMS.Service.GqlTypes.csproj", "{14B76433-E387-41C7-BB42-B8F7EEBD5EE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Steam", "Steam", "{63E0DA89-4859-4ADB-8D47-600A8A0B40DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
