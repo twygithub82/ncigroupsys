@@ -196,9 +196,11 @@ namespace IDMS.Residue.GqlTypes
                             throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
 
                         var customerGuid = item.customer_guid;
-                        var residuePart = await context.residue_part.Where(r => r.residue_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
-                        var partsTarifResidueGuids = residuePart.Select(x => x.tariff_residue_guid).ToArray();
+                        var residuePart = await context.residue_part.Where(r => r.residue_guid == item.guid &&
+                                                                            (!string.IsNullOrEmpty(r.tariff_residue_guid)) &&
+                                                                            (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
 
+                        var partsTarifResidueGuids = residuePart.Select(x => x.tariff_residue_guid).ToArray();
                         var packageResidue = await context.package_residue.Where(r => partsTarifResidueGuids.Contains(r.tariff_residue_guid) &&
                                             r.customer_company_guid == customerGuid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
 
@@ -222,7 +224,7 @@ namespace IDMS.Residue.GqlTypes
             }
         }
 
-        public async Task<int> RollbackRepairStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<int> RollbackResidueStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
                 [Service] IConfiguration config, ResidueRequest residue)
         {
             try
