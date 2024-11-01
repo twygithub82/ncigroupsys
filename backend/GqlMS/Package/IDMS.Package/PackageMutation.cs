@@ -10,9 +10,9 @@ using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 
-namespace IDMS.Models.Package.All.GqlTypes
+namespace IDMS.Models.Package.GqlTypes
 {
-    public class PackageAll_MutationType
+    public class PackageMutation
     {
 
         #region Package Cleaning methods

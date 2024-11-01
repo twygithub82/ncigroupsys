@@ -13,7 +13,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.Models.Package.Depot
+namespace IDMS.Models.Package.GqlTypes
 {
     internal class GqlUtils
     {

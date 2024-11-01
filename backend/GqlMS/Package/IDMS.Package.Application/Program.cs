@@ -8,6 +8,7 @@ using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using HotChocolate.Data;
 using IDMS.Models.DB;
+using IDMS.Models.Package.GqlTypes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,14 +37,14 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
                 .RegisterDbContext<ApplicationPackageDBContext>(DbContextKind.Pooled)
                 .AddAuthorization()
-               .AddQueryType<IDMS.Models.Package.All.GqlTypes.PackageAll_QueryType>()
-               .AddMutationType<IDMS.Models.Package.All.GqlTypes.PackageAll_MutationType>()
-               .AddFiltering()
-               .AddProjections()
-               .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
-               {
-                   MaxPageSize = 100
-               })
+                .AddQueryType<PackageQuery>()
+                .AddMutationType<PackageMutation>()
+                .AddFiltering()
+                .AddProjections()
+                .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
+                {
+                    MaxPageSize = 100
+                })
                .AddSorting();
 
 
