@@ -18,13 +18,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
-	  <ProjectReference Include="..\IDMS.EstimateTemplate.GqlTypes\IDMS.EstimateTemplate.GqlTypes.csproj" />
+	  <ProjectReference Include="..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
+	  <ProjectReference Include="..\IDMS.EstimateTemplate\IDMS.EstimateTemplate.GqlTypes.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Reference Include="CommonUtil.Core.Service">
-	    <HintPath>..\..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
+	    <HintPath>..\..\..\ShareUtil\CommonUtil\Release\CommonUtil.Core.Service.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 

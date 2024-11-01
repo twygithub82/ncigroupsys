@@ -3,13 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Master.Application", "IDMS.MasterMS\IDMS.Master.Application.csproj", "{E4210289-8CBD-45DF-8AA0-E2146A7AC414}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Master.Application", "IDMS.Master.Application\IDMS.Master.Application.csproj", "{E4210289-8CBD-45DF-8AA0-E2146A7AC414}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.EstimateTemplate.GqlTypes", "IDMS.EstimateTemplate.GqlTypes\IDMS.EstimateTemplate.GqlTypes.csproj", "{F791FF52-0654-40F4-8837-7670AED3BC97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.EstimateTemplate.GqlTypes", "IDMS.EstimateTemplate\IDMS.EstimateTemplate.GqlTypes.csproj", "{F791FF52-0654-40F4-8837-7670AED3BC97}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Models", "..\..\..\Models\IDMS.Models\IDMS.Models.csproj", "{AA988104-A3F8-4CF5-A427-A4385F8575A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Models", "..\..\Models\IDMS.Models\IDMS.Models.csproj", "{AA988104-A3F8-4CF5-A427-A4385F8575A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDMS.Customer.GqlTypes", "IDMS.Customer.GqlTypes\IDMS.Customer.GqlTypes.csproj", "{17B1A5A9-CCF0-4C85-90CC-A96EC9F78ED4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Customer.GqlTypes", "IDMS.Customer\IDMS.Customer.GqlTypes.csproj", "{17B1A5A9-CCF0-4C85-90CC-A96EC9F78ED4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CusCompany", "CusCompany", "{2BD7641F-5296-4815-854A-97596A035808}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EstimateTemplate", "EstimateTemplate", "{1870ADD4-B43C-48B9-81DF-161B69DEB60B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +40,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F791FF52-0654-40F4-8837-7670AED3BC97} = {1870ADD4-B43C-48B9-81DF-161B69DEB60B}
+		{17B1A5A9-CCF0-4C85-90CC-A96EC9F78ED4} = {2BD7641F-5296-4815-854A-97596A035808}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9793387-3E64-440D-9C2A-80C031A4C6D2}

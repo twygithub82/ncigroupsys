@@ -9,10 +9,7 @@ using CommonUtil.Core.Service;
 using IDMS.Customer.GqlTypes.LocalModel;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using IDMS.Models.Inventory;
 using static IDMS.Customer.GqlTypes.LocalModel.StatusConstant;
-using System.Xml.Schema;
-using System.Runtime.CompilerServices;
 
 namespace IDMS.Customer.GqlTypes
 {

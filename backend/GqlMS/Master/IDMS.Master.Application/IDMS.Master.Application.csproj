@@ -31,9 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
-    <ProjectReference Include="..\IDMS.Customer.GqlTypes\IDMS.Customer.GqlTypes.csproj" />
-    <ProjectReference Include="..\IDMS.EstimateTemplate.GqlTypes\IDMS.EstimateTemplate.GqlTypes.csproj" />
+    <ProjectReference Include="..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
+    <ProjectReference Include="..\IDMS.Customer\IDMS.Customer.GqlTypes.csproj" />
+    <ProjectReference Include="..\IDMS.EstimateTemplate\IDMS.EstimateTemplate.GqlTypes.csproj" />
   </ItemGroup>
 
 </Project>
