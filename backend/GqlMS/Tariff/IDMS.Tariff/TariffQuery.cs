@@ -9,9 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics.Eventing.Reader;
 
-namespace IDMS.Models.Tariff.All.GqlTypes
+namespace IDMS.Models.Tariff.GqlTypes
 {
-    public class TariffCleaning_QueryType
+    public class TariffQuery
     {
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]

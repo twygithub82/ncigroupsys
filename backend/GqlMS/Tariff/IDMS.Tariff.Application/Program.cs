@@ -2,12 +2,9 @@ using IDMS.Parameter.CleaningProcedure.Class;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using IDMS.Models.Tariff.Cleaning.GqlTypes;
 using Microsoft.EntityFrameworkCore;
-using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
-using HotChocolate.Data;
-using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.Models.Tariff.GqlTypes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,10 +33,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
                 .RegisterDbContext<ApplicationTariffDBContext>(DbContextKind.Pooled)
                 .AddAuthorization()
-               .AddQueryType<IDMS.Models.Tariff.All.GqlTypes.TariffCleaning_QueryType>()
-               .AddMutationType<IDMS.Models.Tariff.All.GqlTypes.TariffCleaning_MutationType>()
-               .AddFiltering()
-               .AddProjections()
+                .AddQueryType<TariffQuery>()
+                .AddMutationType<TariffMutation>()
+                .AddFiltering()
+                .AddProjections()
                 .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
                 {
                     MaxPageSize = 100
@@ -48,7 +45,8 @@ builder.Services.AddGraphQLServer()
 
 
 
-builder.Services.AddAuthentication(options => {
+builder.Services.AddAuthentication(options =>
+{
 
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;

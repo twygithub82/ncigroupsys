@@ -1,26 +1,15 @@
 ﻿using CommonUtil.Core.Service;
-using HotChocolate.Data;
-using IDMS.Models.DB;
-using IDMS.Models.Master;
 using IDMS.Models.Package;
-using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Shared;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace IDMS.Models.Tariff.All.GqlTypes
+namespace IDMS.Models.Tariff.GqlTypes
 {
-    public class TariffCleaning_MutationType
+    public class TariffMutation
     {
         #region Tariff Depot methods
 
