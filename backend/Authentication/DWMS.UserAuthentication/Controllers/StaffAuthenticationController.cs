@@ -10,11 +10,16 @@ using DWMS.UserAuthentication.Models.Authentication.Login;
 using DWMS.UserAuthentication.Models.Authentication.SignUp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.Xml;
 
 namespace DWMS.User.Authentication.API.Controllers
 {
@@ -113,52 +118,17 @@ namespace DWMS.User.Authentication.API.Controllers
                 var roles = assignRolesTeamsToUser.Roles;
                 var teams = assignRolesTeamsToUser.Teams;
 
-                var staffExist = await _userManager.FindByIdAsync(Username!);
+                var staffExist = await _userManager.FindByNameAsync(Username!);
                 if (staffExist == null) return StatusCode(StatusCodes.Status204NoContent, new Response() { Status = "Error", Message = new string[] { "The user not found" } });
+
+                var result = await AssignRolesTeams(staffExist.Id, roles, teams);
+                if (!(result is ObjectResult objectResult && objectResult.StatusCode == StatusCodes.Status200OK
+                   || result is StatusCodeResult statusCodeResult && statusCodeResult.StatusCode == StatusCodes.Status200OK))
+                {
+                    return result;
+                }
                 
-                foreach (var role in roles)
-                {
-
-                    if (!await _roleManager.RoleExistsAsync(role))
-                    {
-                        var ctRoleRes = await this.CreateRole(role);
-
-                        if (ctRoleRes == -1)
-                        {
-                            return StatusCode(StatusCodes.Status403Forbidden,
-                           new Response { Status = "Error", Message = new string[] { "This role doesn't  exists!" } });
-                        }
-                        //_roleManager.
-
-                    }
-
-
-                }
-                var staffRoles = await _userManager.GetRolesAsync(staffExist);
-                List<string> rvRoles= new List<string>();
-                foreach(var role in staffRoles)
-                {
-                    if(!roles.Contains(role))
-                    {
-                        rvRoles.Add(role);
-                    }
-                }
-
-                if (rvRoles.Count > 0)
-                {
-                    await _userManager.RemoveFromRolesAsync(staffExist, rvRoles);
-                }
-
-                foreach (var role in roles)
-                {
-                    if (!staffRoles.Contains(role))
-                    {
-                        await _userManager.AddToRoleAsync(staffExist, role);
-                    }
-                }
-
-
-                return StatusCode(StatusCodes.Status200OK,
+                    return StatusCode(StatusCodes.Status200OK,
                        new Response { Status = "Success", Message = new string[] { $"Staff roles and teams  successfully assigned - {Username}  !" } });
 
                 }
@@ -194,14 +164,6 @@ namespace DWMS.User.Authentication.API.Controllers
 
                     }
 
-                    //var token1 = await _userManager.GenerateEmailConfirmationTokenAsync(userExist);
-                    //var confirmationLink1 = Url.Action(nameof(ConfirmEmail), "Authentication", new { token1, email = userExist.Email }, Request.Scheme);
-                    //var message1 = new Message(new string[] { userExist.Email! }, "Confirmation email link", confirmationLink1);
-                    //_emailService.SendMail(message1);
-
-                    //return StatusCode(StatusCodes.Status200OK,
-                    //  new Response { Status = "Success", Message = new string[] { $"The activation email has been sent again successfully to {userExist.Email} for confirmation !" } });
-
                 }
 
                 ApplicationUser staff = new()
@@ -214,23 +176,7 @@ namespace DWMS.User.Authentication.API.Controllers
                     EmailConfirmed=true
                 };
 
-                var roles = registerStaff.Roles;
-                foreach (var role in roles)
-                {
-
-                    if (!await _roleManager.RoleExistsAsync(role))
-                    {
-                        var ctRoleRes = await this.CreateRole(role);
-
-                        if (ctRoleRes == -1)
-                        {
-                            return StatusCode(StatusCodes.Status403Forbidden,
-                           new Response { Status = "Error", Message = new string[] { "This role doesn't  exists!" } });
-                        }
-                        //_roleManager.
-
-                    }
-                }
+            
 
                 
                 var result = await _userManager.CreateAsync(staff, registerStaff.Password);
@@ -240,16 +186,15 @@ namespace DWMS.User.Authentication.API.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError,
                         new Response { Status = "Error", Message = Errors });
                 }
-
-                foreach (var role in roles)
-                {
-                    await _userManager.AddToRoleAsync(staff, role);
-                }
-
                 
-              
+                var userGuid = staff.Id;
 
-                return StatusCode(StatusCodes.Status200OK,
+                var rst= await AssignRolesTeams(userGuid, registerStaff.Roles, registerStaff.Teams);
+                if (!(rst is ObjectResult objectResult && objectResult.StatusCode == StatusCodes.Status200OK
+                                   || rst is StatusCodeResult statusCodeResult && statusCodeResult.StatusCode == StatusCodes.Status200OK))
+                    return rst;
+
+                    return StatusCode(StatusCodes.Status200OK,
                        new Response { Status = "Success", Message = new string[] { $"Staff created  successfully - {staff.UserName}  !" } });
 
             }
@@ -262,6 +207,316 @@ namespace DWMS.User.Authentication.API.Controllers
 
         }
 
+
+
+        [HttpDelete("RemoveStaff")]
+        public async Task<IActionResult> RemoveStaff([FromBody] string Username)
+        {
+            //string role = "Customer";
+            try
+            {
+                var UserName_action = User.Identity.Name;
+                var primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+                if (primarygroupSid != "a1")
+                {
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
+                }
+                var staffExist = await _userManager.FindByNameAsync(Username!);
+                if (staffExist == null) return StatusCode(StatusCodes.Status204NoContent, new Response() { Status = "Error", Message = new string[] { "The user not found" } });
+
+                var staffGuid = staffExist.Id;
+
+                var rst = await _userManager.DeleteAsync(staffExist);
+                if (rst.Succeeded)
+                {
+                    var userTeams = from tu in _dbContext.team_user where tu.userId == staffGuid select tu;
+                    if (userTeams.Any())
+                    {
+                        foreach (var t in userTeams)
+                        {
+                            t.delete_dt = Utilities.utils.GetNowEpochInSec();
+                            t.update_dt = Utilities.utils.GetNowEpochInSec();
+                            t.update_by = UserName_action;
+                        }
+
+                        _dbContext.SaveChanges();
+                    } 
+
+                    
+                }
+
+                return StatusCode(StatusCodes.Status200OK, new Response() { Status = "Error", Message = new string[] { "The user has been removed successfully" } });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }
+
+            return Unauthorized();
+
+        }
+
+
+        [HttpPost("QueryStaff")]
+        public async Task<IActionResult> QueryStaff([FromBody] QueryStaff staff)
+        {
+            //string role = "Customer";
+            try
+            {
+                var primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+                if (primarygroupSid != "a1")
+                {
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
+                }
+
+                List<QueryStaffResult> result = new List<QueryStaffResult>();
+
+                // Start the query with users filtered by role and isStaff flag
+                var usersQuery = _dbContext.Users
+                    .Where(u => u.UserName != "admin" && u.isStaff == true);
+
+                // Apply email filter if provided
+                if (!string.IsNullOrEmpty(staff.Email))
+                {
+                    usersQuery = usersQuery.Where(u => u.Email.Contains(staff.Email));
+                }
+
+                // Apply username filter if provided
+                if (!string.IsNullOrEmpty(staff.Username))
+                {
+                    usersQuery = usersQuery.Where(u => u.UserName == staff.Username);
+                }
+
+                var users = await usersQuery.ToListAsync();
+
+                foreach (var usr in users)
+                {
+                    QueryStaffResult s = new QueryStaffResult()
+                    {
+                        Email = usr.Email,
+                        Username = usr.UserName,
+                    };
+
+                    var roles =await _userManager.GetRolesAsync(usr);
+                    s.Roles = roles?.ToList();
+
+                    var userTeams = from tu in _dbContext.team_user
+                                    join t in _dbContext.team on tu.team_guid equals t.guid
+                                    where tu.userId == usr.Id && tu.delete_dt == null
+                                    select new { t.description, Department = t.department_cv };
+
+                    s.Teams = userTeams.Select(ut => new Team
+                    {
+                        Description = ut.description,
+                        Department = ut.Department
+                    }).ToList();
+
+                    // Filter roles if provided
+                    result.Add(s);
+                }
+
+                if (!string.IsNullOrEmpty(staff.Role))
+                {
+                    result = result.Where(r => r.Roles != null && r.Roles.Contains(staff.Role)).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(staff.TeamDescription))
+                {
+                    result = result.Where(r => r.Teams != null && r.Teams.Any(t=>t.Description==staff.TeamDescription)).ToList();
+                }
+
+                return StatusCode(StatusCodes.Status200OK, result);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }
+
+            return Unauthorized();
+
+        }
+
+        private async Task<IActionResult> AssignRolesTeams(string userGuid, List<string> roles ,List<Team>teams)
+        {
+            try
+            {
+                var result = await AssignUserToRoles(userGuid, roles);
+                if (result is ObjectResult objectResult && objectResult.StatusCode == StatusCodes.Status200OK
+                    || result is StatusCodeResult statusCodeResult && statusCodeResult.StatusCode == StatusCodes.Status200OK)
+                {
+                    return await AssignUserToTeams(userGuid, teams);
+                }
+                else
+                {
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     new Response { Status = "Success", Message = new string[] { $"{ex.Message}" } }); ;
+            }
+
+            return StatusCode(StatusCodes.Status200OK,
+                      new Response { Status = "Success", Message = new string[] { $"Assign roles and teams to staff  successfully !" } }); ;
+        }
+        private async Task<IActionResult> AssignUserToRoles(string userGuid, List<string> roles)
+        {
+            
+
+            try
+            {
+                //var roles = registerStaff.Roles;
+                ApplicationUser user = await _userManager.FindByIdAsync(userGuid);
+                var userRoles = await _userManager.GetRolesAsync(user);
+                if (user == null) {
+                    return StatusCode(StatusCodes.Status403Forbidden,
+                          new Response { Status = "Error", Message = new string[] { "This staff not found!" } });
+                }
+
+                foreach (var role in roles)
+                {
+
+                    if (!await _roleManager.RoleExistsAsync(role))
+                    {
+                        var ctRoleRes = await this.CreateRole(role);
+
+                        if (ctRoleRes == -1)
+                        {
+                            return StatusCode(StatusCodes.Status403Forbidden,
+                           new Response { Status = "Error", Message = new string[] { "This role fail to create!" } });
+                        }
+                        //_roleManager.
+
+                    }
+                }
+
+
+                foreach (var role in roles)
+                {
+                    if (!userRoles.Contains(role))
+                    {
+                        await _userManager.AddToRoleAsync(user, role);
+                    }
+                }
+
+                foreach (var role in userRoles)
+                {
+                    if (!roles.Contains(role))
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, role);
+                    }
+                }
+
+
+            }
+            catch { }
+
+            return StatusCode(StatusCodes.Status200OK,
+                       new Response { Status = "Success", Message = new string[] { $"Assign roles to staff  successfully !" } }); ;
+        }
+
+
+
+        private async Task<IActionResult> AssignUserToTeams(string userGuid,  List<Team> teams)
+        {
+            
+            try
+            {
+                var UserName_action = User.Identity.Name;
+                
+
+                var userTeams = from tu in _dbContext.team_user
+                            join t in _dbContext.team
+                            on tu.team_guid equals t.guid
+                            where (from u in _dbContext.Users where u.Id == userGuid select u.Id).Contains(tu.userId) && tu.delete_dt == null
+                                select new { team_user_guid=tu.guid, team_guid=t.guid, userId=tu.userId,  t.description,department= t.department_cv };
+
+                var teamList = teams.ToList();
+                var newTeamIds = _dbContext.team
+                         .AsEnumerable() // Switch to client evaluation
+                         .Where(t => teamList.Any(a => a.Department == t.department_cv && a.Description == t.description))
+                         .Select(t => t.guid) // Assuming `guid` is the ID of the team
+                         .ToList();
+
+                var removedUserTeams = _dbContext.team_user
+                   .Where(tu => tu.userId == userGuid && tu.delete_dt == null && !newTeamIds.Contains(tu.team_guid))
+                   .ToList();
+                
+                List<team_user> assignedUserTeams = new List<team_user>();
+                List<team> newTeams = new List<team>();
+                foreach (var team in teams)
+                {
+                    team_user tu = null;
+                    var newTeam = from t in _dbContext.team where (t.description == team.Description && t.department_cv == team.Department) select t;
+                    if (!newTeam.Any())
+                    {
+                        var nt = new team();
+                        nt.guid = Utilities.utils.GetGuidString();
+                        nt.description = team.Description;
+                        nt.department_cv = team.Department;
+                        nt.create_by = UserName_action;
+                        nt.create_dt = Utilities.utils.GetNowEpochInSec();
+
+                        newTeams.Add(nt);
+
+                        tu = new team_user()
+                        {
+                            guid = Utilities.utils.GetGuidString(),
+                            userId = userGuid,
+                            team_guid = nt.guid,
+                            create_by = UserName_action,
+                            create_dt = Utilities.utils.GetNowEpochInSec()
+                        };
+                    }
+                    else 
+                    {
+                        var team_guid= newTeam?.First().guid;
+                        var tus = from u in userTeams where (u.userId == userGuid && u.team_guid == team_guid) select u;
+
+                        if (!tus.Any())
+                        {
+                            tu = new team_user();
+                            tu.guid = Utilities.utils.GetGuidString();
+                            tu.userId = userGuid;
+                            tu.team_guid = newTeam?.First().guid;
+                            tu.create_by = UserName_action;
+                            tu.create_dt = Utilities.utils.GetNowEpochInSec();
+                        }
+                        
+
+
+                    }
+                    if(tu!=null)assignedUserTeams.Add(tu);
+                    
+                }
+                // Add discrepancies (teams not in 'teams' input) to the removedUserTeams
+                foreach (var t in removedUserTeams)
+                {
+                    t.delete_dt = Utilities.utils.GetNowEpochInSec();
+                    t.update_dt = Utilities.utils.GetNowEpochInSec();
+                    t.update_by = UserName_action;
+                }
+
+
+                await _dbContext.team_user.AddRangeAsync(assignedUserTeams);
+                await _dbContext.team.AddRangeAsync(newTeams);
+                await _dbContext.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                      new Response { Status = "Success", Message = new string[] { $"{ex.Message}" } }); 
+            }
+
+            return StatusCode(StatusCodes.Status200OK,
+                      new Response { Status = "Success", Message = new string[] { $"Assign teams to staff  successfully !" } }); ;
+        }
         private async Task<int> CreateRole(string roleName)
         {
             int retval = 0;

@@ -19,4 +19,32 @@ namespace DWMS.UserAuthentication.Models.Authentication.SignUp
         [Required(ErrorMessage = "CorporateId is required")]
         public int? CorporateId { get; set; }
     }
+
+
+    public class QueryStaff 
+    {
+        
+        public string? Username { get; set; }
+
+        
+        public string? Email { get; set; }
+
+
+        public string? Role { get; set; }
+
+        public string? TeamDescription { get; set; }
+
+    }
+
+    public class QueryStaffResult:RolesTeams
+    {
+        
+        public string? Username { get; set; }
+
+        
+        public string? Email { get; set; }
+
+
+
+    }
 }

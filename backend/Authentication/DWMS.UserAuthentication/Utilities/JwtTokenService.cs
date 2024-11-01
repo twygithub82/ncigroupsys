@@ -65,11 +65,19 @@ namespace DWMS.User.Authentication.API.Utilities
                                 where (from r in _dbContext.UserRoles where r.UserId == userId select r.RoleId).Contains(rf.role_guid)
                                 select f.name;
 
+            var teams = from tu in _dbContext.team_user
+                        join t in _dbContext.team
+                        on tu.team_guid equals t.guid
+                        where (from u in _dbContext.Users where u.Id == userId select u.Id).Contains(tu.userId)
+                        select new { t.description, department= t.department_cv };
+
+            JArray teamsArray = JArray.FromObject(teams);
+
             JArray functionNamesArray = JArray.FromObject(functionNames);
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
             var exp = DateTime.Now.AddHours(_duration);
-            List<Claim> authClaims = GetClaims(userType, loginId, email, roles, functionNamesArray);
+            List<Claim> authClaims = GetClaims(userType, loginId, email, roles, functionNamesArray, teamsArray);
             var token = new JwtSecurityToken(
                   issuer: _issuer,
                   audience: _audience,
@@ -80,7 +88,7 @@ namespace DWMS.User.Authentication.API.Utilities
             return token;
         }
 
-         List<Claim> GetClaims(int userType, string loginId, string email, IList<string> roles, JArray functionsRight)
+         List<Claim> GetClaims(int userType, string loginId, string email, IList<string> roles, JArray functionsRight,JArray teams)
         {
             var authClaims = new List<Claim>();
 
@@ -88,6 +96,7 @@ namespace DWMS.User.Authentication.API.Utilities
             authClaims.Add(new Claim(ClaimTypes.Name, loginId));
             authClaims.Add(new Claim(ClaimTypes.Email, email));
             authClaims.Add(new Claim(ClaimTypes.UserData, functionsRight.ToString()));
+            authClaims.Add(new Claim(ClaimTypes.UserData, teams.ToString()));
 
             if (userType == 1)
             {

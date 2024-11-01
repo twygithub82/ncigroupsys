@@ -3,6 +3,7 @@ using DWMS.UserAuthentication.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 
 namespace DWMS.UserAuthentication.DB
 {
@@ -15,6 +16,10 @@ namespace DWMS.UserAuthentication.DB
 
         public DbSet<functions> functions { get; set; }
         public DbSet<role_function> role_function { get; set; }
+
+        public DbSet<team> team { get; set; }
+        
+        public DbSet<team_user> team_user { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
