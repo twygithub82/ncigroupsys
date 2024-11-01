@@ -1,25 +1,14 @@
 ﻿using CommonUtil.Core.Service;
-using HotChocolate.Data;
-using IDMS.Models.Master;
 using IDMS.Models.Package;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace IDMS.Models.Parameter.CleaningMethod.GqlTypes
+namespace IDMS.Models.Parameter.GqlTypes
 {
-    public class CleanningMethod_MutationType
+    public class CleanningMethodMutation
     {
-
-
 
         #region Cleaning Methods
         public async Task<int> AddCleaningMethod(ApplicationParameterDBContext context,

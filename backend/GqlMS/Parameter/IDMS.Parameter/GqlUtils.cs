@@ -13,7 +13,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.Models.Parameter.CleaningMethod
+namespace IDMS.Models.Parameter.GqlTypes
 {
     internal class GqlUtils
     {

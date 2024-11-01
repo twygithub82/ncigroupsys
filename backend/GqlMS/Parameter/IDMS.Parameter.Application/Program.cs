@@ -2,7 +2,7 @@ using IDMS.Parameter.CleaningProcedure.Class;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using IDMS.Models.Parameter.CleaningMethod.GqlTypes;
+using IDMS.Models.Parameter.GqlTypes;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 
@@ -33,8 +33,8 @@ builder.Services.AddGraphQLServer()
     .InitializeOnStartup()
     .RegisterDbContext<ApplicationParameterDBContext>(DbContextKind.Pooled)
     //.RegisterDbContext<ApplicationParameterDBContext>(DbContextKind.Synchronized)
-    .AddQueryType<IDMS.Models.Parameter.CleaningMethod.GqlTypes.CleaningMethod_QueryType>()
-    .AddMutationType<IDMS.Models.Parameter.CleaningMethod.GqlTypes.CleanningMethod_MutationType>()
+    .AddQueryType<CleaningMethodQuery>()
+    .AddMutationType<CleanningMethodMutation>()
     .AddFiltering()
     .AddProjections()
      .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions

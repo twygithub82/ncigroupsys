@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Models\IDMS.Models\IDMS.Models.csproj" />
-    <ProjectReference Include="..\IDMS.Parameter.CategoryMethod.GqlTypes\IDMS.Models.Parameter.CategoryMethod.GqlTypes.csproj" />
+    <ProjectReference Include="..\IDMS.Parameter\IDMS.Parameter.GqlTypes.csproj" />
   </ItemGroup>
 
   <ItemGroup>

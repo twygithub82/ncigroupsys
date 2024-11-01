@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Parameter.CategoryMethod", "IDMS.Parameter.CategoryMethod\IDMS.Parameter.CategoryMethod.csproj", "{5EBF585A-0F39-4002-A714-AD08B4A9AC09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Parameter.Application", "IDMS.Parameter.Application\IDMS.Parameter.Application.csproj", "{5EBF585A-0F39-4002-A714-AD08B4A9AC09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDMS.Models.Parameter.CategoryMethod.GqlTypes", "IDMS.Parameter.CategoryMethod.GqlTypes\IDMS.Models.Parameter.CategoryMethod.GqlTypes.csproj", "{F71BB51F-EBAC-4448-88ED-F7C1CF95848C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Parameter.GqlTypes", "IDMS.Parameter\IDMS.Parameter.GqlTypes.csproj", "{F71BB51F-EBAC-4448-88ED-F7C1CF95848C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDMS.Models", "..\..\Models\IDMS.Models\IDMS.Models.csproj", "{496420D5-477E-4DCA-9F7E-0D3C28C9A761}"
 EndProject
