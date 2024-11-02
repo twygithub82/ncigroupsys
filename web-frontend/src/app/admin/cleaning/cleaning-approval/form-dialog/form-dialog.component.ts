@@ -430,6 +430,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         rep.remarks=this.pcForm.get("remarks")?.value;
         break;
       case "NO_ACTION":
+        rep.action="NA";
         rep.na_dt=Utility.convertDate(this.pcForm.get("no_action_dt")?.value)as number;
         rep.remarks=this.pcForm.get("remarks")?.value;
         break;
