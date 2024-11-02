@@ -59,15 +59,25 @@ namespace IDMS.Survey.GqlTypes
                     ingate.update_dt = currentDateTime;
                 }
 
-                var tnk = inGateRequest.tank;
-                storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
-                context.Attach(sot);
-                sot.unit_type_guid = tnk.unit_type_guid;
-                sot.owner_guid = tnk.owner_guid;
+
+                if(inGateRequest.tank == null || string.IsNullOrEmpty(inGateRequest.tank.guid))
+                    throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
+
+                var tank = inGateRequest.tank;
+                //storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
+                storing_order_tank? sot = await context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
+                    .                                               Where(t => t.guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                
+                if (sot == null)
+                    throw new GraphQLException(new Error("Storing order tank not found.", "NOT FOUND"));
+                
+                //context.Attach(sot);
+                sot.unit_type_guid = tank.unit_type_guid;
+                sot.owner_guid = tank.owner_guid;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
                 sot.tank_status_cv = TankMovementStatus.STORAGE;
-                if ((tnk.purpose_cleaning ?? false) || (tnk.purpose_steam ?? false))
+                if ((tank.purpose_cleaning ?? false) || (tank.purpose_steam ?? false))
                 {
                     sot.tank_status_cv = TankMovementStatus.CLEANING;
                     needAddCleaning = true;
@@ -78,7 +88,7 @@ namespace IDMS.Survey.GqlTypes
 
                 //Add into in_gate_cleaning
                 if (needAddCleaning)
-                    await AddCleaning(context, config, httpContextAccessor, tnk.guid, ingate.create_dt, ingateSurvey.tank_comp_guid);
+                    await AddCleaning(context, config, httpContextAccessor, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
 
                 retval = await context.SaveChangesAsync();
                 //TODO
@@ -234,23 +244,22 @@ namespace IDMS.Survey.GqlTypes
         }
 
         private async Task<int> AddCleaning(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-        [Service] IHttpContextAccessor httpContextAccessor, string sot_Guid, long? ingate_date, string tariffBufferGuid)
+        [Service] IHttpContextAccessor httpContextAccessor, storing_order_tank sot, long? ingate_date, string tariffBufferGuid)
         {
             int retval = 0;
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var sot = context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
-                    .Where(t => t.guid == sot_Guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefault();
+                //var sot = context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
+                //    .Where(t => t.guid == sot_Guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefault();
 
                 var ingateCleaning = new cleaning();
                 ingateCleaning.guid = Util.GenerateGUID();
                 ingateCleaning.create_by = user;
                 ingateCleaning.create_dt = currentDateTime;
-                ingateCleaning.sot_guid = sot_Guid;
+                ingateCleaning.sot_guid = sot.guid;
                 ingateCleaning.approve_dt = ingate_date;
                 ingateCleaning.approve_by = "system";
                 ingateCleaning.status_cv = "APPROVE";
