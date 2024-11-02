@@ -1,10 +1,12 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.Models.Service
 {
     public class steaming_temp: Dates
     {
+        [Key]
         public string? guid {  get; set; }
 
         [ForeignKey("job_order")]
