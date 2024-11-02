@@ -526,7 +526,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   NoActionTank(row:InGateItem)
   {
-    this.popupDialogForm(row,"noaction");
+    this.popupDialogForm(row,"no_action");
    
   }
 

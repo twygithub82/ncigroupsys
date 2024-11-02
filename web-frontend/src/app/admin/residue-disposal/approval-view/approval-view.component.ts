@@ -604,16 +604,6 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     this.updateData(data);
   }
 
-  // addRepairEstPart(result: any) {
-  //   const data = [...this.repList];
-  //   const newItem = new RepairPartItem({
-  //     ...result.item,
-  //   });
-  //   data.push(newItem);
-
-  //   this.updateData(data);
-  // }
-
   // context menu
   onContextMenu(event: MouseEvent, item: AdvanceTable) {
     this.preventDefault(event);
@@ -631,73 +621,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     // Add any additional logic if needed
   }
 
-  // onFormSubmit() {
-
-  //   this.residueEstForm!.get('desc')?.setErrors(null);
-  //   this.residueEstForm!.get('qty')?.setErrors(null);
-  //   this.residueEstForm!.get('unit_price')?.setErrors(null);
-  //   this.residueEstForm!.get('deList')?.setErrors(null);
-
-  //   if(!this.deList.length){
-  //     this.residueEstForm?.get('deList')?.setErrors({ required: true });
-  //   }
-  //   if(!this.residueEstForm?.valid) return;
-
-
-  //   if(this.historyState.action==="NEW")
-  //   {
-  //      var newResidueItem :ResidueItem =new ResidueItem();
-  //      var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
-  //      newResidueItem.bill_to_guid= billGuid;
-  //      newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
-  //      newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-  //      newResidueItem.status_cv="PENDING";
-  //      newResidueItem.sot_guid=this.sotItem?.guid;
-  //      newResidueItem.residue_part= [];
-  //      this.deList.forEach(data=>{
-  //         var residuePart : ResiduePartItem = new ResiduePartItem(data);
-  //         newResidueItem.residue_part?.push(residuePart);
-
-  //      });
-
-  //      delete newResidueItem.customer_company;
-      
-  //      this.residueDS.addResidue(newResidueItem).subscribe(result=>{
-
-  //         if(result.data.addResidue>0)
-  //         {
-  //           this.handleSaveSuccess(result.data.addResidue);
-  //         }
-  //      });
-  //   }
-  //   else if(this.historyState.action==="UPDATE")
-  //   {
-  //     var updResidueItem :ResidueItem =new ResidueItem(this.residueItem);
-  //     var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
-  //     updResidueItem.bill_to_guid= billGuid;
-  //     updResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
-  //     updResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-  //     updResidueItem.sot_guid=this.sotItem?.guid;
-  //     updResidueItem.residue_part= [];
-  //     this.deList.forEach(data=>{
-  //        var residuePart : ResiduePartItem = new ResiduePartItem(data);
-  //        updResidueItem.residue_part?.push(residuePart);
-
-  //     });
-
-  //     delete updResidueItem.customer_company;
-
-  //     this.residueDS.updateResidue(updResidueItem).subscribe(result=>{
-
-  //       if(result.data.updateResidue>0)
-  //       {
-  //         this.handleSaveSuccess(result.data.updateResidue);
-  //       }
-  //    });
-
-  //   }
-   
-  // }
+  
 
   updateData(newData: ResiduePartItem[] | undefined): void {
     if (newData?.length) {
@@ -725,11 +649,6 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     newSot.unit_type_guid = row.unit_type_guid;
     newSot.last_cargo_guid = row.last_cargo_guid;
     newSot.tariff_cleaning = row.tariff_cleaning;
-    // newSot.purpose_cleaning = row.purpose_cleaning;
-    // newSot.purpose_storage = row.purpose_storage;
-    // newSot.purpose_repair_cv = row.purpose_repair_cv;
-    // newSot.purpose_steam = row.purpose_steam;
-    // newSot.required_temp = row.required_temp;
     newSot.clean_status_cv = row.clean_status_cv;
     newSot.certificate_cv = row.certificate_cv;
     newSot.so_guid = row.so_guid;

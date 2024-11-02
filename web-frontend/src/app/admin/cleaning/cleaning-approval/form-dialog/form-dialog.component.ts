@@ -279,8 +279,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.fb.group({
       selectedItems: this.selectedItems,
       job_no_input:[''],
-      approved_dt:[''],
-      no_action_dt:[''],
+      approved_dt:[new Date()],
+      no_action_dt:[new Date()],
       remarks:[''],
       tank_no:[''],
       customer:[''],
@@ -293,9 +293,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       customer_approval_cost:['-'],
       update_by:[''],
       update_on:[''],
-      
-      
-
     });
   }
 
@@ -355,6 +352,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
          customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
          update_by:inGateClnItem.approve_by,
          update_on:this.displayDateFromEpoch(inGateClnItem.approve_dt),
+         job_no_input:inGateClnItem.job_no,
         
       });
 
@@ -372,15 +370,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return String(cc?.code ? `${cc.code} (${cc.name})` : '');
 }
 
-  queryDepotCost()
-  {
-    // const where:any={ customer_company: { guid: { eq: this.selectedItem.guid } } };
-    
-    // this.packageDepotDS?.SearchPackageDepot(where,{},50).subscribe((data:PackageDepotItem[])=>{
-    //   this.packageDepotItems=data;
-
-    // });
-  }
+ 
   
   selectStorageCalculateCV_Description(valCode?:string):CodeValuesItem
   {
@@ -396,15 +386,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     
   }
   
-
-  
-  // selectClassNo(value:string):void{
-  //   const returnDialog: DialogData = {
-  //     selectedValue:value
-  //   }
-  //   console.log('valid');
-  //   this.dialogRef.close(returnDialog);
-  // }
 
   canEdit()
   {
@@ -455,11 +436,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
     
     this.igCleanDS.updateInGateCleaning(rep).subscribe(result=>{
-        if(result.data.updateInGateCleaning>0)
+        if(result.data.updateCleaning>0)
         {
          
                   console.log('valid');
-                  this.handleSaveSuccess(result.data.updateInGateCleaning);
+                  this.handleSaveSuccess(result.data.updateCleaning);
   
         }
       });
@@ -491,7 +472,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       case "approve":
         retval=this.translatedLangText.APPROVE;
         break;
-      case "noaction":
+      case "no_action":
         retval = this.translatedLangText.NO_ACTION;
         break;
       case "view":
@@ -511,7 +492,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   ShowRemarks()
   {
-    var validActions :string[]= ["kiv","noaction"];
+    var validActions :string[]= ["kiv","no_action"];
     return validActions.includes(this.action);
   }
 
@@ -523,7 +504,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   ShowNoActionDate()
   {
-    var validActions :string[]= ["noaction"];
+    var validActions :string[]= ["no_action"];
     return validActions.includes(this.action);
   }
 

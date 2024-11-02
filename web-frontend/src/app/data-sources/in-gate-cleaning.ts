@@ -397,8 +397,8 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
 // `;
 
 export const UPDATE_IN_GATE_CLEANING = gql`
-  mutation updateInGateCleaning($inGateClean: in_gate_cleaningInput!) {
-    updateInGateCleaning(inGateCleaning: $inGateClean)
+  mutation updateCleaning($clean: cleaningInput!) {
+    updateCleaning(cleaning: $clean)
   }
 `;
 
@@ -434,11 +434,11 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
 
  
 
-  updateInGateCleaning(inGateClean: any): Observable<any> {
+  updateInGateCleaning(clean: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_IN_GATE_CLEANING,
       variables: {
-        inGateClean
+        clean
       }
     });
   }
