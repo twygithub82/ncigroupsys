@@ -8,5 +8,7 @@ namespace DWMS.UserAuthentication.Models
         public int CorporateID { get; set; }
 
         public bool isStaff { get; set; } = false;
+
+        
     }
 }

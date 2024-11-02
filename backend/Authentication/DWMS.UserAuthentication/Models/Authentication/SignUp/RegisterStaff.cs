@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DWMS.User.Authentication.API.Models.Authentication;
+using System.ComponentModel.DataAnnotations;
 
 namespace DWMS.UserAuthentication.Models.Authentication.SignUp
 {
-    public class RegisterStaff
+    public class RegisterStaff:RolesTeams
     {
         [Required(ErrorMessage = "User Name is required")]
         public string? Username { get; set; }
@@ -17,5 +18,33 @@ namespace DWMS.UserAuthentication.Models.Authentication.SignUp
 
         [Required(ErrorMessage = "CorporateId is required")]
         public int? CorporateId { get; set; }
+    }
+
+
+    public class QueryStaff 
+    {
+        
+        public string? Username { get; set; }
+
+        
+        public string? Email { get; set; }
+
+
+        public string? Role { get; set; }
+
+        public string? TeamDescription { get; set; }
+
+    }
+
+    public class QueryStaffResult:RolesTeams
+    {
+        
+        public string? Username { get; set; }
+
+        
+        public string? Email { get; set; }
+
+
+
     }
 }
