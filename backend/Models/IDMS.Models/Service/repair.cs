@@ -32,6 +32,7 @@ namespace IDMS.Models.Service
         public string? job_no { get; set; }
         public double? total_hour { get; set; }
         public long? complete_dt { get; set; }
+        public long? na_dt { get; set; }
 
         [ForeignKey("customer_company")]
         public string? bill_to_guid { get; set; }
