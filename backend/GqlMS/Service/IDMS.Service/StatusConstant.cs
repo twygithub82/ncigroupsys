@@ -12,6 +12,7 @@ namespace IDMS.Service.GqlTypes
         public const string CANCELED = "CANCELED";
         public const string NO_ACTION = "NO_ACTION";
         public const string KIV = "KIV";
+        public const string COMPLETED = "COMPLETED";
     }
 
     public static class JobStatus
