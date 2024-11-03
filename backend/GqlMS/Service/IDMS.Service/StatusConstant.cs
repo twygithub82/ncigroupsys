@@ -13,13 +13,14 @@ namespace IDMS.Service.GqlTypes
         public const string NO_ACTION = "NO_ACTION";
         public const string KIV = "KIV";
         public const string COMPLETED = "COMPLETED";
+        public const string JOB_IN_PROGRESS = "JOB_IN_PROGRESS";
     }
 
     public static class JobStatus
     {
         public const string IN_PROGRESS = "JOB_IN_PROGRESS";
         public const string PENDING = "PENDING";
-        public const string COMPLETE = "COMPLETE";
+        public const string COMPLETED = "COMPLETED";
     }
 
     public static class ObjectAction
