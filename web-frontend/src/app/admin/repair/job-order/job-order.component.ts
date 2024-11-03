@@ -109,7 +109,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     'job_order_no',
     'customer',
     'estimate_no',
-    'status_cv'
+    'status_cv',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
@@ -360,10 +361,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     const where: any = {
       status_cv: { in: ["APPROVED"] }
     };
-    // or: [
-    //   { storing_order_tank: { tank_no: { contains: "" } } },
-    //   { estimate_no: { contains: "" } }
-    // ]
+
     if (this.filterRepairForm!.get('filterRepair')?.value) {
       where.or = [
         { storing_order_tank: { tank_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } },
@@ -379,9 +377,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     const where: any = {
       job_type_cv: { eq: "REPAIR" }
     };
-
-    // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
-    //   where.so_no = { contains: this.filterRepairForm!.get('filterJobOrder')?.value };
+    
+    // if (this.filterRepairForm!.get('filterJobOrder')?.value) {
+    //   where.or = [
+    //     { storing_order_tank: { tank_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } },
+    //     { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
+    //   ];
     // }
 
     // TODO:: Get login user team
