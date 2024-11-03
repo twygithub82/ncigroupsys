@@ -7,6 +7,7 @@ using CommonUtil.Core.Service;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Service.GqlTypes.LocalModel;
 using System.Collections;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -40,7 +41,7 @@ namespace IDMS.Service.GqlTypes
                             newJobOrder.job_type_cv = item.job_type_cv;
                             newJobOrder.status_cv = CurrentServiceStatus.PENDING;
                             newJobOrder.total_hour = item.total_hour;
-                            newJobOrder.working_hour = item.working_hour;
+                            //newJobOrder.working_hour = item.working_hour;
                             newJobOrder.remarks = item.remarks;
                             newJobOrder.create_by = user;
                             newJobOrder.create_dt = currentDateTime;
@@ -56,7 +57,7 @@ namespace IDMS.Service.GqlTypes
                             updateJobOrder.team_guid = item.team_guid;
                             updateJobOrder.job_type_cv = item.job_type_cv;
                             updateJobOrder.total_hour = item.total_hour;
-                            updateJobOrder.working_hour = item.working_hour;
+                            //updateJobOrder.working_hour = item.working_hour;
                             updateJobOrder.remarks = item.remarks;
                             updateJobOrder.update_by = user;
                             updateJobOrder.update_dt = currentDateTime;
@@ -192,7 +193,7 @@ namespace IDMS.Service.GqlTypes
 
                     jobOrder.complete_dt = currentDateTime;
                     jobOrder.remarks = item.remarks;
-                    jobOrder.status_cv = JobStatus.COMPLETE;
+                    jobOrder.status_cv = JobStatus.COMPLETED;
                     jobOrder.update_dt = currentDateTime;
                     jobOrder.update_by = user;
                 }
@@ -254,7 +255,7 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        public async Task<int> CompleteEntireJobProcess (ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<int> CompleteEntireJobProcess(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<JobProcessRequest> jobProcessRequest)
         {
             try
@@ -299,41 +300,6 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
-                                                string jobType, string jobOrderGuid, List<string?>? partGuid)
-        {
-            string tableName = "";
-
-            try
-            {
-                switch (jobType.ToUpper())
-                {
-                    case JobType.REPAIR:
-                        tableName = "repair_part";
-                        break;
-                    case JobType.CLEANING:
-                        tableName = "cleaning";
-                        break;
-                    case JobType.RESIDUE:
-                        tableName = "residue_part";
-                        break;
-                    case JobType.STEAM:
-                        tableName = "steaming_temp";
-                        break;
-                }
-
-                var guids = string.Join(",", partGuid.Select(g => $"'{g}'"));
-                string sql = $"UPDATE {tableName} SET update_dt = {currentDateTime}, update_by = '{user}', job_order_guid = '{jobOrderGuid}' WHERE guid IN ({guids})";
-                var ret = context.Database.ExecuteSqlRaw(sql);
-
-                return ret;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
         //private void AssignPartToJob(ApplicationServiceDBContext context, string jobType, string jobOrderGuid, List<string?>? partGuid)
         //{
         //    switch (jobType.ToUpper())
@@ -372,8 +338,6 @@ namespace IDMS.Service.GqlTypes
         //            break;
         //    }
         //}
-
-
 
         public async Task<int> StartJobTimer(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<time_table> timeTable)
@@ -459,6 +423,85 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
+
+        public async Task<int> UpdateJobProcessToInProgress(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, string processGuid, string jobType)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+                string tableName = "";
+
+                dynamic classObject = null;
+
+                switch (jobType.ToUpper())
+                {
+                    case JobType.REPAIR:
+                        tableName = "repair";
+                        break;
+                    case JobType.CLEANING:
+                        tableName = "cleaning";
+                        break;
+                    case JobType.RESIDUE:
+                        tableName = "residue";
+                        break;
+                    case JobType.STEAM:
+                        tableName = "steaming";
+                        break;
+                }
+
+
+                //var guids = string.Join(",", jobProcessRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                string sql = $"UPDATE {tableName} SET status_cv = '{CurrentServiceStatus.JOB_IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                             $"update_by = '{user}' WHERE guid = '{processGuid}'";
+
+                var ret = context.Database.ExecuteSqlRaw(sql);
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+
+        private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
+                                                string jobType, string jobOrderGuid, List<string?>? partGuid)
+        {
+            string tableName = "";
+
+            try
+            {
+                switch (jobType.ToUpper())
+                {
+                    case JobType.REPAIR:
+                        tableName = "repair_part";
+                        break;
+                    case JobType.CLEANING:
+                        tableName = "cleaning";
+                        break;
+                    case JobType.RESIDUE:
+                        tableName = "residue_part";
+                        break;
+                    case JobType.STEAM:
+                        tableName = "steaming_temp";
+                        break;
+                }
+
+                var guids = string.Join(",", partGuid.Select(g => $"'{g}'"));
+                string sql = $"UPDATE {tableName} SET update_dt = {currentDateTime}, update_by = '{user}', job_order_guid = '{jobOrderGuid}' WHERE guid IN ({guids})";
+                var ret = context.Database.ExecuteSqlRaw(sql);
+
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         private async Task<bool> UpdateAccumalateHour(ApplicationServiceDBContext context, string user, long currentDateTime, List<string?> jobOrderGuid)
         {
             try
@@ -471,7 +514,7 @@ namespace IDMS.Service.GqlTypes
 
                     var jobOrdr = new job_order() { guid = j_guid };
                     context.job_order.Attach(jobOrdr);
-                    jobOrdr.total_hour = totalTime;
+                    jobOrdr.working_hour = totalTime;
                     jobOrdr.update_by = user;
                     jobOrdr.update_dt = currentDateTime;
                 }
