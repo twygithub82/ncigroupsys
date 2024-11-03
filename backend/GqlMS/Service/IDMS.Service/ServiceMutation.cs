@@ -268,7 +268,7 @@ namespace IDMS.Service.GqlTypes
 
                 string tableName = "";
                 var jobType = jobProcessRequest.Select(j => j.job_type_cv).FirstOrDefault();
-                var jobOrderGuid = jobProcessRequest.Select(j => j.job_order_guid).FirstOrDefault();
+                //var jobOrderGuid = jobProcessRequest.Select(j => j.job_order_guid).FirstOrDefault();
 
                 switch (jobType.ToUpper())
                 {
@@ -424,18 +424,19 @@ namespace IDMS.Service.GqlTypes
         }
 
 
-        public async Task<int> UpdateJobProcessToInProgress(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, string processGuid, string jobType)
+        public async Task<int> UpdateJobProcessStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, JobProcessRequest jobProcessRequest)
         {
             try
             {
+                if (jobProcessRequest == null)
+                    throw new GraphQLException(new Error($"Job process object cannot be null", "ERROR"));
+
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
                 string tableName = "";
 
-                dynamic classObject = null;
-
-                switch (jobType.ToUpper())
+                switch (jobProcessRequest.job_type_cv.ToUpper())
                 {
                     case JobType.REPAIR:
                         tableName = "repair";
@@ -451,10 +452,13 @@ namespace IDMS.Service.GqlTypes
                         break;
                 }
 
-
-                //var guids = string.Join(",", jobProcessRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                string sql = $"UPDATE {tableName} SET status_cv = '{CurrentServiceStatus.JOB_IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                             $"update_by = '{user}' WHERE guid = '{processGuid}'";
+                string sql = "";
+                if (CurrentServiceStatus.NO_ACTION.EqualsIgnore(jobProcessRequest.process_status))
+                    sql = $"UPDATE {tableName} SET status_cv = '{jobProcessRequest.process_status}', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}', na_dt = {currentDateTime} WHERE guid = '{jobProcessRequest.guid}'";
+                else
+                    sql = $"UPDATE {tableName} SET status_cv = '{jobProcessRequest.process_status}', update_dt = {currentDateTime}, " +
+                             $"update_by = '{user}' WHERE guid = '{jobProcessRequest.guid}'";
 
                 var ret = context.Database.ExecuteSqlRaw(sql);
                 return ret;
