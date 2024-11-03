@@ -844,7 +844,7 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (repairDS.canRollback(repairItem)) {
+                  @if (repairDS.canRollbackStatus(repairItem)) {
                   <button mat-flat-button color="accent" [disabled]="(repairDS.loading$ | async)"
                     (click)="onRollback($event)">
                     <mat-icon>

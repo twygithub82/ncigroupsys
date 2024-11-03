@@ -350,6 +350,7 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
         total_cost
         update_by
         update_dt
+        bill_to_guid
         repair_part {
           action
           create_by
@@ -701,7 +702,7 @@ export const ROLLBACK_REPAIR = gql`
 `
 
 export const ROLLBACK_REPAIR_STATUS = gql`
-  mutation RollbackRepairStatus($repair: [RepairRequestInput!]!) {
+  mutation RollbackRepairStatus($repair: RepairRequestInput!) {
     rollbackRepairStatus(repair: $repair)
   }
 `
@@ -877,6 +878,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canRollback(re: RepairItem | undefined): boolean {
+    return re?.status_cv === 'PENDING';
+  }
+
+  canRollbackStatus(re: RepairItem | undefined): boolean {
     return re?.status_cv === 'CANCELED' || re?.status_cv === 'APPROVED';
   }
 

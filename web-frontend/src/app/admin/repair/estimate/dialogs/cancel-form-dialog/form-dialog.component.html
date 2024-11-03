@@ -20,7 +20,14 @@
             <mat-card-content>
               <div class="row">
                 <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12">
-                  <h5>{{data.translatedLangText.ESTIMATE_NO}}: {{re.get('estimate_no')?.value}}</h5>
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                      <h5>{{data.translatedLangText.ESTIMATE_NO}}: {{re.get('estimate_no')?.value}}</h5>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                      {{data.translatedLangText.REMARKS}}: {{re.get('remarks_display')?.value}}
+                    </div>
+                  </div>
                 </div>
                 <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">

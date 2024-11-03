@@ -182,6 +182,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
   ownerControl = new UntypedFormControl();
   ownerList?: CustomerCompanyItem[];
+  customerBranch?: CustomerCompanyItem;
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   yesnoCv: CodeValuesItem[] = [];
@@ -252,9 +253,14 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if (this.sot_guid) {
       // EDIT
       this.subs.sink = this.sotDS.getStoringOrderTankByIDForInGate(this.sot_guid).subscribe(data => {
-        if (this.sotDS.totalCount > 0) {
+        if (data.length > 0) {
           this.storingOrderTankItem = data[0];
-          this.populateInGateForm(this.storingOrderTankItem);
+          this.ccDS.getCustomerBranch(this.storingOrderTankItem!.storing_order!.customer_company!.guid!).subscribe(cc => {
+            if (cc.length > 0) {
+              this.customerBranch = cc[0]
+            }
+            this.populateInGateForm(this.storingOrderTankItem!);
+          });
         }
       });
     } else {

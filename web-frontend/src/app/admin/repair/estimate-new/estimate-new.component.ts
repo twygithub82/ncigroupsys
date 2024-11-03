@@ -1300,4 +1300,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   getLabourCost(): number | undefined {
     return this.repairItem?.labour_cost || this.packageLabourItem?.cost;
   }
+
+  hasMenuItems(row: any): boolean {
+    return (
+      this.repairDS.canAmend(this.repairItem)
+    );
+  }
 }
