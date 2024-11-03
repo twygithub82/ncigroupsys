@@ -14,13 +14,13 @@
             </h2>
           </div>
           <div class="body">
-            @if (repairDS.loading$ | async) {
+            @if (joDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            @if (!(repairDS.loading$ | async)) {
+            @if (!(joDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -127,17 +127,17 @@
           <div class="card">
             <div class="header">
               <h2>
-                {{translatedLangText.TEAM_ALLOCATION}}
+                {{translatedLangText.JOB_TASK}}
               </h2>
             </div>
             <div class="body">
-              @if (repairDS.loadingSubject | async) {
+              @if (joDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(repairDS.loadingSubject | async)) {
+              @if (!(joDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                   <mat-form-field class="example-full-width">
@@ -171,13 +171,13 @@
               <mat-icon>av_timer</mat-icon>
             </div>
             <div class="body">
-              @if (repairDS.loadingSubject | async) {
+              @if (joDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(repairDS.loadingSubject | async)) {
+              @if (!(joDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
@@ -362,13 +362,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (repairDS.loadingSubject | async) {
+              @if (joDS.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(repairDS.loadingSubject | async)) {
+              @if (!(joDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
@@ -497,9 +497,9 @@
                   @if (repairDS.canAssign(repairItem)) {
                   <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)">
                     <mat-icon>
-                      @if (!(repairDS.loading$ | async)) {
+                      @if (!(joDS.loading$ | async)) {
                       save
-                      } @else if ((repairDS.loading$ | async)) {
+                      } @else if ((joDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>

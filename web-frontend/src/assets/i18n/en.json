@@ -643,8 +643,8 @@
     "SAVE-ANOTHER": "Save Another",
     "TEAM-ALLOCATION": "Team Allocation",
     "DEPOT-REFERENCE":"Depot Reference",
-    "RESIDUE-JOB-NO":"Residue Job No",
-    "JOB-ORDER-NO":"Job Order No"
+    "RESIDUE-JOB-NO":"Residue Job No.",
+    "JOB-ORDER-NO":"Job Order No."
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
