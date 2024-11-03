@@ -68,6 +68,7 @@ namespace IDMS.Cleaning.GqlTypes
                 updateCleaning.update_dt = currentDateTime;
                 updateCleaning.job_no = cleaning.job_no;
                 updateCleaning.remarks = cleaning.remarks;
+                updateCleaning.cleaning_bay_cv = cleaning.cleaning_bay_cv;
                
                 if (ObjectAction.APPROVE.EqualsIgnore(cleaning.action))
                 {

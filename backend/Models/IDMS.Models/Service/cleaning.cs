@@ -31,7 +31,7 @@ namespace IDMS.Models.Service
         public string? complete_by { get; set; }    
         public long? complete_dt { get; set; }
         public long? na_dt { get; set; }
-
+        public string? cleaning_bay_cv { get; set; }
 
         [NotMapped]
         public string action { get; set; } 

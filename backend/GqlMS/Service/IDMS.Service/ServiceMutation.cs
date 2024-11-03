@@ -76,8 +76,6 @@ namespace IDMS.Service.GqlTypes
                     transaction.Rollback();
                     throw;
                 }
-
-
             }
             catch (Exception ex)
             {
