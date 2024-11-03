@@ -293,6 +293,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       customer_approval_cost:['-'],
       update_by:[''],
       update_on:[''],
+      status_cv:[''],
+      approve_dt:[''],
+      na_dt:['']
     });
   }
 
@@ -337,12 +340,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if(this.selectedItems.length==1)
     {
       var inGateClnItem = this.selectedItems[0];
-
       this.pcForm.patchValue({
 
         
         tank_no:inGateClnItem.storing_order_tank?.tank_no,
-        customer:this.displayCustomerName(inGateClnItem.storing_order_tank?.customer_company),
+        customer:this.displayCustomerName(inGateClnItem.storing_order_tank?.storing_order?.customer_company),
          eir_no:inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
          eir_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
          quotation_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
@@ -353,7 +355,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
          update_by:inGateClnItem.approve_by,
          update_on:this.displayDateFromEpoch(inGateClnItem.approve_dt),
          job_no_input:inGateClnItem.job_no,
-        
+         status_cv:inGateClnItem.status_cv,
+         approve_dt:this.displayDateFromEpoch(inGateClnItem.approve_dt),
+         na_dt:this.displayDateFromEpoch(inGateClnItem.na_dt),
+         remarks:inGateClnItem.remarks,
       });
 
       this.createCleaningChargesItem();
@@ -484,7 +489,51 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return retval;
   }
 
-  
+  ShowNoActionDtView()
+  {
+    if(this.action=="view")
+    {
+      var status_cv = this.pcForm.get('status_cv')?.value;
+      var validActions :string[]= ["no_action"];
+      return validActions.includes(status_cv.toLocaleLowerCase());
+    }
+
+    return false;
+
+  }
+
+  ShowApproveDtView()
+  {
+    if(this.action=="view")
+    {
+      var status_cv = this.pcForm.get('status_cv')?.value;
+      var validActions :string[]= ["approve"];
+      return validActions.includes(status_cv.toLocaleLowerCase());
+    }
+
+    return false;
+
+  }
+
+  ShowRemarksView()
+  {
+    if(this.action=="view")
+    {
+      var status_cv = this.pcForm.get('status_cv')?.value;
+      var validActions :string[]= ["kiv","no_action"];
+      return validActions.includes(status_cv.toLocaleLowerCase());
+    }
+
+    return false;
+
+  }
+
+  ShowStatusView()
+  {
+    var validActions :string[]= ["view"];
+    return validActions.includes(this.action);
+  }
+
   ShowJobNo()
   {
      var validActions :string[]= ["kiv","approve"];

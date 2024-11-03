@@ -147,6 +147,38 @@
           
           </div>
           <div class="row">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowStatusView()">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.STATUS}}</mat-label>
+                      <input matInput formControlName="status_cv" readonly>
+                    </mat-form-field>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApproveDtView()">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
+                  <input matInput formControlName="approve_dt" readonly>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDtView()">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.NO_ACTION}}</mat-label>
+                  <input matInput formControlName="na_dt" readonly >
+                </mat-form-field>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowRemarksView()">
+                <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                    <input matInput formControlName="remarks" readonly >
+                
+                  </mat-form-field>
+              </div>
+            </div>
+          
+          </div>
+          </div>
+          <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 text-center">
                   <mat-label style="text-decoration: underline; font-weight: bold;">{{translatedLangText.LAST_CARGO_CLEANING_QUOTATION }}</mat-label>
             </div>
