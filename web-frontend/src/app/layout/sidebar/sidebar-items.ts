@@ -552,10 +552,22 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-      },
+      }
+    ]
+  },
+  {
+    path: "admin/cleaning-management",
+    title: "MENUITEMS.RESIDUE-DISPOSAL.TEXT",
+    iconType: "material",
+    icon: "opacity",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
       {
         path: "admin/residue-disposal/estimate",
-        title: "MENUITEMS.CLEANING.LIST.RESIDUE-DISPOSAL-ESTIMATE",
+        title: "MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE",
         iconType: "",
         icon: "",
         class: "ml-menu",
@@ -566,7 +578,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         path: "admin/residue-disposal/approval",
-        title: "MENUITEMS.CLEANING.LIST.RESIDUE-DISPOSAL-APPROVAL",
+        title: "MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL",
         iconType: "",
         icon: "",
         class: "ml-menu",

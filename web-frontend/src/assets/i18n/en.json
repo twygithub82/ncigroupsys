@@ -186,11 +186,17 @@
     "CLEANING": {
       "TEXT": "Cleaning",
       "LIST": {
-        "APPROVAL": "Cleaning  Approval",
+        "APPROVAL": "Cleaning  Approval"
+      }
+    },
+    "RESIDUE-DISPOSAL":{
+      "TEXT": "Residue Disposal",
+      "LIST": {
         "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
         "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval"
       }
     }
+
   },
   "LANDING-SIGNIN": {
     "WELCOME": "Welcome to",

@@ -1,0 +1,505 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitleDetails" [items]="breadcrumsMiddleList"
+        [active_item]="pageTitleDetails"></app-breadcrumb>
+    </div>
+    <div class="row">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <div class="header">
+            <h2>
+              {{translatedLangText.TANK_DETAILS}}
+            </h2>
+          </div>
+          <div class="body">
+            @if (repairDS.loading$ | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
+            </div>
+            }
+            @if (!(repairDS.loading$ | async)) {
+            <mat-card-content>
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.TANK_NO}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">{{sotItem?.tank_no}}</div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.CUSTOMER}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.LAST_CARGO}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{sotItem?.tariff_cleaning?.cargo}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.OWNER}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex">
+                      <div class="contact-detail-info font-bold">
+                        {{ccDS.displayName(sotItem?.customer_company)}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.EIR_NO}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.EIR_DATE}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{displayDateTime(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.PURPOSE}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">{{displayTankPurpose(sotItem!)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.LAST_TEST}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.NEXT_TEST}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{getNextTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    <form class="ms-0" [formGroup]="repairForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
+      <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.TEAM_ALLOCATION}}
+              </h2>
+            </div>
+            <div class="body">
+              @if (repairDS.loadingSubject | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              @if (!(repairDS.loadingSubject | async)) {
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.TEAM}}</mat-label>
+                    <mat-select formControlName="team_allocation">
+                      @for (team of teamList; track team) {
+                      <mat-option [value]="team">{{team.description}}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0 p-t-10">
+                  <button mat-flat-button color="accent" [disabled]="!isAssignEnabled()" (click)="assignTeam($event)">
+                    <mat-icon>person_add</mat-icon>
+                    {{translatedLangText.ASSIGN}}
+                  </button>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.ESTIMATE_DETAILS}}
+              </h2>
+            </div>
+            <div class="body">
+              @if (repairDS.loadingSubject | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              @if (!(repairDS.loadingSubject | async)) {
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                  <div class="responsive_table">
+                    <table mat-table [dataSource]="repList" matSort class="mat-cell advance-tab-table dark-header"
+                      multiTemplateDataRows>
+                      <ng-container matColumnDef="group_name_cv">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{translatedLangText.GROUP}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length"
+                          [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{getGroupNameCodeDescription(row.tariff_repair?.group_name_cv)}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="seq">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>No.</mat-header-cell>
+                        <mat-cell *matCellDef="let row;"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{row.index
+                          + 1}}</mat-cell>
+                      </ng-container>
+                      <!-- ID Column -->
+                      <ng-container matColumnDef="id">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="subgroup_name_cv">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.SUBGROUP}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-tab-label">{{translatedLangText.SUBGROUP}}:</span>
+                          {{getSubgroupNameCodeDescription(row.tariff_repair?.subgroup_name_cv)}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="damange">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.DAMAGE}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="truncate-text">
+                            <span class="mobile-tab-label">{{translatedLangText.DAMAGE}}:</span>
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)"
+                              matTooltipClass="multiline-tooltip">
+                              {{displayDamageRepairCode(row.rp_damage_repair, 0)}}
+                            </span>
+                          </span>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="repair">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.REPAIR}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-tab-label">{{translatedLangText.REPAIR}}:</span>
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)"
+                            matTooltipClass="multiline-tooltip">
+                            {{displayDamageRepairCode(row.rp_damage_repair, 1)}}
+                          </span>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="description">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.DESCRIPTION}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-tab-label">{{translatedLangText.DESCRIPTION}}:</span>
+                          {{row.description}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="quantity">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.QTY}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-tab-label">{{translatedLangText.QTY}}:</span>
+                          {{row.approve_qty}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="hour">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.HOUR}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-tab-label">{{translatedLangText.HOUR}}:</span>
+                          {{row.approve_hour}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="approve_part">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          <mat-icon>more_vert</mat-icon>
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-tab-label">{{translatedLangText.APPROVED}}:</span>
+                          @if (repairPartDS.is4X(row.rp_damage_repair)) {
+                          <mat-icon class="font-bold">close</mat-icon>
+                          }
+                          @else {
+                          @if (repairPartDS.isApprove(row)) {
+                          <mat-icon class="col-green font-bold">check</mat-icon>
+                          }
+                          @else {
+                          <mat-icon class="col-red font-bold">close</mat-icon>
+                          }
+                          }
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="team">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.TEAM}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm font-bold'">
+                          <span class="mobile-tab-label">{{translatedLangText.TEAM}}:</span>
+                          {{row.job_order?.team?.description || 'NA'}}
+                        </mat-cell>
+                      </ng-container>
+                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let row; let i = index; columns: ['group_name_cv'];"
+                        [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-blue font-bold': true}"
+                        [style.cursor]="'pointer'" matRipple>
+                      </mat-row>
+                      <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" (click)="toggleRep(row)"
+                        [ngClass]="{'bg-light-green': repSelection.isSelected(row)}" [style.cursor]="'pointer'"
+                        matRipple>
+                      </mat-row>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              }
+              <mat-divider></mat-divider>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.ESTIMATE_SUMMARY}}
+                <!-- - <span class="font-bold m-r-5">{{repairItem?.estimate_no}}</span>
+                <span
+                  [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span> -->
+              </h2>
+            </div>
+            <div class="body">
+              @if (repairDS.loadingSubject | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              @if (!(repairDS.loadingSubject | async)) {
+              <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                  {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                  {{translatedLangText.ESTIMATE_DATE}}: <span
+                    class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                  {{translatedLangText.STATUS}}: <span
+                    [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-0">
+                  <div class="row">
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
+                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
+                    </div>
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
+                      {{translatedLangText.ESTIMATE_DATE}}: <span
+                        class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
+                    </div>
+                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
+                      {{translatedLangText.STATUS}}: <span
+                        [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
+                    </div>
+                  </div>
+                </div> -->
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                  <div class="row p-l-5 p-r-10">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border">
+                          <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                          {{translatedLangText.ESTIMATE}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                          {{translatedLangText.APPROVAL}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                          {{translatedLangText.JOB_ALLOCATION}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                          {{translatedLangText.QC_DETAILS}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                          <span class="font-bold">{{translatedLangText.UPDATE_BY}}</span>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label">
+                            {{repairItem?.update_by}}
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
+                          <div class="table-label"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                          <span class="font-bold">{{translatedLangText.UPDATE_DATE}}</span>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                          <div class="table-label">
+                            {{displayDate(repairItem?.update_dt)}}
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 text-center border">
+                          <div class="table-label"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-6-5 col-lg-6-5 col-md-6-5 col-sm-6-5 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                          <span class="font-bold">{{translatedLangText.REMARKS}}</span>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                          <div class="table-label">
+                            {{repairItem?.remarks}}
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                          <div class="table-label">-</div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                          <div class="table-label">-</div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
+                          <div class="table-label">-</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              }
+              <div class="row m-t-5">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                  <button mat-flat-button type="button" aria-label="Back to previous page"
+                    (click)="$event.preventDefault();" [routerLink]="['/admin/repair/job-order']">
+                    <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                  </button>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                  @if (repairDS.canAssign(repairItem)) {
+                  <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)">
+                    <mat-icon>
+                      @if (!(repairDS.loading$ | async)) {
+                      save
+                      } @else if ((repairDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.SAVE_AND_SUBMIT}}
+                  </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
