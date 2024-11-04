@@ -186,14 +186,16 @@
     "CLEANING": {
       "TEXT": "Cleaning",
       "LIST": {
-        "APPROVAL": "Cleaning  Approval"
+        "APPROVAL": "Approval",
+        "JOB-ORDER":"Job Order"
       }
     },
     "RESIDUE-DISPOSAL":{
       "TEXT": "Residue Disposal",
       "LIST": {
         "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
-        "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval"
+        "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval",
+        "JOB-ORDER":"Job Order"
       }
     }
 

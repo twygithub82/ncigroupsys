@@ -552,6 +552,17 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+      },
+      {
+        path: "admin/cleaning/job-order",
+        title: "MENUITEMS.CLEANING.LIST.JOB-ORDER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
       }
     ]
   },
@@ -579,6 +590,17 @@ export const ROUTES: RouteInfo[] = [
       {
         path: "admin/residue-disposal/approval",
         title: "MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/residue-disposal/job-order",
+        title: "MENUITEMS.RESIDUE-DISPOSAL.LIST.JOB-ORDER",
         iconType: "",
         icon: "",
         class: "ml-menu",

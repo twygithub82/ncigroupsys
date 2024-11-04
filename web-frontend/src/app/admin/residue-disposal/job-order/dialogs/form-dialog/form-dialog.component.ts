@@ -20,7 +20,6 @@ import { Apollo } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { RepairPartItem } from 'app/data-sources/repair-part';

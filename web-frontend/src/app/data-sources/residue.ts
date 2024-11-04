@@ -175,6 +175,34 @@ export const GET_RESIDUE_EST = gql`
           tariff_residue_guid
           update_by
           update_dt
+         job_order {
+            team {
+              create_by
+              create_dt
+              delete_dt
+              department_cv
+              description
+              guid
+              update_by
+              update_dt
+            }
+            complete_dt
+            create_by
+            create_dt
+            delete_dt
+            guid
+            job_order_no
+            job_type_cv
+            remarks
+            sot_guid
+            start_dt
+            status_cv
+            team_guid
+            total_hour
+            update_by
+            update_dt
+            working_hour
+          }
         }
       }
       pageInfo {

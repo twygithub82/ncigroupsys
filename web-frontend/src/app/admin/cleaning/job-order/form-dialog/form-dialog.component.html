@@ -2,7 +2,7 @@
   <div class="modalHeader">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h3>{{this.translatedLangText.CLEANING_APPROVAL}} - {{this.getAction()}} </h3>
+        <h3>{{this.translatedLangText.PAGE_TITLE}} - {{this.getAction()}} </h3>
       </div>  
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -15,56 +15,51 @@
       <div class="row justify-content-center">
         <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
         
-          <div class="row">
+          <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <div class="card">
+                <div class="header">
+                  <h2>
+                    {{translatedLangText.TEAM_ALLOCATION}}
+                  </h2>
+                </div>
+                <div class="body">
+                
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.TEAM}}</mat-label>
+                        <mat-select formControlName="team_allocation" required>
+                          @for (team of teamList; track team) {
+                          <mat-option [value]="team">{{team.description}}</mat-option>
+                          }
+                        </mat-select>
 
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowJobNo()">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                        <input matInput formControlName="job_no_input" >
-                        @if (pcForm.get('job_no_input')?.hasError('required')) {
+                        @if (pcForm?.get('team_allocation')?.hasError('required')) {
                           <mat-error>
-                            {{translatedLangText.JOB_NO }} {{translatedLangText.CARGO_REQUIRED }}
+                            {{translatedLangText.TEAM | translate}} {{data.langText.SO_REQUIRED | translate}}
                           </mat-error>
                           }
                       </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApprovedDate()">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
-                      <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date" formControlName="approved_dt" [required]="this.ShowApprovedDate()">
-                      <mat-datepicker-toggle matSuffix [for]="clean_dt_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #clean_dt_picker></mat-datepicker>
-                      @if (pcForm.get('approved_dt')?.hasError('required')) {
-                        <mat-error>
-                          {{translatedLangText.APPROVED_DATE }} {{translatedLangText.CARGO_REQUIRED }}
-                        </mat-error>
-                        }
-                    </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDate()">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.NO_ACTION}} {{translatedLangText.DATE}}</mat-label>
-                      <input matInput [matDatepicker]="noaction_dt_picker" placeholder="Select date" formControlName="no_action_dt" [required]="this.ShowNoActionDate()">
-                      <mat-datepicker-toggle matSuffix [for]="noaction_dt_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #noaction_dt_picker></mat-datepicker>
-                      @if (pcForm.get('approved_dt')?.hasError('required')) {
-                        <mat-error>
-                          {{translatedLangText.NO_ACTION }} {{translatedLangText.CARGO_REQUIRED }}
-                        </mat-error>
-                        }
-                    </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowRemarks()">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                      <input matInput formControlName="remarks" >
-                  
-                    </mat-form-field>
+
+                    </div>
+                  </div>
+                  <div mat-dialog-actions class="mb-1 align-right">
+                    @if (canEdit()) {
+                      <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+                    }
+                    <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+                      @if(canEdit()){
+                      {{translatedLangText.CANCEL}}
+                      }
+                      @if(!canEdit()){
+                        {{translatedLangText.CLOSE}}
+                      }
+                    </button>
+                  </div>
                 </div>
               </div>
-          </div>
+            </div>
           </div>
         <div class="card l-bg-{{this.getBackgroundColorFromNature()}}">
           <div class="row">
@@ -245,107 +240,7 @@
             </div>
             }
           </div>
-          <!-- <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-              <div class="row">
-                <div class="col-xl-0_5 col-lg-0_5 col-md-1 col-sm-1 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">#</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                               1
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                               {{this.getDescription()}}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{translatedLangText.DEPOT_ESTIMATE}}</span>
-                    </div>
-                  </div>
-                    <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                        <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                            <div class="row">
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                <div class="table-label cost-label">
-                                  <span></span><span>{{this.pcForm.get('depot_estimate_cost')!.value}}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                   
-                  
-                </div>
-                <div class="col-xl col-lg col-md col-sm m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{translatedLangText.CUSTOMER_APPROVAL}}</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span></span><span>{{this.pcForm.get('customer_approval_cost')!.value}}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> -->
-          
+       
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
               <mat-label style="display: flex; justify-content: left;">{{translatedLangText.REMARKS_NOTIFICATION}}</mat-label>
@@ -489,19 +384,7 @@
         </div>
         </div>
       </div>
-      <div mat-dialog-actions class="mb-1 align-right">
-        @if (canEdit()) {
-          <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.UPDATE}}</button>
-        }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">
-          @if(canEdit()){
-          {{translatedLangText.CANCEL}}
-          }
-          @if(!canEdit()){
-            {{translatedLangText.CLOSE}}
-          }
-        </button>
-      </div>
+   
     </form>
   </div>
 </div>

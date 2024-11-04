@@ -36,6 +36,9 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { MatDividerModule } from '@angular/material/divider';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { JobOrderDS, JobOrderItem, JobOrderRequest, JobProcessRequest } from 'app/data-sources/job-order';
 
 export interface DialogData {
   action?: string;
@@ -85,6 +88,7 @@ export interface DialogData {
     MatPaginatorModule,
     TlxFormFieldComponent,
     MatDividerModule,
+    MatProgressSpinnerModule,
 ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -107,7 +111,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   packageDepotItems?: PackageDepotItem[]=[];
   packageDepotDS?:PackageDepotDS;
+
+  jobOrderDS?:JobOrderDS;
   CodeValuesDS?:CodeValuesDS;
+
+  teamList?: TeamItem[];
 
   storageCalCvList:CodeValuesItem[]=[];
 
@@ -120,6 +128,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl= new UntypedFormControl();
   custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
+  cleaningTotalHours:number=3;
 
   translatedLangText: any = {};
   langText = {
@@ -224,13 +233,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     INOUT_GATE:"COMMON-FORM.INTOUT-GATE",
     CLEANING_COST_FOR:"COMMON-FORM.CLEANING-COST-FOR",
     LAST_CARGO_CLEANING_QUOTATION :"COMMON-FORM.LAST-CARGO-CLEANING-QUOTATION",
-    TOTAL_COST:"COMMON-FORM.TOTAL-COST"
+    TOTAL_COST:"COMMON-FORM.TOTAL-COST",
+    PAGE_TITLE:"MENUITEMS.CLEANING.LIST.JOB-ORDER",
+    TEAM_DETAILS: 'COMMON-FORM.TEAM-DETAILS',
+    TEAM: 'COMMON-FORM.TEAM',
+    TEAM_ALLOCATION: 'COMMON-FORM.TEAM-ALLOCATION',
   };
 
   
   selectedItems: any;
   selectedItem:any;
   igCleanDS:InGateCleaningDS;
+  teamDS: TeamDS;
   igCleanItems:any=[];
   totalCost_depot: number = 0;
   totalCost_customer: number = 0;
@@ -253,6 +267,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.packageDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.teamDS=new TeamDS(this.apollo);
+    this.jobOrderDS=new JobOrderDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
@@ -296,7 +312,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       update_on:[''],
       status_cv:[''],
       approve_dt:[''],
-      na_dt:['']
+      na_dt:[''],
+      team_allocation: [''],
     });
   }
 
@@ -329,6 +346,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     //this.queryDepotCost();
 
+    this.subs.sink = this.teamDS.getTeamListByDepartment(["CLEANING"]).subscribe(data => {
+      if (data?.length) {
+        this.teamList = data;
+      }
+    });
+
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
      
@@ -340,8 +363,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if(this.selectedItems.length==1)
     {
-      this.selectedItem=this.selectedItems[0];
-      var inGateClnItem = this.selectedItem;
+      this.selectedItem= this.selectedItems[0]
+      var inGateClnItem =this.selectedItem;
       this.pcForm.patchValue({
 
         
@@ -423,37 +446,45 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (!this.pcForm?.valid) return;
 
     var selItem =this.selectedItems[0];
-    delete selItem.storing_order_tank;
-    var rep: InGateCleaningItem = new InGateCleaningItem(selItem);
-    rep.action=this.action.toUpperCase();
-    switch(this.action.toUpperCase())
-    {
-      case "APPROVE":
-        rep.approve_dt=Utility.convertDate(this.pcForm.get("approved_dt")?.value) as number;
-        rep.job_no=this.pcForm.get("job_no")?.value;
-        break;
-      case "KIV":
-        rep.job_no= this.pcForm.get("job_no_input")?.value;
-        rep.remarks=this.pcForm.get("remarks")?.value;
-        break;
-      case "NO_ACTION":
-        rep.action="NA";
-        rep.na_dt=Utility.convertDate(this.pcForm.get("no_action_dt")?.value)as number;
-        rep.remarks=this.pcForm.get("remarks")?.value;
-        break;
-    }
+    var newJobOrderReq :JobOrderRequest = new JobOrderRequest();
+    let job_type="CLEANING";
+    var team : TeamItem = this.pcForm!.get("team_allocation")?.value;
+    newJobOrderReq.job_type_cv=job_type;
+    newJobOrderReq.team_guid =team?.guid;
+    newJobOrderReq.sot_guid=selItem.storing_order_tank?.guid;
+    newJobOrderReq.total_hour=this.cleaningTotalHours;
+    newJobOrderReq.part_guid=[];
+    newJobOrderReq.part_guid.push(selItem.guid);
     
-    this.igCleanDS.updateInGateCleaning(rep).subscribe(result=>{
-        if(result.data.updateCleaning>0)
-        {
-         
-                  console.log('valid');
-                  this.handleSaveSuccess(result.data.updateCleaning);
-  
-        }
-      });
+    this.jobOrderDS?.assignJobOrder(newJobOrderReq).subscribe(result=>{
+      if(result.data.assignJobOrder>0)
+      {
+         let cleanGuid =selItem.guid;
+         let process_status="JOB_IN_PROGRESS";
+         this.updateJobProcessStatus(cleanGuid,job_type,process_status);
+      }
+    });
 
    
+  }
+
+  updateJobProcessStatus(cleaningGuid:string, job_type:string,process_status:string)
+  {
+    
+         var updateJobProcess :JobProcessRequest= new JobProcessRequest();
+         updateJobProcess.guid=cleaningGuid;
+         updateJobProcess.job_type_cv=job_type;
+         updateJobProcess.process_status=process_status;
+
+         this.jobOrderDS?.updateJobProcessStatus(updateJobProcess).subscribe(result=>{
+          if(result.data.updateJobProcessStatus>0)
+          {
+            this.handleSaveSuccess(result.data.updateJobProcessStatus);
+          }
+
+         });
+     
+
   }
   
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -486,6 +517,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       case "view":
         retval =this.translatedLangText.VIEW;
         break;
+      case "allocation":
+          retval =this.translatedLangText.JOB_ALLOCATION;
+          break;
     }
 
     return retval;
@@ -590,7 +624,5 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     return color;
   }
-
-
   
 }

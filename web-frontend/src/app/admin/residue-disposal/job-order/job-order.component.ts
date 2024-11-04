@@ -26,7 +26,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -38,7 +38,7 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -50,7 +50,8 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+//import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-job-order',
@@ -88,7 +89,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     MatTabsModule,
   ]
 })
-export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // displayedColumns = [
   //   'tank_no',
   //   'customer',
@@ -98,13 +99,12 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   //   'tank_status_cv'
   // ];
 
-  displayedColumnsRepair = [
+  displayedColumnsResidue = [
     'tank_no',
     'customer',
-    'eir_no',
-    'eir_dt',
-    'last_cargo',
-    'method',
+    'estimate_no',
+    'net_cost',
+    // 'approve_part',
     'status_cv'
   ];
 
@@ -179,10 +179,10 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  cleanDS: InGateCleaningDS;
+  residueDS:ResidueDS;
   joDS: JobOrderDS;
 
-  clnEstList: InGateCleaningItem[] = [];
+  rsdEstList: ResidueItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -194,14 +194,15 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  pageIndexClean = 0;
-  pageSizeClean = 10;
-  lastSearchCriteriaClean: any;
-  lastOrderByClean: any = { storing_order_tank:{tank_no: "DESC" }};
-  endCursorClean: string | undefined = undefined;
-  startCursorClean: string | undefined = undefined;
-  hasNextPageClean = false;
-  hasPreviousPageClean = false;
+  previous_endCursorResidue:string|undefined=undefined;
+  pageIndexResidue = 0;
+  pageSizeResidue = 10;
+  lastSearchCriteriaResidue: any;
+  lastOrderByResidue: any = { storing_order_tank:{tank_no: "DESC" }};
+  endCursorResidue: string | undefined = undefined;
+  startCursorResidue: string | undefined = undefined;
+  hasNextPageResidue = false;
+  hasPreviousPageResidue = false;
 
   pageIndexJobOrder = 0;
   pageSizeJobOrder = 10;
@@ -218,7 +219,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private router: Router
   ) {
     super();
     this.translateLangText();
@@ -230,8 +232,9 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.cleanDS = new InGateCleaningDS(this.apollo);
+    
     this.joDS = new JobOrderDS(this.apollo);
+    this.residueDS=new ResidueDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -267,34 +270,34 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   cancelSelectedRows(row: StoringOrderItem[]) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        item: [...row],
-        langText: this.langText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-        this.soDS.cancelStoringOrder(so).subscribe(result => {
-          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-            let successMsg = this.langText.CANCELED_SUCCESS;
-            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-              successMsg = res;
-              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-              this.refreshTable();
-            });
-          }
-        });
-      }
-    });
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    //   data: {
+    //     item: [...row],
+    //     langText: this.langText
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result?.action === 'confirmed') {
+    //     const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
+    //     this.soDS.cancelStoringOrder(so).subscribe(result => {
+    //       if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
+    //         let successMsg = this.langText.CANCELED_SUCCESS;
+    //         this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
+    //           successMsg = res;
+    //           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    //           this.refreshTable();
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
   }
 
   public loadData() {
@@ -380,13 +383,13 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       });
     }
 
-    this.lastSearchCriteriaClean = this.cleanDS.addDeleteDtCriteria(where);
-    this.performSearchClean(this.pageSizeClean, this.pageIndexClean, this.pageSizeClean, undefined, undefined, undefined, () => { });
+    this.lastSearchCriteriaResidue = this.residueDS.addDeleteDtCriteria(where);
+    this.performSearchClean(this.pageSizeResidue, this.pageIndexResidue, this.pageSizeResidue, undefined, undefined, undefined, () => { });
   }
 
   onFilterJobOrder() {
     const where: any = {
-      job_type_cv: { eq: "REPAIR" }
+      job_type_cv: { eq: "RESIDUE_DISPOSAL" }
     };
 
     // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
@@ -403,17 +406,19 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   performSearchClean(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.cleanDS.search(this.lastSearchCriteriaClean, this.lastOrderByClean, first, after, last, before)
+    this.subs.sink = this.residueDS.search(this.lastSearchCriteriaResidue, this.lastOrderByResidue, first, after, last, before)
       .subscribe(data => {
-        this.clnEstList = data;
-        this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
-        this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
-        this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
+        this.rsdEstList = data.map(re => {
+          return {...re, net_cost: this.calculateNetCost(re)}
+        });
+        this.endCursorResidue = this.residueDS.pageInfo?.endCursor;
+        this.startCursorResidue = this.residueDS.pageInfo?.startCursor;
+        this.hasNextPageResidue = this.residueDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageResidue = this.residueDS.pageInfo?.hasPreviousPage ?? false;
       });
 
-    this.pageSizeClean = pageSize;
-    this.pageIndexClean = pageIndex;
+    this.pageSizeResidue = pageSize;
+    this.pageIndexResidue = pageIndex;
   }
 
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
@@ -438,22 +443,22 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     let before: string | undefined = undefined;
 
     // Check if the page size has changed
-    if (this.pageSizeClean !== pageSize) {
+    if (this.pageSizeResidue !== pageSize) {
       // Reset pagination if page size has changed
-      this.pageIndexClean = 0;
+      this.pageIndexResidue = 0;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
-      if (pageIndex > this.pageIndexClean && this.hasNextPageClean) {
+      if (pageIndex > this.pageIndexResidue && this.hasNextPageResidue) {
         // Navigate forward
         first = pageSize;
-        after = this.endCursorClean;
-      } else if (pageIndex < this.pageIndexClean && this.hasPreviousPageClean) {
+        after = this.endCursorResidue;
+      } else if (pageIndex < this.pageIndexResidue && this.hasPreviousPageResidue) {
         // Navigate backward
         last = pageSize;
-        before = this.startCursorClean;
+        before = this.startCursorResidue;
       }
     }
 
@@ -516,20 +521,12 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  calculateNetCost(repair: RepairItem): any {
-    // const total = this.repairDS.getTotal(repair?.repair_part)
-    // const labourDiscount = repair.labour_cost_discount;
-    // const matDiscount = repair.material_cost_discount;
+  calculateNetCost(residue: ResidueItem): any {
+    
 
-    // const total_hour = total.hour;
-    // const total_labour_cost = this.repairDS.getTotalLabourCost(total_hour, repair?.labour_cost);
-    // const total_mat_cost = total.total_mat_cost;
-    // const total_cost = repair?.total_cost;
-    // const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
-    // const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
-    // const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
-    // return net_cost.toFixed(2);
-    return undefined;
+    const total = this.residueDS.getTotal(residue?.residue_part)
+     
+     return total.total_mat_cost.toFixed(2);
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
@@ -604,39 +601,31 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     return retval;
   }
 
-  popupDialogForm(row:InGateItem, action:string)
+  AllocationResidueDisposalEstimate(event:Event, row:ResidueItem)
   {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    var rows :InGateCleaningItem[] =[] ;
-    rows.push(row);
-    const dialogRef = this.dialog.open(FormDialogComponent,{
-      
-      width: '1000px',
-      data: {
-        action: action,
-        langText: this.langText,
-        selectedItems:rows
-      },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-        
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          if(result>0)
-            {
+    event.stopPropagation(); // Stop the click event from propagating
+    // Navigate to the route and pass the JSON object
+       this.router.navigate(['/admin/residue-disposal/job-order/allocation/',row.guid], {
+         state: { id: '' ,
+           action:"UPDATE",
+           selectedRow:row,
+           type:'residue-approval',
+           pagination:{
+             where :this.lastSearchCriteriaResidue,
+             pageSize:this.pageSizeResidue,
+             pageIndex:this.pageIndexResidue,
+             hasPreviousPage:this.hasPreviousPageResidue,
+             startCursor:this.startCursorResidue,
+             endCursor:this.endCursorResidue,
+             previous_endCursor:this.previous_endCursorResidue,
              
-              this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
-            }
+             showResult: this.sotDS.totalCount>0
+             
+           }
+         }
+       });
       }
-      });
-   
-   }
+    
+
+ 
 }

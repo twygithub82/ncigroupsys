@@ -9,6 +9,7 @@ import { TariffRepairItem } from './tariff-repair';
 import { RepairItem } from './repair';
 //import { REPDamageRepairItem } from './rep-damage-repair';
 import { TariffResidueItem } from './tariff-residue';
+import { JobOrderItem } from './job-order';
 
 export class ResidueEstPartGO {
   
@@ -43,6 +44,7 @@ export class ResidueEstPartGO {
   public quantity?: number;
   public residue_guid?: string;
   public tariff_residue_guid?: string;
+  public team_guid?:string;
   public description?: string;
 
 
@@ -74,11 +76,13 @@ export class ResidueEstPartGO {
 
 export class ResiduePartItem extends ResidueEstPartGO {
   public tariff_residue?: TariffResidueItem;
-  
+  public job_order?: JobOrderItem;
   
   constructor(item: Partial<ResiduePartItem> = {}) {
     super(item)
     this.tariff_residue = item.tariff_residue;
+    this.job_order=item.job_order;
+    
   }
 }
 
@@ -166,6 +170,8 @@ export const GET_SCHEDULING_SOT = gql`
 `;
 
 export class ResiduePartDS extends BaseDataSource<ResiduePartItem> {
+  
+
   constructor(private apollo: Apollo) {
     super();
   }

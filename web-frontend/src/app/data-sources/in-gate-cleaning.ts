@@ -200,6 +200,8 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
           tariff_cleaning {
             alias
             ban_type_cv
+            in_gate_alert
+            nature_cv
             cargo
             class_cv
             cleaning_category_guid

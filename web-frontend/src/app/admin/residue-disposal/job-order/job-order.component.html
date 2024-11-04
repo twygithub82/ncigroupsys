@@ -9,7 +9,7 @@
         <div class="card">
           <div class="body overflow-auto">
             <mat-tab-group dynamicHeight>
-              <mat-tab [label]="translatedLangText.PAGE_TITLE">
+              <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
                 <form class="ms-0" [formGroup]="filterCleanForm!" (ngSubmit)="onFilterCleaning()" #formDirective="ngForm">
                   <div class="row">
                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 pt-3">
@@ -29,7 +29,7 @@
                   </div>
                 </form>
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="clnEstList" matSort
+                  <table mat-table [dataSource]="rsdEstList" matSort
                     class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="id">
                       <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -40,7 +40,7 @@
                         {{translatedLangText.TANK_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no ? row.storing_order_tank.tank_no : '-'}}
+                        <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="customer">
@@ -49,50 +49,33 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span
-                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company?ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company):'-'}}
+                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
                       </mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="eir_no">
+                    <ng-container matColumnDef="estimate_no">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.EIR_NO}}
+                        {{translatedLangText.ESTIMATE_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.storing_order_tank?.in_gate[0].eir_no?row.storing_order_tank?.in_gate[0].eir_no:'-'}}
+                        <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
                       </mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="eir_dt">
+                    <ng-container matColumnDef="net_cost">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.EIR_DATE}}
+                        {{translatedLangText.NET_COST}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{displayDate(row.storing_order_tank?.in_gate[0].eir_dt)}}
+                        <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
+                        <span>{{row.net_cost}}</span>
                       </mat-cell>
                     </ng-container>
-                   
-                    <ng-container matColumnDef="last_cargo">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>
-                        {{translatedLangText.LAST_CARGO}}
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                        <span
-                          class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cargo?row.storing_order_tank?.tariff_cleaning?.cargo:'-'}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="method">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.METHOD}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.METHOD}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description:'-'}}
-                      </mat-cell>
-                    </ng-container>
+    
                     <ng-container matColumnDef="status_cv">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{displayTankStatus(row.status_cv)}}
+                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{row?.status_cv}}
                       </mat-cell>
                     </ng-container>
                     <!-- <ng-container matColumnDef="tank_no">
@@ -159,28 +142,28 @@
                         </mat-menu>
                       </mat-cell>
                     </ng-container> -->
-                    <mat-header-row *matHeaderRowDef="displayedColumnsRepair"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumnsRepair;"
-                     (click)="this.popupDialogForm(row,'allocation')"
+                    <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
+                     (click)="this.AllocationResidueDisposalEstimate($event,row)"
                       [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                   </table>
                 </div>
                 <!-- No result -->
-                @if (!(cleanDS.loading$ | async) && !clnEstList.length) {
+                @if (!(residueDS.loading$ | async) && !rsdEstList.length) {
                 <mat-divider></mat-divider>
-                <div class="no-results m-l-20 pt-3" [style.display]="clnEstList.length === 0 ? '' : 'none'">
+                <div class="no-results m-l-20 pt-3" [style.display]="rsdEstList.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>
                 }
                 <!-- Loading spinner -->
-                @if (cleanDS.loading$ | async) {
+                @if (residueDS.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="cleanDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                <mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="0" [pageSize]="10"
                   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventClean($event)">
                 </mat-paginator>
               </mat-tab>
@@ -281,20 +264,20 @@
                   </table>
                 </div>
                 <!-- No result -->
-                @if (!(cleanDS.loading$ | async) && !clnEstList.length) {
+                @if (!(residueDS.loading$ | async) && !rsdEstList.length) {
                 <mat-divider></mat-divider>
-                <div class="no-results m-l-20 pt-3" [style.display]="clnEstList.length === 0 ? '' : 'none'">
+                <div class="no-results m-l-20 pt-3" [style.display]="rsdEstList.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>
                 }
                 <!-- Loading spinner -->
-                @if (cleanDS.loading$ | async) {
+                @if (residueDS.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="cleanDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                <mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="0" [pageSize]="10"
                   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
                 </mat-paginator>
               </mat-tab>
