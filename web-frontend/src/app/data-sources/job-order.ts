@@ -12,6 +12,7 @@ import { TeamItem } from './teams';
 import { RepairPartItem } from './repair-part';
 import { InGateCleaningItem } from './in-gate-cleaning';
 import { ResiduePartItem } from './residue-part';
+import { TimeTableItem } from './time-table';
 
 export class JobOrderGO {
   public guid?: string;
@@ -90,7 +91,7 @@ export class JobOrderRequest {
 export class JobProcessRequest {
   public guid?: string;
   public job_type_cv?: string;
-  public process_status?:string;
+  public process_status?: string;
 
   constructor(item: Partial<JobProcessRequest> = {}) {
     this.guid = item.guid;
@@ -101,16 +102,29 @@ export class JobProcessRequest {
 
 export class JobOrderItem extends JobOrderGO {
   public team?: TeamItem;
-  public repair_part?:RepairPartItem[];
-  public cleaning?:InGateCleaningItem[];
-  public residue_part?:ResiduePartItem[];
-  
+  public repair_part?: RepairPartItem[];
+  public cleaning?: InGateCleaningItem[];
+  public residue_part?: ResiduePartItem[];
+
+  public time_table?: TimeTableItem[];
   constructor(item: Partial<JobOrderItem> = {}) {
     super(item);
     this.team = item.team;
-    this.repair_part=item.repair_part;
-    this.cleaning=item.cleaning;
-    this.residue_part=item.residue_part;
+    this.repair_part = item.repair_part;
+    this.cleaning = item.cleaning;
+    this.residue_part = item.residue_part;
+    this.time_table = item.time_table;
+  }
+}
+
+export class JobItemRequest {
+  public guid?: string;
+  public job_order_guid?: string;
+  public job_type_cv?: string;
+  constructor(item: Partial<JobItemRequest> = {}) {
+    this.guid = item.guid;
+    this.job_order_guid = item.job_order_guid;
+    this.job_type_cv = item.job_type_cv;
   }
 }
 
@@ -181,6 +195,19 @@ export const GET_JOB_ORDER = gql`
           update_by
           update_dt
         }
+        time_table(
+          where: { start_time: { neq: null }, stop_time: { eq: null } }
+        ) {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_order_guid
+          start_time
+          stop_time
+          update_by
+          update_dt
+        }
       }
     }
   }
@@ -248,6 +275,17 @@ export const GET_JOB_ORDER_BY_ID = gql`
             subgroup_name_cv
           }
         }
+        time_table {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_order_guid
+          start_time
+          stop_time
+          update_by
+          update_dt
+        }
       }
     }
   }
@@ -262,6 +300,12 @@ export const ASSIGN_JOB_ORDER = gql`
 export const UPDATE_JOB_PROCESS_STATUS = gql`
   mutation updateJobProcessStatus($jobProcessRequest: JobProcessRequestInput!) {
     updateJobProcessStatus(jobProcessRequest: $jobProcessRequest)
+  }
+`
+
+export const COMPLETE_JOB_ITEM = gql`
+  mutation completeJobItem($jobItemRequest: [JobItemRequestInput!]!) {
+    completeJobItem(jobItemRequest: $jobItemRequest)
   }
 `
 
@@ -330,12 +374,21 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   }
 
 
-  
+
   updateJobProcessStatus(jobProcessRequest: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_JOB_PROCESS_STATUS,
       variables: {
         jobProcessRequest
+      }
+    });
+  }
+
+  completeJobItem(jobItemRequest: JobItemRequest): Observable<any> {
+    return this.apollo.mutate({
+      mutation: COMPLETE_JOB_ITEM,
+      variables: {
+        jobItemRequest
       }
     });
   }

@@ -809,8 +809,12 @@ $breakpoints: (
 @include generate-width("tbl-col-width-per-3_25", 3.25);
 @include generate-width("tbl-col-width-per-3_5", 3.5);
 @include generate-width("tbl-col-width-per-3_75", 3.75);
+@include generate-width("tbl-col-width-per-4_25", 4.25);
 @include generate-width("tbl-col-width-per-4_5", 4.5);
+@include generate-width("tbl-col-width-per-4_75", 4.75);
+@include generate-width("tbl-col-width-per-5_25", 5.25);
 @include generate-width("tbl-col-width-per-5_5", 5.5);
+@include generate-width("tbl-col-width-per-5_75", 5.75);
 @include generate-width("tbl-col-width-per-6_5", 6.5);
 @include generate-width("tbl-col-width-per-7_5", 7.5);
 @include generate-width("tbl-col-width-per-8_5", 8.5);

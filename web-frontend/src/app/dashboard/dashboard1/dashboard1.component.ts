@@ -1,4 +1,4 @@
-import { Component, OnInit  } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApexAxisChartSeries, ApexChart, ApexXAxis, ApexDataLabels, ApexTooltip, ApexYAxis, ApexPlotOptions, ApexStroke, ApexLegend, ApexFill, ApexMarkers, ApexGrid, ApexTitleSubtitle, ApexResponsive, NgApexchartsModule } from 'ng-apexcharts';
 
 export type ChartOptions = {
@@ -20,7 +20,7 @@ export type ChartOptions = {
   title: ApexTitleSubtitle;
 };
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { NgClass, CommonModule  } from '@angular/common';
+import { NgClass, CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -33,35 +33,35 @@ import { MatButtonModule } from '@angular/material/button';
 import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { Subscription } from 'rxjs';
 import { Apollo } from 'apollo-angular';
-import {GraphqlNotificationService} from '../../services/global-notification.service'
-import { InGateDS} from 'app/data-sources/in-gate';
-import {StoringOrderTankDS} from 'app/data-sources/storing-order-tank'
+import { GraphqlNotificationService } from '../../services/global-notification.service'
+import { InGateDS } from 'app/data-sources/in-gate';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
-    selector: 'app-dashboard1',
-    templateUrl: './dashboard1.component.html',
-    styleUrls: ['./dashboard1.component.scss'],
-    standalone: true,
-    imports: [
-        BreadcrumbComponent,
-        MatButtonModule,
-        MatMenuModule,
-        MatIconModule,
-        FeatherIconsComponent,
-        NgApexchartsModule,
-        NgScrollbar,
-        RouterLink,
-        MatProgressBarModule,
-        CdkDropList,
-        CdkDrag,
-        CdkDragHandle,
-        MatCheckboxModule,
-        CdkDragPlaceholder,
-        MatTooltipModule,
-        MatProgressSpinnerModule,
-        NgClass,
-        CommonModule,
-    ],
+  selector: 'app-dashboard1',
+  templateUrl: './dashboard1.component.html',
+  styleUrls: ['./dashboard1.component.scss'],
+  standalone: true,
+  imports: [
+    BreadcrumbComponent,
+    MatButtonModule,
+    MatMenuModule,
+    MatIconModule,
+    FeatherIconsComponent,
+    NgApexchartsModule,
+    NgScrollbar,
+    RouterLink,
+    MatProgressBarModule,
+    CdkDropList,
+    CdkDrag,
+    CdkDragHandle,
+    MatCheckboxModule,
+    CdkDragPlaceholder,
+    MatTooltipModule,
+    MatProgressSpinnerModule,
+    NgClass,
+    CommonModule,
+  ],
 })
 
 export class Dashboard1Component implements OnInit {
@@ -71,21 +71,21 @@ export class Dashboard1Component implements OnInit {
   public performanceRateChartOptions!: Partial<ChartOptions>;
   graphqlNotificationService?: GraphqlNotificationService
   messageSubscription?: Subscription;
-  in_gate_yet_to_survey?:number =0;
-  sot_waiting?:number =0;
+  in_gate_yet_to_survey?: number = 0;
+  sot_waiting?: number = 0;
   igDS: InGateDS;
-  sotDS: StoringOrderTankDS ;
+  sotDS: StoringOrderTankDS;
   constructor(
     private apollo: Apollo,
-    
-   // private graphqlNotificationService: GraphqlNotificationService
+
+    // private graphqlNotificationService: GraphqlNotificationService
   ) {
     this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
-    this.igDS= new InGateDS(this.apollo);
-    this.sotDS=new StoringOrderTankDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
     //constructor
   }
-  
+
 
   ngOnInit() {
     // this.chart1();
@@ -94,40 +94,34 @@ export class Dashboard1Component implements OnInit {
     // this.chart4();
     this.messageSubscribe();
     this.loadData();
-    
+
   }
 
-  private loadData(){
-    this.igDS.getInGateCountForYetToSurvey().subscribe(data=>{
-      this.in_gate_yet_to_survey=data;
-
+  private loadData() {
+    this.igDS.getInGateCountForYetToSurvey().subscribe(data => {
+      this.in_gate_yet_to_survey = data;
     });
 
-    this.sotDS.getWaitingStoringOrderTankCount().subscribe(data=>{
-      this.sot_waiting=data;
-
+    this.sotDS.getWaitingStoringOrderTankCount().subscribe(data => {
+      this.sot_waiting = data;
     });
   }
-  
-  
-  private messageSubscribe(){
 
+
+  private messageSubscribe() {
     this.messageSubscription = this.graphqlNotificationService?.newMessageReceived.subscribe(
       (message) => {
         //alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
-        if(message.messageReceived.event_id=="2000" || message.messageReceived.event_id=="2010")
-        {
-          this.igDS.getInGateCountForYetToSurvey().subscribe(data=>{
-            this.in_gate_yet_to_survey=data;
-      
+        if (message.messageReceived.event_id == "2000" || message.messageReceived.event_id == "2010") {
+          this.igDS.getInGateCountForYetToSurvey().subscribe(data => {
+            this.in_gate_yet_to_survey = data;
           });
 
-          this.sotDS.getWaitingStoringOrderTankCount().subscribe(data=>{
-            this.sot_waiting=data;
-      
+          this.sotDS.getWaitingStoringOrderTankCount().subscribe(data => {
+            this.sot_waiting = data;
           });
         }
-        
+
       },
       (error) => console.error(error),
     );

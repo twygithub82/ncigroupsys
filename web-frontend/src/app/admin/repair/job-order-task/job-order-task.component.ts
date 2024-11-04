@@ -36,7 +36,6 @@ import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem, StoringOrderTankUpdateSO } from 'app/data-sources/storing-order-tank';
-import { StoringOrderService } from 'app/services/storing-order.service';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values'
 import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company'
 import { MatRadioModule } from '@angular/material/radio';
@@ -60,8 +59,9 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobOrderDS, JobOrderItem, JobOrderRequest } from 'app/data-sources/job-order';
+import { JobItemRequest, JobOrderDS, JobOrderItem, JobOrderRequest } from 'app/data-sources/job-order';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 
 @Component({
   selector: 'app-job-order-task',
@@ -111,8 +111,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     'repair',
     'description',
     'quantity',
-    'hour',
-    'actions'
+    'hour'
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
@@ -218,7 +217,16 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     QC_DETAILS: 'COMMON-FORM.QC-DETAILS',
     SAVE_ANOTHER: 'COMMON-FORM.SAVE-ANOTHER',
     TEAM_ALLOCATION: 'COMMON-FORM.TEAM-ALLOCATION',
-    ASSIGN: 'COMMON-FORM.ASSIGN'
+    ASSIGN: 'COMMON-FORM.ASSIGN',
+    JOB_DETAILS: 'COMMON-FORM.JOB-DETAILS',
+    START_STOP_JOB: 'COMMON-FORM.START-STOP-JOB',
+    COMPLETE_JOB: 'COMMON-FORM.COMPLETE-JOB',
+    START_TIME: 'COMMON-FORM.START-TIME',
+    STOP_TIME: 'COMMON-FORM.STOP-TIME',
+    TIME_TAKEN: 'COMMON-FORM.TIME-TAKEN',
+    START_JOB: 'COMMON-FORM.START-JOB',
+    STOP_JOB: 'COMMON-FORM.STOP-JOB',
+    COMPLETE: 'COMMON-FORM.COMPLETE'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -229,6 +237,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   repairForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
+  jobOrderItem?: JobOrderItem;
   repairItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repSelection = new SelectionModel<RepairPartItem>(true, []);
@@ -257,9 +266,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   repairDS: RepairDS;
   repairPartDS: RepairPartDS;
   rpDmgRepairDS: RPDamageRepairDS;
-  prDS: PackageRepairDS;
   teamDS: TeamDS;
   joDS: JobOrderDS;
+  ttDS: TimeTableDS;
   isOwner = false;
 
   constructor(
@@ -283,9 +292,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairDS = new RepairDS(this.apollo);
     this.repairPartDS = new RepairPartDS(this.apollo);
     this.rpDmgRepairDS = new RPDamageRepairDS(this.apollo);
-    this.prDS = new PackageRepairDS(this.apollo);
     this.teamDS = new TeamDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
+    this.ttDS = new TimeTableDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -407,6 +416,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       this.subs.sink = this.joDS.getJobOrderByID(this.job_order_guid).subscribe(jo => {
         if (jo?.length) {
           console.log(jo)
+          this.jobOrderItem = jo[0];
           if (this.repair_guid) {
             this.repairDS.getRepairByIDForJobOrder(this.repair_guid).subscribe(repair => {
               if (repair?.length) {
@@ -456,21 +466,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   getCustomer() {
     return this.sotItem?.storing_order?.customer_company;
-  }
-
-  getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } },
-        {
-          or: [
-            { tariff_repair_guid: { in: tariff_repair_guid } }
-          ]
-        }
-      ]
-    };
-
-    return this.prDS.getCustomerPackageCost(where);
   }
 
   displayCustomerCompanyName(cc: CustomerCompanyItem): string {
@@ -798,7 +793,64 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.repSelection.toggle(row);
   }
 
-  isAssignEnabled() {
-    return this.repSelection.hasValue() && this.repairForm?.get('team_allocation')?.value;
+  isStarted() {
+    return this.jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+  }
+
+  toggleJobState(event: Event, isStarted: boolean | undefined) {
+    this.preventDefault(event);  // Prevents the form submission
+    if (!isStarted) {
+      const param = [new TimeTableItem({job_order_guid: this.jobOrderItem?.guid})];
+      console.log(param)
+      this.ttDS.startJobTimer(param).subscribe(result => {
+        console.log(result)
+      });
+    } else {
+      const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      if (found?.length) {
+        const newParam = new TimeTableItem(found[0]);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          console.log(result)
+        });
+      }
+    }
+  }
+
+  completeJobItem(event: Event, repair_part: RepairPartItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    const newParam = new JobItemRequest({
+      guid: repair_part.guid,
+      job_order_guid: repair_part.job_order_guid
+    });
+    const param = [newParam];
+    console.log(param)
+    // this.ttDS.stopJobTimer(param).subscribe(result => {
+    //   console.log(result)
+    // });
+  }
+
+  viewTimeTableDetails(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '700px',
+      data: {
+        item: this.jobOrderItem?.time_table,
+        action: 'new',
+        translatedLangText: this.translatedLangText,
+        populateData: {},
+        index: -1
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => { });
   }
 }

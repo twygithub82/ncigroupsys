@@ -213,7 +213,7 @@
                       <mat-cell *matCellDef="let row; let i=index;"
                         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <button mat-menu-item (click)="stopEventTrigger($event)">
-                          <mat-icon [ngClass]="{'text-success': row.status_cv === 'JOB_IN_PROGRESS'}" disabled>timer</mat-icon>
+                          <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
                         </button>
                         <button mat-menu-item (click)="stopEventTrigger($event)">
                           <mat-icon>check_box</mat-icon>
