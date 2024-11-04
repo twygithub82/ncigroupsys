@@ -35,7 +35,7 @@
                           }
                         </mat-select>
 
-                        @if (pcForm?.get('team_allocation')?.hasError('required')) {
+                        @if (pcForm.get('team_allocation')?.hasError('required')) {
                           <mat-error>
                             {{translatedLangText.TEAM | translate}} {{data.langText.SO_REQUIRED | translate}}
                           </mat-error>
