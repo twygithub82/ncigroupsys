@@ -50,6 +50,7 @@ import { ResidueDisposalApprovalViewComponent } from './residue-disposal/approva
 import { JobOrderCleaningComponent } from './cleaning/job-order/job-order.component';
 import { JobOrderResidueDisposalComponent } from './residue-disposal/job-order/job-order.component';
 import { JobOrderAllocationResidueDisposalComponent } from './residue-disposal/job-order-allocation/job-order-allocation.component';
+import { JobOrderTaskComponent } from './repair/job-order-task/job-order-task.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -233,6 +234,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "repair/job-order/allocation/:id",
     component: JobOrderAllocationComponent,
+  },
+  {
+    path: "repair/job-order/task/:id/:repair_id",
+    component: JobOrderTaskComponent,
   },
   {
     path: "master/estimate-template",

@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
@@ -32,9 +33,9 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-repair-estimate-cancel-form-dialog',
-  templateUrl: './form-dialog.component.html',
-  styleUrls: ['./form-dialog.component.scss'],
+  selector: 'app-repair-estimate-new-cancel-form-dialog',
+  templateUrl: './cancel-form-dialog.component.html',
+  styleUrls: ['./cancel-form-dialog.component.scss'],
   providers: [],
   standalone: true,
   imports: [
@@ -56,7 +57,7 @@ export class CancelFormDialogComponent {
   action?: string;
   index: number;
   dialogTitle?: string;
-  repairList: RepairItem[];
+  repairEstList: RepairItem[];
   cancelForm: UntypedFormGroup;
   startDate = new Date();
 
@@ -67,16 +68,15 @@ export class CancelFormDialogComponent {
     private fb: UntypedFormBuilder
   ) {
     // Set the defaults
-    this.repairList = data.item;
+    this.repairEstList = data.item;
     this.cancelForm = this.createCancelForm();
     this.action = this.data.action;
     this.dialogTitle = this.data.dialogTitle;
     this.index = data.index;
-    this.initializeValuesChange();
   }
   createCancelForm(): UntypedFormGroup {
     return this.fb.group({
-      cancelItemList: this.fb.array(this.repairList.map(re => this.createOrderGroup(re))),
+      cancelItemList: this.fb.array(this.repairEstList.map(re => this.createOrderGroup(re))),
       remarks: ['']
     });
   }
@@ -86,8 +86,7 @@ export class CancelFormDialogComponent {
       guid: [re.guid],
       estimate_no: [re.estimate_no],
       sot_guid: [re.sot_guid],
-      remarks_display: [re.remarks],
-      remarks: ["", Validators.required]
+      remarks: [re.remarks, Validators.required]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {
@@ -112,19 +111,5 @@ export class CancelFormDialogComponent {
   }
   cancelItemArray(): UntypedFormArray {
     return this.cancelForm.get('cancelItemList') as UntypedFormArray;
-  }
-
-  initializeValuesChange() {
-    this.cancelForm!.get('remarks')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          this.cancelItemArray().controls.forEach(rowCancelForm => {
-            rowCancelForm.get('remarks')?.setValue(value);
-          })
-        }
-      })
-    ).subscribe();
   }
 }

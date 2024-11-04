@@ -276,7 +276,6 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
                           @if (hasMenuItems(row)) {
-
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
                           </button>

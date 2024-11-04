@@ -328,17 +328,19 @@
                         <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row;" class="justify-content-end">
+                          @if (hasMenuItems(row)) {
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
                           </button>
                           <mat-menu #menu="matMenu">
-                            @if (sotDS.canAddRemove(row)) {
+                            @if (repairDS.canAmend(repairItem)) {
                             <button mat-menu-item (click)="handleDelete($event, row, row.index)">
                               <mat-icon>delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
                             }
                           </mat-menu>
+                          }
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -804,7 +806,7 @@
                     {{translatedLangText.EXPORT}}
                   </button>
                   }
-                  @if (isAnyItemEdited()) {
+                  @if (repairDS.canAmend(repairItem)) {
                   <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)">
                     <mat-icon>
                       @if (!(repairDS.loading$ | async)) {

@@ -86,7 +86,8 @@ export class CancelFormDialogComponent {
       guid: [re.guid],
       estimate_no: [re.estimate_no],
       sot_guid: [re.sot_guid],
-      remarks: [re.remarks, Validators.required]
+      remarks_display: [re.remarks],
+      remarks: ["", Validators.required]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {
