@@ -174,6 +174,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -351,6 +352,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     this.search();
 
     const queries = [
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
@@ -364,6 +366,9 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = addDefaultSelectOption(data, 'All');
     });
   }
 
@@ -687,6 +692,17 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
          }
        });
     
+  }
+
+  displayTankStatus(status:string):string{
+    var retval:string="-";
+
+    retval= this.processStatusCvList!
+    .filter(item => item.code_val === status)
+    .map(item => item.description)[0]!; // Returns the description of the first match
+
+    if(retval==="") retval="-"
+    return retval;
   }
 
  

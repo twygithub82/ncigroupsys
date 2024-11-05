@@ -170,7 +170,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     METHOD:"COMMON-FORM.METHOD"
   }
 
-  filterCleanForm?: UntypedFormGroup;
+  filterResidueForm?: UntypedFormGroup;
   filterJobOrderForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
@@ -252,8 +252,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   initSearchForm() {
-    this.filterCleanForm = this.fb.group({
-      filterClean: [''],
+    this.filterResidueForm = this.fb.group({
+      filterResidue: [''],
     });
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
@@ -301,7 +301,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   public loadData() {
-    this.onFilterCleaning();
+    this.onFilterResidue();
     this.onFilterJobOrder();
 
     const queries = [
@@ -369,7 +369,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     }
   }
 
-  onFilterCleaning() {
+  onFilterResidue() {
     const where: any = {
       status_cv: { in: ["APPROVED"] }
     };
@@ -377,9 +377,9 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }
     // ]
-    if (this.filterCleanForm!.get('filterClean')?.value) {
+    if (this.filterResidueForm!.get('filterResidue')?.value) {
       where.AND.push({
-        storing_order_tank: { tank_no: { contains: this.filterCleanForm!.get('filterClean')?.value } }
+        storing_order_tank: { tank_no: { contains: this.filterResidueForm!.get('filterResidue')?.value } }
       });
     }
 
@@ -389,7 +389,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
 
   onFilterJobOrder() {
     const where: any = {
-      job_type_cv: { eq: "RESIDUE_DISPOSAL" }
+      job_type_cv: { eq: "RESIDUE" }
     };
 
     // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
@@ -568,8 +568,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   resetForm() {
-    this.filterCleanForm?.patchValue({
-      filterRepair: '',
+    this.filterResidueForm?.patchValue({
+      filterResidue: '',
     });
   }
 

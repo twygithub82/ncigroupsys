@@ -430,7 +430,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     {
       case "APPROVE":
         rep.approve_dt=Utility.convertDate(this.pcForm.get("approved_dt")?.value) as number;
-        rep.job_no=this.pcForm.get("job_no")?.value;
+        rep.job_no=this.pcForm.get("job_no_input")?.value;
         break;
       case "KIV":
         rep.job_no= this.pcForm.get("job_no_input")?.value;

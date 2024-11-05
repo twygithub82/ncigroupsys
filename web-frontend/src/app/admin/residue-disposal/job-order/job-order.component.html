@@ -10,7 +10,7 @@
           <div class="body overflow-auto">
             <mat-tab-group dynamicHeight>
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
-                <form class="ms-0" [formGroup]="filterCleanForm!" (ngSubmit)="onFilterCleaning()" #formDirective="ngForm">
+                <form class="ms-0" [formGroup]="filterResidueForm!" (ngSubmit)="onFilterResidue()" #formDirective="ngForm">
                   <div class="row">
                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
@@ -18,11 +18,11 @@
                         <mat-label>
                           {{translatedLangText.TANK_NO}}
                         </mat-label>
-                        <input matInput formControlName="filterClean">
+                        <input matInput formControlName="filterResidue">
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
-                      <button mat-mini-fab color="primary" (click)="onFilterCleaning()">
+                      <button mat-mini-fab color="primary" (click)="onFilterResidue()">
                         <mat-icon>search</mat-icon>
                       </button>
                     </div>

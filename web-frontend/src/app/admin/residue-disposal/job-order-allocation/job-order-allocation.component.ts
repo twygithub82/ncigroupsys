@@ -350,7 +350,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       qty:[''],
       unit_price:[''],
       deList: [''],
-      team_allocation:['']
+      team_allocation:[''],
+      
     });
   }
 
@@ -685,7 +686,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
         //this.router.navigate(['/admin/master/estimate-template']);
 
         // Navigate to the route and pass the JSON object
-        this.router.navigate(['/admin/residue-disposal/approval'], {
+        this.router.navigate(['/admin/residue-disposal/job-order'], {
           state: this.historyState
 
         }
@@ -1012,7 +1013,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/approval'], {
+    this.router.navigate(['/admin/residue-disposal/job-order'], {
       state: this.historyState
 
     }
@@ -1023,7 +1024,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
     if(residue)
     {
-      var dataList = residue.residue_part?.map(data=>new ResidueEstPartGO(data) );
+      var dataList = residue.residue_part?.map(data=>new ResiduePartItem(data) );
       this.updateData(dataList);
     }
   }
@@ -1173,6 +1174,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     console.log(selectedRep)
     this.repSelection.clear();
     selectedTeam?.setValue('')
+    this.residueEstForm?.get('deList')?.setErrors(null);
+    
   }
   isAssignEnabled() {
     return this.repSelection.hasValue() && this.residueEstForm?.get('team_allocation')?.value;
@@ -1209,37 +1212,69 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
   save() {
 
-    if (!this.residueEstForm?.valid) return;
+    let job_type="RESIDUE";
+    this.residueEstForm?.get('deList')?.setErrors(null);
+    
 
-    var selItem =this.residueItem;
-    var newJobOrderReq :JobOrderRequest = new JobOrderRequest();
-    let job_type="RESIDUE_DISPOSAL";
-    var team : TeamItem = this.residueEstForm!.get("team_allocation")?.value;
-    newJobOrderReq.job_type_cv=job_type;
-    newJobOrderReq.team_guid =team?.guid;
-    newJobOrderReq.sot_guid=selItem?.storing_order_tank?.guid;
-    newJobOrderReq.total_hour=this.cleaningTotalHours;
-    newJobOrderReq.part_guid=[];
-    
-    this.repSelection!.selected.forEach((part) => {
-      newJobOrderReq.part_guid?.push(part.guid);
+    const distinctJobOrders = this.deList
+    .filter((item, index, self) =>
+      index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+        (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+          t.job_order?.team?.description === item?.job_order?.team?.description))
+    )
+    .filter(item => item !== null && item !== undefined)
+    .map(item => item.job_order);
+
+  const finalJobOrder: any[] = [];
+  distinctJobOrders.forEach(jo => {
+    if (jo) {
+      const filteredParts = this.deList.filter(part =>
+        part.job_order?.guid === jo?.guid &&
+        (part.job_order?.team?.guid === jo?.team_guid ||
+          part.job_order?.team?.description === jo?.team?.description)
+      );
+      console.log(filteredParts)
+      const partList = filteredParts.map(part => part.guid);
+      const totalApproveHours = 3;
+
+      const joRequest = new JobOrderRequest();
+      joRequest.guid = jo.guid;
+      joRequest.job_type_cv = jo.job_type_cv ?? job_type;
+      joRequest.remarks = jo.remarks;
+      joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
+      joRequest.status_cv = jo.status_cv;
+      joRequest.team_guid = jo.team_guid;
+      joRequest.total_hour = jo.total_hour ?? totalApproveHours;
+      joRequest.working_hour = jo.working_hour ?? 0;
+      joRequest.part_guid = partList;
+      finalJobOrder.push(joRequest);
+    }
   });
-    
-    this.jobOrderDS?.assignJobOrder(newJobOrderReq).subscribe(result=>{
-      if(result.data.assignJobOrder>0)
+  console.log(finalJobOrder);
+  if(finalJobOrder.length==0)
+  {
+    this.residueEstForm?.get('deList')?.setErrors({required:true});
+    return;
+  }
+  this.jobOrderDS.assignJobOrder(finalJobOrder).subscribe(result => {
+    console.log(result)
+    if(result?.data?.assignJobOrder>0)
+    {
+      if(this.isAllAssignedToTeam())
       {
-        if(this.isAllAssignedToTeam())
-        {
-         let residueGuid =this.residueItem?.guid;
-         let process_status="JOB_IN_PROGRESS";
-         this.updateJobProcessStatus(residueGuid!,job_type,process_status);
-        }
-        else
-        {
-          this.handleSaveSuccess(result.data.assignJobOrder);
-        }
+        let residueGuid = this.residueItem?.guid;
+        let process_status="JOB_IN_PROGRESS";
+        this.updateJobProcessStatus(residueGuid!,job_type,process_status);
+
       }
-    });
+      else
+      {
+        this.handleSaveSuccess(result?.data?.assignJobOrder);
+      }
+    }
+  });
+
+ 
 
   }
 

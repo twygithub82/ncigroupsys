@@ -601,11 +601,19 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     return retval;
   }
 
+   MenuButtonHidden(row:InGateCleaningItem)
+   {
+     const hiddenMenuStatus=['JOB_IN_PROGRESS'];
+    return (hiddenMenuStatus.includes(row.status_cv!));
+
+   }
    HiddenMenu(row:InGateCleaningItem,statusMenu:String):Boolean
    {
      var bRetval:Boolean =false;
 
       bRetval = (row.status_cv===statusMenu);
+      if(!bRetval)  bRetval = (row.status_cv=='JOB_IN_PROGRESS');
+
       return bRetval;
    }
   // updateValidators(validOptions: any[]) {
