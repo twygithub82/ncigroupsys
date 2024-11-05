@@ -533,6 +533,7 @@ export const GET_REPAIR_FOR_JOB_ORDER = gql`
           approve_part
           approve_qty
           complete_dt
+          job_order_guid
           rp_damage_repair {
             action
             code_cv

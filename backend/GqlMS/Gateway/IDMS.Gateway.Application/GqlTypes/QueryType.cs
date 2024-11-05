@@ -1,5 +1,4 @@
 ﻿using HotChocolate.Subscriptions;
-using IDMS.Models;
 
 namespace gateway_graphql_ms.GqlTypes
 {

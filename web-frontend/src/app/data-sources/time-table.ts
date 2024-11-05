@@ -33,6 +33,18 @@ export class TimeTableGO {
   }
 }
 
+export const START_JOB_TIMER = gql`
+  mutation startJobTimer($timeTable: [time_tableInput!]!) {
+    startJobTimer(timeTable: $timeTable)
+  }
+`
+
+export const STOP_JOB_TIMER = gql`
+  mutation stopJobTimer($timeTable: [time_tableInput!]!) {
+    stopJobTimer(timeTable: $timeTable)
+  }
+`
+
 export class TimeTableItem extends TimeTableGO {
   constructor(item: Partial<TimeTableItem> = {}) {
     super(item);
@@ -47,5 +59,23 @@ export interface TimeTableResult {
 export class TimeTableDS extends BaseDataSource<TimeTableItem> {
   constructor(private apollo: Apollo) {
     super();
+  }
+
+  startJobTimer(timeTable: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: START_JOB_TIMER,
+      variables: {
+        timeTable
+      }
+    });
+  }
+
+  stopJobTimer(timeTable: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: STOP_JOB_TIMER,
+      variables: {
+        timeTable
+      }
+    });
   }
 }

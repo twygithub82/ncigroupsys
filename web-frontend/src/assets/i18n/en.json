@@ -646,7 +646,16 @@
     "TEAM-ALLOCATION": "Team Allocation",
     "DEPOT-REFERENCE":"Depot Reference",
     "RESIDUE-JOB-NO":"Residue Job No.",
-    "JOB-ORDER-NO":"Job Order No."
+    "JOB-ORDER-NO":"Job Order No.",
+    "JOB-DETAILS":"Job Details",
+    "START-STOP-JOB":"Start/Stop Job",
+    "COMPLETE-JOB":"Complete Job",
+    "START-TIME":"Start Time",
+    "STOP-TIME":"Stop Time",
+    "TIME-TAKEN":"Time Taken",
+    "START-JOB":"Start Job",
+    "STOP-JOB":"Stop Job",
+    "DONE":"Done"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

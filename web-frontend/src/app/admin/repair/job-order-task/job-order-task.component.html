@@ -127,7 +127,7 @@
           <div class="card">
             <div class="header">
               <h2>
-                {{translatedLangText.JOB_TASK}}
+                {{translatedLangText.JOB_DETAILS}}
               </h2>
             </div>
             <div class="body">
@@ -139,20 +139,19 @@
               }
               @if (!(joDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.TEAM}}</mat-label>
-                    <mat-select formControlName="team_allocation">
-                      @for (team of teamList; track team) {
-                      <mat-option [value]="team">{{team.description}}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0 p-t-10">
-                  <button mat-flat-button color="accent" [disabled]="!isAssignEnabled()" (click)="assignTeam($event)">
-                    <mat-icon>person_add</mat-icon>
-                    {{translatedLangText.ASSIGN}}
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                  <button mat-flat-button color="accent" (click)="viewTimeTableDetails($event)" [ngClass]="'m-r-10'">
+                    <mat-icon>view_list</mat-icon>
+                    {{translatedLangText.TIME_TAKEN}}
+                  </button>
+                  <button mat-flat-button color="accent" (click)="toggleJobState($event, isStarted())"
+                    [ngClass]="{'m-r-10': true, 'bg-red': isStarted(), 'bg-green': !isStarted()}">
+                    <mat-icon>timer</mat-icon>
+                    {{ isStarted() ? translatedLangText.STOP_JOB : translatedLangText.START_JOB }}
+                  </button>
+                  <button mat-flat-button color="accent" [disabled]="true" (click)="assignTeam($event)">
+                    <mat-icon>check_box</mat-icon>
+                    {{translatedLangText.COMPLETE_JOB}}
                   </button>
                 </div>
               </div>
@@ -168,7 +167,6 @@
               <h2>
                 {{translatedLangText.ESTIMATE_DETAILS}}
               </h2>
-              <mat-icon>av_timer</mat-icon>
             </div>
             <div class="body">
               @if (joDS.loadingSubject | async) {
@@ -252,36 +250,36 @@
                       </ng-container>
                       <ng-container matColumnDef="description">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-5_25-xl tbl-col-width-per-5_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.DESCRIPTION}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-5_25-xl tbl-col-width-per-5_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-tab-label">{{translatedLangText.DESCRIPTION}}:</span>
                           {{row.description}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="quantity">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.QTY}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-tab-label">{{translatedLangText.QTY}}:</span>
                           {{row.approve_qty}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="hour">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           mat-sort-header>
                           {{translatedLangText.HOUR}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-tab-label">{{translatedLangText.HOUR}}:</span>
                           {{row.approve_hour}}
                         </mat-cell>
@@ -299,7 +297,7 @@
                           <mat-icon class="font-bold">close</mat-icon>
                           }
                           @else {
-                          @if (repairPartDS.isApprove(row)) {
+                          @if (repairPartDS.isApproved(row)) {
                           <mat-icon class="col-green font-bold">check</mat-icon>
                           }
                           @else {
@@ -320,24 +318,13 @@
                           {{row.job_order?.team?.description || 'NA'}}
                         </mat-cell>
                       </ng-container> -->
-                      <ng-container matColumnDef="actions">
-                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
-                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                            <mat-icon>more_vert</mat-icon>
-                          </button>
-                          <mat-menu #menu="matMenu">
-                          </mat-menu>
-                        </mat-cell>
-                      </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; let i = index; columns: ['group_name_cv'];"
                         [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-blue font-bold': true}"
                         [style.cursor]="'pointer'" matRipple>
                       </mat-row>
-                      <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" (click)="toggleRep(row)"
-                        [ngClass]="{'bg-light-green': repSelection.isSelected(row)}" [style.cursor]="'pointer'"
+                      <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
+                        [ngClass]="{'bg-light-green': repairPartDS.isCompleted(row)}" [style.cursor]="'pointer'"
                         matRipple>
                       </mat-row>
                     </table>
