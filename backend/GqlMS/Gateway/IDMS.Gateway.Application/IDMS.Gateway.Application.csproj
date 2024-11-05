@@ -21,10 +21,4 @@
     <Folder Include="resolver\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="IDMS.Models">
-      <HintPath>..\..\Parameter\IDMS.Parameter.CategoryMethod\dependencies\IDMS.Models.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
