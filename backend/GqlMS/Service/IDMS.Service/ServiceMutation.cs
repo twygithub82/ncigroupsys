@@ -67,6 +67,8 @@ namespace IDMS.Service.GqlTypes
                     }
 
                     var res = await context.SaveChangesAsync();
+                    // Commit the transaction if all operations succeed
+                    await transaction.CommitAsync();
                     //TODO
                     //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                     return res;
@@ -397,6 +399,8 @@ namespace IDMS.Service.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
+                List<string?> jobOrderGuid = timeTable.Select(t => t.job_order_guid).ToList();
+
                 //IList<time_table> newTimeTableList = new List<time_table>();
                 foreach (var item in timeTable)
                 {
@@ -405,14 +409,15 @@ namespace IDMS.Service.GqlTypes
 
                     var stopTimeTable = new time_table() { guid = item.guid };
                     context.time_table.Attach(stopTimeTable);
-                    item.update_by = user;
-                    item.update_dt = currentDateTime;
-                    item.stop_time = currentDateTime;
+                    stopTimeTable.update_by = user;
+                    stopTimeTable.update_dt = currentDateTime;
+                    stopTimeTable.stop_time = currentDateTime;
                 }
 
                 var res = await context.SaveChangesAsync();
 
-                await UpdateAccumalateHour(context, user, currentDateTime, timeTable.Select(t => t.job_order_guid).ToList());
+                if (res > 0)
+                    await UpdateAccumalateHour(context, user, currentDateTime, jobOrderGuid);
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
@@ -514,11 +519,11 @@ namespace IDMS.Service.GqlTypes
                 {
                     var totalTime = await context.time_table
                         .Where(t => t.stop_time != null && t.start_time != null && t.job_order_guid == j_guid)
-                        .SumAsync(t => (t.stop_time - t.stop_time));
+                        .SumAsync(t => (t.stop_time - t.start_time));
 
                     var jobOrdr = new job_order() { guid = j_guid };
                     context.job_order.Attach(jobOrdr);
-                    jobOrdr.working_hour = totalTime;
+                    jobOrdr.working_hour = Math.Round(((double)totalTime / 3600.0), 2);
                     jobOrdr.update_by = user;
                     jobOrdr.update_dt = currentDateTime;
                 }
