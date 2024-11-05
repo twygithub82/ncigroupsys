@@ -164,12 +164,16 @@ export class RepairPartDS extends BaseDataSource<RepairPartItem> {
     super();
   }
 
-  isApprove(rp: RepairPartItem) {
+  isApproved(rp: RepairPartItem) {
     return rp.approve_part;
   }
 
   is4X(rpDmgRepair: RPDamageRepairItem[] | undefined): boolean | undefined {
     return rpDmgRepair && rpDmgRepair.some((item: RPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
+  }
+
+  isCompleted(rp: RepairPartItem): boolean {
+    return rp && rp.complete_dt !== null && rp.complete_dt !== undefined && rp.complete_dt > 0;
   }
 
   sortAndGroupByGroupName(repList: any[]): any[] {

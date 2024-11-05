@@ -10,204 +10,56 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <form class="register-form" [formGroup]="repairPartForm" #formDirective="ngForm">
-      <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>{{data.translatedLangText.DAMAGE}}</mat-label>
-            <mat-select multiple formControlName="damage" required>
-              @for (codeValue of data.populateData.damageCodeCvList; track codeValue) {
-              <mat-option [value]="codeValue.code_val">
-                {{'(' + codeValue.code_val + ')' + codeValue.description}}
-              </mat-option>
-              }
-            </mat-select>
-            @if (repairPartForm.get('damage')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.DAMAGE}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
-            <mat-select multiple formControlName="repair" required>
-              @for (codeValue of data.populateData.repairCodeCvList; track codeValue) {
-              <mat-option [value]="codeValue.code_val">
-                {{'(' + codeValue.code_val + ')' + codeValue.description}}
-              </mat-option>
-              }
-            </mat-select>
-            @if (repairPartForm.get('repair')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.REPAIR}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.GROUP_NAME}}</mat-label>
-            <mat-select formControlName="group_name_cv" required>
-              @for (codeValue of data.populateData.groupNameCvList; track codeValue) {
-              <mat-option [value]="codeValue">{{codeValue.description}}</mat-option>
-              }
-            </mat-select>
-            @if (repairPartForm.get('group_name_cv')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.GROUP_NAME}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.SUBGROUP_NAME}}</mat-label>
-            <mat-select formControlName="subgroup_name_cv">
-              @for (codeValue of subgroupNameCvList; track codeValue) {
-              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-              }
-            </mat-select>
-            @if (repairPartForm.get('subgroup_name_cv')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.SUBGROUP_NAME}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.LOCATION}}</mat-label>
-            <mat-select formControlName="location_cv">
-              @for (codeValue of data.populateData.partLocationCvList; track codeValue) {
-              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-              }
-            </mat-select>
-            @if (repairPartForm.get('location_cv')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.LOCATION}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.COMMENT}}</mat-label>
-            <input matInput formControlName="comment">
-          </mat-form-field>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.PART_NAME}}</mat-label>
-            <mat-select formControlName="part_name" required>
-              @for (name of partNameList; track name) {
-              <mat-option [value]="name">{{name}}</mat-option>
-              }
-            </mat-select>
-            <!-- <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
-              formControlName="part_name" required>
-            <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
-              @for (name of partNameFilteredList; track name) {
-              <mat-option [value]="name">
-                {{name}}
-              </mat-option>
-              }
-            </mat-autocomplete>
-            @if (partNameControl.get('part_name')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.PART_NAME}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-            @if (partNameControl.hasError('invalidAutocompleteSelection')) {
-            <mat-error>
-              {{data.translatedLangText.INVALID_SELECTION}}
-            </mat-error>
-            } -->
-          </mat-form-field>
-        </div>
-        <div class="col-xl col-lg col-md col-sm mb-1">
-          <button mat-mini-fab color="primary" [disabled]="!this.repairPartForm.get('part_name')?.value">
-            <mat-icon>search</mat-icon>
-          </button>
-        </div>
-        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
-            <input matInput formControlName="remarks">
-          </mat-form-field>
-        </div>
-        <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.DIMENSION}}</mat-label>
-            <mat-select formControlName="dimension" required>
-              @for (dim of dimensionList; track dim) {
-              <mat-option [value]="dim">{{dim}}</mat-option>
-              }
-            </mat-select>
-            @if (repairPartForm.get('dimension')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.DIMENSION}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.LENGTH}}</mat-label>
-            <mat-select formControlName="length" required>
-              @for (length of lengthList; track length) {
-              <mat-option [value]="length.length">{{length.length + '' + length.length_unit_cv}}</mat-option>
-              }
-            </mat-select>
-            @if (repairPartForm.get('length')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.LENGTH}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div> -->
-      </div>
-      <div class="row">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
-          {{data.translatedLangText.PART}}:
-          <span class="font-bold">
-            {{this.repairPart.tariff_repair?.alias}}
-            {{this.repairPart.tariff_repair?.length}}{{getUnitTypeDescription(this.repairPart.tariff_repair?.length_unit_cv)}}
-          </span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.QTY}}</mat-label>
-            <input matInput formControlName="quantity" type="number" required>
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.HOUR}}</mat-label>
-            <input matInput formControlName="hour" type="number" required>
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.MATERIAL_COST}}</mat-label>
-            <input matInput formControlName="material_cost" type="number" required>
-          </mat-form-field>
-        </div>
-      </div>
-      <div mat-dialog-actions class="mb-1 align-right">
-        @if (canEdit()) {
-        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid"
-          (click)="submit()">{{data.translatedLangText.UPDATE}}</button>
-        }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
-      </div>
-    </form>
+    @if (timeTableList.length) {
+    <div class="responsive_table">
+      <table mat-table [dataSource]="timeTableList" matSort
+        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="start_time">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{data.translatedLangText.START_TIME}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{data.translatedLangText.START_TIME}}:</span>{{displayDateTime(row.start_time)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="stop_time">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{data.translatedLangText.STOP_TIME}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{data.translatedLangText.STOP_TIME}}:</span>{{displayDateTime(row.stop_time)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="time_taken">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{data.translatedLangText.TIME_TAKEN}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{data.translatedLangText.TIME_TAKEN}}:</span>{{displayTimeTaken(row.stop_time, row.start_time)}}
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
+        </mat-row>
+      </table>
+    </div>
+    }
+    <!-- No result -->
+    @if (!timeTableList.length) {
+    <mat-divider></mat-divider>
+    <div class="no-results m-l-20 pt-3" [style.display]="timeTableList.length === 0 ? '' : 'none'">
+      <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
+    </div>
+    }
   </div>
 </div>
