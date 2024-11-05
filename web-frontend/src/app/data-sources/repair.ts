@@ -491,7 +491,7 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
 `;
 
 export const GET_REPAIR_FOR_JOB_ORDER = gql`
-  query QueryRepair($where: repairFilterInput) {
+  query QueryRepair($where: repairFilterInput, $repair_part_where: repair_partFilterInput) {
     resultList: queryRepair(where: $where) {
       nodes {
         aspnetusers_guid
@@ -510,7 +510,7 @@ export const GET_REPAIR_FOR_JOB_ORDER = gql`
         total_cost
         update_by
         update_dt
-        repair_part {
+        repair_part(where: $repair_part_where) {
           action
           create_by
           create_dt
@@ -787,13 +787,17 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       );
   }
 
-  getRepairByIDForJobOrder(id: string): Observable<RepairItem[]> {
+  getRepairByIDForJobOrder(id: string, job_order_guid: string | undefined): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
-    const where: any = { guid: { eq: id }, status_cv: { eq: "APPROVED" } }
+    const where: any = { guid: { eq: id } }
+    const repair_part_where: any = {}
+    if (job_order_guid) {
+      repair_part_where.job_order_guid = { eq: job_order_guid };
+    }
     return this.apollo
       .query<any>({
         query: GET_REPAIR_FOR_JOB_ORDER,
-        variables: { where },
+        variables: { where, repair_part_where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

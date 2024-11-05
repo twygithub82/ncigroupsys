@@ -128,6 +128,19 @@ export class JobItemRequest {
   }
 }
 
+export class UpdateJobOrderRequest {
+  public guid?: string;
+  public remarks?: string;
+  public start_dt?: number;
+  public complete_dt?: number;
+  constructor(item: Partial<UpdateJobOrderRequest> = {}) {
+    this.guid = item.guid;
+    this.remarks = item.remarks;
+    this.start_dt = item.start_dt;
+    this.complete_dt = item.complete_dt;
+  }
+}
+
 export interface JobOrderResult {
   items: JobOrderItem[];
   totalCount: number;
@@ -194,6 +207,63 @@ export const GET_JOB_ORDER = gql`
           status_cv
           update_by
           update_dt
+        }
+        time_table(
+          where: { start_time: { neq: null }, stop_time: { eq: null } }
+        ) {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_order_guid
+          start_time
+          stop_time
+          update_by
+          update_dt
+        }
+      }
+    }
+  }
+`;
+
+export const GET_JOB_ORDER_FOR_REPAIR = gql`
+  query queryJobOrder($where: job_orderFilterInput, $order: [job_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryJobOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        guid
+        job_order_no
+        job_type_cv
+        remarks
+        sot_guid
+        start_dt
+        status_cv
+        team_guid
+        total_hour
+        update_by
+        update_dt
+        working_hour
+        team {
+          description
+          guid
+        }
+        storing_order_tank {
+          tank_no
+          storing_order {
+            customer_company {
+              name
+              code
+            }
+          }
+        }
+        repair_part {
+          repair {
+            guid
+            estimate_no
+          }
         }
         time_table(
           where: { start_time: { neq: null }, stop_time: { eq: null } }
@@ -309,6 +379,12 @@ export const COMPLETE_JOB_ITEM = gql`
   }
 `
 
+export const COMPLETE_JOB_ORDER = gql`
+  mutation completeJobOrder($jobOrderRequest: [UpdateJobOrderRequestInput!]!) {
+    completeJobOrder(jobOrderRequest: $jobOrderRequest)
+  }
+`
+
 export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -318,6 +394,34 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     return this.apollo
       .watchQuery<any>({
         query: GET_JOB_ORDER,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .valueChanges
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as JobOrderItem[]); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  searchJobOrderForRepair(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<JobOrderItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .watchQuery<any>({
+        query: GET_JOB_ORDER_FOR_REPAIR,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -373,8 +477,6 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     });
   }
 
-
-
   updateJobProcessStatus(jobProcessRequest: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_JOB_PROCESS_STATUS,
@@ -384,11 +486,20 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     });
   }
 
-  completeJobItem(jobItemRequest: JobItemRequest): Observable<any> {
+  completeJobItem(jobItemRequest: JobItemRequest[]): Observable<any> {
     return this.apollo.mutate({
       mutation: COMPLETE_JOB_ITEM,
       variables: {
         jobItemRequest
+      }
+    });
+  }
+
+  completeJobOrder(jobOrderRequest: UpdateJobOrderRequest[]): Observable<any> {
+    return this.apollo.mutate({
+      mutation: COMPLETE_JOB_ORDER,
+      variables: {
+        jobOrderRequest
       }
     });
   }

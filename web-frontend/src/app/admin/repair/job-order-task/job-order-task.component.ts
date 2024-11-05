@@ -59,7 +59,7 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobItemRequest, JobOrderDS, JobOrderItem, JobOrderRequest } from 'app/data-sources/job-order';
+import { JobItemRequest, JobOrderDS, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 
@@ -223,10 +223,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     COMPLETE_JOB: 'COMMON-FORM.COMPLETE-JOB',
     START_TIME: 'COMMON-FORM.START-TIME',
     STOP_TIME: 'COMMON-FORM.STOP-TIME',
-    TIME_TAKEN: 'COMMON-FORM.TIME-TAKEN',
+    TIME_HISTORY: 'COMMON-FORM.TIME-HISTORY',
     START_JOB: 'COMMON-FORM.START-JOB',
     STOP_JOB: 'COMMON-FORM.STOP-JOB',
-    COMPLETE: 'COMMON-FORM.COMPLETE'
+    COMPLETE: 'COMMON-FORM.COMPLETE',
+    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -253,6 +254,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
+  jobStatusCvList: CodeValuesItem[] = [];
+  processStatusCvList: CodeValuesItem[] = [];
 
   teamList?: TeamItem[];
 
@@ -357,6 +360,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      { alias: 'jobStatusCv', codeValType: 'JOB_STATUS' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -409,6 +414,12 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
       this.unitTypeCvList = data;
     });
+    this.cvDS.connectAlias('jobStatusCv').subscribe(data => {
+      this.jobStatusCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
+    });
 
     this.job_order_guid = this.route.snapshot.paramMap.get('id');
     this.repair_guid = this.route.snapshot.paramMap.get('repair_id');
@@ -418,7 +429,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
           console.log(jo)
           this.jobOrderItem = jo[0];
           if (this.repair_guid) {
-            this.repairDS.getRepairByIDForJobOrder(this.repair_guid).subscribe(repair => {
+            this.repairDS.getRepairByIDForJobOrder(this.repair_guid, this.job_order_guid!).subscribe(repair => {
               if (repair?.length) {
                 console.log(repair)
                 this.repairItem = repair[0];
@@ -470,21 +481,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   displayCustomerCompanyName(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv}` : '';
-  }
-
-  assignTeam(event: Event) {
-    const selectedRep = this.repSelection.selected;
-    const selectedTeam = this.repairForm?.get('team_allocation');
-    selectedRep.forEach(rep => {
-      rep.job_order = new JobOrderItem({
-        ...rep.job_order,
-        team_guid: selectedTeam?.value?.guid,
-        team: selectedTeam?.value
-      });
-    })
-    console.log(selectedRep)
-    this.repSelection.clear();
-    selectedTeam?.setValue('')
   }
 
   undoTempAction(row: any[], actionToBeRemove: string) {
@@ -654,6 +650,14 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     return this.cvDS.getCodeDescription(codeValType, this.soTankStatusCvList);
   }
 
+  getJobStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.jobStatusCvList);
+  }
+
+  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
+  }
+
   displayTankPurpose(sot: StoringOrderTankItem) {
     let purposes: any[] = [];
     if (sot?.purpose_storage) {
@@ -797,6 +801,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     return this.jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
   }
 
+  canCompleteJob() {
+    return (this.repairPartDS.canCompleteJob(this.repairItem?.repair_part) && (this.jobOrderItem?.complete_dt === undefined || this.jobOrderItem?.complete_dt === null))
+  }
+
   toggleJobState(event: Event, isStarted: boolean | undefined) {
     this.preventDefault(event);  // Prevents the form submission
     if (!isStarted) {
@@ -821,15 +829,33 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   completeJobItem(event: Event, repair_part: RepairPartItem) {
     this.preventDefault(event);  // Prevents the form submission
+    if (this.repairPartDS.isCompleted(repair_part)) return;
     const newParam = new JobItemRequest({
       guid: repair_part.guid,
-      job_order_guid: repair_part.job_order_guid
+      job_order_guid: repair_part.job_order_guid,
+      job_type_cv: repair_part.job_order?.job_type_cv
     });
     const param = [newParam];
     console.log(param)
-    // this.ttDS.stopJobTimer(param).subscribe(result => {
-    //   console.log(result)
-    // });
+    this.joDS.completeJobItem(param).subscribe(result => {
+      console.log(result)
+    });
+  }
+
+  completeJob(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    //if (this.repairPartDS.isCompleted(repair_part)) return;
+    const newParam = new UpdateJobOrderRequest({
+      guid: this.jobOrderItem?.guid,
+      remarks: this.jobOrderItem?.remarks,
+      start_dt: this.jobOrderItem?.start_dt,
+      complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+    });
+    const param = [newParam];
+    console.log(param)
+    this.joDS.completeJobOrder(param).subscribe(result => {
+      console.log(result)
+    });
   }
 
   viewTimeTableDetails(event: Event) {
