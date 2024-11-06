@@ -262,7 +262,7 @@ namespace IDMS.Survey.GqlTypes
                 ingateCleaning.sot_guid = sot.guid;
                 ingateCleaning.approve_dt = ingate_date;
                 ingateCleaning.approve_by = "system";
-                ingateCleaning.status_cv = "APPROVE";
+                ingateCleaning.status_cv = "APPROVED";
                 ingateCleaning.job_no = sot?.job_no;
                 var customerGuid = sot?.storing_order?.customer_company_guid;
                 ingateCleaning.bill_to_guid = customerGuid;
