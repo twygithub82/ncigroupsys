@@ -942,6 +942,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       });
 
       delete updResidueItem.customer_company;
+      delete updResidueItem.storing_order_tank;
 
       this.residueDS.updateResidue(updResidueItem).subscribe(result=>{
 
@@ -1446,7 +1447,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     {
       this.updateSelectedItem.item.edited=false;
       this.updateSelectedItem=null;
-      this.resetValue();
+     
     }
+    this.resetValue();
   }
 }

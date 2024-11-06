@@ -262,7 +262,7 @@
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addEstDetails($event)" [disabled]="!(groupNameCvList.length)">
+                    (click)="addEstDetails($event)" >
                     <mat-icon class="col-white">
                       @if (!this.updateSelectedItem){
                          add
@@ -345,7 +345,7 @@
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
-                    [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt&&row.edited}"
+                    [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': (row.guid || row.action=='NEW') && !row.delete_dt&&row.edited}"
                     (click)="editEstDetails($event, row, row.index)" [style.cursor]="'pointer'"  
                       matRipple>
                     </mat-row>
