@@ -283,6 +283,63 @@ export const GET_JOB_ORDER_FOR_REPAIR = gql`
   }
 `;
 
+export const GET_STARTED_JOB_ORDER = gql`
+  query queryJobOrder($where: job_orderFilterInput, $order: [job_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryJobOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        guid
+        job_order_no
+        job_type_cv
+        remarks
+        sot_guid
+        start_dt
+        status_cv
+        team_guid
+        total_hour
+        update_by
+        update_dt
+        working_hour
+        team {
+          description
+          guid
+        }
+        storing_order_tank {
+          tank_no
+          storing_order {
+            customer_company {
+              name
+              code
+            }
+          }
+        }
+        repair_part {
+          repair {
+            guid
+            estimate_no
+          }
+        }
+        time_table(
+          where: { start_time: { neq: null }, stop_time: { eq: null } }
+        ) {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_order_guid
+          start_time
+          stop_time
+          update_by
+          update_dt
+        }
+      }
+    }
+  }
+`;
+
 export const GET_JOB_ORDER_BY_ID = gql`
   query queryJobOrder($where: job_orderFilterInput, $order: [job_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryJobOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -392,12 +449,11 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   searchJobOrder(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<JobOrderItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
-      .watchQuery<any>({
+      .query<any>({
         query: GET_JOB_ORDER,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
-      .valueChanges
       .pipe(
         map((result) => result.data),
         catchError((error: ApolloError) => {
@@ -420,12 +476,36 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   searchJobOrderForRepair(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<JobOrderItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
-      .watchQuery<any>({
+      .query<any>({
         query: GET_JOB_ORDER_FOR_REPAIR,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
-      .valueChanges
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as JobOrderItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  searchStartedJobOrder(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<JobOrderItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_STARTED_JOB_ORDER,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
       .pipe(
         map((result) => result.data),
         catchError((error: ApolloError) => {

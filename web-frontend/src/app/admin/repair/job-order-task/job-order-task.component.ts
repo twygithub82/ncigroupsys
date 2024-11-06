@@ -844,7 +844,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   completeJob(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
-    //if (this.repairPartDS.isCompleted(repair_part)) return;
     const newParam = new UpdateJobOrderRequest({
       guid: this.jobOrderItem?.guid,
       remarks: this.jobOrderItem?.remarks,

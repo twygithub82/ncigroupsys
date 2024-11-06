@@ -8,6 +8,7 @@ import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
 import { RepairPartItem } from './repair-part';
 import { UserItem } from './user';
+import { ApolloError } from '@apollo/client/errors';
 
 export class RepairGO {
   public guid?: string;
@@ -729,7 +730,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as RepairItem[]); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const resultList = result.resultList || { nodes: [], totalCount: 0 };
