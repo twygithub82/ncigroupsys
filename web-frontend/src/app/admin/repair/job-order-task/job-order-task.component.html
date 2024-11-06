@@ -138,18 +138,26 @@
               </div>
               }
               @if (!(joDS.loadingSubject | async)) {
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                    {{translatedLangText.JOB_ORDER_NO}}: <span class="font-bold">{{jobOrderItem?.job_order_no}}</span>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                    {{translatedLangText.STATUS}}: <span class="font-bold">{{getJobStatusDescription(jobOrderItem?.status_cv)}}</span>
+                  </div>
+                </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                  <button mat-flat-button color="accent" (click)="viewTimeTableDetails($event)" [ngClass]="'m-r-10'">
+                  <button mat-flat-button (click)="viewTimeTableDetails($event)" [ngClass]="'m-r-10'">
                     <mat-icon>view_list</mat-icon>
-                    {{translatedLangText.TIME_TAKEN}}
+                    {{translatedLangText.TIME_HISTORY}}
                   </button>
                   <button mat-flat-button color="accent" (click)="toggleJobState($event, isStarted())"
                     [ngClass]="{'m-r-10': true, 'bg-red': isStarted(), 'bg-green': !isStarted()}">
                     <mat-icon>timer</mat-icon>
                     {{ isStarted() ? translatedLangText.STOP_JOB : translatedLangText.START_JOB }}
                   </button>
-                  <button mat-flat-button color="accent" [disabled]="true" (click)="assignTeam($event)">
+                  <button mat-flat-button color="accent" [disabled]="!canCompleteJob()" (click)="completeJob($event)">
                     <mat-icon>check_box</mat-icon>
                     {{translatedLangText.COMPLETE_JOB}}
                   </button>
@@ -323,7 +331,7 @@
                         [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-blue font-bold': true}"
                         [style.cursor]="'pointer'" matRipple>
                       </mat-row>
-                      <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
+                      <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" (click)="completeJobItem($event, row)"
                         [ngClass]="{'bg-light-green': repairPartDS.isCompleted(row)}" [style.cursor]="'pointer'"
                         matRipple>
                       </mat-row>
@@ -366,7 +374,7 @@
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.STATUS}}: <span
-                    [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
+                    [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{getProcessStatusDescription(repairItem?.status_cv)}}</span>
                 </div>
               </div>
               <div class="row">
@@ -481,7 +489,7 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (repairDS.canAssign(repairItem)) {
+                  <!-- @if (repairDS.canAssign(repairItem)) {
                   <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)">
                     <mat-icon>
                       @if (!(joDS.loading$ | async)) {
@@ -492,7 +500,7 @@
                     </mat-icon>
                     {{translatedLangText.SAVE_AND_SUBMIT}}
                   </button>
-                  }
+                  } -->
                 </div>
               </div>
             </div>

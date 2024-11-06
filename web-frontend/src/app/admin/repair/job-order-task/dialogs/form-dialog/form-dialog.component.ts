@@ -105,7 +105,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     // Set the defaults
     this.cvDS = new CodeValuesDS(this.apollo);
     this.action = data.action!;
-    this.dialogTitle = `${data.translatedLangText.TIME_TAKEN}`;
+    this.dialogTitle = `${data.translatedLangText.TIME_HISTORY}`;
     this.timeTableList = data.item ?? [];
     this.index = data.index;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);

@@ -183,6 +183,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  jobStatusCvList: CodeValuesItem[] = [];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -299,7 +301,9 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'jobStatusCv', codeValType: 'JOB_STATUS' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -310,6 +314,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
+    });
+    this.cvDS.connectAlias('jobStatusCv').subscribe(data => {
+      this.jobStatusCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
     });
   }
 
@@ -411,7 +421,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.joDS.searchJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+    this.subs.sink = this.joDS.searchJobOrderForRepair(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         this.jobOrderList = data;
         this.endCursorJobOrder = this.repairDS.pageInfo?.endCursor;
@@ -508,6 +518,14 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  }
+
+  getJobStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.jobStatusCvList);
+  }
+
+  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
   }
 
   calculateNetCost(repair: RepairItem): any {

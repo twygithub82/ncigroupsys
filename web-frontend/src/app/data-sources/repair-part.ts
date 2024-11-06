@@ -214,4 +214,9 @@ export class RepairPartDS extends BaseDataSource<RepairPartItem> {
 
     return groupedRepList;
   }
+
+  // Validation
+  canCompleteJob(rpList: RepairPartItem[] | undefined): boolean {
+    return !rpList?.some(item => !item.complete_dt);
+  }
 }

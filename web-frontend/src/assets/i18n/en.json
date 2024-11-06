@@ -655,7 +655,8 @@
     "TIME-TAKEN":"Time Taken",
     "START-JOB":"Start Job",
     "STOP-JOB":"Stop Job",
-    "DONE":"Done"
+    "DONE":"Done",
+    "TIME-HISTORY":"Time History"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

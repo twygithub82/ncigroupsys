@@ -399,7 +399,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
 
     this.repair_guid = this.route.snapshot.paramMap.get('id');
     if (this.repair_guid) {
-      this.subs.sink = this.repairDS.getRepairByIDForJobOrder(this.repair_guid).subscribe(data => {
+      this.subs.sink = this.repairDS.getRepairByIDForJobOrder(this.repair_guid, undefined).subscribe(data => {
         if (data?.length) {
           this.repairItem = data[0];
           this.sotItem = this.repairItem?.storing_order_tank;
