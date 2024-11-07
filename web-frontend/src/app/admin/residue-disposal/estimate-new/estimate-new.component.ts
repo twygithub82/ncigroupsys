@@ -346,7 +346,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
         var desc_value = this.residueEstForm?.get("desc")?.value;
         this.displayPackResidueList= this.packResidueList.filter(data=> data.description && data.description.includes(desc_value));
         if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
-        else if(typeof desc_value==='object')
+        else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
         {
           this.residueEstForm?.patchValue({
 
@@ -666,7 +666,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
     if(index===-1)
     {
-      var newData =[residuePartItem ,...this.deList];
+      var newData =[...this.deList,residuePartItem];
       this.updateData(newData);
     }
   this.resetSelectedItemForUpdating();
@@ -900,7 +900,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     if(!this.residueEstForm?.valid) return;
 
 
-    if(this.historyState.action==="NEW")
+    if(this.historyState.action==="NEW" ||this.historyState.action==="DUPLICATE")
     {
        var newResidueItem :ResidueItem =new ResidueItem();
        var billGuid:string =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
@@ -1327,6 +1327,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
       this.packResidueList=data;
       this.displayPackResidueList=data;
+      this.populateResiduePartList(this.residueItem!);
     });
 
   }
@@ -1353,6 +1354,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
     if (this.historyState.selectedRow != null) {
 
+      this.isDuplicate = this.historyState.action==='DUPLICATE';
       this.sotItem = this.historyState.selectedRow;
       this.residueItem=this.historyState.selectedResidue;
       this.getPackageResidue();
@@ -1369,7 +1371,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     {
       billingGuid=residue.bill_to_guid!;
     }
-    this.populateResiduePartList(residue);
+    
     this.residueEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
@@ -1436,7 +1438,20 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
     if(residue)
     {
-      var dataList = residue.residue_part?.map(data=>new ResidueEstPartGO(data) );
+      var dataList = residue.residue_part?.map(data=>
+        {
+          if (this.isDuplicate && data.description) {
+            data.action='NEW';
+            // Filter packResidueList for matching tariff_residue_guid
+            const packResidue = this.packResidueList.find(res => res.tariff_residue?.guid === data.tariff_residue_guid);
+            if (packResidue) {
+                data.cost = packResidue.cost;
+            }
+          }
+          
+          return new ResidueEstPartGO(data)
+
+        } );
       this.updateData(dataList);
     }
   }

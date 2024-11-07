@@ -1175,8 +1175,8 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
           return RepairRequestInput
         });
         console.log(reList);
-        this.residueDS.rollbackResidue(reList).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackResidue)
+        this.residueDS.rollbackResidueStatus(reList[0]).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackResidueStatus)
         });
       }
     });

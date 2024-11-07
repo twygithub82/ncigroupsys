@@ -56,7 +56,7 @@ export class CancelFormDialogComponent {
   action?: string;
   index: number;
   dialogTitle?: string;
-  repairEstList: RepairItem[];
+  repairList: RepairItem[];
   cancelForm: UntypedFormGroup;
   startDate = new Date();
 
@@ -67,7 +67,7 @@ export class CancelFormDialogComponent {
     private fb: UntypedFormBuilder
   ) {
     // Set the defaults
-    this.repairEstList = data.item;
+    this.repairList = data.item;
     this.cancelForm = this.createCancelForm();
     this.action = this.data.action;
     this.dialogTitle = this.data.dialogTitle;
@@ -76,7 +76,7 @@ export class CancelFormDialogComponent {
   }
   createCancelForm(): UntypedFormGroup {
     return this.fb.group({
-      cancelItemList: this.fb.array(this.repairEstList.map(re => this.createOrderGroup(re))),
+      cancelItemList: this.fb.array(this.repairList.map(re => this.createOrderGroup(re))),
       remarks: ['']
     });
   }
@@ -86,7 +86,8 @@ export class CancelFormDialogComponent {
       guid: [re.guid],
       estimate_no: [re.estimate_no],
       sot_guid: [re.sot_guid],
-      remarks: [re.remarks, Validators.required]
+      remarks_display: [re.remarks],
+      remarks: ["", Validators.required]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {

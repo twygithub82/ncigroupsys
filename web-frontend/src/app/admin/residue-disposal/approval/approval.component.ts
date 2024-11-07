@@ -38,7 +38,7 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -165,7 +165,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  repairDS: RepairDS;
+  // repairDS: RepairDS;
   residueDS:ResidueDS;
 
   repList: ResidueItem[] = [];
@@ -210,7 +210,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.repairDS = new RepairDS(this.apollo);
+    // this.repairDS = new RepairDS(this.apollo);
     this.residueDS=new ResidueDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -490,15 +490,17 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
         this.repList = data.map(re => {
           return {...re, net_cost: this.calculateNetCost(re)}
         });
-        this.endCursor = this.repairDS.pageInfo?.endCursor;
-        this.startCursor = this.repairDS.pageInfo?.startCursor;
-        this.hasNextPage = this.repairDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.repairDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.residueDS.pageInfo?.endCursor;
+        this.startCursor = this.residueDS.pageInfo?.startCursor;
+        this.hasNextPage = this.residueDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.residueDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSize = pageSize;
     this.pageIndex = pageIndex;
   }
+
+ 
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;

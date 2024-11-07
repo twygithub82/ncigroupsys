@@ -552,25 +552,22 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   }
 
   onPageEvent(event: PageEvent) {
-
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-    let order:any|undefined=this.lastOrderBy;
+
     // Check if the page size has changed
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
-      this.pageSize=pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
-      //if (pageIndex > this.pageIndex && this.hasNextPage) {
-        if (pageIndex > this.pageIndex ) {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
         // Navigate forward
         first = pageSize;
         after = this.endCursor;
@@ -579,23 +576,14 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
         last = pageSize;
         before = this.startCursor;
       }
-      else if (pageIndex==this.pageIndex)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursor;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
-      }
     }
 
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
       this.updatePageSelection();
     });
-      
   }
+
+  
 
  
 
@@ -757,7 +745,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
  // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
       state: { id: '' ,
-        action:"NEW",
+        action:"DUPLICATE",
         selectedResidue:row,
         selectedRow:sot,
         type:'residue-estimate',

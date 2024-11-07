@@ -8,6 +8,7 @@ import { SchedulingItem } from './scheduling';
 import { TariffRepairItem } from './tariff-repair';
 import { UserItem } from './user';
 import { CustomerCompanyItem } from './customer-company';
+import { ResiduePartItem } from './residue-part';
 
 export class ResidueGO {
   public estimate_no?:string;
@@ -65,7 +66,7 @@ export class ResidueGO {
 }
 
 export class ResidueItem extends ResidueGO {
-  public residue_part?: ResidueItem[];
+  public residue_part?: ResiduePartItem[];
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?:CustomerCompanyItem;
   //public aspnetsuser?: UserItem;
@@ -556,6 +557,12 @@ export const ROLLBACK_RESIDUE_EST = gql`
   }
 `
 
+export const ROLLBACK_RESIDUE_STATUS_EST = gql`
+  mutation RollbackResidueStatus($residue: ResidueRequestInput!) {
+    rollbackResidueStatus(residue: $residue)
+  }
+`
+
 export const APPROVE_RESIDUE_EST = gql`
   mutation ApproveResidue($residue: residueInput!) {
     approveResidue(residue: $residue)
@@ -628,6 +635,15 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
+  rollbackResidueStatus(residue: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_RESIDUE_STATUS_EST,
+      variables: {
+        residue
+      }
+    });
+  }
+
   approveResidue(residue: any): Observable<any> {
     return this.apollo.mutate({
       mutation: APPROVE_RESIDUE_EST,
@@ -650,7 +666,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canRollback(re: ResidueItem): boolean {
-    return re.status_cv === 'CANCELED' || re.status_cv === 'APPROVED';
+    return  re.status_cv==='PENDING';
   }
 
   canCopy(re: ResidueItem): boolean {
