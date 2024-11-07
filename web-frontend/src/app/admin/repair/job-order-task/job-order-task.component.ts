@@ -274,6 +274,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   ttDS: TimeTableDS;
   isOwner = false;
 
+  private jobOrderSubscriptions: Subscription[] = [];
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -428,6 +430,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         if (jo?.length) {
           console.log(jo)
           this.jobOrderItem = jo[0];
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
           if (this.repair_guid) {
             this.repairDS.getRepairByIDForJobOrder(this.repair_guid, this.job_order_guid!).subscribe(repair => {
               if (repair?.length) {
@@ -877,5 +881,59 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => { });
+  }
+
+  private subscribeToJobOrderEvent(
+    subscribeFn: (guid: string) => Observable<any>,
+    job_order_guid: string
+  ) {
+    const subscription = subscribeFn(job_order_guid).subscribe({
+      next: (response) => {
+        console.log('Received data:', response);
+        const data = response.data
+        
+        let jobData: any;
+        let eventType: any;
+
+        if (data?.onJobStopped) {
+          jobData = data.onJobStopped;
+          eventType = 'jobStopped';
+        } else if (data?.onJobStarted) {
+          jobData = data.onJobStarted;
+          eventType = 'jobStarted';
+        }
+        
+        if (jobData) {
+          if (this.jobOrderItem) {
+            this.jobOrderItem.status_cv = jobData.job_status;
+            this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
+            this.jobOrderItem.time_table ??= [];
+
+            const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
+            if (eventType === 'jobStarted') {
+              if (foundTimeTable?.length) {
+                foundTimeTable[0].start_time = jobData.start_time
+                console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+              } else {
+                const startNew = new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid});
+                this.jobOrderItem.time_table?.push(startNew)
+                console.log(`Updated JobOrder ${eventType} :`, startNew);
+              }
+            } else if (eventType === 'jobStopped') {
+              foundTimeTable[0].stop_time = jobData.stop_time;
+              console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+            }
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+      complete: () => {
+        console.log('Subscription completed');
+      }
+    });
+
+    this.jobOrderSubscriptions.push(subscription);
   }
 }
