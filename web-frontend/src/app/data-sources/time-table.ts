@@ -8,6 +8,7 @@ import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
 import { CurrencyItem } from './currency';
 import { ContactPersonItem } from './contact-person';
+import { JobOrderItem } from './job-order';
 
 export class TimeTableGO {
   public guid?: string;
@@ -46,8 +47,10 @@ export const STOP_JOB_TIMER = gql`
 `
 
 export class TimeTableItem extends TimeTableGO {
+  public job_order?: JobOrderItem;
   constructor(item: Partial<TimeTableItem> = {}) {
     super(item);
+    this.job_order = item.job_order;
   }
 }
 

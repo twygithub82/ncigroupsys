@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -38,7 +38,6 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -50,14 +49,12 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { JobOrderStartedComponent } from "../../job-order/job-order-started/job-order-started.component";
-import { MatBadgeModule } from '@angular/material/badge';
 
 @Component({
-  selector: 'app-job-order',
+  selector: 'app-job-order-started',
   standalone: true,
-  templateUrl: './job-order.component.html',
-  styleUrl: './job-order.component.scss',
+  templateUrl: './job-order-started.component.html',
+  styleUrl: './job-order-started.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -87,11 +84,11 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    JobOrderStartedComponent,
-    MatBadgeModule
   ]
 })
-export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  count = 0;
+  @Output() countChange = new EventEmitter<number>();
   // displayedColumns = [
   //   'tank_no',
   //   'customer',
@@ -117,11 +114,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     'status_cv',
     'actions'
   ];
-
-  pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
-  breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
-  ]
 
   translatedLangText: any = {};
   langText = {
@@ -168,7 +160,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
-    JOB_ORDER_STARTED_TAB_TITLE: 'COMMON-FORM.STARTED-JOB-ORDER',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO'
   }
 
@@ -197,25 +188,11 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  pageIndexRepair = 0;
-  pageSizeRepair = 10;
-  lastSearchCriteriaRepair: any;
-  lastOrderByRepair: any = { estimate_no: "DESC" };
-  endCursorRepair: string | undefined = undefined;
-  startCursorRepair: string | undefined = undefined;
-  hasNextPageRepair = false;
-  hasPreviousPageRepair = false;
-
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
+  pageSizeJobOrder = 100;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { job_order_no: "DESC" };
-  endCursorJobOrder: string | undefined = undefined;
-  startCursorJobOrder: string | undefined = undefined;
-  hasNextPageJobOrder = false;
-  hasPreviousPageJobOrder = false;
-
-  jobOrderStartedCount = 0;
+  
   private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
@@ -250,14 +227,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.loadData();
   }
 
-  override ngOnDestroy() {
-    this.jobOrderSubscriptions.forEach((sub) => sub.unsubscribe());
-  }
-
-  refresh() {
-    this.refreshTable();
-  }
-
   initSearchForm() {
     this.filterRepairForm = this.fb.group({
       filterRepair: [''],
@@ -267,48 +236,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     });
   }
 
-  cancelItem(row: StoringOrderItem) {
-    // this.id = row.id;
-    this.cancelSelectedRows([row])
-  }
-
-  private refreshTable() {
-    this.paginator._changePageSize(this.paginator.pageSize);
-  }
-
-  cancelSelectedRows(row: StoringOrderItem[]) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        item: [...row],
-        langText: this.langText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-        this.soDS.cancelStoringOrder(so).subscribe(result => {
-          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-            let successMsg = this.langText.CANCELED_SUCCESS;
-            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-              successMsg = res;
-              ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-              this.refreshTable();
-            });
-          }
-        });
-      }
-    });
-  }
-
   public loadData() {
-    this.onFilterRepair();
     this.onFilterJobOrder();
 
     const queries = [
@@ -350,63 +278,18 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     });
   }
 
-  // export table data in excel file
-  exportExcel() {
-    // key name with space add in brackets
-    // const exportData: Partial<TableElement>[] =
-    //   this.dataSource.filteredData.map((x) => ({
-    //     'First Name': x.fName,
-    //     'Last Name': x.lName,
-    //     Email: x.email,
-    //     Gender: x.gender,
-    //     'Birth Date': formatDate(new Date(x.bDate), 'yyyy-MM-dd', 'en') || '',
-    //     Mobile: x.mobile,
-    //     Address: x.address,
-    //     Country: x.country,
-    //   }));
-
-    // TableExportUtil.exportToExcel(exportData, 'excel');
-  }
-
-  // context menu
-  onContextMenu(event: MouseEvent, item: StoringOrderItem) {
-    event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-      this.contextMenu.menuData = { item: item };
-      this.contextMenu.menu.focusFirstItem('mouse');
-      this.contextMenu.openMenu();
-    }
-  }
-
-  onFilterRepair() {
-    const where: any = {
-      status_cv: { in: ["APPROVED"] }
-    };
-
-    if (this.filterRepairForm!.get('filterRepair')?.value) {
-      where.or = [
-        { storing_order_tank: { tank_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } },
-        { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
-      ];
-    }
-
-    this.lastSearchCriteriaRepair = this.repairDS.addDeleteDtCriteria(where);
-    this.performSearchRepair(this.pageSizeRepair, this.pageIndexRepair, this.pageSizeRepair, undefined, undefined, undefined, () => { });
-  }
-
   onFilterJobOrder() {
     const where: any = {
-      job_type_cv: { eq: "REPAIR" }
+      job_type_cv: { eq: "REPAIR" },
+      time_table: { some: { start_time: { neq: null }, stop_time: { eq: null } } }
     };
-
-    if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
-      where.or = [
-        { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } },
-        //{ estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
-      ];
-    }
+    
+    // if (this.filterRepairForm!.get('filterJobOrder')?.value) {
+    //   where.or = [
+    //     { storing_order_tank: { tank_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } },
+    //     { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
+    //   ];
+    // }
 
     // TODO:: Get login user team
     // if (false) {
@@ -417,98 +300,112 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
-  performSearchRepair(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.repairDS.searchRepair(this.lastSearchCriteriaRepair, this.lastOrderByRepair, first, after, last, before)
-      .subscribe(data => {
-        this.repEstList = data.map(re => {
-          return { ...re, net_cost: this.calculateNetCost(re) }
-        });
-        this.endCursorRepair = this.repairDS.pageInfo?.endCursor;
-        this.startCursorRepair = this.repairDS.pageInfo?.startCursor;
-        this.hasNextPageRepair = this.repairDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPageRepair = this.repairDS.pageInfo?.hasPreviousPage ?? false;
-      });
-
-    this.pageSizeRepair = pageSize;
-    this.pageIndexRepair = pageIndex;
-  }
-
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.joDS.searchJobOrderForRepair(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+    this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder)
       .subscribe(data => {
         this.jobOrderList = data;
+        this.updateCount(this.jobOrderList.length);
         this.jobOrderList.forEach(jo => {
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
         })
-        this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
-        this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
-        this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSizeJobOrder = pageSize;
     this.pageIndexJobOrder = pageIndex;
   }
 
-  onPageEventRepair(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-
-    // Check if the page size has changed
-    if (this.pageSizeRepair !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexRepair = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndexRepair && this.hasNextPageRepair) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorRepair;
-      } else if (pageIndex < this.pageIndexRepair && this.hasPreviousPageRepair) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorRepair;
-      }
-    }
-
-    this.performSearchRepair(pageSize, pageIndex, first, after, last, before, () => { });
+  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
+  initializeFilterCustomerCompany() {
+  }
 
-    // Check if the page size has changed
-    if (this.pageSizeJobOrder !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexJobOrder = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
+  }
+
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  }
+
+  getJobStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.jobStatusCvList);
+  }
+
+  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
+  }
+
+  displayLastCargoFn(tc: TariffCleaningItem): string {
+    return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
+  }
+
+  resetForm() {
+    this.filterRepairForm?.patchValue({
+      filterRepair: '',
+    });
+  }
+
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  stopEventTrigger(event: Event) {
+    this.preventDefault(event);
+    this.stopPropagation(event);
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation(); // Stops event propagation
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
+
+  isStarted(jobOrderItem: JobOrderItem | undefined) {
+    return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+  }
+
+  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
+    this.stopPropagation(event);  // Prevents the form submission
+    if (!isStarted) {
+      const param = [new TimeTableItem({job_order_guid: jobOrderItem?.guid, job_order: jobOrderItem})];
+      console.log(param)
+      this.ttDS.startJobTimer(param).subscribe(result => {
+        console.log(result)
+      });
     } else {
-      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorJobOrder;
-      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorJobOrder;
+      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      if (found?.length) {
+        const newParam = new TimeTableItem(found[0]);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({...jobOrderItem});
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          console.log(result)
+        });
       }
     }
+  }
 
-    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
+  private emitCount() {
+    // Emit the count value to the parent component
+    this.countChange.emit(this.count);
+  }
+  
+  updateCount(newCount: number) {
+    this.count = newCount;
+    this.emitCount();
   }
 
   private subscribeToJobOrderEvent(
@@ -561,137 +458,5 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     });
 
     this.jobOrderSubscriptions.push(subscription);
-  }
-
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-  }
-
-  initializeFilterCustomerCompany() {
-  }
-
-  translateLangText() {
-    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
-      this.translatedLangText = translations;
-    });
-  }
-
-  getTankStatusDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
-  }
-
-  getJobStatusDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.jobStatusCvList);
-  }
-
-  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
-  }
-
-  calculateNetCost(repair: RepairItem): any {
-    const total = this.repairDS.getTotal(repair?.repair_part)
-    const labourDiscount = repair.labour_cost_discount;
-    const matDiscount = repair.material_cost_discount;
-
-    const total_hour = total.hour;
-    const total_labour_cost = this.repairDS.getTotalLabourCost(total_hour, repair?.labour_cost);
-    const total_mat_cost = total.total_mat_cost;
-    const total_cost = repair?.total_cost;
-    const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
-    const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
-    const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
-    return net_cost.toFixed(2);
-  }
-
-  displayLastCargoFn(tc: TariffCleaningItem): string {
-    return tc && tc.cargo ? `${tc.cargo}` : '';
-  }
-
-  updateValidators(validOptions: any[]) {
-    this.lastCargoControl.setValidators([
-      Validators.required,
-      AutocompleteSelectionValidator(validOptions)
-    ]);
-  }
-
-  displayDate(input: number | undefined): string | undefined {
-    return Utility.convertEpochToDateStr(input);
-  }
-
-  resetDialog(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
-  }
-
-  resetForm() {
-    this.filterRepairForm?.patchValue({
-      filterRepair: '',
-    });
-  }
-
-  filterDeleted(resultList: any[] | undefined): any {
-    return (resultList || []).filter((row: any) => !row.delete_dt);
-  }
-
-  stopEventTrigger(event: Event) {
-    this.preventDefault(event);
-    this.stopPropagation(event);
-  }
-
-  stopPropagation(event: Event) {
-    event.stopPropagation(); // Stops event propagation
-  }
-
-  preventDefault(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-  }
-
-  isStarted(jobOrderItem: JobOrderItem | undefined) {
-    return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-  }
-
-  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-    this.stopPropagation(event);  // Prevents the form submission
-    if (!isStarted) {
-      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-      console.log(param)
-      this.ttDS.startJobTimer(param).subscribe(result => {
-        console.log(result)
-      });
-    } else {
-      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-      if (found?.length) {
-        const newParam = new TimeTableItem(found[0]);
-        newParam.stop_time = Utility.convertDate(new Date()) as number;
-        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-        const param = [newParam];
-        console.log(param)
-        this.ttDS.stopJobTimer(param).subscribe(result => {
-          console.log(result)
-        });
-      }
-    }
-  }
-
-  onCountChange(count: number) {
-    this.jobOrderStartedCount = count;
   }
 }

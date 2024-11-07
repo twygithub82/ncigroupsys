@@ -363,18 +363,27 @@ namespace IDMS.Service.GqlTypes
                     item.create_dt = currentDateTime;
                     item.start_time = currentDateTime;
                     newTimeTableList.Add(item);
-                }
 
-                //Change the job_order status
-                var jobOrderGuids = timeTable.Select(t => t.job_order_guid).ToList();
-                foreach (var item in jobOrderGuids)
-                {
-                    var job_order = new job_order() { guid = item };
+                    var job_order = new job_order() { guid = item.job_order_guid };
                     context.job_order.Attach(job_order);
                     job_order.status_cv = JobStatus.IN_PROGRESS;
                     job_order.update_by = user;
                     job_order.update_dt = currentDateTime;
+                    if (item?.job_order?.start_dt == null)
+                        job_order.start_dt = currentDateTime;
                 }
+
+                ////Change the job_order status
+                //var jobOrderGuids = timeTable.Select(t => t.job_order_guid).ToList();
+                //foreach (var item in jobOrderGuids)
+                //{
+                //    var job_order = new job_order() { guid = item };
+                //    context.job_order.Attach(job_order);
+                //    job_order.status_cv = JobStatus.IN_PROGRESS;
+                //    job_order.update_by = user;
+                //    job_order.update_dt = currentDateTime;
+                //    job_order.start_dt = currentDateTime;
+                //}
 
                 await context.time_table.AddRangeAsync(newTimeTableList);
                 var res = await context.SaveChangesAsync();

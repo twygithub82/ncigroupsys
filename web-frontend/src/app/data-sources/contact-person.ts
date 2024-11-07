@@ -124,12 +124,11 @@ export class CustomerCompanyContactPersonDS extends BaseDataSource<ContactPerson
     loadItems(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<ContactPersonItem[]> {
         this.loadingSubject.next(true);
         return this.apollo
-            .watchQuery<any>({
+            .query<any>({
                 query: GET_CONTACT_PERSON,
                 variables: { where, order, first, after, last, before },
                 fetchPolicy: 'no-cache' // Ensure fresh data
             })
-            .valueChanges
             .pipe(
                 map((result) => result.data),
                 catchError((error: ApolloError) => {
