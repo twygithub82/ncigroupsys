@@ -26,11 +26,20 @@ namespace IDMS.Residue.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                residue newResidue = residue;
+                residue newResidue = new residue();
                 newResidue.guid = Util.GenerateGUID();
+                newResidue.sot_guid = residue.sot_guid;
+                newResidue.bill_to_guid = residue.bill_to_guid;
+                newResidue.estimate_no = residue.estimate_no;
+                newResidue.remarks = residue.remarks;
+                newResidue.job_no = residue.job_no;
+                newResidue.status_cv = CurrentServiceStatus.PENDING;
+                newResidue.allocate_by = residue.allocate_by;
+                newResidue.allocate_dt = residue.allocate_dt;   
+
                 newResidue.create_by = user;
                 newResidue.create_dt = currentDateTime;
-                newResidue.status_cv = CurrentServiceStatus.PENDING;
+               
                 await context.residue.AddAsync(newResidue);
 
                 //Handling For Template_est_part
