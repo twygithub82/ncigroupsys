@@ -114,10 +114,10 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
      //"actions"
    
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
+  pageTitleDetails = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.CLEANING.LIST.ESTIMATE'
+    'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL'
   ]
   translatedLangText: any = {}
   langText = {

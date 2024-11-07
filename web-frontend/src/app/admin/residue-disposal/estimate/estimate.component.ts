@@ -106,7 +106,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     'actions'
   ];
 
-  pageTitle = 'MENUITEMS.REPAIR.LIST.ESTIMATE'
+  pageTitle = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]

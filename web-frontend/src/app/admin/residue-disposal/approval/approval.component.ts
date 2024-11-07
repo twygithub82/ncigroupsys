@@ -104,7 +104,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.REPAIR.LIST.APPROVAL'
+  pageTitle = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]

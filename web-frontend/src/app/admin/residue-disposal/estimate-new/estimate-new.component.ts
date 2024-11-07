@@ -113,11 +113,11 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
      "actions"
    
   ];
-  pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
-  pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
+  pageTitleNew = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.ESTIMATE-NEW'
+  pageTitleEdit = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.ESTIMATE'
+    'MENUITEMS.RESIDUE-DISPOSAL.LIST.ESTIMATE'
   ]
   translatedLangText: any = {}
   langText = {
@@ -319,12 +319,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       customer_code:[''],
       billing_branch:[''],
       job_no:[''],
-      est_template: [''],
-      is_default_template: [''],
+    
       remarks: [''],
-      surveyor_id: [''],
-      labour_cost_discount: [0],
-      material_cost_discount: [0],
       last_test: [''],
       next_test: [''],
       desc:[''],
@@ -1375,7 +1371,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.residueEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no:this.sotItem?.job_no,
+      job_no: residue?.job_no?residue.job_no:this.sotItem?.job_no,
        billing_branch:this.getBillingBranch(billingGuid),
        remarks:residue?.remarks
 
