@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Service.GqlTypes.LocalModel;
 using System.Collections;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using IDMS.Models.Notification;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -188,6 +189,7 @@ namespace IDMS.Service.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
+                IList<JobNotification> notificationList = new List<JobNotification>();
                 foreach (var item in jobOrderRequest)
                 {
                     var jobOrder = new job_order() { guid = item.guid };
@@ -198,11 +200,21 @@ namespace IDMS.Service.GqlTypes
                     jobOrder.status_cv = JobStatus.COMPLETED;
                     jobOrder.update_dt = currentDateTime;
                     jobOrder.update_by = user;
+
+                    //Handling of sending job notification
+                    var jobNotification = new JobNotification();
+                    jobNotification.job_order_guid = item.guid;
+                    jobNotification.complete_dt = currentDateTime;
+                    notificationList.Add(jobNotification);
+                }
+                var res = await context.SaveChangesAsync();
+
+                //TODO
+                foreach (var item in notificationList)
+                {
+                    await GqlUtils.SendJobNotification(config, item, JobNotificationType.COMPLETE_JOB);
                 }
 
-                var res = await context.SaveChangesAsync();
-                //TODO
-                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
             }
             catch (Exception ex)
@@ -246,8 +258,14 @@ namespace IDMS.Service.GqlTypes
                 var guids = string.Join(",", jobItemRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
                 string sql = $"UPDATE {tableName} SET complete_dt = {currentDateTime}, update_dt = {currentDateTime}, " +
                              $"update_by = '{user}' WHERE guid IN ({guids})";
-
                 var ret = context.Database.ExecuteSqlRaw(sql);
+
+                //Handling of sending job notification
+                var jobNotification = new JobNotification();
+                jobNotification.job_order_guid = jobOrderGuid;
+                jobNotification.job_type = jobType;
+                jobNotification.complete_dt = currentDateTime;
+                await GqlUtils.SendJobNotification(config, jobNotification, JobNotificationType.COMPLETE_ITEM);
 
                 return ret;
             }
@@ -347,22 +365,31 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (timeTable == null)
-                    throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
+                    throw new GraphQLException(new Error($"Time table object cannot be null", "ERROR"));
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 IList<time_table> newTimeTableList = new List<time_table>();
+                IList<JobNotification> notificationList = new List<JobNotification>();  
+
                 foreach (var item in timeTable)
                 {
                     if (item.job_order_guid == null)
                         throw new GraphQLException(new Error($"Job order guid cannot be null", "ERROR"));
 
-                    item.guid = Util.GenerateGUID();
-                    item.create_by = user;
-                    item.create_dt = currentDateTime;
-                    item.start_time = currentDateTime;
-                    newTimeTableList.Add(item);
+                    //handling of time_table 
+                    var startTimeTable = new time_table();
+                    startTimeTable.guid = Util.GenerateGUID();
+                    startTimeTable.create_by = user;
+                    startTimeTable.create_dt = currentDateTime;
+                    startTimeTable.start_time = currentDateTime;
+                    startTimeTable.job_order_guid = item.job_order_guid;
+                    newTimeTableList.Add(startTimeTable);
+
+                    //handling of job_order
+                    if (item.job_order == null)
+                        throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
 
                     var job_order = new job_order() { guid = item.job_order_guid };
                     context.job_order.Attach(job_order);
@@ -371,6 +398,15 @@ namespace IDMS.Service.GqlTypes
                     job_order.update_dt = currentDateTime;
                     if (item?.job_order?.start_dt == null)
                         job_order.start_dt = currentDateTime;
+
+                    //handling of job_notification
+                    var jobNotification = new JobNotification();
+                    jobNotification.time_table_guid = startTimeTable.guid;
+                    jobNotification.job_order_guid = item.job_order_guid;
+                    jobNotification.job_status = job_order.status_cv;
+                    jobNotification.start_time = startTimeTable.start_time;
+                    jobNotification.stop_time = startTimeTable.stop_time;
+                    notificationList.Add(jobNotification);
                 }
 
                 ////Change the job_order status
@@ -387,8 +423,13 @@ namespace IDMS.Service.GqlTypes
 
                 await context.time_table.AddRangeAsync(newTimeTableList);
                 var res = await context.SaveChangesAsync();
+
                 //TODO
-                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                foreach (var item in notificationList)
+                {
+                    await GqlUtils.SendJobNotification(config, item, JobNotificationType.START_JOB);
+                }
+
                 return res;
             }
             catch (Exception ex)
@@ -403,14 +444,14 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 if (timeTable == null)
-                    throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
+                    throw new GraphQLException(new Error($"Time table object cannot be null", "ERROR"));
 
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 List<string?> jobOrderGuid = timeTable.Select(t => t.job_order_guid).ToList();
 
-                //IList<time_table> newTimeTableList = new List<time_table>();
+                IList<JobNotification> notificationList = new List<JobNotification>();
                 foreach (var item in timeTable)
                 {
                     if (item.job_order_guid == null)
@@ -421,14 +462,27 @@ namespace IDMS.Service.GqlTypes
                     stopTimeTable.update_by = user;
                     stopTimeTable.update_dt = currentDateTime;
                     stopTimeTable.stop_time = currentDateTime;
+
+                    //handling of job_notification
+                    var jobNotification = new JobNotification();
+                    jobNotification.time_table_guid = item.guid;
+                    jobNotification.job_order_guid = item.job_order_guid;
+                    jobNotification.job_status = item.job_order.status_cv;
+                    jobNotification.start_time = item.start_time;
+                    jobNotification.stop_time = stopTimeTable.stop_time;
+                    notificationList.Add(jobNotification);
                 }
 
                 var res = await context.SaveChangesAsync();
 
                 if (res > 0)
                     await UpdateAccumalateHour(context, user, currentDateTime, jobOrderGuid);
+
                 //TODO
-                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+                foreach (var item in notificationList)
+                {
+                    await GqlUtils.SendJobNotification(config, item, JobNotificationType.STOP_JOB);
+                }
                 return res;
             }
             catch (Exception ex)
