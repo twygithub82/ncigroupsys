@@ -656,7 +656,8 @@
     "START-JOB":"Start Job",
     "STOP-JOB":"Stop Job",
     "DONE":"Done",
-    "TIME-HISTORY":"Time History"
+    "TIME-HISTORY":"Time History",
+    "STARTED-JOB-ORDER":"Started Jobs"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

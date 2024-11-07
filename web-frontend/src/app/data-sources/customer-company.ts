@@ -196,12 +196,11 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   loadItems(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
-      .watchQuery<any>({
+      .query<any>({
         query: SEARCH_COMPANY_QUERY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
-      .valueChanges
       .pipe(
         map((result) => result.data),
         catchError((error: ApolloError) => {
@@ -231,12 +230,11 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
 
     }
     return this.apollo
-      .watchQuery<any>({
+      .query<any>({
         query: GET_COMPANY_QUERY,
         variables: { where, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
-      .valueChanges
       .pipe(
         map((result) => result.data),
         catchError((error: ApolloError) => {
