@@ -24,7 +24,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
+import { Observable, Subscription, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -188,23 +188,12 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  pageIndexRepair = 0;
-  pageSizeRepair = 10;
-  lastSearchCriteriaRepair: any;
-  lastOrderByRepair: any = { estimate_no: "DESC" };
-  endCursorRepair: string | undefined = undefined;
-  startCursorRepair: string | undefined = undefined;
-  hasNextPageRepair = false;
-  hasPreviousPageRepair = false;
-
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
+  pageSizeJobOrder = 100;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { job_order_no: "DESC" };
-  endCursorJobOrder: string | undefined = undefined;
-  startCursorJobOrder: string | undefined = undefined;
-  hasNextPageJobOrder = false;
-  hasPreviousPageJobOrder = false;
+  
+  private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -238,10 +227,6 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
     this.loadData();
   }
 
-  refresh() {
-    this.refreshTable();
-  }
-
   initSearchForm() {
     this.filterRepairForm = this.fb.group({
       filterRepair: [''],
@@ -249,10 +234,6 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
     });
-  }
-
-  private refreshTable() {
-    this.paginator._changePageSize(this.paginator.pageSize);
   }
 
   public loadData() {
@@ -320,48 +301,18 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+    this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder)
       .subscribe(data => {
         this.jobOrderList = data;
         this.updateCount(this.jobOrderList.length);
-        this.endCursorJobOrder = this.repairDS.pageInfo?.endCursor;
-        this.startCursorJobOrder = this.repairDS.pageInfo?.startCursor;
-        this.hasNextPageJobOrder = this.repairDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPageJobOrder = this.repairDS.pageInfo?.hasPreviousPage ?? false;
+        this.jobOrderList.forEach(jo => {
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
+        })
       });
 
     this.pageSizeJobOrder = pageSize;
     this.pageIndexJobOrder = pageIndex;
-  }
-
-  onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-
-    // Check if the page size has changed
-    if (this.pageSizeJobOrder !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexJobOrder = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorJobOrder;
-      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorJobOrder;
-      }
-    }
-
-    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -455,5 +406,57 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
   updateCount(newCount: number) {
     this.count = newCount;
     this.emitCount();
+  }
+
+  private subscribeToJobOrderEvent(
+    subscribeFn: (guid: string) => Observable<any>,
+    job_order_guid: string
+  ) {
+    const subscription = subscribeFn(job_order_guid).subscribe({
+      next: (response) => {
+        console.log('Received data:', response);
+        const data = response.data
+        
+        let jobData: any;
+        let eventType: any;
+
+        if (data?.onJobStopped) {
+          jobData = data.onJobStopped;
+          eventType = 'jobStopped';
+        } else if (data?.onJobStarted) {
+          jobData = data.onJobStarted;
+          eventType = 'jobStarted';
+        }
+        
+        if (jobData) {
+          const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
+          if (foundJob?.length) {
+            foundJob[0].status_cv = jobData.job_status;
+            foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
+            foundJob[0].time_table ??= [];
+
+            if (eventType === 'jobStarted') {
+              const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
+              if (foundTimeTable?.length) {
+                foundTimeTable[0].start_time = jobData.start_time
+              } else {
+                foundJob[0].time_table?.push(new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid}))
+              }
+            } else if (eventType === 'jobStopped') {
+              foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
+            }
+            console.log(`Updated JobOrder ${eventType} :`, foundJob[0]);
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+      complete: () => {
+        console.log('Subscription completed');
+      }
+    });
+
+    this.jobOrderSubscriptions.push(subscription);
   }
 }

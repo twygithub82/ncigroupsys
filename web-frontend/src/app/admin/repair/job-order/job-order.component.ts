@@ -24,7 +24,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
+import { Observable, Subscription, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -89,7 +89,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatTabsModule,
     JobOrderStartedComponent,
     MatBadgeModule
-]
+  ]
 })
 export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // displayedColumns = [
@@ -216,6 +216,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   hasPreviousPageJobOrder = false;
 
   jobOrderStartedCount = 0;
+  private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -247,6 +248,10 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.loadData();
+  }
+
+  override ngOnDestroy() {
+    this.jobOrderSubscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   refresh() {
@@ -395,7 +400,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     const where: any = {
       job_type_cv: { eq: "REPAIR" }
     };
-    
+
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
       where.or = [
         { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } },
@@ -432,6 +437,10 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.subs.sink = this.joDS.searchJobOrderForRepair(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         this.jobOrderList = data;
+        this.jobOrderList.forEach(jo => {
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
+        })
         this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
         this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
         this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
@@ -502,14 +511,57 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
-  // mergeCriteria(criteria: any) {
-  //   return {
-  //     and: [
-  //       { delete_dt: { eq: null } },
-  //       criteria
-  //     ]
-  //   };
-  // }
+  private subscribeToJobOrderEvent(
+    subscribeFn: (guid: string) => Observable<any>,
+    job_order_guid: string
+  ) {
+    const subscription = subscribeFn(job_order_guid).subscribe({
+      next: (response) => {
+        console.log('Received data:', response);
+        const data = response.data
+        
+        let jobData: any;
+        let eventType: any;
+
+        if (data?.onJobStopped) {
+          jobData = data.onJobStopped;
+          eventType = 'jobStopped';
+        } else if (data?.onJobStarted) {
+          jobData = data.onJobStarted;
+          eventType = 'jobStarted';
+        }
+        
+        if (jobData) {
+          const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
+          if (foundJob?.length) {
+            foundJob[0].status_cv = jobData.job_status;
+            foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
+            foundJob[0].time_table ??= [];
+
+            if (eventType === 'jobStarted') {
+              const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
+              if (foundTimeTable?.length) {
+                foundTimeTable[0].start_time = jobData.start_time
+              } else {
+                foundJob[0].time_table?.push(new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid}))
+              }
+            } else if (eventType === 'jobStopped') {
+              foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
+            }
+            console.log(`Updated JobOrder ${eventType} :`, foundJob[0]);
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+      complete: () => {
+        console.log('Subscription completed');
+      }
+    });
+
+    this.jobOrderSubscriptions.push(subscription);
+  }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
@@ -619,7 +671,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
     this.stopPropagation(event);  // Prevents the form submission
     if (!isStarted) {
-      const param = [new TimeTableItem({job_order_guid: jobOrderItem?.guid, job_order: jobOrderItem})];
+      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
       console.log(param)
       this.ttDS.startJobTimer(param).subscribe(result => {
         console.log(result)
@@ -629,7 +681,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       if (found?.length) {
         const newParam = new TimeTableItem(found[0]);
         newParam.stop_time = Utility.convertDate(new Date()) as number;
-        newParam.job_order = new JobOrderGO({...jobOrderItem});
+        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
         const param = [newParam];
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {

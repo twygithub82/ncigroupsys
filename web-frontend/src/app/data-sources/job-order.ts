@@ -1,6 +1,6 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
@@ -418,6 +418,30 @@ export const GET_JOB_ORDER_BY_ID = gql`
   }
 `;
 
+const ON_JOB_STARTED_SUBSCRIPTION = gql`
+  subscription onJobStarted($job_order_guid: String!) {
+    onJobStarted(job_order_guid: $job_order_guid) {
+      job_order_guid
+      job_status
+      start_time
+      stop_time
+      time_table_guid
+    }
+  }
+`;
+
+const ON_JOB_STOPPED_SUBSCRIPTION = gql`
+  subscription onJobStarted($job_order_guid: String!) {
+    onJobStopped(job_order_guid: $job_order_guid) {
+      job_order_guid
+      job_status
+      start_time
+      stop_time
+      time_table_guid
+    }
+  }
+`;
+
 export const ASSIGN_JOB_ORDER = gql`
   mutation assignJobOrder($jobOrderRequest: [JobOrderRequestInput!]!) {
     assignJobOrder(jobOrderRequest: $jobOrderRequest)
@@ -546,6 +570,20 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
           return resultList.nodes;
         })
       );
+  }
+  
+  subscribeToJobOrderStarted(job_order_guid: string): Observable<any> {
+    return this.apollo.subscribe({
+      query: ON_JOB_STARTED_SUBSCRIPTION,
+      variables: { job_order_guid }
+    });
+  }
+  
+  subscribeToJobOrderStopped(job_order_guid: string): Observable<any> {
+    return this.apollo.subscribe({
+      query: ON_JOB_STOPPED_SUBSCRIPTION,
+      variables: { job_order_guid }
+    });
   }
 
   assignJobOrder(jobOrderRequest: any): Observable<any> {
