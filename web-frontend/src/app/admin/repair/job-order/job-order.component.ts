@@ -52,6 +52,7 @@ import { JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { JobOrderStartedComponent } from "../../job-order/job-order-started/job-order-started.component";
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-job-order',
@@ -88,7 +89,8 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatCardModule,
     MatTabsModule,
     JobOrderStartedComponent,
-    MatBadgeModule
+    MatBadgeModule,
+    MatButtonToggleModule
   ]
 })
 export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -246,7 +248,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeFilterCustomerCompany();
+    this.initializeValueChanges();
     this.loadData();
   }
 
@@ -264,6 +266,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     });
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
+      jobStatusCv: [''],
     });
   }
 
@@ -408,6 +411,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       ];
     }
 
+    if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
+      where.status_cv = {
+        in: this.filterJobOrderForm!.get('jobStatusCv')?.value
+      };
+    }
+
     // TODO:: Get login user team
     // if (false) {
     //   where.team_guid = { eq: "" }
@@ -519,7 +528,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       next: (response) => {
         console.log('Received data:', response);
         const data = response.data
-        
+
         let jobData: any;
         let eventType: any;
 
@@ -530,7 +539,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
           jobData = data.onJobStarted;
           eventType = 'jobStarted';
         }
-        
+
         if (jobData) {
           const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
           if (foundJob?.length) {
@@ -543,7 +552,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
               if (foundTimeTable?.length) {
                 foundTimeTable[0].start_time = jobData.start_time
               } else {
-                foundJob[0].time_table?.push(new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid}))
+                foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
               }
             } else if (eventType === 'jobStopped') {
               foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
@@ -567,7 +576,14 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  initializeFilterCustomerCompany() {
+  initializeValueChanges() {
+    this.filterJobOrderForm?.get('jobStatusCv')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.onFilterJobOrder();
+      })
+    ).subscribe();
   }
 
   translateLangText() {
@@ -663,9 +679,17 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
+  
+  isSelectedJobStatus(value: string): boolean {
+    return this.filterJobOrderForm?.get('jobStatusCv')?.value.includes(value);
+  }
 
   isStarted(jobOrderItem: JobOrderItem | undefined) {
     return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+  }
+
+  canStartJob(jobOrderItem: JobOrderItem | undefined) {
+    return this.joDS.canStartJob(jobOrderItem)
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {

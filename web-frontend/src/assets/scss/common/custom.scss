@@ -1,4 +1,5 @@
 @use 'sass:math';
+@import '/src/assets/scss/common/_variables.scss';
 
 .header .header-button {
   margin-right: auto;
@@ -1024,4 +1025,8 @@ $breakpoints: (
 .group-header-row {
   background-color: #00e1ff !important;
   font-weight: bold !important;
+}
+
+.selected-toggle-btn {
+  background-color: color("lightest-purple") !important;
 }

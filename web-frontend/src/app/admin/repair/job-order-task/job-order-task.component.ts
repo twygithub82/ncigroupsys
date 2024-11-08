@@ -59,7 +59,7 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobItemRequest, JobOrderDS, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 
@@ -432,6 +432,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
           this.jobOrderItem = jo[0];
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
           if (this.repair_guid) {
             this.repairDS.getRepairByIDForJobOrder(this.repair_guid, this.job_order_guid!).subscribe(repair => {
               if (repair?.length) {
@@ -574,12 +575,15 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       }));
 
       newData = this.repairPartDS.sortAndGroupByGroupName(newData);
-      // newData = [...this.sortREP(newData)];
 
       this.repList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
+
+      this.repList.forEach(item => {
+        this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "REPAIR")
+      })
     }
   }
 
@@ -805,14 +809,18 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     return this.jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
   }
 
+  canStartJob() {
+    return this.joDS.canStartJob(this.jobOrderItem)
+  }
+
   canCompleteJob() {
-    return (this.repairPartDS.canCompleteJob(this.repairItem?.repair_part) && (this.jobOrderItem?.complete_dt === undefined || this.jobOrderItem?.complete_dt === null))
+    return this.repairPartDS.canCompleteJob(this.repairItem?.repair_part) && this.joDS.canStartJob(this.jobOrderItem)
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined) {
     this.preventDefault(event);  // Prevents the form submission
     if (!isStarted) {
-      const param = [new TimeTableItem({job_order_guid: this.jobOrderItem?.guid})];
+      const param = [new TimeTableItem({job_order_guid: this.jobOrderItem?.guid, job_order: new JobOrderGO({ ...this.jobOrderItem }) })];
       console.log(param)
       this.ttDS.startJobTimer(param).subscribe(result => {
         console.log(result)
@@ -822,6 +830,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       if (found?.length) {
         const newParam = new TimeTableItem(found[0]);
         newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({ ...this.jobOrderItem });
         const param = [newParam];
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {
@@ -901,6 +910,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         } else if (data?.onJobStarted) {
           jobData = data.onJobStarted;
           eventType = 'jobStarted';
+        } else if (data?.onJobCompleted) {
+          jobData = data.onJobCompleted;
+          eventType = 'onJobCompleted';
         }
         
         if (jobData) {
@@ -925,6 +937,64 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
             }
           }
         }
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+      complete: () => {
+        console.log('Subscription completed');
+      }
+    });
+
+    this.jobOrderSubscriptions.push(subscription);
+  }
+
+  private subscribeToJobItemEvent(
+    subscribeFn: (guid: string, job_type: string) => Observable<any>,
+    item_guid: string,
+    job_type: string
+  ) {
+    const subscription = subscribeFn(item_guid, job_type).subscribe({
+      next: (response) => {
+        console.log('Received data:', response);
+        const data = response.data
+        
+        let jobData: any;
+        let eventType: any;
+
+        // if (data?.onJobStopped) {
+        //   jobData = data.onJobStopped;
+        //   eventType = 'jobStopped';
+        // } else if (data?.onJobStarted) {
+        //   jobData = data.onJobStarted;
+        //   eventType = 'jobStarted';
+        // } else if (data?.onJobCompleted) {
+        //   jobData = data.onJobCompleted;
+        //   eventType = 'onJobCompleted';
+        // }
+        
+        // if (jobData) {
+        //   if (this.jobOrderItem) {
+        //     this.jobOrderItem.status_cv = jobData.job_status;
+        //     this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
+        //     this.jobOrderItem.time_table ??= [];
+
+        //     const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
+        //     if (eventType === 'jobStarted') {
+        //       if (foundTimeTable?.length) {
+        //         foundTimeTable[0].start_time = jobData.start_time
+        //         console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+        //       } else {
+        //         const startNew = new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid});
+        //         this.jobOrderItem.time_table?.push(startNew)
+        //         console.log(`Updated JobOrder ${eventType} :`, startNew);
+        //       }
+        //     } else if (eventType === 'jobStopped') {
+        //       foundTimeTable[0].stop_time = jobData.stop_time;
+        //       console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+        //     }
+        //   }
+        // }
       },
       error: (error) => {
         console.error('Error:', error);

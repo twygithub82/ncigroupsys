@@ -13,7 +13,7 @@
                 <form class="ms-0" [formGroup]="filterRepairForm!" (ngSubmit)="onFilterRepair()"
                   #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
                         <mat-label>
@@ -22,7 +22,7 @@
                         <input matInput formControlName="filterRepair">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 pt-3">
                       <button mat-mini-fab color="primary" (click)="onFilterRepair()">
                         <mat-icon>search</mat-icon>
                       </button>
@@ -130,7 +130,7 @@
                 <form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()"
                   #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
                         <mat-label>
@@ -139,10 +139,17 @@
                         <input matInput formControlName="filterJobOrder">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
-                      <button mat-mini-fab color="primary" (click)="onFilterJobOrder()">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+                      <button mat-mini-fab color="primary" class="m-r-10 mt-4" (click)="onFilterJobOrder()">
                         <mat-icon>search</mat-icon>
                       </button>
+                      <mat-button-toggle-group formControlName="jobStatusCv" [hideMultipleSelectionIndicator]="true"
+                        color="primary" multiple>
+                        @for (codeValue of jobStatusCvList; track codeValue) {
+                        <mat-button-toggle [value]="codeValue.code_val"
+                          [class.selected-toggle-btn]="isSelectedJobStatus(codeValue.code_val!)">{{codeValue.description}}</mat-button-toggle>
+                        }
+                      </mat-button-toggle-group>
                     </div>
                   </div>
                 </form>
@@ -214,7 +221,8 @@
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row; let i=index;"
                         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <button mat-menu-item (click)="toggleJobState($event, isStarted(row), row)">
+                        <button mat-menu-item (click)="toggleJobState($event, isStarted(row), row)"
+                          [disabled]="!canStartJob(row)">
                           <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
                         </button>
                         <button mat-menu-item (click)="stopEventTrigger($event)">
@@ -247,11 +255,11 @@
                   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
                 </mat-paginator>
               </mat-tab>
-              <mat-tab >
+              <mat-tab>
                 <ng-template mat-tab-label>
                   <span [ngClass]="'m-r-10'">{{ translatedLangText.JOB_ORDER_STARTED_TAB_TITLE }}</span>
                   <span matBadge="{{ jobOrderStartedCount }}" matBadgeOverlap="false"
-                        [matBadgeHidden]="jobOrderStartedCount === 0">
+                    [matBadgeHidden]="jobOrderStartedCount === 0">
                   </span>
                 </ng-template>
                 <app-job-order-started (countChange)="onCountChange($event)"></app-job-order-started>
