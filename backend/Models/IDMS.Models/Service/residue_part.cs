@@ -21,6 +21,8 @@ namespace IDMS.Models.Service
         public int? quantity { get; set; }
         public double? cost { get; set; }
         public bool? approve_part { get; set; }
+        public int? approve_qty { get; set; }
+        public double? approve_cost { get; set; }
         public long? complete_dt { get; set; }
 
         [UseFiltering]
