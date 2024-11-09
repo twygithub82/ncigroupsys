@@ -411,6 +411,9 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
             width_diameter
             width_diameter_unit_cv
           }
+          job_order {
+            status_cv
+          }
         }
         aspnetsuser {
           id
@@ -879,7 +882,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canApprove(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'PENDING';
+    return re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED';
   }
 
   canCancel(re: RepairItem | undefined): boolean {
@@ -890,8 +893,8 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return re?.status_cv === 'PENDING';
   }
 
-  canRollbackStatus(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'CANCELED' || re?.status_cv === 'APPROVED';
+  canRollbackStatus(re: RepairItem | undefined, rp: RepairPartItem[]): boolean {
+    return (re?.status_cv === 'CANCELED' || re?.status_cv === 'APPROVED') && rp?.some(part => part.job_order?.status_cv !== 'PENDING');
   }
 
   canAssign(re: RepairItem | undefined): boolean {

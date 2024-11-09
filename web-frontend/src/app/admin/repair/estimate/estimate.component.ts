@@ -176,7 +176,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   sotList: StoringOrderTankItem[] = [];
   reSelection = new SelectionModel<RepairItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
-  reStatusCvList: CodeValuesItem[] = [];
+  processStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
 
@@ -376,13 +376,13 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.search();
 
     const queries = [
-      { alias: 'reStatusCv', codeValType: 'REP_EST_STATUS' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('reStatusCv').subscribe(data => {
-      this.reStatusCvList = addDefaultSelectOption(data, 'All');
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
@@ -579,14 +579,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-  // mergeCriteria(criteria: any) {
-  //   return {
-  //     and: [
-  //       { delete_dt: { eq: null } },
-  //       criteria
-  //     ]
-  //   };
-  // }
+  getProcessStatusDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
+  }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';

@@ -657,7 +657,8 @@
     "STOP-JOB":"Stop Job",
     "DONE":"Done",
     "TIME-HISTORY":"Time History",
-    "STARTED-JOB-ORDER":"Started Jobs"
+    "STARTED-JOB-ORDER":"Started Jobs",
+    "APPROVE-INFO":"Approve Info"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
