@@ -25,6 +25,8 @@ namespace IDMS.Models.Service
         public string? remarks { get; set; }   
         public long? start_dt { get; set; }
         public long? complete_dt { get; set; }
+        public long? qc_dt { get; set; }
+        public string? qc_by { get; set; }
 
         [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; }
