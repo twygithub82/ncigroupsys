@@ -53,7 +53,7 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { JobOrderStartedComponent } from "../../job-order/job-order-started/job-order-started.component";
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { JobOrderTaskComponent } from "../../job-order/job-order-task/job-order-task.component";
+import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-task.component";
 
 @Component({
   selector: 'app-job-order',

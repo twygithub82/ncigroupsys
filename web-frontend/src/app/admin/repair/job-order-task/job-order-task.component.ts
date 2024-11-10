@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
@@ -87,6 +87,7 @@ import { RepairPartItem } from 'app/data-sources/repair-part';
   ]
 })
 export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+
   displayedColumnsJobOrder = [
     'tank_no',
     'customer',
@@ -123,8 +124,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
-    REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
-    JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE'
   }
