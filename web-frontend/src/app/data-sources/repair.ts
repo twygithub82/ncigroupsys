@@ -411,6 +411,9 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
             width_diameter
             width_diameter_unit_cv
           }
+          job_order {
+            status_cv
+          }
         }
         aspnetsuser {
           id
@@ -703,6 +706,12 @@ export const ROLLBACK_REPAIR = gql`
   }
 `
 
+export const ROLLBACK_REPAIR_APPROVAL = gql`
+  mutation RollbackRepairApproval($repair: [RepairRequestInput!]!) {
+    rollbackRepairApproval(repair: $repair)
+  }
+`
+
 export const ROLLBACK_REPAIR_STATUS = gql`
   mutation RollbackRepairStatus($repair: RepairRequestInput!) {
     rollbackRepairStatus(repair: $repair)
@@ -794,14 +803,14 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   getRepairByIDForJobOrder(id: string, job_order_guid: string | undefined): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
     const where: any = { guid: { eq: id } }
-    const repair_part_where: any = {}
+    const services_repair_part_where: any = {}
     if (job_order_guid) {
-      repair_part_where.job_order_guid = { eq: job_order_guid };
+      services_repair_part_where.job_order_guid = { eq: job_order_guid };
     }
     return this.apollo
       .query<any>({
         query: GET_REPAIR_FOR_JOB_ORDER,
-        variables: { where, repair_part_where },
+        variables: { where, services_repair_part_where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -856,9 +865,18 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     });
   }
 
-  rollbackRepairStatus(repair: any): Observable<any> {
+  // rollbackRepairStatus(repair: any): Observable<any> {
+  //   return this.apollo.mutate({
+  //     mutation: ROLLBACK_REPAIR_STATUS,
+  //     variables: {
+  //       repair
+  //     }
+  //   });
+  // }
+
+  rollbackRepairApproval(repair: any): Observable<any> {
     return this.apollo.mutate({
-      mutation: ROLLBACK_REPAIR_STATUS,
+      mutation: ROLLBACK_REPAIR_APPROVAL,
       variables: {
         repair
       }
@@ -879,7 +897,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canApprove(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'PENDING';
+    return re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED';
   }
 
   canCancel(re: RepairItem | undefined): boolean {
@@ -890,8 +908,8 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return re?.status_cv === 'PENDING';
   }
 
-  canRollbackStatus(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'CANCELED' || re?.status_cv === 'APPROVED';
+  canRollbackStatus(re: RepairItem | undefined, rp: RepairPartItem[]): boolean {
+    return (re?.status_cv === 'CANCELED' || re?.status_cv === 'APPROVED') && !rp?.some(part => part.job_order?.status_cv && part.job_order.status_cv !== 'PENDING');
   }
 
   canAssign(re: RepairItem | undefined): boolean {

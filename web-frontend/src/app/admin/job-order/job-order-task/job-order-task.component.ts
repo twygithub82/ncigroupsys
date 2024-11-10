@@ -49,12 +49,14 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { RepairPartItem } from 'app/data-sources/repair-part';
 
 @Component({
-  selector: 'app-job-order-started',
+  selector: 'app-job-order-task',
   standalone: true,
-  templateUrl: './job-order-started.component.html',
-  styleUrl: './job-order-started.component.scss',
+  templateUrl: './job-order-task.component.html',
+  styleUrl: './job-order-task.component.scss',
   imports: [
     MatTooltipModule,
     MatButtonModule,
@@ -81,33 +83,15 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
+    MatButtonToggleModule
   ]
 })
-export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  count = 0;
-  @Output() countChange = new EventEmitter<number>();
-  // displayedColumns = [
-  //   'tank_no',
-  //   'customer',
-  //   'eir_no',
-  //   'eir_dt',
-  //   'last_cargo',
-  //   'tank_status_cv'
-  // ];
-
-  displayedColumnsRepair = [
-    'tank_no',
-    'customer',
-    'estimate_no',
-    'net_cost',
-    'status_cv'
-  ];
-
+export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumnsJobOrder = [
     'tank_no',
-    'job_order_no',
     'customer',
     'estimate_no',
+    'allocate_dt',
     'status_cv',
     'actions'
   ];
@@ -115,52 +99,36 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
-    SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
-    EIR_DATE: 'COMMON-FORM.EIR-DATE',
-    EIR_NO: 'COMMON-FORM.EIR-NO',
-    PART_NAME: 'COMMON-FORM.PART-NAME',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
     PURPOSE: 'COMMON-FORM.PURPOSE',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
-    ADD: 'COMMON-FORM.ADD',
-    REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
-    ACCEPTED: 'COMMON-FORM.ACCEPTED',
-    WAITING: 'COMMON-FORM.WAITING',
-    CANCELED: 'COMMON-FORM.CANCELED',
-    TANKS: 'COMMON-FORM.TANKS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
-    BILL_COMPLETED: 'COMMON-FORM.BILL-COMPLETED',
-    REPAIR_JOB_NO: 'COMMON-FORM.REPAIR-JOB-NO',
-    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
     ESTIMATE_STATUS: 'COMMON-FORM.ESTIMATE-STATUS',
     CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
-    NET_COST: 'COMMON-FORM.NET-COST',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    AMEND: 'COMMON-FORM.AMEND',
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
-    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO'
+    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
+    ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE'
   }
 
-  filterRepairForm?: UntypedFormGroup;
   filterJobOrderForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
@@ -181,15 +149,17 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
   processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
-  lastCargoControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
-  last_cargoList?: TariffCleaningItem[];
 
   pageIndexJobOrder = 0;
   pageSizeJobOrder = 100;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { job_order_no: "DESC" };
-  
+  endCursorJobOrder: string | undefined = undefined;
+  startCursorJobOrder: string | undefined = undefined;
+  hasNextPageJobOrder = false;
+  hasPreviousPageJobOrder = false;
+
   private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
@@ -203,7 +173,7 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -220,16 +190,15 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeFilterCustomerCompany();
+    this.initializeValueChanges();
     this.loadData();
   }
 
   initSearchForm() {
-    this.filterRepairForm = this.fb.group({
-      filterRepair: [''],
-    });
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
+      jobStatusCv: [''],
+      customer: this.customerCodeControl,
     });
   }
 
@@ -277,16 +246,21 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
 
   onFilterJobOrder() {
     const where: any = {
-      job_type_cv: { eq: "REPAIR" },
-      time_table: { some: { start_time: { neq: null }, stop_time: { eq: null } } }
+      job_type_cv: { eq: "REPAIR" }
     };
-    
-    // if (this.filterRepairForm!.get('filterJobOrder')?.value) {
-    //   where.or = [
-    //     { storing_order_tank: { tank_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } },
-    //     { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
-    //   ];
-    // }
+
+    if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
+      where.or = [
+        { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } },
+        { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
+      ];
+    }
+
+    if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
+      where.status_cv = {
+        in: this.filterJobOrderForm!.get('jobStatusCv')?.value
+      };
+    }
 
     // TODO:: Get login user team
     // if (false) {
@@ -301,7 +275,6 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder)
       .subscribe(data => {
         this.jobOrderList = data;
-        this.updateCount(this.jobOrderList.length);
         this.jobOrderList.forEach(jo => {
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
@@ -312,11 +285,60 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
     this.pageIndexJobOrder = pageIndex;
   }
 
+  onPageEventJobOrder(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    if (this.pageSizeJobOrder !== pageSize) {
+      this.pageIndexJobOrder = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
+        first = pageSize;
+        after = this.endCursorJobOrder;
+      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
+        last = pageSize;
+        before = this.startCursorJobOrder;
+      }
+    }
+
+    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
+  }
+
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  initializeFilterCustomerCompany() {
+  initializeValueChanges() {
+    this.filterJobOrderForm!.get('customer')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+
+    this.filterJobOrderForm?.get('jobStatusCv')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.onFilterJobOrder();
+      })
+    ).subscribe();
   }
 
   translateLangText() {
@@ -345,14 +367,20 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
     return Utility.convertEpochToDateStr(input);
   }
 
-  resetForm() {
-    this.filterRepairForm?.patchValue({
-      filterRepair: '',
-    });
-  }
-
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
+  canStartJob(jobOrderItem: JobOrderItem | undefined) {
+    return this.joDS.canStartJob(jobOrderItem)
+  }
+
+  canCompleteJob(jobOrderItem: JobOrderItem | undefined) : boolean {
+    return this.joDS.canCompleteJob(jobOrderItem);
+  }
+
+  isSelectedJobStatus(value: string): boolean {
+    return this.filterJobOrderForm?.get('jobStatusCv')?.value.includes(value);
   }
 
   stopEventTrigger(event: Event) {
@@ -375,7 +403,7 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
   toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
     this.stopPropagation(event);  // Prevents the form submission
     if (!isStarted) {
-      const param = [new TimeTableItem({job_order_guid: jobOrderItem?.guid, job_order: jobOrderItem})];
+      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: jobOrderItem })];
       console.log(param)
       this.ttDS.startJobTimer(param).subscribe(result => {
         console.log(result)
@@ -385,7 +413,7 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
       if (found?.length) {
         const newParam = new TimeTableItem(found[0]);
         newParam.stop_time = Utility.convertDate(new Date()) as number;
-        newParam.job_order = new JobOrderGO({...jobOrderItem});
+        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
         const param = [newParam];
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {
@@ -393,16 +421,6 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
         });
       }
     }
-  }
-
-  private emitCount() {
-    // Emit the count value to the parent component
-    this.countChange.emit(this.count);
-  }
-  
-  updateCount(newCount: number) {
-    this.count = newCount;
-    this.emitCount();
   }
 
   private subscribeToJobOrderEvent(
@@ -413,7 +431,7 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
       next: (response) => {
         console.log('Received data:', response);
         const data = response.data
-        
+
         let jobData: any;
         let eventType: any;
 
@@ -424,7 +442,7 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
           jobData = data.onJobStarted;
           eventType = 'jobStarted';
         }
-        
+
         if (jobData) {
           const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
           if (foundJob?.length) {
@@ -437,7 +455,7 @@ export class JobOrderStartedComponent extends UnsubscribeOnDestroyAdapter implem
               if (foundTimeTable?.length) {
                 foundTimeTable[0].start_time = jobData.start_time
               } else {
-                foundJob[0].time_table?.push(new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid}))
+                foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
               }
             } else if (eventType === 'jobStopped') {
               foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);

@@ -78,23 +78,19 @@ import { JobOrderDS, JobOrderItem, JobOrderRequest } from 'app/data-sources/job-
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    NgScrollbar,
     NgClass,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
     MatLabel,
     MatTableModule,
     MatPaginatorModule,
-    FeatherIconsComponent,
     MatProgressSpinnerModule,
     RouterLink,
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
-    MatCardModule,
-    TlxFormFieldComponent
+    MatCardModule
   ]
 })
 export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -535,6 +531,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       )
       .filter(item => item !== null && item !== undefined)
       .map(item => item.job_order);
+    debugger
 
     const finalJobOrder: any[] = [];
     distinctJobOrders.forEach(jo => {
@@ -547,6 +544,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
         console.log(filteredParts)
         const partList = filteredParts.map(part => part.guid);
         const totalApproveHours = filteredParts.reduce((total, part) => total + (part.approve_hour || 0), 0);
+        // TODO :: if same team, add them to the same job
 
         const joRequest = new JobOrderRequest();
         joRequest.guid = jo.guid;
@@ -562,8 +560,15 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       }
     });
     console.log(finalJobOrder);
+    const without4x = this.repList.filter(part =>
+      !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair)
+    );
+    console.log(without4x);
     this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
       console.log(result)
+      if (!without4x?.length) {
+        console.log("all parts are assigned");
+      }
       this.handleSaveSuccess(result?.data?.assignJobOrder);
     });
   }

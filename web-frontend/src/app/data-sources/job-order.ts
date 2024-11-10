@@ -336,6 +336,13 @@ const GET_STARTED_JOB_ORDER = gql`
           update_dt
         }
       }
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
     }
   }
 `;
@@ -668,5 +675,9 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
 
   canStartJob(jobOrderItem: JobOrderItem | undefined) {
     return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
+  }
+
+  canCompleteJob(jobOrderItem: JobOrderItem | undefined) {
+    return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' && this.canStartJob(jobOrderItem);
   }
 }

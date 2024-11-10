@@ -332,7 +332,7 @@
                         [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                       <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" (click)="completeJobItem($event, row)"
-                        [ngClass]="{'bg-light-green': repairPartDS.isCompleted(row)}" [style.cursor]="'pointer'"
+                        [ngClass]="" [style.cursor]="'pointer'"
                         matRipple>
                       </mat-row>
                     </table>
