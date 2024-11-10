@@ -91,7 +91,7 @@ import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-tas
     MatBadgeModule,
     MatButtonToggleModule,
     JobOrderTaskComponent
-]
+  ]
 })
 export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
 
@@ -177,6 +177,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   jobStatusCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
 
+  availableProcessStatus: string[] = [
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED'
+  ]
+
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
@@ -237,6 +243,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   initSearchForm() {
     this.filterRepairForm = this.fb.group({
       filterRepair: [''],
+      status_cv: [['APPROVED']],
+      customer: this.customerCodeControl,
     });
   }
 
@@ -354,7 +362,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   onFilterRepair() {
     const where: any = {
-      status_cv: { in: ["APPROVED"] }
     };
 
     if (this.filterRepairForm!.get('filterRepair')?.value) {
@@ -362,6 +369,10 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
         { storing_order_tank: { tank_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } },
         { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
       ];
+    }
+
+    if (this.filterRepairForm!.get('status_cv')?.value) {
+      where.status_cv = { in: this.filterRepairForm!.get('status_cv')?.value };
     }
 
     this.lastSearchCriteriaRepair = this.repairDS.addDeleteDtCriteria(where);
@@ -471,6 +482,21 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   initializeValueChanges() {
+    this.filterRepairForm!.get('customer')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
   }
 
   translateLangText() {

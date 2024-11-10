@@ -76,7 +76,7 @@ export class RepairCostTableItem extends RepairGO {
   public discount_labour_owner_cost?: string;
   public discount_mat_owner_cost?: string;
   public net_owner_cost?: string;
-  
+
   public total_lessee_hour?: string;
   public total_lessee_labour_cost?: string;
   public total_lessee_mat_cost?: string;
@@ -730,7 +730,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
   searchRepair(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
-    
+
     return this.apollo
       .query<any>({
         query: GET_REPAIR,
@@ -803,14 +803,14 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   getRepairByIDForJobOrder(id: string, job_order_guid: string | undefined): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
     const where: any = { guid: { eq: id } }
-    const services_repair_part_where: any = {}
+    const repair_part_where: any = {}
     if (job_order_guid) {
-      services_repair_part_where.job_order_guid = { eq: job_order_guid };
+      repair_part_where.job_order_guid = { eq: job_order_guid };
     }
     return this.apollo
       .query<any>({
         query: GET_REPAIR_FOR_JOB_ORDER,
-        variables: { where, services_repair_part_where },
+        variables: { where, repair_part_where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -897,7 +897,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canApprove(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS';
+    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED');
   }
 
   canCancel(re: RepairItem | undefined): boolean {

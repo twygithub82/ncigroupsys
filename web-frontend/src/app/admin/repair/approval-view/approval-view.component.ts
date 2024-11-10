@@ -753,6 +753,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       case 'CANCEL':
       case 'NO_ACTION':
         return 'badge-solid-red';
+      case 'JOB_IN_PROGRESS':
+        return 'badge-solid-purple';
       default:
         return '';
     }
