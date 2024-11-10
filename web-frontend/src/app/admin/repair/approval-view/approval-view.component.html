@@ -367,10 +367,10 @@
                           @else {
                           @if (row.approve_part === null || row.approve_part === undefined ||
                           repairPartDS.isApproved(row)){
-                          <mat-icon class="col-green font-bold" (click)="toggleApprovePart(row)">check</mat-icon>
+                          <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event, row)">check</mat-icon>
                           }
                           @else {
-                          <mat-icon class="col-red font-bold" (click)="toggleApprovePart(row)">close</mat-icon>
+                          <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event, row)">close</mat-icon>
                           }
                           }
                         </mat-cell>

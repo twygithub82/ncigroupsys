@@ -56,7 +56,7 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobOrderDS, JobOrderItem, JobOrderRequest } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderItem, JobOrderRequest, JobProcessRequest } from 'app/data-sources/job-order';
 
 @Component({
   selector: 'app-job-order-allocation',
@@ -399,19 +399,6 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
         if (data?.length) {
           this.repairItem = data[0];
           this.sotItem = this.repairItem?.storing_order_tank;
-          // this.getCustomerLabourPackage(this.sotItem?.storing_order?.customer_company?.guid!);
-          // this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
-          //   if (cc?.length) {
-          //     this.customer_companyList = cc;
-          //     // if (this.customer_companyList?.length == 1) {
-          //     //   const bill_to = this.repairForm?.get('bill_to');
-          //     //   bill_to?.setValue(this.customer_companyList[0]);
-          //     //   if (!this.canApprove()) {
-          //     //     bill_to?.disable();
-          //     //   }
-          //     // }
-          //   }
-          // });
           this.populateRepair(this.repairItem);
         }
       });
@@ -529,11 +516,37 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
           (t.job_order?.team?.guid === item?.job_order?.team_guid ||
             t.job_order?.team?.description === item?.job_order?.team?.description))
       )
-      .filter(item => item !== null && item !== undefined)
+      .filter(item => item.job_order !== null && item.job_order !== undefined)
       .map(item => item.job_order);
     debugger
 
-    const finalJobOrder: any[] = [];
+    // const finalJobOrder: any[] = [];
+    // distinctJobOrders.forEach(jo => {
+    //   if (jo) {
+    //     const filteredParts = this.repList.filter(part =>
+    //       part.job_order?.guid === jo?.guid &&
+    //       (part.job_order?.team?.guid === jo?.team_guid ||
+    //         part.job_order?.team?.description === jo?.team?.description)
+    //     );
+    //     console.log(filteredParts)
+    //     const partList = filteredParts.map(part => part.guid);
+    //     const totalApproveHours = filteredParts.reduce((total, part) => total + (part.approve_hour || 0), 0);
+    //     // TODO :: if same team, add them to the same job
+
+    //     const joRequest = new JobOrderRequest();
+    //     joRequest.guid = jo.guid;
+    //     joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
+    //     joRequest.remarks = jo.remarks;
+    //     joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
+    //     joRequest.status_cv = jo.status_cv;
+    //     joRequest.team_guid = jo.team_guid;
+    //     joRequest.total_hour = jo.total_hour ?? totalApproveHours;
+    //     joRequest.working_hour = jo.working_hour ?? 0;
+    //     joRequest.part_guid = partList;
+    //     finalJobOrder.push(joRequest);
+    //   }
+    // });
+    const jobOrderMap = new Map<string, JobOrderRequest>();
     distinctJobOrders.forEach(jo => {
       if (jo) {
         const filteredParts = this.repList.filter(part =>
@@ -541,35 +554,62 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
           (part.job_order?.team?.guid === jo?.team_guid ||
             part.job_order?.team?.description === jo?.team?.description)
         );
-        console.log(filteredParts)
+
         const partList = filteredParts.map(part => part.guid);
         const totalApproveHours = filteredParts.reduce((total, part) => total + (part.approve_hour || 0), 0);
-        // TODO :: if same team, add them to the same job
 
-        const joRequest = new JobOrderRequest();
-        joRequest.guid = jo.guid;
-        joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
-        joRequest.remarks = jo.remarks;
-        joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
-        joRequest.status_cv = jo.status_cv;
-        joRequest.team_guid = jo.team_guid;
-        joRequest.total_hour = jo.total_hour ?? totalApproveHours;
-        joRequest.working_hour = jo.working_hour ?? 0;
-        joRequest.part_guid = partList;
-        finalJobOrder.push(joRequest);
+        // Check if the job order with the same team_guid already exists in the map
+        const existingJobOrder = jobOrderMap.get(jo.team_guid!);
+
+        if (existingJobOrder) {
+          // Accumulate part_guids and total hours for the existing job order
+          existingJobOrder.part_guid?.push(...partList);
+          existingJobOrder.total_hour = (existingJobOrder.total_hour ?? 0) + totalApproveHours;
+        } else {
+          // Create a new JobOrderRequest and set its properties
+          const joRequest = new JobOrderRequest();
+          joRequest.guid = jo.guid;
+          joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
+          joRequest.remarks = jo.remarks;
+          joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
+          joRequest.status_cv = jo.status_cv;
+          joRequest.team_guid = jo.team_guid;
+          joRequest.total_hour = jo.total_hour ?? totalApproveHours;
+          joRequest.working_hour = jo.working_hour ?? 0;
+          joRequest.part_guid = partList;
+
+          // Add the job order to the map with team_guid as the key
+          jobOrderMap.set(jo.team_guid!, joRequest);
+        }
       }
     });
+    const finalJobOrder = Array.from(jobOrderMap.values());
     console.log(finalJobOrder);
     const without4x = this.repList.filter(part =>
       !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair)
     );
-    console.log(without4x);
     this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
       console.log(result)
       if (!without4x?.length) {
         console.log("all parts are assigned");
+        this.updateJobProcessStatus(this.repairItem!.guid!, "JOB_IN_PROGRESS");
+      } else {
+        this.handleSaveSuccess(result?.data?.assignJobOrder);
       }
-      this.handleSaveSuccess(result?.data?.assignJobOrder);
+    });
+  }
+
+  updateJobProcessStatus(repair_guid: string, process_status: string) {
+    var updateJobProcess: JobProcessRequest = new JobProcessRequest();
+    updateJobProcess.guid = repair_guid;
+    updateJobProcess.job_type_cv = "REPAIR";
+    updateJobProcess.process_status = process_status;
+
+    this.joDS.updateJobProcessStatus(updateJobProcess).subscribe(result => {
+      console.log(result)
+      if (result.data.updateJobProcessStatus > 0) {
+        this.handleSaveSuccess(result.data.updateJobProcessStatus);
+      }
     });
   }
 

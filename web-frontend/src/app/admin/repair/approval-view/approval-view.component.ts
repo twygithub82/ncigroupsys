@@ -57,6 +57,7 @@ import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
+import { JobOrderDS, JobProcessRequest } from 'app/data-sources/job-order';
 
 @Component({
   selector: 'app-approval-view',
@@ -158,7 +159,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
     OWNER: 'COMMON-FORM.OWNER',
     EIR_NO: 'COMMON-FORM.EIR-NO',
@@ -246,6 +246,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   repDmgRepairDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
   userDS: UserDS;
+  joDS: JobOrderDS;
   isOwner = false;
 
   constructor(
@@ -271,6 +272,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.repDmgRepairDS = new RPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
+    this.joDS = new JobOrderDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -491,7 +493,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         item: row,
         action: 'edit',
         translatedLangText: this.translatedLangText,
-        index: index
+        index: index,
+        repairItem: this.repairItem
       },
       direction: tempDirection
     });
@@ -535,9 +538,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: RepairItem) => new RepairGO(item));
         console.log(reList);
-        this.repairDS.cancelRepair(reList).subscribe(result => {
-          this.handleCancelSuccess(result?.data?.cancelRepair)
-        });
+        this.updateJobProcessStatus(reList[0].guid, "NO_ACTION");
+        // this.repairDS.cancelRepair(reList).subscribe(result => {
+        //   this.handleCancelSuccess(result?.data?.cancelRepair)
+        // });
       }
     });
   }
@@ -624,6 +628,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       re.guid = this.repairItem?.guid;
       re.sot_guid = this.repairItem?.sot_guid;
       re.bill_to_guid = bill_to?.value?.guid;
+      re.status_cv = this.repairItem?.status_cv;
       re.total_cost = Utility.convertNumber(this.repairForm?.get('net_cost')?.value, 2);
 
       this.repList?.forEach((rep: RepairPartItem) => {
@@ -658,6 +663,20 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   onFormSubmit() {
     this.repairForm!.get('repList')?.setErrors(null);
+  }
+
+  updateJobProcessStatus(repair_guid: string, process_status: string) {
+    var updateJobProcess: JobProcessRequest = new JobProcessRequest();
+    updateJobProcess.guid = repair_guid;
+    updateJobProcess.job_type_cv = "REPAIR";
+    updateJobProcess.process_status = process_status;
+
+    this.joDS.updateJobProcessStatus(updateJobProcess).subscribe(result => {
+      console.log(result)
+      if (result.data.updateJobProcessStatus > 0) {
+        this.handleSaveSuccess(result.data.updateJobProcessStatus);
+      }
+    });
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
@@ -948,7 +967,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     return this.repairItem?.labour_cost;
   }
 
-  toggleApprovePart(rep: RepairPartItem) {
+  toggleApprovePart(event: Event, rep: RepairPartItem) {
+    this.stopPropagation(event);
     if (!this.repairDS.canApprove(this.repairItem)) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
     this.calculateCost();
