@@ -78,16 +78,13 @@ import { UserDS, UserItem } from 'app/data-sources/user';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    NgScrollbar,
     NgClass,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
     MatLabel,
     MatTableModule,
     MatPaginatorModule,
-    FeatherIconsComponent,
     MatProgressSpinnerModule,
     RouterLink,
     MatRadioModule,
@@ -547,7 +544,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   onRollback(event: Event) {
     this.preventDefault(event);
-    console.log(this.repairItem)
 
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -578,8 +574,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
           return RepairRequestInput
         });
         console.log(reList);
-        this.repairDS.rollbackRepairStatus(reList[0]).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackRepairStatus)
+        this.repairDS.rollbackRepairApproval(reList).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackRepairApproval)
         });
       }
     });

@@ -64,10 +64,10 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 
 @Component({
-  selector: 'app-job-order-task',
+  selector: 'job-order-task-details',
   standalone: true,
-  templateUrl: './job-order-task.component.html',
-  styleUrl: './job-order-task.component.scss',
+  templateUrl: './job-order-task-details.component.html',
+  styleUrl: './job-order-task-details.component.scss',
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -83,27 +83,22 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    NgScrollbar,
     NgClass,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
-    MatLabel,
     MatTableModule,
     MatPaginatorModule,
-    FeatherIconsComponent,
     MatProgressSpinnerModule,
     RouterLink,
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    TlxFormFieldComponent,
     MatSlideToggleModule,
   ]
 })
-export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
     'subgroup_name_cv',
@@ -813,8 +808,12 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     return this.joDS.canStartJob(this.jobOrderItem)
   }
 
+  // canCompleteJob() {
+  //   return this.repairPartDS.canCompleteJob(this.repairItem?.repair_part) && this.joDS.canStartJob(this.jobOrderItem)
+  // }
+
   canCompleteJob() {
-    return this.repairPartDS.canCompleteJob(this.repairItem?.repair_part) && this.joDS.canStartJob(this.jobOrderItem)
+    return this.joDS.canCompleteJob(this.jobOrderItem)
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined) {

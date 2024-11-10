@@ -658,7 +658,8 @@
     "DONE":"Done",
     "TIME-HISTORY":"Time History",
     "STARTED-JOB-ORDER":"Started Jobs",
-    "APPROVE-INFO":"Approve Info"
+    "APPROVE-INFO":"Approve Info",
+    "ALLOCATE-DATE":"Allocate Date"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

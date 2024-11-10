@@ -62,12 +62,10 @@ import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
     RouterLink,
     TranslateModule,
     MatExpansionModule,
@@ -438,7 +436,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['IN_SURVEY', 'CLEANING', 'STORAGE', 'STEAM', 'REPAIR'] }
+      tank_status_cv: { in: ['IN_SURVEY', 'CLEANING', 'STORAGE', 'STEAM', 'REPAIR'] },
+      purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
     };
 
     if (this.searchForm!.get('tank_no')?.value) {
