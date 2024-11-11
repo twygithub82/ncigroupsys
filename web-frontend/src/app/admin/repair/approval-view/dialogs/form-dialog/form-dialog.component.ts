@@ -22,7 +22,7 @@ import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { RepairPartItem } from 'app/data-sources/repair-part';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { Direction } from '@angular/cdk/bidi';
@@ -80,6 +80,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
   repairDS: RepairDS;
+  repairPartDS: RepairPartDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -96,6 +97,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.repDrDS = new RPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.repairDS = new RepairDS(this.apollo);
+    this.repairPartDS = new RepairPartDS(this.apollo);
     this.action = data.action!;
     this.dialogTitle = data.translatedLangText.APPROVE_INFO;
     this.repairPart = data.item ? data.item : new RepairPartItem();
@@ -108,9 +110,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      approve_qty: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem)}],
-      approve_hour: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem)}],
-      approve_cost: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem)}]
+      approve_qty: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}],
+      approve_hour: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}],
+      approve_cost: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}]
     });
   }
 
