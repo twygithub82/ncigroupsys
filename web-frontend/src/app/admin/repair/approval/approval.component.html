@@ -120,7 +120,7 @@
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.REPAIR_TYPE}}</mat-label>
-                      <mat-select multiple formControlName="repair_type_cv">
+                      <mat-select multiple formControlName="purpose">
                         @for (codeValue of purposeOptionCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
@@ -161,6 +161,12 @@
                         </mat-option>
                         }
                       </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.ESTIMATE_NO}}</mat-label>
+                      <input matInput formControlName="estimate_no">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 d-flex align-items-center">
@@ -225,7 +231,7 @@
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{row?.status_cv}}
+                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
                   </mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="actions">
