@@ -919,7 +919,6 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
         }
 
         if (jobData) {
-          debugger
           if (this.jobOrderItem) {
             this.jobOrderItem.status_cv = jobData.job_status;
             this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;

@@ -119,8 +119,8 @@
           <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
         </button>
         }
-        @if (canCompleteJob(row)) {
-        <button mat-menu-item (click)="stopEventTrigger($event)">
+        @if (canCompleteJob(row, isStarted(row))) {
+        <button mat-menu-item (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
           <mat-icon>check_box</mat-icon>
         </button>
         }

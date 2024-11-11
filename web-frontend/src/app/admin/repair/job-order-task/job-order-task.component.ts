@@ -47,7 +47,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
-import { JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RepairPartItem } from 'app/data-sources/repair-part';
@@ -276,6 +276,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         this.jobOrderList.forEach(jo => {
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
         })
       });
 
@@ -373,8 +374,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     return this.joDS.canStartJob(jobOrderItem)
   }
 
-  canCompleteJob(jobOrderItem: JobOrderItem | undefined) : boolean {
-    return this.joDS.canCompleteJob(jobOrderItem);
+  canCompleteJob(jobOrderItem: JobOrderItem | undefined, isStarted: boolean | undefined): boolean {
+    return this.joDS.canCompleteJob(jobOrderItem) && !isStarted;
   }
 
   isSelectedJobStatus(value: string): boolean {
@@ -401,7 +402,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
     this.stopPropagation(event);  // Prevents the form submission
     if (!isStarted) {
-      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: jobOrderItem })];
+      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
       console.log(param)
       this.ttDS.startJobTimer(param).subscribe(result => {
         console.log(result)
@@ -419,6 +420,21 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         });
       }
     }
+  }
+
+  completeJob(event: Event, jobOrderItem: JobOrderItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    const newParam = new UpdateJobOrderRequest({
+      guid: jobOrderItem?.guid,
+      remarks: jobOrderItem?.remarks,
+      start_dt: jobOrderItem?.start_dt,
+      complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+    });
+    const param = [newParam];
+    console.log(param)
+    this.joDS.completeJobOrder(param).subscribe(result => {
+      console.log(result)
+    });
   }
 
   private subscribeToJobOrderEvent(
@@ -439,6 +455,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         } else if (data?.onJobStarted) {
           jobData = data.onJobStarted;
           eventType = 'jobStarted';
+        } else if (data?.onJobCompleted) {
+          jobData = data.onJobCompleted;
+          eventType = 'onJobCompleted';
         }
 
         if (jobData) {
