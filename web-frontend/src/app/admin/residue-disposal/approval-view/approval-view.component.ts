@@ -626,8 +626,8 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     if (newData?.length) {
       this.deList = newData.map((row, index) => ({
         ...row,
-        approve_cost: (row.approve_cost)?row.approve_cost:row.cost,
-        approve_qty:(row.approve_qty)?row.approve_qty:row.quantity,
+        approve_cost: (this.residueItem?.status_cv==='PENDING')?row.cost:(row.approve_cost?row.approve_cost:row.cost),
+        approve_qty:(this.residueItem?.status_cv==='PENDING')?row.quantity:(row.approve_qty?row.approve_qty:row.quantity),
         index: index
       }));
       
@@ -1332,8 +1332,8 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     }
     this.residueEstForm?.patchValue({
        desc:descValue,
-       qty:row.quantity,
-       unit_price:row.cost?.toFixed(2)
+       qty:(this.residueItem?.status_cv==='PENDING')? row.quantity:row.approve_qty,
+       unit_price:(this.residueItem?.status_cv==='PENDING')?row.cost?.toFixed(2):row.approve_cost?.toFixed(2)
     });
 
    
