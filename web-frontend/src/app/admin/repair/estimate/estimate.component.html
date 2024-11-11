@@ -97,7 +97,7 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CHANGE_REQUEST}}</mat-label>
                       <mat-select formControlName="change_request_cv">
-                        @for (codeValue of reStatusCvList; track codeValue) {
+                        @for (codeValue of processStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
@@ -155,12 +155,18 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                       <mat-select formControlName="est_status_cv">
-                        @for (codeValue of reStatusCvList; track codeValue) {
+                        @for (codeValue of processStatusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
                         }
                       </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.ESTIMATE_NO}}</mat-label>
+                      <input matInput formControlName="estimate_no">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 d-flex align-items-center">
@@ -294,7 +300,7 @@
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let repairRow" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{repairRow.status_cv}}
+                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(repairRow.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="remarks">

@@ -50,8 +50,10 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { JobOrderStartedComponent } from "../../job-order/job-order-started/job-order-started.component";
+import { JobOrderQCComponent } from "../../repair/job-order-qc/job-order-qc.component";
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-task.component";
 
 @Component({
   selector: 'app-job-order',
@@ -67,12 +69,10 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
     RouterLink,
     TranslateModule,
     MatExpansionModule,
@@ -87,35 +87,20 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    JobOrderStartedComponent,
-    MatBadgeModule
+    JobOrderQCComponent,
+    MatBadgeModule,
+    MatButtonToggleModule,
+    JobOrderTaskComponent
   ]
 })
 export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  // displayedColumns = [
-  //   'tank_no',
-  //   'customer',
-  //   'eir_no',
-  //   'eir_dt',
-  //   'last_cargo',
-  //   'tank_status_cv'
-  // ];
 
   displayedColumnsRepair = [
     'tank_no',
     'customer',
     'estimate_no',
-    'net_cost',
+    'allocate_dt',
     'status_cv'
-  ];
-
-  displayedColumnsJobOrder = [
-    'tank_no',
-    'job_order_no',
-    'customer',
-    'estimate_no',
-    'status_cv',
-    'actions'
   ];
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
@@ -168,12 +153,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
-    JOB_ORDER_STARTED_TAB_TITLE: 'COMMON-FORM.STARTED-JOB-ORDER',
-    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO'
+    QC: 'COMMON-FORM.QC',
+    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
+    ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE'
   }
 
   filterRepairForm?: UntypedFormGroup;
-  filterJobOrderForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
@@ -192,6 +177,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   jobStatusCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
 
+  availableProcessStatus: string[] = [
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED'
+  ]
+
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
@@ -205,15 +196,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   startCursorRepair: string | undefined = undefined;
   hasNextPageRepair = false;
   hasPreviousPageRepair = false;
-
-  pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
-  lastSearchCriteriaJobOrder: any;
-  lastOrderByJobOrder: any = { job_order_no: "DESC" };
-  endCursorJobOrder: string | undefined = undefined;
-  startCursorJobOrder: string | undefined = undefined;
-  hasNextPageJobOrder = false;
-  hasPreviousPageJobOrder = false;
 
   jobOrderStartedCount = 0;
   private jobOrderSubscriptions: Subscription[] = [];
@@ -246,7 +228,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeFilterCustomerCompany();
+    this.initializeValueChanges();
     this.loadData();
   }
 
@@ -261,9 +243,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   initSearchForm() {
     this.filterRepairForm = this.fb.group({
       filterRepair: [''],
-    });
-    this.filterJobOrderForm = this.fb.group({
-      filterJobOrder: [''],
+      status_cv: [['APPROVED']],
+      customer: this.customerCodeControl,
     });
   }
 
@@ -309,7 +290,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   public loadData() {
     this.onFilterRepair();
-    this.onFilterJobOrder();
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
@@ -382,7 +362,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   onFilterRepair() {
     const where: any = {
-      status_cv: { in: ["APPROVED"] }
     };
 
     if (this.filterRepairForm!.get('filterRepair')?.value) {
@@ -392,29 +371,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       ];
     }
 
-    this.lastSearchCriteriaRepair = this.repairDS.addDeleteDtCriteria(where);
-    this.performSearchRepair(this.pageSizeRepair, this.pageIndexRepair, this.pageSizeRepair, undefined, undefined, undefined, () => { });
-  }
-
-  onFilterJobOrder() {
-    const where: any = {
-      job_type_cv: { eq: "REPAIR" }
-    };
-
-    if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
-      where.or = [
-        { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } },
-        //{ estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
-      ];
+    if (this.filterRepairForm!.get('status_cv')?.value) {
+      where.status_cv = { in: this.filterRepairForm!.get('status_cv')?.value };
     }
 
-    // TODO:: Get login user team
-    // if (false) {
-    //   where.team_guid = { eq: "" }
-    // }
-
-    this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+    this.lastSearchCriteriaRepair = this.repairDS.addDeleteDtCriteria(where);
+    this.performSearchRepair(this.pageSizeRepair, this.pageIndexRepair, this.pageSizeRepair, undefined, undefined, undefined, () => { });
   }
 
   performSearchRepair(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
@@ -431,24 +393,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
     this.pageSizeRepair = pageSize;
     this.pageIndexRepair = pageIndex;
-  }
-
-  performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.joDS.searchJobOrderForRepair(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
-      .subscribe(data => {
-        this.jobOrderList = data;
-        this.jobOrderList.forEach(jo => {
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
-        })
-        this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
-        this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
-        this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
-      });
-
-    this.pageSizeJobOrder = pageSize;
-    this.pageIndexJobOrder = pageIndex;
   }
 
   onPageEventRepair(event: PageEvent) {
@@ -481,36 +425,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.performSearchRepair(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
-  onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-
-    // Check if the page size has changed
-    if (this.pageSizeJobOrder !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndexJobOrder = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursorJobOrder;
-      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursorJobOrder;
-      }
-    }
-
-    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
-  }
-
   private subscribeToJobOrderEvent(
     subscribeFn: (guid: string) => Observable<any>,
     job_order_guid: string
@@ -519,7 +433,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       next: (response) => {
         console.log('Received data:', response);
         const data = response.data
-        
+
         let jobData: any;
         let eventType: any;
 
@@ -530,7 +444,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
           jobData = data.onJobStarted;
           eventType = 'jobStarted';
         }
-        
+
         if (jobData) {
           const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
           if (foundJob?.length) {
@@ -543,7 +457,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
               if (foundTimeTable?.length) {
                 foundTimeTable[0].start_time = jobData.start_time
               } else {
-                foundJob[0].time_table?.push(new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid}))
+                foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
               }
             } else if (eventType === 'jobStopped') {
               foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
@@ -567,7 +481,22 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  initializeFilterCustomerCompany() {
+  initializeValueChanges() {
+    this.filterRepairForm!.get('customer')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
   }
 
   translateLangText() {
@@ -666,6 +595,10 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   isStarted(jobOrderItem: JobOrderItem | undefined) {
     return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+  }
+
+  canStartJob(jobOrderItem: JobOrderItem | undefined) {
+    return this.joDS.canStartJob(jobOrderItem)
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {

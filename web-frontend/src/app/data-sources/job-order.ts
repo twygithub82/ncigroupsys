@@ -146,7 +146,7 @@ export interface JobOrderResult {
   totalCount: number;
 }
 
-export const GET_JOB_ORDER = gql`
+const GET_JOB_ORDER = gql`
   query queryJobOrder($where: job_orderFilterInput, $order: [job_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryJobOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -226,7 +226,7 @@ export const GET_JOB_ORDER = gql`
   }
 `;
 
-export const GET_JOB_ORDER_FOR_REPAIR = gql`
+const GET_JOB_ORDER_FOR_REPAIR = gql`
   query queryJobOrder($where: job_orderFilterInput, $order: [job_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryJobOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -283,7 +283,7 @@ export const GET_JOB_ORDER_FOR_REPAIR = gql`
   }
 `;
 
-export const GET_STARTED_JOB_ORDER = gql`
+const GET_STARTED_JOB_ORDER = gql`
   query queryJobOrder($where: job_orderFilterInput, $order: [job_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryJobOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -336,11 +336,18 @@ export const GET_STARTED_JOB_ORDER = gql`
           update_dt
         }
       }
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
     }
   }
 `;
 
-export const GET_JOB_ORDER_BY_ID = gql`
+const GET_JOB_ORDER_BY_ID = gql`
   query queryJobOrder($where: job_orderFilterInput, $order: [job_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryJobOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
@@ -442,25 +449,55 @@ const ON_JOB_STOPPED_SUBSCRIPTION = gql`
   }
 `;
 
-export const ASSIGN_JOB_ORDER = gql`
+const ON_JOB_COMPLETED_SUBSCRIPTION = gql`
+  subscription onJobCompleted($job_order_guid: String!) {
+    onJobCompleted(job_order_guid: $job_order_guid) {
+      complete_dt
+      item_guid
+      job_order_guid
+      job_status
+      job_type
+      start_time
+      stop_time
+      time_table_guid
+    }
+  }
+`;
+
+const ON_JOB_ITEM_COMPLETED_SUBSCRIPTION = gql`
+  subscription onJobCompleted($item_guid: String!, $job_type: String!) {
+    onJobItemCompleted(item_guid: $item_guid, job_type: $job_type) {
+      complete_dt
+      item_guid
+      job_order_guid
+      job_status
+      job_type
+      start_time
+      stop_time
+      time_table_guid
+    }
+  }
+`;
+
+const ASSIGN_JOB_ORDER = gql`
   mutation assignJobOrder($jobOrderRequest: [JobOrderRequestInput!]!) {
     assignJobOrder(jobOrderRequest: $jobOrderRequest)
   }
 `
 
-export const UPDATE_JOB_PROCESS_STATUS = gql`
+const UPDATE_JOB_PROCESS_STATUS = gql`
   mutation updateJobProcessStatus($jobProcessRequest: JobProcessRequestInput!) {
     updateJobProcessStatus(jobProcessRequest: $jobProcessRequest)
   }
 `
 
-export const COMPLETE_JOB_ITEM = gql`
+const COMPLETE_JOB_ITEM = gql`
   mutation completeJobItem($jobItemRequest: [JobItemRequestInput!]!) {
     completeJobItem(jobItemRequest: $jobItemRequest)
   }
 `
 
-export const COMPLETE_JOB_ORDER = gql`
+const COMPLETE_JOB_ORDER = gql`
   mutation completeJobOrder($jobOrderRequest: [UpdateJobOrderRequestInput!]!) {
     completeJobOrder(jobOrderRequest: $jobOrderRequest)
   }
@@ -585,6 +622,20 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
       variables: { job_order_guid }
     });
   }
+  
+  subscribeToJobOrderCompleted(job_order_guid: string): Observable<any> {
+    return this.apollo.subscribe({
+      query: ON_JOB_COMPLETED_SUBSCRIPTION,
+      variables: { job_order_guid }
+    });
+  }
+  
+  subscribeToJobItemCompleted(item_guid: string, job_type: string): Observable<any> {
+    return this.apollo.subscribe({
+      query: ON_JOB_ITEM_COMPLETED_SUBSCRIPTION,
+      variables: { item_guid, job_type }
+    });
+  }
 
   assignJobOrder(jobOrderRequest: any): Observable<any> {
     return this.apollo.mutate({
@@ -620,5 +671,13 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
         jobOrderRequest
       }
     });
+  }
+
+  canStartJob(jobOrderItem: JobOrderItem | undefined) {
+    return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
+  }
+
+  canCompleteJob(jobOrderItem: JobOrderItem | undefined) {
+    return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' && this.canStartJob(jobOrderItem);
   }
 }

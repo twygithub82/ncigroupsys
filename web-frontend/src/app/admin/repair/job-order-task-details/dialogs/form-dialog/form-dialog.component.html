@@ -38,14 +38,14 @@
             <span class="mobile-tab-label">{{data.translatedLangText.STOP_TIME}}:</span>{{displayDateTime(row.stop_time)}}
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="time_taken">
+        <ng-container matColumnDef="duration">
           <mat-header-cell mat-header-cell *matHeaderCellDef
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            {{data.translatedLangText.TIME_TAKEN}}
+            {{data.translatedLangText.DURATION}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            <span class="mobile-tab-label">{{data.translatedLangText.TIME_TAKEN}}:</span>{{displayTimeTaken(row.stop_time, row.start_time)}}
+            <span class="mobile-tab-label">{{data.translatedLangText.DURATION}}:</span>{{displayTimeTaken(row.stop_time, row.start_time)}}
           </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

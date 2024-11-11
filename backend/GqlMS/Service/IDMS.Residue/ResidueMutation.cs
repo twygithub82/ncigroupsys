@@ -164,8 +164,8 @@ namespace IDMS.Residue.GqlTypes
                             context.residue_part.Attach(part);
 
                             part.approve_part = item.approve_part;
-                            part.cost = item.cost;
-                            part.quantity = item.quantity;
+                            part.approve_cost = item.approve_cost;
+                            part.approve_qty = item.approve_qty;
                             part.update_by = user;
                             part.update_dt = currentDateTime;
                         }
@@ -220,6 +220,53 @@ namespace IDMS.Residue.GqlTypes
                             part.update_by = user;
                             part.update_dt = currentDateTime;
                             part.cost = packageResidue.Where(r => r.tariff_residue_guid == part.tariff_residue_guid).Select(r => r.cost).First();
+                        }
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> RollbackResidueApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+         [Service] IConfiguration config, List<ResidueRequest> residue)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in residue)
+                {
+                    if (item != null && !string.IsNullOrEmpty(item.guid))
+                    {
+                        var rollbackResidue = new residue() { guid = item.guid };
+                        context.residue.Attach(rollbackResidue);
+
+                        rollbackResidue.update_by = user;
+                        rollbackResidue.update_dt = currentDateTime;
+                        rollbackResidue.status_cv = CurrentServiceStatus.PENDING;
+                        rollbackResidue.remarks = item.remarks;
+
+                        if (string.IsNullOrEmpty(item.customer_guid))
+                            throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+
+                        var customerGuid = item.customer_guid;
+                        var residuePart = await context.residue_part.Where(r => r.residue_guid == item.guid &&
+                                                                            (!string.IsNullOrEmpty(r.tariff_residue_guid)) &&
+                                                                            (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+                        foreach (var part in residuePart)
+                        {
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                            part.approve_part = null;
+                            part.approve_cost = part.cost;
+                            part.approve_qty = part.quantity;
                         }
                     }
                 }

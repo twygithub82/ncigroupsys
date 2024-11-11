@@ -82,6 +82,53 @@ namespace IDMS.Repair.GqlTypes
             }
         }
 
+        public async Task<int> ApproveRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, repair repair)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                //Handlind update approval for estimate
+                if (repair != null && !string.IsNullOrEmpty(repair.guid) && !string.IsNullOrEmpty(repair.bill_to_guid))
+                {
+                    var appvRepair = new repair() { guid = repair.guid };
+                    context.repair.Attach(appvRepair);
+
+                    appvRepair.update_by = user;
+                    appvRepair.update_dt = currentDateTime;
+
+                    appvRepair.total_cost = repair.total_cost;
+                    appvRepair.bill_to_guid = repair.bill_to_guid;
+                    appvRepair.status_cv = CurrentServiceStatus.APPROVED;
+                    appvRepair.remarks = repair.remarks;
+
+                    if (repair.repair_part != null)
+                    {
+                        foreach (var item in repair.repair_part)
+                        {
+                            var part = new repair_part() { guid = item.guid };
+                            context.repair_part.Attach(part);
+
+                            part.approve_qty = item.approve_qty;
+                            part.approve_hour = item.approve_hour;
+                            part.approve_part = item.approve_part;
+                            part.approve_cost = item.approve_cost;
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                        }
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
 
         public async Task<int> UpdateRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, repair repair, customer_company? customerCompany)
@@ -194,7 +241,6 @@ namespace IDMS.Repair.GqlTypes
             }
         }
 
-
         public async Task<int> CancelRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
                 [Service] IConfiguration config, List<repair> repair)
         {
@@ -225,7 +271,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
 
         public async Task<int> RollbackRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
                 [Service] IConfiguration config, List<RepairRequest> repair)
@@ -277,6 +322,53 @@ namespace IDMS.Repair.GqlTypes
             }
         }
 
+        public async Task<int> RollbackRepairApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+               [Service] IConfiguration config, List<RepairRequest> repair)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in repair)
+                {
+                    if (item != null && !string.IsNullOrEmpty(item.guid))
+                    {
+                        var rollbackRepair = new repair() { guid = item.guid };
+                        context.repair.Attach(rollbackRepair);
+
+                        rollbackRepair.update_by = user;
+                        rollbackRepair.update_dt = currentDateTime;
+                        rollbackRepair.status_cv = CurrentServiceStatus.PENDING;
+                        rollbackRepair.remarks = item.remarks;
+
+                        if (string.IsNullOrEmpty(item.customer_guid))
+                            throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+
+                        var customerGuid = item.customer_guid;
+                        var repairPart = await context.repair_part.Where(r => r.repair_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+
+                        foreach (var part in repairPart)
+                        {
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                            part.approve_part = null;
+                            part.approve_cost = part.material_cost;
+                            part.approve_hour = part.hour;
+                            part.approve_qty = part.quantity;
+                        }
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
         public async Task<int> RollbackRepairStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
           [Service] IConfiguration config, RepairRequest repair)
         {
@@ -304,55 +396,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
-        public async Task<int> ApproveRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, repair repair)
-        {
-            try
-            {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
-
-                //Handlind update approval for estimate
-                if (repair != null && !string.IsNullOrEmpty(repair.guid) && !string.IsNullOrEmpty(repair.bill_to_guid))
-                {
-                    var appvRepair = new repair() { guid = repair.guid };
-                    context.repair.Attach(appvRepair);
-
-                    appvRepair.update_by = user;
-                    appvRepair.update_dt = currentDateTime;
-
-                    appvRepair.total_cost = repair.total_cost;
-                    appvRepair.bill_to_guid = repair.bill_to_guid;
-                    appvRepair.status_cv = CurrentServiceStatus.APPROVED;
-                    appvRepair.remarks = repair.remarks;
-
-                    if (repair.repair_part != null)
-                    {
-                        foreach (var item in repair.repair_part)
-                        {
-                            var part = new repair_part() { guid = item.guid };
-                            context.repair_part.Attach(part);
-
-                            part.approve_qty = item.approve_qty;
-                            part.approve_hour = item.approve_hour;
-                            part.approve_part = item.approve_part;
-                            part.approve_cost = item.approve_cost;
-                            part.update_by = user;
-                            part.update_dt = currentDateTime;
-                        }
-                    }
-                }
-
-                var res = await context.SaveChangesAsync();
-                return res;
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-            }
-        }
-
 
         private async Task UpdateRepairDamageCode(ApplicationServiceDBContext context, string user, long currentDateTime,
                                           repair_part repairPart, IEnumerable<rp_damage_repair>? rpDamageRepair = null)

@@ -54,16 +54,20 @@ import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
-import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
+import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
+import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
-import { JobOrderDS, JobProcessRequest } from 'app/data-sources/job-order';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 
 @Component({
-  selector: 'app-approval-view',
+  selector: 'job-order-task-details',
   standalone: true,
-  templateUrl: './approval-view.component.html',
-  styleUrl: './approval-view.component.scss',
+  templateUrl: './job-order-task-details.component.html',
+  styleUrl: './job-order-task-details.component.scss',
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -83,7 +87,6 @@ import { JobOrderDS, JobProcessRequest } from 'app/data-sources/job-order';
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
-    MatLabel,
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
@@ -92,10 +95,10 @@ import { JobOrderDS, JobProcessRequest } from 'app/data-sources/job-order';
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    TlxFormFieldComponent
+    MatSlideToggleModule,
   ]
 })
-export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
     'subgroup_name_cv',
@@ -103,19 +106,12 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     'repair',
     'description',
     'quantity',
-    'hour',
-    'price',
-    'material',
-    'isOwner',
-    'approve_part',
-    'approve_qty',
-    'approve_hour',
-    'approve_cost'
+    'hour'
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
+  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.APPROVAL'
+    'MENUITEMS.REPAIR.TEXT'
   ]
   translatedLangText: any = {}
   langText = {
@@ -159,6 +155,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
+    INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
     OWNER: 'COMMON-FORM.OWNER',
     EIR_NO: 'COMMON-FORM.EIR-NO',
@@ -205,20 +202,42 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     APPROVE: 'COMMON-FORM.APPROVE',
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
-    BILL_DETAILS: 'COMMON-FORM.BILL-DETAILS',
-    BILL_TO: 'COMMON-FORM.BILL-TO',
-    APPROVE_INFO: 'COMMON-FORM.APPROVE-INFO'
+    TEAM_DETAILS: 'COMMON-FORM.TEAM-DETAILS',
+    TEAM: 'COMMON-FORM.TEAM',
+    UPDATE_BY: 'COMMON-FORM.UPDATE-BY',
+    UPDATE_DATE: 'COMMON-FORM.UPDATE-DATE',
+    ESTIMATE: 'COMMON-FORM.ESTIMATE',
+    APPROVAL: 'COMMON-FORM.APPROVAL',
+    JOB_ALLOCATION: 'COMMON-FORM.JOB-ALLOCATION',
+    QC_DETAILS: 'COMMON-FORM.QC-DETAILS',
+    SAVE_ANOTHER: 'COMMON-FORM.SAVE-ANOTHER',
+    TEAM_ALLOCATION: 'COMMON-FORM.TEAM-ALLOCATION',
+    ASSIGN: 'COMMON-FORM.ASSIGN',
+    JOB_DETAILS: 'COMMON-FORM.JOB-DETAILS',
+    START_STOP_JOB: 'COMMON-FORM.START-STOP-JOB',
+    COMPLETE_JOB: 'COMMON-FORM.COMPLETE-JOB',
+    START_TIME: 'COMMON-FORM.START-TIME',
+    STOP_TIME: 'COMMON-FORM.STOP-TIME',
+    TIME_HISTORY: 'COMMON-FORM.TIME-HISTORY',
+    START_JOB: 'COMMON-FORM.START-JOB',
+    STOP_JOB: 'COMMON-FORM.STOP-JOB',
+    COMPLETE: 'COMMON-FORM.COMPLETE',
+    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
+    DURATION: 'COMMON-FORM.DURATION'
   }
 
   clean_statusList: CodeValuesItem[] = [];
 
+  job_order_guid?: string | null;
   repair_guid?: string | null;
 
   repairForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
+  jobOrderItem?: JobOrderItem;
   repairItem?: RepairItem;
-  // packageLabourItem?: PackageLabourItem;
+  packageLabourItem?: PackageLabourItem;
+  repSelection = new SelectionModel<RepairPartItem>(true, []);
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
@@ -231,8 +250,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
+  jobStatusCvList: CodeValuesItem[] = [];
+  processStatusCvList: CodeValuesItem[] = [];
 
-  customer_companyList?: CustomerCompanyItem[];
+  teamList?: TeamItem[];
 
   customerCodeControl = new UntypedFormControl();
 
@@ -243,11 +264,13 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   plDS: PackageLabourDS;
   repairDS: RepairDS;
   repairPartDS: RepairPartDS;
-  repDmgRepairDS: RPDamageRepairDS;
-  prDS: PackageRepairDS;
-  userDS: UserDS;
+  rpDmgRepairDS: RPDamageRepairDS;
+  teamDS: TeamDS;
   joDS: JobOrderDS;
+  ttDS: TimeTableDS;
   isOwner = false;
+
+  private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -269,10 +292,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.plDS = new PackageLabourDS(this.apollo);
     this.repairDS = new RepairDS(this.apollo);
     this.repairPartDS = new RepairPartDS(this.apollo);
-    this.repDmgRepairDS = new RPDamageRepairDS(this.apollo);
-    this.prDS = new PackageRepairDS(this.apollo);
-    this.userDS = new UserDS(this.apollo);
+    this.rpDmgRepairDS = new RPDamageRepairDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
+    this.ttDS = new TimeTableDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -287,8 +310,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   initForm() {
     this.repairForm = this.fb.group({
-      bill_to: [''],
-      job_no: [''],
+      team_allocation: [''],
       guid: [''],
       remarks: [{ value: '', disabled: true }],
       surveyor_id: [''],
@@ -336,6 +358,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      { alias: 'jobStatusCv', codeValType: 'JOB_STATUS' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -388,32 +412,38 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
       this.unitTypeCvList = data;
     });
+    this.cvDS.connectAlias('jobStatusCv').subscribe(data => {
+      this.jobStatusCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
+    });
 
-    this.repair_guid = this.route.snapshot.paramMap.get('id');
-    if (this.repair_guid) {
-      this.subs.sink = this.repairDS.getRepairByIDForApproval(this.repair_guid).subscribe(data => {
+    this.job_order_guid = this.route.snapshot.paramMap.get('id');
+    this.repair_guid = this.route.snapshot.paramMap.get('repair_id');
+    if (this.job_order_guid) {
+      this.subs.sink = this.joDS.getJobOrderByID(this.job_order_guid).subscribe(jo => {
+        if (jo?.length) {
+          console.log(jo)
+          this.jobOrderItem = jo[0];
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
+          if (this.repair_guid) {
+            this.repairDS.getRepairByIDForJobOrder(this.repair_guid, this.job_order_guid!).subscribe(repair => {
+              if (repair?.length) {
+                console.log(repair)
+                this.repairItem = repair[0];
+                this.sotItem = this.repairItem?.storing_order_tank;
+                this.populateRepair(this.repairItem);
+              }
+            });
+          }
+        }
+      });
+      this.subs.sink = this.teamDS.getTeamListByDepartment(["REPAIR"]).subscribe(data => {
         if (data?.length) {
-          this.repairItem = data[0];
-          console.log(this.repairItem);
-          this.sotItem = this.repairItem?.storing_order_tank;
-          this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
-            if (cc?.length) {
-              const bill_to = this.repairForm?.get('bill_to');
-              this.customer_companyList = cc;
-              if (this.repairItem?.bill_to_guid) {
-                const found = this.customer_companyList?.filter(x => x.guid === this.repairItem?.bill_to_guid)
-                if (found?.length) {
-                  bill_to?.setValue(found[0]);
-                }
-              } else if (this.customer_companyList?.length == 1) {
-                bill_to?.setValue(this.customer_companyList[0]);
-              }
-              if (!this.repairDS.canApprove(this.repairItem)) {
-                bill_to?.disable();
-              }
-            }
-          });
-          this.populateRepair(this.repairItem);
+          this.teamList = data;
         }
       });
     }
@@ -422,6 +452,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   populateRepair(repair: RepairItem) {
     this.isOwner = repair.owner_enable ?? false;
     repair.repair_part = this.filterDeleted(repair.repair_part)
+    this.updateData(repair.repair_part);
     this.repairForm?.patchValue({
       job_no: repair.job_no || this.sotItem?.job_no,
       guid: repair.guid,
@@ -430,159 +461,27 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       labour_cost_discount: repair.labour_cost_discount,
       material_cost_discount: repair.material_cost_discount
     });
-    this.updateData(repair.repair_part);
-    if (!this.repairDS.canApprove(this.repairItem)) {
-      this.repairForm?.get('job_no')?.disable();
-    }
   }
 
-  // getCustomerLabourPackage(customer_company_guid: string) {
-  //   const where = {
-  //     and: [
-  //       { customer_company_guid: { eq: customer_company_guid } }
-  //     ]
-  //   }
-  //   this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
-  //     if (data?.length > 0) {
-  //       this.packageLabourItem = data[0];
-  //     }
-  //   });
-  // }
+  getCustomerLabourPackage(customer_company_guid: string) {
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    }
+    this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data?.length > 0) {
+        this.packageLabourItem = data[0];
+      }
+    });
+  }
 
   getCustomer() {
     return this.sotItem?.storing_order?.customer_company;
   }
 
-  getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } },
-        {
-          or: [
-            { tariff_repair_guid: { in: tariff_repair_guid } }
-          ]
-        }
-      ]
-    };
-
-    return this.prDS.getCustomerPackageCost(where);
-  }
-
   displayCustomerCompanyName(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv === 'BRANCH' ? cc.type_cv : 'CUSTOMER'}` : '';
-  }
-
-  selectOwner($event: Event, row: RepairPartItem) {
-    this.stopPropagation($event);
-    row.owner = !(row.owner || false);
-    this.calculateCost();
-    // this.getCalculateCost();
-  }
-
-  editApproveDetails(event: Event, row: RepairPartItem, index: number) {
-    this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
-      data: {
-        item: row,
-        action: 'edit',
-        translatedLangText: this.translatedLangText,
-        index: index,
-        repairItem: this.repairItem
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const data = [...this.repList];
-        const updatedItem = new RepairPartItem({
-          ...result.item,
-        });
-        if (result.index >= 0) {
-          data[result.index] = updatedItem;
-          this.updateData(data);
-        } else {
-          this.updateData([...this.repList, result.item]);
-        }
-      }
-    });
-  }
-
-  onCancel(event: Event) {
-    this.preventDefault(event);
-    console.log(this.repairItem)
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: RepairItem) => new RepairGO(item));
-        console.log(reList);
-        this.updateJobProcessStatus(reList[0].guid, "NO_ACTION");
-        // this.repairDS.cancelRepair(reList).subscribe(result => {
-        //   this.handleCancelSuccess(result?.data?.cancelRepair)
-        // });
-      }
-    });
-  }
-
-  onRollback(event: Event) {
-    this.preventDefault(event);
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: any) => {
-          const RepairRequestInput = {
-            customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
-            estimate_no: item.estimate_no,
-            guid: item.guid,
-            remarks: item.remarks,
-            sot_guid: item.sot_guid
-          }
-          return RepairRequestInput
-        });
-        console.log(reList);
-        this.repairDS.rollbackRepairApproval(reList).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackRepairApproval)
-        });
-      }
-    });
+    return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv}` : '';
   }
 
   undoTempAction(row: any[], actionToBeRemove: string) {
@@ -619,63 +518,45 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     event.preventDefault();
   }
 
-  onApprove(event: Event) {
-    event.preventDefault();
-    const bill_to = this.repairForm!.get('bill_to');
-    bill_to?.setErrors(null);
-    if (bill_to?.value) {
-      let re: RepairItem = new RepairItem();
-      re.guid = this.repairItem?.guid;
-      re.sot_guid = this.repairItem?.sot_guid;
-      re.bill_to_guid = bill_to?.value?.guid;
-      re.status_cv = this.repairItem?.status_cv;
-      re.total_cost = Utility.convertNumber(this.repairForm?.get('net_cost')?.value, 2);
-
-      this.repList?.forEach((rep: RepairPartItem) => {
-        rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
-        rep.approve_qty = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0;
-        rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
-        rep.approve_cost = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
-      })
-
-      re.repair_part = this.repList?.map((rep: RepairPartItem) => {
-        return new RepairPartItem({
-          ...rep,
-          tariff_repair: undefined,
-          rp_damage_repair: undefined,
-          approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair),
-          approve_qty: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0,
-          approve_hour: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0,
-          approve_cost: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0
-        })
-      });
-      console.log(re)
-      this.repairDS.approveRepair(re).subscribe(result => {
-        console.log(result)
-        this.handleSaveSuccess(result?.data?.approveRepair);
-      });
-    } else {
-      bill_to?.setErrors({ required: true })
-      bill_to?.markAsTouched();
-      bill_to?.updateValueAndValidity();
-    }
-  }
-
   onFormSubmit() {
-    this.repairForm!.get('repList')?.setErrors(null);
-  }
+    const distinctJobOrders = this.repList
+      .filter((item, index, self) =>
+        index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+          (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+            t.job_order?.team?.description === item?.job_order?.team?.description))
+      )
+      .filter(item => item !== null && item !== undefined)
+      .map(item => item.job_order);
 
-  updateJobProcessStatus(repair_guid: string, process_status: string) {
-    var updateJobProcess: JobProcessRequest = new JobProcessRequest();
-    updateJobProcess.guid = repair_guid;
-    updateJobProcess.job_type_cv = "REPAIR";
-    updateJobProcess.process_status = process_status;
+    const finalJobOrder: any[] = [];
+    distinctJobOrders.forEach(jo => {
+      if (jo) {
+        const filteredParts = this.repList.filter(part =>
+          part.job_order?.guid === jo?.guid &&
+          (part.job_order?.team?.guid === jo?.team_guid ||
+            part.job_order?.team?.description === jo?.team?.description)
+        );
+        console.log(filteredParts)
+        const partList = filteredParts.map(part => part.guid);
+        const totalApproveHours = filteredParts.reduce((total, part) => total + (part.approve_hour || 0), 0);
 
-    this.joDS.updateJobProcessStatus(updateJobProcess).subscribe(result => {
-      console.log(result)
-      if (result.data.updateJobProcessStatus > 0) {
-        this.handleSaveSuccess(result.data.updateJobProcessStatus);
+        const joRequest = new JobOrderRequest();
+        joRequest.guid = jo.guid;
+        joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
+        joRequest.remarks = jo.remarks;
+        joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
+        joRequest.status_cv = jo.status_cv;
+        joRequest.team_guid = jo.team_guid;
+        joRequest.total_hour = jo.total_hour ?? totalApproveHours;
+        joRequest.working_hour = jo.working_hour ?? 0;
+        joRequest.part_guid = partList;
+        finalJobOrder.push(joRequest);
       }
+    });
+    console.log(finalJobOrder);
+    this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
+      console.log(result)
+      this.handleSaveSuccess(result?.data?.assignJobOrder);
     });
   }
 
@@ -690,38 +571,42 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       }));
 
       newData = this.repairPartDS.sortAndGroupByGroupName(newData);
-      // newData = [...this.sortREP(newData)];
 
       this.repList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
-      this.calculateCost();
-      // this.getCalculateCost();
+
+      this.repList.forEach(item => {
+        this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "REPAIR")
+      })
     }
+  }
+
+  handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
+    //this.stopEventTrigger(event);
+    let newSot: StoringOrderTankItem = new StoringOrderTankItem();
+    newSot.unit_type_guid = row.unit_type_guid;
+    newSot.last_cargo_guid = row.last_cargo_guid;
+    newSot.tariff_cleaning = row.tariff_cleaning;
+    // newSot.purpose_cleaning = row.purpose_cleaning;
+    // newSot.purpose_storage = row.purpose_storage;
+    // newSot.purpose_repair_cv = row.purpose_repair_cv;
+    // newSot.purpose_steam = row.purpose_steam;
+    // newSot.required_temp = row.required_temp;
+    newSot.clean_status_cv = row.clean_status_cv;
+    newSot.certificate_cv = row.certificate_cv;
+    newSot.so_guid = row.so_guid;
+    newSot.eta_dt = row.eta_dt;
+    newSot.etr_dt = row.etr_dt;
+    //this.addEstDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/approval']);
-    }
-  }
-
-  handleCancelSuccess(count: any) {
-    if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/approval']);
-    }
-  }
-
-  handleRollbackSuccess(count: any) {
-    if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/approval']);
+      this.router.navigate(['/admin/repair/job-order']);
     }
   }
 
@@ -742,6 +627,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+  canRollback(): boolean {
+    return this.repairItem?.status_cv === 'CANCELED' || this.repairItem?.status_cv === 'APPROVED';
   }
 
   getBadgeClass(status: string | undefined): string {
@@ -766,6 +655,14 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   getSoStatusDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.soTankStatusCvList);
+  }
+
+  getJobStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.jobStatusCvList);
+  }
+
+  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
   }
 
   displayTankPurpose(sot: StoringOrderTankItem) {
@@ -827,19 +724,17 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   displayDamageRepairCode(damageRepair: any[], filterCode: number): string {
-    return damageRepair?.filter((x: any) => x.code_type === filterCode && (!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'edit')).map(item => {
+    return damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
       return item.code_cv;
     }).join('/');
   }
 
   displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-    const concate = damageRepair?.filter((x: any) => x.code_type === filterCode && (!x.delete_dt && x.action !== 'cancel') || (x.delete_dt && x.action === 'edit')).map(item => {
+    return damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
       const codeCv = item.code_cv;
       const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
       return description ? description : '';
     }).join('\n');
-
-    return concate;
   }
 
   displayDateTime(input: number | undefined): string | undefined {
@@ -871,10 +766,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     return "";
   }
 
-  selectText(event: FocusEvent) {
-    Utility.selectText(event)
-  }
-
   parse2Decimal(figure: number | string | undefined) {
     if (typeof (figure) === 'string') {
       return parseFloat(figure).toFixed(2);
@@ -884,108 +775,239 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     return "";
   }
 
-  calculateCost() {
-    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt && (item.approve_part ?? true));
-    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (item.approve_part ?? true));
-    const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
-    const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
-
-    let total_hour = 0;
-    let total_labour_cost = 0;
-    let total_mat_cost = 0;
-    let total_cost = 0;
-    let discount_labour_cost = 0;
-    let discount_mat_cost = 0;
-    let net_cost = 0;
-
-    const totalOwner = this.repairDS.getTotal(ownerList);
-    const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-    const total_owner_mat_cost = totalOwner.total_mat_cost;
-    const total_owner_cost = this.repairDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    const discount_labour_owner_cost = this.repairDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    const discount_mat_owner_cost = this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    const net_owner_cost = this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
-
-    this.repairForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-    this.repairForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-    this.repairForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-    this.repairForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-    this.repairForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-    this.repairForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-    this.repairForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
-
-    total_hour += total_owner_hour;
-    total_labour_cost += total_owner_labour_cost;
-    total_mat_cost += total_owner_mat_cost;
-    total_cost += total_owner_cost;
-    discount_labour_cost += discount_labour_owner_cost;
-    discount_mat_cost += discount_mat_owner_cost;
-    net_cost += net_owner_cost;
-
-    const totalLessee = this.repairDS.getTotal(lesseeList);
-    const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-    const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    const total_lessee_cost = this.repairDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    const discount_labour_lessee_cost = this.repairDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    const discount_mat_lessee_cost = this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    const net_lessee_cost = this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
-
-    this.repairForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-    this.repairForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-    this.repairForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-    this.repairForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-    this.repairForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-    this.repairForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-    this.repairForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
-
-    total_hour += total_lessee_hour;
-    total_labour_cost += total_lessee_labour_cost;
-    total_mat_cost += total_lessee_mat_cost;
-    total_cost += total_lessee_cost;
-    discount_labour_cost += discount_labour_lessee_cost;
-    discount_mat_cost += discount_mat_lessee_cost;
-    net_cost += net_lessee_cost;
-
-    this.repairForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-    this.repairForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-    this.repairForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-    this.repairForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-    this.repairForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-    this.repairForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-    this.repairForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
-  }
-
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 
   canExport(): boolean {
-    return !!this.repair_guid;
+    return !!this.job_order_guid;
   }
 
   getLabourCost(): number | undefined {
     return this.repairItem?.labour_cost;
   }
 
-  toggleApprovePart(event: Event, rep: RepairPartItem) {
-    this.stopPropagation(event);
-    if (!this.repairDS.canRollback(this.repairItem)) return;
-    rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
-    this.calculateCost();
-    // this.getCalculateCost();
-  }
-
   displayApproveQty(rep: RepairPartItem) {
-    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0;
+    return (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
   }
 
   displayApproveHour(rep: RepairPartItem) {
-    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
+    return (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
   }
 
   displayApproveCost(rep: RepairPartItem) {
-    return this.parse2Decimal((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
+    return this.parse2Decimal((rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
+  }
+
+  toggleRep(row: RepairPartItem) {
+    if (this.repairPartDS.is4X(row.rp_damage_repair) || row.job_order_guid) return;
+    this.repSelection.toggle(row);
+  }
+
+  isStarted() {
+    return this.jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+  }
+
+  canStartJob() {
+    return this.joDS.canStartJob(this.jobOrderItem)
+  }
+
+  // canCompleteJob() {
+  //   return this.repairPartDS.canCompleteJob(this.repairItem?.repair_part) && this.joDS.canStartJob(this.jobOrderItem)
+  // }
+
+  canCompleteJob() {
+    return this.joDS.canCompleteJob(this.jobOrderItem) && !this.isStarted()
+  }
+
+  toggleJobState(event: Event, isStarted: boolean | undefined) {
+    this.preventDefault(event);  // Prevents the form submission
+    if (!isStarted) {
+      const param = [new TimeTableItem({ job_order_guid: this.jobOrderItem?.guid, job_order: new JobOrderGO({ ...this.jobOrderItem }) })];
+      console.log(param)
+      this.ttDS.startJobTimer(param).subscribe(result => {
+        console.log(result)
+      });
+    } else {
+      const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      if (found?.length) {
+        const newParam = new TimeTableItem(found[0]);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({ ...this.jobOrderItem });
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          console.log(result)
+        });
+      }
+    }
+  }
+
+  completeJobItem(event: Event, repair_part: RepairPartItem) {
+    this.preventDefault(event);  // Prevents the form submission
+    if (this.repairPartDS.isCompleted(repair_part)) return;
+    const newParam = new JobItemRequest({
+      guid: repair_part.guid,
+      job_order_guid: repair_part.job_order_guid,
+      job_type_cv: repair_part.job_order?.job_type_cv
+    });
+    const param = [newParam];
+    console.log(param)
+    this.joDS.completeJobItem(param).subscribe(result => {
+      console.log(result)
+    });
+  }
+
+  completeJob(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    const newParam = new UpdateJobOrderRequest({
+      guid: this.jobOrderItem?.guid,
+      remarks: this.jobOrderItem?.remarks,
+      start_dt: this.jobOrderItem?.start_dt,
+      complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+    });
+    const param = [newParam];
+    console.log(param)
+    this.joDS.completeJobOrder(param).subscribe(result => {
+      console.log(result)
+    });
+  }
+
+  viewTimeTableDetails(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '700px',
+      data: {
+        item: this.jobOrderItem?.time_table,
+        action: 'new',
+        translatedLangText: this.translatedLangText,
+        populateData: {},
+        index: -1
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => { });
+  }
+
+  private subscribeToJobOrderEvent(
+    subscribeFn: (guid: string) => Observable<any>,
+    job_order_guid: string
+  ) {
+    const subscription = subscribeFn(job_order_guid).subscribe({
+      next: (response) => {
+        console.log('Received data:', response);
+        const data = response.data
+
+        let jobData: any;
+        let eventType: any;
+
+        if (data?.onJobStopped) {
+          jobData = data.onJobStopped;
+          eventType = 'jobStopped';
+        } else if (data?.onJobStarted) {
+          jobData = data.onJobStarted;
+          eventType = 'jobStarted';
+        } else if (data?.onJobCompleted) {
+          jobData = data.onJobCompleted;
+          eventType = 'onJobCompleted';
+        }
+
+        if (jobData) {
+          debugger
+          if (this.jobOrderItem) {
+            this.jobOrderItem.status_cv = jobData.job_status;
+            this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
+            this.jobOrderItem.time_table ??= [];
+
+            const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
+            if (eventType === 'jobStarted') {
+              if (foundTimeTable?.length) {
+                foundTimeTable[0].start_time = jobData.start_time
+                console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+              } else {
+                const startNew = new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid });
+                this.jobOrderItem.time_table?.push(startNew)
+                console.log(`Updated JobOrder ${eventType} :`, startNew);
+              }
+            } else if (eventType === 'jobStopped') {
+              foundTimeTable[0].stop_time = jobData.stop_time;
+              console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+            }
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+      complete: () => {
+        console.log('Subscription completed');
+      }
+    });
+
+    this.jobOrderSubscriptions.push(subscription);
+  }
+
+  private subscribeToJobItemEvent(
+    subscribeFn: (guid: string, job_type: string) => Observable<any>,
+    item_guid: string,
+    job_type: string
+  ) {
+    const subscription = subscribeFn(item_guid, job_type).subscribe({
+      next: (response) => {
+        console.log('Received data:', response);
+        const data = response.data
+
+        let jobData: any;
+        let eventType: any;
+
+        // if (data?.onJobStopped) {
+        //   jobData = data.onJobStopped;
+        //   eventType = 'jobStopped';
+        // } else if (data?.onJobStarted) {
+        //   jobData = data.onJobStarted;
+        //   eventType = 'jobStarted';
+        // } else if (data?.onJobCompleted) {
+        //   jobData = data.onJobCompleted;
+        //   eventType = 'onJobCompleted';
+        // }
+
+        // if (jobData) {
+        //   if (this.jobOrderItem) {
+        //     this.jobOrderItem.status_cv = jobData.job_status;
+        //     this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
+        //     this.jobOrderItem.time_table ??= [];
+
+        //     const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
+        //     if (eventType === 'jobStarted') {
+        //       if (foundTimeTable?.length) {
+        //         foundTimeTable[0].start_time = jobData.start_time
+        //         console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+        //       } else {
+        //         const startNew = new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid});
+        //         this.jobOrderItem.time_table?.push(startNew)
+        //         console.log(`Updated JobOrder ${eventType} :`, startNew);
+        //       }
+        //     } else if (eventType === 'jobStopped') {
+        //       foundTimeTable[0].stop_time = jobData.stop_time;
+        //       console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+        //     }
+        //   }
+        // }
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+      complete: () => {
+        console.log('Subscription completed');
+      }
+    });
+
+    this.jobOrderSubscriptions.push(subscription);
   }
 }
