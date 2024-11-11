@@ -36,6 +36,9 @@ export class ResidueEstPartGO {
   public update_by?: string;
   public delete_dt?: number;
 
+  public approve_qty?: number;
+  
+  public approve_cost?: number;
   public guid?: string;
   public action?:string;
   public approve_part?: boolean;
@@ -61,9 +64,9 @@ export class ResidueEstPartGO {
     // this.hour = item.hour;
     // this.owner = item.owner || false;
     this.cost = item.cost;
-    // this.approve_qty = item.approve_qty;
-    // this.approve_hour = item.approve_hour;
-    // this.approve_cost = item.approve_cost;
+    this.approve_qty = item.approve_qty;
+    
+    this.approve_cost = item.approve_cost;
     this.approve_part = item.approve_part;
     // this.complete_dt = item.complete_dt;
     this.create_dt = item.create_dt;

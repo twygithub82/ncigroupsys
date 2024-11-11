@@ -213,11 +213,11 @@
               </div>
               }
               @if (!(sotDS.loadingSubject | async)) {
-              <!-- <div class="row">
+              <div class="row">
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                    <input matInput formControlName="desc" [matAutocomplete]="description" required="true">
+                    <input matInput formControlName="desc" [matAutocomplete]="description" readonly>
                     <mat-autocomplete #description="matAutocomplete" [displayWith]="displayResiduePart">
                       @for (cc of displayPackResidueList; track cc) {
                       <mat-option [value]="cc">
@@ -261,14 +261,9 @@
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addEstDetails($event)" [disabled]="!(groupNameCvList.length)">
+                    (click)="addEstDetails($event)"  [disabled]="!this.updateSelectedItem">
                     <mat-icon class="col-white">
-                      @if (!this.updateSelectedItem){
-                         add
-                      }
-                      @else {
                         edit
-                      }
                     </mat-icon>
                     {{translatedLangText.ESTIMATE_DETAILS}}
                   </button>
@@ -282,7 +277,7 @@
                     </button>
                   }
                 </div>
-              </div> -->
+              </div> 
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="deList" matSort
@@ -306,7 +301,7 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span
-                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
+                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.approve_qty}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="unit_price">
@@ -314,7 +309,7 @@
                         {{translatedLangText.UNIT_PRICE}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}}
+                        <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.approve_cost)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="cost">
@@ -322,7 +317,7 @@
                         {{translatedLangText.COST}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity*row.cost)}}
+                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.approve_qty*row.approve_cost)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="approve_part">
@@ -338,10 +333,10 @@
     
                         @if (row.approve_part === null || row.approve_part === undefined ||
                         IsApprovePart(row)){
-                        <mat-icon class="col-green font-bold" (click)="toggleApprovePart(row)">check</mat-icon>
+                        <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
                         }
                         @else {
-                        <mat-icon class="col-red font-bold" (click)="toggleApprovePart(row)">close</mat-icon>
+                        <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
                         }
                         
                       </mat-cell>
@@ -364,7 +359,7 @@
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
+                    <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"  (click)="editEstDetails($event, row, row.index)"
                     [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt&&row.edited}"
                     [style.cursor]="'pointer'"  
                       matRipple>
@@ -455,18 +450,18 @@
                     {{translatedLangText.NO_ACTION}}
                   </button>
                   }
-                  <!-- @if (canSave()) {
-                  <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)" class="m-l-5">
+                   @if (residueDS.canSave(residueItem!)) {
+                  <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-l-5" (click)="onSave($event)">
                     <mat-icon>
-                      @if (!(repairDS.loading$ | async)) {
+                      @if (!(residueDS.loading$ | async)) {
                       save
-                      } @else if ((repairDS.loading$ | async)) {
+                      } @else if ((residueDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
                     {{translatedLangText.SAVE_AND_SUBMIT}}
                   </button>
-                  } -->
+                  } 
                 </div>
               </div>
             </div>

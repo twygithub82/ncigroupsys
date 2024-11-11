@@ -178,7 +178,7 @@
           
           </div>
           </div>
-          <div class="row">
+          <!-- <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 text-center">
                   <mat-label style="text-decoration: underline; font-weight: bold;">{{translatedLangText.LAST_CARGO_CLEANING_QUOTATION }}</mat-label>
             </div>
@@ -187,7 +187,7 @@
             <div class="responsive_table">
               <table mat-table [dataSource]="igCleanItems" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                <!-- ID Column -->
+                
                 <ng-container matColumnDef="id">
                   <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -237,115 +237,15 @@
                 <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
               </table>
             </div>
-            <!-- No result -->
+            
             @if (!igCleanItems.length) {
             <mat-divider></mat-divider>
             <div class="no-results m-l-20 pt-3" [style.display]="igCleanItems.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
-          </div>
-          <!-- <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-              <div class="row">
-                <div class="col-xl-0_5 col-lg-0_5 col-md-1 col-sm-1 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">#</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                               1
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                               {{this.getDescription()}}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{translatedLangText.DEPOT_ESTIMATE}}</span>
-                    </div>
-                  </div>
-                    <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                        <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                            <div class="row">
-                              <div
-                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                                <div class="table-label cost-label">
-                                  <span></span><span>{{this.pcForm.get('depot_estimate_cost')!.value}}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                   
-                  
-                </div>
-                <div class="col-xl col-lg col-md col-sm m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{translatedLangText.CUSTOMER_APPROVAL}}</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span></span><span>{{this.pcForm.get('customer_approval_cost')!.value}}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div> -->
-          
+               
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
               <mat-label style="display: flex; justify-content: left;">{{translatedLangText.REMARKS_NOTIFICATION}}</mat-label>

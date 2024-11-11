@@ -595,7 +595,8 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   calculateNetCost(residue: ResidueItem): any {
     
 
-    const total = this.residueDS.getTotal(residue?.residue_part)
+    const total =  (residue.status_cv=="PENDING")?this.residueDS.getTotal(residue?.residue_part) : this.residueDS.getApprovedTotal(residue?.residue_part)
+
      
      return total.total_mat_cost.toFixed(2);
   }
