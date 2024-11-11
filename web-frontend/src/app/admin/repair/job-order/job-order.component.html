@@ -159,12 +159,9 @@
               </mat-tab>
               <mat-tab>
                 <ng-template mat-tab-label>
-                  <span [ngClass]="'m-r-10'">{{ translatedLangText.JOB_ORDER_STARTED_TAB_TITLE }}</span>
-                  <span matBadge="{{ jobOrderStartedCount }}" matBadgeOverlap="false"
-                    [matBadgeHidden]="jobOrderStartedCount === 0">
-                  </span>
+                  <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
                 </ng-template>
-                <app-job-order-started (countChange)="onCountChange($event)"></app-job-order-started>
+                <app-job-order-qc></app-job-order-qc>
               </mat-tab>
             </mat-tab-group>
           </div>

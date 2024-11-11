@@ -422,10 +422,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   populateRepair(repair: RepairItem) {
     this.isOwner = repair.owner_enable ?? false;
     repair.repair_part = this.filterDeleted(repair.repair_part)
-    this.updateData(repair.repair_part);
-    if (!this.repairDS.canApprove(this.repairItem)) {
-      this.repairForm?.get('job_no')?.disable();
-    }
     this.repairForm?.patchValue({
       job_no: repair.job_no || this.sotItem?.job_no,
       guid: repair.guid,
@@ -434,6 +430,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       labour_cost_discount: repair.labour_cost_discount,
       material_cost_discount: repair.material_cost_discount
     });
+    this.updateData(repair.repair_part);
+    if (!this.repairDS.canApprove(this.repairItem)) {
+      this.repairForm?.get('job_no')?.disable();
+    }
   }
 
   // getCustomerLabourPackage(customer_company_guid: string) {
@@ -971,7 +971,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   toggleApprovePart(event: Event, rep: RepairPartItem) {
     this.stopPropagation(event);
-    if (!this.repairDS.canApprove(this.repairItem)) return;
+    if (!this.repairDS.canRollback(this.repairItem)) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
     this.calculateCost();
     // this.getCalculateCost();

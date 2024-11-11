@@ -827,6 +827,28 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       );
   }
 
+  getRepairForQC(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RepairItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_REPAIR_FOR_JOB_ORDER,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
   addRepair(repair: any, customerCompany: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_REPAIR,
@@ -897,7 +919,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canApprove(re: RepairItem | undefined): boolean {
-    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED');
+    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS');
   }
 
   canCancel(re: RepairItem | undefined): boolean {

@@ -659,7 +659,9 @@
     "TIME-HISTORY":"Time History",
     "STARTED-JOB-ORDER":"Started Jobs",
     "APPROVE-INFO":"Approve Info",
-    "ALLOCATE-DATE":"Allocate Date"
+    "ALLOCATE-DATE":"Allocate Date",
+    "QC":"QC",
+    "DURATION": "Duration"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

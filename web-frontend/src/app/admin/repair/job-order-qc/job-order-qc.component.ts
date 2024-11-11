@@ -53,10 +53,10 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 
 @Component({
-  selector: 'app-job-order-task',
+  selector: 'app-job-order-qc',
   standalone: true,
-  templateUrl: './job-order-task.component.html',
-  styleUrl: './job-order-task.component.scss',
+  templateUrl: './job-order-qc.component.html',
+  styleUrl: './job-order-qc.component.scss',
   imports: [
     MatTooltipModule,
     MatButtonModule,
@@ -86,7 +86,7 @@ import { RepairPartItem } from 'app/data-sources/repair-part';
     MatButtonToggleModule
   ]
 })
-export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumnsJobOrder = [
     'tank_no',
     'customer',
@@ -201,7 +201,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   public loadData() {
-    this.onFilterJobOrder();
+    this.onFilter();
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
@@ -242,7 +242,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
-  onFilterJobOrder() {
+  onFilter() {
     const where: any = {
       job_type_cv: { eq: "REPAIR" }
     };
@@ -266,10 +266,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     // }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+    this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
-  performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder)
       .subscribe(data => {
         this.jobOrderList = data;
@@ -306,7 +306,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       }
     }
 
-    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -334,7 +334,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     //   startWith(''),
     //   debounceTime(300),
     //   tap(value => {
-    //     this.onFilterJobOrder();
+    //     this.onFilter();
     //   })
     // ).subscribe();
   }

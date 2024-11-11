@@ -222,7 +222,8 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     START_JOB: 'COMMON-FORM.START-JOB',
     STOP_JOB: 'COMMON-FORM.STOP-JOB',
     COMPLETE: 'COMMON-FORM.COMPLETE',
-    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO'
+    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
+    DURATION: 'COMMON-FORM.DURATION'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -639,7 +640,10 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
       case 'PENDING':
         return 'badge-solid-cyan';
       case 'CANCEL':
+      case 'NO_ACTION':
         return 'badge-solid-red';
+      case 'JOB_IN_PROGRESS':
+        return 'badge-solid-purple';
       default:
         return '';
     }
@@ -813,13 +817,13 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
   // }
 
   canCompleteJob() {
-    return this.joDS.canCompleteJob(this.jobOrderItem)
+    return this.joDS.canCompleteJob(this.jobOrderItem) && !this.isStarted()
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined) {
     this.preventDefault(event);  // Prevents the form submission
     if (!isStarted) {
-      const param = [new TimeTableItem({job_order_guid: this.jobOrderItem?.guid, job_order: new JobOrderGO({ ...this.jobOrderItem }) })];
+      const param = [new TimeTableItem({ job_order_guid: this.jobOrderItem?.guid, job_order: new JobOrderGO({ ...this.jobOrderItem }) })];
       console.log(param)
       this.ttDS.startJobTimer(param).subscribe(result => {
         console.log(result)
@@ -899,7 +903,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
       next: (response) => {
         console.log('Received data:', response);
         const data = response.data
-        
+
         let jobData: any;
         let eventType: any;
 
@@ -913,8 +917,9 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
           jobData = data.onJobCompleted;
           eventType = 'onJobCompleted';
         }
-        
+
         if (jobData) {
+          debugger
           if (this.jobOrderItem) {
             this.jobOrderItem.status_cv = jobData.job_status;
             this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
@@ -926,7 +931,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
                 foundTimeTable[0].start_time = jobData.start_time
                 console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
               } else {
-                const startNew = new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid});
+                const startNew = new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid });
                 this.jobOrderItem.time_table?.push(startNew)
                 console.log(`Updated JobOrder ${eventType} :`, startNew);
               }
@@ -957,7 +962,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
       next: (response) => {
         console.log('Received data:', response);
         const data = response.data
-        
+
         let jobData: any;
         let eventType: any;
 
@@ -971,7 +976,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
         //   jobData = data.onJobCompleted;
         //   eventType = 'onJobCompleted';
         // }
-        
+
         // if (jobData) {
         //   if (this.jobOrderItem) {
         //     this.jobOrderItem.status_cv = jobData.job_status;

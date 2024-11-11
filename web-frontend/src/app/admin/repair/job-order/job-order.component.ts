@@ -50,7 +50,7 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { JobOrderStartedComponent } from "../../job-order/job-order-started/job-order-started.component";
+import { JobOrderQCComponent } from "../../repair/job-order-qc/job-order-qc.component";
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-task.component";
@@ -87,7 +87,7 @@ import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-tas
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    JobOrderStartedComponent,
+    JobOrderQCComponent,
     MatBadgeModule,
     MatButtonToggleModule,
     JobOrderTaskComponent
@@ -153,7 +153,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
-    JOB_ORDER_STARTED_TAB_TITLE: 'COMMON-FORM.STARTED-JOB-ORDER',
+    QC: 'COMMON-FORM.QC',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE'
   }

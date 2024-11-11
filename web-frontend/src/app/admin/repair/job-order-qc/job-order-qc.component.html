@@ -1,4 +1,4 @@
-<form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()" #formDirective="ngForm">
+<form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilter()" #formDirective="ngForm">
   <div class="row">
     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
       <mat-form-field class="example-full-width" appearance="fill">
@@ -42,7 +42,7 @@
           [class.selected-toggle-btn]="isSelectedJobStatus(codeValue.code_val!)">{{codeValue.description}}</mat-button-toggle>
         }
       </mat-button-toggle-group> -->
-      <button mat-mini-fab color="primary" class="mt-4" (click)="onFilterJobOrder()">
+      <button mat-mini-fab color="primary" class="mt-4" (click)="onFilter()">
         <mat-icon>search</mat-icon>
       </button>
     </div>
