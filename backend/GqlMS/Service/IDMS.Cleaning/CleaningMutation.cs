@@ -8,6 +8,7 @@ using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
 using IDMS.Models.Inventory;
 using IDMS.Service.GqlTypes;
+using IDMS.Cleaning.GqlTypes.LocalModel;
 
 namespace IDMS.Cleaning.GqlTypes
 {
@@ -132,6 +133,46 @@ namespace IDMS.Cleaning.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
             return retval;
+        }
+
+        public async Task<int> AbortCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, CleaningJobOrder cleaningJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (cleaningJobOrder == null)
+                    throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
+
+                var abortCleaning = new cleaning() { guid = cleaningJobOrder.guid };
+                context.cleaning.Attach(abortCleaning);
+
+                abortCleaning.update_by = user;
+                abortCleaning.update_dt = currentDateTime;
+                abortCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
+                abortCleaning.remarks = cleaningJobOrder.remarks;
+
+                foreach (var item in cleaningJobOrder.job_order)
+                {
+                    var job_order = new job_order() { guid = item.guid };
+                    context.job_order.Attach(job_order);
+                    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                    {
+                        job_order.status_cv = CurrentServiceStatus.CANCELED;
+                        job_order.update_by = user;
+                        job_order.update_dt = currentDateTime;
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
         }
 
     }
