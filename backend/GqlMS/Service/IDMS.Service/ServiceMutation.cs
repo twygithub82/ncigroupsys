@@ -172,14 +172,14 @@ namespace IDMS.Service.GqlTypes
                     if (!string.IsNullOrEmpty(item.remarks))
                         jobOrder.remarks = item.remarks;
 
-                    if (CurrentServiceStatus.QC.EqualsIgnore(item?.status_cv ?? ""))
-                    {
-                        jobOrder.qc_dt = item.qc_dt.HasValue ? item.qc_dt : currentDateTime;
-                        jobOrder.qc_by = string.IsNullOrEmpty(item.qc_by) ? user : item.qc_by;
-                    }
+                    //if (CurrentServiceStatus.QC.EqualsIgnore(item?.status_cv ?? ""))
+                    //{
+                    //    jobOrder.qc_dt = item.qc_dt.HasValue ? item.qc_dt : currentDateTime;
+                    //    jobOrder.qc_by = string.IsNullOrEmpty(item.qc_by) ? user : item.qc_by;
+                    //}
 
-                    if (!string.IsNullOrEmpty(item.status_cv))
-                        jobOrder.status_cv = item.status_cv;
+                    //if (!string.IsNullOrEmpty(item.status_cv))
+                    //    jobOrder.status_cv = item.status_cv;
 
                     jobOrder.update_dt = currentDateTime;
                     jobOrder.update_by = user;
@@ -225,6 +225,7 @@ namespace IDMS.Service.GqlTypes
                     var jobNotification = new JobNotification();
                     jobNotification.job_order_guid = item.guid;
                     jobNotification.complete_dt = currentDateTime;
+                    jobNotification.job_status = JobStatus.COMPLETED;
                     notificationList.Add(jobNotification);
                 }
                 var res = await context.SaveChangesAsync();
@@ -556,8 +557,6 @@ namespace IDMS.Service.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
-
 
         private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
                                                 string jobType, string jobOrderGuid, List<string?>? partGuid)

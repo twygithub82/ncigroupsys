@@ -27,8 +27,8 @@ namespace IDMS.Service.GqlTypes.LocalModel
         public string? remarks { get; set; }
         public long? start_dt { get; set; }
         public long? complete_dt { get; set; }
-        public long? qc_dt { get; set; }
-        public string? qc_by {  get; set; }
-        public string? status_cv { get; set; }
+        //public long? qc_dt { get; set; }
+        //public string? qc_by {  get; set; }
+        //public string? status_cv { get; set; }
     }
 }
