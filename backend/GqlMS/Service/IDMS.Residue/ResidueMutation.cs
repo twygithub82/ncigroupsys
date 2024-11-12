@@ -150,11 +150,13 @@ namespace IDMS.Residue.GqlTypes
                     approveResidue.bill_to_guid = residue.bill_to_guid;
                     approveResidue.update_by = user;
                     approveResidue.update_dt = currentDateTime;
-                    approveResidue.status_cv = CurrentServiceStatus.APPROVED;
                     approveResidue.job_no = residue.job_no;
                     approveResidue.remarks = residue.remarks;
                     approveResidue.approve_by = user;
                     approveResidue.approve_dt = currentDateTime;
+
+                    if (CurrentServiceStatus.PENDING.EqualsIgnore(residue.status_cv))
+                        approveResidue.status_cv = CurrentServiceStatus.APPROVED;
 
                     if (residue.residue_part != null)
                     {

@@ -148,7 +148,7 @@ namespace IDMS.Service.GqlTypes
         // }
 
         public async Task<int> UpdateJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, UpdateJobOrderRequest jobOrderRequest)
+            [Service] IConfiguration config, List<UpdateJobOrderRequest> jobOrderRequest)
         {
             try
             {
@@ -158,14 +158,34 @@ namespace IDMS.Service.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var jobOrder = new job_order() { guid = jobOrderRequest.guid };
-                context.Attach(jobOrder);
+                foreach (var item in jobOrderRequest)
+                {
+                    var jobOrder = new job_order() { guid = item.guid };
+                    context.Attach(jobOrder);
 
-                jobOrder.start_dt = jobOrderRequest.start_dt;
-                jobOrder.complete_dt = jobOrderRequest.complete_dt;
-                jobOrder.remarks = jobOrderRequest.remarks;
-                jobOrder.update_dt = currentDateTime;
-                jobOrder.update_by = user;
+                    if (item.start_dt.HasValue)
+                        jobOrder.start_dt = item.start_dt;
+
+                    if (item.complete_dt.HasValue)
+                        jobOrder.complete_dt = item.complete_dt;
+
+                    if (!string.IsNullOrEmpty(item.remarks))
+                        jobOrder.remarks = item.remarks;
+
+                    if (CurrentServiceStatus.QC.EqualsIgnore(item?.status_cv ?? ""))
+                    {
+                        jobOrder.qc_dt = item.qc_dt.HasValue ? item.qc_dt : currentDateTime;
+                        jobOrder.qc_by = string.IsNullOrEmpty(item.qc_by) ? user : item.qc_by;
+                    }
+
+                    if (!string.IsNullOrEmpty(item.status_cv))
+                        jobOrder.status_cv = item.status_cv;
+
+                    jobOrder.update_dt = currentDateTime;
+                    jobOrder.update_by = user;
+                }
+
+
 
                 var res = await context.SaveChangesAsync();
                 //TODO
@@ -371,7 +391,7 @@ namespace IDMS.Service.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 IList<time_table> newTimeTableList = new List<time_table>();
-                IList<JobNotification> notificationList = new List<JobNotification>();  
+                IList<JobNotification> notificationList = new List<JobNotification>();
 
                 foreach (var item in timeTable)
                 {

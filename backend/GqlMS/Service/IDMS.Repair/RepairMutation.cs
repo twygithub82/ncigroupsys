@@ -101,9 +101,11 @@ namespace IDMS.Repair.GqlTypes
 
                     appvRepair.total_cost = repair.total_cost;
                     appvRepair.bill_to_guid = repair.bill_to_guid;
-                    appvRepair.status_cv = CurrentServiceStatus.APPROVED;
                     appvRepair.remarks = repair.remarks;
 
+                    if (CurrentServiceStatus.PENDING.EqualsIgnore(repair.status_cv))
+                        appvRepair.status_cv = CurrentServiceStatus.APPROVED;
+      
                     if (repair.repair_part != null)
                     {
                         foreach (var item in repair.repair_part)
