@@ -8,6 +8,7 @@ using CommonUtil.Core.Service;
 using IDMS.Service.GqlTypes;
 using IDMS.Residue.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
+using IDMS.Models.Inventory;
 
 
 namespace IDMS.Residue.GqlTypes
@@ -152,11 +153,15 @@ namespace IDMS.Residue.GqlTypes
                     approveResidue.update_dt = currentDateTime;
                     approveResidue.job_no = residue.job_no;
                     approveResidue.remarks = residue.remarks;
-                    approveResidue.approve_by = user;
-                    approveResidue.approve_dt = currentDateTime;
 
+                    //Only change when first time approve
                     if (CurrentServiceStatus.PENDING.EqualsIgnore(residue.status_cv))
+                    {
                         approveResidue.status_cv = CurrentServiceStatus.APPROVED;
+                        approveResidue.approve_by = user;
+                        approveResidue.approve_dt = currentDateTime;
+                    }
+
 
                     if (residue.residue_part != null)
                     {
@@ -217,7 +222,7 @@ namespace IDMS.Residue.GqlTypes
 
                         foreach (var part in residuePart)
                         {
-                            //var estPart = new repair_est_part() { guid = part.guid };
+                            //var estPart = new repair_est_part() { guid = part.guid }; 
                             //context.repair_est_part.Attach(estPart);
                             part.update_by = user;
                             part.update_dt = currentDateTime;
@@ -236,7 +241,7 @@ namespace IDMS.Residue.GqlTypes
         }
 
         public async Task<int> RollbackResidueApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-         [Service] IConfiguration config, List<ResidueRequest> residue)
+            [Service] IConfiguration config, List<ResidueRequest> residue)
         {
             try
             {
@@ -283,7 +288,7 @@ namespace IDMS.Residue.GqlTypes
         }
 
         public async Task<int> RollbackResidueStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-                [Service] IConfiguration config, ResidueRequest residue)
+             [Service] IConfiguration config, ResidueRequest residue)
         {
             try
             {
@@ -311,7 +316,7 @@ namespace IDMS.Residue.GqlTypes
         }
 
         public async Task<int> CancelResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        [Service] IConfiguration config, List<residue> residue)
+            [Service] IConfiguration config, List<residue> residue)
         {
             try
             {
@@ -334,6 +339,63 @@ namespace IDMS.Residue.GqlTypes
 
                 var res = await context.SaveChangesAsync();
                 return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> CompleteQCResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, ResJobOrderRequest resJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (resJobOrder == null)
+                    throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+
+                using var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    //Repair handling
+                    var completedResidue = new residue() { guid = resJobOrder.guid };
+                    context.residue.Attach(completedResidue);
+                    completedResidue.update_by = user;
+                    completedResidue.update_dt = currentDateTime;
+                    completedResidue.status_cv = CurrentServiceStatus.QC;
+                    completedResidue.remarks = resJobOrder.remarks;
+
+                    //Tank handling
+                    if (string.IsNullOrEmpty(resJobOrder.sot_guid))
+                        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                    var sot = new storing_order_tank() { guid = resJobOrder.sot_guid };
+                    context.storing_order_tank.Attach(sot);
+                    sot.tank_status_cv = "AV";
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;
+
+
+                    //job_orders handling
+                    var guids = string.Join(",", resJobOrder.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}' update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}' WHERE guid IN ({guids})";
+                    context.Database.ExecuteSqlRaw(sql);
+
+                    var res = await context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return res;
+                }
+                catch (Exception ex)
+                {
+                    // Rollback in case of an error
+                    transaction.Rollback();
+                    throw;
+                }
             }
             catch (Exception ex)
             {
