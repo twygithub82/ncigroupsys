@@ -165,6 +165,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -226,12 +227,13 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       change_request_cv: [''],
       eir_no: [''],
       repair_job_no: [''],
-      repair_type_cv: [''],
+      purpose: [''],
       est_dt_start: [''],
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: ['']
+      est_status_cv: [''],
+      estimate_no: ['']
     });
   }
 
@@ -341,7 +343,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -352,6 +355,9 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
     });
   }
 
@@ -403,23 +409,11 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     const where: any = {
     };
 
-    if (this.searchForm!.value['so_no']) {
-      where.so_no = { contains: this.searchForm!.value['so_no'] };
-    }
-
-    if (this.searchForm!.value['so_status']) {
-      where.status_cv = { contains: this.searchForm!.value['so_status'] };
-    }
-
-    if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-    }
-
-    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('job_no')?.value || (this.searchForm!.get('eta_dt_start')?.value && this.searchForm!.get('eta_dt_end')?.value) || this.searchForm!.get('purpose')?.value) {
+    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('job_no')?.value || (this.searchForm!.get('eta_dt_start')?.value && this.searchForm!.get('eta_dt_end')?.value) || this.searchForm!.get('purpose')?.value || this.searchForm!.get('customer_code')?.value) {
       const sotSome: any = {};
 
-      if (this.searchForm!.value['last_cargo']) {
-        sotSome.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
+      if (this.searchForm!.get('last_cargo')?.value) {
+        sotSome.last_cargo = { contains: this.searchForm!.get('last_cargo')?.value.code };
       }
 
       if (this.searchForm!.get('tank_no')?.value) {
@@ -457,6 +451,14 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
           sotSome.purpose_repair_cv = { in: repairPurposes };
         }
       }
+
+      if (this.searchForm!.get('customer_code')?.value) {
+        const soSome: any = {};
+        soSome.customer_company = { code: { contains: this.searchForm!.get('customer_code')?.value.code } };
+
+        sotSome.storing_order = soSome;
+      }
+
       where.storing_order_tank = sotSome;
     }
 
@@ -654,5 +656,9 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+  getProcessStatusDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
   }
 }

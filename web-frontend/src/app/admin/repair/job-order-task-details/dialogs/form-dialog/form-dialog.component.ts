@@ -61,14 +61,11 @@ export interface DialogData {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
     MatTableModule,
     MatDividerModule,
   ],
@@ -77,7 +74,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     'start_time',
     'stop_time',
-    'time_taken'
+    'duration'
   ];
 
   action: string;

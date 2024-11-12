@@ -22,8 +22,36 @@
                         <input matInput formControlName="filterRepair">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 pt-3">
-                      <button mat-mini-fab color="primary" (click)="onFilterRepair()">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+                        <input matInput formControlName="customer" [formControl]="customerCodeControl"
+                          [matAutocomplete]="customerCode">
+                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                          @for (cc of customer_companyList; track cc) {
+                          <mat-option [value]="cc">
+                            {{ccDS.displayName(cc)}}
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.STATUS}}</mat-label>
+                        <mat-select multiple formControlName="status_cv">
+                          @for (codeValue of processStatusCvList; track codeValue) {
+                          @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                          <mat-option [value]="codeValue.code_val">
+                            {{codeValue.description}}
+                          </mat-option>
+                          }
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                      <button mat-mini-fab color="primary" class="mt-4" (click)="onFilterRepair()">
                         <mat-icon>search</mat-icon>
                       </button>
                     </div>
@@ -131,12 +159,9 @@
               </mat-tab>
               <mat-tab>
                 <ng-template mat-tab-label>
-                  <span [ngClass]="'m-r-10'">{{ translatedLangText.JOB_ORDER_STARTED_TAB_TITLE }}</span>
-                  <span matBadge="{{ jobOrderStartedCount }}" matBadgeOverlap="false"
-                    [matBadgeHidden]="jobOrderStartedCount === 0">
-                  </span>
+                  <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
                 </ng-template>
-                <app-job-order-started (countChange)="onCountChange($event)"></app-job-order-started>
+                <app-job-order-qc></app-job-order-qc>
               </mat-tab>
             </mat-tab-group>
           </div>

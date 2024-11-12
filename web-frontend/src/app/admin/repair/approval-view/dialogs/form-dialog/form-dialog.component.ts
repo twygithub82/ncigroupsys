@@ -22,11 +22,12 @@ import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { RepairPartItem } from 'app/data-sources/repair-part';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { Direction } from '@angular/cdk/bidi';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
 
 
 export interface DialogData {
@@ -34,6 +35,7 @@ export interface DialogData {
   item?: RepairPartItem;
   translatedLangText?: any;
   populateData?: any;
+  repairItem?: RepairItem;
   index: number;
 }
 
@@ -55,14 +57,11 @@ export interface DialogData {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -71,15 +70,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dialogTitle: string;
 
   repairPartForm: UntypedFormGroup;
+  repairItem?: RepairItem;
   repairPart: any;
   subgroupNameCvList?: CodeValuesItem[];
 
-  tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
   repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
+  repairDS: RepairDS;
+  repairPartDS: RepairPartDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -90,15 +91,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     super();
     // Set the defaults
-    this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
     this.repDrDS = new RPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
+    this.repairDS = new RepairDS(this.apollo);
+    this.repairPartDS = new RepairPartDS(this.apollo);
     this.action = data.action!;
     this.dialogTitle = data.translatedLangText.APPROVE_INFO;
     this.repairPart = data.item ? data.item : new RepairPartItem();
+    this.repairItem = data.repairItem;
     this.index = data.index;
     this.repairPartForm = this.createForm();
     this.initializeValueChange();
@@ -107,17 +110,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      approve_qty: [''],
-      approve_hour: [''],
-      approve_cost: ['']
+      approve_qty: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}],
+      approve_hour: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}],
+      approve_cost: [{value: '', disabled: !this.repairDS.canApprove(this.repairItem) || this.repairPartDS.is4X(this.repairPart?.rp_damage_repair)}]
     });
   }
 
   patchForm() {
     this.repairPartForm.patchValue({
-      approve_qty: this.repairPart.approve_qty,
-      approve_hour: this.repairPart.approve_hour,
-      approve_cost: this.repairPart.approve_cost
+      approve_qty: this.repairDS.canApprove(this.repairItem) ? (this.repairPart.approve_qty ?? this.repairPart.quantity) : this.repairPart.approve_qty,
+      approve_hour: this.repairDS.canApprove(this.repairItem) ? (this.repairPart.approve_hour ?? this.repairPart.hour) : this.repairPart.approve_hour,
+      approve_cost: this.repairDS.canApprove(this.repairItem) ? (this.repairPart.approve_cost ?? this.repairPart.material_cost) : this.repairPart.approve_cost
     });
   }
 

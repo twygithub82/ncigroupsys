@@ -252,7 +252,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
   billingBranchList:CustomerCompanyItem[]=[];
   packResidueList:PackageResidueItem[]=[];
   displayPackResidueList:PackageResidueItem[]=[];
-  deList:ResiduePartItem[]=[];
+  deList:any[]=[];
   
 
   customerCodeControl = new UntypedFormControl();
@@ -351,7 +351,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
         var desc_value = this.residueEstForm?.get("desc")?.value;
         this.displayPackResidueList= this.packResidueList.filter(data=> data.description && data.description.includes(desc_value));
         if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
-        else if(typeof desc_value==='object')
+        else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
         {
           this.residueEstForm?.patchValue({
 
@@ -626,6 +626,8 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     if (newData?.length) {
       this.deList = newData.map((row, index) => ({
         ...row,
+        approve_cost: (this.residueItem?.status_cv==='PENDING')?row.cost:(row.approve_cost?row.approve_cost:row.cost),
+        approve_qty:(this.residueItem?.status_cv==='PENDING')?row.quantity:(row.approve_qty?row.approve_qty:row.quantity),
         index: index
       }));
       
@@ -859,95 +861,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     return "";
   }
 
-  // calculateCost() {
-  //   const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
-  //   const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
-  //   const labourDiscount = this.residueEstForm?.get('labour_cost_discount')?.value;
-  //   const matDiscount = this.residueEstForm?.get('material_cost_discount')?.value;
-
-  //   let total_hour = 0;
-  //   let total_labour_cost = 0;
-  //   let total_mat_cost = 0;
-  //   let total_cost = 0;
-  //   let discount_labour_cost = 0;
-  //   let discount_mat_cost = 0;
-  //   let net_cost = 0;
-
-  //   const totalOwner = this.repairEstDS.getTotal(ownerList);
-  //   const total_owner_hour = totalOwner.hour;
-  //   const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-  //   const total_owner_mat_cost = totalOwner.total_mat_cost;
-  //   const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-  //   const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-  //   const discount_mat_owner_cost = this.repairEstDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-  //   const net_owner_cost = this.repairEstDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
-
-  //   this.residueEstForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-  //   this.residueEstForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-  //   this.residueEstForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-  //   this.residueEstForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-  //   this.residueEstForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-  //   this.residueEstForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-  //   this.residueEstForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
-
-  //   total_hour += total_owner_hour;
-  //   total_labour_cost += total_owner_labour_cost;
-  //   total_mat_cost += total_owner_mat_cost;
-  //   total_cost += total_owner_cost;
-  //   discount_labour_cost += discount_labour_owner_cost;
-  //   discount_mat_cost += discount_mat_owner_cost;
-  //   net_cost += net_owner_cost;
-
-  //   const totalLessee = this.repairEstDS.getTotal(lesseeList);
-  //   const total_lessee_hour = totalLessee.hour;
-  //   const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-  //   const total_lessee_mat_cost = totalLessee.total_mat_cost;
-  //   const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-  //   const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-  //   const discount_mat_lessee_cost = this.repairEstDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-  //   const net_lessee_cost = this.repairEstDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
-
-  //   this.residueEstForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-  //   this.residueEstForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-  //   this.residueEstForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-  //   this.residueEstForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-  //   this.residueEstForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-  //   this.residueEstForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-  //   this.residueEstForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
-
-  //   total_hour += total_lessee_hour;
-  //   total_labour_cost += total_lessee_labour_cost;
-  //   total_mat_cost += total_lessee_mat_cost;
-  //   total_cost += total_lessee_cost;
-  //   discount_labour_cost += discount_labour_lessee_cost;
-  //   discount_mat_cost += discount_mat_lessee_cost;
-  //   net_cost += net_lessee_cost;
-
-  //   this.residueEstForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-  //   this.residueEstForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-  //   this.residueEstForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-  //   this.residueEstForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-  //   this.residueEstForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-  //   this.residueEstForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-  //   this.residueEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
-  // }
-
-  // filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
-  //   return (resultList || [])
-  //     .filter((row: MasterTemplateItem) =>
-  //       !row.delete_dt && (
-  //         row.type_cv === 'GENERAL' || (row.type_cv === 'EXCLUSIVE' &&
-  //           row.template_est_customer?.some(customer =>
-  //             customer.customer_company_guid === customer_company_guid && !customer.delete_dt
-  //           ))
-  //       )
-  //     );
-  // }
-
-  // filterDeleted(resultList: any[] | undefined): any {
-  //   return (resultList || []).filter((row: any) => !row.delete_dt);
-  // }
-
+  
   canExport(): boolean {
     return !!this.repair_guid;
   }
@@ -1106,7 +1020,8 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     return rep.approve_part;
   }
 
-  toggleApprovePart(rep: ResiduePartItem) {
+  toggleApprovePart(event:Event,rep: ResiduePartItem) {
+    event.stopPropagation(); // Prevents click event from bubbling up
     if (!this.residueDS.canApprove(this.residueItem!)) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
   }
@@ -1175,9 +1090,19 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
           return RepairRequestInput
         });
         console.log(reList);
-        this.residueDS.rollbackResidueStatus(reList[0]).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackResidueStatus)
-        });
+        if(this.residueItem?.status_cv=="PENDING")
+        {
+      
+          this.residueDS.rollbackResidue(reList[0]).subscribe(result => {
+            this.handleRollbackSuccess(result?.data?.rollbackResidue)
+          });
+        }
+        else
+        {
+          this.residueDS.rollbackResidueApproval(reList[0]).subscribe(result => {
+            this.handleRollbackSuccess(result?.data?.rollbackResidueApproval)
+          });
+        }
       }
     });
   }
@@ -1214,7 +1139,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
       re.guid = this.residueItem?.guid;
       re.sot_guid = this.residueItem?.sot_guid;
       re.bill_to_guid = bill_to;
-
+      re.status_cv=this.residueItem?.status_cv;
       // this.deList?.forEach((rep: ResiduePartItem) => {
       //   rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
       //   rep.approve_qty = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
@@ -1227,8 +1152,11 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
           ...rep,
           tariff_residue: undefined,
           approve_part: rep.approve_part,
+          // approve_qty:rep.approve_qty,
+          // approve_cost:rep.approve_cost
         })
       });
+      
       console.log(re)
       this.residueDS.approveResidue(re).subscribe(result => {
         console.log(result)
@@ -1239,5 +1167,176 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
       bill_to?.markAsTouched();
       bill_to?.updateValueAndValidity();
     }
+  }
+
+  onSave(event: Event) {
+    event.preventDefault();
+    const bill_to =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
+   
+    if (bill_to) {
+      let re: ResidueItem = new ResidueItem();
+      re.guid = this.residueItem?.guid;
+      re.sot_guid = this.residueItem?.sot_guid;
+      re.bill_to_guid = bill_to;
+      re.status_cv=this.residueItem?.status_cv;
+      
+      // this.deList?.forEach((rep: ResiduePartItem) => {
+      //   rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
+      //   rep.approve_qty = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
+      //   rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
+      //   rep.approve_cost = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
+      // })
+
+      re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
+        return new ResiduePartItem({
+          ...rep,
+          tariff_residue: undefined,
+          approve_part: rep.approve_part,
+          // approve_qty:rep.approve_qty,
+          // approve_cost:rep.approve_cost
+        })
+      });
+      
+      console.log(re)
+      this.residueDS.updateResidue(re).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result?.data?.updateResidue);
+      });
+    } else {
+      bill_to?.setErrors({ required: true })
+      bill_to?.markAsTouched();
+      bill_to?.updateValueAndValidity();
+    }
+  }
+
+  addEstDetails(event: Event) {
+    
+    this.preventDefault(event);  // Prevents the form submission
+    
+    var descObject :PackageResidueItem;
+
+    if(typeof this.residueEstForm?.get("desc")?.value==="object")
+    {
+      descObject = new PackageResidueItem(this.residueEstForm?.get("desc")?.value);
+      descObject.description = descObject.tariff_residue?.description;
+    }
+    else
+    {
+      descObject = new PackageResidueItem();
+      descObject.description= this.residueEstForm?.get("desc")?.value;
+      descObject.cost= Number(this.residueEstForm?.get("unit_price")?.value);
+    }
+
+
+    this.checkCompulsoryEst(["desc","qty","unit_price"]);
+    var index :number =-1;
+    if(this.updateSelectedItem)
+    {
+      index = this.updateSelectedItem.index;
+    }
+    this.checkDuplicationEst(descObject,index);
+    if(!this.residueEstForm?.valid)return;
+    
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    
+    let residuePartItem = new ResiduePartItem();
+    if(index==-1)
+    {
+      residuePartItem.action="NEW";
+    }
+    else
+    {
+      residuePartItem = this.deList[index];
+      residuePartItem.action = residuePartItem.guid?"EDIT":"NEW";
+    }
+
+    residuePartItem.approve_cost= Number(this.residueEstForm?.get("unit_price")?.value);
+    residuePartItem.description= descObject.description;
+    residuePartItem.approve_qty=this.residueEstForm?.get("qty")?.value;
+    residuePartItem.residue_guid = this.historyState.selectedResidue?.guid;
+    residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
+
+    if(index===-1)
+    {
+      var newData =[...this.deList,residuePartItem];
+      this.updateData(newData);
+    }
+  this.resetSelectedItemForUpdating();
+  }
+
+  checkDuplicationEst(item:PackageResidueItem ,index:number=-1)
+  {
+    var existItems = this.deList.filter(data=>data.description===item?.description)
+    if(existItems.length>0)
+    {
+      if(index==-1 || index!=existItems[0].index)
+      {
+        this.residueEstForm?.get("desc")?.setErrors({ duplicated: true });
+      }
+    }
+  }
+
+  
+  CancelEditEstDetails(event: Event)
+  {
+    this.preventDefault(event);  // Prevents the form submission
+    this.resetSelectedItemForUpdating();
+    // this.updateSelectedItem=undefined;
+    // this.resetValue();
+  }
+
+  editEstDetails(event: Event, row: ResiduePartItem, index: number) {
+    this.preventDefault(event);  // Prevents the form submission
+
+    if( this.residueItem?.status_cv=='CANCELED') return;
+
+    var itm =this.deList[index];
+    var IsEditedRow = itm.edited;
+  
+
+    this.resetSelectedItemForUpdating();
+
+    if(IsEditedRow) return;
+
+    
+    this.updateSelectedItem ={
+      item:this.deList[index],
+      index:index,
+      action:"update",
+      
+    }
+    this.updateSelectedItem.item.edited=true;
+
+    var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
+    var descValue:any;
+    if(descValues.length>0)
+    {
+      descValue = descValues[0];
+    }
+    else
+    {
+      descValue = new PackageResidueItem();
+      descValue.guid=row.guid;
+      descValue.description= row.description;
+      descValue.tariff_residue= new TariffResidueItem();
+      descValue.tariff_residue.description= row.description;
+      descValue.cost= Number(row.cost);
+      
+    }
+    this.residueEstForm?.patchValue({
+       desc:descValue,
+       qty:(this.residueItem?.status_cv==='PENDING')? row.quantity:row.approve_qty,
+       unit_price:(this.residueItem?.status_cv==='PENDING')?row.cost?.toFixed(2):row.approve_cost?.toFixed(2)
+    });
+
+   
+    
   }
 }

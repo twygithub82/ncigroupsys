@@ -331,7 +331,7 @@
                         [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-blue font-bold': true}"
                         [style.cursor]="'pointer'" matRipple>
                       </mat-row>
-                      <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" (click)="completeJobItem($event, row)"
+                      <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
                         [ngClass]="" [style.cursor]="'pointer'"
                         matRipple>
                       </mat-row>

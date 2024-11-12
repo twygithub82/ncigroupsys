@@ -22,14 +22,26 @@
         </mat-autocomplete>
       </mat-form-field>
     </div>
-    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
-      <mat-button-toggle-group formControlName="jobStatusCv" class="m-r-10" [hideMultipleSelectionIndicator]="true"
+    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>{{translatedLangText.STATUS}}</mat-label>
+        <mat-select multiple formControlName="jobStatusCv">
+          @for (codeValue of jobStatusCvList; track codeValue) {
+          <mat-option [value]="codeValue.code_val">
+            {{codeValue.description}}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+      <!-- <mat-button-toggle-group formControlName="jobStatusCv" class="m-r-10" [hideMultipleSelectionIndicator]="true"
         color="primary" multiple>
         @for (codeValue of jobStatusCvList; track codeValue) {
         <mat-button-toggle [value]="codeValue.code_val"
           [class.selected-toggle-btn]="isSelectedJobStatus(codeValue.code_val!)">{{codeValue.description}}</mat-button-toggle>
         }
-      </mat-button-toggle-group>
+      </mat-button-toggle-group> -->
       <button mat-mini-fab color="primary" class="mt-4" (click)="onFilterJobOrder()">
         <mat-icon>search</mat-icon>
       </button>

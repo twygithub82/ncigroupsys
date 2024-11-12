@@ -171,6 +171,8 @@ export const GET_RESIDUE_EST = gql`
           description
           guid
           job_order_guid
+          approve_qty
+          approve_cost
           quantity
           residue_guid
           tariff_residue_guid
@@ -562,6 +564,11 @@ export const ROLLBACK_RESIDUE_STATUS_EST = gql`
     rollbackResidueStatus(residue: $residue)
   }
 `
+export const ROLLBACK_RESIDUE_APPROVAL_EST = gql`
+  mutation RollbackResidueApproval($residue: [ResidueRequestInput!]!) {
+    rollbackResidueApproval(residue: $residue)
+  }
+`
 
 export const APPROVE_RESIDUE_EST = gql`
   mutation ApproveResidue($residue: residueInput!) {
@@ -635,6 +642,15 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
+  rollbackResidueApproval(residue: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_RESIDUE_APPROVAL_EST,
+      variables: {
+        residue
+      }
+    });
+  }
+
   rollbackResidueStatus(residue: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_RESIDUE_STATUS_EST,
@@ -657,8 +673,13 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     return re.status_cv === 'PENDING';
   }
 
+  canSave(re: ResidueItem): boolean {
+    const validStatus=['APPROVED','JOB_IN_PROGRESS']
+    return validStatus.includes(re.status_cv!);
+  }
+
   canApprove(re: ResidueItem): boolean {
-    return re.status_cv === 'PENDING';
+    return re.status_cv === 'PENDING' ;
   }
 
   canCancel(re: ResidueItem): boolean {
@@ -666,7 +687,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canRollback(re: ResidueItem): boolean {
-    return  re.status_cv==='PENDING';
+    return  re.status_cv==='PENDING'||re.status_cv === 'APPROVED';
   }
 
   canCopy(re: ResidueItem): boolean {
@@ -679,6 +700,17 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
         //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
         
         total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.cost ?? 0)))
+      };
+    }, {  total_mat_cost: 0 }) || 0;
+    return totalSums;
+  }
+
+  getApprovedTotal(residuePartList: any[] | undefined): any {
+    const totalSums = residuePartList?.filter(data => !data.delete_dt &&(data.approve_part==1 || data.approve_part==null))?.reduce((totals: any, owner) => {
+      return {
+        //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+        
+        total_mat_cost: totals.total_mat_cost + (((owner.approve_cost ?? owner.cost??0) * (owner.approve_qty ??owner.quantity?? 0)))
       };
     }, {  total_mat_cost: 0 }) || 0;
     return totalSums;
