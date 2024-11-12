@@ -682,6 +682,60 @@ export const GET_REPAIR_FOR_JOB_ORDER = gql`
   }
 `;
 
+const GET_REPAIR_FOR_QC = gql`
+  query queryRepair($where: repairFilterInput, $order: [repairSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryRepair(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        aspnetusers_guid
+        create_by
+        create_dt
+        delete_dt
+        estimate_no
+        guid
+        remarks
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        approve_dt
+        complete_dt
+        storing_order_tank {
+          guid
+          job_no
+          tank_no
+          purpose_repair_cv
+          storing_order {
+            customer_company {
+              code
+              name
+              guid
+            }
+          }
+        }
+        repair_part {
+          job_order_guid
+          approve_part
+          rp_damage_repair {
+            code_cv
+            delete_dt
+            code_type
+          }
+          job_order {
+            qc_dt
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`
+
 export const ADD_REPAIR = gql`
   mutation AddRepair($repair: repairInput!, $customerCompany: customer_companyInput) {
     addRepair(repair: $repair, customerCompany: $customerCompany)
@@ -831,7 +885,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
-        query: GET_REPAIR_FOR_JOB_ORDER,
+        query: GET_REPAIR_FOR_QC,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

@@ -662,7 +662,9 @@
     "APPROVE-INFO":"Approve Info",
     "ALLOCATE-DATE":"Allocate Date",
     "QC":"QC",
-    "DURATION": "Duration"
+    "DURATION": "Duration",
+    "APPROVE-DATE": "Approve Date",
+    "QC-DATE": "QC Date"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

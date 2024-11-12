@@ -270,7 +270,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder)
+    this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         this.jobOrderList = data;
         this.jobOrderList.forEach(jo => {
