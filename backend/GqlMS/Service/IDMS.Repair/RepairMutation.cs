@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Repair.GqlTypes.LocalModel;
 using HotChocolate.Types;
 using IDMS.Service.GqlTypes;
+using IDMS.Service.GqlTypes.LocalModel;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using IDMS.Models.Inventory;
 
 namespace IDMS.Repair.GqlTypes
 {
@@ -68,7 +71,6 @@ namespace IDMS.Repair.GqlTypes
                     cust.update_dt = currentDateTime;
                 }
 
-
                 var res = await context.SaveChangesAsync();
 
                 //TODO
@@ -104,8 +106,12 @@ namespace IDMS.Repair.GqlTypes
                     appvRepair.remarks = repair.remarks;
 
                     if (CurrentServiceStatus.PENDING.EqualsIgnore(repair.status_cv))
+                    {
                         appvRepair.status_cv = CurrentServiceStatus.APPROVED;
-      
+                        appvRepair.approve_by = user;
+                        appvRepair.approve_dt = currentDateTime;
+                    }
+                 
                     if (repair.repair_part != null)
                     {
                         foreach (var item in repair.repair_part)
@@ -244,7 +250,7 @@ namespace IDMS.Repair.GqlTypes
         }
 
         public async Task<int> CancelRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-                [Service] IConfiguration config, List<repair> repair)
+            [Service] IConfiguration config, List<repair> repair)
         {
             try
             {
@@ -275,7 +281,7 @@ namespace IDMS.Repair.GqlTypes
         }
 
         public async Task<int> RollbackRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-                [Service] IConfiguration config, List<RepairRequest> repair)
+            [Service] IConfiguration config, List<RepairRequest> repair)
         {
             try
             {
@@ -325,7 +331,7 @@ namespace IDMS.Repair.GqlTypes
         }
 
         public async Task<int> RollbackRepairApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-               [Service] IConfiguration config, List<RepairRequest> repair)
+            [Service] IConfiguration config, List<RepairRequest> repair)
         {
             try
             {
@@ -371,30 +377,99 @@ namespace IDMS.Repair.GqlTypes
             }
         }
 
-        public async Task<int> RollbackRepairStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-          [Service] IConfiguration config, RepairRequest repair)
+        public async Task<int> AbortRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, RepJobOrderRequest repJobOrder)
         {
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                if (repair == null)
+                if (repJobOrder == null)
                     throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
 
-                var rollbackRepair = new repair() { guid = repair.guid };
-                context.repair.Attach(rollbackRepair);
+                var abortRepair = new repair() { guid = repJobOrder.guid };
+                context.repair.Attach(abortRepair);
 
-                rollbackRepair.update_by = user;
-                rollbackRepair.update_dt = currentDateTime;
-                rollbackRepair.status_cv = CurrentServiceStatus.PENDING;
-                rollbackRepair.remarks = repair.remarks;
+                abortRepair.update_by = user;
+                abortRepair.update_dt = currentDateTime;
+                abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
+                abortRepair.remarks = repJobOrder.remarks;
+
+                foreach(var item in repJobOrder.job_order)
+                {
+                    var job_order = new job_order() { guid = item.guid };
+                    context.job_order.Attach(job_order);
+                    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                    {
+                        job_order.status_cv = CurrentServiceStatus.CANCELED;
+                        job_order.update_by = user;
+                        job_order.update_dt = currentDateTime;
+                    }
+                }
 
                 var res = await context.SaveChangesAsync();
                 return res;
             }
             catch (Exception ex)
             {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> CompleteQCRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, RepJobOrderRequest repJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (repJobOrder == null)
+                    throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+
+                using var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    //Repair handling
+                    var completedRepair = new repair() { guid = repJobOrder.guid };
+                    context.repair.Attach(completedRepair);
+                    completedRepair.update_by = user;
+                    completedRepair.update_dt = currentDateTime;
+                    completedRepair.status_cv = CurrentServiceStatus.QC;
+                    completedRepair.remarks = repJobOrder.remarks;
+
+                    //Tank handling
+                    if (string.IsNullOrEmpty(repJobOrder.sot_guid))
+                        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                    var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };
+                    context.storing_order_tank.Attach(sot);
+                    sot.tank_status_cv = "AV";
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;    
+
+
+                    //job_orders handling
+                    var guids = string.Join(",", repJobOrder.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}' update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}' WHERE guid IN ({guids})";
+                    context.Database.ExecuteSqlRaw(sql);
+
+                    var res = await context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return res;
+                }
+                catch(Exception ex)
+                {
+                    // Rollback in case of an error
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {   
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
