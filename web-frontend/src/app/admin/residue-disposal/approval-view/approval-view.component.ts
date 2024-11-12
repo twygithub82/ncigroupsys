@@ -1339,4 +1339,17 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
    
     
   }
+
+  getTotalCost(): number {
+    return this.deList.reduce((acc, row) => {
+      if (row.approve_part!==false) {
+        return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
+      }
+      return acc; // If row is approved, keep the current accumulator value
+    }, 0);
+  }
+
+  getFooterBackgroundColor():string{
+    return 'light-green';
+  }
 }

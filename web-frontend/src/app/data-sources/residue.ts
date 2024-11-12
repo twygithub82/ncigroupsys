@@ -675,11 +675,12 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
 
   canSave(re: ResidueItem): boolean {
     const validStatus=['APPROVED','JOB_IN_PROGRESS']
-    return validStatus.includes(re.status_cv!);
+    return false;
   }
 
   canApprove(re: ResidueItem): boolean {
-    return re.status_cv === 'PENDING' ;
+    const validStatus=['PENDING','APPROVED','JOB_IN_PROGRESS']
+    return validStatus.includes(re.status_cv!);
   }
 
   canCancel(re: ResidueItem): boolean {

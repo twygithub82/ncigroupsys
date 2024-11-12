@@ -21,12 +21,12 @@ import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatDividerModule } from '@angular/material/divider';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
 
 export interface DialogData {
-  action?: string;
-  item: StoringOrderTankItem[];
+  action: string;
+  item: ResiduePartItem;
   langText?: any;
-  translatedLangText?: any;
   index: number;
 }
 
@@ -53,8 +53,8 @@ export interface DialogData {
 export class CancelFormDialogComponent {
   index: number;
   dialogTitle?: string;
-  storingOrderTank: StoringOrderTankItem[];
-  storingOrderTankForm: UntypedFormGroup;
+  residuePartItem: ResiduePartItem;
+  residueForm: UntypedFormGroup;
   startDate = new Date();
 
   lastCargoControl = new UntypedFormControl();
@@ -64,14 +64,14 @@ export class CancelFormDialogComponent {
     private fb: UntypedFormBuilder
   ) {
     // Set the defaults
-    this.storingOrderTank = data.item;
-    this.storingOrderTankForm = this.createStorigOrderForm();
+    this.residuePartItem = data.item;
+    this.residueForm = this.createStorigOrderForm();
     this.index = data.index;
   }
   createStorigOrderForm(): UntypedFormGroup {
     return this.fb.group({
-      storingOrderTank: this.fb.array(this.storingOrderTank.map(sot => this.createTankGroup(sot))),
-      remarks: ['', Validators.required]
+      residuePartItem: this.residuePartItem,
+     // remarks: ['', Validators.required]
     });
   }
   createTankGroup(sot: any): UntypedFormGroup {
@@ -84,18 +84,18 @@ export class CancelFormDialogComponent {
     this.dialogRef.close();
   }
   confirm(): void {
-    if (this.storingOrderTankForm.valid) {
-      let remarks = this.storingOrderTankForm.value['remarks']
-      this.storingOrderTank.forEach(row => row.remarks = remarks);
+    if (this.residueForm.valid) {
+      let remarks = this.residueForm.value['remarks']
+      //this.storingOrderTank.forEach(row => row.remarks = remarks);
       const returnDialog: DialogData = {
         action: 'confirmed',
-        item: this.storingOrderTank,
+        item: this.residuePartItem,
         index: this.index
       }
       this.dialogRef.close(returnDialog);
     }
   }
-  getStoringOrderTanksArray(): UntypedFormArray {
-    return this.storingOrderTankForm.get('storingOrderTank') as UntypedFormArray;
-  }
+  // getStoringOrderTanksArray(): UntypedFormArray {
+  //   return this.storingOrderTankForm.get('storingOrderTank') as UntypedFormArray;
+  // }
 }

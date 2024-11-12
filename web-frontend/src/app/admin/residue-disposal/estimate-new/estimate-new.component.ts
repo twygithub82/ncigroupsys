@@ -117,7 +117,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.ESTIMATE'
+    'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE'
   ]
   translatedLangText: any = {}
   langText = {
@@ -800,7 +800,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     });
   }
 
-  rollbackSelectedRows(row: RepairPartItem[]) {
+  rollbackSelectedRows(event: Event, row: ResiduePartItem, index: number) {
     //this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -808,31 +808,35 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     } else {
       tempDirection = 'ltr';
     }
+    const item:any[]=[];
+    item.push(row);
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '1000px',
       data: {
         action: "rollback",
-        item: [...row],
-        translatedLangText: this.translatedLangText
+        item:row,
+        langText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairPartItem) => {
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+        const data: any[] = [...this.deList];
+       // result.item.forEach((newItem: ResiduePartItem) => {
+          const index = data.findIndex(existingItem => existingItem.guid === result.item.guid);
 
           if (index !== -1) {
             data[index] = {
               ...data[index],
-              ...newItem,
+              ...result.item,
+              delete_dt:null,
+              action:'',
               actions: Array.isArray(data[index].actions!)
                 ? [...new Set([...data[index].actions!, 'rollback'])]
                 : ['rollback']
             };
           }
-        });
+       // });
         this.updateData(data);
       }
     });
@@ -968,7 +972,15 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     }
   }
 
+  handleRollback(event: Event, row: any, index: number): void {
+    this.stopEventTrigger(event);
+    this.preventDefault(event);
+     this.rollbackSelectedRows(event, row, index);
+   }
+
   handleDelete(event: Event, row: any, index: number): void {
+   this.stopEventTrigger(event);
+   this.preventDefault(event);
     this.deleteItem(event, row, index);
   }
 
@@ -1461,5 +1473,18 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
      
     }
     this.resetValue();
+  }
+
+  getTotalCost(): number {
+    return this.deList.reduce((acc, row) => {
+      if (row.delete_dt===null) {
+        return acc + ((row.quantity || 0) * (row.cost || 0));
+      }
+      return acc; // If row is approved, keep the current accumulator value
+    }, 0);
+  }
+
+  getFooterBackgroundColor():string{
+    return 'light-green';
   }
 }

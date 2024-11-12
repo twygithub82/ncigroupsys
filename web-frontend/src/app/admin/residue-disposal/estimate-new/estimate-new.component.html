@@ -157,7 +157,7 @@
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
-                        <input matInput formControlName="job_no">
+                        <input matInput formControlName="job_no" [readonly]="!(residueDS.canAmend(this.residueItem!))">
                       </mat-form-field>
                     </div>
                   </div>
@@ -169,7 +169,7 @@
                       <div class="contact-detail-info font-bold">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
-                          <mat-select formControlName="billing_branch">
+                          <mat-select formControlName="billing_branch" >
                             @for (item of billingBranchList; track item) {
                             <mat-option [value]="item">
                               {{ this.ccDS.displayName(item)}}
@@ -184,7 +184,7 @@
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                        <input matInput formControlName="remarks">
+                        <input matInput formControlName="remarks" [readonly]="!(residueDS.canAmend(this.residueItem!))">
                       </mat-form-field>
                     </div>
                   </div>
@@ -213,6 +213,7 @@
               </div>
               }
               @if (!(sotDS.loadingSubject | async)) {
+                @if (residueDS.canAmend(this.residueItem!)) {
               <div class="row">
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
@@ -284,6 +285,7 @@
                   }
                 </div>
               </div>
+            }
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="deList" matSort
@@ -292,6 +294,7 @@
                     <ng-container matColumnDef="seq">
                       <mat-header-cell *matHeaderCellDef mat-sort-header  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                       <mat-cell *matCellDef="let row; let i = index"  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="desc">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -300,6 +303,7 @@
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
                       </mat-cell>
+                      <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="qty">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -309,6 +313,7 @@
                         <span
                           class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
                       </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="unit_price">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -317,6 +322,7 @@
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}}
                       </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="cost">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -325,23 +331,34 @@
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity*row.cost)}}
                       </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"  >
+                        <span class="mobile-label" > </span>{{this.parse2Decimal( getTotalCost()) }}
+                      </mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
                       <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row;" class="justify-content-end">
-                        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                          <mat-icon>more_vert</mat-icon>
+                        @if (!row.delete_dt){
+                        <button mat-icon-button  (click)="handleDelete($event, row, row.index)">
+                          <mat-icon>delete_forever</mat-icon>
                         </button>
-                        <mat-menu #menu="matMenu">
+                        }
+                        @if (row.delete_dt){
+                          <button mat-icon-button  (click)="handleRollback($event, row, row.index)">
+                            <mat-icon>undo</mat-icon>
+                          </button>
+                          }
+                        <!-- <mat-menu #menu="matMenu">
                           @if (sotDS.canAddRemove(row)) {
                           <button mat-menu-item (click)="handleDelete($event, row, row.index)">
                             <mat-icon>delete_forever</mat-icon>
                             <span>{{translatedLangText.DELETE}}</span>
                           </button>
                           }
-                        </mat-menu>
+                        </mat-menu> -->
                       </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
@@ -349,6 +366,7 @@
                     (click)="editEstDetails($event, row, row.index)" [style.cursor]="'pointer'"  
                       matRipple>
                     </mat-row>
+                    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
                   </table>
                 </div>
                 <!-- No result -->
@@ -395,7 +413,7 @@
                   {{translatedLangText.EXPORT}}
                 </button>
                 }
-                @if (isAnyItemEdited()) {
+                @if (residueDS.canAmend(this.residueItem!)) {
                 <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)">
                   <mat-icon>
                     @if (!(residueDS.loading$ | async)) {
