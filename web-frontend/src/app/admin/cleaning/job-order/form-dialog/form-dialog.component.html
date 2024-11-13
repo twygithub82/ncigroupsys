@@ -20,10 +20,56 @@
               <div class="card">
                 <div class="header">
                   <h2>
-                    {{translatedLangText.TEAM_ALLOCATION}}
+                    {{translatedLangText.BAY_ALLOCATION}}
                   </h2>
                 </div>
                 <div class="body">
+                  <div class="team-container">
+                    <div class="team-buttons">
+                      
+                      @for (team of teamList; track team) {
+                    
+                        <button 
+                          mat-button 
+                          (click)="toggleTeam(team)"
+                          [ngClass]="{'selected': team.isSelected}"
+                          [disabled]="team.isOccupied"
+                          class="team-button">
+                          <!-- Team description at the top-left -->
+                          <span class="team-description">
+                            @if(team.isOccupied)
+                            {
+                              {{team.tank_no}}
+                            }
+                            @else{
+                            {{team.description}}
+                            }
+
+
+                          </span>
+  
+  
+                        </button> 
+                      
+                    } 
+                    </div>
+                  </div>
+                  <div class="spacer"></div>
+                  <div mat-dialog-actions class="mb-1 align-right">
+                    @if (canEdit()) {
+                      <button mat-flat-button color="primary" (click)="save()" [disabled]="!canSave()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+                    }
+                    <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+                      @if(canEdit()){
+                      {{translatedLangText.CANCEL}}
+                      }
+                      @if(!canEdit()){
+                        {{translatedLangText.CLOSE}}
+                      }
+                    </button>
+                  </div>
+                </div>
+                <!-- <div class="body">
                 
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
@@ -57,7 +103,7 @@
                       }
                     </button>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>

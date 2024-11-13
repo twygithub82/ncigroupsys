@@ -67,3 +67,37 @@ td div img:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow on hover */
   }
 
+  .team-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .team-buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  
+  .team-button {
+    width: 150px;
+    padding: 10px;
+    text-align: center;
+  }
+  .team-button:disabled{
+    background-color: #8b8b8b; /* Change to your desired color */
+    color: rgb(245, 242, 242);
+  }
+  .team-button{
+    background-color: #deeffa; /* Change to your desired color */
+    color: black;
+  }
+  .team-button.selected {
+    background-color: #4caf50; /* Change to your desired color */
+    color: white;
+  }
+  .spacer {
+    height: 20px; /* Adjust to increase spacing further */
+  }
+

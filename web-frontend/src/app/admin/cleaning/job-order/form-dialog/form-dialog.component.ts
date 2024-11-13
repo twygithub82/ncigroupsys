@@ -115,7 +115,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   jobOrderDS?:JobOrderDS;
   CodeValuesDS?:CodeValuesDS;
 
-  teamList?: TeamItem[];
+  teamList?: any[];
 
   storageCalCvList:CodeValuesItem[]=[];
 
@@ -237,7 +237,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     PAGE_TITLE:"MENUITEMS.CLEANING.LIST.JOB-ORDER",
     TEAM_DETAILS: 'COMMON-FORM.TEAM-DETAILS',
     TEAM: 'COMMON-FORM.TEAM',
-    TEAM_ALLOCATION: 'COMMON-FORM.TEAM-ALLOCATION',
+    BAY_ALLOCATION: 'COMMON-FORM.BAY-ALLOCATION',
   };
 
   
@@ -313,7 +313,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       status_cv:[''],
       approve_dt:[''],
       na_dt:[''],
-      team_allocation: [''],
+      team_allocation: [undefined],
     });
   }
 
@@ -342,13 +342,47 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
 
+
+  queryOccupiedTeam()
+  {
+    const teamGuids = this.teamList?.map(team => team.guid);
+    const where: any = {
+      and:[]
+    }; 
+    where.and.push({team: { guid:{in: teamGuids }}});
+    where.and.push({job_type_cv: { eq:'CLEANING'}});
+    where.and.push({status_cv: { neq:'COMPLETED'}});
+
+    this.jobOrderDS?.searchStartedJobOrder(where).subscribe(data=>{
+      if (data?.length) {
+        data.forEach(d=>{
+          this.teamList?.forEach(team => {
+            if (team.guid === d.team?.guid) {
+              // If the team GUID matches, update isOccupied to true
+              team.isOccupied = true;
+              team.tank_no=d.storing_order_tank?.tank_no;
+            }
+          });
+        });
+      }
+    });
+
+  }
+
   loadData()
   {
     //this.queryDepotCost();
 
     this.subs.sink = this.teamDS.getTeamListByDepartment(["CLEANING"]).subscribe(data => {
       if (data?.length) {
-        this.teamList = data;
+        
+        this.teamList = data.map((row, index) => ({
+          ...row,
+          index:index,
+          isSelected: false,
+          isOccupied:false
+        }));
+        this.queryOccupiedTeam();
       }
     });
 
@@ -624,5 +658,34 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     return color;
   }
+
+  toggleTeam(team: any) {
+    let selected:boolean =!team.isSelected;
+
+    if(selected)
+    {
+      this.teamList!.forEach(team => team.isSelected = false);
+      this.pcForm.patchValue({
+        team_allocation:team
+      });
+    }
+    else
+    {
+      this.pcForm.patchValue({
+        team_allocation:''
+      });
+    }
+    team.isSelected = !team.isSelected;
+  }
   
+  canSave():boolean{
+    let retval:boolean =false;
+
+     retval = !!this.pcForm?.get("team_allocation")?.value;
+    return retval;
+  }
+
+  trackByTeam(index: number, team: any): any {
+    return team.guid;  // Or any unique identifier from your team object
+  }
 }

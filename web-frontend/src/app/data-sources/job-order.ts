@@ -13,6 +13,7 @@ import { RepairPartItem } from './repair-part';
 import { InGateCleaningItem } from './in-gate-cleaning';
 import { ResiduePartItem } from './residue-part';
 import { TimeTableItem } from './time-table';
+import { StoringOrderTankItem } from './storing-order-tank';
 
 export class JobOrderGO {
   public guid?: string;
@@ -102,6 +103,7 @@ export class JobProcessRequest {
 
 export class JobOrderItem extends JobOrderGO {
   public team?: TeamItem;
+  public storing_order_tank?:StoringOrderTankItem;
   public repair_part?: RepairPartItem[];
   public cleaning?: InGateCleaningItem[];
   public residue_part?: ResiduePartItem[];
@@ -114,6 +116,7 @@ export class JobOrderItem extends JobOrderGO {
     this.cleaning = item.cleaning;
     this.residue_part = item.residue_part;
     this.time_table = item.time_table;
+    this.storing_order_tank=item.storing_order_tank;
   }
 }
 
