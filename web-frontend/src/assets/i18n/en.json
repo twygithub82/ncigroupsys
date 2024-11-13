@@ -644,6 +644,7 @@
     "ASSIGN": "Assign",
     "SAVE-ANOTHER": "Save Another",
     "TEAM-ALLOCATION": "Team Allocation",
+    "BAY-ALLOCATION": "Bay Allocation",
     "DEPOT-REFERENCE":"Depot Reference",
     "JOB-REFERENCE":"Job Reference",
     "RESIDUE-JOB-NO":"Residue Job No.",
