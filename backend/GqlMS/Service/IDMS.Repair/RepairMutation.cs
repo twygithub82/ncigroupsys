@@ -445,7 +445,7 @@ namespace IDMS.Repair.GqlTypes
 
                     var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };
                     context.storing_order_tank.Attach(sot);
-                    sot.tank_status_cv = "AV";
+                    sot.tank_status_cv = TankMovementStatus.STORAGE;
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;    
 
