@@ -67,68 +67,78 @@
     </ng-container>
     <ng-container matColumnDef="customer">
       <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.CUSTOMER}}
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span
           class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="estimate_no">
       <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.ESTIMATE_NO}}
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span
-          class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="estimate_dt">
       <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.ESTIMATE_DATE}}
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_DATE}}:</span>
         <span>{{displayDate(row.create_dt)}}</span>
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="approve_dt">
       <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.APPROVE_DATE}}
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span class="mobile-tab-label">{{translatedLangText.APPROVE_DATE}}:</span>
         <span>{{displayDate(row.approve_dt)}}</span>
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="qc_dt">
       <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.QC_DATE}}
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span class="mobile-tab-label">{{translatedLangText.QC_DATE}}:</span>
         <span>{{displayDate(row.repair_part?.[0]?.job_order?.complete_dt)}}</span>
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="repair_type">
       <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.REPAIR_TYPE}}
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span class="mobile-tab-label">{{translatedLangText.REPAIR_TYPE}}:</span>
-        <span>{{row.storing_order_tank?.purpose_repair_cv}}</span>
+        <span>{{getRepairOptionStatusDescription(row.storing_order_tank?.purpose_repair_cv)}}</span>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="status_cv">
+      <mat-header-cell mat-header-cell *matHeaderCellDef
+        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        {{translatedLangText.STATUS}}
+      </mat-header-cell>
+      <mat-cell mat-cell *matCellDef="let row"
+        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        <span
+          class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
       </mat-cell>
     </ng-container>
     <!-- <ng-container matColumnDef="actions">
@@ -151,8 +161,7 @@
     </ng-container> -->
     <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
-      [routerLink]="['/admin/repair/approval/view', row.guid]"
-      [style.cursor]="'pointer'" matRipple>
+      [routerLink]="['/admin/repair/qc/view', row.guid]" [style.cursor]="'pointer'" matRipple>
     </mat-row>
   </table>
 </div>
