@@ -665,7 +665,8 @@
     "QC":"QC",
     "DURATION": "Duration",
     "APPROVE-DATE": "Approve Date",
-    "QC-DATE": "QC Date"
+    "QC-DATE": "QC Date",
+    "QC-COMPLETE": "QC Complete"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

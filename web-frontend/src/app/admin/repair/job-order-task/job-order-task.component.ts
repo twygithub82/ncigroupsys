@@ -152,7 +152,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   pageIndexJobOrder = 0;
   pageSizeJobOrder = 100;
   lastSearchCriteriaJobOrder: any;
-  lastOrderByJobOrder: any = { job_order_no: "DESC" };
+  lastOrderByJobOrder: any = { create_dt: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
   startCursorJobOrder: string | undefined = undefined;
   hasNextPageJobOrder = false;

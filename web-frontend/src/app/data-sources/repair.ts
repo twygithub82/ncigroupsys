@@ -25,6 +25,10 @@ export class RepairGO {
   public bill_to_guid?: string;
   public job_no?: string;
   public total_hour?: number;
+  public approve_by?: string;
+  public approve_dt?: number;
+  public complete_dt?: number;
+  public na_dt?: number;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -46,6 +50,10 @@ export class RepairGO {
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
     this.total_hour = item.total_hour || 0;
+    this.approve_by = item.approve_by;
+    this.approve_dt = item.approve_dt;
+    this.complete_dt = item.complete_dt;
+    this.na_dt = item.na_dt;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -141,6 +149,7 @@ export const GET_REPAIR = gql`
         total_cost
         update_by
         update_dt
+        approve_dt
         storing_order_tank {
           guid
           job_no
@@ -413,6 +422,174 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
           }
           job_order {
             status_cv
+          }
+        }
+        aspnetsuser {
+          id
+          userName
+        }
+        storing_order_tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          etr_dt
+          guid
+          job_no
+          owner_guid
+          preinspect_job_no
+          liftoff_job_no
+          lifton_job_no
+          takein_job_no
+          release_job_no
+          last_cargo_guid
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          so_guid
+          status_cv
+          tank_no
+          tank_status_cv
+          update_by
+          update_dt
+          storing_order {
+            customer_company {
+              code
+              name
+              guid
+            }
+          }
+          tariff_cleaning {
+            alias
+            cargo
+            class_cv
+            create_by
+            create_dt
+            delete_dt
+            guid
+            update_by
+            update_dt
+          }
+          customer_company {
+            code
+            guid
+            name
+            delete_dt
+          }
+          in_gate {
+            eir_no
+            eir_dt
+            delete_dt
+            in_gate_survey {
+              last_test_cv
+              next_test_cv
+              test_dt
+              test_class_cv
+            }
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+export const GET_REPAIR_FOR_QC_DETAILS = gql`
+  query QueryRepair($where: repairFilterInput) {
+    resultList: queryRepair(where: $where) {
+      nodes {
+        aspnetusers_guid
+        create_by
+        create_dt
+        delete_dt
+        estimate_no
+        guid
+        owner_enable
+        remarks
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        bill_to_guid
+        approve_dt
+        approve_by
+        repair_part {
+          action
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          hour
+          location_cv
+          comment
+          owner
+          quantity
+          remarks
+          repair_guid
+          tariff_repair_guid
+          update_by
+          update_dt
+          approve_cost
+          approve_hour
+          approve_part
+          approve_qty
+          complete_dt
+          rp_damage_repair {
+            action
+            code_cv
+            code_type
+            create_by
+            create_dt
+            delete_dt
+            guid
+            rp_guid
+            update_by
+            update_dt
+          }
+          tariff_repair {
+            alias
+            create_by
+            create_dt
+            delete_dt
+            dimension
+            group_name_cv
+            guid
+            height_diameter
+            height_diameter_unit_cv
+            labour_hour
+            length
+            length_unit_cv
+            material_cost
+            part_name
+            remarks
+            subgroup_name_cv
+            thickness
+            thickness_unit_cv
+            update_by
+            update_dt
+            width_diameter
+            width_diameter_unit_cv
+          }
+          job_order {
+            guid
+            status_cv
+            create_dt
+            create_by
+            qc_dt
+            qc_by
+            team {
+              description
+            }
           }
         }
         aspnetsuser {
@@ -837,6 +1014,29 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return this.apollo
       .query<any>({
         query: GET_REPAIR_FOR_APPROVAL,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  getRepairByIDForQC(id: string): Observable<RepairItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { guid: { eq: id } }
+    return this.apollo
+      .query<any>({
+        query: GET_REPAIR_FOR_QC_DETAILS,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

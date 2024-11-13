@@ -91,10 +91,11 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     'tank_no',
     'customer',
     'estimate_no',
-    'estimate_dt',
-    'approve_dt',
+    // 'estimate_dt',
+    // 'approve_dt',
     'qc_dt',
-    'repair_type'
+    'repair_type',
+    'status_cv'
   ];
 
   translatedLangText: any = {};
@@ -143,8 +144,8 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   ttDS: TimeTableDS;
 
   repEstList: RepairItem[] = [];
-  soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
+  repairOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
   jobStatusCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
@@ -207,21 +208,17 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.onFilter();
 
     const queries = [
-      { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
       { alias: 'jobStatusCv', codeValType: 'JOB_STATUS' },
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('soStatusCv').subscribe(data => {
-      this.soStatusCvList = addDefaultSelectOption(data, 'All');
-    });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
-    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-      this.tankStatusCvList = data;
+    this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
+      this.repairOptionCvList = addDefaultSelectOption(data, "No Repair");
     });
     this.cvDS.connectAlias('jobStatusCv').subscribe(data => {
       this.jobStatusCvList = data;
@@ -360,8 +357,8 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
-  getTankStatusDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  getRepairOptionStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.repairOptionCvList);
   }
 
   getJobStatusDescription(codeValType: string | undefined): string | undefined {

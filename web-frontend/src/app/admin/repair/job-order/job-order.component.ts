@@ -155,7 +155,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     QC: 'COMMON-FORM.QC',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE'
+    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE'
   }
 
   filterRepairForm?: UntypedFormGroup;
