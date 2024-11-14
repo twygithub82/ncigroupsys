@@ -51,6 +51,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.component";
+import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
 
 @Component({
   selector: 'app-job-order',
@@ -86,7 +88,9 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-  ]
+    JobOrderQCComponent,
+    JobOrderTaskComponent
+]
 })
 export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // displayedColumns = [
@@ -167,7 +171,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    METHOD:"COMMON-FORM.METHOD"
+    METHOD:"COMMON-FORM.METHOD",
+    QC: 'COMMON-FORM.QC',
   }
 
   filterCleanForm?: UntypedFormGroup;
@@ -181,6 +186,12 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   igDS: InGateDS;
   cleanDS: InGateCleaningDS;
   joDS: JobOrderDS;
+
+  availableProcessStatus: string[] = [
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED'
+  ]
 
   clnEstList: InGateCleaningItem[] = [];
   jobOrderList: JobOrderItem[] = [];
@@ -251,6 +262,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   initSearchForm() {
     this.filterCleanForm = this.fb.group({
       filterClean: [''],
+      status_cv: [['APPROVED']],
+      customer: [''],
     });
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
@@ -367,16 +380,32 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onFilterCleaning() {
+
+
     const where: any = {
-      status_cv: { in: ["APPROVED"] }
+      and:[]
     };
+
+
     // or: [
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }
     // ]
     if (this.filterCleanForm!.get('filterClean')?.value) {
-      where.AND.push({
+      where.and.push({
         storing_order_tank: { tank_no: { contains: this.filterCleanForm!.get('filterClean')?.value } }
+      });
+    }
+
+    if (this.filterCleanForm!.get('customer')?.value) {
+      where.and.push({
+        customer_company: { code: { eq: (this.filterCleanForm!.get('customer')?.value).code } }
+      });
+    }
+
+    if (this.filterCleanForm!.get('status_cv')?.value) {
+      where.and.push({
+        status_cv: { in: this.filterCleanForm!.get('status_cv')?.value} 
       });
     }
 
@@ -504,7 +533,26 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initializeFilterCustomerCompany() {
+    this.filterCleanForm!.get('customer')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+  
+  
   }
+
+
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {

@@ -51,6 +51,7 @@ import { JobOrderCleaningComponent } from './cleaning/job-order/job-order.compon
 import { JobOrderResidueDisposalComponent } from './residue-disposal/job-order/job-order.component';
 import { JobOrderAllocationResidueDisposalComponent } from './residue-disposal/job-order-allocation/job-order-allocation.component';
 import { JobOrderTaskDetailsComponent } from './repair/job-order-task-details/job-order-task-details.component';
+import { CleaningJobOrderTaskDetailsComponent } from './cleaning/job-order-task-details/job-order-task-details.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -288,6 +289,10 @@ export const ADMIN_ROUTE: Routes = [
     component: JobOrderCleaningComponent,
   },
   {
+    path: "cleaning/job-order/task/:id/:clean_id",
+    component: CleaningJobOrderTaskDetailsComponent,
+  },
+  {
     path: "residue-disposal/job-order",
     component: JobOrderResidueDisposalComponent,
   },
@@ -295,6 +300,7 @@ export const ADMIN_ROUTE: Routes = [
     path: "residue-disposal/job-order/allocation/:id",
     component: JobOrderAllocationResidueDisposalComponent,
   },
+  
 ];
 
 // @NgModule({

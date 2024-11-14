@@ -346,6 +346,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   queryOccupiedTeam()
   {
     const teamGuids = this.teamList?.map(team => team.guid);
+    
     const where: any = {
       and:[]
     }; 
@@ -382,6 +383,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           isSelected: false,
           isOccupied:false
         }));
+        this.sortBayList(this.teamList);
         this.queryOccupiedTeam();
       }
     });
@@ -687,5 +689,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   trackByTeam(index: number, team: any): any {
     return team.guid;  // Or any unique identifier from your team object
+  }
+
+  sortBayList( bayList:any[]) {
+    bayList.sort((a:any, b:any) => {
+      const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
+      const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
+      return numA - numB;
+    });
   }
 }

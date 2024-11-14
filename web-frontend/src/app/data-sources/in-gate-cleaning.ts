@@ -10,6 +10,7 @@ import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 import { AnyObject } from 'chart.js/dist/types/basic';
 import { InGateSurveyItem } from './in-gate-survey';
 import { CustomerCompanyItem } from './customer-company';
+import { JobOrderItem } from './job-order';
 
 export class InGateCleaningGO {
   public action?:string='';
@@ -62,11 +63,12 @@ export class InGateCleaningGO {
 export class InGateCleaningItem extends InGateCleaningGO {
   public storing_order_tank?: StoringOrderTankGO;
   public customer_company?: CustomerCompanyItem;
-
+  public job_order?:JobOrderItem;
   constructor(item: Partial<InGateCleaningItem> = {}) {
     super(item)
     this.storing_order_tank = item.storing_order_tank;
     this.customer_company = item.customer_company ;
+    this.job_order=item.job_order;
   }
 }
 
@@ -118,6 +120,34 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
         status_cv
         update_by
         update_dt
+        job_order {
+          team {
+            create_by
+            create_dt
+            delete_dt
+            department_cv
+            description
+            guid
+            update_by
+            update_dt
+          }
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_order_no
+          job_type_cv
+          remarks
+          sot_guid
+          start_dt
+          status_cv
+          team_guid
+          total_hour
+          update_by
+          update_dt
+          working_hour
+        }
         storing_order_tank {
           certificate_cv
           clean_status_cv
@@ -181,7 +211,14 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
             eir_dt
             eir_no
             eir_status_cv
+            delete_dt
             guid
+            in_gate_survey {
+              last_test_cv
+              test_class_cv
+              test_dt
+              next_test_cv
+            }
           }
           customer_company {
             code

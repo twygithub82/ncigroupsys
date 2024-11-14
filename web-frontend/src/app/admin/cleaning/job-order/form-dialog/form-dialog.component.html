@@ -219,7 +219,7 @@
           
           </div>
           </div>
-          <div class="row">
+          <!-- <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1 text-center">
                   <mat-label style="text-decoration: underline; font-weight: bold;">{{translatedLangText.LAST_CARGO_CLEANING_QUOTATION }}</mat-label>
             </div>
@@ -228,7 +228,7 @@
             <div class="responsive_table">
               <table mat-table [dataSource]="igCleanItems" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                <!-- ID Column -->
+                
                 <ng-container matColumnDef="id">
                   <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -278,14 +278,14 @@
                 <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
               </table>
             </div>
-            <!-- No result -->
+            
             @if (!igCleanItems.length) {
             <mat-divider></mat-divider>
             <div class="no-results m-l-20 pt-3" [style.display]="igCleanItems.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
-          </div>
+          </div> -->
        
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">

@@ -306,6 +306,10 @@ const GET_STARTED_JOB_ORDER = gql`
         update_by
         update_dt
         working_hour
+        cleaning{
+          guid,
+          job_no
+        }
         team {
           description
           guid
