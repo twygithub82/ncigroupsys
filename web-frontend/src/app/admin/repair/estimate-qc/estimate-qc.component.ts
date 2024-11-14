@@ -60,10 +60,10 @@ import { UserDS, UserItem } from 'app/data-sources/user';
 import { JobOrderDS, JobOrderGO, JobProcessRequest, RepJobOrderRequest } from 'app/data-sources/job-order';
 
 @Component({
-  selector: 'app-approval-view',
+  selector: 'app-estimate-qc',
   standalone: true,
-  templateUrl: './approval-view.component.html',
-  styleUrl: './approval-view.component.scss',
+  templateUrl: './estimate-qc.component.html',
+  styleUrl: './estimate-qc.component.scss',
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -83,7 +83,6 @@ import { JobOrderDS, JobOrderGO, JobProcessRequest, RepJobOrderRequest } from 'a
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
-    MatLabel,
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
@@ -91,26 +90,20 @@ import { JobOrderDS, JobOrderGO, JobProcessRequest, RepJobOrderRequest } from 'a
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
-    MatCardModule,
-    TlxFormFieldComponent
+    MatCardModule
   ]
 })
-export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
     'subgroup_name_cv',
     'damange',
     'repair',
     'description',
-    'quantity',
-    'hour',
-    'price',
-    'material',
-    'isOwner',
-    'approve_part',
     'approve_qty',
     'approve_hour',
-    'approve_cost'
+    'approve_part',
+    'team',
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
   breadcrumsMiddleList = [
@@ -156,7 +149,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
-    ARE_YOU_SURE_ABORT: 'COMMON-FORM.ARE-YOU-SURE-ABORT',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
@@ -209,7 +201,15 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     BILL_DETAILS: 'COMMON-FORM.BILL-DETAILS',
     BILL_TO: 'COMMON-FORM.BILL-TO',
     APPROVE_INFO: 'COMMON-FORM.APPROVE-INFO',
-    ABORT: 'COMMON-FORM.ABORT'
+    TEAM: 'COMMON-FORM.TEAM',
+    QC_DATE: 'COMMON-FORM.QC-DATE',
+    ESTIMATE: 'COMMON-FORM.ESTIMATE',
+    APPROVAL: 'COMMON-FORM.APPROVAL',
+    JOB_ALLOCATION: 'COMMON-FORM.JOB-ALLOCATION',
+    QC_DETAILS: 'COMMON-FORM.QC-DETAILS',
+    UPDATE_BY: 'COMMON-FORM.UPDATE-BY',
+    UPDATE_DATE: 'COMMON-FORM.UPDATE-DATE',
+    QC_COMPLETE: 'COMMON-FORM.QC-COMPLETE',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -233,6 +233,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
+  jobStatusCvList: CodeValuesItem[] = []
+  processStatusCvList: CodeValuesItem[] = []
 
   customer_companyList?: CustomerCompanyItem[];
 
@@ -338,6 +340,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      { alias: 'jobStatusCv', codeValType: 'JOB_STATUS' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -390,10 +394,16 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
       this.unitTypeCvList = data;
     });
+    this.cvDS.connectAlias('jobStatusCv').subscribe(data => {
+      this.jobStatusCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
+    });
 
     this.repair_guid = this.route.snapshot.paramMap.get('id');
     if (this.repair_guid) {
-      this.subs.sink = this.repairDS.getRepairByIDForApproval(this.repair_guid).subscribe(data => {
+      this.subs.sink = this.repairDS.getRepairByIDForQC(this.repair_guid).subscribe(data => {
         if (data?.length) {
           this.repairItem = data[0];
           console.log(this.repairItem);
@@ -516,125 +526,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     });
   }
 
-  onCancel(event: Event) {
-    this.preventDefault(event);
-    console.log(this.repairItem)
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: RepairItem) => new RepairGO(item));
-        console.log(reList);
-        this.updateJobProcessStatus(reList[0].guid, "NO_ACTION");
-        // this.repairDS.cancelRepair(reList).subscribe(result => {
-        //   this.handleCancelSuccess(result?.data?.cancelRepair)
-        // });
-      }
-    });
-  }
-
-  onAbort(event: Event) {
-    this.preventDefault(event);
-    console.log(this.repairItem)
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const distinctJobOrders = this.repList
-          .filter((item, index, self) =>
-            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
-              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
-                t.job_order?.team?.description === item?.job_order?.team?.description))
-          )
-          .filter(item => item.job_order !== null && item.job_order !== undefined)
-          .map(item => new JobOrderGO(item.job_order!));
-
-        const repJobOrder = new RepJobOrderRequest({
-          guid: this.repairItem?.guid,
-          sot_guid: this.repairItem?.sot_guid,
-          estimate_no: this.repairItem?.estimate_no,
-          remarks: this.repairItem?.remarks,
-          job_order: distinctJobOrders
-        });
-
-        console.log(repJobOrder)
-        this.repairDS.abortRepair(repJobOrder).subscribe(result => {
-          console.log(result)
-          this.handleCancelSuccess(result?.data?.abortRepair)
-        });
-      }
-    });
-  }
-
-  onRollback(event: Event) {
-    this.preventDefault(event);
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: any) => {
-          const RepairRequestInput = {
-            customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
-            estimate_no: item.estimate_no,
-            guid: item.guid,
-            remarks: item.remarks,
-            sot_guid: item.sot_guid
-          }
-          return RepairRequestInput
-        });
-        console.log(reList);
-        this.repairDS.rollbackRepairApproval(reList).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackRepairApproval)
-        });
-      }
-    });
-  }
-
   undoTempAction(row: any[], actionToBeRemove: string) {
     const data: any[] = [...this.repList];
     row.forEach((newItem: any) => {
@@ -669,46 +560,30 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     event.preventDefault();
   }
 
-  onApprove(event: Event) {
+  onQCComplete(event: Event) {
     event.preventDefault();
-    const bill_to = this.repairForm!.get('bill_to');
-    bill_to?.setErrors(null);
-    if (bill_to?.value) {
-      let re: RepairItem = new RepairItem();
-      re.guid = this.repairItem?.guid;
-      re.sot_guid = this.repairItem?.sot_guid;
-      re.bill_to_guid = bill_to?.value?.guid;
-      re.status_cv = this.repairItem?.status_cv;
-      re.total_cost = Utility.convertNumber(this.repairForm?.get('net_cost')?.value, 2);
+    const distinctJobOrders = this.repList
+      .filter((item, index, self) =>
+        index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+          (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+            t.job_order?.team?.description === item?.job_order?.team?.description))
+      )
+      .filter(item => item.job_order !== null && item.job_order !== undefined)
+      .map(item => new JobOrderGO(item.job_order!));
 
-      this.repList?.forEach((rep: RepairPartItem) => {
-        rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
-        rep.approve_qty = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0;
-        rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
-        rep.approve_cost = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
-      })
+    const repJobOrder = new RepJobOrderRequest({
+      guid: this.repairItem?.guid,
+      sot_guid: this.repairItem?.sot_guid,
+      estimate_no: this.repairItem?.estimate_no,
+      remarks: this.repairItem?.remarks,
+      job_order: distinctJobOrders
+    });
 
-      re.repair_part = this.repList?.map((rep: RepairPartItem) => {
-        return new RepairPartItem({
-          ...rep,
-          tariff_repair: undefined,
-          rp_damage_repair: undefined,
-          approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair),
-          approve_qty: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0,
-          approve_hour: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0,
-          approve_cost: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0
-        })
-      });
-      console.log(re)
-      this.repairDS.approveRepair(re).subscribe(result => {
-        console.log(result)
-        this.handleSaveSuccess(result?.data?.approveRepair);
-      });
-    } else {
-      bill_to?.setErrors({ required: true })
-      bill_to?.markAsTouched();
-      bill_to?.updateValueAndValidity();
-    }
+    console.log(repJobOrder)
+    this.joDS.completeQCRepair(repJobOrder).subscribe(result => {
+      console.log(result)
+      this.handleSaveSuccess(result?.data?.completeQCRepair);
+    });
   }
 
   onFormSubmit() {
@@ -755,23 +630,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/approval']);
-    }
-  }
-
-  handleCancelSuccess(count: any) {
-    if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/approval']);
-    }
-  }
-
-  handleRollbackSuccess(count: any) {
-    if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/approval']);
+      this.router.navigate(['/admin/repair/job-order']);
     }
   }
 
@@ -797,6 +656,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   getBadgeClass(status: string | undefined): string {
     switch (status) {
       case 'APPROVED':
+      case 'QC_COMPLETED':
         return 'badge-solid-green';
       case 'PENDING':
         return 'badge-solid-cyan';
@@ -863,6 +723,14 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
   }
 
+  getJobStatusDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.jobStatusCvList);
+  }
+
+  getProcessStatusDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
+  }
+
   getGroupSeq(codeVal: string | undefined): number | undefined {
     const gncv = this.groupNameCvList.filter(x => x.code_val === codeVal);
     if (gncv.length) {
@@ -897,6 +765,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   displayDate(input: number | undefined): string | undefined {
+    if (!input) return 'NA';
     return Utility.convertEpochToDateStr(input);
   }
 

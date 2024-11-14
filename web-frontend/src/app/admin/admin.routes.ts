@@ -52,6 +52,7 @@ import { JobOrderResidueDisposalComponent } from './residue-disposal/job-order/j
 import { JobOrderAllocationResidueDisposalComponent } from './residue-disposal/job-order-allocation/job-order-allocation.component';
 import { JobOrderTaskDetailsComponent } from './repair/job-order-task-details/job-order-task-details.component';
 import { CleaningJobOrderTaskDetailsComponent } from './cleaning/job-order-task-details/job-order-task-details.component';
+import { RepairQCViewComponent } from './repair/estimate-qc/estimate-qc.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -239,6 +240,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "repair/job-order/task/:id/:repair_id",
     component: JobOrderTaskDetailsComponent,
+  },
+  {
+    path: "repair/qc/view/:id",
+    component: RepairQCViewComponent,
   },
   {
     path: "master/estimate-template",

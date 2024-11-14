@@ -518,7 +518,6 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       )
       .filter(item => item.job_order !== null && item.job_order !== undefined)
       .map(item => item.job_order);
-    debugger
 
     // const finalJobOrder: any[] = [];
     // distinctJobOrders.forEach(jo => {

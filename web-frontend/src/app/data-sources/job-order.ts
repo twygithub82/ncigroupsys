@@ -27,6 +27,8 @@ export class JobOrderGO {
   public remarks?: string;
   public start_dt?: number;
   public complete_dt?: number;
+  public qc_dt?: number;
+  public qc_by?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -45,6 +47,8 @@ export class JobOrderGO {
     this.remarks = item.remarks;
     this.start_dt = item.start_dt;
     this.complete_dt = item.complete_dt;
+    this.qc_dt = item.qc_dt;
+    this.qc_by = item.qc_by;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -61,7 +65,6 @@ export class JobOrderRequest {
   public sot_guid?: string;
   public status_cv?: string;
   public team_guid?: string;
-  //public process_guid?:string;
   public total_hour?: number;
   public working_hour?: number;
   public create_dt?: number;
@@ -75,7 +78,6 @@ export class JobOrderRequest {
     this.job_type_cv = item.job_type_cv;
     this.part_guid = item.part_guid;
     this.remarks = item.remarks;
-    //this.process_guid=item.process_guid;
     this.sot_guid = item.sot_guid;
     this.status_cv = item.status_cv;
     this.team_guid = item.team_guid;
@@ -141,6 +143,21 @@ export class UpdateJobOrderRequest {
     this.remarks = item.remarks;
     this.start_dt = item.start_dt;
     this.complete_dt = item.complete_dt;
+  }
+}
+
+export class RepJobOrderRequest {
+  public estimate_no?: string;
+  public guid?: string;
+  public job_order?: JobOrderGO[];
+  public remarks?: string;
+  public sot_guid?: string;
+  constructor(item: Partial<RepJobOrderRequest> = {}) {
+    this.estimate_no = item.estimate_no;
+    this.guid = item.guid;
+    this.job_order = item.job_order;
+    this.remarks = item.remarks;
+    this.sot_guid = item.sot_guid;
   }
 }
 
@@ -510,6 +527,12 @@ const COMPLETE_JOB_ORDER = gql`
   }
 `
 
+const QC_COMPLETE_REPAIR_JOB_ORDER = gql`
+  mutation completeQCRepair($repJobOrder: RepJobOrderRequestInput!) {
+    completeQCRepair(repJobOrder: $repJobOrder)
+  }
+`
+
 export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -615,28 +638,28 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
         })
       );
   }
-  
+
   subscribeToJobOrderStarted(job_order_guid: string): Observable<any> {
     return this.apollo.subscribe({
       query: ON_JOB_STARTED_SUBSCRIPTION,
       variables: { job_order_guid }
     });
   }
-  
+
   subscribeToJobOrderStopped(job_order_guid: string): Observable<any> {
     return this.apollo.subscribe({
       query: ON_JOB_STOPPED_SUBSCRIPTION,
       variables: { job_order_guid }
     });
   }
-  
+
   subscribeToJobOrderCompleted(job_order_guid: string): Observable<any> {
     return this.apollo.subscribe({
       query: ON_JOB_COMPLETED_SUBSCRIPTION,
       variables: { job_order_guid }
     });
   }
-  
+
   subscribeToJobItemCompleted(item_guid: string, job_type: string): Observable<any> {
     return this.apollo.subscribe({
       query: ON_JOB_ITEM_COMPLETED_SUBSCRIPTION,
@@ -680,11 +703,34 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     });
   }
 
+  completeQCRepair(repJobOrder: RepJobOrderRequest): Observable<any> {
+    return this.apollo.mutate({
+      mutation: QC_COMPLETE_REPAIR_JOB_ORDER,
+      variables: {
+        repJobOrder
+      }
+    });
+  }
+
   canStartJob(jobOrderItem: JobOrderItem | undefined) {
     return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
   }
 
   canCompleteJob(jobOrderItem: JobOrderItem | undefined) {
     return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' && this.canStartJob(jobOrderItem);
+  }
+
+  getEstimateJobOrder(rpList: RepairPartItem[] | undefined) {
+    const firstValidJobOrder = rpList?.find(
+      (rp) => rp.job_order && rp.job_order.create_dt !== null && rp.job_order.create_by !== null
+    );
+    return firstValidJobOrder?.job_order;
+  }
+
+  getQCJobOrder(rpList: RepairPartItem[] | undefined) {
+    const firstValidJobOrder = rpList?.find(
+      (rp) => rp.job_order && rp.job_order.qc_dt !== null && rp.job_order.qc_by !== null
+    );
+    return firstValidJobOrder?.job_order;
   }
 }
