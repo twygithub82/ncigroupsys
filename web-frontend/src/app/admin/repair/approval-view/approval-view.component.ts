@@ -57,7 +57,7 @@ import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
-import { JobOrderDS, JobProcessRequest } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderGO, JobProcessRequest, RepJobOrderRequest } from 'app/data-sources/job-order';
 
 @Component({
   selector: 'app-approval-view',
@@ -156,6 +156,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_ABORT: 'COMMON-FORM.ARE-YOU-SURE-ABORT',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
@@ -207,7 +208,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     BILL_DETAILS: 'COMMON-FORM.BILL-DETAILS',
     BILL_TO: 'COMMON-FORM.BILL-TO',
-    APPROVE_INFO: 'COMMON-FORM.APPROVE-INFO'
+    APPROVE_INFO: 'COMMON-FORM.APPROVE-INFO',
+    ABORT: 'COMMON-FORM.ABORT'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -542,6 +544,54 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         // this.repairDS.cancelRepair(reList).subscribe(result => {
         //   this.handleCancelSuccess(result?.data?.cancelRepair)
         // });
+      }
+    });
+  }
+
+  onAbort(event: Event) {
+    this.preventDefault(event);
+    console.log(this.repairItem)
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
+        item: [this.repairItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const distinctJobOrders = this.repList
+          .filter((item, index, self) =>
+            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                t.job_order?.team?.description === item?.job_order?.team?.description))
+          )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO(item.job_order!));
+
+        const repJobOrder = new RepJobOrderRequest({
+          guid: this.repairItem?.guid,
+          sot_guid: this.repairItem?.sot_guid,
+          estimate_no: this.repairItem?.estimate_no,
+          remarks: this.repairItem?.remarks,
+          job_order: distinctJobOrders
+        });
+
+        console.log(repJobOrder)
+        this.repairDS.abortRepair(repJobOrder).subscribe(result => {
+          console.log(result)
+          this.handleCancelSuccess(result?.data?.abortRepair)
+        });
       }
     });
   }

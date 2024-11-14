@@ -234,6 +234,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
   jobStatusCvList: CodeValuesItem[] = []
+  processStatusCvList: CodeValuesItem[] = []
 
   customer_companyList?: CustomerCompanyItem[];
 
@@ -340,6 +341,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
       { alias: 'jobStatusCv', codeValType: 'JOB_STATUS' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -394,6 +396,9 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.cvDS.connectAlias('jobStatusCv').subscribe(data => {
       this.jobStatusCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
     });
 
     this.repair_guid = this.route.snapshot.paramMap.get('id');
@@ -573,7 +578,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
       remarks: this.repairItem?.remarks,
       job_order: distinctJobOrders
     });
-    
+
     console.log(repJobOrder)
     this.joDS.completeQCRepair(repJobOrder).subscribe(result => {
       console.log(result)
@@ -651,6 +656,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   getBadgeClass(status: string | undefined): string {
     switch (status) {
       case 'APPROVED':
+      case 'QC_COMPLETED':
         return 'badge-solid-green';
       case 'PENDING':
         return 'badge-solid-cyan';
@@ -719,6 +725,10 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   getJobStatusDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.jobStatusCvList);
+  }
+
+  getProcessStatusDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {

@@ -285,6 +285,7 @@
     "SAVE-AND-SUBMIT": "Save & Submit",
     "ARE-YOU-SURE-DELETE": "Are you sure to delete?",
     "ARE-YOU-SURE-CANCEL": "Are you sure to cancel?",
+    "ARE-YOU-SURE-ABORT": "Are you sure to abort?",
     "ARE-YOU-SURE-ROLLBACK": "Are you sure to rollback?",
     "DELETE": "Delete",
     "OK": "Ok",
@@ -666,7 +667,8 @@
     "DURATION": "Duration",
     "APPROVE-DATE": "Approve Date",
     "QC-DATE": "QC Date",
-    "QC-COMPLETE": "QC Complete"
+    "QC-COMPLETE": "QC Complete",
+    "ABORT": "Abort"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
