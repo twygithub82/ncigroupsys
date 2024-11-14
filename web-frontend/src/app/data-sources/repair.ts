@@ -421,6 +421,7 @@ export const GET_REPAIR_FOR_APPROVAL = gql`
             width_diameter_unit_cv
           }
           job_order {
+            guid
             status_cv
           }
         }
@@ -955,6 +956,12 @@ export const APPROVE_REPAIR = gql`
   }
 `
 
+const ABORT_REPAIR = gql`
+  mutation abortRepair($repJobOrder: RepJobOrderRequestInput!) {
+    abortRepair(repJobOrder: $repJobOrder)
+  }
+`
+
 export class RepairDS extends BaseDataSource<RepairItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -1168,6 +1175,15 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     });
   }
 
+  abortRepair(repJobOrder: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ABORT_REPAIR,
+      variables: {
+        repJobOrder
+      }
+    });
+  }
+
   canAmend(re: RepairItem | undefined): boolean {
     return !re?.status_cv || re?.status_cv === 'PENDING';
   }
@@ -1178,6 +1194,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
 
   canCancel(re: RepairItem | undefined): boolean {
     return re?.status_cv === 'PENDING';
+  }
+
+  canAbort(re: RepairItem | undefined): boolean {
+    return re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS';
   }
 
   canRollback(re: RepairItem | undefined): boolean {

@@ -902,6 +902,19 @@
                     {{translatedLangText.NO_ACTION}}
                   </button>
                   }
+                  @if (repairDS.canAbort(repairItem)) {
+                  <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-l-5"
+                    (click)="onAbort($event)">
+                    <mat-icon>
+                      @if (!(repairDS.loading$ | async)) {
+                      close
+                      } @else if ((repairDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.ABORT}}
+                  </button>
+                  }
                   <!-- @if (canSave()) {
                   <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)" class="m-l-5">
                     <mat-icon>
