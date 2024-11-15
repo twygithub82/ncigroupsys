@@ -12,14 +12,11 @@ namespace IDMS.Models.Service
 
         [ForeignKey("storing_order_tank")]
         public string? sot_guid { get; set; }
-        public string? description { get; set; }
-        public int? quantity { get; set; }
-        public double? hour { get; set; }
-        public double? material_cost { get; set; }
         public string? status_cv { get; set; }
         public string? remarks { get; set; }
         public string? job_no { get; set; }
-        public string? estimate_no {  get; set; }
+        public double? total_cost { get; set; }
+        public string? estimate_no { get; set; }
         public string? estimate_by { get; set; }
         public long? estimate_dt { get; set; }
         public string? approve_by { get; set; }
@@ -28,6 +25,7 @@ namespace IDMS.Models.Service
         public long? begin_dt { get; set; }
         public string? complete_by { get; set; }
         public long? complete_dt { get; set; }
+        public long? na_dt { get; set; }
         public string? invoice_by { get; set; }
         public long? invoice_dt { get; set; }
 
