@@ -452,7 +452,7 @@ namespace IDMS.Repair.GqlTypes
 
                     //job_orders handling
                     var guids = string.Join(",", repJobOrder.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}' update_dt = {currentDateTime}, " +
+                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
                             $"update_by = '{user}' WHERE guid IN ({guids})";
                     context.Database.ExecuteSqlRaw(sql);
 
