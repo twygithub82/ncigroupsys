@@ -11,6 +11,7 @@ namespace IDMS.Models.Tariff
         public float? temp_min { get; set; }
         public float? temp_max { get; set; }
         public double? cost { get; set; }
+        public double? labour { get; set; }
         public string? remarks { get; set; }
 
         [UseFiltering]

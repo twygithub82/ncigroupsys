@@ -22,7 +22,7 @@ namespace IDMS.Models.Package
         public string? customer_company_guid { get; set; }
 
         public double? cost { get; set; }
-
+        public double? labour {  get; set; }
         public string? remarks { get; set; }
 
         public tariff_steaming? tariff_steaming { get; set; }
