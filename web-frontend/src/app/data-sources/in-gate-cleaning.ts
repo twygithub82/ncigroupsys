@@ -138,6 +138,8 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
           guid
           job_order_no
           job_type_cv
+          qc_dt
+          qc_by
           remarks
           sot_guid
           start_dt
@@ -441,6 +443,13 @@ export const UPDATE_IN_GATE_CLEANING = gql`
   }
 `;
 
+const ABORT_IN_GATE_CLEANING = gql`
+  mutation abortCleaning($clnJobOrder: CleaningJobOrderInput!) {
+    abortCleaning(cleaningJobOrder: $clnJobOrder)
+  }
+`
+
+
 export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -478,6 +487,15 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
       mutation: UPDATE_IN_GATE_CLEANING,
       variables: {
         clean
+      }
+    });
+  }
+
+  abortInGateCleaning(clnJobOrder: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ABORT_IN_GATE_CLEANING,
+      variables: {
+        clnJobOrder
       }
     });
   }
