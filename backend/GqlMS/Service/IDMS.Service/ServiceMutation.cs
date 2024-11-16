@@ -244,7 +244,6 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-
         public async Task<int> CompleteJobItem(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<JobItemRequest> jobItemRequest)
         {
@@ -340,45 +339,6 @@ namespace IDMS.Service.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
-        //private void AssignPartToJob(ApplicationServiceDBContext context, string jobType, string jobOrderGuid, List<string?>? partGuid)
-        //{
-        //    switch (jobType.ToUpper())
-        //    {
-        //        case JobType.REPAIR:
-        //            foreach (var item in partGuid)
-        //            {
-        //                var repPart = new repair_part() { guid = item };
-        //                context.repair_part.Attach(repPart);
-        //                repPart.job_order_guid = jobOrderGuid;
-        //            }
-        //            break;
-        //        case JobType.CLEANING:
-        //            foreach (var item in partGuid)
-        //            {
-        //                var cleaningPart = new cleaning() { guid = item };
-        //                context.cleaning.Attach(cleaningPart);
-        //                cleaningPart.job_order_guid = jobOrderGuid;
-        //            }
-        //            break;
-        //        case JobType.RESIDUE:
-        //            foreach (var item in partGuid)
-        //            {
-        //                var resPart = new residue_part() { guid = item };
-        //                context.residue_part.Attach(resPart);
-        //                resPart.job_order_guid = jobOrderGuid;
-        //            }
-        //            break;
-        //        case JobType.STEAM:
-        //            //foreach (var item in partGuid)
-        //            //{
-        //            //    var resPart = new residue_part() { guid = item };
-        //            //    context.residue_part.Attach(resPart);
-        //            //    resPart.job_order_guid = jobOrderGuid;
-        //            //}
-        //            break;
-        //    }
-        //}
 
         public async Task<int> StartJobTimer(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<time_table> timeTable)
@@ -512,7 +472,6 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-
         public async Task<int> UpdateJobProcessStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, JobProcessRequest jobProcessRequest)
         {
@@ -592,7 +551,6 @@ namespace IDMS.Service.GqlTypes
                 throw;
             }
         }
-
         private async Task<bool> UpdateAccumalateHour(ApplicationServiceDBContext context, string user, long currentDateTime, List<string?> jobOrderGuid)
         {
             try

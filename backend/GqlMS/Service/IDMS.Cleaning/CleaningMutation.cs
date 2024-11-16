@@ -9,6 +9,7 @@ using IDMS.Models.Service;
 using IDMS.Models.Inventory;
 using IDMS.Service.GqlTypes;
 using IDMS.Cleaning.GqlTypes.LocalModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace IDMS.Cleaning.GqlTypes
 {
@@ -107,33 +108,33 @@ namespace IDMS.Cleaning.GqlTypes
         }
 
 
-        public async Task<int> DeleteCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, List<string> cleaningGuids)
-        {
-            int retval = 0;
-            try
-            {
+        //public async Task<int> DeleteCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
+        //    [Service] IHttpContextAccessor httpContextAccessor, List<string> cleaningGuids)
+        //{
+        //    int retval = 0;
+        //    try
+        //    {
 
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //string user = "admin";
-                long currentDateTime = DateTime.Now.ToEpochTime();
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        //string user = "admin";
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
 
-                var delCleaning = context.cleaning.Where(i => cleaningGuids.Contains(i.guid));
-                foreach (var cleaning in delCleaning)
-                {
-                    cleaning.delete_dt = currentDateTime;
-                    cleaning.update_by = user;
-                    cleaning.update_dt = currentDateTime;
+        //        var delCleaning = context.cleaning.Where(i => cleaningGuids.Contains(i.guid));
+        //        foreach (var cleaning in delCleaning)
+        //        {
+        //            cleaning.delete_dt = currentDateTime;
+        //            cleaning.update_by = user;
+        //            cleaning.update_dt = currentDateTime;
 
-                    retval = await context.SaveChangesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-            }
-            return retval;
-        }
+        //            retval = await context.SaveChangesAsync();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+        //    }
+        //    return retval;
+        //}
 
         public async Task<int> AbortCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, CleaningJobOrder cleaningJobOrder)
@@ -175,5 +176,61 @@ namespace IDMS.Cleaning.GqlTypes
             }
         }
 
+        public async Task<int> CompleteQCCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, CleaningJobOrder cleaningJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (cleaningJobOrder == null)
+                    throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
+
+                using var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    var completeCleaning = new cleaning() { guid = cleaningJobOrder.guid };
+                    context.cleaning.Attach(completeCleaning);
+
+                    completeCleaning.update_by = user;
+                    completeCleaning.update_dt = currentDateTime;
+                    completeCleaning.status_cv = CurrentServiceStatus.QC;
+                    completeCleaning.remarks = cleaningJobOrder.remarks;
+
+                    //Tank handling
+                    if (string.IsNullOrEmpty(cleaningJobOrder.sot_guid))
+                        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                    var sot = new storing_order_tank() { guid = cleaningJobOrder.sot_guid };
+                    context.storing_order_tank.Attach(sot);
+                    sot.tank_status_cv = TankMovementStatus.STORAGE;
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;
+
+                    //job_orders handling
+                    var guids = string.Join(",", cleaningJobOrder.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}' WHERE guid IN ({guids})";
+                    context.Database.ExecuteSqlRaw(sql);
+
+                    var res = await context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return res;
+                }
+                catch (Exception ex)
+                {
+                    // Rollback in case of an error
+                    transaction.Rollback();
+                    throw;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
     }
 }

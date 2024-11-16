@@ -49,6 +49,7 @@ namespace IDMS.Models.Service.GqlTypes.DB
         public DbSet<residue_part> residue_part { get; set; }
         public DbSet<cleaning> cleaning { get; set; }
         public DbSet<steaming> steaming { get; set; }
+        public DbSet<steaming_part> steaming_part { get; set; }
         public DbSet<steaming_temp> steaming_temp { get; set; }
     }
 }

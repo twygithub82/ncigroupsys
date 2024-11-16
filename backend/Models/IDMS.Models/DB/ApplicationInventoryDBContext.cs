@@ -28,7 +28,6 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<out_gate_survey> out_gate_survey { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
         public DbSet<cleaning_method> cleaning_method { get; set; }
-        //public DbSet<CleaningCategoryWithTariff> cleaning_category { get; set; }
         public DbSet<cleaning_category> cleaning_category { get; set; }
 
         public DbSet<booking> booking { get; set; }
@@ -74,6 +73,8 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
             modelBuilder.Entity<customer_company_cleaning_category>();
             modelBuilder.Entity<tariff_buffer>();
             modelBuilder.Entity<package_buffer>();
+            modelBuilder.Entity<tariff_steaming>();
+            modelBuilder.Entity<package_steaming>();
 
         }
     }
