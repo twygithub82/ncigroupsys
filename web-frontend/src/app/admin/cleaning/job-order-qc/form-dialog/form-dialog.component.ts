@@ -118,6 +118,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   teamList?: any[];
 
   storageCalCvList:CodeValuesItem[]=[];
+  processStatusCvList:CodeValuesItem[]=[];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -238,7 +239,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     TEAM_DETAILS: 'COMMON-FORM.TEAM-DETAILS',
     TEAM: 'COMMON-FORM.TEAM',
     BAY_ALLOCATION: 'COMMON-FORM.BAY-ALLOCATION',
-    ABORT: 'COMMON-FORM.ABORT',
+    QC_COMPLETE: 'COMMON-FORM.QC-COMPLETE',
   };
 
   
@@ -371,19 +372,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
-  buttonViewOnly():boolean
-  {
-    let bView:boolean=false;
-    if(this.selectedItems?.length>0)
-    {
-       bView = this.selectedItems[0].status_cv=="JOB_IN_PROGRESS";
-    }
-    return bView;
-  }
   loadData()
   {
     //this.queryDepotCost();
-    
+
     this.subs.sink = this.teamDS.getTeamListByDepartment(["CLEANING"]).subscribe(data => {
       if (data?.length) {
         
@@ -391,8 +383,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           ...row,
           index:index,
           isSelected: false,
-          isOccupied:false,
-          isViewOnly:this.buttonViewOnly()|| this.action=="view"
+          isOccupied:false
         }));
         this.sortBayList(this.teamList);
         this.queryOccupiedTeam();
@@ -401,13 +392,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
      
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
       this.storageCalCvList=data;
    
-
+      this.CodeValuesDS?.connectAlias('processStatusCv').subscribe(data => {
+        this.processStatusCvList = data;
+      });
     if(this.selectedItems.length==1)
     {
       this.selectedItem= this.selectedItems[0]
@@ -417,16 +411,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         
         tank_no:inGateClnItem.storing_order_tank?.tank_no,
         customer:this.displayCustomerName(inGateClnItem.storing_order_tank?.storing_order?.customer_company),
-         eir_no:inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
-         eir_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
-         quotation_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+        //  eir_no:inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
+        //  eir_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+        //  quotation_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
          cargo:inGateClnItem.storing_order_tank?.tariff_cleaning.cargo,
-         job_no:inGateClnItem.job_no,
-         depot_estimate_cost:Number(inGateClnItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
-         customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
+         job_no:inGateClnItem.job_order_no,
+        //  depot_estimate_cost:Number(inGateClnItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
+        //  customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
          update_by:inGateClnItem.approve_by,
          update_on:this.displayDateFromEpoch(inGateClnItem.approve_dt),
-         job_no_input:inGateClnItem.job_no,
+        // job_no_input:inGateClnItem.job_order_no,
          status_cv:inGateClnItem.status_cv,
          approve_dt:this.displayDateFromEpoch(inGateClnItem.approve_dt),
          na_dt:this.displayDateFromEpoch(inGateClnItem.na_dt),
@@ -466,7 +460,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   canEdit()
   {
-    if(this.action!="view" )
+    if(this.action!="view")
     {
     return true;
     }
@@ -488,21 +482,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  canAbort():boolean
-  {
-    let retval:boolean=true;
-    var selItem =this.selectedItems[0];
-
-    retval =selItem.job_order.status_cv==="COMPLETED";
-    return retval;
-  }
-  abort(event: Event){
-
+  onQCComplete(event: Event) {
     event.preventDefault();
-    var selItem =this.selectedItems[0];
-    if(selItem.status_cv!="JOB_IN_PROGRESS") return;
-
-    
     const distinctJobOrders :any[] =[];
     const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
     distinctJobOrders.push(jobOrder);
@@ -514,38 +495,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
 
     console.log(repJobOrder)
-    this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
+    this.jobOrderDS?.completeQCCleaning(repJobOrder).subscribe(result => {
       console.log(result)
-      this.handleSaveSuccess(result?.data?.abortCleaning);
+      this.handleSaveSuccess(result?.data?.completeQCCleaning);
     });
-
-  }
-
-  save() {
-
-    if (!this.pcForm?.valid) return;
-
-    var selItem =this.selectedItems[0];
-    var newJobOrderReq :JobOrderRequest = new JobOrderRequest();
-    let job_type="CLEANING";
-    var team : TeamItem = this.pcForm!.get("team_allocation")?.value;
-    newJobOrderReq.job_type_cv=job_type;
-    newJobOrderReq.team_guid =team?.guid;
-    newJobOrderReq.sot_guid=selItem.storing_order_tank?.guid;
-    newJobOrderReq.total_hour=this.cleaningTotalHours;
-    newJobOrderReq.part_guid=[];
-    newJobOrderReq.part_guid.push(selItem.guid);
-    
-    this.jobOrderDS?.assignJobOrder(newJobOrderReq).subscribe(result=>{
-      if(result.data.assignJobOrder>0)
-      {
-         let cleanGuid =selItem.guid;
-         let process_status="JOB_IN_PROGRESS";
-         this.updateJobProcessStatus(cleanGuid,job_type,process_status);
-      }
-    });
-
-   
   }
 
   updateJobProcessStatus(cleaningGuid:string, job_type:string,process_status:string)
@@ -707,7 +660,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   toggleTeam(team: any) {
     let selected:boolean =!team.isSelected;
-    if(team.isViewOnly) return;
+
     if(selected)
     {
       this.teamList!.forEach(team => team.isSelected = false);
@@ -724,10 +677,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     team.isSelected = !team.isSelected;
   }
   
-  canSave():boolean{
+  canQCComplete():boolean{
     let retval:boolean =false;
-
-     retval = !!this.pcForm?.get("team_allocation")?.value;
+    const validStatus:string[]=['COMPLETED'];
+     retval =  validStatus.includes(this.selectedItems[0].job_order.status_cv);
+     if(retval) retval=this.selectedItems[0].status_cv=='JOB_IN_PROGRESS';
     return retval;
   }
 
@@ -741,5 +695,28 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       return numA - numB;
     });
+  }
+
+  getProcessStatusDescription(codeVal: string | undefined): string | undefined {
+    return this.CodeValuesDS?.getCodeDescription(codeVal, this.processStatusCvList);
+  }
+
+  getBadgeClass(status: string | undefined): string {
+    switch (status) {
+      case 'APPROVED':
+      case 'QC_COMPLETED':
+        return 'badge-solid-green';
+      case 'PENDING':
+        return 'badge-solid-cyan';
+      case 'CANCEL':
+      case 'NO_ACTION':
+        return 'badge-solid-red';
+      case 'JOB_IN_PROGRESS':
+        return 'badge-solid-purple';
+      case 'COMPLETED':
+        return 'badge-solid-blue';
+      default:
+        return '';
+    }
   }
 }

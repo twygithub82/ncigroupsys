@@ -146,6 +146,18 @@ export class UpdateJobOrderRequest {
   }
 }
 
+export class ClnJobOrderRequest {
+  public guid?: string;
+  public job_order?: JobOrderGO[];
+  public remarks?: string;
+  public sot_guid?: string;
+  constructor(item: Partial<ClnJobOrderRequest> = {}) {
+    this.guid = item.guid;
+    this.job_order = item.job_order;
+    this.remarks = item.remarks;
+    this.sot_guid = item.sot_guid;
+  }
+}
 export class RepJobOrderRequest {
   public estimate_no?: string;
   public guid?: string;
@@ -175,6 +187,8 @@ const GET_JOB_ORDER = gql`
         create_dt
         delete_dt
         guid
+        qc_by
+        qc_dt
         job_order_no
         job_type_cv
         remarks
@@ -191,12 +205,17 @@ const GET_JOB_ORDER = gql`
           guid
         }
         storing_order_tank {
+          guid
           tank_no
           storing_order {
             customer_company {
               name
               code
             }
+          }
+          tariff_cleaning {
+            cargo
+            nature_cv
           }
         }
         repair_part {
@@ -533,6 +552,12 @@ const QC_COMPLETE_REPAIR_JOB_ORDER = gql`
   }
 `
 
+const QC_COMPLETE_CLEANING_JOB_ORDER = gql`
+  mutation completeQCCleaning($clnJobOrder: CleaningJobOrderInput!) {
+    completeQCCleaning(cleaningJobOrder: $clnJobOrder)
+  }
+`
+
 export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -708,6 +733,15 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
       mutation: QC_COMPLETE_REPAIR_JOB_ORDER,
       variables: {
         repJobOrder
+      }
+    });
+  }
+
+  completeQCCleaning(clnJobOrder: ClnJobOrderRequest): Observable<any> {
+    return this.apollo.mutate({
+      mutation: QC_COMPLETE_CLEANING_JOB_ORDER,
+      variables: {
+        clnJobOrder
       }
     });
   }

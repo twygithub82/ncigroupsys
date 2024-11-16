@@ -190,7 +190,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED'
+    'QC_COMPLETED'
   ]
 
   clnEstList: InGateCleaningItem[] = [];
@@ -652,7 +652,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     return retval;
   }
 
-  popupDialogForm(row:InGateItem, action:string)
+  popupDialogForm(row:InGateCleaningItem, action:string)
   {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -660,8 +660,12 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     } else {
       tempDirection = 'ltr';
     }
+
+    if(row.status_cv==='QC_COMPLETED') action='view';
     var rows :InGateCleaningItem[] =[] ;
     rows.push(row);
+    
+
     const dialogRef = this.dialog.open(FormDialogComponent,{
       
       width: '1000px',

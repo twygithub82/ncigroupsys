@@ -43,7 +43,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { InGateDS } from 'app/data-sources/in-gate';
+import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -51,6 +51,8 @@ import { JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RepairPartItem } from 'app/data-sources/repair-part';
+import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-job-order-qc',
@@ -87,81 +89,140 @@ import { RepairPartItem } from 'app/data-sources/repair-part';
   ]
 })
 export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  displayedColumnsJobOrder = [
+ // displayedColumns = [
+  //   'tank_no',
+  //   'customer',
+  //   'eir_no',
+  //   'eir_dt',
+  //   'last_cargo',
+  //   'tank_status_cv'
+  // ];
+
+  displayedColumnsRepair = [
     'tank_no',
     'customer',
-    'estimate_no',
-    'estimate_dt',
-    'approve_dt',
-    'qc_dt',
-    'repair_type'
+    // 'eir_no',
+    // 'eir_dt',
+    'last_cargo',
+    'qcdt',
+    'qctype',
+    'status_cv'
   ];
+
+  displayedColumnsJobOrder = [
+    'tank_no',
+    'job_order_no',
+    'customer',
+    'estimate_no',
+    'status_cv'
+  ];
+
+  pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
+  breadcrumsMiddleList = [
+    'MENUITEMS.HOME.TEXT'
+  ]
 
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
+    SO_NO: 'COMMON-FORM.SO-NO',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    PART_NAME: 'COMMON-FORM.PART-NAME',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
     PURPOSE: 'COMMON-FORM.PURPOSE',
+    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    ADD: 'COMMON-FORM.ADD',
+    REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
+    ACCEPTED: 'COMMON-FORM.ACCEPTED',
+    WAITING: 'COMMON-FORM.WAITING',
+    CANCELED: 'COMMON-FORM.CANCELED',
+    TANKS: 'COMMON-FORM.TANKS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
+    BILL_COMPLETED: 'COMMON-FORM.BILL-COMPLETED',
+    REPAIR_JOB_NO: 'COMMON-FORM.REPAIR-JOB-NO',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
     ESTIMATE_STATUS: 'COMMON-FORM.ESTIMATE-STATUS',
     CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    NET_COST: 'COMMON-FORM.NET-COST',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    AMEND: 'COMMON-FORM.AMEND',
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
+    REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
+    JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
-    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
+    METHOD:"COMMON-FORM.METHOD",
+    QC: 'COMMON-FORM.QC',
     QC_DATE: 'COMMON-FORM.QC-DATE',
-    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE'
+    JOB_TYPE:'COMMON-FORM.JOB-TYPE',
+
   }
 
+  filterCleanForm?: UntypedFormGroup;
   filterJobOrderForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
+  tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  repairDS: RepairDS;
+  cleanDS: InGateCleaningDS;
   joDS: JobOrderDS;
-  ttDS: TimeTableDS;
 
-  repEstList: RepairItem[] = [];
+  availableProcessStatus: string[] = [
+   // 'APPROVED',
+    'JOB_IN_PROGRESS',
+   // 'COMPLETED',
+    'QC_COMPLETED'
+  ]
+
+  clnEstList: InGateCleaningItem[] = [];
+  jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  jobStatusCvList: CodeValuesItem[] = [];
-  processStatusCvList: CodeValuesItem[] = [];
+  processStatusCvList:CodeValuesItem[]=[];
 
   customerCodeControl = new UntypedFormControl();
+  lastCargoControl = new UntypedFormControl();
   customer_companyList?: CustomerCompanyItem[];
+  last_cargoList?: TariffCleaningItem[];
+
+  pageIndexClean = 0;
+  pageSizeClean = 10;
+  lastSearchCriteriaClean: any;
+  lastOrderByClean: any = { storing_order_tank:{tank_no: "DESC" }};
+  endCursorClean: string | undefined = undefined;
+  startCursorClean: string | undefined = undefined;
+  hasNextPageClean = false;
+  hasPreviousPageClean = false;
 
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 100;
+  pageSizeJobOrder = 10;
   lastSearchCriteriaJobOrder: any;
-  lastOrderByJobOrder: any = { create_dt: "DESC" };
+  lastOrderByJobOrder: any = { job_order_no: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
   startCursorJobOrder: string | undefined = undefined;
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
-
-  private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -174,15 +235,15 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.customerCodeControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.customer_companyList)]);
+    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.repairDS = new RepairDS(this.apollo);
+    this.cleanDS = new InGateCleaningDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
-    this.ttDS = new TimeTableDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -191,27 +252,74 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeValueChanges();
+    this.initializeFilterCustomerCompany();
     this.loadData();
   }
 
+  refresh() {
+    this.refreshTable();
+  }
+
   initSearchForm() {
+    this.filterCleanForm = this.fb.group({
+      filterClean: [''],
+      status_cv: [['JOB_IN_PROGRESS']],
+      customer: [''],
+    });
     this.filterJobOrderForm = this.fb.group({
-      filterRepair: [''],
-      jobStatusCv: [['PENDING', 'JOB_IN_PROGRESS']],
-      customer: this.customerCodeControl,
+      filterJobOrder: [''],
     });
   }
 
+  cancelItem(row: StoringOrderItem) {
+    // this.id = row.id;
+    this.cancelSelectedRows([row])
+  }
+
+  private refreshTable() {
+    this.paginator._changePageSize(this.paginator.pageSize);
+  }
+
+  cancelSelectedRows(row: StoringOrderItem[]) {
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    //   data: {
+    //     item: [...row],
+    //     langText: this.langText
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result?.action === 'confirmed') {
+    //     const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
+    //     this.soDS.cancelStoringOrder(so).subscribe(result => {
+    //       if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
+    //         let successMsg = this.langText.CANCELED_SUCCESS;
+    //         this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
+    //           successMsg = res;
+    //           ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    //           this.refreshTable();
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
+  }
+
   public loadData() {
-    this.onFilter();
+   this.onFilterCleaning();
+    this.onFilterJobOrder();
 
     const queries = [
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'jobStatusCv', codeValType: 'JOB_STATUS' },
-      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -223,11 +331,8 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
     });
-    this.cvDS.connectAlias('jobStatusCv').subscribe(data => {
-      this.jobStatusCvList = data;
-    });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = data;
+      this.processStatusCvList = addDefaultSelectOption(data, 'All');
     });
   }
 
@@ -245,34 +350,97 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
-  onFilter() {
-    const where: any = {
-      status_cv: { in: ["JOB_IN_PROGRESS", "QC_COMPLETED", "AV"] },
-      repair_part: {
-        all: {
-          delete_dt: { eq: null },
-          or: [
-            { approve_part: { eq: false } },
-            {
-              approve_part: { eq: true },
-              job_order: { status_cv: { in: ["COMPLETED", "CANCELED"] } }
-            }
-          ]
-        }
-      }
-    };
+  // export table data in excel file
+  exportExcel() {
+    // key name with space add in brackets
+    // const exportData: Partial<TableElement>[] =
+    //   this.dataSource.filteredData.map((x) => ({
+    //     'First Name': x.fName,
+    //     'Last Name': x.lName,
+    //     Email: x.email,
+    //     Gender: x.gender,
+    //     'Birth Date': formatDate(new Date(x.bDate), 'yyyy-MM-dd', 'en') || '',
+    //     Mobile: x.mobile,
+    //     Address: x.address,
+    //     Country: x.country,
+    //   }));
 
-    if (this.filterJobOrderForm!.get('filterRepair')?.value) {
-      where.or = [
-        { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } },
-        { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } } }
-      ];
+    // TableExportUtil.exportToExcel(exportData, 'excel');
+  }
+
+  // context menu
+  onContextMenu(event: MouseEvent, item: StoringOrderItem) {
+    event.preventDefault();
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
+      this.contextMenu.menuData = { item: item };
+      this.contextMenu.menu.focusFirstItem('mouse');
+      this.contextMenu.openMenu();
+    }
+  }
+
+  onFilterCleaning() {
+
+
+    const where: any = {
+      and:[]
+    };
+    
+    where.and.push({
+      job_order: { status_cv: {eq:'COMPLETED' }}
+    });
+
+    // or: [
+    //   { storing_order_tank: { tank_no: { contains: "" } } },
+    //   { estimate_no: { contains: "" } }
+    // ]
+    if (this.filterCleanForm!.get('filterClean')?.value) {
+      where.and.push({
+        storing_order_tank: { tank_no: { contains: this.filterCleanForm!.get('filterClean')?.value } }
+      });
     }
 
-    // if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
-    //   where.status_cv = {
-    //     in: this.filterJobOrderForm!.get('jobStatusCv')?.value
-    //   };
+    if (this.filterCleanForm!.get('customer')?.value) {
+      where.and.push({
+        customer_company: { code: { eq: (this.filterCleanForm!.get('customer')?.value).code } }
+      });
+    }
+
+    if (this.filterCleanForm!.get('status_cv')?.value) {
+      where.and.push({
+        status_cv: { in: this.filterCleanForm!.get('status_cv')?.value} 
+      });
+    }
+
+    this.lastSearchCriteriaClean = this.cleanDS.addDeleteDtCriteria(where);
+    this.performSearchClean(this.pageSizeClean, this.pageIndexClean, this.pageSizeClean, undefined, undefined, undefined, () => { });
+  }
+
+  onFilterJobOrder() {
+    const where: any = { and:[]}
+    where.and.push({job_type_cv: { eq: "CLEANING" }});
+    
+
+    if (this.filterCleanForm!.get('filterClean')?.value) {
+      where.and.push({
+        storing_order_tank: { tank_no: { contains: this.filterCleanForm!.get('filterClean')?.value } }
+      });
+    }
+
+    if (this.filterCleanForm!.get('customer')?.value) {
+      where.and.push({
+        storing_order_tank:{ customer_company: { code: { eq: (this.filterCleanForm!.get('customer')?.value).code } }}
+      });
+    }
+
+    if (this.filterCleanForm!.get('status_cv')?.value) {
+      where.and.push({
+        status_cv: { in: this.filterCleanForm!.get('status_cv')?.value} 
+      });
+    }
+    // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
+    //   where.so_no = { contains: this.filterRepairForm!.get('filterJobOrder')?.value };
     // }
 
     // TODO:: Get login user team
@@ -281,21 +449,65 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     // }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.repairDS.getRepairForQC(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+  performSearchClean(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.subs.sink = this.cleanDS.search(this.lastSearchCriteriaClean, this.lastOrderByClean, first, after, last, before)
       .subscribe(data => {
-        this.repEstList = data;
-        // this.jobOrderList.forEach(jo => {
-        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
-        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
-        // })
+        this.clnEstList = data;
+        this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
+        this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
+        this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
+      });
+
+    this.pageSizeClean = pageSize;
+    this.pageIndexClean = pageIndex;
+  }
+
+  performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.subs.sink = this.joDS.searchJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+      .subscribe(data => {
+        this.jobOrderList = data;
+        this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
+        this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
+        this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSizeJobOrder = pageSize;
     this.pageIndexJobOrder = pageIndex;
+  }
+
+  onPageEventClean(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSizeClean !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndexClean = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndexClean && this.hasNextPageClean) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursorClean;
+      } else if (pageIndex < this.pageIndexClean && this.hasPreviousPageClean) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursorClean;
+      }
+    }
+
+    this.performSearchClean(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
   onPageEventJobOrder(event: PageEvent) {
@@ -305,7 +517,9 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
 
+    // Check if the page size has changed
     if (this.pageSizeJobOrder !== pageSize) {
+      // Reset pagination if page size has changed
       this.pageIndexJobOrder = 0;
       first = pageSize;
       after = undefined;
@@ -313,23 +527,34 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       before = undefined;
     } else {
       if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
+        // Navigate forward
         first = pageSize;
         after = this.endCursorJobOrder;
       } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
+        // Navigate backward
         last = pageSize;
         before = this.startCursorJobOrder;
       }
     }
 
-    this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
+    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
+
+  // mergeCriteria(criteria: any) {
+  //   return {
+  //     and: [
+  //       { delete_dt: { eq: null } },
+  //       criteria
+  //     ]
+  //   };
+  // }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  initializeValueChanges() {
-    this.filterJobOrderForm!.get('customer')!.valueChanges.pipe(
+  initializeFilterCustomerCompany() {
+    this.filterCleanForm!.get('customer')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -344,15 +569,11 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
         });
       })
     ).subscribe();
-
-    // this.filterJobOrderForm?.get('jobStatusCv')?.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     this.onFilter();
-    //   })
-    // ).subscribe();
+  
+  
   }
+
+
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -364,36 +585,68 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  getJobStatusDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.jobStatusCvList);
-  }
+  calculateNetCost(repair: RepairItem): any {
+    // const total = this.repairDS.getTotal(repair?.repair_part)
+    // const labourDiscount = repair.labour_cost_discount;
+    // const matDiscount = repair.material_cost_discount;
 
-  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
+    // const total_hour = total.hour;
+    // const total_labour_cost = this.repairDS.getTotalLabourCost(total_hour, repair?.labour_cost);
+    // const total_mat_cost = total.total_mat_cost;
+    // const total_cost = repair?.total_cost;
+    // const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
+    // const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
+    // const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
+    // return net_cost.toFixed(2);
+    return undefined;
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
+  updateValidators(validOptions: any[]) {
+    this.lastCargoControl.setValidators([
+      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
+  }
+
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
 
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.filterCleanForm?.patchValue({
+      filterRepair: '',
+    });
+  }
+
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
-  }
-
-  canStartJob(jobOrderItem: JobOrderItem | undefined) {
-    return this.joDS.canStartJob(jobOrderItem)
-  }
-
-  canCompleteJob(jobOrderItem: JobOrderItem | undefined): boolean {
-    return this.joDS.canCompleteJob(jobOrderItem);
-  }
-
-  isSelectedJobStatus(value: string): boolean {
-    return this.filterJobOrderForm?.get('jobStatusCv')?.value.includes(value);
   }
 
   stopEventTrigger(event: Event) {
@@ -409,82 +662,52 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     event.preventDefault(); // Prevents the form submission
   }
 
-  isStarted(jobOrderItem: JobOrderItem | undefined) {
-    return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+  displayTankStatus(status:string):string{
+    var retval:string="-";
+
+    retval= this.processStatusCvList!
+    .filter(item => item.code_val === status)
+    .map(item => item.description)[0]!; // Returns the description of the first match
+
+    if(retval==="") retval="-"
+    return retval;
   }
 
-  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-    this.stopPropagation(event);  // Prevents the form submission
-    if (!isStarted) {
-      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: jobOrderItem })];
-      console.log(param)
-      this.ttDS.startJobTimer(param).subscribe(result => {
-        console.log(result)
-      });
+  popupDialogForm(row:InGateItem, action:string)
+  {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
     } else {
-      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-      if (found?.length) {
-        const newParam = new TimeTableItem(found[0]);
-        newParam.stop_time = Utility.convertDate(new Date()) as number;
-        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-        const param = [newParam];
-        console.log(param)
-        this.ttDS.stopJobTimer(param).subscribe(result => {
-          console.log(result)
-        });
-      }
+      tempDirection = 'ltr';
     }
-  }
+    var rows :InGateCleaningItem[] =[] ;
+    rows.push(row);
+    const dialogRef = this.dialog.open(FormDialogComponent,{
+      
+      width: '1000px',
+      data: {
+        action: action,
+        langText: this.langText,
+        selectedItems:rows
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      }
+        
+    });
 
-  // private subscribeToJobOrderEvent(
-  //   subscribeFn: (guid: string) => Observable<any>,
-  //   job_order_guid: string
-  // ) {
-  //   const subscription = subscribeFn(job_order_guid).subscribe({
-  //     next: (response) => {
-  //       console.log('Received data:', response);
-  //       const data = response.data
-
-  //       let jobData: any;
-  //       let eventType: any;
-
-  //       if (data?.onJobStopped) {
-  //         jobData = data.onJobStopped;
-  //         eventType = 'jobStopped';
-  //       } else if (data?.onJobStarted) {
-  //         jobData = data.onJobStarted;
-  //         eventType = 'jobStarted';
-  //       }
-
-  //       if (jobData) {
-  //         const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
-  //         if (foundJob?.length) {
-  //           foundJob[0].status_cv = jobData.job_status;
-  //           foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
-  //           foundJob[0].time_table ??= [];
-
-  //           if (eventType === 'jobStarted') {
-  //             const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
-  //             if (foundTimeTable?.length) {
-  //               foundTimeTable[0].start_time = jobData.start_time
-  //             } else {
-  //               foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
-  //             }
-  //           } else if (eventType === 'jobStopped') {
-  //             foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
-  //           }
-  //           console.log(`Updated JobOrder ${eventType} :`, foundJob[0]);
-  //         }
-  //       }
-  //     },
-  //     error: (error) => {
-  //       console.error('Error:', error);
-  //     },
-  //     complete: () => {
-  //       console.log('Subscription completed');
-  //     }
-  //   });
-
-  //   this.jobOrderSubscriptions.push(subscription);
-  // }
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         if (result) {
+          if(result>0)
+            {
+             
+              this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
+            }
+      }
+      });
+  
+   
+   
+   }
 }
