@@ -36,4 +36,9 @@ namespace IDMS.Survey.GqlTypes.LocalModel
         public const string PROCESSING = "PROCESSING";
         public const string COMPLETED = "COMPLETED";
     }
+
+    public static class CurrentProcessStatus
+    {
+        public const string APPROVED = "APPROVED";
+    }
 }
