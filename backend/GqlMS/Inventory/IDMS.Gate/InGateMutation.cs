@@ -22,7 +22,6 @@ namespace IDMS.Gate.GqlTypes
             int retval = 0;
             try
             {
-                
                 string so_guid = "";
                 //GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in");
                 //long epochNow = GqlUtils.GetNowEpochInSec();
@@ -84,8 +83,6 @@ namespace IDMS.Gate.GqlTypes
                     so_tank.job_no = InGate.tank.job_no;
                     so_tank.status_cv = "ACCEPTED";
                     so_tank.tank_status_cv = GqlUtils.GetCodeValue(context, tankStatusGuid);
-                    //   so_tank.purpose_cleaning = InGate.tank.purpose_cleaning;
-                    //   so_tank.purpose_steam= InGate.tank.purpose_steam;
                     so_tank.owner_guid = InGate.tank.owner_guid;
                     so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
                     so_tank.purpose_storage = InGate.tank.purpose_storage;
@@ -94,13 +91,7 @@ namespace IDMS.Gate.GqlTypes
                     so_guid = so_tank.so_guid;
                 }
                 newInGate.eir_no = $"{so.so_no}";
-                //if(so.haulier!=InGate.haulier)
-                //{
-                //    so.haulier = InGate.haulier;
-                //}
-
                 context.in_gate.Add(newInGate);
-
 
                 if (!string.IsNullOrEmpty(so_guid))
                 {

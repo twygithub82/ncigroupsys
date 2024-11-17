@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.Survey.GqlTypes.LocalModel
+namespace IDMS.Inventory.GqlTypes
 {
     public static class EirStatus
     {
@@ -12,6 +12,22 @@ namespace IDMS.Survey.GqlTypes.LocalModel
         public const string PENDING = "PENDING";
         public const string PUBLISHED = "PUBLISHED";
         public const string CANCELED = "CANCELED";
+    }
+
+    public static class SOStatus
+    {
+        public const string COMPLETED = "COMPLETED";
+        public const string PENDING = "PENDING";
+        public const string PROCESSING = "PROCESSING";
+        public const string CANCELED = "CANCELED";
+    }
+
+    public static class SOTankStatus
+    {
+        public const string CANCELED = "CANCELED";
+        public const string WAITING = "WAITING";
+        public const string ACCEPTED = "ACCEPTED";
+        public const string PREORDER = "PREORDER";
     }
 
     public static class TankMovementStatus
@@ -28,6 +44,16 @@ namespace IDMS.Survey.GqlTypes.LocalModel
         public const string RO = "RO_GENERATED";
     }
 
+    public static class SOTankAction
+    {
+        public const string NEW = "NEW";
+        public const string EDIT = "EDIT";
+        public const string ROLLBACK = "ROLLBACK";
+        public const string CANCEL = "CANCEL";
+        public const string PREORDER = "PREORDER";
+    }
+
+
     public static class ROStatus
     {
         public const string CANCELED = "CANCELED";
@@ -35,6 +61,13 @@ namespace IDMS.Survey.GqlTypes.LocalModel
         public const string PENDING = "PENDING";
         public const string PROCESSING = "PROCESSING";
         public const string COMPLETED = "COMPLETED";
+    }
+
+    public static class BookingStatus
+    {
+        public const string CANCELED = "CANCELED";
+        public const string DELETED = "DELETED";
+        public const string NEW = "NEW";
     }
 
     public static class CurrentProcessStatus

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿    using AutoMapper;
 using CommonUtil.Core.Service;
 using HotChocolate;
 using HotChocolate.Subscriptions;
