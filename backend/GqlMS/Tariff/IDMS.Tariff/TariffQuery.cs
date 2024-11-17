@@ -175,6 +175,33 @@ namespace IDMS.Models.Tariff.GqlTypes
         }
 
 
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<tariff_steaming?> QueryTariffSteaming(ApplicationTariffDBContext context,
+           [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<tariff_steaming> query = null;
+            try
+            {
+
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.tariff_steaming.Where(i => i.delete_dt == null || i.delete_dt == 0);
+
+            }
+            catch
+            {
+                throw;
+            }
+
+            return query;
+
+        }
+
+
+
         //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection()]
         [UseFiltering()]

@@ -5,6 +5,7 @@ using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace IDMS.Models.Tariff.GqlTypes
@@ -1014,6 +1015,100 @@ namespace IDMS.Models.Tariff.GqlTypes
             return retval;
         }
         #endregion Tariff Repair methods
+
+        #region Tariff Steaming methods
+
+        public async Task<int> AddTariffSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_steaming NewTariffSteaming)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                NewTariffSteaming.guid = (string.IsNullOrEmpty(NewTariffSteaming.guid) ? Util.GenerateGUID() : NewTariffSteaming.guid);
+                var newTariffSteaming = new tariff_steaming();
+                newTariffSteaming.guid = NewTariffSteaming.guid;
+                newTariffSteaming.temp_max = NewTariffSteaming.temp_max;
+                newTariffSteaming.temp_min = NewTariffSteaming.temp_min;
+                newTariffSteaming.labour = NewTariffSteaming.labour;
+                newTariffSteaming.cost = NewTariffSteaming.cost;
+                newTariffSteaming.remarks = NewTariffSteaming.remarks;
+                newTariffSteaming.create_by = uid;
+                newTariffSteaming.create_dt = GqlUtils.GetNowEpochInSec();
+                await context.tariff_steaming.AddAsync(newTariffSteaming);
+
+                retval = await context.SaveChangesAsync();
+            }
+            catch { throw; }
+
+
+            return retval;
+        }
+
+
+        public async Task<int> UpdateTariffSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, tariff_steaming UpdateTariffSteaming)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdateTariffSteaming.guid;
+                var dbTariffSteaming = context.tariff_steaming.Where(t => t.guid == guid).FirstOrDefault();
+
+                if (dbTariffSteaming == null)
+                {
+                    throw new GraphQLException(new Error("The record not found", "500"));
+                }
+
+                dbTariffSteaming.temp_max = UpdateTariffSteaming.temp_max;
+                dbTariffSteaming.temp_min = UpdateTariffSteaming.temp_min;
+                dbTariffSteaming.labour = UpdateTariffSteaming.labour;
+                dbTariffSteaming.cost = UpdateTariffSteaming.cost;
+                dbTariffSteaming.remarks = UpdateTariffSteaming.remarks;
+                dbTariffSteaming.update_by = uid;
+                dbTariffSteaming.update_dt = GqlUtils.GetNowEpochInSec();
+
+                retval = await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+
+        public async Task<int> DeleteTariffSteaming(ApplicationTariffDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteTariffSteam_guids)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var delTariffSteaming = context.tariff_steaming.Where(s => DeleteTariffSteam_guids.Contains(s.guid) && s.delete_dt == null).ToList();
+                var currentDateTime = GqlUtils.GetNowEpochInSec();
+
+                foreach (var delTariffClean in delTariffSteaming)
+                {
+                    delTariffClean.delete_dt = currentDateTime;
+                    delTariffClean.update_by = uid;
+                    delTariffClean.update_dt = currentDateTime;
+                }
+                retval = await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+            return retval;
+        }
+        #endregion Tariff Steaming methods
 
         #region AddUnNO&Class
 
