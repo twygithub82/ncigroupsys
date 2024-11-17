@@ -109,18 +109,18 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     'seq',
     // 'group_name_cv',
      'desc',
-     'qty',
-     'unit_price',
-     'cost',
+    //  'qty',
+    //  'unit_price',
+    //  'cost',
      'approve_part',
      'team',
      //"actions"
    
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
+  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.CLEANING.LIST.ESTIMATE'
+    'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   ]
   translatedLangText: any = {}
   langText = {
@@ -226,6 +226,13 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     TEAM_ALLOCATION: 'COMMON-FORM.TEAM-ALLOCATION',
     ASSIGN: 'COMMON-FORM.ASSIGN',
     TEAM: 'COMMON-FORM.TEAM',
+    REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
+    JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
+    QC: 'COMMON-FORM.QC',
+    JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
+    METHOD:"COMMON-FORM.METHOD",
+    RESIDUE_DISPOSAL:'COMMON-FORM.RESIDUE-DISPOSAL',
+    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE'
 
   }
 
@@ -1155,8 +1162,12 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   masterToggle() {
     this.isAllSelected()
       ? this.repSelection.clear()
-      : this.deList.forEach((row) =>
-          this.repSelection.select(row)
+      : this.deList.forEach((row) =>{
+          if(row.approve_part===null)
+          {
+            this.repSelection.select(row)
+          }
+        }
         );
  }
 
@@ -1281,7 +1292,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     let retval = true;
   
     this.deList.forEach((data) => {
-      if (!data.job_order?.team?.description) {
+      if (!data.job_order?.team?.description && data.approve_part) {
         retval = false;
       }
     });

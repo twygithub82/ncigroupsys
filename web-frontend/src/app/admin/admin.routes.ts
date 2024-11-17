@@ -53,6 +53,8 @@ import { JobOrderAllocationResidueDisposalComponent } from './residue-disposal/j
 import { JobOrderTaskDetailsComponent } from './repair/job-order-task-details/job-order-task-details.component';
 import { CleaningJobOrderTaskDetailsComponent } from './cleaning/job-order-task-details/job-order-task-details.component';
 import { RepairQCViewComponent } from './repair/estimate-qc/estimate-qc.component';
+import { ResidueJobOrderTaskDetailsComponent } from './residue-disposal/job-order-task-details/job-order-task-details.component';
+import { ResidueQCViewComponent } from './residue-disposal/estimate-qc/estimate-qc.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -304,6 +306,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "residue-disposal/job-order/allocation/:id",
     component: JobOrderAllocationResidueDisposalComponent,
+  },
+  {
+    path: "residue-disposal/job-order/task/:id/:residue_id",
+    component: ResidueJobOrderTaskDetailsComponent,
+  },
+  {
+    path: "residue-disposal/qc/view/:id",
+    component: ResidueQCViewComponent,
   },
   
 ];

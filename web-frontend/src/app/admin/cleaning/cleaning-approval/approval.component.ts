@@ -603,10 +603,21 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
    MenuButtonHidden(row:InGateCleaningItem)
    {
-     const hiddenMenuStatus=['JOB_IN_PROGRESS'];
-    return (hiddenMenuStatus.includes(row.status_cv!));
+     const hiddenMenuStatus=['JOB_IN_PROGRESS',"QC_COMPLETED"];
+     var bRetval:Boolean=false;
+     bRetval =hiddenMenuStatus.includes(row.status_cv!);
+     if(!bRetval)
+     {
+      if(row.status_cv==="NO_ACTION" && row.storing_order_tank?.repair?.length!>0)
+      {
+        const allPending = row.storing_order_tank?.repair?.every((item: any) => item.status_cv === 'PENDING') ?? false;
+        bRetval =!allPending;
+      }
+     }
+    return bRetval;
 
    }
+
    HiddenMenu(row:InGateCleaningItem,statusMenu:String):Boolean
    {
      var bRetval:Boolean =false;

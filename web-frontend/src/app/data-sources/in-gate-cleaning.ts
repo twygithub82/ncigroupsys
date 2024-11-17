@@ -61,7 +61,7 @@ export class InGateCleaningGO {
 }
 
 export class InGateCleaningItem extends InGateCleaningGO {
-  public storing_order_tank?: StoringOrderTankGO;
+  public storing_order_tank?: StoringOrderTankItem;
   public customer_company?: CustomerCompanyItem;
   public job_order?:JobOrderItem;
   constructor(item: Partial<InGateCleaningItem> = {}) {
@@ -182,6 +182,10 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
           unit_type_guid
           update_by
           update_dt
+          repair{
+            guid
+            status_cv
+          }
           storing_order {
             customer_company_guid
             guid

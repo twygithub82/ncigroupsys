@@ -51,6 +51,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { JobOrderQCComponent } from "../job-order-qc/job-order-qc.component";
+import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
 //import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
@@ -87,7 +89,9 @@ import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-  ]
+    JobOrderQCComponent,
+    JobOrderTaskComponent
+]
 })
 export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // displayedColumns = [
@@ -103,7 +107,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     'tank_no',
     'customer',
     'estimate_no',
-    'net_cost',
+    'approved_dt',
     // 'approve_part',
     'status_cv'
   ];
@@ -166,8 +170,11 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
+    QC: 'COMMON-FORM.QC',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    METHOD:"COMMON-FORM.METHOD"
+    METHOD:"COMMON-FORM.METHOD",
+    RESIDUE_DISPOSAL:'COMMON-FORM.RESIDUE-DISPOSAL',
+    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE'
   }
 
   filterResidueForm?: UntypedFormGroup;

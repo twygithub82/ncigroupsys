@@ -244,8 +244,8 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
   testTypeCvList: CodeValuesItem[] = []
   testClassCvList: CodeValuesItem[] = []
   partLocationCvList: CodeValuesItem[] = []
-  damageCodeCvList: CodeValuesItem[] = []
-  repairCodeCvList: CodeValuesItem[] = []
+  // damageCodeCvList: CodeValuesItem[] = []
+  // repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
   templateList: MasterTemplateItem[] = []
   surveyorList: UserItem[] = []
@@ -262,16 +262,16 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   plDS: PackageLabourDS;
-  repairEstDS: RepairDS;
-  repairEstPartDS: RepairPartDS;
+  // repairEstDS: RepairDS;
+  // repairEstPartDS: RepairPartDS;
   residueDS:ResidueDS;
   
   mtDS: MasterEstimateTemplateDS;
-  prDS: PackageRepairDS;
+  // prDS: PackageRepairDS;
   
   packResidueDS:PackageResidueDS;
 
-  userDS: UserDS;
+  // userDS: UserDS;
   isOwner = false;
 
   isDuplicate = false;
@@ -296,12 +296,12 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.plDS = new PackageLabourDS(this.apollo);
-    this.repairEstDS = new RepairDS(this.apollo);
-    this.repairEstPartDS = new RepairPartDS(this.apollo);
+     this.plDS = new PackageLabourDS(this.apollo);
+    // this.repairEstDS = new RepairDS(this.apollo);
+    // this.repairEstPartDS = new RepairPartDS(this.apollo);
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
-    this.prDS = new PackageRepairDS(this.apollo);
-    this.userDS = new UserDS(this.apollo);
+    // this.prDS = new PackageRepairDS(this.apollo);
+    // this.userDS = new UserDS(this.apollo);
     this.packResidueDS= new PackageResidueDS(this.apollo);
     this.residueDS=new ResidueDS(this.apollo);
 
@@ -372,8 +372,8 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
       { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
       { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
       { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
-      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
-      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      // { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+      // { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
@@ -394,12 +394,12 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     this.cvDS.connectAlias('partLocationCv').subscribe(data => {
       this.partLocationCvList = data;
     });
-    this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
-      this.damageCodeCvList = data;
-    });
-    this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
-      this.repairCodeCvList = data;
-    });
+    // this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
+    //   this.damageCodeCvList = data;
+    // });
+    // this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
+    //   this.repairCodeCvList = data;
+    // });
     this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
       this.unitTypeCvList = data;
     });
@@ -434,20 +434,20 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
   }
 
 
-  getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } },
-        {
-          or: [
-            { tariff_repair_guid: { in: tariff_repair_guid } }
-          ]
-        }
-      ]
-    };
+  // getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {
+  //   const where = {
+  //     and: [
+  //       { customer_company_guid: { eq: customer_company_guid } },
+  //       {
+  //         or: [
+  //           { tariff_repair_guid: { in: tariff_repair_guid } }
+  //         ]
+  //       }
+  //     ]
+  //   };
 
-    return this.prDS.getCustomerPackageCost(where);
-  }
+  //   return this.prDS.getCustomerPackageCost(where);
+  // }
 
  
 
@@ -1295,7 +1295,8 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
   editEstDetails(event: Event, row: ResiduePartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
-    if( this.residueItem?.status_cv=='CANCELED') return;
+    const status_NotEditable:string[]=['CANCELED','JOB_IN_PROGRESS'];
+    if( status_NotEditable.includes(this.residueItem?.status_cv!)) return;
 
     var itm =this.deList[index];
     var IsEditedRow = itm.edited;

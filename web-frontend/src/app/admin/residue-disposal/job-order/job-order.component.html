@@ -60,13 +60,13 @@
                         <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
                       </mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="net_cost">
+                    <ng-container matColumnDef="approved_dt">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.NET_COST}}
+                        {{translatedLangText.APPROVE_DATE}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
-                        <span>{{row.net_cost}}</span>
+                        <span class="mobile-label">{{translatedLangText.APPROVE_DATE}}:</span>
+                        <span>{{displayDate(row.approve_dt)}}</span>
                       </mat-cell>
                     </ng-container>
     
@@ -78,70 +78,6 @@
                         <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{row?.status_cv}}
                       </mat-cell>
                     </ng-container>
-                    <!-- <ng-container matColumnDef="tank_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.TANK_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span
-                          class="mobile-tab-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="customer">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-3_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.CUSTOMER}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-3_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span
-                          class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="estimate_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.ESTIMATE_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="net_cost">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.NET_COST}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-tab-label">{{translatedLangText.NET_COST}}:</span>
-                        <span>{{row.net_cost}}</span>
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="status_cv">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.STATUS}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{row?.status_cv}}
-                      </mat-cell>
-                    </ng-container> -->
-                    <!-- <ng-container matColumnDef="actions">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
-                        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                          <mat-icon>more_vert</mat-icon>
-                        </button>
-                        <mat-menu #menu="matMenu">
-                        </mat-menu>
-                      </mat-cell>
-                    </ng-container> -->
                     <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
                      (click)="this.AllocationResidueDisposalEstimate($event,row)"
@@ -168,118 +104,13 @@
                 </mat-paginator>
               </mat-tab>
               <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
-                <form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()" #formDirective="ngForm">
-                  <div class="row">
-                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 pt-3">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
-                        <mat-label>
-                          {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
-                        </mat-label>
-                        <input matInput formControlName="filterJobOrder">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
-                      <button mat-mini-fab color="primary" (click)="onFilterJobOrder()">
-                        <mat-icon>search</mat-icon>
-                      </button>
-                    </div>
-                  </div>
-                </form>
-                <div class="responsive_table">
-                  <table mat-table [dataSource]="jobOrderList" matSort
-                    class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
-                    <ng-container matColumnDef="id">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-                      <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="tank_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.TANK_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span
-                          class="mobile-tab-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="customer">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-3_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.CUSTOMER}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-3_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span
-                          class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="estimate_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.ESTIMATE_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.repair_part?.[0]?.repair?.estimate_no}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="job_order_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.JOB_ORDER_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-tab-label">{{translatedLangText.JOB_ORDER_NO}}:</span>
-                        <span>{{row.job_order_no}}</span>
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="status_cv">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        {{translatedLangText.STATUS}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{row?.status_cv}}
-                      </mat-cell>
-                    </ng-container>
-                    <!-- <ng-container matColumnDef="actions">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
-                        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                          <mat-icon>more_vert</mat-icon>
-                        </button>
-                        <mat-menu #menu="matMenu">
-                        </mat-menu>
-                      </mat-cell>
-                    </ng-container> -->
-                    <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
-                      [routerLink]="['/admin/repair/job-order/allocation', row.guid]" [style.cursor]="'pointer'" matRipple>
-                    </mat-row>
-                  </table>
-                </div>
-                <!-- No result -->
-                @if (!(residueDS.loading$ | async) && !rsdEstList.length) {
-                <mat-divider></mat-divider>
-                <div class="no-results m-l-20 pt-3" [style.display]="rsdEstList.length === 0 ? '' : 'none'">
-                  <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-                </div>
-                }
-                <!-- Loading spinner -->
-                @if (residueDS.loading$ | async) {
-                <div class="tbl-spinner">
-                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                  </mat-progress-spinner>
-                </div>
-                }
-                <mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="0" [pageSize]="10"
-                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
-                </mat-paginator>
+                <app-job-order-task></app-job-order-task>
+              </mat-tab>
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
+                </ng-template>
+                <app-job-order-qc></app-job-order-qc>
               </mat-tab>
             </mat-tab-group>
           </div>

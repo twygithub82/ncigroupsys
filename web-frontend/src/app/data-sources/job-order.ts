@@ -173,6 +173,21 @@ export class RepJobOrderRequest {
   }
 }
 
+export class ResJobOrderRequest {
+  public estimate_no?: string;
+  public guid?: string;
+  public job_order?: JobOrderGO[];
+  public remarks?: string;
+  public sot_guid?: string;
+  constructor(item: Partial<RepJobOrderRequest> = {}) {
+    this.estimate_no = item.estimate_no;
+    this.guid = item.guid;
+    this.job_order = item.job_order;
+    this.remarks = item.remarks;
+    this.sot_guid = item.sot_guid;
+  }
+}
+
 export interface JobOrderResult {
   items: JobOrderItem[];
   totalCount: number;
@@ -365,6 +380,12 @@ const GET_STARTED_JOB_ORDER = gql`
             estimate_no
           }
         }
+        residue_part {
+          residue {
+            guid
+            estimate_no
+          }
+        }
         time_table(
           where: { start_time: { neq: null }, stop_time: { eq: null } }
         ) {
@@ -552,6 +573,12 @@ const QC_COMPLETE_REPAIR_JOB_ORDER = gql`
   }
 `
 
+const QC_COMPLETE_RESIDUE_JOB_ORDER = gql`
+  mutation completeQCResidue($resJobOrder: ResJobOrderRequestInput!) {
+    completeQCResidue(resJobOrder: $resJobOrder)
+  }
+`
+
 const QC_COMPLETE_CLEANING_JOB_ORDER = gql`
   mutation completeQCCleaning($clnJobOrder: CleaningJobOrderInput!) {
     completeQCCleaning(cleaningJobOrder: $clnJobOrder)
@@ -733,6 +760,15 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
       mutation: QC_COMPLETE_REPAIR_JOB_ORDER,
       variables: {
         repJobOrder
+      }
+    });
+  }
+
+  completeQCResidue(resJobOrder: ResJobOrderRequest): Observable<any> {
+    return this.apollo.mutate({
+      mutation: QC_COMPLETE_RESIDUE_JOB_ORDER,
+      variables: {
+        resJobOrder
       }
     });
   }

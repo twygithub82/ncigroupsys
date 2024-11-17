@@ -668,7 +668,8 @@
     "APPROVE-DATE": "Approve Date",
     "QC-DATE": "QC Date",
     "QC-COMPLETE": "QC Complete",
-    "ABORT": "Abort"
+    "ABORT": "Abort",
+    "RESIDUE-DISPOSAL" :"Residue Disposal"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
