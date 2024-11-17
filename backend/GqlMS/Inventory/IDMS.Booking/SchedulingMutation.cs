@@ -10,7 +10,6 @@ using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using static IDMS.Booking.GqlTypes.LocaModel.StatusConstant;
 
 namespace IDMS.Booking.GqlTypes
 {

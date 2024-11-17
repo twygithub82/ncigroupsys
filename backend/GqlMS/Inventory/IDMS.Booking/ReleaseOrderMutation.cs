@@ -10,7 +10,6 @@ using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using static IDMS.Booking.GqlTypes.LocaModel.StatusConstant;
 
 namespace IDMS.Booking.GqlTypes
 {
@@ -105,7 +104,7 @@ namespace IDMS.Booking.GqlTypes
                     //Start add the entity into EF for tracking
                     context.Attach(sot);
 
-                    if (TankAction.NEW.EqualsIgnore(roSOT?.action))
+                    if (SOTankAction.NEW.EqualsIgnore(roSOT?.action))
                     {
                         //For Insert, create a new RO_SOT record
                         var newROSOT = new release_order_sot();
@@ -128,7 +127,7 @@ namespace IDMS.Booking.GqlTypes
                         continue;
                     }
 
-                    if (TankAction.EDIT.EqualsIgnore(roSOT?.action))
+                    if (SOTankAction.EDIT.EqualsIgnore(roSOT?.action))
                     {   //For Update
                         //var extSch = existingSchList.Find(s => s.guid == roSOT.guid);
                         //extSch.update_by = user;
@@ -147,7 +146,7 @@ namespace IDMS.Booking.GqlTypes
                         continue;
                     }
 
-                    if (TankAction.CANCEL.EqualsIgnore(roSOT?.action))
+                    if (SOTankAction.CANCEL.EqualsIgnore(roSOT?.action))
                     {
                         //var extSch = existingSchList.Find(s => s.guid == roSOT.guid);
                         //extSch.status_cv = ROStatus.CANCELED;

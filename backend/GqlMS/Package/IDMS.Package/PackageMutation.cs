@@ -902,6 +902,109 @@ namespace IDMS.Models.Package.GqlTypes
             return result;
         }
         #endregion Package Repair methods
+
+        #region Package Steaming methods
+        public async Task<int> UpdatePackageSteamings(ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageSteaming_guids, double cost, double labour, string remarks)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var currentDateTime = DateTime.Now.ToEpochTime();
+
+                var dbPackageSteaming = context.package_steaming.Where(cc => UpdatePackageSteaming_guids.Contains(cc.guid)).ToList();
+                if (dbPackageSteaming == null)
+                {
+                    throw new GraphQLException(new Error("The Package Steaming not found", "500"));
+                }
+                foreach (var item in dbPackageSteaming)
+                {
+                    if (cost > -1) item.cost = cost;
+                    if (labour > -1) item.cost = labour;
+                    if (!string.IsNullOrEmpty(remarks)) item.remarks = remarks;
+
+                    item.update_by = uid;
+                    item.update_dt = currentDateTime;
+                }
+                retval = await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+
+        public async Task<int> UpdatePackageSteaming(ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, package_steaming UpdatePackageSteaming)
+        {
+            int retval = 0;
+            try
+            {
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var guid = UpdatePackageSteaming.guid;
+                if (string.IsNullOrEmpty(guid))
+                {
+                    throw new GraphQLException(new Error("The package guid  is empty", "500"));
+                }
+                var dbPackageSteaming = context.package_steaming.Find(guid);
+
+                if (dbPackageSteaming == null)
+                {
+                    throw new GraphQLException(new Error("The Package Steaming not found", "500"));
+                }
+                // dbPackageDepot.customer_company_guid = UpdatePackageDepot.customer_company_guid;
+                dbPackageSteaming.cost = UpdatePackageSteaming.cost;
+                dbPackageSteaming.labour = UpdatePackageSteaming.labour;
+                dbPackageSteaming.remarks = UpdatePackageSteaming.remarks;
+
+                dbPackageSteaming.update_by = uid;
+                dbPackageSteaming.update_dt = GqlUtils.GetNowEpochInSec();
+
+                retval = await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public async Task<int> DeletePackageSteaming(ApplicationPackageDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, string[] DeletePackageSteaming_guids)
+        {
+            int retval = 0;
+            try
+            {
+
+                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var delPackageSteaming = context.package_steaming.Where(s => DeletePackageSteaming_guids.Contains(s.guid) && s.delete_dt == null);
+                var currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in delPackageSteaming)
+                {
+                    item.delete_dt = currentDateTime;
+                    item.update_by = uid;
+                    item.update_dt = currentDateTime;
+                }
+                retval = await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+        #endregion Package Steaming methods
     }
 }
 

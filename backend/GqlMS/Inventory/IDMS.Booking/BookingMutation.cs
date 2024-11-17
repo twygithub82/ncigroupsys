@@ -11,7 +11,6 @@ using HotChocolate.Types;
 using Microsoft.Extensions.Configuration;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Booking.GqlTypes.LocaModel;
-using static IDMS.Booking.GqlTypes.LocaModel.StatusConstant;
 
 namespace IDMS.Booking.GqlTypes
 {
@@ -38,7 +37,7 @@ namespace IDMS.Booking.GqlTypes
                     newBooking.surveyor_guid = booking.surveyor_guid;
                     newBooking.reference = booking.reference;
                     newBooking.book_type_cv = booking.book_type_cv;
-                    newBooking.status_cv = StatusConstant.BookingStatus.NEW;
+                    newBooking.status_cv = BookingStatus.NEW;
                     newBooking.booking_dt = booking.booking_dt;
                     //newBooking.action_dt = booking.action_dt;
 

@@ -55,35 +55,33 @@ namespace IDMS.Models.Tariff.Cleaning.GqlTypes.DB
 
         }
 
-        public DbSet<IDMS.Models.Tariff.tariff_cleaning> tariff_cleaning { get; set; }
+        
 
         public DbSet<IDMS.Models.Parameter.cleaning_method> cleaning_method { get; set; }
-
         public DbSet<IDMS.Models.Parameter.cleaning_category> cleaning_category { get; set; }
         
         public DbSet<IDMS.Models.Package.customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
         public DbSet<IDMS.Models.Master.customer_company> customer_company { get; set; }
 
         public DbSet<IDMS.Models.Inventory.storing_order> storing_order { get; set; }
-
         public DbSet<IDMS.Models.Inventory.storing_order_tank> storing_order_tank { get; set; }
 
-        public DbSet<IDMS.Models.Tariff.tariff_depot> tariff_depot { get; set; }
+        public DbSet<tariff_cleaning> tariff_cleaning { get; set; }
+        public DbSet<tariff_depot> tariff_depot { get; set; }
+        public DbSet<tariff_buffer> tariff_buffer { get; set; }
+        public DbSet<tariff_labour> tariff_labour { get; set; }
+        public DbSet<tariff_residue> tariff_residue { get; set; }
+        public DbSet<tariff_repair> tariff_repair { get; set; }
+        public DbSet<tariff_steaming> tariff_steaming { get; set; }
 
-        public DbSet<IDMS.Models.Tariff.tariff_buffer> tariff_buffer { get; set; }
+        public DbSet<package_depot> package_depot { get; set; }
+        public DbSet<package_residue> package_residue { get; set; }
+        public DbSet<package_labour> package_labour { get; set; }
+        public DbSet<package_buffer> package_buffer { get; set; }
+        public DbSet<package_repair> package_repair { get; set; }
+        public DbSet<package_steaming> package_steaming { get; set; }
 
-        public DbSet<IDMS.Models.Tariff.tariff_labour> tariff_labour { get; set; }
-
-        public DbSet<IDMS.Models.Tariff.tariff_residue> tariff_residue { get; set; }
-
-        public DbSet<IDMS.Models.Tariff.tariff_repair> tariff_repair { get; set; }
-
-        public DbSet<IDMS.Models.Package.package_depot> package_depot { get; set; }
-        public DbSet<IDMS.Models.Package.package_residue> package_residue { get; set; }
-        public DbSet<IDMS.Models.Package.package_labour> package_labour { get; set; }
-        public DbSet<IDMS.Models.Package.package_buffer> package_buffer { get; set; }
-        public DbSet<IDMS.Models.Package.package_repair> package_repair { get; set; }
-        public DbSet<IDMS.Models.Shared.tank> tank { get; set; }
+        public DbSet<tank> tank { get; set; }
         public DbSet<un_number> un_number { get; set; }
 
     }

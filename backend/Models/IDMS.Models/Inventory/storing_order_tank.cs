@@ -71,5 +71,9 @@ namespace IDMS.Models.Inventory
         public IEnumerable<repair>? repair { get; set; }
         [UseFiltering]
         public IEnumerable<residue?>? residue { get; set; }
+        [UseFiltering]
+        public IEnumerable<cleaning?>? cleaning { get; set; }
+        [UseFiltering]
+        public IEnumerable<steaming?>? steaming { get; set; }   
     }
 }
