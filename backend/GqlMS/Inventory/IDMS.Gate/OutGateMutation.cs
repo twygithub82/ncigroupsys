@@ -1,6 +1,5 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate.Authorization;
-using IDMS.Survey.GqlTypes.LocalModel;
 using IDMS.Inventory.GqlTypes;
 using IDMS.Models;
 using IDMS.Models.Inventory;
@@ -54,7 +53,7 @@ namespace IDMS.Gate.GqlTypes
 
                 var soTank = new storing_order_tank() { guid = OutGate.so_tank_guid };
                 context.Attach(soTank);
-                soTank.tank_status_cv = TankMovementStatus.OUTGATE;
+                soTank.tank_status_cv = TankMovementStatus.OUTGATE_SURVEY;
                 soTank.update_by = user;
                 soTank.update_dt = currentDate;
 
@@ -77,11 +76,6 @@ namespace IDMS.Gate.GqlTypes
 
                     int count = context.out_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
                                 .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0).Count();
-                   //.Include(s => s.tank.tariff_cleaning)
-                   //.Include(s => s.tank.storing_order)
-                   //.Include(s => s.tank.storing_order.customer_company)
-                   //.Include(s => s.tank.tariff_cleaning.cleaning_method)
-                   //.Include(s => s.tank.tariff_cleaning.cleaning_category).Count();
                     GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
                     string notification_uid = $"out-gate-{newOutGate.eir_no}";
                     GqlUtils.AddAndTriggerStaffNotification(config, 3, "out-gate", "new out-gate was check-out", notification_uid);
@@ -152,112 +146,5 @@ namespace IDMS.Gate.GqlTypes
             }
             return retval;
         }
-
-        //public async Task<int> DeleteInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-        //    [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
-        //{
-        //    int retval = 0;
-        //    try
-        //    {
-
-        //        var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        var query = context.in_gate.Where(i => i.guid == $"{InGate_guid}").FirstOrDefault();
-        //        var querySurvey = context.in_gate_survey.Where(s=>s.in_gate_guid == $"{InGate_guid}").FirstOrDefault();
-        //        if (query!=null)
-        //        {
-        //            long epochNow = GqlUtils.GetNowEpochInSec();
-        //            var delInGate = query;
-        //            delInGate.delete_dt = epochNow;
-        //            delInGate.update_by = uid;
-        //            delInGate.update_dt = epochNow;
-
-        //            if(querySurvey!=null)
-        //            {
-        //                epochNow = GqlUtils.GetNowEpochInSec();
-        //                var delInGateSurvey = querySurvey;
-        //                delInGateSurvey.delete_dt = epochNow;
-        //                delInGateSurvey.update_by = uid;
-        //                delInGateSurvey.update_dt = epochNow;
-        //            }
-        //           retval = context.SaveChanges(true);
-        //        }
-
-        //        //long epochNow = GqlUtils.GetNowEpochInSec();
-        //        //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        //var guid = Util.GenerateGUID();
-        //        //var delNow = GqlUtils.GetNowEpochInSec();
-        //        //var command = @$"update in_gate set delete_dt={delNow},update_by='{uid}',update_dt={delNow}  where guid='{InGate_guid}' ";
-        //        ////var command = @$"Insert into in_gate (guid,so_tank_guid,eir_no,vehicle_no,yard_guid,driver_name,LOLO,preinspection,create_dt)
-        //        ////            values ('{InGate.guid}','{InGate.so_tank_guid}','{InGate.eir_no}','{InGate.vehicle_no}','{InGate.yard_guid}','{InGate.driver_name}',
-        //        ////            '{InGate.LOLO}','{InGate.preinspection}',{epochNow})";
-
-        //        //var result = await GqlUtils.RunNonQueryCommand(config, command);
-        //        //if (result["result"] != null)
-        //        //{
-        //        //    retval.result = Convert.ToInt32(result["result"]);
-        //        //}
-        //    }
-        //    catch
-        //    {
-        //        throw;
-        //    }
-        //    return retval;
-        //}
-
-
-        //private void CheckAndUpdateROStatus(ApplicationInventoryDBContext context, string guid)
-        //{
-        //    try
-        //    {
-        //        var tanks = context.storing_order_tank.Where(t => t.so_guid == guid);
-        //        var Status = "PROCESSING";
-        //        int nCountCancel = 0;
-        //        int nCountWait = 0;
-        //        int nCountAccept = 0;
-        //        foreach (var tank in tanks)
-        //        {
-        //            switch (tank.status_cv.Trim())
-        //            {
-        //                case "WATING":
-        //                    nCountWait++;
-        //                    break;
-        //                case "ACCEPTED":
-        //                    nCountAccept++;
-        //                    break;
-        //                case "CANCELED":
-        //                    nCountCancel++;
-        //                    break;
-        //            }
-        //        }
-
-        //        if (nCountWait == 0)
-        //        {
-        //            if ((nCountAccept + nCountCancel) == tanks.Count())
-        //            {
-        //                if (nCountAccept > 0)
-        //                {
-        //                    Status = "COMPLETED";
-        //                }
-        //                else
-        //                {
-        //                    Status = "CANCELED";
-        //                }
-        //            }
-
-        //        }
-
-        //        var so = context.storing_order.Where(so => so.guid == guid).FirstOrDefault();
-        //        if (so != null)
-        //        {
-        //            so.status_cv = Status;
-        //        }
-
-        //    }
-        //    catch
-        //    {
-        //        throw;
-
-        //    }
-        //}
     }
 }
