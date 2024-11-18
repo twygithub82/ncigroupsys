@@ -1,0 +1,13 @@
+td div {
+    //display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    justify-content: center;
+    align-items: center;
+    height: 95%;
+    //overflow: hidden;
+  }
+
+  .adjust-button {
+    position: relative;
+    top: 8px; /* Move the button down by 20px */
+  }
