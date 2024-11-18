@@ -11,6 +11,7 @@ using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using HotChocolate.Types;
 using IDMS.Inventory.GqlTypes;
 using IDMS.StoringOrder.GqlTypes.LocalModel;
+using System.Data;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
@@ -54,7 +55,7 @@ namespace IDMS.StoringOrder.GqlTypes
                     newTank.takein_job_no = tnk.job_no;
                     newTank.release_job_no = tnk.job_no;
                     newTank.owner_guid = tnk.owner_guid;
-                    //context.storing_order_tank.Add(newTank);
+                    newTank.tank_status_cv = TankMovementStatus.SO;
                     newTankList.Add(newTank);
                 }
 
@@ -116,6 +117,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         newTank.create_dt = currentDateTime;
                         newTank.create_by = user;
                         newTank.status_cv = SOTankAction.NEW.EqualsIgnore(tnk?.action) ? SOTankStatus.WAITING : SOTankStatus.PREORDER;
+                        newTank.tank_status_cv = TankMovementStatus.SO;
                         await context.storing_order_tank.AddAsync(newTank);
                         isSendNotification = true;
                         continue;
