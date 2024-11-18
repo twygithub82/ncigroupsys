@@ -20,7 +20,7 @@ namespace IDMS.StoringOrder.GqlTypes
     [ExtendObjectType(typeof(InventoryMutation))]
     public class SOTMutation
     {
-        public async Task<int> CancelStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
+        private async Task<int> CancelStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
             [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, 
             ApplicationInventoryDBContext context)
         {
@@ -35,7 +35,7 @@ namespace IDMS.StoringOrder.GqlTypes
         }
 
 
-        public async Task<int> RollbackStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
+        private async Task<int> RollbackStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
           [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, ApplicationInventoryDBContext context)
         {
             try
