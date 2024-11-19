@@ -132,6 +132,17 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       },
+      {
+        path: "admin/tariff/tariff-steam",
+        title: "MENUITEMS.TARIFF.LIST.TARIFF-STEAM",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
     ]
   },
   {

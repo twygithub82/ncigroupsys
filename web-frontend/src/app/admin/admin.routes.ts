@@ -55,6 +55,7 @@ import { CleaningJobOrderTaskDetailsComponent } from './cleaning/job-order-task-
 import { RepairQCViewComponent } from './repair/estimate-qc/estimate-qc.component';
 import { ResidueJobOrderTaskDetailsComponent } from './residue-disposal/job-order-task-details/job-order-task-details.component';
 import { ResidueQCViewComponent } from './residue-disposal/estimate-qc/estimate-qc.component';
+import { TariffSteamComponent } from './tariff/tariff-steam/tariff-steam.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -180,6 +181,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "tariff/tariff-buffer",
     component: TariffBufferComponent,
+  },
+  {
+    path: "tariff/tariff-steam",
+    component: TariffSteamComponent,
   },
   {
     path: "package/package-cleaning",

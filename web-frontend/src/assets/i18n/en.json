@@ -99,7 +99,8 @@
         "TARIFF-BUFFER": "Buffer Cleaning",
         "TARIFF-RESIDUE": "Residue Disposal",
         "TARIFF-CLEANING-NEW": "New Tariff Cleaning",
-        "TARIFF-CLEANING-EDIT": "Edit Tariff Cleaning"
+        "TARIFF-CLEANING-EDIT": "Edit Tariff Cleaning",
+        "TARIFF-STEAM":"Steaming"
       }
     },
     "PARAMETER": {
@@ -440,6 +441,8 @@
     "TANK-PHOTOS": "Tank Photos",
     "PACKAGE-MIN-COST": "Min Cost $",
     "PACKAGE-MAX-COST": "Max Cost $",
+    "PACKAGE-MIN-LABOUR": "Min Labour $",
+    "PACKAGE-MAX-LABOUR": "Max Labour $",
     "PACKAGE-DETAIL": "Detail",
     "BOOKING-DATE": "Booking Date",
     "BOOKING-REFERENCE": "Booking Reference",
@@ -580,6 +583,7 @@
     "TEMPLATE-TYPE-GENERAL": "General",
     "TEMPLATE-TYPE-EXCLUSIVE": "Exclusive",
     "LABOUR": "Labour",
+    "LABOUR$": "Labour$",
     "NO-PARTS": "No Parts",
     "SDS-FILE": "SDS File:",
     "CLEAR-ALL": "Clear All",
@@ -669,7 +673,10 @@
     "QC-DATE": "QC Date",
     "QC-COMPLETE": "QC Complete",
     "ABORT": "Abort",
-    "RESIDUE-DISPOSAL" :"Residue Disposal"
+    "RESIDUE-DISPOSAL" :"Residue Disposal",
+    "MIN-TEMP":"Min Temp.",
+    "MAX-TEMP":"Max Temp.",
+    "TEMP-RANGE-ERROR":"Maximum temperature must be greater than minimum temperature."
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

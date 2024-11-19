@@ -57,11 +57,12 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-steam';
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,
-  templateUrl: './tariff-residue.component.html',
-  styleUrl: './tariff-residue.component.scss',
+  templateUrl: './tariff-steam.component.html',
+  styleUrl: './tariff-steam.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -91,21 +92,23 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
     MatDividerModule,
   ]
 })
-export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
+export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
    // 'select',
     // // 'img',
-      'fName',
-      'lName',
-      'email',
-    //  'gender',
-    // 'bDate',
+      'minTemp',
+      'maxTemp',
+      'cost',
+      'labour',
+      'qty',
+      'lastUpdate',
+      
     // 'mobile',
     // 'actions',
   ];
 
-  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-RESIDUE'
+  pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-STEAM'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.TARIFF.TEXT'
@@ -134,9 +137,9 @@ implements OnInit {
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  tariffResidueDS : TariffResidueDS;
+  tariffSteamDS : TariffSteamingDS;
 
-  tariffResidueItems : TariffResidueItem[]=[];
+  tariffSteamItems : TariffSteamingItem[]=[];
 
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList1?: CustomerCompanyItem[];
@@ -145,7 +148,7 @@ implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { description: "ASC" };
+  lastOrderBy: any = { create_dt: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -240,12 +243,18 @@ implements OnInit {
     CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_MIN_LABOUR : 'COMMON-FORM.PACKAGE-MIN-LABOUR',
+    PACKAGE_MAX_LABOUR : 'COMMON-FORM.PACKAGE-MAX-LABOUR',
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     DESCRIPTION : 'COMMON-FORM.DESCRIPTION',
     COST : 'COMMON-FORM.COST',
     LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    MAX_TEMP:'COMMON-FORM.MAX-TEMP',
+    MIN_TEMP:'COMMON-FORM.MIN-TEMP',
+    QTY:'COMMON-FORM.QTY',
+    LABOUR:'COMMON-FORM.LABOUR$'
      }
   
   constructor(
@@ -264,7 +273,7 @@ implements OnInit {
     // this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    this.tariffResidueDS= new TariffResidueDS(this.apollo);
+    this.tariffSteamDS= new TariffSteamingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -288,9 +297,11 @@ implements OnInit {
       guid: [{value:''}],
       // customer_code: this.customerCodeControl,
       // cleaning_category:this.categoryControl,
-      description : [''],
+    //  description : [''],
       min_cost:[''],
-      max_cost:['']
+      max_cost:[''],
+      min_labour:[''],
+      max_labour:['']
       
     });
   }
@@ -443,7 +454,7 @@ implements OnInit {
             //{
               this.handleSaveSuccess(result);
               //this.search();
-              if(this.tariffResidueDS.totalCount>0)
+              if(this.tariffSteamDS.totalCount>0)
               {
                 this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
               }
@@ -516,35 +527,43 @@ implements OnInit {
       and:[]
     };
 
-
-    if (this.pcForm!.value["description"])
+    if (this.pcForm!.value["min_labour"])
       {
-       // if(!where.and) where.and=[];
-        const description :Text = this.pcForm!.value["description"];
-        where.and.push({description :{contains:description}});
+        
+        const minLabour :number = Number(this.pcForm!.value["min_labour"]);
+        where.and.push({labour :{gte:minLabour}})
       }
+  
+      if (this.pcForm!.value["max_labour"])
+        {
+         
+          const maxLabour :number = Number(this.pcForm!.value["max_labour"]);
+          where.and.push({labour :{ngte:maxLabour}})
+          
+        }
 
     if (this.pcForm!.value["min_cost"])
     {
-     // if(!where.and) where.and=[];
+      
       const minCost :number = Number(this.pcForm!.value["min_cost"]);
-      where.and.push({cost :{gte:minCost}});
+      where.and.push({cost :{gte:minCost}})
     }
 
     if (this.pcForm!.value["max_cost"])
       {
-        //if(!where.and) where.and=[];
+       
         const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-        where.and.push({cost :{ngte:maxCost}});
+        where.and.push({cost :{ngte:maxCost}})
+        
       }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.tariffResidueDS.SearchTariffResidue(where,this.lastOrderBy,this.pageSize).subscribe(data => {
-       this.tariffResidueItems=data;
+    this.subs.sink = this.tariffSteamDS.SearchTariffSteam(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+       this.tariffSteamItems=data;
        this.previous_endCursor=undefined;
-       this.endCursor = this.tariffResidueDS.pageInfo?.endCursor;
-       this.startCursor = this.tariffResidueDS.pageInfo?.startCursor;
-       this.hasNextPage = this.tariffResidueDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.tariffResidueDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.tariffSteamDS.pageInfo?.endCursor;
+       this.startCursor = this.tariffSteamDS.pageInfo?.startCursor;
+       this.hasNextPage = this.tariffSteamDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.tariffSteamDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -609,12 +628,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.tariffResidueDS.SearchTariffResidue(where,order,first,after,last,before).subscribe(data => {
-        this.tariffResidueItems=data;
-        this.endCursor = this.tariffResidueDS.pageInfo?.endCursor;
-        this.startCursor = this.tariffResidueDS.pageInfo?.startCursor;
-        this.hasNextPage = this.tariffResidueDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.tariffResidueDS.pageInfo?.hasPreviousPage ?? false;
+      this.subs.sink = this.tariffSteamDS.SearchTariffSteam(where,order,first,after,last,before).subscribe(data => {
+        this.tariffSteamItems=data;
+        this.endCursor = this.tariffSteamDS.pageInfo?.endCursor;
+        this.startCursor = this.tariffSteamDS.pageInfo?.startCursor;
+        this.hasNextPage = this.tariffSteamDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.tariffSteamDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
