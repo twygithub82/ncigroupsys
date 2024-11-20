@@ -76,6 +76,24 @@ export class RepairItem extends RepairGO {
   }
 }
 
+export class RepairRequest {
+  public customer_guid?: string;
+  public estimate_no?: string;
+  public guid?: string;
+  public is_approved?: boolean;
+  public remarks?: string;
+  public sot_guid?: string;
+
+  constructor(item: Partial<RepairRequest> = {}) {
+    this.customer_guid = item.customer_guid;
+    this.estimate_no = item.estimate_no;
+    this.guid = item.guid;
+    this.is_approved = item.is_approved;
+    this.remarks = item.remarks;
+    this.sot_guid = item.sot_guid;
+  }
+}
+
 export class RepairCostTableItem extends RepairGO {
   public total_owner_hour?: string;
   public total_owner_labour_cost?: string;

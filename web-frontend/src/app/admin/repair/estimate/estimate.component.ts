@@ -46,7 +46,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
+import { RepairDS, RepairGO, RepairItem, RepairRequest } from 'app/data-sources/repair';
 
 @Component({
   selector: 'app-estimate',
@@ -345,13 +345,14 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: any) => {
-          const RepairRequestInput = {
+          const RepairRequestInput = new RepairRequest({
             customer_guid: item.customer_company_guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
+            is_approved: false,
             remarks: item.remarks,
             sot_guid: item.sot_guid
-          }
+          })
           return RepairRequestInput
         });
         console.log(reList);
