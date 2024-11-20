@@ -590,20 +590,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairForm!.get('repList')?.setErrors(null);
   }
 
-  updateJobProcessStatus(repair_guid: string, process_status: string) {
-    var updateJobProcess: JobProcessRequest = new JobProcessRequest();
-    updateJobProcess.guid = repair_guid;
-    updateJobProcess.job_type_cv = "REPAIR";
-    updateJobProcess.process_status = process_status;
-
-    this.joDS.updateJobProcessStatus(updateJobProcess).subscribe(result => {
-      console.log(result)
-      if (result.data.updateJobProcessStatus > 0) {
-        this.handleSaveSuccess(result.data.updateJobProcessStatus);
-      }
-    });
-  }
-
   updateData(newData: RepairPartItem[] | undefined): void {
     if (newData?.length) {
       newData = newData.map((row) => ({

@@ -50,7 +50,7 @@ import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
+import { RepairDS, RepairGO, RepairItem, RepairStatusRequest } from 'app/data-sources/repair';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
 import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
@@ -223,6 +223,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   packageLabourItem?: PackageLabourItem;
   repSelection = new SelectionModel<RepairPartItem>(true, []);
   repList: RepairPartItem[] = [];
+  oldJobOrderList?: (JobOrderItem | undefined)[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
   yesnoCvList: CodeValuesItem[] = []
@@ -412,7 +413,22 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
 
   populateRepair(repair: RepairItem) {
     this.isOwner = repair.owner_enable ?? false;
-    repair.repair_part = this.filterDeleted(repair.repair_part)
+    repair.repair_part = this.filterDeleted(repair.repair_part);
+
+    this.oldJobOrderList = repair.repair_part?.filter((item, index, self) => {
+      const jobOrder = item.job_order;
+      const teamDescription = jobOrder?.team?.description;
+      if (!teamDescription) {
+        return false;
+      }
+      return index === self.findIndex(
+        (t) =>
+          t.job_order?.team?.description === teamDescription
+      );
+    })
+      .map(item => item.job_order);
+    console.log(this.oldJobOrderList)
+
     this.updateData(repair.repair_part);
     this.repairForm?.patchValue({
       job_no: repair.job_no || this.sotItem?.job_no,
@@ -463,12 +479,19 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   assignTeam(event: Event) {
     const selectedRep = this.repSelection.selected;
     const selectedTeam = this.repairForm?.get('team_allocation');
+    const oldTeamFound = this.oldJobOrderList?.find(oldJob => oldJob?.team?.guid === selectedTeam?.value?.guid)
+
     selectedRep.forEach(rep => {
-      rep.job_order = new JobOrderItem({
-        ...rep.job_order,
-        team_guid: selectedTeam?.value?.guid,
-        team: selectedTeam?.value
-      });
+      rep.job_order = oldTeamFound
+        ? new JobOrderItem({
+          ...oldTeamFound,
+          team_guid: selectedTeam?.value?.guid,
+          team: selectedTeam?.value
+        })
+        : new JobOrderItem({
+          team_guid: selectedTeam?.value?.guid,
+          team: selectedTeam?.value
+        });
     })
     console.log(selectedRep)
     this.repSelection.clear();
@@ -510,16 +533,63 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   onFormSubmit() {
+    // const distinctJobOrders = this.repList
+    //   .filter((item, index, self) =>
+    //     index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+    //       (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+    //         t.job_order?.team?.description === item?.job_order?.team?.description))
+    //   )
+    //   .filter(item => item.job_order !== null && item.job_order !== undefined)
+    //   .map(item => item.job_order);
     const distinctJobOrders = this.repList
-      .filter((item, index, self) =>
-        index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
-          (t.job_order?.team?.guid === item?.job_order?.team_guid ||
-            t.job_order?.team?.description === item?.job_order?.team?.description))
-      )
-      .filter(item => item.job_order !== null && item.job_order !== undefined)
+      .filter((item, index, self) => {
+        const jobOrder = item.job_order;
+        const teamDescription = jobOrder?.team?.description;
+        if (!teamDescription) {
+          return false;
+        }
+        return index === self.findIndex(
+          (t) =>
+            t.job_order?.team?.description === teamDescription
+        );
+      })
       .map(item => item.job_order);
 
-    // const finalJobOrder: any[] = [];
+    const missingJobOrders = this.oldJobOrderList?.filter(
+      oldJob =>
+        !distinctJobOrders.some(
+          distinctJob =>
+            distinctJob?.guid === oldJob?.guid &&
+            distinctJob?.team?.description === oldJob?.team?.description
+        )
+    );
+    console.log(missingJobOrders);
+
+    const finalJobOrder: any[] = [];
+    distinctJobOrders?.forEach(jo => {
+      if (jo) {
+        const filteredParts = this.repList.filter(part =>
+        // ((part.job_order?.guid && part.job_order?.guid === jo?.guid) || !part.job_order?.guid) &&
+        (part.job_order?.team?.guid === jo?.team_guid ||
+          part.job_order?.team?.description === jo?.team?.description)
+        );
+        const partList = filteredParts.map(part => part.guid);
+        const totalApproveHours = filteredParts.reduce((total, part) => total + (part.approve_hour || 0), 0);
+
+        const joRequest = new JobOrderRequest();
+        joRequest.guid = jo.guid;
+        joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
+        joRequest.remarks = jo.remarks;
+        joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
+        joRequest.status_cv = jo.status_cv;
+        joRequest.team_guid = jo.team_guid;
+        joRequest.total_hour = jo.total_hour ?? totalApproveHours;
+        joRequest.working_hour = jo.working_hour ?? 0;
+        joRequest.part_guid = partList;
+        finalJobOrder.push(joRequest);
+      }
+    });
+    // const jobOrderMap = new Map<string, JobOrderRequest>();
     // distinctJobOrders.forEach(jo => {
     //   if (jo) {
     //     const filteredParts = this.repList.filter(part =>
@@ -527,87 +597,65 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     //       (part.job_order?.team?.guid === jo?.team_guid ||
     //         part.job_order?.team?.description === jo?.team?.description)
     //     );
-    //     console.log(filteredParts)
+
     //     const partList = filteredParts.map(part => part.guid);
     //     const totalApproveHours = filteredParts.reduce((total, part) => total + (part.approve_hour || 0), 0);
-    //     // TODO :: if same team, add them to the same job
 
-    //     const joRequest = new JobOrderRequest();
-    //     joRequest.guid = jo.guid;
-    //     joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
-    //     joRequest.remarks = jo.remarks;
-    //     joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
-    //     joRequest.status_cv = jo.status_cv;
-    //     joRequest.team_guid = jo.team_guid;
-    //     joRequest.total_hour = jo.total_hour ?? totalApproveHours;
-    //     joRequest.working_hour = jo.working_hour ?? 0;
-    //     joRequest.part_guid = partList;
-    //     finalJobOrder.push(joRequest);
+    //     // Check if the job order with the same team_guid already exists in the map
+    //     const existingJobOrder = jobOrderMap.get(jo.team_guid!);
+
+    //     if (existingJobOrder) {
+    //       // Accumulate part_guids and total hours for the existing job order
+    //       existingJobOrder.part_guid?.push(...partList);
+    //       existingJobOrder.total_hour = (existingJobOrder.total_hour ?? 0) + totalApproveHours;
+    //     } else {
+    //       // Create a new JobOrderRequest and set its properties
+    //       const joRequest = new JobOrderRequest();
+    //       joRequest.guid = jo.guid;
+    //       joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
+    //       joRequest.remarks = jo.remarks;
+    //       joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
+    //       joRequest.status_cv = jo.status_cv;
+    //       joRequest.team_guid = jo.team_guid;
+    //       joRequest.total_hour = jo.total_hour ?? totalApproveHours;
+    //       joRequest.working_hour = jo.working_hour ?? 0;
+    //       joRequest.part_guid = partList;
+
+    //       // Add the job order to the map with team_guid as the key
+    //       jobOrderMap.set(jo.team_guid!, joRequest);
+    //     }
     //   }
     // });
-    const jobOrderMap = new Map<string, JobOrderRequest>();
-    distinctJobOrders.forEach(jo => {
-      if (jo) {
-        const filteredParts = this.repList.filter(part =>
-          part.job_order?.guid === jo?.guid &&
-          (part.job_order?.team?.guid === jo?.team_guid ||
-            part.job_order?.team?.description === jo?.team?.description)
-        );
-
-        const partList = filteredParts.map(part => part.guid);
-        const totalApproveHours = filteredParts.reduce((total, part) => total + (part.approve_hour || 0), 0);
-
-        // Check if the job order with the same team_guid already exists in the map
-        const existingJobOrder = jobOrderMap.get(jo.team_guid!);
-
-        if (existingJobOrder) {
-          // Accumulate part_guids and total hours for the existing job order
-          existingJobOrder.part_guid?.push(...partList);
-          existingJobOrder.total_hour = (existingJobOrder.total_hour ?? 0) + totalApproveHours;
-        } else {
-          // Create a new JobOrderRequest and set its properties
-          const joRequest = new JobOrderRequest();
-          joRequest.guid = jo.guid;
-          joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
-          joRequest.remarks = jo.remarks;
-          joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
-          joRequest.status_cv = jo.status_cv;
-          joRequest.team_guid = jo.team_guid;
-          joRequest.total_hour = jo.total_hour ?? totalApproveHours;
-          joRequest.working_hour = jo.working_hour ?? 0;
-          joRequest.part_guid = partList;
-
-          // Add the job order to the map with team_guid as the key
-          jobOrderMap.set(jo.team_guid!, joRequest);
-        }
-      }
-    });
-    const finalJobOrder = Array.from(jobOrderMap.values());
+    // const finalJobOrder = Array.from(jobOrderMap.values());
     console.log(finalJobOrder);
     const without4x = this.repList.filter(part =>
       !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair)
     );
     this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
       console.log(result)
+      if ((result?.data?.assignJobOrder ?? 0) > 0 && missingJobOrders?.length) {
+        const jobOrderGuidToDelete = missingJobOrders.map(jo => jo?.guid!)
+        this.joDS.deleteJobOrder(jobOrderGuidToDelete).subscribe(result => {
+          console.log(`deleteJobOrder: ${jobOrderGuidToDelete}, result: ${result}`);
+        });
+      }
+
       if (!without4x?.length) {
         console.log("all parts are assigned");
-        this.updateJobProcessStatus(this.repairItem!.guid!, "JOB_IN_PROGRESS");
+        var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+          guid: this.repairItem!.guid,
+          sot_guid: this.sotItem!.guid,
+          action: "JOB_IN_PROGRESS"
+        });
+        console.log(repairStatusReq);
+        this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+          console.log(result)
+          if (result.data.updateRepairStatus > 0) {
+            this.handleSaveSuccess(result.data.updateRepairStatus);
+          }
+        });
       } else {
         this.handleSaveSuccess(result?.data?.assignJobOrder);
-      }
-    });
-  }
-
-  updateJobProcessStatus(repair_guid: string, process_status: string) {
-    var updateJobProcess: JobProcessRequest = new JobProcessRequest();
-    updateJobProcess.guid = repair_guid;
-    updateJobProcess.job_type_cv = "REPAIR";
-    updateJobProcess.process_status = process_status;
-
-    this.joDS.updateJobProcessStatus(updateJobProcess).subscribe(result => {
-      console.log(result)
-      if (result.data.updateJobProcessStatus > 0) {
-        this.handleSaveSuccess(result.data.updateJobProcessStatus);
       }
     });
   }
@@ -838,7 +886,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   toggleRep(row: RepairPartItem) {
-    if (this.repairPartDS.is4X(row.rp_damage_repair) || row.job_order_guid) return;
+    if (this.repairPartDS.is4X(row.rp_damage_repair) || !this.joDS.canJobAllocate(row?.job_order)) return;
     this.repSelection.toggle(row);
   }
 

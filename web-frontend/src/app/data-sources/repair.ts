@@ -94,6 +94,20 @@ export class RepairRequest {
   }
 }
 
+export class RepairStatusRequest {
+  public action?: string;
+  public guid?: string;
+  public remarks?: string;
+  public sot_guid?: string;
+
+  constructor(item: Partial<RepairStatusRequest> = {}) {
+    this.action = item.action;
+    this.guid = item.guid;
+    this.remarks = item.remarks;
+    this.sot_guid = item.sot_guid;
+  }
+}
+
 export class RepairCostTableItem extends RepairGO {
   public total_owner_hour?: string;
   public total_owner_labour_cost?: string;
@@ -980,6 +994,12 @@ const ABORT_REPAIR = gql`
   }
 `
 
+const UPDATE_REPAIR_STATUS = gql`
+  mutation UpdateRepairStatus($repair: RepairStatusRequestInput!) {
+    updateRepairStatus(repair: $repair)
+  }
+`
+
 export class RepairDS extends BaseDataSource<RepairItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -1198,6 +1218,15 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       mutation: ABORT_REPAIR,
       variables: {
         repJobOrder
+      }
+    });
+  }
+
+  updateRepairStatus(repair: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_REPAIR_STATUS,
+      variables: {
+        repair
       }
     });
   }

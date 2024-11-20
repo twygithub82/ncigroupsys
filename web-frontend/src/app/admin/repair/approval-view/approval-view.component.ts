@@ -53,7 +53,7 @@ import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairDS, RepairGO, RepairItem, RepairRequest } from 'app/data-sources/repair';
+import { RepairDS, RepairGO, RepairItem, RepairRequest, RepairStatusRequest } from 'app/data-sources/repair';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
@@ -540,10 +540,17 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: RepairItem) => new RepairGO(item));
         console.log(reList);
-        this.updateJobProcessStatus(reList[0].guid, "NO_ACTION");
-        // this.repairDS.cancelRepair(reList).subscribe(result => {
-        //   this.handleCancelSuccess(result?.data?.cancelRepair)
-        // });
+        var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+          guid: reList[0].guid,
+          sot_guid: this.sotItem!.guid,
+          action: "NO_ACTION"
+        });
+        this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+          console.log(result)
+          if (result.data.updateRepairStatus > 0) {
+            this.handleSaveSuccess(result.data.updateRepairStatus);
+          }
+        });
       }
     });
   }
@@ -714,20 +721,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   onFormSubmit() {
     this.repairForm!.get('repList')?.setErrors(null);
-  }
-
-  updateJobProcessStatus(repair_guid: string, process_status: string) {
-    var updateJobProcess: JobProcessRequest = new JobProcessRequest();
-    updateJobProcess.guid = repair_guid;
-    updateJobProcess.job_type_cv = "REPAIR";
-    updateJobProcess.process_status = process_status;
-
-    this.joDS.updateJobProcessStatus(updateJobProcess).subscribe(result => {
-      console.log(result)
-      if (result.data.updateJobProcessStatus > 0) {
-        this.handleSaveSuccess(result.data.updateJobProcessStatus);
-      }
-    });
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {
