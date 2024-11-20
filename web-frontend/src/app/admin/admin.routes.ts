@@ -53,6 +53,8 @@ import { JobOrderAllocationResidueDisposalComponent } from './residue-disposal/j
 import { JobOrderTaskDetailsComponent } from './repair/job-order-task-details/job-order-task-details.component';
 import { CleaningJobOrderTaskDetailsComponent } from './cleaning/job-order-task-details/job-order-task-details.component';
 import { RepairQCViewComponent } from './repair/estimate-qc/estimate-qc.component';
+import { TankMovementComponent } from './inventory/tank-movement/tank-movement.component';
+import { TankMovementDetailsComponent } from './inventory/tank-movement-details/tank-movement-details.component';
 import { ResidueJobOrderTaskDetailsComponent } from './residue-disposal/job-order-task-details/job-order-task-details.component';
 import { ResidueQCViewComponent } from './residue-disposal/estimate-qc/estimate-qc.component';
 import { TariffSteamComponent } from './tariff/tariff-steam/tariff-steam.component';
@@ -97,6 +99,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "inventory/in-gate-survey/survey-form/:id",
     component: InGateSurveyFormComponent,
+  },
+  {
+    path: "inventory/tank-movement",
+    component: TankMovementComponent,
+  },
+  {
+    path: "inventory/tank-movement/details/:id",
+    component: TankMovementDetailsComponent,
   },
   {
     path: "inventory/out-gate",

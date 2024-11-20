@@ -9,6 +9,7 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 import { AnyObject } from 'chart.js/dist/types/basic';
 import { InGateItem } from './in-gate';
+import { TariffBufferItem } from './tariff-buffer';
 
 export class InGateSurveyGO {
   public guid?: string = '';
@@ -152,10 +153,12 @@ export class InGateSurveyGO {
 
 export class InGateSurveyItem extends InGateSurveyGO {
   public in_gate?: InGateItem;
+  public tariff_buffer?: TariffBufferItem;
 
   constructor(item: Partial<InGateSurveyItem> = {}) {
     super(item);
     this.in_gate = item.in_gate;
+    this.tariff_buffer = item.tariff_buffer;
   }
 }
 
@@ -391,6 +394,96 @@ export const QUERY_IN_GATE_SURVEY_BY_ID = gql`
   }
 `
 
+export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_MOVEMENT = gql`
+  query queryInGateSurveyByID($where: in_gate_surveyFilterInput){
+    inGatesSurvey: queryInGateSurvey(where: $where) {
+      totalCount
+      nodes {
+        airline_valve_conn_cv
+        airline_valve_conn_spec_cv
+        airline_valve_cv
+        airline_valve_dim
+        airline_valve_pcs
+        btm_dis_comp_cv
+        btm_dis_valve_cv
+        btm_dis_valve_spec_cv
+        buffer_plate
+        capacity
+        cladding_cv
+        comments
+        create_by
+        create_dt
+        data_csc_transportplate
+        delete_dt
+        dipstick
+        dom_dt
+        foot_valve_cv
+        guid
+        height_cv
+        in_gate_guid
+        inspection_dt
+        ladder
+        last_release_dt
+        last_test_cv
+        test_class_cv
+        test_dt
+        manlid_comp_cv
+        manlid_cover_cv
+        manlid_cover_pcs
+        manlid_cover_pts
+        manlid_seal_cv
+        manufacturer_cv
+        max_weight_cv
+        pv_spec_cv
+        pv_spec_pcs
+        pv_type_cv
+        pv_type_pcs
+        residue
+        safety_handrail
+        take_in_reference
+        tank_comp_guid
+        tare_weight
+        thermometer
+        thermometer_cv
+        top_dis_comp_cv
+        top_dis_valve_cv
+        top_dis_valve_spec_cv
+        update_by
+        update_dt
+        walkway_cv
+        top_coord
+        bottom_coord
+        front_coord
+        rear_coord
+        left_coord
+        right_coord
+        in_gate {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          eir_dt
+          eir_no
+          eir_status_cv
+          guid
+          haulier
+          lolo_cv
+          preinspection_cv
+          remarks
+          so_tank_guid
+          update_by
+          update_dt
+          vehicle_no
+          yard_cv
+        }
+        tariff_buffer {
+          buffer_type
+        }
+      }
+    }
+  }
+`
+
 export const ADD_IN_GATE_SURVEY = gql`
   mutation AddInGateSurvey($inGateSurvey: InGateSurveyRequestInput!, $inGate: in_gateInput!) {
     record: addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateRequest: $inGate) {
@@ -441,6 +534,30 @@ export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
     return this.apollo
       .query<any>({
         query: QUERY_IN_GATE_SURVEY_BY_ID,
+        variables: { where }
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateSurveyItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.inGatesSurvey || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          return retResult.nodes;
+        })
+      );
+  }
+
+  getInGateSurveyByIDForMovement(sot_guid: string): Observable<InGateSurveyItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = { in_gate: { so_tank_guid: { eq: sot_guid }, delete_dt: { eq: null } } }
+    return this.apollo
+      .query<any>({
+        query: QUERY_IN_GATE_SURVEY_BY_ID_FOR_MOVEMENT,
         variables: { where }
       })
       .pipe(

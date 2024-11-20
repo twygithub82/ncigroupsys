@@ -17,6 +17,7 @@ import { OutGateItem } from './out-gate';
 import { CustomerCompanyItem } from './customer-company';
 import { RepairItem } from './repair';
 import { ResidueItem } from './residue';
+import { TankItem } from './tank';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -100,11 +101,12 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public out_gate?: OutGateItem[];
   public customer_company?: CustomerCompanyItem;
   public repair?: RepairItem[];
-  public residue?:ResidueItem[];
+  public residue?: ResidueItem[];
+  public tank?: TankItem;
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
-    super(item); // Call the constructor of the parent class
+    super(item);
     this.tariff_cleaning = item.tariff_cleaning;
     this.in_gate = item.in_gate;
     this.booking = item.booking;
@@ -112,8 +114,10 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.release_order_sot = item.release_order_sot;
     this.out_gate = item.out_gate;
     this.customer_company = item.customer_company;
+    this.repair = item.repair;
+    this.residue = item.residue;
+    this.tank = item.tank;
     this.actions = item.actions || [];
-    this.residue=item.residue;
   }
 }
 
@@ -1024,6 +1028,154 @@ const CHECK_ANY_ACTIVE_SOT = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANKS_FOR_MOVEMENT = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        guid
+        tank_no
+        so_guid
+        tank_status_cv
+        create_dt
+        create_by
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+        }
+        storing_order {
+          so_no
+          so_notes
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
+          delete_dt
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        guid
+        tank_no
+        so_guid
+        tank_status_cv
+        create_dt
+        create_by
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        clean_status_cv
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+          nature_cv
+          in_gate_alert
+        }
+        customer_company {
+          code
+          guid
+          name
+        }
+        storing_order {
+          create_by
+          create_dt
+          customer_company_guid
+          delete_dt
+          guid
+          haulier
+          remarks
+          so_no
+          so_notes
+          status_cv
+          update_by
+          update_dt
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
+        release_order_sot(where: { delete_dt: { eq: null } }) {
+          release_order {
+            create_by
+            create_dt
+            customer_company_guid
+            delete_dt
+            guid
+            haulier
+            release_dt
+            remarks
+            ro_generated
+            ro_no
+            ro_notes
+            status_cv
+            update_by
+            update_dt
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          guid
+          eir_no
+          eir_dt
+          delete_dt
+        }
+        out_gate(where: { delete_dt: { eq: null } }) {
+          guid
+          eir_no
+          eir_dt
+          delete_dt
+        }
+        tank {
+          unit_type
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const CANCEL_STORING_ORDER_TANK = gql`
   mutation CancelStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
     cancelStoringOrderTank(sot: $sot)
@@ -1209,15 +1361,14 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
-        map((result) => result.data),
-        catchError(() => of({ soList: [] })),
-        finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          const sotList = result?.data.sotList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
           return sotList.nodes;
-        })
+        }),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
       );
   }
 
@@ -1231,15 +1382,14 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
-        map((result) => result.data),
-        catchError(() => of({ soList: [] })),
-        finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          const sotList = result?.data.sotList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
           return sotList.nodes;
-        })
+        }),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
       );
   }
 
@@ -1336,6 +1486,56 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(sotList.nodes);
           this.totalCount = sotList.totalCount;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  searchStoringOrderTankForMovement(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_MOVEMENT,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTankForMovementByID(guid: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    const where = {
+      guid: { eq: guid }
+    }
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
           return sotList.nodes;
         })
       );

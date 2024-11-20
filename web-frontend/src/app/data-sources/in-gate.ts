@@ -330,6 +330,33 @@ export const GET_IN_GATE_BY_ID = gql`
   }
 `;
 
+export const GET_IN_GATE_BY_ID_FOR_MOVEMENT = gql`
+  query getInGateByID($where: in_gateFilterInput) {
+    resultList: queryInGates(where: $where) {
+      totalCount
+      nodes {
+        create_by
+        create_dt
+        delete_dt
+        driver_name
+        eir_dt
+        eir_no
+        eir_status_cv
+        guid
+        haulier
+        lolo_cv
+        preinspection_cv
+        remarks
+        so_tank_guid
+        update_by
+        update_dt
+        vehicle_no
+        yard_cv
+      }
+    }
+  }
+`;
+
 export const ADD_IN_GATE = gql`
   mutation AddInGate($inGate: in_gateInput!) {
     addInGate(inGate: $inGate)
@@ -397,6 +424,31 @@ export class InGateDS extends BaseDataSource<InGateItem> {
           this.totalCount = retResult.totalCount;
   
           // Return the nodes
+          return retResult.nodes;
+        }),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+
+  getInGateByIDForMovement(sot_guid: string): Observable<InGateItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = { so_tank_guid: { eq: sot_guid }, delete_dt: { eq: null } }
+    return this.apollo
+      .query<any>({
+        query: GET_IN_GATE_BY_ID_FOR_MOVEMENT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Disable caching for this query
+      })
+      .pipe(
+        // Handle the response and errors
+        map((result) => {
+          const retResult = result?.data.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
           return retResult.nodes;
         }),
         catchError((error: ApolloError) => {

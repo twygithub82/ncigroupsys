@@ -18,6 +18,7 @@ export class OutGateGO {
   public so_tank_guid?: string;
   public vehicle_no?: string;
   public remarks?: string;
+  public haulier?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -33,6 +34,7 @@ export class OutGateGO {
     this.so_tank_guid = item.so_tank_guid;
     this.vehicle_no = item.vehicle_no;
     this.remarks = item.remarks;
+    this.haulier = item.haulier;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -56,7 +58,7 @@ export interface OutGateResult {
 }
 
 export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
-  query queryOutGateForSurvey($where: out_gateFilterInput, $order: [out_gateSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+  query queryOutGates($where: out_gateFilterInput, $order: [out_gateSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryOutGates(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
       pageInfo {
@@ -133,6 +135,36 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
   }
 `;
 
+export const GET_OUT_GATE_BY_ID_FOR_MOVEMENT = gql`
+  query queryOutGates($where: out_gateFilterInput) {
+    resultList: queryOutGates(where: $where) {
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      nodes {
+        create_by
+        create_dt
+        delete_dt
+        driver_name
+        eir_dt
+        eir_no
+        eir_status_cv
+        guid
+        haulier
+        remarks
+        so_tank_guid
+        update_by
+        update_dt
+        vehicle_no
+      }
+    }
+  }
+`;
+
 export const ADD_OUT_GATE = gql`
   mutation AddOutGate($outGate: out_gateInput!, $releaseOrder: release_orderInput!) {
     addOutGate(outGate: $outGate, releaseOrder: $releaseOrder) {
@@ -175,6 +207,31 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
           this.pageInfo = retResult.pageInfo;
           return retResult.nodes;
         })
+      );
+  }
+
+  getOutGateByIDForMovement(sot_guid: string): Observable<OutGateItem[]> {
+    this.loadingSubject.next(true);
+    let where: any = { so_tank_guid: { eq: sot_guid }, delete_dt: { eq: null } }
+    return this.apollo
+      .query<any>({
+        query: GET_OUT_GATE_BY_ID_FOR_MOVEMENT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Disable caching for this query
+      })
+      .pipe(
+        // Handle the response and errors
+        map((result) => {
+          const retResult = result?.data.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          return retResult.nodes;
+        }),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as OutGateItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false))
       );
   }
 
