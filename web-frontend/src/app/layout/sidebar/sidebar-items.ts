@@ -431,6 +431,17 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       },
       {
+        path: "admin/inventory/tank-movement",
+        title: "MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
         path: "admin/inventory/booking",
         title: "MENUITEMS.INVENTORY.LIST.BOOKING",
         iconType: "",

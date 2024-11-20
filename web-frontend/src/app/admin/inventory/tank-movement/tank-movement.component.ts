@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -43,12 +43,13 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 @Component({
-  selector: 'app-in-gate',
+  selector: 'app-tank-movement',
   standalone: true,
-  templateUrl: './in-gate-survey.component.html',
-  styleUrl: './in-gate-survey.component.scss',
+  templateUrl: './tank-movement.component.html',
+  styleUrl: './tank-movement.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -76,7 +77,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
     MatDividerModule,
   ]
 })
-export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
     'customer',
@@ -84,10 +85,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     'eir_dt',
     'last_cargo',
     'purpose',
-    'eir_status_cv'
+    'tank_status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY'
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT'
   ]
@@ -119,22 +120,27 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    RO_NO: 'COMMON-FORM.RO-NO'
   }
 
   searchForm?: UntypedFormGroup;
   customerCodeControl = new UntypedFormControl();
+  lastCargoControl = new UntypedFormControl();
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   cvDS: CodeValuesDS;
+  tcDS: TariffCleaningDS;
 
-  inGateList: InGateItem[] = [];
+  sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
+  last_cargoList?: TariffCleaningItem[];
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  yardCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
   pageSize = 10;
@@ -155,10 +161,12 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   ) {
     super();
     this.translateLangText();
+    this.initSearchForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
+    this.tcDS = new TariffCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -167,8 +175,8 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initSearchForm();
     this.initializeValueChanges();
+    // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
   }
 
@@ -176,14 +184,17 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     this.searchForm = this.fb.group({
       so_no: [''],
       customer_code: this.customerCodeControl,
+      last_cargo: this.lastCargoControl,
       eir_no: [''],
+      ro_no: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
       tank_no: [''],
       job_no: [''],
       purpose: [''],
       tank_status_cv: [''],
-      eir_status_cv: ['']
+      eir_status_cv: [''],
+      yard_cv: ['']
     });
   }
 
@@ -204,6 +215,23 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
         });
       })
     ).subscribe();
+
+    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.cargo;
+        }
+        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+          this.last_cargoList = data
+          this.updateValidators(this.lastCargoControl, this.last_cargoList);
+        });
+      })
+    ).subscribe();
   }
 
   public loadData() {
@@ -211,6 +239,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'yardCv', codeValType: 'YARD' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -221,6 +250,9 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('yardCv').subscribe(data => {
+      this.yardCvList = addDefaultSelectOption(data, 'All');
     });
     this.search();
   }
@@ -338,9 +370,9 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.subs.sink = this.igDS.searchInGateForSurvey(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTankForMovement(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.inGateList = data;
+        this.sotList = data;
         this.endCursor = this.igDS.pageInfo?.endCursor;
         this.startCursor = this.igDS.pageInfo?.startCursor;
         this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
@@ -385,6 +417,10 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
+  displayLastCargoFn(tc: TariffCleaningItem): string {
+    return tc && tc.cargo ? `${tc.cargo}` : '';
+  }
+
   displayTankPurpose(sot: StoringOrderTankItem) {
     let purposes: any[] = [];
     if (sot?.purpose_storage) {
@@ -406,8 +442,8 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
   }
 
-  getEirStatusDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.eirStatusCvList);
+  getTankStatusDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
   displayDate(input: number | undefined): string | undefined {

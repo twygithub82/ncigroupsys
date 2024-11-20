@@ -79,16 +79,13 @@ import { UserDS, UserItem } from 'app/data-sources/user';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    NgScrollbar,
     NgClass,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     CommonModule,
     MatLabel,
     MatTableModule,
     MatPaginatorModule,
-    FeatherIconsComponent,
     MatProgressSpinnerModule,
     RouterLink,
     MatRadioModule,
@@ -834,44 +831,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
               actions: Array.isArray(data[index].actions!)
                 ? [...new Set([...data[index].actions!, 'cancel'])]
                 : ['cancel']
-            };
-          }
-        });
-        this.updateData(data);
-      }
-    });
-  }
-
-  rollbackSelectedRows(row: RepairPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: "rollback",
-        item: [...row],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairPartItem) => {
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'rollback'])]
-                : ['rollback']
             };
           }
         });

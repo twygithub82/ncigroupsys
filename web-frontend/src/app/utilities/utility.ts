@@ -178,6 +178,64 @@ export class Utility {
     return parseInt(containerNumber.charAt(10), 10) === finalCheckDigit;
   }
 
+  static verifyFormattedIsoContainerCheckDigit(containerNumber: string): boolean {
+    // Regular expression to validate both formats:
+    const containerNumberRegex = /^[A-Z]{4}[0-9]{7}$|^[A-Z]{4} [0-9]{6}-[0-9]$/;
+
+    // Check for valid format
+    if (!containerNumberRegex.test(containerNumber)) {
+        return false; // Invalid format
+    }
+
+    // Remove any space and hyphen to standardize format to "ABCD1234567"
+    const normalizedContainerNumber = containerNumber.replace(/[\s-]/g, '');
+
+    // Verify that the normalized container number length is 11
+    if (normalizedContainerNumber.length !== 11) {
+        return false;
+    }
+
+    // Convert letters to numbers as per ISO 6346
+    const lettersToValues = (letter: string): number => {
+        const code = letter.charCodeAt(0);
+        if (code >= 65 && code <= 90) {
+            // ISO 6346: A=10, B=12, ..., Z=38, skipping multiples of 11
+            let value = code - 55;
+            if (value >= 11) value++;
+            if (value >= 22) value++;
+            if (value >= 33) value++;
+            return value;
+        }
+        return -1;
+    };
+
+    // Convert the container number to numeric values
+    const numericValues = [];
+    for (let i = 0; i < 10; i++) {
+        const char = normalizedContainerNumber.charAt(i);
+        if (i < 4) {
+            numericValues.push(lettersToValues(char));
+        } else {
+            numericValues.push(parseInt(char, 10));
+        }
+    }
+
+    // Calculate weighted sum using 2^position
+    let weightedSum = 0;
+    for (let i = 0; i < 10; i++) {
+        weightedSum += numericValues[i] * Math.pow(2, i);
+    }
+
+    // Calculate the check digit
+    const checkDigit = weightedSum % 11;
+
+    // Adjust check digit if it equals 10
+    const finalCheckDigit = checkDigit === 10 ? 0 : checkDigit;
+
+    // Compare calculated check digit with the last digit of the container number
+    return parseInt(normalizedContainerNumber.charAt(10), 10) === finalCheckDigit;
+}
+
   static getDeleteDtEpoch(): number {
     const today = new Date();
     // Set the time to 00:00:00 to get the start of the day in epoch time

@@ -53,7 +53,7 @@ import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
+import { RepairDS, RepairGO, RepairItem, RepairRequest } from 'app/data-sources/repair';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
@@ -618,18 +618,19 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: any) => {
-          const RepairRequestInput = {
+          const RepairRequestInput = new RepairRequest({
             customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
+            is_approved: true,
             remarks: item.remarks,
             sot_guid: item.sot_guid
-          }
+          })
           return RepairRequestInput
         });
         console.log(reList);
-        this.repairDS.rollbackRepairApproval(reList).subscribe(result => {
-          this.handleRollbackSuccess(result?.data?.rollbackRepairApproval)
+        this.repairDS.rollbackRepair(reList).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackRepair)
         });
       }
     });

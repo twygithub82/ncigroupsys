@@ -35,12 +35,10 @@ namespace IDMS.Gate.GqlTypes
                     create_by = InGate.create_by,
                     create_dt = InGate.create_dt,
                     driver_name = InGate.driver_name,
-                    //eir_doc =InGate.eir_doc,
                     eir_dt = currentDate,
                     eir_no = InGate.eir_no,
                     guid = InGate.guid,
                     remarks = InGate.remarks,
-                    //   haulier =InGate.haulier,
                     lolo_cv = InGate.lolo_cv,
                     preinspection_cv = InGate.preinspection_cv,
                     so_tank_guid = InGate.so_tank_guid,
@@ -75,14 +73,14 @@ namespace IDMS.Gate.GqlTypes
 
                 if (InGate.tank != null)
                 {
-                    string tankStatusGuid =$"{config["CodeValuesSetting:TankStatusGuid"]}";
-                    if (so_tank.status_cv != "WAITING")
-                    {
+                    //string tankStatusGuid =$"{config["CodeValuesSetting:TankStatusGuid"]}";
+
+                    if (SOTankStatus.WAITING != so_tank.status_cv)
                         throw new GraphQLException(new Error("Tank status is not waiting", "404"));
-                    }
+                    
                     so_tank.job_no = InGate.tank.job_no;
-                    so_tank.status_cv = "ACCEPTED";
-                    so_tank.tank_status_cv = GqlUtils.GetCodeValue(context, tankStatusGuid);
+                    so_tank.status_cv = SOTankStatus.ACCEPTED;
+                    so_tank.tank_status_cv = TankMovementStatus.INGATE_SURVEY;
                     so_tank.owner_guid = InGate.tank.owner_guid;
                     so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
                     so_tank.purpose_storage = InGate.tank.purpose_storage;
@@ -173,16 +171,16 @@ namespace IDMS.Gate.GqlTypes
 
                     if (InGate.tank != null)
                     {
+                        so_tank.tank_status_cv = TankMovementStatus.INGATE_SURVEY;
                         so_tank.job_no = InGate.tank.job_no;
-                        so_tank.status_cv = "ACCEPTED";
-                        //so_tank.purpose_cleaning = InGate.tank.purpose_cleaning;
-                        //  so_tank.purpose_steam = InGate.tank.purpose_steam;
+                        so_tank.status_cv = SOTankStatus.ACCEPTED; //"ACCEPTED";
                         so_tank.last_cargo_guid = InGate.tank.last_cargo_guid;
                         so_tank.purpose_storage = InGate.tank.purpose_storage;
                         so_tank.owner_guid = InGate.tank.owner_guid;
                         so_tank.update_by = uid;
                         so_tank.update_dt = epochNow;
                         so_guid = so_tank.so_guid;
+                        
                     }
 
                     if (!string.IsNullOrEmpty(so_guid))
@@ -230,21 +228,6 @@ namespace IDMS.Gate.GqlTypes
                     }
                    retval = context.SaveChanges(true);
                 }
-
-                //long epochNow = GqlUtils.GetNowEpochInSec();
-                //var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //var guid = Util.GenerateGUID();
-                //var delNow = GqlUtils.GetNowEpochInSec();
-                //var command = @$"update in_gate set delete_dt={delNow},update_by='{uid}',update_dt={delNow}  where guid='{InGate_guid}' ";
-                ////var command = @$"Insert into in_gate (guid,so_tank_guid,eir_no,vehicle_no,yard_guid,driver_name,LOLO,preinspection,create_dt)
-                ////            values ('{InGate.guid}','{InGate.so_tank_guid}','{InGate.eir_no}','{InGate.vehicle_no}','{InGate.yard_guid}','{InGate.driver_name}',
-                ////            '{InGate.LOLO}','{InGate.preinspection}',{epochNow})";
-
-                //var result = await GqlUtils.RunNonQueryCommand(config, command);
-                //if (result["result"] != null)
-                //{
-                //    retval.result = Convert.ToInt32(result["result"]);
-                //}
             }
             catch(Exception ex)
             {

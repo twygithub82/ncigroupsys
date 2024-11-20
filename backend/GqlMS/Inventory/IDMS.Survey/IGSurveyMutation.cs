@@ -13,6 +13,7 @@ using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using IDMS.Models.Shared;
 
 
 namespace IDMS.Survey.GqlTypes
@@ -76,12 +77,17 @@ namespace IDMS.Survey.GqlTypes
                 sot.owner_guid = tank.owner_guid;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
-                sot.tank_status_cv = TankMovementStatus.STORAGE;
+             
                 if ((tank.purpose_cleaning ?? false) || (tank.purpose_steam ?? false))
                 {
                     sot.tank_status_cv = TankMovementStatus.CLEANING;
                     needAddCleaning = true;
                 }
+                else if(!string.IsNullOrEmpty(tank.purpose_repair_cv))
+                    sot.tank_status_cv = TankMovementStatus.REPAIR;
+                else
+                    sot.tank_status_cv = TankMovementStatus.STORAGE;
+
 
                 //Add the newly created guid into list for return
                 retGuids.Add(ingateSurvey.guid);
@@ -169,9 +175,11 @@ namespace IDMS.Survey.GqlTypes
 
                 sot.tank_status_cv = TankMovementStatus.STORAGE;
                 if ((tnk.purpose_cleaning ?? false) || (tnk.purpose_steam ?? false))
-                {
                     sot.tank_status_cv = TankMovementStatus.CLEANING;
-                }
+                else if (!string.IsNullOrEmpty(tnk.purpose_repair_cv))
+                    sot.tank_status_cv = TankMovementStatus.REPAIR;
+                else
+                    sot.tank_status_cv = TankMovementStatus.STORAGE;
 
 
                 retval = await context.SaveChangesAsync();
@@ -333,6 +341,8 @@ namespace IDMS.Survey.GqlTypes
                 newSteam.total_cost = totalCost;
                 newSteam.approve_dt = ingate_date;
                 newSteam.approve_by = "system";
+                newSteam.estimate_by = "system";
+                newSteam.estimate_dt = ingate_date;
                 await context.AddAsync(newSteam);
 
                 //steaming_part handling

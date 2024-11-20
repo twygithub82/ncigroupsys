@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +43,7 @@ namespace IDMS.Inventory.GqlTypes
         public const string STEAM = "STEAM";
         public const string STORAGE = "STORAGE";
         public const string RO = "RO_GENERATED";
+        public const string SO = "SO_GENERATED";
     }
 
     public static class SOTankAction
