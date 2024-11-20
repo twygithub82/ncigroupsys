@@ -51,6 +51,9 @@ import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RepairPartItem } from 'app/data-sources/repair-part';
+import { ResidueDS, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
+import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
 
 @Component({
   selector: 'app-job-order-task',
@@ -125,7 +128,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
-    RESIDUE_DISPOSAL:'COMMON-FORM.RESIDUE-DISPOSAL'
+    
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -138,6 +141,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   repairDS: RepairDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
+  residueDS:ResidueDS;
 
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
@@ -181,6 +185,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairDS = new RepairDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
+    this.residueDS= new ResidueDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -434,7 +439,12 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     const param = [newParam];
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
-      console.log(result)
+      if(result.data.completeJobOrder>0)
+      {
+        var item : ResiduePartItem = new ResiduePartItem(jobOrderItem.residue_part![0]!);
+        this.UpdateResidueStatusCompleted(item.residue_guid!);
+      }
+      //console.log(result)
     });
   }
 
@@ -491,5 +501,44 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
 
     this.jobOrderSubscriptions.push(subscription);
+  }
+
+  UpdateResidueStatusCompleted(residue_guid:string ){
+    const where: any = {
+      and:[]
+    };
+    
+    where.and.push({
+      residue_part:{all:{job_order: { status_cv: {eq:'COMPLETED' }}}}
+    });
+
+    where.and.push({
+      guid:{eq:residue_guid}
+    })
+
+    this.residueDS.search(where).subscribe(result=>{
+
+      if(result.length>0)
+      {
+        var resItem:ResidueItem=result[0];
+        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action="COMPLETE";
+        residueStatus.guid = resItem?.guid;
+        residueStatus.sot_guid= resItem?.sot_guid;
+         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+
+            console.log(result);
+         });
+         //.subscribe(result=>{
+        //   if(result.data.updateResidueStatus>0)
+        //   {
+        //     this.had(result.data.updateResidueStatus);
+        //   }
+
+        //  });
+
+      }
+    });
+
   }
 }

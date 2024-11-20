@@ -59,7 +59,7 @@ import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { ResidueDS, ResidueGO, ResidueItem } from 'app/data-sources/residue';
+import { ResidueDS, ResidueGO, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
@@ -1272,9 +1272,20 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     {
       if(this.isAllAssignedToTeam())
       {
-        let residueGuid = this.residueItem?.guid;
-        let process_status="JOB_IN_PROGRESS";
-        this.updateJobProcessStatus(residueGuid!,job_type,process_status);
+        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action="IN_PROGRESS";
+        residueStatus.guid = this.residueItem?.guid;
+        residueStatus.sot_guid= this.residueItem?.sot_guid;
+        this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+          if(result.data.updateResidueStatus>0)
+          {
+            this.handleSaveSuccess(result.data.updateResidueStatus);
+          }
+
+         });
+        // let residueGuid = this.residueItem?.guid;
+        // let process_status="JOB_IN_PROGRESS";
+        // this.updateJobProcessStatus(residueGuid!,job_type,process_status);
 
       }
       else

@@ -226,11 +226,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     QTY:'COMMON-FORM.QTY',
     LABOUR:'COMMON-FORM.LABOUR$',
     TEMP_RANGE_ERROR:'COMMON-FORM.TEMP-RANGE-ERROR',
+    TEMP_RANGE_OVERLAPS_ERROR:'COMMON-FORM.TEMP-RANGE-OVERLAPS-ERROR',
     TARIFF_STEAM:'MENUITEMS.TARIFF.LIST.TARIFF-STEAM',
   };
   unit_type_control = new UntypedFormControl();
   
-  selectedItem: TariffResidueItem;
+  selectedItem: TariffSteamingItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
@@ -260,6 +261,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.InitValueChanges()
+    if(this.action==="edit")  this.patchTariffSteam(data.selectedItem);
     // this.sotExistedList = data.sotExistedList;
     // if (this.action === 'edit') {
     //   this.dialogTitle = 'Edit ' + data.item.tank_no;
@@ -277,6 +279,20 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     // }
   }
 
+  patchTariffSteam(row:TariffSteamingItem)
+  {
+    this.pcForm.patchValue({
+      selectedItem: row,
+      action:"edit",
+      min_temp:row.temp_min,
+      max_temp:row.temp_max,
+      labour:row.labour?.toFixed(2),
+     // qty:[''],
+      cost:row.cost?.toFixed(2),
+      remarks:row.remarks
+    });
+  }
+
   createTariffSteam(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: null,
@@ -284,7 +300,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       min_temp:['',[Validators.required]],
       max_temp:['',[Validators.required]],
       labour:[''],
-      qty:[''],
+     // qty:[''],
       cost:[''],
       remarks:['']
       
@@ -322,7 +338,11 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   GetTitle()
   {
    
-      return this.translatedLangText.NEW + " " + this.translatedLangText.TARIFF_STEAM;      
+    if (this.action === "new") {
+      return `${this.translatedLangText.NEW} ${this.translatedLangText.TARIFF_STEAM}`;
+    }
+    return `${this.translatedLangText.EDIT} ${this.translatedLangText.TARIFF_STEAM}`;
+    //  return this.action==="new"?this.translatedLangText.NEW:this.translatedLangText.EDIT + " " + this.translatedLangText.TARIFF_STEAM;      
     
   }
 
@@ -359,9 +379,15 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     if (!this.pcForm?.valid) return;
     
     let where: any = { or:[]};
-    where.or.push({temp_min:{gt:this.pcForm?.value['max_temp']}});
-    where.or.push({temp_max:{lt:this.pcForm?.value['min_temp']}});
 
+    let maxTemp =this.pcForm?.value['max_temp'];
+    let minTemp=this.pcForm?.value['min_temp']
+    
+    where.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
+    where.or.push ({and:[{temp_min:{lte:maxTemp}},{temp_max:{gte:maxTemp}}]})
+    where.or.push ({and:[{temp_min:{gte:minTemp}},{temp_min:{lte:maxTemp}}]})
+    where.or.push ({and:[{temp_max:{gte:minTemp}},{temp_max:{lte:maxTemp}}]})
+  
     this.subs.sink= this.trfSteamDS.SearchTariffSteam(where).subscribe(data=>{
         if(data.length==0)
         {
@@ -375,6 +401,64 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
               this.handleSaveSuccess(result?.data?.addTariffSteaming);
             });
+        }
+        else
+        {
+            this.pcForm?.setErrors({ overlaps: true });
+        }
+
+
+    });
+
+   
+
+   
+
+  }
+
+  update() {
+
+    if (!this.pcForm?.valid) return;
+    
+    let where: any = { or:[]};
+
+    let maxTemp =this.pcForm?.value['max_temp'];
+    let minTemp=this.pcForm?.value['min_temp']
+    
+    where.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
+    where.or.push ({and:[{temp_min:{lte:maxTemp}},{temp_max:{gte:maxTemp}}]})
+    where.or.push ({and:[{temp_min:{gte:minTemp}},{temp_min:{lte:maxTemp}}]})
+    where.or.push ({and:[{temp_max:{gte:minTemp}},{temp_max:{lte:maxTemp}}]})
+  
+    this.subs.sink= this.trfSteamDS.SearchTariffSteam(where).subscribe(data=>{
+        if(data.length<=1)
+        {
+          let bUpd:boolean=true;
+
+          if(data.length==1)
+          {
+            bUpd=this.selectedItem.guid===data[0].guid;
+           
+          }
+          
+          if(bUpd)
+          {
+            let updSteam = new TariffSteamingItem();
+            updSteam.guid = this.selectedItem.guid;
+            updSteam.cost= Number(this.pcForm!.value['cost']);
+            updSteam.remarks= String(this.pcForm.value['remarks']);
+            updSteam.temp_max= Number(this.pcForm.value['max_temp']);
+            updSteam.temp_min= Number(this.pcForm.value['min_temp']);
+            updSteam.labour= Number(this.pcForm.value['labour']);
+            this.trfSteamDS.updateTariffSteam(updSteam).subscribe(result=>{
+              this.handleSaveSuccess(result?.data?.updateTariffSteaming);
+            });
+          }
+          else
+          {
+            this.pcForm?.setErrors({ overlaps: true });
+          }
+
         }
         else
         {

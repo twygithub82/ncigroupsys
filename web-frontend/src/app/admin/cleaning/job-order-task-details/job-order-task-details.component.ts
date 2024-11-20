@@ -880,9 +880,9 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
     const param = [newParam];
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
-      if(result.completeJobOrder>0)
+      if(result.data.completeJobOrder>0)
       {
-
+          this.UpdateCleaningStatusCompleted();
       }
     });
   }
@@ -988,39 +988,6 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
         let jobData: any;
         let eventType: any;
 
-        // if (data?.onJobStopped) {
-        //   jobData = data.onJobStopped;
-        //   eventType = 'jobStopped';
-        // } else if (data?.onJobStarted) {
-        //   jobData = data.onJobStarted;
-        //   eventType = 'jobStarted';
-        // } else if (data?.onJobCompleted) {
-        //   jobData = data.onJobCompleted;
-        //   eventType = 'onJobCompleted';
-        // }
-
-        // if (jobData) {
-        //   if (this.jobOrderItem) {
-        //     this.jobOrderItem.status_cv = jobData.job_status;
-        //     this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
-        //     this.jobOrderItem.time_table ??= [];
-
-        //     const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
-        //     if (eventType === 'jobStarted') {
-        //       if (foundTimeTable?.length) {
-        //         foundTimeTable[0].start_time = jobData.start_time
-        //         console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //       } else {
-        //         const startNew = new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid});
-        //         this.jobOrderItem.time_table?.push(startNew)
-        //         console.log(`Updated JobOrder ${eventType} :`, startNew);
-        //       }
-        //     } else if (eventType === 'jobStopped') {
-        //       foundTimeTable[0].stop_time = jobData.stop_time;
-        //       console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //     }
-        //   }
-        // }
       },
       error: (error) => {
         console.error('Error:', error);
@@ -1032,4 +999,44 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
 
     this.jobOrderSubscriptions.push(subscription);
   }
+
+
+  UpdateCleaningStatusCompleted() {
+
+
+    const where: any = {
+      and:[]
+    };
+    
+    where.and.push({
+      job_order: { status_cv: {eq:'COMPLETED' }}
+    });
+
+    where.and.push({
+      guid:{eq:this.clean_guid}
+    });
+
+
+    this.subs.sink = this.clnDS.search(where)
+      .subscribe(data => {
+        if(data.length>0)
+        {
+          var cln =data[0];
+          var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+          rep.action='COMPLETE';
+          delete rep.storing_order_tank;
+          delete rep.job_order;
+          delete rep.customer_company;
+          this.clnDS.updateInGateCleaning(rep).subscribe(result=>{
+
+            console.log(result);
+
+          });
+          //  this.clnDS.
+        }
+      });
+  }
+
+ 
+
 }

@@ -51,6 +51,7 @@ import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RepairPartItem } from 'app/data-sources/repair-part';
+import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 
 @Component({
   selector: 'app-job-order-task',
@@ -138,6 +139,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   repairDS: RepairDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
+  clnDS:InGateCleaningDS;
 
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
@@ -181,6 +183,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairDS = new RepairDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
+    this.clnDS= new InGateCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -435,6 +438,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
       console.log(result)
+      if (jobOrderItem?.cleaning?.length! > 0 ) {
+         var item : InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+        this.onFilterCleaningCompleted(item.guid!);
+      }
     });
   }
 
@@ -491,5 +498,41 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
 
     this.jobOrderSubscriptions.push(subscription);
+  }
+
+  onFilterCleaningCompleted( clean_guid:string) {
+
+
+    const where: any = {
+      and:[]
+    };
+    
+    where.and.push({
+      job_order: { status_cv: {eq:'COMPLETED' }}
+    });
+
+    where.and.push({
+      guid:{eq:clean_guid}
+    });
+
+
+    this.subs.sink = this.clnDS.search(where)
+      .subscribe(data => {
+        if(data.length>0)
+        {
+           var cln =data[0];
+           var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+           rep.action='COMPLETE';
+           delete rep.storing_order_tank;
+           delete rep.job_order;
+           delete rep.customer_company;
+           this.clnDS.updateInGateCleaning(rep).subscribe(result=>{
+
+             console.log(result);
+
+           });
+          //  this.clnDS.
+        }
+      });
   }
 }

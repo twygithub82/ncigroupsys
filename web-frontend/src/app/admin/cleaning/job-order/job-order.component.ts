@@ -190,7 +190,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'QC_COMPLETED'
+    'COMPLETED'
   ]
 
   clnEstList: InGateCleaningItem[] = [];

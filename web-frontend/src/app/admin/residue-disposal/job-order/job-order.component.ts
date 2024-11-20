@@ -189,6 +189,12 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   residueDS:ResidueDS;
   joDS: JobOrderDS;
 
+  availableProcessStatus: string[] = [
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED'
+  ]
+
   rsdEstList: ResidueItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
@@ -261,6 +267,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   initSearchForm() {
     this.filterResidueForm = this.fb.group({
       filterResidue: [''],
+      status_cv:[['APPROVED']],
+      customer:['']
     });
     this.filterJobOrderForm = this.fb.group({
       filterJobOrder: [''],
@@ -378,8 +386,14 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
 
   onFilterResidue() {
     const where: any = {
-      status_cv: { in: ["APPROVED"] }
+     and:[]
     };
+
+    if (this.filterResidueForm!.get('status_cv')?.value?.length) {
+      where.and.push({status_cv : {
+        in: this.filterResidueForm!.get('status_cv')?.value
+      }});
+    }
     // or: [
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }
@@ -389,6 +403,13 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
         storing_order_tank: { tank_no: { contains: this.filterResidueForm!.get('filterResidue')?.value } }
       });
     }
+
+    if (this.filterResidueForm!.get('customer')?.value) {
+      where.and.push({
+        customer_company: { code: { eq: (this.filterResidueForm!.get('customer')?.value).code } }
+      });
+    }
+
 
     this.lastSearchCriteriaResidue = this.residueDS.addDeleteDtCriteria(where);
     this.performSearchClean(this.pageSizeResidue, this.pageIndexResidue, this.pageSizeResidue, undefined, undefined, undefined, () => { });
@@ -633,6 +654,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
        });
       }
     
-
+      getStatusDescription(codeValType: string | undefined): string | undefined {
+        return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
+      }
  
 }

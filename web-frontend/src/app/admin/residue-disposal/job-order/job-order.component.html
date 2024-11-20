@@ -12,13 +12,40 @@
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
                 <form class="ms-0" [formGroup]="filterResidueForm!" (ngSubmit)="onFilterResidue()" #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
                         <mat-label>
                           {{translatedLangText.TANK_NO}}
                         </mat-label>
                         <input matInput formControlName="filterResidue">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+                        <input matInput formControlName="customer" [matAutocomplete]="customerCode">
+                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                          @for (cc of customer_companyList; track cc) {
+                          <mat-option [value]="cc">
+                            {{ccDS.displayName(cc)}}
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.STATUS}}</mat-label>
+                        <mat-select multiple formControlName="status_cv">
+                          @for (codeValue of processStatusCvList; track codeValue) {
+                          @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                          <mat-option [value]="codeValue.code_val">
+                            {{codeValue.description}}
+                          </mat-option>
+                          }
+                          }
+                        </mat-select>
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
@@ -75,7 +102,7 @@
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{row?.status_cv}}
+                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
@@ -106,12 +133,12 @@
               <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
                 <app-job-order-task></app-job-order-task>
               </mat-tab>
-              <mat-tab>
+              <!-- <mat-tab>
                 <ng-template mat-tab-label>
                   <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
                 </ng-template>
                 <app-job-order-qc></app-job-order-qc>
-              </mat-tab>
+              </mat-tab> -->
             </mat-tab-group>
           </div>
         </div>

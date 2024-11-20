@@ -162,7 +162,8 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     NEW: 'COMMON-FORM.NEW',
     COPY: 'COMMON-FORM.COPY',
     NO_OF_PARTS: 'COMMON-FORM.NO-OF-PARTS',
-    REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED'
+    REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
+    RESIDUE_JOB_NO: 'COMMON-FORM.RESIDUE-JOB-NO',
   }
 
   searchForm?: UntypedFormGroup;
@@ -182,6 +183,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
   reStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  processStatusCvList:CodeValuesItem[]=[];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -408,7 +410,8 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     const queries = [
       { alias: 'reStatusCv', codeValType: 'REP_EST_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('reStatusCv').subscribe(data => {
@@ -419,6 +422,9 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = addDefaultSelectOption(data, 'All');
     });
   }
 

@@ -58,6 +58,7 @@ import { TariffLabourDS,TariffLabourItem } from 'app/data-sources/tariff-labour'
 import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-steam';
+import { DeleteDialogComponent } from 'app/advance-table/dialogs/delete/delete.component';
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,
@@ -101,11 +102,11 @@ implements OnInit {
       'maxTemp',
       'cost',
       'labour',
-      'qty',
+     // 'qty',
       'lastUpdate',
       
     // 'mobile',
-    // 'actions',
+   //  'actions',
   ];
 
   pageTitle = 'MENUITEMS.TARIFF.LIST.TARIFF-STEAM'
@@ -438,7 +439,7 @@ implements OnInit {
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit,{
+    const dialogRef = this.dialog.open(FormDialogComponent_New,{
       width: '600px',
       data: {
         action: 'edit',
@@ -465,36 +466,43 @@ implements OnInit {
   }
 
   
-  deleteItem(row: AdvanceTable) {
-    // this.id = row.id;
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(DeleteDialogComponent, {
-    //   data: row,
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // for delete we use splice in order to remove single object from DataService
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'snackbar-danger',
-    //         'Delete Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
+  deleteItem(row: TariffSteamingItem) {
+    
+      // let tempDirection: Direction;
+      // if (localStorage.getItem('isRtl') === 'true') {
+      //   tempDirection = 'rtl';
+      // } else {
+      //   tempDirection = 'ltr';
+      // }
+      // const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      //   width: '1000px',
+      //   data: {
+      //     item: row,
+      //     langText: this.langText,
+      //     index: index
+      //   },
+      //   direction: tempDirection
+      // });
+      // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      //   if (result?.action === 'confirmed') {
+      //     if (result.item.guid) {
+      //       const data: any[] = [...this.deList];
+      //       const updatedItem = {
+      //         ...result.item,
+      //         delete_dt: Utility.getDeleteDtEpoch(),
+      //         action: 'cancel'
+      //       };
+      //       data[result.index] = updatedItem;
+      //       this.updateData(data); // Refresh the data source
+      //     } else {
+      //       const data = [...this.deList];
+      //       data.splice(index, 1);
+      //       this.updateData(data); // Refresh the data source
+      //     }
+  
+      //     this.resetSelectedItemForUpdating();
+      //   }
+      // });
   }
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);

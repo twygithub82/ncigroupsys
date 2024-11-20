@@ -80,6 +80,22 @@ export class ResidueItem extends ResidueGO {
   }
 }
 
+export class ResidueStatusRequest  {
+  public guid?: string;
+  public action?: string;
+  
+  public sot_guid?: string;
+  //public aspnetsuser?: UserItem;
+  
+  constructor(item: Partial<ResidueStatusRequest> = {}) {
+    
+    this.guid = item.guid;
+    this.sot_guid = item.sot_guid;
+   // this.aspnetsuser = item.aspnetsuser;
+    this.action = item.action;
+  }
+}
+
 export const GET_RESIDUE_EST = gql`
   query QueryResidue($where: residueFilterInput, $order: [residueSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryResidue(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -373,6 +389,12 @@ export const UPDATE_RESIDUE_EST = gql`
   }
 `;
 
+export const UPDATE_RESIDUE_STATUS = gql`
+  mutation UpdateResidueStatus($residue: ResidueStatusRequestInput!) {
+    updateResidueStatus(residue: $residue)
+  }
+`;
+
 export const CANCEL_RESIDUE_EST = gql`
   mutation CancelResidue($residue: [residueInput!]!) {
     cancelResidue(residue: $residue)
@@ -471,6 +493,16 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   updateResidue(residue: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_RESIDUE_EST,
+      variables: {
+        residue
+      }
+    });
+  }
+
+
+  updateResidueStatus(residue: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_RESIDUE_STATUS,
       variables: {
         residue
       }

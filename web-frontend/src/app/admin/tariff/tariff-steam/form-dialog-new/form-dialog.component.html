@@ -32,6 +32,11 @@
                {{translatedLangText.TEMP_RANGE_ERROR}}
             </mat-error>
             }
+            @if (pcForm.hasError('overlaps')) {
+              <mat-error>
+                 {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
+              </mat-error>
+              }
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                  <mat-form-field class="example-full-width">
@@ -81,6 +86,10 @@
         @if (canEdit()) {
           <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
         }
+        @else {
+          <button mat-flat-button color="primary" (click)="update()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+        }
+        
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
       </div>
     </form>

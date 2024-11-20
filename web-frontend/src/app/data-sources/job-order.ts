@@ -385,6 +385,7 @@ const GET_STARTED_JOB_ORDER = gql`
             guid
             estimate_no
           }
+          residue_guid
         }
         time_table(
           where: { start_time: { neq: null }, stop_time: { eq: null } }

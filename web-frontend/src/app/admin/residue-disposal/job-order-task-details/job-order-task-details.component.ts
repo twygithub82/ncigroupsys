@@ -62,7 +62,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { ResidueDS, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
 
 @Component({
@@ -625,7 +625,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/job-order']);
+      this.router.navigate(['/admin/residue-disposal/job-order']);
     }
   }
 
@@ -888,7 +888,10 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     const param = [newParam];
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
-      console.log(result)
+      if(result.data.completeJobOrder>0)
+      {
+      this.UpdateResidueStatusCompleted(this.residueItem?.guid!);
+      }
     });
   }
 
@@ -1044,5 +1047,40 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
       }
       return acc; // If row is approved, keep the current accumulator value
     }, 0);
+  }
+
+  UpdateResidueStatusCompleted(residue_guid:string ){
+    const where: any = {
+      and:[]
+    };
+    
+    where.and.push({
+      residue_part:{all:{job_order: { status_cv: {eq:'COMPLETED' }}}}
+    });
+
+    where.and.push({
+      guid:{eq:residue_guid}
+    })
+
+    this.residueDS.search(where).subscribe(result=>{
+
+      if(result.length>0)
+      {
+        var resItem:ResidueItem=result[0];
+        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action="COMPLETE";
+        residueStatus.guid = resItem?.guid;
+        residueStatus.sot_guid= resItem?.sot_guid;
+         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+
+            console.log(result);
+         });
+     
+
+      }
+      this.handleSaveSuccess(1);
+
+    });
+
   }
 }

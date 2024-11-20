@@ -676,7 +676,8 @@
     "RESIDUE-DISPOSAL" :"Residue Disposal",
     "MIN-TEMP":"Min Temp.",
     "MAX-TEMP":"Max Temp.",
-    "TEMP-RANGE-ERROR":"Maximum temperature must be greater than minimum temperature."
+    "TEMP-RANGE-ERROR":"Maximum temperature must be greater than minimum temperature.",
+    "TEMP-RANGE-OVERLAPS-ERROR": "New steam temperature must not be overlaps the existing steam temperature."
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

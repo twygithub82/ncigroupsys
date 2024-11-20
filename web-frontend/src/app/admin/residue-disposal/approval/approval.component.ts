@@ -231,8 +231,8 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
   initSearchForm() {
     this.searchForm = this.fb.group({
       tank_no: [''],
-      customer_code: this.customerCodeControl,
-      last_cargo: this.lastCargoControl,
+      customer_code: [''],
+      last_cargo:[''],
       eir_dt_start: [''],
       eir_dt_end: [''],
       part_name: [''],
@@ -356,6 +356,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
+      
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -420,19 +421,22 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     const where: any = {
     };
 
-    if (this.searchForm!.value['so_no']) {
-      where.so_no = { contains: this.searchForm!.value['so_no'] };
-    }
+    // if (this.searchForm!.value['so_no']) {
+    //   where.so_no = { contains: this.searchForm!.value['so_no'] };
+    // }
 
-    if (this.searchForm!.value['so_status']) {
-      where.status_cv = { contains: this.searchForm!.value['so_status'] };
+    if (this.searchForm!.value['est_status_cv']) {
+      where.status_cv = { contains: this.searchForm!.value['est_status_cv'] };
     }
 
     if (this.searchForm!.value['customer_code']) {
       where.storing_order_tank ={storing_order: { customer_company: { code: { contains: this.searchForm!.value['customer_code'].code } }}};
     }
+
     
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['job_no'] || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
+    
+    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['residue_job_no'] || 
+      (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
       const sotSome: any = {};
 
       if (this.searchForm!.value['last_cargo']) {

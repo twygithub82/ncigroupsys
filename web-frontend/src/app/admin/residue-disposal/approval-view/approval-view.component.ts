@@ -59,7 +59,7 @@ import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { ResidueDS, ResidueGO, ResidueItem } from 'app/data-sources/residue';
+import { ResidueDS, ResidueGO, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 
@@ -809,15 +809,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     }).join('/');
   }
 
-  // displayDamageRepairCodeDescription(damageRepair: any[], filterCode: number): string {
-  //   const concate = damageRepair?.filter((x: any) => x.code_type === filterCode && !x.delete_dt && x.action !== 'cancel').map(item => {
-  //     const codeCv = item.code_cv;
-  //     const description = `(${codeCv})` + (item.code_type == 0 ? this.getDamageCodeDescription(codeCv) : this.getRepairCodeDescription(codeCv));
-  //     return description ? description : '';
-  //   }).join('\n');
-
-  //   return concate;
-  // }
+  
 
   displayDateTime(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateTimeStr(input);
@@ -1050,9 +1042,18 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
         console.log(reList);
-        this.residueDS.cancelResidue(reList).subscribe(result => {
-          this.handleCancelSuccess(result?.data?.cancelResidue)
-        });
+
+        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action="NA";
+        residueStatus.guid = this.residueItem?.guid;
+        residueStatus.sot_guid= this.residueItem?.sot_guid;
+         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+
+          this.handleCancelSuccess(result?.data?.updateResidueStatus);
+         });
+        // this.residueDS.cancelResidue(reList).subscribe(result => {
+        //   this.handleCancelSuccess(result?.data?.cancelResidue)
+        // });
       }
     });
   }
@@ -1085,24 +1086,25 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
             estimate_no: item?.estimate_no,
             guid: item?.guid,
             remarks: item.remarks,
-            sot_guid: item.sot_guid
+            sot_guid: item.sot_guid,
+            is_approved:this.residueItem?.status_cv=="APPROVED"
           }
           return RepairRequestInput
         });
         console.log(reList);
-        if(this.residueItem?.status_cv=="PENDING")
-        {
+        // if(this.residueItem?.status_cv=="PENDING")
+        // {
       
           this.residueDS.rollbackResidue(reList[0]).subscribe(result => {
             this.handleRollbackSuccess(result?.data?.rollbackResidue)
           });
-        }
-        else
-        {
-          this.residueDS.rollbackResidueApproval(reList[0]).subscribe(result => {
-            this.handleRollbackSuccess(result?.data?.rollbackResidueApproval)
-          });
-        }
+        // }
+        // else
+        // {
+        //   this.residueDS.rollbackResidueApproval(reList[0]).subscribe(result => {
+        //     this.handleRollbackSuccess(result?.data?.rollbackResidueApproval)
+        //   });
+        // }
       }
     });
   }
