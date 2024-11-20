@@ -645,7 +645,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
         var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
           guid: this.repairItem!.guid,
           sot_guid: this.sotItem!.guid,
-          action: "JOB_IN_PROGRESS"
+          action: "IN_PROGRESS"
         });
         console.log(repairStatusReq);
         this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
