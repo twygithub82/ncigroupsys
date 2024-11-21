@@ -334,7 +334,7 @@
                           </button>
                           }
                           @if (repairDS.canCancel(repairRow)) {
-                          <button mat-menu-item (click)="cancelRow(repairRow)">
+                          <button mat-menu-item (click)="cancelRow(repairRow, row)">
                             <mat-icon>cancel</mat-icon>
                             <span>{{translatedLangText.CANCEL}}</span>
                           </button>

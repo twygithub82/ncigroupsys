@@ -46,7 +46,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairDS, RepairGO, RepairItem, RepairRequest } from 'app/data-sources/repair';
+import { RepairDS, RepairGO, RepairItem, RepairRequest, RepairStatusRequest } from 'app/data-sources/repair';
 
 @Component({
   selector: 'app-estimate',
@@ -194,6 +194,10 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   hasNextPage = false;
   hasPreviousPage = false;
 
+  currentStartCursor: string | undefined = undefined;
+  currentEndCursor: string | undefined = undefined;
+  lastCursorDirection: string | undefined = undefined;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -276,17 +280,17 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-  cancelRow(row: RepairItem) {
+  cancelRow(row: RepairItem, sot: StoringOrderTankItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
     if (!found) {
       // this.toggleRow(row);
       selectedList.push(row);
     }
-    this.cancelSelectedRows(selectedList)
+    this.cancelSelectedRows(selectedList, sot)
   }
 
-  cancelSelectedRows(row: RepairItem[]) {
+  cancelSelectedRows(row: RepairItem[], sot: StoringOrderTankItem) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -306,10 +310,18 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: RepairItem) => new RepairGO(item));
-        console.log(reList);
-        this.repairDS.cancelRepair(reList).subscribe(result => {
-          this.handleCancelSuccess(result?.data?.cancelRepair)
-          this.performSearch(this.pageSize, 0, this.pageSize);
+        var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+          guid: reList[0].guid,
+          sot_guid: sot!.guid,
+          action: "CANCEL",
+          remarks: reList[0].remarks
+        });
+        console.log(repairStatusReq);
+        this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+          console.log(result)
+          if (result.data.updateRepairStatus > 0) {
+            this.handleCancelSuccess(result.data.updateRepairStatus);
+          }
         });
       }
     });
@@ -396,6 +408,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.triggerCurrentSearch();
     }
   }
 
@@ -528,7 +541,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     // }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, this.endCursor, undefined, undefined, () => {
       this.updatePageSelection();
     });
   }
@@ -546,6 +559,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
+
+        this.currentEndCursor = after;
+        this.currentStartCursor = before;
       });
 
     this.pageSize = pageSize;
@@ -570,10 +586,12 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     } else {
       if (pageIndex > this.pageIndex && this.hasNextPage) {
         // Navigate forward
+        this.lastCursorDirection = 'forward';
         first = pageSize;
         after = this.endCursor;
       } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
         // Navigate backward
+        this.lastCursorDirection = 'backward';
         last = pageSize;
         before = this.startCursor;
       }
@@ -583,6 +601,37 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       this.updatePageSelection();
     });
   }
+
+  triggerCurrentSearch() {
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+  
+    if (this.pageIndex === 0) {
+      first = this.pageSize;
+    } else if (this.lastCursorDirection === 'forward') {
+      first = this.pageSize;
+      after = this.currentEndCursor;
+    } else if (this.lastCursorDirection === 'backward') {
+      last = this.pageSize;
+      before = this.currentStartCursor;
+    }
+  
+    // Perform the search
+    this.performSearch(
+      this.pageSize,
+      this.pageIndex,
+      first,
+      after,
+      last,
+      before,
+      () => {
+        this.updatePageSelection(); // Callback for UI updates
+      }
+    );
+  }
+  
 
   getProcessStatusDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
