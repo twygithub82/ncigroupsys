@@ -14,7 +14,9 @@ namespace IDMS.Service.GqlTypes
 {
     public class ServiceMutation
     {
-
+        /// <summary>
+        /// Assign part to Job, Update Job Order status to Pending
+        /// </summary>
         public async Task<int> AssignJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<JobOrderRequest> jobOrderRequest)
         {
@@ -86,67 +88,6 @@ namespace IDMS.Service.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
-        // public async Task<int> AssignJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        //[Service] IConfiguration config, List<JobOrderRequest> jobOrderRequest)
-        // {
-        //     try
-        //     {
-        //         if (jobOrderRequest == null)
-        //             throw new GraphQLException(new Error($"Job order object cannot be null", "ERROR"));
-
-        //         var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //         long currentDateTime = DateTime.Now.ToEpochTime();
-        //         var currentJobOrderGuid = "";
-
-        //         foreach (var item in jobOrderRequest)
-        //         {
-        //             if (string.IsNullOrEmpty(item.guid))
-        //             {
-        //                 var newJobOrder = new job_order();
-        //                 newJobOrder.guid = Util.GenerateGUID();
-        //                 currentJobOrderGuid = newJobOrder.guid;
-        //                 newJobOrder.sot_guid = item.sot_guid;
-        //                 newJobOrder.team_guid = item.team_guid;
-        //                 newJobOrder.job_type_cv = item.job_type_cv;
-        //                 newJobOrder.status_cv = CurrentServiceStatus.PENDING;
-        //                 newJobOrder.total_hour = item.total_hour;
-        //                 newJobOrder.working_hour = item.working_hour;
-        //                 newJobOrder.remarks = item.remarks;
-        //                 newJobOrder.create_by = user;
-        //                 newJobOrder.create_dt = currentDateTime;
-        //                 await context.AddAsync(newJobOrder);
-        //             }
-        //             else
-        //             {
-        //                 var updateJobOrder = new job_order() { guid = item.guid };
-        //                 context.Attach(updateJobOrder);
-
-        //                 currentJobOrderGuid = item.guid;
-        //                 updateJobOrder.remarks = item.remarks;
-        //                 updateJobOrder.team_guid = item.team_guid;
-        //                 updateJobOrder.job_type_cv = item.job_type_cv;
-        //                 updateJobOrder.total_hour = item.total_hour;
-        //                 updateJobOrder.working_hour = item.working_hour;
-        //                 updateJobOrder.remarks = item.remarks;
-        //                 updateJobOrder.update_by = user;
-        //                 updateJobOrder.update_dt = currentDateTime;
-        //             }
-
-        //             AssignPartToJob(context, item.job_type_cv, currentJobOrderGuid, item.part_guid);
-        //         }
-
-        //         var res = await context.SaveChangesAsync();
-        //         //TODO
-        //         //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
-        //         return res;
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //     }
-        // }
-
         public async Task<int> UpdateJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<UpdateJobOrderRequest> jobOrderRequest)
         {
@@ -198,6 +139,9 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
+        /// <summary>
+        /// Update Job Order status to completed, update complete_dt
+        /// </summary>
         public async Task<int> CompleteJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<UpdateJobOrderRequest> jobOrderRequest)
         {
@@ -244,49 +188,21 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        public async Task<int> CompleteJobItem(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<JobItemRequest> jobItemRequest)
+        public async Task<int> DeleteJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<string> jobOrderGuid)
         {
             try
             {
-                if (jobItemRequest == null)
-                    throw new GraphQLException(new Error($"Job item object cannot be null", "ERROR"));
-
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                string tableName = "";
-                var jobType = jobItemRequest.Select(j => j.job_type_cv).FirstOrDefault();
-                var jobOrderGuid = jobItemRequest.Select(j => j.job_order_guid).FirstOrDefault();
+                string tableName = "job_order";
 
-                switch (jobType.ToUpper())
-                {
-                    case JobType.REPAIR:
-                        tableName = "repair_part";
-                        break;
-                    case JobType.CLEANING:
-                        tableName = "cleaning";
-                        break;
-                    case JobType.RESIDUE:
-                        tableName = "residue_part";
-                        break;
-                    case JobType.STEAM:
-                        tableName = "steaming";
-                        break;
-                }
+                var guids = string.Join(",", jobOrderGuid.Select(g => $"'{g}'"));
+                string sql = $"UPDATE {tableName} SET delete_dt = {currentDateTime}, update_dt = {currentDateTime}, update_by = '{user}' WHERE guid IN ({guids})";
 
-                var guids = string.Join(",", jobItemRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                string sql = $"UPDATE {tableName} SET complete_dt = {currentDateTime}, update_dt = {currentDateTime}, " +
-                             $"update_by = '{user}' WHERE guid IN ({guids})";
                 var ret = context.Database.ExecuteSqlRaw(sql);
-
-                //Handling of sending job notification
-                var jobNotification = new JobNotification();
-                jobNotification.job_order_guid = jobOrderGuid;
-                jobNotification.job_type = jobType;
-                jobNotification.complete_dt = currentDateTime;
-                await GqlUtils.SendJobNotification(config, jobNotification, JobNotificationType.COMPLETE_ITEM);
-
+                //var res = await context.SaveChangesAsync();
                 return ret;
             }
             catch (Exception ex)
@@ -295,51 +211,108 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        public async Task<int> CompleteEntireJobProcess(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<JobProcessRequest> jobProcessRequest)
-        {
-            try
-            {
-                if (jobProcessRequest == null)
-                    throw new GraphQLException(new Error($"Job process object cannot be null", "ERROR"));
+        //public async Task<int> CompleteJobItem(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        //    [Service] IConfiguration config, List<JobItemRequest> jobItemRequest)
+        //{
+        //    try
+        //    {
+        //        if (jobItemRequest == null)
+        //            throw new GraphQLException(new Error($"Job item object cannot be null", "ERROR"));
 
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
 
-                string tableName = "";
-                var jobType = jobProcessRequest.Select(j => j.job_type_cv).FirstOrDefault();
-                //var jobOrderGuid = jobProcessRequest.Select(j => j.job_order_guid).FirstOrDefault();
+        //        string tableName = "";
+        //        var jobType = jobItemRequest.Select(j => j.job_type_cv).FirstOrDefault();
+        //        var jobOrderGuid = jobItemRequest.Select(j => j.job_order_guid).FirstOrDefault();
 
-                switch (jobType.ToUpper())
-                {
-                    case JobType.REPAIR:
-                        tableName = "repair";
-                        break;
-                    case JobType.CLEANING:
-                        tableName = "cleaning";
-                        break;
-                    case JobType.RESIDUE:
-                        tableName = "residue";
-                        break;
-                    case JobType.STEAM:
-                        tableName = "steaming";
-                        break;
-                }
+        //        switch (jobType.ToUpper())
+        //        {
+        //            case JobType.REPAIR:
+        //                tableName = "repair_part";
+        //                break;
+        //            case JobType.CLEANING:
+        //                tableName = "cleaning";
+        //                break;
+        //            case JobType.RESIDUE:
+        //                tableName = "residue_part";
+        //                break;
+        //            case JobType.STEAM:
+        //                tableName = "steaming";
+        //                break;
+        //        }
 
-                var guids = string.Join(",", jobProcessRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                string sql = $"UPDATE {tableName} SET complete_dt = {currentDateTime}, complete_by = '{user}' update_dt = {currentDateTime}, " +
-                             $"update_by = '{user}' WHERE guid IN ({guids})";
+        //        var guids = string.Join(",", jobItemRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+        //        string sql = $"UPDATE {tableName} SET complete_dt = {currentDateTime}, update_dt = {currentDateTime}, " +
+        //                     $"update_by = '{user}' WHERE guid IN ({guids})";
+        //        var ret = context.Database.ExecuteSqlRaw(sql);
 
-                var ret = context.Database.ExecuteSqlRaw(sql);
+        //        //Handling of sending job notification
+        //        var jobNotification = new JobNotification();
+        //        jobNotification.job_order_guid = jobOrderGuid;
+        //        jobNotification.job_type = jobType;
+        //        jobNotification.complete_dt = currentDateTime;
+        //        await GqlUtils.SendJobNotification(config, jobNotification, JobNotificationType.COMPLETE_ITEM);
 
-                return ret;
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-            }
-        }
+        //        return ret;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+        //    }
+        //}
 
+        /// <summary>
+        ///  Update Process to Status Completed When all Job are done, update complete_dt 
+        /// </summary>
+        //public async Task<int> CompleteEntireJobProcess(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        //    [Service] IConfiguration config, List<JobProcessRequest> jobProcessRequest)
+        //{
+        //    try
+        //    {
+        //        if (jobProcessRequest == null)
+        //            throw new GraphQLException(new Error($"Job process object cannot be null", "ERROR"));
+
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
+
+        //        string tableName = "";
+        //        var jobType = jobProcessRequest.Select(j => j.job_type_cv).FirstOrDefault();
+        //        //var jobOrderGuid = jobProcessRequest.Select(j => j.job_order_guid).FirstOrDefault();
+
+        //        switch (jobType.ToUpper())
+        //        {
+        //            case JobType.REPAIR:
+        //                tableName = "repair";
+        //                break;
+        //            case JobType.CLEANING:
+        //                tableName = "cleaning";
+        //                break;
+        //            case JobType.RESIDUE:
+        //                tableName = "residue";
+        //                break;
+        //            case JobType.STEAM:
+        //                tableName = "steaming";
+        //                break;
+        //        }
+
+        //        var guids = string.Join(",", jobProcessRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+        //        string sql = $"UPDATE {tableName} SET status_cv = '{CurrentServiceStatus.COMPLETED}', complete_dt = {currentDateTime}, complete_by = '{user}' update_dt = {currentDateTime}, " +
+        //                     $"update_by = '{user}' WHERE guid IN ({guids})";
+
+        //        var ret = context.Database.ExecuteSqlRaw(sql);
+
+        //        return ret;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+        //    }
+        //}
+
+        /// <summary>
+        /// Start current job, and update current Job Order to JOB-IN-PROGRESS
+        /// </summary>
         public async Task<int> StartJobTimer(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<time_table> timeTable)
         {
@@ -472,50 +445,53 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        public async Task<int> UpdateJobProcessStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, JobProcessRequest jobProcessRequest)
-        {
-            try
-            {
-                if (jobProcessRequest == null)
-                    throw new GraphQLException(new Error($"Job process object cannot be null", "ERROR"));
+        /// <summary>
+        /// Mainly use to update Process status to Job-In-Progress, or other status
+        /// </summary>
+        //public async Task<int> UpdateJobProcessStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        //    [Service] IConfiguration config, JobProcessRequest jobProcessRequest)
+        //{
+        //    try
+        //    {
+        //        if (jobProcessRequest == null)
+        //            throw new GraphQLException(new Error($"Job process object cannot be null", "ERROR"));
 
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
-                string tableName = "";
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
+        //        string tableName = "";
 
-                switch (jobProcessRequest.job_type_cv.ToUpper())
-                {
-                    case JobType.REPAIR:
-                        tableName = "repair";
-                        break;
-                    case JobType.CLEANING:
-                        tableName = "cleaning";
-                        break;
-                    case JobType.RESIDUE:
-                        tableName = "residue";
-                        break;
-                    case JobType.STEAM:
-                        tableName = "steaming";
-                        break;
-                }
+        //        switch (jobProcessRequest.job_type_cv.ToUpper())
+        //        {
+        //            case JobType.REPAIR:
+        //                tableName = "repair";
+        //                break;
+        //            case JobType.CLEANING:
+        //                tableName = "cleaning";
+        //                break;
+        //            case JobType.RESIDUE:
+        //                tableName = "residue";
+        //                break;
+        //            case JobType.STEAM:
+        //                tableName = "steaming";
+        //                break;
+        //        }
 
-                string sql = "";
-                if (CurrentServiceStatus.NO_ACTION.EqualsIgnore(jobProcessRequest.process_status))
-                    sql = $"UPDATE {tableName} SET status_cv = '{jobProcessRequest.process_status}', update_dt = {currentDateTime}, " +
-                            $"update_by = '{user}', na_dt = {currentDateTime} WHERE guid = '{jobProcessRequest.guid}'";
-                else
-                    sql = $"UPDATE {tableName} SET status_cv = '{jobProcessRequest.process_status}', update_dt = {currentDateTime}, " +
-                             $"update_by = '{user}' WHERE guid = '{jobProcessRequest.guid}'";
+        //        string sql = "";
+        //        if (CurrentServiceStatus.NO_ACTION.EqualsIgnore(jobProcessRequest.process_status))
+        //            sql = $"UPDATE {tableName} SET status_cv = '{jobProcessRequest.process_status}', update_dt = {currentDateTime}, " +
+        //                    $"update_by = '{user}', na_dt = {currentDateTime} WHERE guid = '{jobProcessRequest.guid}'";
+        //        else
+        //            sql = $"UPDATE {tableName} SET status_cv = '{jobProcessRequest.process_status}', update_dt = {currentDateTime}, " +
+        //                     $"update_by = '{user}' WHERE guid = '{jobProcessRequest.guid}'";
 
-                var ret = context.Database.ExecuteSqlRaw(sql);
-                return ret;
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-            }
-        }
+        //        var ret = context.Database.ExecuteSqlRaw(sql);
+        //        return ret;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+        //    }
+        //}
 
         private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
                                                 string jobType, string jobOrderGuid, List<string?>? partGuid)

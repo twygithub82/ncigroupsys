@@ -32,6 +32,8 @@ namespace IDMS.Service.GqlTypes
         public const string KIV = "KIV";
         public const string APPROVE = "APPROVE";
         public const string NA = "NA";
+        public const string COMPLETE = "COMPLETE";
+        public const string IN_PROGRESS = "IN_PROGRESS";
     }
 
     public static class JobType

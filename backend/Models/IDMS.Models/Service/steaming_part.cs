@@ -16,6 +16,9 @@ namespace IDMS.Models.Service
 
         [ForeignKey("tariff_steaming")]
         public string? tariff_steaming_guid { get; set; }
+
+        [ForeignKey("job_order")]
+        public string? job_order_guid { get; set; }
         public string? description { get; set; }
         public int? quantity { get; set; }
         public double? cost { get; set; }
@@ -31,7 +34,11 @@ namespace IDMS.Models.Service
 
         [UseFiltering]
         public steaming? steaming { get; set; } = null;
+
         [UseFiltering]
         public tariff_steaming? tariff_steaming { get; set; } = null;
+
+        [UseFiltering]
+        public job_order? job_order { get; set; }
     }
 }

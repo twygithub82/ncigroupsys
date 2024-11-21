@@ -1031,7 +1031,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         return 'badge-solid-green';
       case 'PENDING':
         return 'badge-solid-cyan';
-      case 'CANCEL':
+      case 'NO_ACTION':
+      case 'CANCELED':
         return 'badge-solid-red';
       default:
         return '';

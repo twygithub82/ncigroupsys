@@ -105,7 +105,7 @@ export class JobProcessRequest {
 
 export class JobOrderItem extends JobOrderGO {
   public team?: TeamItem;
-  public storing_order_tank?:StoringOrderTankItem;
+  public storing_order_tank?: StoringOrderTankItem;
   public repair_part?: RepairPartItem[];
   public cleaning?: InGateCleaningItem[];
   public residue_part?: ResiduePartItem[];
@@ -118,7 +118,7 @@ export class JobOrderItem extends JobOrderGO {
     this.cleaning = item.cleaning;
     this.residue_part = item.residue_part;
     this.time_table = item.time_table;
-    this.storing_order_tank=item.storing_order_tank;
+    this.storing_order_tank = item.storing_order_tank;
   }
 }
 
@@ -586,6 +586,12 @@ const QC_COMPLETE_CLEANING_JOB_ORDER = gql`
   }
 `
 
+const DELETE_JOB_ORDER = gql`
+  mutation deleteJobOrder($jobOrderGuid: [String!]!) {
+    deleteJobOrder(jobOrderGuid: $jobOrderGuid)
+  }
+`
+
 export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -783,12 +789,25 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     });
   }
 
+  deleteJobOrder(jobOrderGuid: string[]): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_JOB_ORDER,
+      variables: {
+        jobOrderGuid
+      }
+    });
+  }
+
   canStartJob(jobOrderItem: JobOrderItem | undefined) {
     return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
   }
 
   canCompleteJob(jobOrderItem: JobOrderItem | undefined) {
     return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' && this.canStartJob(jobOrderItem);
+  }
+
+  canJobAllocate(jobOrderItem: JobOrderItem | undefined): boolean {
+    return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
   }
 
   getEstimateJobOrder(rpList: RepairPartItem[] | undefined) {

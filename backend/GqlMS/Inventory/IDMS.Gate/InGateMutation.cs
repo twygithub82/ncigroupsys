@@ -51,7 +51,7 @@ namespace IDMS.Gate.GqlTypes
                     throw new GraphQLException(new Error("Tank guid is empty", "404"));
                 }
 
-                var so_tank = context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefault();
+                var so_tank = await context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefaultAsync();
 
                 if (so_tank == null)
                 {
@@ -101,13 +101,16 @@ namespace IDMS.Gate.GqlTypes
                 {
                     string evtId = EventId.NEW_INGATE;
                     string evtName = EventName.NEW_INGATE;
-                    int count = context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
-                   .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0)
-                   .Include(s => s.tank.tariff_cleaning)
-                   .Include(s => s.tank.storing_order)
-                   .Include(s => s.tank.storing_order.customer_company)
-                   .Include(s => s.tank.tariff_cleaning.cleaning_method)
-                   .Include(s => s.tank.tariff_cleaning.cleaning_category).Count();
+                    int count = await context.in_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                   .Include(s => s.tank).Where(i => i.tank != null)
+                   .Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0).CountAsync();
+                   //.Include(s => s.tank.tariff_cleaning)
+                   //.Include(s => s.tank.storing_order)
+                   //.Include(s => s.tank.storing_order.customer_company)
+                   //.Include(s => s.tank.tariff_cleaning.cleaning_method)
+                   //.Include(s => s.tank.tariff_cleaning.cleaning_category).Count();
+
+
                     GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
                     string notification_uid = $"in-gate-{newInGate.eir_no}";
                     GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in", notification_uid);
@@ -143,7 +146,7 @@ namespace IDMS.Gate.GqlTypes
                     updatedIngate.update_by = uid;
                     updatedIngate.update_dt = epochNow;
 
-                    var so_tank = context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefault();
+                    var so_tank = await context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefaultAsync();
 
                     if (string.IsNullOrEmpty(InGate.so_tank_guid))
                     {
