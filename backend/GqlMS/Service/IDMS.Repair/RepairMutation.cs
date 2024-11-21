@@ -249,37 +249,6 @@ namespace IDMS.Repair.GqlTypes
             }
         }
 
-        public async Task<int> CancelRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<repair> repair)
-        {
-            try
-            {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
-
-                foreach (var item in repair)
-                {
-                    if (item != null && !string.IsNullOrEmpty(item.guid))
-                    {
-                        var cancelRepair = new repair() { guid = item.guid };
-                        context.Attach(cancelRepair);
-
-                        cancelRepair.update_by = user;
-                        cancelRepair.update_dt = currentDateTime;
-                        cancelRepair.status_cv = CurrentServiceStatus.CANCELED;
-                        cancelRepair.remarks = item.remarks;
-                    }
-                }
-
-                var res = await context.SaveChangesAsync();
-                return res;
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-            }
-        }
-
         public async Task<int> RollbackRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<RepairRequest> repair)
         {
@@ -305,18 +274,30 @@ namespace IDMS.Repair.GqlTypes
 
                         var customerGuid = item.customer_guid;
                         var repairPart = await context.repair_part.Where(r => r.repair_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
-                        var partsTarifRepairGuids = repairPart.Select(x => x.tariff_repair_guid).ToArray();
-                        //var estPartGuid = estRepair.repair_est_part.Select(x => x.tariff_repair_guid).ToArray();
-                        var packageRepair = await context.package_repair.Where(r => partsTarifRepairGuids.Contains(r.tariff_repair_guid) &&
-                                            r.customer_company_guid == customerGuid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
 
-                        foreach (var part in repairPart)
+                        if (item.is_approved)//if the repair already approved, rollback the approval
                         {
-                            //var estPart = new repair_est_part() { guid = part.guid };
-                            //context.repair_est_part.Attach(estPart);
-                            part.update_by = user;
-                            part.update_dt = currentDateTime;
-                            part.material_cost = packageRepair.Where(r => r.tariff_repair_guid == part.tariff_repair_guid).Select(r => r.material_cost).First();
+                            foreach (var part in repairPart)
+                            {
+                                part.update_by = user;
+                                part.update_dt = currentDateTime;
+                                part.approve_part = null;
+                                part.approve_cost = part.material_cost;
+                                part.approve_hour = part.hour;
+                                part.approve_qty = part.quantity;
+                            }
+                        }
+                        else//if the repair still oending, rollback the repair
+                        {
+                            var partsTarifRepairGuids = repairPart.Select(x => x.tariff_repair_guid).ToArray();
+                            var packageRepair = await context.package_repair.Where(r => partsTarifRepairGuids.Contains(r.tariff_repair_guid) &&
+                                                r.customer_company_guid == customerGuid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+                            foreach (var part in repairPart)
+                            {
+                                part.update_by = user;
+                                part.update_dt = currentDateTime;
+                                part.material_cost = packageRepair.Where(r => r.tariff_repair_guid == part.tariff_repair_guid).Select(r => r.material_cost).First();
+                            }
                         }
                     }
                 }
@@ -330,52 +311,52 @@ namespace IDMS.Repair.GqlTypes
             }
         }
 
-        public async Task<int> RollbackRepairApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<RepairRequest> repair)
-        {
-            try
-            {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
+        //public async Task<int> RollbackRepairApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        //    [Service] IConfiguration config, List<RepairRequest> repair)
+        //{
+        //    try
+        //    {
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
 
-                foreach (var item in repair)
-                {
-                    if (item != null && !string.IsNullOrEmpty(item.guid))
-                    {
-                        var rollbackRepair = new repair() { guid = item.guid };
-                        context.repair.Attach(rollbackRepair);
+        //        foreach (var item in repair)
+        //        {
+        //            if (item != null && !string.IsNullOrEmpty(item.guid))
+        //            {
+        //                var rollbackRepair = new repair() { guid = item.guid };
+        //                context.repair.Attach(rollbackRepair);
 
-                        rollbackRepair.update_by = user;
-                        rollbackRepair.update_dt = currentDateTime;
-                        rollbackRepair.status_cv = CurrentServiceStatus.PENDING;
-                        rollbackRepair.remarks = item.remarks;
+        //                rollbackRepair.update_by = user;
+        //                rollbackRepair.update_dt = currentDateTime;
+        //                rollbackRepair.status_cv = CurrentServiceStatus.PENDING;
+        //                rollbackRepair.remarks = item.remarks;
 
-                        if (string.IsNullOrEmpty(item.customer_guid))
-                            throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+        //                if (string.IsNullOrEmpty(item.customer_guid))
+        //                    throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
 
-                        var customerGuid = item.customer_guid;
-                        var repairPart = await context.repair_part.Where(r => r.repair_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+        //                var customerGuid = item.customer_guid;
+        //                var repairPart = await context.repair_part.Where(r => r.repair_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
 
-                        foreach (var part in repairPart)
-                        {
-                            part.update_by = user;
-                            part.update_dt = currentDateTime;
-                            part.approve_part = null;
-                            part.approve_cost = part.material_cost;
-                            part.approve_hour = part.hour;
-                            part.approve_qty = part.quantity;
-                        }
-                    }
-                }
+        //                foreach (var part in repairPart)
+        //                {
+        //                    part.update_by = user;
+        //                    part.update_dt = currentDateTime;
+        //                    part.approve_part = null;
+        //                    part.approve_cost = part.material_cost;
+        //                    part.approve_hour = part.hour;
+        //                    part.approve_qty = part.quantity;
+        //                }
+        //            }
+        //        }
 
-                var res = await context.SaveChangesAsync();
-                return res;
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-            }
-        }
+        //        var res = await context.SaveChangesAsync();
+        //        return res;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+        //    }
+        //}
 
         public async Task<int> AbortRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, RepJobOrderRequest repJobOrder)
@@ -410,6 +391,58 @@ namespace IDMS.Repair.GqlTypes
 
                 var res = await context.SaveChangesAsync();
                 return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateRepairStatus(ApplicationServiceDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, RepairStatusRequest repair)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (repair == null)
+                    throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+
+                var updateRepair = new repair() { guid = repair.guid };
+                context.repair.Attach(updateRepair);
+                updateRepair.update_dt = currentDateTime;
+                updateRepair.update_by = user;
+                updateRepair.remarks = repair.remarks;
+
+                if (ObjectAction.IN_PROGRESS.EqualsIgnore(repair.action))
+                    updateRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                else if(ObjectAction.CANCEL.EqualsIgnore(repair.action))
+                    updateRepair.status_cv = CurrentServiceStatus.CANCELED;
+                else if (ObjectAction.COMPLETE.EqualsIgnore(repair.action))
+                {
+                    updateRepair.status_cv = CurrentServiceStatus.COMPLETED;
+                    //updateRepair.complete_by = user;
+                    updateRepair.complete_dt = currentDateTime;
+                }
+                else if (ObjectAction.NA.EqualsIgnore(repair.action))
+                {
+                    updateRepair.status_cv = CurrentServiceStatus.NO_ACTION;
+                    updateRepair.na_dt = currentDateTime;
+
+                    //Tank handling
+                    if (string.IsNullOrEmpty(repair.sot_guid))
+                        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                    var sot = new storing_order_tank() { guid = repair.sot_guid };
+                    context.storing_order_tank.Attach(sot);
+                    sot.tank_status_cv = TankMovementStatus.STORAGE;
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;
+                }
+                var res = await context.SaveChangesAsync();
+                return res;
+
             }
             catch (Exception ex)
             {
@@ -564,6 +597,38 @@ namespace IDMS.Repair.GqlTypes
                 throw;
             }
         }
+
+
+        //public async Task<int> CancelRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        //    [Service] IConfiguration config, List<repair> repair)
+        //{
+        //    try
+        //    {
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
+
+        //        foreach (var item in repair)
+        //        {
+        //            if (item != null && !string.IsNullOrEmpty(item.guid))
+        //            {
+        //                var cancelRepair = new repair() { guid = item.guid };
+        //                context.Attach(cancelRepair);
+
+        //                cancelRepair.update_by = user;
+        //                cancelRepair.update_dt = currentDateTime;
+        //                cancelRepair.status_cv = CurrentServiceStatus.CANCELED;
+        //                cancelRepair.remarks = item.remarks;
+        //            }
+        //        }
+
+        //        var res = await context.SaveChangesAsync();
+        //        return res;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+        //    }
+        //}
 
 
     }
