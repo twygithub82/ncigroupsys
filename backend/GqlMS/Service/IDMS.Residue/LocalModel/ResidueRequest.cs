@@ -9,6 +9,8 @@ namespace IDMS.Residue.GqlTypes.LocalModel
         public string? estimate_no { get; set; }
         public string remarks { get; set; }
         public string customer_guid { get; set; }
+        public bool is_approved { get; set; } = false;
+
     }
 
     public class ResJobOrderRequest
@@ -18,5 +20,14 @@ namespace IDMS.Residue.GqlTypes.LocalModel
         public string? estimate_no { get; set; }
         public string? remarks { get; set; }
         public List<job_order?>? job_order { get; set; }
+    }
+
+    public class ResidueStatusRequest
+    {
+        public string guid { get; set; }
+        public string sot_guid { get; set; }
+        public string? remarks { get; set; }
+        public string action { get; set; }
+
     }
 }
