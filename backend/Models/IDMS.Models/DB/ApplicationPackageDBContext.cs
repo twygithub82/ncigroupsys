@@ -1,5 +1,7 @@
 ﻿using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Master;
+using IDMS.Models.Package;
+using IDMS.Models.Parameter;
 using IDMS.Models.Tariff;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,14 +25,14 @@ namespace IDMS.Models.DB
 
 
         public DbSet<customer_company> customer_company { get; set; }
-        public DbSet<IDMS.Models.Parameter.cleaning_category> cleaning_category { get; set; }
-        public DbSet<IDMS.Models.Package.customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
-        public DbSet<IDMS.Models.Package.package_depot> package_depot { get; set; }
-        public DbSet<IDMS.Models.Package.package_labour> package_labour { get; set; }
-        public DbSet<IDMS.Models.Package.package_repair> package_repair { get; set; }
-        public DbSet<IDMS.Models.Package.package_residue> package_residue { get; set; }
-        public DbSet<IDMS.Models.Package.package_buffer> package_buffer { get; set; }
-
+        public DbSet<cleaning_category> cleaning_category { get; set; }
+        public DbSet<customer_company_cleaning_category> customer_company_cleaning_category { get; set; }
+        public DbSet<package_depot> package_depot { get; set; }
+        public DbSet<package_labour> package_labour { get; set; }
+        public DbSet<package_repair> package_repair { get; set; }
+        public DbSet<package_residue> package_residue { get; set; }
+        public DbSet<package_buffer> package_buffer { get; set; }
+        public DbSet<package_steaming> package_steaming { get; set; }
         public DbSet<tariff_repair> tariff_repair { get; set; } 
     }
 
