@@ -14,8 +14,8 @@ namespace IDMS.Models.Service
         public double? meter_temp { get; set; }
         public double? top_temp { get; set; }
         public double? bottom_temp { get; set; }
-        public string? status_cv { get; set; }
         public string? remarks {  get; set; }
         public job_order? job_order { get; set; }
+
      }
 }
