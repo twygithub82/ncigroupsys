@@ -16,12 +16,13 @@ namespace IDMS.Steaming.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<steaming> QueryResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<steaming> QuerySteaming(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
                 var steaming = context.steaming.Where(d => d.delete_dt == null || d.delete_dt == 0)
-                    .Include(r => r.storing_order_tank)
+                    .Include(d => d.steaming_part)
+                    .Include(d => d.storing_order_tank)
                         .ThenInclude(t => t.storing_order)
                             .ThenInclude(s => s.customer_company);
 
