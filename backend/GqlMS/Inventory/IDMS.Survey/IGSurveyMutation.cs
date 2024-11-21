@@ -77,13 +77,15 @@ namespace IDMS.Survey.GqlTypes
                 sot.owner_guid = tank.owner_guid;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
-             
-                if ((tank.purpose_cleaning ?? false) || (tank.purpose_steam ?? false))
+
+                if (tank.purpose_steam ?? false)
+                    sot.tank_status_cv = TankMovementStatus.STEAM;
+                else if (tank.purpose_cleaning ?? false)
                 {
                     sot.tank_status_cv = TankMovementStatus.CLEANING;
                     needAddCleaning = true;
                 }
-                else if(!string.IsNullOrEmpty(tank.purpose_repair_cv))
+                else if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
                     sot.tank_status_cv = TankMovementStatus.REPAIR;
                 else
                     sot.tank_status_cv = TankMovementStatus.STORAGE;
@@ -327,6 +329,10 @@ namespace IDMS.Survey.GqlTypes
                                 joined.p.tariff_steaming_guid
                             })
                             .FirstOrDefaultAsync();
+
+                if (result == null || string.IsNullOrEmpty(result.tariff_steaming_guid))
+                    throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
+
                 var defQty = 1;
                 var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
 
