@@ -331,7 +331,8 @@
                       <div class="row">
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xs-3 m-b-0 d-none d-md-block">
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
                               <span class="font-bold table-label">{{translatedLangText.DESCRIPTION}}</span>
                             </div>
                           </div>
@@ -388,7 +389,8 @@
                         </div>
                         <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
                               <span class="font-bold table-label">{{translatedLangText.IN_GATE}}</span>
                             </div>
                           </div>
@@ -401,7 +403,8 @@
                           <div class="row">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.ORDER_DATE}}:</span>
-                              <span class="font-bold table-label">{{displayDate(sot?.storing_order?.create_dt) || "-"}}</span>
+                              <span class="font-bold table-label">{{displayDate(sot?.storing_order?.create_dt) ||
+                                "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
@@ -455,20 +458,24 @@
                         </div>
                         <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
                               <span class="font-bold table-label">{{translatedLangText.OUT_GATE}}</span>
                             </div>
                           </div>
                           <div class="row">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.ORDER_NO}}:</span>
-                              <span class="font-bold table-label">{{sot?.release_order_sot?.[0]?.release_order?.ro_no || "-"}}</span>
+                              <span class="font-bold table-label">{{sot?.release_order_sot?.[0]?.release_order?.ro_no ||
+                                "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.ORDER_DATE}}:</span>
-                              <span class="font-bold table-label">{{displayDate(sot?.release_order_sot?.[0]?.release_order?.create_dt) || "-"}}</span>
+                              <span
+                                class="font-bold table-label">{{displayDate(sot?.release_order_sot?.[0]?.release_order?.create_dt)
+                                || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
@@ -525,7 +532,8 @@
                     }
                   </div>
                 </mat-expansion-panel>
-                <mat-expansion-panel [expanded]="section === 'purpose_details'" (opened)="setSection('purpose_details')">
+                <mat-expansion-panel [expanded]="section === 'purpose_details'"
+                  (opened)="setSection('purpose_details')">
                   <mat-expansion-panel-header class="ps-0">
                     <mat-panel-title>
                       <div class="header">
@@ -548,6 +556,43 @@
                     <mat-card-content>
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                          <mat-tab-group dynamicHeight>
+                            <mat-tab>
+                              <ng-template mat-tab-label>
+                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                  <mat-icon class="m-r-5">storage</mat-icon>{{ translatedLangText.STORAGE }}
+                                </span>
+                              </ng-template>
+                            </mat-tab>
+                            <mat-tab>
+                              <ng-template mat-tab-label>
+                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                  <i class="fas fa-thermometer-half fa-icon m-r-5"></i>{{ translatedLangText.STEAM }}
+                                </span>
+                              </ng-template>
+                            </mat-tab>
+                            <mat-tab>
+                              <ng-template mat-tab-label>
+                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                  <i class="fas fa-trash fa-icon m-r-5"></i>{{ translatedLangText.RESIDUE }}
+                                </span>
+                              </ng-template>
+                            </mat-tab>
+                            <mat-tab>
+                              <ng-template mat-tab-label>
+                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                  <i class="fas fa-magic fa-icon m-r-5"></i>{{ translatedLangText.CLEANING }}
+                                </span>
+                              </ng-template>
+                            </mat-tab>
+                            <mat-tab>
+                              <ng-template mat-tab-label>
+                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                  <mat-icon class="m-r-5">build</mat-icon>{{ translatedLangText.REPAIR }}
+                                </span>
+                              </ng-template>
+                            </mat-tab>
+                          </mat-tab-group>
                         </div>
                       </div>
                     </mat-card-content>

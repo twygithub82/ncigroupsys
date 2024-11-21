@@ -57,14 +57,11 @@ export interface DialogData {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -187,7 +184,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         rp_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
         quantity: this.repairPartForm.get('quantity')?.value,
         hour: this.repairPartForm.get('hour')?.value,
-        material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value),
+        material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value, 2),
         remarks: this.repairPartForm.get('remarks')?.value,
         create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
       }

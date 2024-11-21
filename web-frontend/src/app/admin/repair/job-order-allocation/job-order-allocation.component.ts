@@ -585,6 +585,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
         joRequest.team_guid = jo.team_guid;
         joRequest.total_hour = jo.total_hour ?? totalApproveHours;
         joRequest.working_hour = jo.working_hour ?? 0;
+        joRequest.process_guid = this.repairItem?.guid;
         joRequest.part_guid = partList;
         finalJobOrder.push(joRequest);
       }

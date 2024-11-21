@@ -55,6 +55,7 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -88,7 +89,8 @@ import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
     MatDividerModule,
     MatCardModule,
     MatStepperModule,
-    MatRadioModule
+    MatRadioModule,
+    MatTabsModule,
   ]
 })
 export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -222,6 +224,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TRANSACTION_ON: 'COMMON-FORM.TRANSACTION-ON',
     IN_GATE: 'COMMON-FORM.IN-GATE',
     OUT_GATE: 'COMMON-FORM.OUT-GATE',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    STEAM: 'COMMON-FORM.STEAM',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    REPAIR: 'COMMON-FORM.REPAIR',
   }
 
   sot_guid: string | null | undefined;

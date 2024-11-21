@@ -67,6 +67,7 @@ export class JobOrderRequest {
   public team_guid?: string;
   public total_hour?: number;
   public working_hour?: number;
+  public process_guid?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -83,6 +84,7 @@ export class JobOrderRequest {
     this.team_guid = item.team_guid;
     this.total_hour = item.total_hour;
     this.working_hour = item.working_hour;
+    this.process_guid = item.process_guid;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -357,8 +359,8 @@ const GET_STARTED_JOB_ORDER = gql`
         update_by
         update_dt
         working_hour
-        cleaning{
-          guid,
+        cleaning {
+          guid
           job_no
         }
         team {
