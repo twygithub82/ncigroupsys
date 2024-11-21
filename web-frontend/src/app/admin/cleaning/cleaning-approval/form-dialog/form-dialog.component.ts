@@ -442,7 +442,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         rep.remarks=this.pcForm.get("remarks")?.value;
         break;
     }
-    
+    delete rep.job_order;
     this.igCleanDS.updateInGateCleaning(rep).subscribe(result=>{
         if(result.data.updateCleaning>0)
         {

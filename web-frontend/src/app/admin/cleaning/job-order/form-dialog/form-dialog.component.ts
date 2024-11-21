@@ -374,12 +374,25 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   buttonViewOnly():boolean
   {
     let bView:boolean=false;
-    let viewOnlyStatus:string[]=['JOB_IN_PROGRESS','COMPLETED'];
+    let viewOnlyStatus:string[]=['APPROVED','JOB_IN_PROGRESS','COMPLETED'];
     if(this.selectedItems?.length>0)
     {
        bView = viewOnlyStatus.includes(this.selectedItems[0]?.status_cv!);
+       if(bView && this.selectedItems[0]?.status_cv==="APPROVED" )
+       {
+        var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
+        bView=this.isTeamContainTheTank(tankNo);
+       }
     }
     return bView;
+  }
+
+  isTeamContainTheTank(tankNo:string):boolean
+  {
+     let bRetval:boolean=false;
+      let tnk=this.teamList?.filter(t=>t.tank_no===tankNo);
+      bRetval =tnk?.length!>0;
+     return bRetval;
   }
   loadData()
   {
@@ -494,7 +507,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     let retval:boolean=true;
     var selItem =this.selectedItems[0];
 
-    retval =selItem.job_order.status_cv==="COMPLETED" && selItem.status_cv!=="COMPLETED";
+    retval =selItem.job_order?.status_cv==="COMPLETED" && selItem.status_cv!=="COMPLETED";
+    if(!retval)
+    {
+      if(selItem.status_cv==="APPROVED")
+      {
+        var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
+        retval=this.isTeamContainTheTank(tankNo);
+      }
+    }
     return retval;
   }
   abort(event: Event){
@@ -540,18 +561,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.jobOrderDS?.assignJobOrder(newJobOrderReq).subscribe(result=>{
       if(result.data.assignJobOrder>0)
       {
-        var cleanItem:InGateCleaningItem = new InGateCleaningItem();
-        cleanItem.guid =selItem.guid;
-        cleanItem.action="IN_PROGRESS";
-        cleanItem.job_no= selItem.job_no;
-        cleanItem.remarks= selItem.remarks;
-        this.igCleanDS.updateInGateCleaning(cleanItem).subscribe(result=>{
-          if(result.data.updateCleaning>0)
-          {
-            this.handleSaveSuccess(result.data.updateCleaning);
-          }
+        this.handleSaveSuccess(result.data.assignJobOrder);
+        // var cleanItem:InGateCleaningItem = new InGateCleaningItem();
+        // cleanItem.guid =selItem.guid;
+        // cleanItem.action="IN_PROGRESS";
+        // cleanItem.job_no= selItem.job_no;
+        // cleanItem.remarks= selItem.remarks;
+        // this.igCleanDS.updateInGateCleaning(cleanItem).subscribe(result=>{
+        //   if(result.data.updateCleaning>0)
+        //   {
+        //     this.handleSaveSuccess(result.data.updateCleaning);
+        //   }
 
-         });
+        //  });
         //  let cleanGuid =selItem.guid;
         //  let process_status="JOB_IN_PROGRESS";
         //  this.updateJobProcessStatus(cleanGuid,job_type,process_status);

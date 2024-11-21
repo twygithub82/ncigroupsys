@@ -837,7 +837,11 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
       const param = [new TimeTableItem({ job_order_guid: this.jobOrderItem?.guid, job_order: new JobOrderGO({ ...this.jobOrderItem }) })];
       console.log(param)
       this.ttDS.startJobTimer(param).subscribe(result => {
-        console.log(result)
+        if(result.data.startJobTimer>0)
+          {
+            //var item : InGateCleaningItem = new InGateCleaningItem(this.jobOrderItem?.cleaning![0]!);
+            this.UpdateCleaningStatusInProgress(this.clean_guid! );
+          }
       });
     } else {
       const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
@@ -1000,6 +1004,39 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
     this.jobOrderSubscriptions.push(subscription);
   }
 
+
+  UpdateCleaningStatusInProgress( clean_guid:string) {
+
+
+    const where: any = {
+      and:[]
+    };
+    
+   
+    where.and.push({
+      guid:{eq:clean_guid}
+    });
+
+
+    this.subs.sink = this.clnDS.search(where)
+      .subscribe(data => {
+        if(data.length>0)
+        {
+           var cln =data[0];
+           var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+           rep.action='IN_PROGRESS';
+           delete rep.storing_order_tank;
+           delete rep.job_order;
+           delete rep.customer_company;
+           this.clnDS.updateInGateCleaning(rep).subscribe(result=>{
+
+             console.log(result);
+
+           });
+          //  this.clnDS.
+        }
+      });
+  }
 
   UpdateCleaningStatusCompleted() {
 

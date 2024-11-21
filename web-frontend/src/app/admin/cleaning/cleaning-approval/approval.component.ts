@@ -390,16 +390,43 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
   onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
+    // const { pageIndex, pageSize } = event;
+    // let first: number | undefined = undefined;
+    // let after: string | undefined = undefined;
+    // let last: number | undefined = undefined;
+    // let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    // if (this.pageSize !== pageSize) {
+    //   // Reset pagination if page size has changed
+    //   this.pageIndex = 0;
+    //   first = pageSize;
+    //   after = undefined;
+    //   last = undefined;
+    //   before = undefined;
+    // } else {
+    //   if (pageIndex > this.pageIndex && this.hasNextPage) {
+    //     // Navigate forward
+    //     first = pageSize;
+    //     after = this.endCursor;
+    //   } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+    //     // Navigate backward
+    //     last = pageSize;
+    //     before = this.startCursor;
+    //   }
+    // }
+
+    const { pageIndex, pageSize, previousPageIndex } = event;
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-
+    let order: any | undefined = this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
+      this.pageSize = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
@@ -413,6 +440,10 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
         // Navigate backward
         last = pageSize;
         before = this.startCursor;
+      }
+      else if (pageIndex == this.pageIndex) {
+        first = pageSize;
+        after = this.previous_endCursor;
       }
     }
 

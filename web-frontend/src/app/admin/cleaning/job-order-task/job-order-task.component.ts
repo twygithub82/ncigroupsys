@@ -409,7 +409,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
       console.log(param)
       this.ttDS.startJobTimer(param).subscribe(result => {
-        console.log(result)
+        if(result.data.startJobTimer>0)
+        {
+          var item : InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+          this.UpdateCleaningStatusInProgress(item.guid!);
+        }
       });
     } else {
       const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
@@ -440,7 +444,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       console.log(result)
       if (jobOrderItem?.cleaning?.length! > 0 ) {
          var item : InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-        this.onFilterCleaningCompleted(item.guid!);
+        this.UpdateCleaningStatusCompleted(item.guid!);
       }
     });
   }
@@ -500,7 +504,42 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.jobOrderSubscriptions.push(subscription);
   }
 
-  onFilterCleaningCompleted( clean_guid:string) {
+
+  UpdateCleaningStatusInProgress( clean_guid:string) {
+
+
+    const where: any = {
+      and:[]
+    };
+    
+   
+    where.and.push({
+      guid:{eq:clean_guid}
+    });
+
+
+    this.subs.sink = this.clnDS.search(where)
+      .subscribe(data => {
+        if(data.length>0)
+        {
+           var cln =data[0];
+           var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+           rep.action='IN_PROGRESS';
+           delete rep.storing_order_tank;
+           delete rep.job_order;
+           delete rep.customer_company;
+           this.clnDS.updateInGateCleaning(rep).subscribe(result=>{
+
+             console.log(result);
+
+           });
+          //  this.clnDS.
+        }
+      });
+  }
+
+
+ UpdateCleaningStatusCompleted( clean_guid:string) {
 
 
     const where: any = {
