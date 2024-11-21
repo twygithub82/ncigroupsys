@@ -47,6 +47,9 @@ namespace IDMS.Models.Service
         public IEnumerable<cleaning?>? cleaning { get; set; }
         
         [UseFiltering]
-        public IEnumerable<steaming_temp?>? steaming_temp { get; set; } 
+        public IEnumerable<steaming_temp?>? steaming_temp { get; set; }
+
+        [UseFiltering]
+        public IEnumerable<steaming_part?>? steaming_part { get; set; }
     }
 }

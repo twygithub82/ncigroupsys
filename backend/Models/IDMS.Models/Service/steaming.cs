@@ -34,5 +34,8 @@ namespace IDMS.Models.Service
 
         [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; } = null;
+
+        [UseFiltering]
+        public IEnumerable<steaming_part?>? steaming_part { get; set; }
     }
 }
