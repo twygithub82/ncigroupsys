@@ -130,7 +130,7 @@
                       <span>{{translatedLangText.CURRENT_STATUS}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{sot?.tank_status_cv}}
+                      <div class="contact-detail-info font-bold">{{getTankStatusDescription(sot?.tank_status_cv)}}
                       </div>
                     </div>
                   </div>
@@ -517,13 +517,13 @@
                           <div class="row">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.DATE_OF_INSPECTION}}</span>
-                              <span class="font-bold table-label">{{"SHOULD BE OUT GATE SURVEY CREATE DATE"}}</span>
+                              <span class="font-bold table-label">{{"TODO ::"}}</span>
                             </div>
                           </div>
                           <div class="row">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.UPDATE_STATUS}}</span>
-                              <span class="font-bold table-label">{{"SHOULD BE OUT GATE SURVEY UPDATE DATE"}}</span>
+                              <span class="font-bold table-label">{{"TODO ::"}}</span>
                             </div>
                           </div>
                         </div>
@@ -545,14 +545,7 @@
                     <mat-panel-description>
                     </mat-panel-description>
                   </mat-expansion-panel-header>
-                  <div class="body">
-                    @if (igDS.loading$ | async) {
-                    <div class="tbl-spinner">
-                      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                      </mat-progress-spinner>
-                    </div>
-                    }
-                    @if (!(igDS.loading$ | async)) {
+                  <div class="body p-t-0">
                     <mat-card-content>
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
@@ -563,6 +556,88 @@
                                   <mat-icon class="m-r-5">storage</mat-icon>{{ translatedLangText.STORAGE }}
                                 </span>
                               </ng-template>
+                              @if ((pdDS.loading$ | async) || (sotDS.loading$ | async)) {
+                              <div class="tbl-spinner">
+                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                </mat-progress-spinner>
+                              </div>
+                              }
+                              @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async)) {
+                              <div class="row m-t-10">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.STORAGE_BEGIN_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.STORAGE_DAYS}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">{{pdDS.getStorageDays(sot!, pdItem!) ||
+                                        "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.AV_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">{{getAvailableDate(sot!) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.ETR_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">{{convertDisplayDate(sot?.etr_dt) ||
+                                        "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.STORAGE_CLOSE_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.FREE_STORAGE_DAYS}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">{{pdItem?.free_storage || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.STORAGE_CALCULATE_BY}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{getStorageCalDescription(pdItem?.storage_cal_cv)}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              }
                             </mat-tab>
                             <mat-tab>
                               <ng-template mat-tab-label>
@@ -570,6 +645,40 @@
                                   <i class="fas fa-thermometer-half fa-icon m-r-5"></i>{{ translatedLangText.STEAM }}
                                 </span>
                               </ng-template>
+                              @if ((pdDS.loading$ | async) || (sotDS.loading$ | async)) {
+                              <div class="tbl-spinner">
+                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                </mat-progress-spinner>
+                              </div>
+                              }
+                              @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async)) {
+                              <div class="row m-t-10">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.STEAM_BEGIN_ON}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.STEAM_COMPLETED_ON}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              }
                             </mat-tab>
                             <mat-tab>
                               <ng-template mat-tab-label>
@@ -577,6 +686,107 @@
                                   <i class="fas fa-trash fa-icon m-r-5"></i>{{ translatedLangText.RESIDUE }}
                                 </span>
                               </ng-template>
+                              @if ((residueDS.loading$ | async) || (sotDS.loading$ | async)) {
+                              <div class="tbl-spinner">
+                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                </mat-progress-spinner>
+                              </div>
+                              }
+                              @if (!(residueDS.loading$ | async) && !(sotDS.loading$ | async)) {
+                              <div class="row m-t-10 contact-details-field">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.QUOTATION_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(residueItem?.[0]?.create_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.COMPLETED_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(cleaningItem?.[0]?.job_order?.start_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.DEPOT_REFERENCE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{cleaningItem?.[0]?.job_no || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.JOB_STATUS}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{getProcessStatusDescription(cleaningItem?.[0]?.status_cv) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.APPROVED_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(cleaningItem?.[0]?.approve_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.RESIDUE_QUANTITY}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.CUSTOMER_REFERENCE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.BILL}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold d-flex align-items-center">
+                                        @if (false) {
+                                        <mat-icon
+                                          class="material-icons-two-tone col-green font-bold m-l-0">check</mat-icon>
+                                        }
+                                        @else {
+                                        <mat-icon
+                                          class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
+                                        }
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              }
                             </mat-tab>
                             <mat-tab>
                               <ng-template mat-tab-label>
@@ -584,6 +794,153 @@
                                   <i class="fas fa-magic fa-icon m-r-5"></i>{{ translatedLangText.CLEANING }}
                                 </span>
                               </ng-template>
+                              @if ((cleaningDS.loading$ | async) || (sotDS.loading$ | async)) {
+                              <div class="tbl-spinner">
+                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                </mat-progress-spinner>
+                              </div>
+                              }
+                              @if (!(cleaningDS.loading$ | async) && !(sotDS.loading$ | async)) {
+                              <div class="row m-t-10 contact-details-field">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.QUOTATION_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(cleaningItem?.[0]?.create_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.CLEAN_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(cleaningItem?.[0]?.job_order?.start_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.JOB_NO}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{cleaningItem?.[0]?.job_no || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.JOB_STATUS}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{getProcessStatusDescription(cleaningItem?.[0]?.status_cv) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.APPROVED_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(cleaningItem?.[0]?.approve_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.PROCEDURE_NAME}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.PROCESSING_DATE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.BILL}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold d-flex align-items-center">
+                                        @if (false) {
+                                        <mat-icon
+                                          class="material-icons-two-tone col-green font-bold m-l-0">check</mat-icon>
+                                        }
+                                        @else {
+                                        <mat-icon
+                                          class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
+                                        }
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row m-t-10">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.CLEANING_BEGIN_ON}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(cleaningItem?.[0]?.job_order?.start_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.COMPLETED_ON}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{displayDate(cleaningItem?.[0]?.job_order?.complete_dt) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.DURATION_DAY_HR_MIN}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{joDS.getJobOrderDuration(cleaningItem?.[0]?.job_order) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.CLEANING_BAY}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{cleaningItem?.[0]?.job_order?.team?.description || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              }
                             </mat-tab>
                             <mat-tab>
                               <ng-template mat-tab-label>
@@ -596,7 +953,6 @@
                         </div>
                       </div>
                     </mat-card-content>
-                    }
                   </div>
                 </mat-expansion-panel>
               </mat-accordion>

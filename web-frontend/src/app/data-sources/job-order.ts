@@ -14,6 +14,7 @@ import { InGateCleaningItem } from './in-gate-cleaning';
 import { ResiduePartItem } from './residue-part';
 import { TimeTableItem } from './time-table';
 import { StoringOrderTankItem } from './storing-order-tank';
+import { Utility } from 'app/utilities/utility';
 
 export class JobOrderGO {
   public guid?: string;
@@ -824,5 +825,23 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
       (rp) => rp.job_order && rp.job_order.qc_dt !== null && rp.job_order.qc_by !== null
     );
     return firstValidJobOrder?.job_order;
+  }
+
+  getJobOrderDuration(jo: JobOrderItem | undefined): string | undefined {
+    if (jo?.start_dt && jo?.complete_dt) {
+      const timeTakenMs = jo?.complete_dt - jo?.start_dt;
+
+      if (timeTakenMs === undefined || timeTakenMs < 0) {
+        return "Invalid time data";
+      }
+
+      const days = Math.floor(timeTakenMs / (3600 * 24));
+      const hours = Math.floor((timeTakenMs % (3600 * 24)) / 3600);
+      const minutes = Math.floor((timeTakenMs % 3600) / 60);
+
+      return `${days} day${days !== 1 ? 's' : ''} ${hours} hr${hours !== 1 ? 's' : ''} ${minutes} min${minutes !== 1 ? 's' : ''}`;
+    } else {
+      return undefined;
+    }
   }
 }

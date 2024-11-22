@@ -11,21 +11,21 @@ import { CustomerCompanyItem } from './customer-company';
 import { ResiduePartItem } from './residue-part';
 
 export class ResidueGO {
-  public estimate_no?:string;
-  public allocate_by?:string;
-  public allocate_dt?:number;
-  public approve_by?:string;
-  public approve_dt?:number;
+  public estimate_no?: string;
+  public allocate_by?: string;
+  public allocate_dt?: number;
+  public approve_by?: string;
+  public approve_dt?: number;
   public bill_to_guid?: string;
-  public complete_by?:string;
-  public complete_dt?:number;
+  public complete_by?: string;
+  public complete_dt?: number;
   public guid?: string;
   public job_no?: string;
   public remarks?: string;
   public sot_guid?: string;
   public status_cv?: string;
-  
- 
+
+
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -41,11 +41,11 @@ export class ResidueGO {
   // public owner_enable?: boolean;
   // public total_hour?: number;
 
-  
+
 
   constructor(item: Partial<ResidueGO> = {}) {
     this.guid = item.guid;
-    this.estimate_no=item.estimate_no;
+    this.estimate_no = item.estimate_no;
     this.sot_guid = item.sot_guid;
     this.allocate_by = item.allocate_by;
     this.allocate_dt = item.allocate_dt;
@@ -68,30 +68,30 @@ export class ResidueGO {
 export class ResidueItem extends ResidueGO {
   public residue_part?: ResiduePartItem[];
   public storing_order_tank?: StoringOrderTankItem;
-  public customer_company?:CustomerCompanyItem;
+  public customer_company?: CustomerCompanyItem;
   //public aspnetsuser?: UserItem;
   public actions?: string[]
   constructor(item: Partial<ResidueItem> = {}) {
     super(item)
     this.residue_part = item.residue_part;
     this.storing_order_tank = item.storing_order_tank;
-   // this.aspnetsuser = item.aspnetsuser;
+    // this.aspnetsuser = item.aspnetsuser;
     this.actions = item.actions;
   }
 }
 
-export class ResidueStatusRequest  {
+export class ResidueStatusRequest {
   public guid?: string;
   public action?: string;
-  
+
   public sot_guid?: string;
   //public aspnetsuser?: UserItem;
-  
+
   constructor(item: Partial<ResidueStatusRequest> = {}) {
-    
+
     this.guid = item.guid;
     this.sot_guid = item.sot_guid;
-   // this.aspnetsuser = item.aspnetsuser;
+    // this.aspnetsuser = item.aspnetsuser;
     this.action = item.action;
   }
 }
@@ -235,7 +235,6 @@ export const GET_RESIDUE_EST = gql`
   }
 `;
 
-
 export const GET_RESIDUE_EST_JOB_ORDER = gql`
   query queryResidue($where: residueFilterInput,$residue_part_where:residue_partFilterInput) {
     resultList: queryResidue(where: $where) {
@@ -335,6 +334,88 @@ export const GET_RESIDUE_EST_JOB_ORDER = gql`
           update_by
           update_dt
          job_order {
+            team {
+              create_by
+              create_dt
+              delete_dt
+              department_cv
+              description
+              guid
+              update_by
+              update_dt
+            }
+            complete_dt
+            create_by
+            create_dt
+            delete_dt
+            qc_dt
+            qc_by
+            guid
+            job_order_no
+            job_type_cv
+            remarks
+            sot_guid
+            start_dt
+            status_cv
+            team_guid
+            total_hour
+            update_by
+            update_dt
+            working_hour
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+export const GET_RESIDUE_FOR_MOVEMENT = gql`
+  query queryResidue($where: residueFilterInput) {
+    resultList: queryResidue(where: $where) {
+      nodes {
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        bill_to_guid
+        complete_by
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        estimate_no
+        guid
+        job_no
+        remarks
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        residue_part(where:$residue_part_where) {
+          action
+          approve_part
+          cost
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          job_order_guid
+          approve_qty
+          approve_cost
+          quantity
+          residue_guid
+          tariff_residue_guid
+          update_by
+          update_dt
+          job_order {
             team {
               create_by
               create_dt
@@ -478,14 +559,33 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       );
   }
 
- 
+  getResidueForMovement(sot_guid: string | undefined): Observable<ResidueItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { sot_guid: { eq: sot_guid } }
+    return this.apollo
+      .query<any>({
+        query: GET_RESIDUE_FOR_MOVEMENT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const resultList = result.data?.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        }),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
 
   addResidue(residue: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_RESIDUE_EST,
       variables: {
         residue
-        
       }
     });
   }
@@ -498,7 +598,6 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       }
     });
   }
-
 
   updateResidueStatus(residue: any): Observable<any> {
     return this.apollo.mutate({
@@ -555,17 +654,17 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canAmend(re: ResidueItem): boolean {
-    if(!re) return true;
+    if (!re) return true;
     return re.status_cv === 'PENDING';
   }
 
   canSave(re: ResidueItem): boolean {
-    const validStatus=['APPROVED','JOB_IN_PROGRESS']
+    const validStatus = ['APPROVED', 'JOB_IN_PROGRESS']
     return false;
   }
 
   canApprove(re: ResidueItem): boolean {
-    const validStatus=['PENDING','APPROVED','JOB_IN_PROGRESS']
+    const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
     return validStatus.includes(re?.status_cv!);
   }
 
@@ -574,7 +673,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canRollback(re: ResidueItem): boolean {
-    return  re.status_cv==='PENDING'||re.status_cv === 'APPROVED';
+    return re.status_cv === 'PENDING' || re.status_cv === 'APPROVED';
   }
 
   canCopy(re: ResidueItem): boolean {
@@ -582,24 +681,24 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   getTotal(residuePartList: any[] | undefined): any {
-    const totalSums = residuePartList?.filter(data => !data.delete_dt &&(data.approve_part==1 || data.approve_part==null))?.reduce((totals: any, owner) => {
+    const totalSums = residuePartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part == null))?.reduce((totals: any, owner) => {
       return {
         //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
-        
+
         total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.cost ?? 0)))
       };
-    }, {  total_mat_cost: 0 }) || 0;
+    }, { total_mat_cost: 0 }) || 0;
     return totalSums;
   }
 
   getApprovedTotal(residuePartList: any[] | undefined): any {
-    const totalSums = residuePartList?.filter(data => !data.delete_dt &&(data.approve_part==1 || data.approve_part==null))?.reduce((totals: any, owner) => {
+    const totalSums = residuePartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part == null))?.reduce((totals: any, owner) => {
       return {
         //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
-        
-        total_mat_cost: totals.total_mat_cost + (((owner.approve_cost ?? owner.cost??0) * (owner.approve_qty ??owner.quantity?? 0)))
+
+        total_mat_cost: totals.total_mat_cost + (((owner.approve_cost ?? owner.cost ?? 0) * (owner.approve_qty ?? owner.quantity ?? 0)))
       };
-    }, {  total_mat_cost: 0 }) || 0;
+    }, { total_mat_cost: 0 }) || 0;
     return totalSums;
   }
 

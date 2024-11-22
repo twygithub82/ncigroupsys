@@ -13,6 +13,7 @@ import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
 import { CustomerCompanyItem } from './customer-company';
 import { TariffDepotItem } from './tariff-depot';
+import { StoringOrderTankItem } from './storing-order-tank';
 
 export class PackageDepotGO {
   public guid?: string;
@@ -20,7 +21,7 @@ export class PackageDepotGO {
   public description?: string;
   public preinspection_cost?: number;
   public remarks?: string;
-  public storage_cal_cv?:string;
+  public storage_cal_cv?: string;
   public lolo_cost?: number;
   public storage_cost?: number;
   public free_storage?: number;
@@ -29,9 +30,9 @@ export class PackageDepotGO {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  public gate_in_cost?:number;
-  public gate_out_cost?:number;
- 
+  public gate_in_cost?: number;
+  public gate_out_cost?: number;
+
 
   constructor(item: Partial<PackageDepotGO> = {}) {
     this.guid = item.guid;
@@ -42,26 +43,26 @@ export class PackageDepotGO {
     this.lolo_cost = item.lolo_cost;
     this.storage_cost = item.storage_cost;
     this.free_storage = item.free_storage;
-    this.remarks=item.remarks;
-    this.storage_cal_cv=item.storage_cal_cv;
+    this.remarks = item.remarks;
+    this.storage_cal_cv = item.storage_cal_cv;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
-    this.gate_in_cost=item.gate_in_cost;
-    this.gate_out_cost=item.gate_out_cost;
-   
+    this.gate_in_cost = item.gate_in_cost;
+    this.gate_out_cost = item.gate_out_cost;
+
   }
 }
 
 export class PackageDepotItem extends PackageDepotGO {
   public tariff_depot?: TariffDepotItem;
-  public customer_company?:CustomerCompanyItem;
+  public customer_company?: CustomerCompanyItem;
   constructor(item: Partial<PackageDepotItem> = {}) {
     super(item);
     this.tariff_depot = item.tariff_depot;
-    this.customer_company=item.customer_company;
+    this.customer_company = item.customer_company;
   }
 }
 
@@ -70,66 +71,60 @@ export interface TariffDepotResult {
   totalCount: number;
 }
 
-
-
-
-
-
-
 export const GET_PACKAGE_DEPOT_QUERY = gql`
   query queryPackageDepot($where: package_depotFilterInput, $order:[package_depotSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     packageDepotResult : queryPackageDepot(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-      create_by
-      create_dt
-      customer_company_guid
-      delete_dt
-      free_storage
-      guid
-      lolo_cost
-      preinspection_cost
-      gate_in_cost
-      gate_out_cost
-      remarks
-      storage_cal_cv
-      storage_cost
-      tariff_depot_guid
-      update_by
-      update_dt
-      customer_company {
-        city
-        code
-        country
         create_by
         create_dt
+        customer_company_guid
         delete_dt
-        effective_dt
-        email
-        guid
-        name
-        phone
-        postal
-        type_cv
-        update_by
-        update_dt
-      }
-      tariff_depot {
-        create_by
-        create_dt
-        delete_dt
-        description
         free_storage
         guid
         lolo_cost
         preinspection_cost
         gate_in_cost
         gate_out_cost
-        profile_name
+        remarks
+        storage_cal_cv
         storage_cost
+        tariff_depot_guid
         update_by
         update_dt
+        customer_company {
+          city
+          code
+          country
+          create_by
+          create_dt
+          delete_dt
+          effective_dt
+          email
+          guid
+          name
+          phone
+          postal
+          type_cv
+          update_by
+          update_dt
+        }
+        tariff_depot {
+          create_by
+          create_dt
+          delete_dt
+          description
+          free_storage
+          guid
+          lolo_cost
+          preinspection_cost
+          gate_in_cost
+          gate_out_cost
+          profile_name
+          storage_cost
+          update_by
+          update_dt
+        }
       }
-    }
       pageInfo {
         endCursor
         hasNextPage
@@ -139,9 +134,55 @@ export const GET_PACKAGE_DEPOT_QUERY = gql`
       totalCount
     }
   }
-
 `;
 
+export const GET_CUSTOMER_PACKAGE_DEPOT_QUERY = gql`
+  query queryPackageDepot($where: package_depotFilterInput) {
+    resultList : queryPackageDepot(where: $where) {
+      nodes {
+        create_by
+        create_dt
+        customer_company_guid
+        delete_dt
+        free_storage
+        guid
+        lolo_cost
+        preinspection_cost
+        gate_in_cost
+        gate_out_cost
+        remarks
+        storage_cal_cv
+        storage_cost
+        tariff_depot_guid
+        update_by
+        update_dt
+        tariff_depot {
+          create_by
+          create_dt
+          delete_dt
+          description
+          free_storage
+          guid
+          lolo_cost
+          preinspection_cost
+          gate_in_cost
+          gate_out_cost
+          profile_name
+          storage_cost
+          update_by
+          update_dt
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
 
 export const UPDATE_PACKAGE_DEPOT = gql`
   mutation updatePackageDepot($pd: package_depotInput!) {
@@ -169,7 +210,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  
+
   SearchPackageDepot(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<PackageDepotItem[]> {
     this.loadingSubject.next(true);
     if (!last)
@@ -198,7 +239,33 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
       );
   }
 
-
+  getCustomerPackage(customer_company_guid: string, tariff_depot_guid: string): Observable<PackageDepotItem[]> {
+    this.loadingSubject.next(true);
+    const where = this.addDeleteDtCriteria({
+      customer_company_guid: { eq: customer_company_guid },
+      tariff_depot_guid: { eq: tariff_depot_guid }
+    })
+    return this.apollo
+      .query<any>({
+        query: GET_CUSTOMER_PACKAGE_DEPOT_QUERY,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const resultList = result?.data?.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.pageInfo = resultList.pageInfo;
+          this.totalCount = resultList.totalCount;
+          return resultList.nodes;
+        }),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffDepotItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
 
   updatePackageDepot(pd: any): Observable<any> {
     return this.apollo.mutate({
@@ -209,8 +276,8 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     });
   }
 
-  updatePackageDepots(guids: any,free_storage:any,lolo_cost:any,preinspection_cost:any,
-    storage_cost:any,gate_in_cost:any, gate_out_cost:any, remarks:any,storage_cal_cv:any): Observable<any> {
+  updatePackageDepots(guids: any, free_storage: any, lolo_cost: any, preinspection_cost: any,
+    storage_cost: any, gate_in_cost: any, gate_out_cost: any, remarks: any, storage_cal_cv: any): Observable<any> {
     return this.apollo.mutate({
       mutation: UPDATE_PACKAGE_DEPOTS,
       variables: {
@@ -227,5 +294,39 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     });
   }
 
+  getStorageBeginDate(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem): number | undefined {
+    if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
+      return sotItem?.in_gate?.[0]?.create_dt;
+    } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {
+      //return sotItem?.cleaning;
+    } else if (pdItem?.storage_cal_cv === 'AFTER_AV_DATE') {
 
+    } else if (pdItem?.storage_cal_cv === 'NO_STORAGE') {
+
+    }
+    return undefined;
+  }
+
+  getStorageDays(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem): number | undefined {
+    if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
+      if (sotItem?.in_gate?.[0]?.create_dt) {
+        const createDtInSeconds = sotItem.in_gate[0].create_dt;
+        const createDate = new Date(createDtInSeconds * 1000);
+        const currentDate = new Date();
+    
+        const differenceInMs = currentDate.getTime() - createDate.getTime();
+    
+        const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+    
+        return differenceInDays;
+      }
+    } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {
+      //return sotItem?.cleaning;
+    } else if (pdItem?.storage_cal_cv === 'AFTER_AV_DATE') {
+
+    } else if (pdItem?.storage_cal_cv === 'NO_STORAGE') {
+
+    }
+    return undefined;
+  }
 }
