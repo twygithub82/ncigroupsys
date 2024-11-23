@@ -56,7 +56,7 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobOrderDS, JobOrderItem, JobOrderRequest, JobProcessRequest } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest, RepJobOrderRequest } from 'app/data-sources/job-order';
 
 @Component({
   selector: 'app-job-order-allocation',
@@ -209,7 +209,8 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     QC_DETAILS: 'COMMON-FORM.QC-DETAILS',
     SAVE_ANOTHER: 'COMMON-FORM.SAVE-ANOTHER',
     TEAM_ALLOCATION: 'COMMON-FORM.TEAM-ALLOCATION',
-    ASSIGN: 'COMMON-FORM.ASSIGN'
+    ASSIGN: 'COMMON-FORM.ASSIGN',
+    ABORT: 'COMMON-FORM.ABORT'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -532,6 +533,54 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     event.preventDefault();
   }
 
+  onAbort(event: Event) {
+    this.preventDefault(event);
+    console.log(this.repairItem)
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
+        item: [this.repairItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const distinctJobOrders = this.repList
+          .filter((item, index, self) =>
+            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                t.job_order?.team?.description === item?.job_order?.team?.description))
+          )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO(item.job_order!));
+
+        const repJobOrder = new RepJobOrderRequest({
+          guid: this.repairItem?.guid,
+          sot_guid: this.repairItem?.sot_guid,
+          estimate_no: this.repairItem?.estimate_no,
+          remarks: this.repairItem?.remarks,
+          job_order: distinctJobOrders
+        });
+
+        console.log(repJobOrder)
+        this.repairDS.abortRepair(repJobOrder).subscribe(result => {
+          console.log(result)
+          this.handleCancelSuccess(result?.data?.abortRepair)
+        });
+      }
+    });
+  }
+
   onFormSubmit() {
     // const distinctJobOrders = this.repList
     //   .filter((item, index, self) =>
@@ -705,6 +754,14 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
       this.router.navigate(['/admin/repair/job-order']);
+    }
+  }
+
+  handleCancelSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      this.router.navigate(['/admin/repair/approval']);
     }
   }
 

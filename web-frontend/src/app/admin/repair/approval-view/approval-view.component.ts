@@ -1026,7 +1026,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   toggleApprovePart(event: Event, rep: RepairPartItem) {
     this.stopPropagation(event);
-    if (!this.repairDS.canRollback(this.repairItem)) return;
+    if (!this.repairDS.canAmend(this.repairItem)) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
     this.calculateCost();
     // this.getCalculateCost();

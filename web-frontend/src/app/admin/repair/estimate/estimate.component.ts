@@ -451,8 +451,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['IN_SURVEY', 'CLEANING', 'STORAGE', 'STEAM', 'REPAIR'] },
-      // purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
+      tank_status_cv: { in: ['REPAIR'] },
+      purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
     };
 
     if (this.searchForm!.get('tank_no')?.value) {
