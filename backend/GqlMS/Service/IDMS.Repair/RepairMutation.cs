@@ -393,7 +393,7 @@ namespace IDMS.Repair.GqlTypes
                 //tank movement status handling
                 var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };
                 context.storing_order_tank.Attach(sot);
-                sot.tank_status_cv = await TankStillHaveEstimate(context, repJobOrder.sot_guid, repJobOrder.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
+                sot.tank_status_cv = await TankMovementCheck(context, "repair", repJobOrder.sot_guid, repJobOrder.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
 
@@ -444,7 +444,7 @@ namespace IDMS.Repair.GqlTypes
 
                     var sot = new storing_order_tank() { guid = repair.sot_guid };
                     context.storing_order_tank.Attach(sot);
-                    sot.tank_status_cv = await TankStillHaveEstimate(context, repair.sot_guid, repair.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
+                    sot.tank_status_cv = await TankMovementCheck(context, "repair", repair.sot_guid, repair.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
                 }
@@ -492,7 +492,7 @@ namespace IDMS.Repair.GqlTypes
 
                     var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };
                     context.storing_order_tank.Attach(sot);
-                    sot.tank_status_cv = await TankStillHaveEstimate(context, repJobOrder.sot_guid, repJobOrder.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
+                    sot.tank_status_cv = await TankMovementCheck(context, "repair", repJobOrder.sot_guid, repJobOrder.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
 
@@ -637,17 +637,25 @@ namespace IDMS.Repair.GqlTypes
         //}
 
 
-        private async Task<bool> TankStillHaveEstimate(ApplicationServiceDBContext context, string sotGuid, string repairGuid)
+        private async Task<bool> TankMovementCheck(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
         {
-            List<string> status = new List<string> { CurrentServiceStatus.APPROVED, CurrentServiceStatus.JOB_IN_PROGRESS, CurrentServiceStatus.QC, CurrentServiceStatus.PENDING };
-            var result = await context.repair
-                        .Where(r => status.Contains(r.status_cv) && r.sot_guid == sotGuid && r.guid != repairGuid).Select(r => r.guid)
-                        .ToListAsync();
+            //List<string> status = new List<string> { CurrentServiceStatus.APPROVED, CurrentServiceStatus.JOB_IN_PROGRESS, CurrentServiceStatus.QC, CurrentServiceStatus.PENDING };
+            //var result = await context.repair
+            //            .Where(r => status.Contains(r.status_cv) && r.sot_guid == sotGuid && r.guid != processGuid).Select(r => r.guid)
+            //            .ToListAsync();
+
+            string tableName = processType;
+
+            var sqlQuery = $@"SELECT guid FROM {tableName} 
+                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', '{CurrentServiceStatus.PENDING}')
+                            AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+            var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
             if (result.Count > 0)
                 return true;
             else
                 return false;
+            //}
         }
     }
 }

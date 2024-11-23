@@ -72,21 +72,30 @@ namespace IDMS.Cleaning.GqlTypes
                 {
                     updateCleaning.status_cv = CurrentServiceStatus.APPROVED;
                     updateCleaning.approve_dt = cleaning.approve_dt;
-                    updateCleaning.approve_by = user;//cleaning?.storing_order_tank?.storing_order?.customer_company_guid;
+                    updateCleaning.approve_by = user;
                 }
                 else if (ObjectAction.KIV.EqualsIgnore(cleaning.action))
-                {
                     updateCleaning.status_cv = CurrentServiceStatus.KIV;
-                }
-                else if(ObjectAction.IN_PROGRESS.EqualsIgnore(cleaning.action))
-                {
+                else if (ObjectAction.IN_PROGRESS.EqualsIgnore(cleaning.action))
                     updateCleaning.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                }
                 else if (ObjectAction.COMPLETE.EqualsIgnore(cleaning.action))
                 {
                     updateCleaning.status_cv = CurrentServiceStatus.COMPLETED;
                     updateCleaning.complete_by = user;
-                    updateCleaning.complete_dt = currentDateTime;   
+                    updateCleaning.complete_dt = currentDateTime;
+
+                    if (string.IsNullOrEmpty(cleaning.sot_guid))
+                        throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
+
+                    if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
+                    {
+                        //if no other steaming estimate or all completed. then we check cross process tank movement
+                        var sot = await context.storing_order_tank.FindAsync(cleaning.sot_guid);
+                        if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
+                            sot.tank_status_cv = TankMovementStatus.REPAIR;
+                        else
+                            sot.tank_status_cv = TankMovementStatus.STORAGE;
+                    }
                 }
                 else if (ObjectAction.NA.EqualsIgnore(cleaning.action))
                 {
@@ -96,11 +105,15 @@ namespace IDMS.Cleaning.GqlTypes
                     if (string.IsNullOrEmpty(cleaning.sot_guid))
                         throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
-                    var sot = await context.storing_order_tank.FindAsync(cleaning.sot_guid);
-                    if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
-                        sot.tank_status_cv = TankMovementStatus.REPAIR;
-                    else
-                        sot.tank_status_cv = TankMovementStatus.STORAGE;
+                    if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
+                    {
+                        //if no other steaming estimate or all completed. then we check cross process tank movement
+                        var sot = await context.storing_order_tank.FindAsync(cleaning.sot_guid);
+                        if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
+                            sot.tank_status_cv = TankMovementStatus.REPAIR;
+                        else
+                            sot.tank_status_cv = TankMovementStatus.STORAGE;
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -151,6 +164,23 @@ namespace IDMS.Cleaning.GqlTypes
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
+        }
+
+
+        private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
+        {
+            //First check if still have other steaming estimate havnt completed
+            string tableName = processType;
+
+            var sqlQuery = $@"SELECT guid FROM {tableName} 
+                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', '{CurrentServiceStatus.PENDING}')
+                            AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+            var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
+
+            if (result.Count > 0)
+                return true;
+            else
+                return false;
         }
 
         //public async Task<int> CompleteQCCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,

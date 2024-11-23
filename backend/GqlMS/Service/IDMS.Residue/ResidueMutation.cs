@@ -279,20 +279,20 @@ namespace IDMS.Residue.GqlTypes
                     updateResidue.status_cv = CurrentServiceStatus.COMPLETED;
                     updateResidue.complete_by = user;
                     updateResidue.complete_dt = currentDateTime;
+
+                    if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
+                        //if no other residue estimate or all completed. then we check cross process tank movement
+                        await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
                 }
                 else if (ObjectAction.NA.EqualsIgnore(residue.action))
                 {
                     updateResidue.status_cv = CurrentServiceStatus.NO_ACTION;
-                    var sot = await context.storing_order_tank.FindAsync(residue.sot_guid);
+                    updateResidue.na_dt = currentDateTime;
 
-                    if (sot?.purpose_cleaning ?? false)
-                        sot.tank_status_cv = TankMovementStatus.CLEANING;
-                    else if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
-                        sot.tank_status_cv = TankMovementStatus.REPAIR;
-                    else
-                        sot.tank_status_cv = TankMovementStatus.STORAGE;
-                    sot.update_by = user;
-                    sot.update_dt = currentDateTime;
+                    if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
+                        //if no other residue estimate or all completed. then we check cross process tank movement
+                        await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
+
                 }
                 var res = await context.SaveChangesAsync();
                 return res;
@@ -302,6 +302,36 @@ namespace IDMS.Residue.GqlTypes
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
+        }
+
+        private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
+        {
+            //First check if still have other steaming estimate havnt completed
+            string tableName = processType;
+
+            var sqlQuery = $@"SELECT guid FROM {tableName} 
+                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', '{CurrentServiceStatus.PENDING}')
+                            AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+            var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
+
+            if (result.Count > 0)
+                return true;
+            else
+                return false;
+        }
+
+        private async Task TankMovementCheckCrossProcess(ApplicationServiceDBContext context, string sotGuid, string user, long currentDateTime)
+        {
+            var sot = await context.storing_order_tank.FindAsync(sotGuid);
+
+            if (sot?.purpose_cleaning ?? false)
+                sot.tank_status_cv = TankMovementStatus.CLEANING;
+            else if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
+                sot.tank_status_cv = TankMovementStatus.REPAIR;
+            else
+                sot.tank_status_cv = TankMovementStatus.STORAGE;
+            sot.update_by = user;
+            sot.update_dt = currentDateTime;
         }
 
         //public async Task<int> RollbackResidueApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -410,5 +440,5 @@ namespace IDMS.Residue.GqlTypes
         //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
         //    }
         //}
-    }
+        }
 }

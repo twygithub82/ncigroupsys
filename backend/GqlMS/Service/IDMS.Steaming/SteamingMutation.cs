@@ -6,15 +6,11 @@ using IDMS.Models.Service;
 using IDMS.Service.GqlTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HotChocolate.Types;
 using IDMS.Models.Inventory;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Steaming.GqlTypes.LocalModel;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace IDMS.Steaming.GqlTypes
 {
@@ -375,7 +371,7 @@ namespace IDMS.Steaming.GqlTypes
                 context.steaming.Attach(updateSteaming);
                 updateSteaming.update_by = user;
                 updateSteaming.update_dt = currentDateTime;
-                updateSteaming.remarks = steaming.remarks;  
+                updateSteaming.remarks = steaming.remarks;
 
                 if (ObjectAction.IN_PROGRESS.EqualsIgnore(steaming.action))
                     updateSteaming.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
@@ -386,29 +382,35 @@ namespace IDMS.Steaming.GqlTypes
                     updateSteaming.status_cv = CurrentServiceStatus.COMPLETED;
                     updateSteaming.complete_by = user;
                     updateSteaming.complete_dt = currentDateTime;
+
+                    if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
+                        //if no other steaming estimate or all completed. then we check cross process tank movement
+                        await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
                 }
                 else if (ObjectAction.NA.EqualsIgnore(steaming.action))
                 {
                     updateSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
                     updateSteaming.na_dt = currentDateTime;
 
-                    var sot = await context.storing_order_tank
-                        .Include(s => s.residue)
-                        .Where(s => s.guid == steaming.sot_guid).FirstOrDefaultAsync();
-                    if (sot != null) 
-                    {
-                        if (sot.residue.Any(r => CurrentServiceStatus.APPROVED.EqualsIgnore(r?.status_cv)))
-                            sot.tank_status_cv = TankMovementStatus.CLEANING;
-                        else if (sot?.purpose_cleaning ?? false)
-                            sot.tank_status_cv = TankMovementStatus.CLEANING;
-                        else if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
-                            sot.tank_status_cv = TankMovementStatus.REPAIR;
-                        else
-                            sot.tank_status_cv = TankMovementStatus.STORAGE;
-                        sot.update_by = user;
-                        sot.update_dt = currentDateTime;
-                    }
-
+                    if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
+                        //if no other steaming estimate or all completed. then we check cross process tank movement
+                        await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
+                    //var sot = await context.storing_order_tank
+                    //    .Include(s => s.residue)
+                    //    .Where(s => s.guid == steaming.sot_guid).FirstOrDretefaultAsync();
+                    //if (sot != null)
+                    //{
+                    //    if (sot.residue.Any(r => CurrentServiceStatus.APPROVED.EqualsIgnore(r?.status_cv)))
+                    //        sot.tank_status_cv = TankMovementStatus.CLEANING;
+                    //    else if (sot?.purpose_cleaning ?? false)
+                    //        sot.tank_status_cv = TankMovementStatus.CLEANING;
+                    //    else if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
+                    //        sot.tank_status_cv = TankMovementStatus.REPAIR;
+                    //    else
+                    //        sot.tank_status_cv = TankMovementStatus.STORAGE;
+                    //    sot.update_by = user;
+                    //    sot.update_dt = currentDateTime;
+                    //}
                 }
                 var res = await context.SaveChangesAsync();
                 return res;
@@ -417,6 +419,44 @@ namespace IDMS.Steaming.GqlTypes
             catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+
+        private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
+        {
+            //First check if still have other steaming estimate havnt completed
+            string tableName = processType;
+
+            var sqlQuery = $@"SELECT guid FROM {tableName} 
+                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', '{CurrentServiceStatus.PENDING}')
+                            AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+            var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
+
+            if (result.Count > 0)
+                return true;
+            else
+                return false;
+        }
+
+        private async Task TankMovementCheckCrossProcess(ApplicationServiceDBContext context, string sotGuid, string user, long currentDateTime)
+        {
+            var sot = await context.storing_order_tank
+                                    .Include(s => s.residue)
+                                    .Where(s => s.guid == sotGuid).FirstOrDefaultAsync();
+            if (sot != null)
+            {
+                if (sot.residue.Any(r => CurrentServiceStatus.APPROVED.EqualsIgnore(r?.status_cv) || CurrentServiceStatus.PENDING.EqualsIgnore(r?.status_cv)))
+                    sot.tank_status_cv = TankMovementStatus.CLEANING;
+                else if (sot?.purpose_cleaning ?? false)
+                    sot.tank_status_cv = TankMovementStatus.CLEANING;
+                else if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
+                    sot.tank_status_cv = TankMovementStatus.REPAIR;
+                else
+                    sot.tank_status_cv = TankMovementStatus.STORAGE;
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
             }
         }
     }
