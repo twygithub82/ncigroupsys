@@ -641,7 +641,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
      {
       if(row.status_cv==="NO_ACTION" && row.storing_order_tank?.repair?.length!>0)
       {
-        const allPending = row.storing_order_tank?.repair?.every((item: any) => item.status_cv === 'PENDING') ?? false;
+        var validStatus:string[]=['APPROVED','PENDING',"QC_COMPLETED"]
+        const allPending = row.storing_order_tank?.repair?.every((item: any) => validStatus.includes(item.status_cv)) ?? false;
         bRetval =!allPending;
       }
      }

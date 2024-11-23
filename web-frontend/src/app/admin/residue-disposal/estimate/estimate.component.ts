@@ -272,7 +272,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       bill_completed_cv: [''],
       status_cv: [''],
       eir_no: [''],
-      repair_job_no: [''],
+      residue_job_no: [''],
       repair_type_cv: [''],
       est_dt_start: [''],
       est_dt_end: [''],
