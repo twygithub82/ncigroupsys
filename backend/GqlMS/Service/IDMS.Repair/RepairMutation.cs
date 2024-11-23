@@ -9,8 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Repair.GqlTypes.LocalModel;
 using HotChocolate.Types;
 using IDMS.Service.GqlTypes;
-using IDMS.Service.GqlTypes.LocalModel;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using IDMS.Models.Inventory;
 
 namespace IDMS.Repair.GqlTypes

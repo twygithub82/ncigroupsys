@@ -1,12 +1,10 @@
-﻿using AutoMapper;
-using CommonUtil.Core.Service;
+﻿using CommonUtil.Core.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using HotChocolate;
 using HotChocolate.Types;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
-using IDMS.Models.Inventory;
 using IDMS.Service.GqlTypes;
 using IDMS.Cleaning.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +16,7 @@ namespace IDMS.Cleaning.GqlTypes
     {
         //[Authorize]
         public async Task<int> AddCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, cleaning cleaning)
+            [Service] IHttpContextAccessor httpContextAccessor, cleaning cleaning)
         {
 
             try
@@ -50,7 +48,7 @@ namespace IDMS.Cleaning.GqlTypes
         }
 
         public async Task<int> UpdateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, cleaning cleaning)
+            [Service] IHttpContextAccessor httpContextAccessor, cleaning cleaning)
         {
             try
             {

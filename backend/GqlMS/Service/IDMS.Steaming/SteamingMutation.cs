@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CommonUtil.Core.Service;
+﻿using CommonUtil.Core.Service;
 using HotChocolate;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
@@ -7,10 +6,8 @@ using IDMS.Service.GqlTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using HotChocolate.Types;
-using IDMS.Models.Inventory;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Steaming.GqlTypes.LocalModel;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace IDMS.Steaming.GqlTypes
 {
@@ -18,7 +15,7 @@ namespace IDMS.Steaming.GqlTypes
     public class SteamingMutation
     {
         public async Task<int> AddSteaming(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, steaming steaming)
+            [Service] IHttpContextAccessor httpContextAccessor, steaming steaming)
         {
 
             try
@@ -55,7 +52,7 @@ namespace IDMS.Steaming.GqlTypes
         }
 
         public async Task<int> ApproveSteaming(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, steaming steaming)
+            [Service] IHttpContextAccessor httpContextAccessor, steaming steaming)
         {
             try
             {
@@ -103,7 +100,7 @@ namespace IDMS.Steaming.GqlTypes
         }
 
         public async Task<int> UpdateSteaming(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, steaming steaming)
+            [Service] IHttpContextAccessor httpContextAccessor, steaming steaming)
         {
             try
             {
@@ -421,8 +418,6 @@ namespace IDMS.Steaming.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
-
 
         private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
         {
