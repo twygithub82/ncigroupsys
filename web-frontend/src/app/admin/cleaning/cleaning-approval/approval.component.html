@@ -111,9 +111,11 @@
                       <mat-label>{{translatedLangText.APPROVAL_STATUS}}</mat-label>
                       <mat-select formControlName="approval_status">
                         @for (codeValue of processStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
+                          @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                            <mat-option [value]="codeValue.code_val">
+                              {{codeValue.description}}
+                            </mat-option>
+                            }
                         }
                       </mat-select>
                     </mat-form-field>

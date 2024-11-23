@@ -357,16 +357,16 @@
                           <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.ESTIMATE}}
-                        </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.APPROVAL}}
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.JOB_ALLOCATION}}
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.QC_DETAILS}}
+                          {{translatedLangText.JOB_COMPLETION}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                          {{translatedLangText.BILLING_DETAILS}}
                         </div>
                       </div>
                     </div>
@@ -377,17 +377,17 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label">
-                            {{cleanItem?.update_by}}
+                            {{cleanItem?.create_by}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label"></div>
+                          <div class="table-label">{{jobOrderItem?.create_by?jobOrderItem?.create_by:"-"}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                          <div class="table-label"></div>
+                          <div class="table-label">{{jobOrderItem?.complete_dt?jobOrderItem?.update_by:"-"}}</div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <div class="table-label"></div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 text-center border">
+                          <div class="table-label">-</div>
                         </div>
                       </div>
                     </div>
@@ -402,13 +402,13 @@
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label"></div>
+                          <div class="table-label"> {{jobOrderItem?.create_by?displayDate(jobOrderItem?.create_dt):"-"}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label"></div>
+                          <div class="table-label">{{jobOrderItem?.complete_dt?displayDate(jobOrderItem?.complete_dt):"-"}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 text-center border">
-                          <div class="table-label"></div>
+                          <div class="table-label">-</div>
                         </div>
                       </div>
                     </div>
@@ -419,7 +419,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                           <div class="table-label">
-                            {{cleanItem?.remarks}}
+                            {{cleanItem?.remarks?cleanItem?.remarks:"-"}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">

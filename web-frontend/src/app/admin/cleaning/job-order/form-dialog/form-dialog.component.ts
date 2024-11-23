@@ -353,7 +353,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }; 
     where.and.push({team: { guid:{in: teamGuids }}});
     where.and.push({job_type_cv: { eq:'CLEANING'}});
-    where.and.push({status_cv: { neq:'COMPLETED'}});
+    where.and.push({status_cv: { in:['JOB_IN_PROGRESS','PENDING']}});
+    where.and.push({delete_dt: { eq:null}});
 
     this.jobOrderDS?.searchStartedJobOrder(where).subscribe(data=>{
       if (data?.length) {
@@ -363,6 +364,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
               // If the team GUID matches, update isOccupied to true
               team.isOccupied = true;
               team.tank_no=d.storing_order_tank?.tank_no;
+              team.isEditable=team.tank_no===this.selectedItems[0].storing_order_tank?.tank_no;
+              if(team.isEditable)
+              {
+                this.toggleTeam(team);
+                team.isOccupied=false;
+              }
             }
           });
         });
@@ -374,15 +381,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   buttonViewOnly():boolean
   {
     let bView:boolean=false;
-    let viewOnlyStatus:string[]=['APPROVED','JOB_IN_PROGRESS','COMPLETED'];
+    let viewOnlyStatus:string[]=['JOB_IN_PROGRESS','COMPLETED'];
     if(this.selectedItems?.length>0)
     {
        bView = viewOnlyStatus.includes(this.selectedItems[0]?.status_cv!);
-       if(bView && this.selectedItems[0]?.status_cv==="APPROVED" )
-       {
-        var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
-        bView=this.isTeamContainTheTank(tankNo);
-       }
+      //  if(bView && this.selectedItems[0]?.status_cv==="APPROVED" )
+      //  {
+      //   var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
+      //   bView=this.isTeamContainTheTank(tankNo);
+      //  }
     }
     return bView;
   }
@@ -406,6 +413,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           index:index,
           isSelected: false,
           isOccupied:false,
+          isEditable:false,
           isViewOnly:this.buttonViewOnly()|| this.action=="view"
         }));
         this.sortBayList(this.teamList);
@@ -558,6 +566,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     newJobOrderReq.part_guid=[];
     newJobOrderReq.part_guid.push(selItem.guid);
     
+    if(selItem.job_order)
+    {
+      var joGuids:string[]=[];
+      joGuids.push(selItem.job_order.guid);
+      this.jobOrderDS?.deleteJobOrder(joGuids).subscribe(result=>{
+        console.log(result);
+      });
+    }
+
     this.jobOrderDS?.assignJobOrder(newJobOrderReq).subscribe(result=>{
       if(result.data.assignJobOrder>0)
       {
@@ -776,5 +793,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       return numA - numB;
     });
+  }
+  getTariffCleaningRemarks()
+  {
+    return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks?this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks:"-";
   }
 }

@@ -253,7 +253,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       hazard_level:this.hazardLevelControl,
       ban_type:this.banTypeControl,
       flash_point:[''],
-      un_no: ['']
+      un_no: [''],
+      
     });
   }
   cancelItem(row: StoringOrderItem) {

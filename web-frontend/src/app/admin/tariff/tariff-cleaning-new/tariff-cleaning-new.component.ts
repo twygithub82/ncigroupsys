@@ -308,6 +308,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       depot_note:[''],
       sds_file:[null],
       file_size:[0, [Validators.required, this.onlyFileSizeValidator]],
+      remarks:['']
     });
   }
 
@@ -352,6 +353,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       depot_note:tc.depot_note,
       sds_file:[''],
       file_size:[0, [Validators.required, this.onlyFileSizeValidator]],
+      remarks:tc.remarks
     });
     
    
@@ -523,6 +525,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         tc.flash_point= Number(this.tcForm.value['flash_point']);
         tc.un_no=this.tcForm.value['un_no'];
         tc.nature_cv=this.tcForm.value['nature'];
+        tc.remarks=this.tcForm.value['remarks'];
         tc.cleaning_category=undefined;
         tc.cleaning_method=undefined;
             if (tc.guid) {

@@ -157,6 +157,14 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
   }
 
+  
+  availableProcessStatus: string[] = [
+    'ALL',
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED'
+  ]
+
   searchForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
@@ -244,7 +252,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: ['']
+      est_status_cv: ['ALL']
     });
   }
 
@@ -369,7 +377,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = addDefaultSelectOption(data, 'All');
+      this.processStatusCvList = addDefaultSelectOption(data, 'All','ALL');
     });
   }
 
@@ -429,8 +437,11 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     }
 
 
-    if (this.searchForm!.value['est_status_cv']) {
-      where.status_cv = { contains: this.searchForm!.value['est_status_cv'] };
+    if (this.searchForm?.get("est_status_cv") ) {
+      if(this.searchForm?.value['est_status_cv']!=="ALL")
+      {
+         where.status_cv = { contains: this.searchForm!.value['est_status_cv'] };
+      }
     }
 
     if (this.searchForm!.value['customer_code']) {
@@ -451,14 +462,35 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
       where.storing_order_tank.in_gate.some = {eir_dt:{ gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) }};
     }
     
+    if ( this.searchForm!.value['eir_no'])
+      {
+        
+        if(!where.storing_order_tank) where.storing_order_tank={};
+        if(!where.storing_order_tank.in_gate) where.storing_order_tank.in_gate={};
+        where.storing_order_tank.in_gate.some = {eir_no:{ contains: this.searchForm!.value['eir_no']}};
+      }
 
     if (this.searchForm!.value['part_name'] )
       {
         if(!where.residue_part) where.residue_part={};
         where.residue_part.some = {description:{contains:this.searchForm!.value['part_name']} };
       }
-      
     
+      if ( this.searchForm!.value['residue_job_no'])
+        {
+          
+          where.job_no = {contains:this.searchForm!.value['residue_job_no'] };
+        }
+
+        if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end'])
+          {
+            where.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
+          }
+        
+          if (this.searchForm!.value['approval_dt_start'] && this.searchForm!.value['approval_dt_end'])
+            {
+              where.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
+            }
     // if ( this.searchForm!.value['residue_job_no'] || 
     //   (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
     //   const sotSome: any = {};
@@ -668,13 +700,19 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
 
   resetForm() {
     this.searchForm?.patchValue({
-      so_no: '',
-      so_status: '',
       tank_no: '',
-      job_no: '',
-      purpose: '',
-      eta_dt_start: '',
-      eta_dt_end: ''
+      customer_code: '',
+      last_cargo:'',
+      eir_dt_start: '',
+      eir_dt_end: '',
+      part_name: '',
+      eir_no: '',
+      residue_job_no: '',
+      est_dt_start: '',
+      est_dt_end: '',
+      approval_dt_start: '',
+      approval_dt_end: '',
+      est_status_cv: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
