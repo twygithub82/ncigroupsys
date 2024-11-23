@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using CommonUtil.Core.Service;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Service.GqlTypes.LocalModel;
-using System.Collections;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using IDMS.Models.Notification;
 
 namespace IDMS.Service.GqlTypes
@@ -66,7 +64,7 @@ namespace IDMS.Service.GqlTypes
                             updateJobOrder.update_dt = currentDateTime;
                         }
 
-                        await AssignPartToJob(context, currentDateTime, user, item.job_type_cv, currentJobOrderGuid, item.part_guid);
+                        await AssignPartToJob(context, currentDateTime, user, item.job_type_cv, currentJobOrderGuid, item.part_guid, item.process_guid);
                     }
 
                     var res = await context.SaveChangesAsync();
@@ -494,31 +492,47 @@ namespace IDMS.Service.GqlTypes
         //}
 
         private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
-                                                string jobType, string jobOrderGuid, List<string?>? partGuid)
+                                                string jobType, string jobOrderGuid, List<string?>? partGuid, string processGuid)
         {
-            string tableName = "";
+            string partTableName = "";
+            string processTableName = "";
+            //bool needAllocateBy = false;
 
             try
             {
                 switch (jobType.ToUpper())
                 {
                     case JobType.REPAIR:
-                        tableName = "repair_part";
+                        partTableName = "repair_part";
+                        processTableName = "repair";
                         break;
                     case JobType.CLEANING:
-                        tableName = "cleaning";
+                        partTableName = "cleaning";
+                        processTableName = "cleaning";
+                        //needAllocateBy = true;
                         break;
                     case JobType.RESIDUE:
-                        tableName = "residue_part";
+                        partTableName = "residue_part";
+                        processTableName = "residue";
+                        //needAllocateBy = true;
                         break;
                     case JobType.STEAM:
-                        tableName = "steaming_temp";
+                        partTableName = "steaming_part";
+                        processTableName = "steaming";
+                        //needAllocateBy = true;
                         break;
                 }
 
                 var guids = string.Join(",", partGuid.Select(g => $"'{g}'"));
-                string sql = $"UPDATE {tableName} SET update_dt = {currentDateTime}, update_by = '{user}', job_order_guid = '{jobOrderGuid}' WHERE guid IN ({guids})";
+                string sql = $"UPDATE {partTableName} SET update_dt = {currentDateTime}, update_by = '{user}', job_order_guid = '{jobOrderGuid}' WHERE guid IN ({guids})";
                 var ret = context.Database.ExecuteSqlRaw(sql);
+
+                if (!string.IsNullOrEmpty(processGuid))
+                {
+                    string sql1 = sql1 = $"UPDATE {processTableName} SET allocate_by = '{user}', allocate_dt = {currentDateTime}, " +
+                                         $"update_by = '{user}', update_dt = {currentDateTime} WHERE guid = '{processGuid}'";
+                    var res = context.Database.ExecuteSqlRaw(sql1);
+                }
 
                 return ret;
             }
@@ -527,6 +541,41 @@ namespace IDMS.Service.GqlTypes
                 throw;
             }
         }
+
+        //private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
+        //                                        string jobType, string jobOrderGuid, List<string?>? partGuid)
+        //{
+        //    string tableName = "";
+
+        //    try
+        //    {
+        //        switch (jobType.ToUpper())
+        //        {
+        //            case JobType.REPAIR:
+        //                tableName = "repair_part";
+        //                break;
+        //            case JobType.CLEANING:
+        //                tableName = "cleaning";
+        //                break;
+        //            case JobType.RESIDUE:
+        //                tableName = "residue_part";
+        //                break;
+        //            case JobType.STEAM:
+        //                tableName = "steaming_part";
+        //                break;
+        //        }
+
+        //        var guids = string.Join(",", partGuid.Select(g => $"'{g}'"));
+        //        string sql = $"UPDATE {tableName} SET update_dt = {currentDateTime}, update_by = '{user}', job_order_guid = '{jobOrderGuid}' WHERE guid IN ({guids})";
+        //        var ret = context.Database.ExecuteSqlRaw(sql);
+
+        //        return ret;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
         private async Task<bool> UpdateAccumalateHour(ApplicationServiceDBContext context, string user, long currentDateTime, List<string?> jobOrderGuid)
         {
             try
