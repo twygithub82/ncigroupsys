@@ -16,6 +16,7 @@ namespace IDMS.Service.GqlTypes.LocalModel
         public double? working_hour { get; set; }
         public double total_hour { get; set; }
         public string job_type_cv { get; set; }
+        public string? process_guid { get; set; }
         public string? status_cv { get; set; }
         public string? remarks { get; set; }
         public List<string?>? part_guid {  get; set; }

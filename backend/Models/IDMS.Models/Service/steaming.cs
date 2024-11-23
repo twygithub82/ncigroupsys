@@ -28,6 +28,8 @@ namespace IDMS.Models.Service
         public long? na_dt { get; set; }
         public string? invoice_by { get; set; }
         public long? invoice_dt { get; set; }
+        public string? allocate_by { get; set; }
+        public long? allocate_dt { get; set; }
 
         [NotMapped]
         public string action { get; set; }
