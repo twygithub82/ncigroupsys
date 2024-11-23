@@ -55,6 +55,11 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
+import { MatTabsModule } from '@angular/material/tabs';
+import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
+import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
+import { JobOrderDS } from 'app/data-sources/job-order';
+import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -88,7 +93,8 @@ import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
     MatDividerModule,
     MatCardModule,
     MatStepperModule,
-    MatRadioModule
+    MatRadioModule,
+    MatTabsModule,
   ]
 })
 export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -222,6 +228,32 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TRANSACTION_ON: 'COMMON-FORM.TRANSACTION-ON',
     IN_GATE: 'COMMON-FORM.IN-GATE',
     OUT_GATE: 'COMMON-FORM.OUT-GATE',
+    STORAGE: 'COMMON-FORM.STORAGE',
+    STEAM: 'COMMON-FORM.STEAM',
+    CLEANING: 'COMMON-FORM.CLEANING',
+    REPAIR: 'COMMON-FORM.REPAIR',
+    STORAGE_BEGIN_DATE: 'COMMON-FORM.STORAGE-BEGIN-DATE',
+    STORAGE_DAYS: 'COMMON-FORM.STORAGE-DAYS',
+    AV_DATE: 'COMMON-FORM.AV-DATE',
+    ETR_DATE: 'COMMON-FORM.ETR-DATE',
+    STORAGE_CLOSE_DATE: 'COMMON-FORM.STORAGE-CLOSE-DATE',
+    FREE_STORAGE_DAYS: 'COMMON-FORM.FREE-STORAGE-DAYS',
+    STORAGE_CALCULATE_BY: 'COMMON-FORM.STORAGE-CALCULATE-BY',
+    QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE',
+    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
+    JOB_STATUS: 'COMMON-FORM.JOB-STATUS',
+    APPROVED_DATE: 'COMMON-FORM.APPROVED-DATE',
+    PROCEDURE_NAME: 'COMMON-FORM.PROCEDURE-NAME',
+    PROCESSING_DATE: 'COMMON-FORM.PROCESSING-DATE',
+    BILL: 'COMMON-FORM.BILL',
+    CLEANING_BEGIN_ON: 'COMMON-FORM.CLEANING-BEGIN-ON',
+    COMPLETED_ON: 'COMMON-FORM.COMPLETED-ON',
+    DURATION_DAY_HR_MIN: 'COMMON-FORM.DURATION-DAY-HR-MIN',
+    CLEANING_BAY: 'COMMON-FORM.CLEANING-BAY',
+    COMPLETED_DATE: 'COMMON-FORM.COMPLETED-DATE',
+    DEPOT_REFERENCE: 'COMMON-FORM.DEPOT-REFERENCE',
+    RESIDUE_QUANTITY: 'COMMON-FORM.RESIDUE-QUANTITY',
+    CUSTOMER_REFERENCE: 'COMMON-FORM.CUSTOMER-REFERENCE'
   }
 
   sot_guid: string | null | undefined;
@@ -229,6 +261,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   igs?: InGateSurveyItem;
   ig?: InGateItem;
   og?: OutGateItem;
+  pdItem?: PackageDepotItem;
+  cleaningItem?: InGateCleaningItem[];
+  residueItem?: ResidueItem[];
 
   surveyForm?: UntypedFormGroup;
 
@@ -240,6 +275,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   cvDS: CodeValuesDS;
   tDS: TankDS;
   pbDS: PackageBufferDS;
+  pdDS: PackageDepotDS;
+  // steamDS: SteamDS;
+  residueDS: ResidueDS;
+  cleaningDS: InGateCleaningDS;
+  joDS: JobOrderDS;
 
   customerCodeControl = new UntypedFormControl();
   ownerControl = new UntypedFormControl();
@@ -268,6 +308,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tankCompTypeCvList: CodeValuesItem[] = [];
   valveBrandCvList: CodeValuesItem[] = [];
   tankSideCvList: CodeValuesItem[] = [];
+
+  storageCalCvList: CodeValuesItem[] = [];
+  processStatusCvList: CodeValuesItem[] = [];
+  tankStatusCvList: CodeValuesItem[] = [];
   packageBufferList?: PackageBufferItem[];
 
   unit_typeList: TankItem[] = []
@@ -336,6 +380,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.pbDS = new PackageBufferDS(this.apollo);
+    this.pdDS = new PackageDepotDS(this.apollo);
+    this.residueDS = new ResidueDS(this.apollo);
+    this.cleaningDS = new InGateCleaningDS(this.apollo);
+    this.joDS = new JobOrderDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -389,6 +437,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'thermometerCv', codeValType: 'THERMOMETER' },
       { alias: 'valveBrandCv', codeValType: 'VALVE_BRAND' },
       { alias: 'tankSideCv', codeValType: 'TANK_SIDE' },
+      { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -463,6 +514,15 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS.connectAlias('tankSideCv').subscribe(data => {
       this.tankSideCvList = data;
     });
+    this.cvDS.connectAlias('storageCalCv').subscribe(data => {
+      this.storageCalCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
+    });
+    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvList = data;
+    });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
     });
@@ -472,26 +532,43 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       // EDIT
       this.subs.sink = this.sotDS.getStoringOrderTankForMovementByID(this.sot_guid).subscribe(data => {
         if (this.sotDS.totalCount > 0) {
+          console.log(`sot: `, data)
           this.sot = data[0];
-          console.log(this.sot)
+          this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
+            console.log(`packageDepot: `, data)
+            this.pdItem = data[0];
+          });
         }
       });
       this.subs.sink = this.igsDS.getInGateSurveyByIDForMovement(this.sot_guid).subscribe(data => {
         if (this.igsDS.totalCount > 0) {
+          console.log(`igs: `, data)
           this.igs = data[0];
-          console.log(this.igs)
         }
       });
       this.subs.sink = this.igDS.getInGateByIDForMovement(this.sot_guid).subscribe(data => {
         if (this.igDS.totalCount > 0) {
+          console.log(`ig: `, data)
           this.ig = data[0];
-          console.log(this.ig)
         }
       });
       this.subs.sink = this.ogDS.getOutGateByIDForMovement(this.sot_guid).subscribe(data => {
         if (this.ogDS.totalCount > 0) {
+          console.log(`og: `, data)
           this.og = data[0];
-          console.log(this.og)
+        }
+      });
+      this.subs.sink = this.residueDS.getResidueForMovement(this.sot_guid).subscribe(data => {
+        if (this.residueDS.totalCount > 0) {
+          console.log(`residue: `, data)
+          this.residueItem = data;
+          // TODO :: get job
+        }
+      });
+      this.subs.sink = this.cleaningDS.getCleaningForMovement(this.sot_guid).subscribe(data => {
+        if (this.cleaningDS.totalCount > 0) {
+          console.log(`cleaning: `, data)
+          this.cleaningItem = data;
         }
       });
     }
@@ -719,6 +796,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
+  }
+
+  convertDisplayDate(input: number | Date | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input as number);
   }
 
   getNatureInGateAlert() {
@@ -1134,16 +1215,40 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return Utility.verifyFormattedIsoContainerCheckDigit(tank_no);
   }
 
-  getTestTypeDescription(codeVal: string): string | undefined {
+  getTestTypeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
   }
 
-  getTestClassDescription(codeValType: string): string | undefined {
+  getTestClassDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
   }
 
-  getTankSideDescription(codeValType: string): string | undefined {
+  getTankSideDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.tankSideCvList);
+  }
+
+  getStorageCalDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.storageCalCvList);
+  }
+
+  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
+  }
+
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+  }
+
+  getAvailableDate(sot: StoringOrderTankItem) {
+    const maxCompleteDt: number[] | undefined = sot.repair
+      ?.map(item => item.complete_dt)
+      .filter((dt): dt is number => dt !== undefined && dt !== null);
+
+    const max = maxCompleteDt && maxCompleteDt.length > 0
+      ? Math.max(...maxCompleteDt)
+      : undefined;
+
+    return max;
   }
 
   preventDefault(event: Event) {

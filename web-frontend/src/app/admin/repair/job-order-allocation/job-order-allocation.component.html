@@ -482,6 +482,19 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                  @if (repairDS.canAbort(repairItem)) {
+                  <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-r-5"
+                    (click)="onAbort($event)">
+                    <mat-icon>
+                      @if (!(repairDS.loading$ | async)) {
+                      close
+                      } @else if ((repairDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.ABORT}}
+                  </button>
+                  }
                   @if (repairDS.canAssign(repairItem)) {
                   <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)">
                     <mat-icon>

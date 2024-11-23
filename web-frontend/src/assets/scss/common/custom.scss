@@ -1030,3 +1030,24 @@ $breakpoints: (
 .selected-toggle-btn {
   background-color: color("lightest-purple") !important;
 }
+
+.fa-icon {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 24px;
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1;
+}
+
+.legend-container {
+  background-color: #f9f9f9;
+}
+
+.legend-item {
+  font-size: 1rem;
+}
+
+.mat-icon {
+  font-size: 24px;
+}

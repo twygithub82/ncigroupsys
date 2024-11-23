@@ -140,6 +140,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
   purposeOptionCvList: CodeValuesItem[] = [];
   eirStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
@@ -249,6 +250,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvListDisplay = data;
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -443,7 +445,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   getTankStatusDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
   }
 
   displayDate(input: number | undefined): string | undefined {

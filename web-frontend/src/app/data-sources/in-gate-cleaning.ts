@@ -13,7 +13,7 @@ import { CustomerCompanyItem } from './customer-company';
 import { JobOrderItem } from './job-order';
 
 export class InGateCleaningGO {
-  public action?:string='';
+  public action?: string = '';
   public guid?: string = '';
   public job_no?: string;
   public allocate_by?: string;
@@ -26,9 +26,9 @@ export class InGateCleaningGO {
   public complete_by?: string;
   public complete_dt?: number;
   public na_dt?: number;
-  public remarks?:string;
-  public sot_guid?:string;
-  public status_cv?:string;
+  public remarks?: string;
+  public sot_guid?: string;
+  public status_cv?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -36,7 +36,7 @@ export class InGateCleaningGO {
   public delete_dt?: number;
 
   constructor(item: Partial<InGateCleaningGO> = {}) {
-    this.action=item.action||'';
+    this.action = item.action || '';
     this.guid = item.guid || '';
     this.job_no = item.job_no;
     this.allocate_by = item.allocate_by;
@@ -48,10 +48,10 @@ export class InGateCleaningGO {
     this.cleaning_cost = item.cleaning_cost;
     this.complete_by = item.complete_by;
     this.complete_dt = item.complete_dt;
-    this.na_dt=item.na_dt;
+    this.na_dt = item.na_dt;
     this.remarks = item.remarks;
-    this.sot_guid=item.sot_guid;
-    this.status_cv=item.status_cv;
+    this.sot_guid = item.sot_guid;
+    this.status_cv = item.status_cv;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -63,33 +63,21 @@ export class InGateCleaningGO {
 export class InGateCleaningItem extends InGateCleaningGO {
   public storing_order_tank?: StoringOrderTankItem;
   public customer_company?: CustomerCompanyItem;
-  public job_order?:JobOrderItem;
+  public job_order?: JobOrderItem;
   constructor(item: Partial<InGateCleaningItem> = {}) {
     super(item)
     this.storing_order_tank = item.storing_order_tank;
-    this.customer_company = item.customer_company ;
-    this.job_order=item.job_order;
+    this.customer_company = item.customer_company;
+    this.job_order = item.job_order;
   }
 }
-
-
 
 export interface InGateCleaningResult {
   items: InGateCleaningItem[];
   totalCount: number;
 }
 
-
-
-// export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
-//  query queryInGateCount($where: in_gateFilterInput) {
-//     inGates: queryInGates(where: $where) {
-//       totalCount
-//   }
-// }
-// `;
-
-export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
+const SEARCH_IN_GATE_CLEANING_QUERY = gql`
   query queryInGateCleaning($where: cleaningFilterInput, $order: [cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     inGates: queryCleaning(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
@@ -268,178 +256,71 @@ export const SEARCH_IN_GATE_CLEANING_QUERY = gql`
   }
 `;
 
-// export const GET_IN_GATE_BY_ID = gql`
-//   query getInGateByID($where: in_gateFilterInput) {
-//     inGates: queryInGates(where: $where) {
-//       totalCount
-//       nodes {
-//         create_by
-//         create_dt
-//         delete_dt
-//         driver_name
-//         eir_dt
-//         eir_no
-//         eir_status_cv
-//         guid
-//         haulier
-//         lolo_cv
-//         preinspection_cv
-//         remarks
-//         so_tank_guid
-//         update_by
-//         update_dt
-//         vehicle_no
-//         yard_cv
-//         tank {
-//           certificate_cv
-//           clean_status_cv
-//           create_by
-//           create_dt
-//           delete_dt
-//           estimate_cv
-//           eta_dt
-//           etr_dt
-//           guid
-//           job_no
-//           last_cargo_guid
-//           last_test_guid
-//           liftoff_job_no
-//           lifton_job_no
-//           owner_guid
-//           preinspect_job_no
-//           purpose_cleaning
-//           purpose_repair_cv
-//           purpose_steam
-//           purpose_storage
-//           release_job_no
-//           remarks
-//           required_temp
-//           so_guid
-//           status_cv
-//           takein_job_no
-//           tank_no
-//           tank_status_cv
-//           unit_type_guid
-//           update_by
-//           update_dt
-//           customer_company {
-//             code
-//             guid
-//             name
-//           }
-//           tariff_cleaning {
-//             alias
-//             ban_type_cv
-//             cargo
-//             class_cv
-//             cleaning_category_guid
-//             cleaning_method_guid
-//             create_by
-//             create_dt
-//             delete_dt
-//             depot_note
-//             description
-//             flash_point
-//             guid
-//             hazard_level_cv
-//             in_gate_alert
-//             msds_guid
-//             nature_cv
-//             open_on_gate_cv
-//             remarks
-//             un_no
-//             update_by
-//             update_dt
-//           }
-//           storing_order {
-//             so_no
-//             haulier
-//             customer_company {
-//               code
-//               name
-//               guid
-//             }
-//           }
-//         }
-//         in_gate_survey {
-//           airline_valve_conn_cv
-//           airline_valve_conn_spec_cv
-//           airline_valve_cv
-//           airline_valve_dim
-//           airline_valve_pcs
-//           btm_dis_comp_cv
-//           btm_dis_valve_cv
-//           btm_dis_valve_spec_cv
-//           btm_valve_brand_cv
-//           buffer_plate
-//           capacity
-//           cladding_cv
-//           comments
-//           create_by
-//           create_dt
-//           data_csc_transportplate
-//           delete_dt
-//           dipstick
-//           dom_dt
-//           foot_valve_cv
-//           guid
-//           height_cv
-//           in_gate_guid
-//           inspection_dt
-//           ladder
-//           last_release_dt
-//           last_test_cv
-//           manlid_comp_cv
-//           manlid_cover_cv
-//           manlid_cover_pcs
-//           manlid_cover_pts
-//           manlid_seal_cv
-//           manufacturer_cv
-//           max_weight_cv
-//           next_test_cv
-//           pv_spec_cv
-//           pv_spec_pcs
-//           pv_type_cv
-//           pv_type_pcs
-//           residue
-//           safety_handrail
-//           take_in_reference
-//           tank_comp_cv
-//           tare_weight
-//           test_class_cv
-//           test_dt
-//           thermometer
-//           thermometer_cv
-//           top_dis_comp_cv
-//           top_dis_valve_cv
-//           top_dis_valve_spec_cv
-//           top_valve_brand_cv
-//           update_by
-//           update_dt
-//           walkway_cv
-//           top_coord
-//           bottom_coord
-//           front_coord
-//           rear_coord
-//           left_coord
-//           right_coord
-//           top_remarks
-//           bottom_remarks
-//           front_remarks
-//           rear_remarks
-//           left_remarks
-//           right_remarks
-//         }
-//       }
-//     }
-//   }
-// `;
-
-// export const ADD_IN_GATE = gql`
-//   mutation AddInGate($inGate: in_gateInput!) {
-//     addInGate(inGate: $inGate)
-//   }
-// `;
+const GET_IN_GATE_CLEANING_BY_SOT = gql`
+  query queryInGateCleaning($where: cleaningFilterInput) {
+    resultList: queryCleaning(where: $where) {
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      nodes {
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        bill_to_guid
+        buffer_cost
+        cleaning_cost
+        complete_by
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        guid
+        job_no
+        na_dt
+        remarks
+        sot_guid
+        status_cv
+        update_by
+        update_dt
+        job_order {
+          team {
+            create_by
+            create_dt
+            delete_dt
+            department_cv
+            description
+            guid
+            update_by
+            update_dt
+          }
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_order_no
+          job_type_cv
+          qc_dt
+          qc_by
+          remarks
+          sot_guid
+          start_dt
+          status_cv
+          team_guid
+          total_hour
+          update_by
+          update_dt
+          working_hour
+        }
+      }
+    }
+  }
+`;
 
 export const UPDATE_IN_GATE_CLEANING = gql`
   mutation updateCleaning($clean: cleaningInput!) {
@@ -452,7 +333,6 @@ const ABORT_IN_GATE_CLEANING = gql`
     abortCleaning(cleaningJobOrder: $clnJobOrder)
   }
 `
-
 
 export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
   constructor(private apollo: Apollo) {
@@ -484,7 +364,30 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
       );
   }
 
- 
+  getCleaningForMovement(sot_guid?: any): Observable<InGateCleaningItem[]> {
+    this.loadingSubject.next(true);
+    const where = this.addDeleteDtCriteria({ sot_guid: { eq: sot_guid } })
+    return this.apollo
+      .query<any>({
+        query: GET_IN_GATE_CLEANING_BY_SOT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const retResult = result?.data?.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          this.pageInfo = retResult.pageInfo;
+          return retResult.nodes;
+        }),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
 
   updateInGateCleaning(clean: any): Observable<any> {
     return this.apollo.mutate({
@@ -503,77 +406,6 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
       }
     });
   }
-
-  // getInGateCountForYetToSurvey(): Observable<number> {
-  //   this.loadingSubject.next(true);
-  //   let where: any = { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
-  //   return this.apollo
-  //     .query<any>({
-  //       query: GET_IN_GATE_YET_TO_SURVEY_COUNT,
-  //       variables: { where },
-  //       fetchPolicy: 'no-cache' // Ensure fresh data
-  //     })
-  //     .pipe(
-  //       map((result) => result.data),
-  //       catchError((error: ApolloError) => {
-  //         console.error('GraphQL Error:', error);
-  //         return of(0); // Return an empty array on error
-  //       }),
-  //       finalize(() => this.loadingSubject.next(false)),
-  //       map((result) => {
-  //         const retResult = result.inGates || { nodes: [], totalCount: 0 };
-
-  //         return retResult.totalCount;
-  //       })
-  //     );
-  // }
-
-  // getInGateItem(in_gates: InGateItem[] | undefined): InGateItem | undefined {
-  //   return in_gates?.find(ig => ig.delete_dt === null);
-  // }
-  // getInGateByID(id: string): Observable<InGateItem[]> {
-  //   this.loadingSubject.next(true);
-  //   let where = this.addDeleteDtCriteria({ guid: { eq: id } });
-  //   return this.apollo
-  //     .query<any>({
-  //       query: GET_IN_GATE_BY_ID,
-  //       variables: { where },
-  //       fetchPolicy: 'no-cache' // Disable caching for this query
-  //     })
-  //     .pipe(
-  //       // Handle the response and errors
-  //       map((result) => {
-  //         const data = result.data;
-  //         if (!data) {
-  //           throw new Error('No data returned from query');
-  //         }
-  
-  //         // Extract the nodes and totalCount
-  //         const retResult = data.inGates || { nodes: [], totalCount: 0 };
-  
-  //         // Update internal state
-  //         this.dataSubject.next(retResult.nodes);
-  //         this.totalCount = retResult.totalCount;
-  
-  //         // Return the nodes
-  //         return retResult.nodes;
-  //       }),
-  //       catchError((error: ApolloError) => {
-  //         console.error('GraphQL Error:', error);
-  //         return of([] as InGateItem[]); // Return an empty array on error
-  //       }),
-  //       finalize(() => this.loadingSubject.next(false))
-  //     );
-  // }
-
-  // addInGate(inGate: any): Observable<any> {
-  //   return this.apollo.mutate({
-  //     mutation: ADD_IN_GATE,
-  //     variables: {
-  //       inGate
-  //     }
-  //   });
-  // }
 }
 
 

@@ -138,7 +138,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         ...this.repairPart,
         approve_qty: this.repairPartForm.get('approve_qty')?.value,
         approve_hour: this.repairPartForm.get('approve_hour')?.value,
-        approve_cost: Utility.convertNumber(this.repairPartForm.get('approve_cost')?.value),
+        approve_cost: Utility.convertNumber(this.repairPartForm.get('approve_cost')?.value, 2),
       }
       console.log(rep)
       const returnDialog: DialogData = {

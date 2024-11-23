@@ -125,7 +125,7 @@
     </div>
     <form class="ms-0" [formGroup]="repairForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
-        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
             <div class="header">
               <h2>
@@ -277,11 +277,10 @@
                           @else {
                           @if (row.approve_part === null || row.approve_part === undefined ||
                           repairPartDS.isApproved(row)){
-                          <mat-icon class="col-green font-bold"
-                            (click)="toggleApprovePart($event, row)">check</mat-icon>
+                          <mat-icon class="col-green font-bold">check</mat-icon>
                           }
                           @else {
-                          <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event, row)">close</mat-icon>
+                          <mat-icon class="col-red font-bold">close</mat-icon>
                           }
                           }
                         </mat-cell>

@@ -233,6 +233,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
+  processStatusCvList: CodeValuesItem[] = []
 
   customer_companyList?: CustomerCompanyItem[];
 
@@ -338,6 +339,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -389,6 +391,9 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     });
     this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
       this.unitTypeCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
     });
 
     this.repair_guid = this.route.snapshot.paramMap.get('id');
@@ -705,7 +710,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
           approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair),
           approve_qty: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0,
           approve_hour: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0,
-          approve_cost: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0
+          approve_cost: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0,
+          job_order: undefined
         })
       });
       console.log(re)
@@ -856,6 +862,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
+  }
+
+  getProcessStatusDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {
@@ -1016,7 +1026,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   toggleApprovePart(event: Event, rep: RepairPartItem) {
     this.stopPropagation(event);
-    if (!this.repairDS.canRollback(this.repairItem)) return;
+    if (!this.repairDS.canAmend(this.repairItem)) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
     this.calculateCost();
     // this.getCalculateCost();

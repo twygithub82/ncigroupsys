@@ -18,6 +18,7 @@ import { CustomerCompanyItem } from './customer-company';
 import { RepairItem } from './repair';
 import { ResidueItem } from './residue';
 import { TankItem } from './tank';
+import { InGateCleaningItem } from './in-gate-cleaning';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -101,6 +102,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public out_gate?: OutGateItem[];
   public customer_company?: CustomerCompanyItem;
   public repair?: RepairItem[];
+  public cleaning?: InGateCleaningItem[];
   public residue?: ResidueItem[];
   public tank?: TankItem;
   public actions?: string[] = [];
@@ -1100,6 +1102,7 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
         purpose_steam
         purpose_storage
         clean_status_cv
+        unit_type_guid
         tariff_cleaning {
           guid
           open_on_gate_cv
@@ -1153,16 +1156,40 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
           guid
           eir_no
           eir_dt
+          create_dt
           delete_dt
         }
         out_gate(where: { delete_dt: { eq: null } }) {
           guid
           eir_no
           eir_dt
+          create_dt
           delete_dt
         }
         tank {
           unit_type
+          tariff_depot_guid
+        }
+        repair {
+          guid
+          status_cv
+          complete_dt
+          create_dt
+          delete_dt
+        }
+        residue {
+          guid
+          status_cv
+          complete_dt
+          create_dt
+          delete_dt
+        }
+        cleaning {
+          guid
+          status_cv
+          complete_dt
+          create_dt
+          delete_dt
         }
       }
       pageInfo {

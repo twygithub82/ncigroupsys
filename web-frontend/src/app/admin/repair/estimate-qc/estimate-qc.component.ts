@@ -874,14 +874,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     return this.repairItem?.labour_cost;
   }
 
-  toggleApprovePart(event: Event, rep: RepairPartItem) {
-    this.stopPropagation(event);
-    if (!this.repairDS.canRollback(this.repairItem)) return;
-    rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
-    this.calculateCost();
-    // this.getCalculateCost();
-  }
-
   displayApproveQty(rep: RepairPartItem) {
     return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0;
   }

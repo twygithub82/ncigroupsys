@@ -125,30 +125,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   submit() {
-    if (this.repairPartForm?.valid) {
-      if (this.action === 'new') {
-        this.repairPart.action = 'new';
-      } else {
-        if (this.repairPart.action !== 'new') {
-          this.repairPart.action = 'edit';
-        }
-      }
-
-      var rep: any = {
-        ...this.repairPart,
-        approve_qty: this.repairPartForm.get('approve_qty')?.value,
-        approve_hour: this.repairPartForm.get('approve_hour')?.value,
-        approve_cost: Utility.convertNumber(this.repairPartForm.get('approve_cost')?.value),
-      }
-      console.log(rep)
-      const returnDialog: DialogData = {
-        item: rep,
-        index: this.index
-      }
-      this.dialogRef.close(returnDialog);
-    } else {
-      this.findInvalidControls();
-    }
+    
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
