@@ -235,6 +235,7 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
             nature_cv
             cargo
             class_cv
+            remarks
             cleaning_category_guid
             cleaning_method_guid
             cleaning_method {

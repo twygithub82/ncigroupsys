@@ -166,6 +166,13 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     RESIDUE_JOB_NO: 'COMMON-FORM.RESIDUE-JOB-NO',
   }
 
+  
+  availableProcessStatus: string[] = [
+    'ALL',
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED'
+  ]
   searchForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
@@ -278,7 +285,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [''],
+      est_status_cv: ['ALL'],
       current_status_cv: ['']
     });
   }
@@ -408,15 +415,18 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     this.search();
 
     const queries = [
-      { alias: 'reStatusCv', codeValType: 'REP_EST_STATUS' },
+      //{ alias: 'reStatusCv', codeValType: 'REP_EST_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('reStatusCv').subscribe(data => {
-      this.reStatusCvList = addDefaultSelectOption(data, 'All');
-    });
+    // this.cvDS.connectAlias('soStatusCv').subscribe(data => {
+    //   this.processStatusCvList = addDefaultSelectOption(data, 'All');
+    // });
+    // this.cvDS.connectAlias('reStatusCv').subscribe(data => {
+    //   this.reStatusCvList = addDefaultSelectOption(data, 'All');
+    // });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
     });
@@ -424,7 +434,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = addDefaultSelectOption(data, 'All');
+      this.processStatusCvList = addDefaultSelectOption(data, 'All','ALL');
     });
   }
 
@@ -474,7 +484,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['IN_SURVEY', 'CLEANING', 'STORAGE', 'STEAM', 'REPAIR'] }
+      tank_status_cv: { in: ['CLEANING'] }
     };
 
     if (this.searchForm!.value['tank_no']) {
@@ -482,50 +492,77 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     }
 
     if (this.searchForm!.value['last_cargo']) {
+      
       if(!where.tariff_cleaning) where.tariff_cleaning={};
-      where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].code };
+
+       where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
     }
 
+
     if (this.searchForm!.value['eir_no']) {
-      where.eir_no = { contains: this.searchForm!.value['eir_no'] };
+      if(!where.in_gate) where.in_gate={};
+      where.in_gate = {some:{ eir_no:{contains: this.searchForm!.value['eir_no'] }}};
     }
 
     if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end']) {
-      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+      if(!where.in_gate) where.in_gate={};
+      where.in_gate = {some:{eir_dt:{ gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) }}};
+      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
-    if (this.searchForm!.value['job_no']) {
-      where.job_no = { contains: this.searchForm!.value['job_no'] };
-    }
 
     if (this.searchForm!.value['customer_code']) {
-      const soSome: any = {};
-
-      if (this.searchForm!.value['customer_code']) {
-        soSome.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
-      }
+        where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
 
-    if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
-      let reSome: any = {};
-
-      if (this.searchForm!.value['part_name']) {
-        reSome = {
-          repair_est_part: {
-            some: {
-              tariff_repair: {
-                part_name: { contains: this.searchForm!.value['part_name'] }
-              }
-            }
-          }
-        };
+    
+    if (this.searchForm!.value['part_name'] )
+      {
+        if(!where.residue) where.residue={};
+        where.residue.some = {residue_part:{some:{description:{contains:this.searchForm!.value['part_name']}} }};
+      }
+    
+    if ( this.searchForm!.value['residue_job_no'])
+      {
+        
+        if(!where.residue) where.residue={};
+        where.residue = {some:{ job_no:{contains: this.searchForm!.value['job_no'] }}};
       }
 
-      if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
-        reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
+    if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end'])
+      {
+        if(!where.residue) where.residue={};
+        if(!where.residue.some) where.residue.some={};
+        where.residue.some.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
       }
-      where.repair_est = { some: reSome };
-    }
+        
+    if (this.searchForm!.value['approval_dt_start'] && this.searchForm!.value['approval_dt_end'])
+      {
+        if(!where.residue) where.residue={};
+        if(!where.residue.some) where.residue.some={};
+        where.residue.some.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
+      }
+
+    // if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
+    //   let reSome: any = {};
+
+    //   if (this.searchForm!.value['part_name']) {
+    //     reSome = {
+    //       repair_est_part: {
+    //         some: {
+    //           tariff_repair: {
+    //             part_name: { contains: this.searchForm!.value['part_name'] }
+    //           }
+    //         }
+    //       }
+    //     };
+    //   }
+
+    //   if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
+    //     reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
+    //   }
+    //   where.repair_est = { some: reSome };
+    // }
 
    
 
@@ -690,13 +727,22 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
 
   resetForm() {
     this.searchForm?.patchValue({
-      so_no: '',
-      so_status: '',
       tank_no: '',
-      job_no: '',
-      purpose: '',
-      eta_dt_start: '',
-      eta_dt_end: ''
+      customer_code: '',
+      last_cargo:'',
+      eir_dt_start: '',
+      eir_dt_end: '',
+      part_name: '',
+      bill_completed_cv: '',
+      status_cv: '',
+      eir_no: '',
+      residue_job_no: '',
+      est_dt_start: '',
+      est_dt_end: '',
+      approval_dt_start: '',
+      approval_dt_end: '',
+      est_status_cv: 'ALL',
+      current_status_cv: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
