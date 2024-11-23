@@ -574,7 +574,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     var color='orange';
     let natureCv=this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv;
-    switch(natureCv.toUpperCase())
+    switch(natureCv?.toUpperCase())
     {
       
       case "HAZARDOUS":

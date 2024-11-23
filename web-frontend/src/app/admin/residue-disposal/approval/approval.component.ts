@@ -421,9 +421,13 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     const where: any = {
     };
 
-    // if (this.searchForm!.value['so_no']) {
-    //   where.so_no = { contains: this.searchForm!.value['so_no'] };
-    // }
+    if(this.searchForm!.get('tank_no')?.value)
+    {
+        where.storing_order_tank={};
+        where.storing_order_tank.tank_no={contains:this.searchForm!.get('tank_no')?.value};
+  
+    }
+
 
     if (this.searchForm!.value['est_status_cv']) {
       where.status_cv = { contains: this.searchForm!.value['est_status_cv'] };
@@ -433,53 +437,71 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
       where.storing_order_tank ={storing_order: { customer_company: { code: { contains: this.searchForm!.value['customer_code'].code } }}};
     }
 
-    
-    
-    if (this.searchForm!.value['tank_no'] || this.searchForm!.value['residue_job_no'] || 
-      (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
-      const sotSome: any = {};
+    if (this.searchForm!.value['last_cargo']) {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      if(!where.storing_order_tank.tariff_cleaning) where.storing_order_tank.tariff_cleaning={};
 
-      if (this.searchForm!.value['last_cargo']) {
-        where.last_cargo = { contains: this.searchForm!.value['last_cargo'].code };
-      }
-
-      if (this.searchForm!.value['tank_no']) {
-        sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
-      }
-
-      if (this.searchForm!.value['job_no']) {
-        sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
-      }
-
-      if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
-      }
-
-      if (this.searchForm!.value['purpose']) {
-        const purposes = this.searchForm!.value['purpose'];
-        if (purposes.includes('STORAGE')) {
-          sotSome.purpose_storage = { eq: true }
-        }
-        if (purposes.includes('CLEANING')) {
-          sotSome.purpose_cleaning = { eq: true }
-        }
-        if (purposes.includes('STEAM')) {
-          sotSome.purpose_steam = { eq: true }
-        }
-
-        const repairPurposes = [];
-        if (purposes.includes('REPAIR')) {
-          repairPurposes.push('REPAIR');
-        }
-        if (purposes.includes('OFFHIRE')) {
-          repairPurposes.push('OFFHIRE');
-        }
-        if (repairPurposes.length > 0) {
-          sotSome.purpose_repair_cv = { in: repairPurposes };
-        }
-      }
-      where.storing_order_tank = { some: sotSome };
+       where.storing_order_tank.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
     }
+
+    if (this.searchForm!.value['eir_dt_start'] && this.searchForm!.value['eir_dt_end'])
+    {
+      if(!where.storing_order_tank) where.storing_order_tank={};
+      if(!where.storing_order_tank.in_gate) where.storing_order_tank.in_gate={};
+      where.storing_order_tank.in_gate.some = {eir_dt:{ gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) }};
+    }
+    
+
+    if (this.searchForm!.value['part_name'] )
+      {
+        if(!where.residue_part) where.residue_part={};
+        where.residue_part.some = {description:{contains:this.searchForm!.value['part_name']} };
+      }
+      
+    
+    // if ( this.searchForm!.value['residue_job_no'] || 
+    //   (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
+    //   const sotSome: any = {};
+
+      
+
+    //   if (this.searchForm!.value['tank_no']) {
+    //     sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
+    //   }
+
+    //   if (this.searchForm!.value['job_no']) {
+    //     sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
+    //   }
+
+    //   if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
+    //     sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
+    //   }
+
+    //   if (this.searchForm!.value['purpose']) {
+    //     const purposes = this.searchForm!.value['purpose'];
+    //     if (purposes.includes('STORAGE')) {
+    //       sotSome.purpose_storage = { eq: true }
+    //     }
+    //     if (purposes.includes('CLEANING')) {
+    //       sotSome.purpose_cleaning = { eq: true }
+    //     }
+    //     if (purposes.includes('STEAM')) {
+    //       sotSome.purpose_steam = { eq: true }
+    //     }
+
+    //     const repairPurposes = [];
+    //     if (purposes.includes('REPAIR')) {
+    //       repairPurposes.push('REPAIR');
+    //     }
+    //     if (purposes.includes('OFFHIRE')) {
+    //       repairPurposes.push('OFFHIRE');
+    //     }
+    //     if (repairPurposes.length > 0) {
+    //       sotSome.purpose_repair_cv = { in: repairPurposes };
+    //     }
+    //   }
+    //   where.storing_order_tank = { some: sotSome };
+    // }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
