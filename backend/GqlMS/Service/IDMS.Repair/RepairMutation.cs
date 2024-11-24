@@ -432,7 +432,7 @@ namespace IDMS.Repair.GqlTypes
                         updateRepair.status_cv = CurrentServiceStatus.PARTIAL;
                         break;
                     case ObjectAction.ASSIGN:
-                        updateRepair.status_cv = CurrentServiceStatus.ASSIGN;
+                        updateRepair.status_cv = CurrentServiceStatus.ASSIGNED;
                         break;
                     case ObjectAction.CANCEL:
                         updateRepair.status_cv = CurrentServiceStatus.CANCELED;

@@ -283,7 +283,7 @@ namespace IDMS.Residue.GqlTypes
                         updateResidue.status_cv = CurrentServiceStatus.PARTIAL;
                         break;
                     case ObjectAction.ASSIGN:
-                        updateResidue.status_cv = CurrentServiceStatus.ASSIGN;
+                        updateResidue.status_cv = CurrentServiceStatus.ASSIGNED;
                         break;
                     case ObjectAction.COMPLETE:
                         updateResidue.status_cv = CurrentServiceStatus.COMPLETED;

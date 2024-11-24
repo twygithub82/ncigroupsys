@@ -370,45 +370,64 @@ namespace IDMS.Steaming.GqlTypes
                 updateSteaming.update_dt = currentDateTime;
                 updateSteaming.remarks = steaming.remarks;
 
-                if (ObjectAction.IN_PROGRESS.EqualsIgnore(steaming.action))
-                    updateSteaming.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                else if (ObjectAction.CANCEL.EqualsIgnore(steaming.action))
-                    updateSteaming.status_cv = CurrentServiceStatus.CANCELED;
-                else if (ObjectAction.COMPLETE.EqualsIgnore(steaming.action))
-                {
-                    updateSteaming.status_cv = CurrentServiceStatus.COMPLETED;
-                    updateSteaming.complete_by = user;
-                    updateSteaming.complete_dt = currentDateTime;
 
-                    if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
-                        //if no other steaming estimate or all completed. then we check cross process tank movement
-                        await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
-                }
-                else if (ObjectAction.NA.EqualsIgnore(steaming.action))
+                switch (steaming.action.ToUpper())
                 {
-                    updateSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
-                    updateSteaming.na_dt = currentDateTime;
+                    case ObjectAction.IN_PROGRESS:
+                        updateSteaming.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                        break;
+                    case ObjectAction.CANCEL:
+                        updateSteaming.status_cv = CurrentServiceStatus.CANCELED;
+                        break;
+                    case ObjectAction.PARTIAL:
+                        updateSteaming.status_cv = CurrentServiceStatus.PARTIAL;
+                        break;
+                    case ObjectAction.ASSIGN:
+                        updateSteaming.status_cv = CurrentServiceStatus.ASSIGNED;
+                        break;
+                    case ObjectAction.COMPLETE:
+                        updateSteaming.status_cv = CurrentServiceStatus.COMPLETED;
+                        updateSteaming.complete_by = user;
+                        updateSteaming.complete_dt = currentDateTime;
 
-                    if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
-                        //if no other steaming estimate or all completed. then we check cross process tank movement
-                        await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
-                    //var sot = await context.storing_order_tank
-                    //    .Include(s => s.residue)
-                    //    .Where(s => s.guid == steaming.sot_guid).FirstOrDretefaultAsync();
-                    //if (sot != null)
-                    //{
-                    //    if (sot.residue.Any(r => CurrentServiceStatus.APPROVED.EqualsIgnore(r?.status_cv)))
-                    //        sot.tank_status_cv = TankMovementStatus.CLEANING;
-                    //    else if (sot?.purpose_cleaning ?? false)
-                    //        sot.tank_status_cv = TankMovementStatus.CLEANING;
-                    //    else if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
-                    //        sot.tank_status_cv = TankMovementStatus.REPAIR;
-                    //    else
-                    //        sot.tank_status_cv = TankMovementStatus.STORAGE;
-                    //    sot.update_by = user;
-                    //    sot.update_dt = currentDateTime;
-                    //}
+                        if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
+                            //if no other steaming estimate or all completed. then we check cross process tank movement
+                            await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
+                        break;
+                    case ObjectAction.NA:
+                        updateSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
+                        updateSteaming.na_dt = currentDateTime;
+
+                        if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
+                            //if no other steaming estimate or all completed. then we check cross process tank movement
+                            await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
+                        break;
                 }
+
+
+                //if (ObjectAction.IN_PROGRESS.EqualsIgnore(steaming.action))
+                //    updateSteaming.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                //else if (ObjectAction.CANCEL.EqualsIgnore(steaming.action))
+                //    updateSteaming.status_cv = CurrentServiceStatus.CANCELED;
+                //else if (ObjectAction.COMPLETE.EqualsIgnore(steaming.action))
+                //{
+                //    updateSteaming.status_cv = CurrentServiceStatus.COMPLETED;
+                //    updateSteaming.complete_by = user;
+                //    updateSteaming.complete_dt = currentDateTime;
+
+                //    if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
+                //        //if no other steaming estimate or all completed. then we check cross process tank movement
+                //        await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
+                //}
+                //else if (ObjectAction.NA.EqualsIgnore(steaming.action))
+                //{
+                //    updateSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
+                //    updateSteaming.na_dt = currentDateTime;
+
+                //    if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
+                //        //if no other steaming estimate or all completed. then we check cross process tank movement
+                //        await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
+                //}
                 var res = await context.SaveChangesAsync();
                 return res;
 
