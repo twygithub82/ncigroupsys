@@ -304,6 +304,48 @@ namespace IDMS.Residue.GqlTypes
             }
         }
 
+        public async Task<int> AbortResidue(ApplicationServiceDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, ResJobOrderRequest residueJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (residueJobOrder == null)
+                    throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+
+                var abortResidue = new residue() { guid = residueJobOrder.guid };
+                context.residue.Attach(abortResidue);
+
+                abortResidue.update_by = user;
+                abortResidue.update_dt = currentDateTime;
+                abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
+                abortResidue.remarks = residueJobOrder.remarks;
+
+                //foreach (var item in residueJobOrder.job_order)
+                //{
+                //    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                //    {
+                //        var job_order = new job_order() { guid = item.guid };
+                //        context.job_order.Attach(job_order);
+
+                //        job_order.status_cv = CurrentServiceStatus.CANCELED;
+                //        job_order.update_by = user;
+                //        job_order.update_dt = currentDateTime;
+                //    }
+                //}
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
         private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
         {
             //First check if still have other steaming estimate havnt completed
