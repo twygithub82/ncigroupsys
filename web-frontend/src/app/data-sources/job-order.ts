@@ -182,7 +182,7 @@ export class ResJobOrderRequest {
   public job_order?: JobOrderGO[];
   public remarks?: string;
   public sot_guid?: string;
-  constructor(item: Partial<RepJobOrderRequest> = {}) {
+  constructor(item: Partial<ResJobOrderRequest> = {}) {
     this.estimate_no = item.estimate_no;
     this.guid = item.guid;
     this.job_order = item.job_order;

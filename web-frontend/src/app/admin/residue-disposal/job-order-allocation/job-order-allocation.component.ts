@@ -1505,7 +1505,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const distinctJobOrders = this.repList
+        const distinctJobOrders = this.deList
           .filter((item, index, self) =>
             index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
               (t.job_order?.team?.guid === item?.job_order?.team_guid ||
@@ -1514,19 +1514,19 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
           .filter(item => item.job_order !== null && item.job_order !== undefined)
           .map(item => new JobOrderGO(item.job_order!));
 
-        const repJobOrder = new ResJobOrderRequest({
+        const residueJobOrder = new ResJobOrderRequest({
           guid: this.residueItem?.guid,
           sot_guid: this.residueItem?.sot_guid,
           estimate_no: this.residueItem?.estimate_no,
-          remarks: this.residueItem?.remarks,
+          remarks: result.item[0]?.remarks,
           job_order: distinctJobOrders
         });
 
-        console.log(repJobOrder)
-        // this.residueDS.abortResidue(repJobOrder).subscribe(result => {
-        //   console.log(result)
-        //   this.handleCancelSuccess(result?.data?.abortRepair)
-        // });
+        console.log(residueJobOrder)
+         this.residueDS.abortResidue(residueJobOrder).subscribe(result => {
+           console.log(result)
+           this.handleCancelSuccess(result?.data?.abortResidue)
+         });
       }
     });
   }

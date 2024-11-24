@@ -345,7 +345,7 @@
                           <mat-icon>delete_forever</mat-icon>
                         </button>
                         }
-                        @if (row.delete_dt){
+                        @if (residueDS.canRollback(this.residueItem!)) {
                           <button mat-icon-button  (click)="handleRollback($event, row, row.index)">
                             <mat-icon>undo</mat-icon>
                           </button>
@@ -416,7 +416,7 @@
                 </button>
                 }
                 @if (residueDS.canAmend(this.residueItem!)) {
-                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)">
+                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5">
                   <mat-icon>
                     @if (!(residueDS.loading$ | async)) {
                     save
@@ -427,6 +427,32 @@
                   {{translatedLangText.SAVE_AND_SUBMIT}}
                 </button>
                 }
+                @if (residueDS.canRollback(this.residueItem!)) {
+                  <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                    (click)="rollbackRow($event)">
+                    <mat-icon>
+                      @if (!(residueDS.loading$ | async)) {
+                      undo
+                      } @else if ((residueDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.ROLLBACK}}
+                  </button>
+                  }
+                  @if (residueDS.canCancel(residueItem!)) {
+                    <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                      (click)="onCancel($event)">
+                      <mat-icon>
+                        @if (!(residueDS.loading$ | async)) {
+                        close
+                        } @else if ((residueDS.loading$ | async)) {
+                        <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                        }
+                      </mat-icon>
+                      {{translatedLangText.CANCEL}}
+                    </button>
+                    }
               </div>
             </div>
           </div>

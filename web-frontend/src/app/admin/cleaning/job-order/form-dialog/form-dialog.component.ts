@@ -653,15 +653,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         const distinctJobOrders :any[] =[];
         const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
         distinctJobOrders.push(jobOrder);
-        const repJobOrder = new ClnJobOrderRequest({
+        const residueJobOrder = new ClnJobOrderRequest({
           guid: this.selectedItems[0]?.guid,
           sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
           remarks: this.selectedItems[0]?.remarks,
           job_order: distinctJobOrders
         });
     
-        console.log(repJobOrder)
-        this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
+        console.log(residueJobOrder)
+        this.igCleanDS?.abortInGateCleaning(residueJobOrder).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.abortCleaning);
         });
