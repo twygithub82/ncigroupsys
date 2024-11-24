@@ -15,7 +15,7 @@ namespace IDMS.Service.GqlTypes
         public const string COMPLETED = "COMPLETED";
         public const string JOB_IN_PROGRESS = "JOB_IN_PROGRESS";
         public const string PARTIAL = "PARTIAL_ASSIGNED";
-        public const string ASSIGN = "ASSIGNED";
+        public const string ASSIGNED = "ASSIGNED";
     }
 
     public static class JobStatus
