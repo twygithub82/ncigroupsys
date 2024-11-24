@@ -1243,8 +1243,8 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return re?.status_cv === 'PENDING';
   }
 
-  canAbort(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS';
+  canAbort(re: RepairItem | undefined, rp: RepairPartItem[]): boolean {
+    return (re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS') && rp?.some(part => !part.job_order?.status_cv && part.job_order?.status_cv !== 'PENDING' && part.job_order?.status_cv !== 'CANCELED');
   }
 
   canRollback(re: RepairItem | undefined): boolean {
