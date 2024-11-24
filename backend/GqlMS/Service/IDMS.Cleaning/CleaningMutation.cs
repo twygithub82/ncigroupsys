@@ -1,12 +1,10 @@
-﻿using AutoMapper;
-using CommonUtil.Core.Service;
+﻿using CommonUtil.Core.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using HotChocolate;
 using HotChocolate.Types;
 using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Service;
-using IDMS.Models.Inventory;
 using IDMS.Service.GqlTypes;
 using IDMS.Cleaning.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +16,7 @@ namespace IDMS.Cleaning.GqlTypes
     {
         //[Authorize]
         public async Task<int> AddCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, cleaning cleaning)
+            [Service] IHttpContextAccessor httpContextAccessor, cleaning cleaning)
         {
 
             try
@@ -50,7 +48,7 @@ namespace IDMS.Cleaning.GqlTypes
         }
 
         public async Task<int> UpdateCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, cleaning cleaning)
+            [Service] IHttpContextAccessor httpContextAccessor, cleaning cleaning)
         {
             try
             {
@@ -88,14 +86,8 @@ namespace IDMS.Cleaning.GqlTypes
                         throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
                     if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-                    {
-                        //if no other steaming estimate or all completed. then we check cross process tank movement
-                        var sot = await context.storing_order_tank.FindAsync(cleaning.sot_guid);
-                        if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
-                            sot.tank_status_cv = TankMovementStatus.REPAIR;
-                        else
-                            sot.tank_status_cv = TankMovementStatus.STORAGE;
-                    }
+                        //if no other cleaning estimate or all completed. then we check cross process tank movement
+                        await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
                 }
                 else if (ObjectAction.NA.EqualsIgnore(cleaning.action))
                 {
@@ -106,14 +98,8 @@ namespace IDMS.Cleaning.GqlTypes
                         throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
                     if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-                    {
-                        //if no other steaming estimate or all completed. then we check cross process tank movement
-                        var sot = await context.storing_order_tank.FindAsync(cleaning.sot_guid);
-                        if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
-                            sot.tank_status_cv = TankMovementStatus.REPAIR;
-                        else
-                            sot.tank_status_cv = TankMovementStatus.STORAGE;
-                    }
+                        //if no other cleaning estimate or all completed. then we check cross process tank movement
+                        await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -181,6 +167,18 @@ namespace IDMS.Cleaning.GqlTypes
                 return true;
             else
                 return false;
+        }
+
+        private async Task TankMovementCheckCrossProcess(ApplicationServiceDBContext context, string sotGuid, string user, long currentDateTime)
+        {
+            //if no other steaming estimate or all completed. then we check cross process tank movement
+            var sot = await context.storing_order_tank.FindAsync(sotGuid);
+            if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
+                sot.tank_status_cv = TankMovementStatus.REPAIR;
+            else
+                sot.tank_status_cv = TankMovementStatus.STORAGE;
+            sot.update_by = user;
+            sot.update_dt = currentDateTime;
         }
 
         //public async Task<int> CompleteQCCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,

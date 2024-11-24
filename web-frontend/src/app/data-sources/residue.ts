@@ -398,7 +398,7 @@ export const GET_RESIDUE_FOR_MOVEMENT = gql`
         status_cv
         update_by
         update_dt
-        residue_part(where:$residue_part_where) {
+        residue_part {
           action
           approve_part
           cost

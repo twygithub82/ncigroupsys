@@ -367,7 +367,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       where.tank = sotSearch;
     }
 
-    this.lastSearchCriteria = this.igDS.addDeleteDtCriteria(where);
+    this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
 
@@ -375,10 +375,10 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     this.subs.sink = this.sotDS.searchStoringOrderTankForMovement(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
-        this.endCursor = this.igDS.pageInfo?.endCursor;
-        this.startCursor = this.igDS.pageInfo?.startCursor;
-        this.hasNextPage = this.igDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.igDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.sotDS.pageInfo?.endCursor;
+        this.startCursor = this.sotDS.pageInfo?.startCursor;
+        this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.sotDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSize = pageSize;

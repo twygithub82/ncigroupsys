@@ -482,7 +482,7 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (repairDS.canAbort(repairItem)) {
+                  @if (repairDS.canAbort(repairItem, repList)) {
                   <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-r-5"
                     (click)="onAbort($event)">
                     <mat-icon>

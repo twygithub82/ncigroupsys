@@ -26,7 +26,6 @@ namespace IDMS.Cleaning.GqlTypes
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
 
