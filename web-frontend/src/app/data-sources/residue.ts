@@ -673,7 +673,8 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canRollback(re: ResidueItem): boolean {
-    return re.status_cv === 'PENDING' || re.status_cv === 'APPROVED';
+    const validStatus = ['PENDING', 'APPROVED', 'CANCELED','NO_ACTION']
+    return validStatus.includes(re?.status_cv!);
   }
 
   canCopy(re: ResidueItem): boolean {

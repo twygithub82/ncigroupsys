@@ -1044,7 +1044,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
         console.log(reList);
 
         let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-        residueStatus.action="NA";
+        residueStatus.action="CANCEL";
         residueStatus.guid = this.residueItem?.guid;
         residueStatus.sot_guid= this.residueItem?.sot_guid;
          this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{

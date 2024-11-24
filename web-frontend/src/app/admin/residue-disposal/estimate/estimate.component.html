@@ -259,7 +259,7 @@
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let residueRow" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{residueRow.status_cv}}
+                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(residueRow.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="remarks">

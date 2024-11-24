@@ -162,7 +162,9 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     'ALL',
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED'
+    'COMPLETED',
+    'NO_ACTION',
+    'CANCELED'
   ]
 
   searchForm?: UntypedFormGroup;
@@ -476,21 +478,21 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
         where.residue_part.some = {description:{contains:this.searchForm!.value['part_name']} };
       }
     
-      if ( this.searchForm!.value['residue_job_no'])
-        {
-          
-          where.job_no = {contains:this.searchForm!.value['residue_job_no'] };
-        }
-
-        if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end'])
-          {
-            where.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
-          }
+    if ( this.searchForm!.value['residue_job_no'])
+      {
         
-          if (this.searchForm!.value['approval_dt_start'] && this.searchForm!.value['approval_dt_end'])
-            {
-              where.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
-            }
+        where.job_no = {contains:this.searchForm!.value['residue_job_no'] };
+      }
+
+    if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end'])
+      {
+        where.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
+      }
+        
+    if (this.searchForm!.value['approval_dt_start'] && this.searchForm!.value['approval_dt_end'])
+      {
+        where.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
+      }
     // if ( this.searchForm!.value['residue_job_no'] || 
     //   (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
     //   const sotSome: any = {};

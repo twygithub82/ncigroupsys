@@ -49,7 +49,7 @@ import { MatCardModule } from '@angular/material/card';
 
 // import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
-import { ResidueDS,ResidueItem } from 'app/data-sources/residue';
+import { ResidueDS,ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { RepairItem } from 'app/data-sources/repair';
 
 @Component({
@@ -171,7 +171,8 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     'ALL',
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED'
+    'COMPLETED',
+    'PENDING',
   ]
   searchForm?: UntypedFormGroup;
 
@@ -347,10 +348,20 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       if (result?.action === 'confirmed') {
          const reList = result.item.map((item: ResidueItem) => new ResidueItem(item));
          console.log(reList);
-         this.residueDS.cancelResidue(reList).subscribe((result: { data: { cancelResidue: any; }; }) => {
-           this.handleCancelSuccess(result?.data?.cancelResidue)
-           this.performSearch(this.pageSize, 0, this.pageSize);
-         });
+
+         let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+         residueStatus.action="CANCEL";
+         residueStatus.guid = row[0]?.guid;
+         residueStatus.sot_guid= row[0]?.sot_guid;
+          this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+ 
+            this.handleCancelSuccess(result?.data?.UpdateResidueStatus)
+            this.performSearch(this.pageSize, 0, this.pageSize);
+          });
+        //  this.residueDS.cancelResidue(reList).subscribe((result: { data: { cancelResidue: any; }; }) => {
+        //    this.handleCancelSuccess(result?.data?.cancelResidue)
+        //    this.performSearch(this.pageSize, 0, this.pageSize);
+        //  });
       }
     });
   }
@@ -384,13 +395,15 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
+
         const reList = result.item.map((item: any) => {
           const ResidueEstimateRequestInput = {
             customer_guid: item.customer_company_guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
             remarks: item.remarks,
-            sot_guid: item.sot_guid
+            sot_guid: item.sot_guid,
+            is_approved:item?.status_cv=="APPROVED"
           }
           return ResidueEstimateRequestInput;
         });
@@ -673,6 +686,10 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {

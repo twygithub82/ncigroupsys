@@ -568,11 +568,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     
     if(selItem.job_order)
     {
-      var joGuids:string[]=[];
-      joGuids.push(selItem.job_order.guid);
-      this.jobOrderDS?.deleteJobOrder(joGuids).subscribe(result=>{
-        console.log(result);
-      });
+      newJobOrderReq.guid=selItem.job_order.guid;
+      // var joGuids:string[]=[];
+      // joGuids.push(selItem.job_order.guid);
+      // this.jobOrderDS?.deleteJobOrder(joGuids).subscribe(result=>{
+      //   console.log(result);
+      // });
     }
 
     this.jobOrderDS?.assignJobOrder(newJobOrderReq).subscribe(result=>{

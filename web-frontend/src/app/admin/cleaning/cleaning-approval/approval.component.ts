@@ -142,7 +142,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     'ALL',
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED'
+    'COMPLETED',
+    'NO_ACTION'
   ]
 
   searchForm?: UntypedFormGroup;
@@ -330,7 +331,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       
     };
 
-    where.storing_order_tank={};
+    //where.storing_order_tank={};
    // where.storing_order_tank.tank_status_cv={eq:"CLEANING"};
 
     if(this.searchForm!.get('tank_no')?.value)
@@ -380,10 +381,10 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       where.job_no= { contains: this.searchForm!.value['job_no'].code } ;
     }
 
-    if (this.searchForm!.get('approval_status')?.value) {
+    // if (this.searchForm!.get('approval_status')?.value) {
      
-      where.status_cv= { eq: this.searchForm!.value['approval_status'] } ;
-    }
+    //   where.status_cv= { eq: this.searchForm!.value['approval_status'] } ;
+    // }
 
  
   this.lastSearchCriteria=where;
