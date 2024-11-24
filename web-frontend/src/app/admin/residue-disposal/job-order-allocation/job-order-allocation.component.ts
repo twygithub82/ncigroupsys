@@ -63,7 +63,7 @@ import { ResidueDS, ResidueGO, ResidueItem, ResidueStatusRequest } from 'app/dat
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobOrderDS, JobOrderItem, JobOrderRequest, JobProcessRequest } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest, ResJobOrderRequest } from 'app/data-sources/job-order';
 
 @Component({
   selector: 'app-estimate-new',
@@ -232,7 +232,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     METHOD:"COMMON-FORM.METHOD",
     RESIDUE_DISPOSAL:'COMMON-FORM.RESIDUE-DISPOSAL',
-    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE'
+    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
+    ABORT: 'COMMON-FORM.ABORT'
 
   }
 
@@ -266,7 +267,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   packResidueList:PackageResidueItem[]=[];
   displayPackResidueList:PackageResidueItem[]=[];
   deList:ResiduePartItem[]=[];
-  
+  oldJobOrderList?: (JobOrderItem | undefined)[] = [];
 
   customerCodeControl = new UntypedFormControl();
 
@@ -1030,11 +1031,33 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
     if(residue)
     {
+      residue.residue_part = this.filterDeleted(residue.residue_part);
+      
       var dataList = residue.residue_part?.map(data=>new ResiduePartItem(data) );
+
+      
+
+      this.oldJobOrderList = residue.residue_part?.filter((item, index, self) => {
+        const jobOrder = item.job_order;
+        const teamDescription = jobOrder?.team?.description;
+        if (!teamDescription) {
+          return false;
+        }
+        return index === self.findIndex(
+          (t) =>
+            t.job_order?.team?.description === teamDescription
+        );
+      })
+        .map(item => item.job_order);
+
       this.updateData(dataList);
     }
   }
   
+  filterDeleted(resultList: any[] | undefined): any {
+    return (resultList || []).filter((row: any) => !row.delete_dt);
+  }
+
   resetSelectedItemForUpdating()
   {
     if(this.updateSelectedItem)
@@ -1147,8 +1170,10 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     }
   }
 
-  toggleRep(row: ResidueItem) {
-    //if (this.repairPartDS.is4X(row.rp_damage_repair) || row.job_order_guid) return;
+  toggleRep(row: ResiduePartItem) {
+    
+    if (!this.jobOrderDS.canJobAllocate(row?.job_order)) 
+        return;
     this.repSelection.toggle(row);
   }
 
@@ -1174,17 +1199,36 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   assignTeam(event: Event) {
     const selectedRep = this.repSelection.selected;
     const selectedTeam = this.residueEstForm?.get('team_allocation');
+    const oldTeamFound = this.oldJobOrderList?.find(oldJob => oldJob?.team?.guid === selectedTeam?.value?.guid)
+
     selectedRep.forEach(rep => {
-      rep.job_order = new JobOrderItem({
-        ...rep.job_order,
-        team_guid: selectedTeam?.value?.guid,
-        team: selectedTeam?.value
-      });
+      rep.job_order = oldTeamFound
+        ? new JobOrderItem({
+          ...oldTeamFound,
+          team_guid: selectedTeam?.value?.guid,
+          team: selectedTeam?.value
+        })
+        : new JobOrderItem({
+          team_guid: selectedTeam?.value?.guid,
+          team: selectedTeam?.value
+        });
     })
     console.log(selectedRep)
     this.repSelection.clear();
     selectedTeam?.setValue('')
-    this.residueEstForm?.get('deList')?.setErrors(null);
+    // const selectedRep = this.repSelection.selected;
+    // const selectedTeam = this.residueEstForm?.get('team_allocation');
+    // selectedRep.forEach(rep => {
+    //   rep.job_order = new JobOrderItem({
+    //     ...rep.job_order,
+    //     team_guid: selectedTeam?.value?.guid,
+    //     team: selectedTeam?.value
+    //   });
+    // })
+    // console.log(selectedRep)
+    // this.repSelection.clear();
+    // selectedTeam?.setValue('')
+    // this.residueEstForm?.get('deList')?.setErrors(null);
     
   }
   isAssignEnabled() {
@@ -1221,6 +1265,98 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   }
 
   save() {
+    // const distinctJobOrders = this.repList
+    //   .filter((item, index, self) =>
+    //     index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+    //       (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+    //         t.job_order?.team?.description === item?.job_order?.team?.description))
+    //   )
+    //   .filter(item => item.job_order !== null && item.job_order !== undefined)
+    //   .map(item => item.job_order);
+    const distinctJobOrders = this.deList
+      .filter((item, index, self) => {
+        const jobOrder = item.job_order;
+        const teamDescription = jobOrder?.team?.description;
+        if (!teamDescription) {
+          return false;
+        }
+        return index === self.findIndex(
+          (t) =>
+            t.job_order?.team?.description === teamDescription
+        );
+      })
+      .map(item => item.job_order);
+
+    const missingJobOrders = this.oldJobOrderList?.filter(
+      oldJob =>
+        !distinctJobOrders.some(
+          distinctJob =>
+            distinctJob?.guid === oldJob?.guid &&
+            distinctJob?.team?.description === oldJob?.team?.description
+        )
+    );
+    console.log(missingJobOrders);
+
+    const finalJobOrder: any[] = [];
+    distinctJobOrders?.forEach(jo => {
+      if (jo) {
+        const filteredParts = this.deList.filter(part =>
+        // ((part.job_order?.guid && part.job_order?.guid === jo?.guid) || !part.job_order?.guid) &&
+        (part.job_order?.team?.guid === jo?.team_guid ||
+          part.job_order?.team?.description === jo?.team?.description)
+        );
+        const partList = filteredParts.map(part => part.guid);
+        const totalApproveHours =3;
+
+        const joRequest = new JobOrderRequest();
+        joRequest.guid = jo.guid;
+        joRequest.job_type_cv = jo.job_type_cv ?? 'RESIDUE';
+        joRequest.remarks = jo.remarks;
+        joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
+        joRequest.status_cv = jo.status_cv;
+        joRequest.team_guid = jo.team_guid;
+        joRequest.total_hour = jo.total_hour ?? totalApproveHours;
+        joRequest.working_hour = jo.working_hour ?? 0;
+        joRequest.process_guid = this.residueItem?.guid;
+        joRequest.part_guid = partList;
+        finalJobOrder.push(joRequest);
+      }
+    });
+    
+    console.log(finalJobOrder);
+    // const without4x = this.repList.filter(part =>
+    //   !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair)
+    // );
+    this.jobOrderDS.assignJobOrder(finalJobOrder).subscribe(result => {
+      console.log(result)
+      if ((result?.data?.assignJobOrder ?? 0) > 0 && missingJobOrders?.length) {
+        const jobOrderGuidToDelete = missingJobOrders.map(jo => jo?.guid!)
+        this.jobOrderDS.deleteJobOrder(jobOrderGuidToDelete).subscribe(result => {
+          console.log(`deleteJobOrder: ${jobOrderGuidToDelete}, result: ${result}`);
+        });
+      }
+
+      if(this.isAllAssignedToTeam()) {
+        console.log("all parts are assigned");
+        var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
+          guid: this.residueItem!.guid,
+          sot_guid: this.sotItem!.guid,
+          action: "IN_PROGRESS"
+        });
+        console.log(residueStatusReq);
+        this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
+          console.log(result)
+          if (result.data.updateResidueStatus > 0) {
+            this.handleSaveSuccess(result.data.updateResidueStatus);
+          }
+        });
+      } else {
+        this.handleSaveSuccess(result?.data?.assignJobOrder);
+      }
+    });
+  }
+
+  save_old() {
 
     let job_type="RESIDUE";
     this.residueEstForm?.get('deList')?.setErrors(null);
@@ -1300,15 +1436,32 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   }
 
   isAllAssignedToTeam(): boolean {
-    let retval = true;
+
+    return this.deList.every(
+      (data) =>
+        { 
+           let bRet=!data.approve_part?true:data.approve_part;
+           if(bRet)
+           {
+              if(!data.job_order?.team_guid)
+              {
+                 return false;
+              }
+           }
+           return bRet;
+        }
+
+    );
+
+    // let retval = true;
   
-    this.deList.forEach((data) => {
-      if (!data.job_order?.team?.description && data.approve_part) {
-        retval = false;
-      }
-    });
+    // this.deList.forEach((data) => {
+    //   if (!data.job_order?.team?.description && data.approve_part) {
+    //     retval = false;
+    //   }
+    // });
   
-    return retval;
+    // return retval;
   }
 
   updateJobProcessStatus(residueGuid:string, job_type:string,process_status:string)
@@ -1328,6 +1481,54 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
          });
      
 
+  }
+
+  onAbort(event: Event) {
+    this.preventDefault(event);
+    console.log(this.residueItem)
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
+        item: [this.residueItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const distinctJobOrders = this.repList
+          .filter((item, index, self) =>
+            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                t.job_order?.team?.description === item?.job_order?.team?.description))
+          )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO(item.job_order!));
+
+        const repJobOrder = new ResJobOrderRequest({
+          guid: this.residueItem?.guid,
+          sot_guid: this.residueItem?.sot_guid,
+          estimate_no: this.residueItem?.estimate_no,
+          remarks: this.residueItem?.remarks,
+          job_order: distinctJobOrders
+        });
+
+        console.log(repJobOrder)
+        // this.residueDS.abortResidue(repJobOrder).subscribe(result => {
+        //   console.log(result)
+        //   this.handleCancelSuccess(result?.data?.abortRepair)
+        // });
+      }
+    });
   }
   
 }

@@ -1,4 +1,4 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose, MatDialog } from '@angular/material/dialog';
 import { Component, Inject, OnInit,ViewChild } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
@@ -39,6 +39,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ClnJobOrderRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest } from 'app/data-sources/job-order';
+import { Direction } from '@angular/cdk/bidi';
+import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component'
 
 export interface DialogData {
   action?: string;
@@ -182,6 +184,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    ARE_YOU_SURE_ABORT:'COMMON-FORM.ARE-YOU-SURE-ABORT',
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
@@ -255,6 +258,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -514,17 +518,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     let retval:boolean=true;
     var selItem =this.selectedItems[0];
-
-    retval =selItem.job_order?.status_cv==="COMPLETED" && selItem.status_cv!=="COMPLETED";
-    if(!retval)
-    {
-      if(selItem.status_cv==="APPROVED")
-      {
-        var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
-        retval=this.isTeamContainTheTank(tankNo);
-      }
-    }
-    return retval;
+    return selItem.status_cv==="APPROVED";
+    // retval =selItem.job_order?.status_cv==="COMPLETED" && selItem.status_cv!=="COMPLETED";
+    // if(!retval)
+    // {
+    //   if(selItem.status_cv==="APPROVED")
+    //   {
+    //     var tankNo = this.selectedItems[0].storing_order_tank?.tank_no;
+    //     retval=this.isTeamContainTheTank(tankNo);
+    //   }
+    // }
+    //return retval;
   }
   abort(event: Event){
 
@@ -599,6 +603,70 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
 
    
+  }
+
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
+
+
+  onAbort(event: Event) {
+    this.preventDefault(event);
+    console.log(this.selectedItem)
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
+        item: [this.selectedItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        // const distinctJobOrders = this.repList
+        //   .filter((item, index, self) =>
+        //     index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+        //       (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+        //         t.job_order?.team?.description === item?.job_order?.team?.description))
+        //   )
+        //   .filter(item => item.job_order !== null && item.job_order !== undefined)
+        //   .map(item => new JobOrderGO(item.job_order!));
+
+        // const repJobOrder = new ResJobOrderRequest({
+        //   guid: this.residueItem?.guid,
+        //   sot_guid: this.residueItem?.sot_guid,
+        //   estimate_no: this.residueItem?.estimate_no,
+        //   remarks: this.residueItem?.remarks,
+        //   job_order: distinctJobOrders
+        // });
+
+        
+        const distinctJobOrders :any[] =[];
+        const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
+        distinctJobOrders.push(jobOrder);
+        const repJobOrder = new ClnJobOrderRequest({
+          guid: this.selectedItems[0]?.guid,
+          sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
+          remarks: this.selectedItems[0]?.remarks,
+          job_order: distinctJobOrders
+        });
+    
+        console.log(repJobOrder)
+        this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.abortCleaning);
+        });
+      }
+    });
   }
 
   updateJobProcessStatus(cleaningGuid:string, job_type:string,process_status:string)

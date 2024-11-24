@@ -38,7 +38,7 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';

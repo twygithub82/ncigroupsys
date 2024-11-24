@@ -384,7 +384,7 @@
                 </button>
               </div>
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                @if (canExport()) {
+                <!-- @if (canExport()) {
                 <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5">
                   @if (!(residueDS.loading$ | async)) {
                   <i class="fas fa-file-export"></i>
@@ -395,41 +395,10 @@
                   }
                   {{translatedLangText.EXPORT}}
                 </button>
-                }
-                <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right">
-
-                  <button mat-flat-button color="primary"  (click)="save()"
-                  >{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
-                
-                  <!-- @if (residueDS.canRollback(residueItem!)) {
-                  <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)"
-                    (click)="onRollback($event)">
-                    <mat-icon>
-                      @if (!(residueDS.loading$ | async)) {
-                      undo
-                      } @else if ((residueDS.loading$ | async)) {
-                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                      }
-                    </mat-icon>
-                    {{translatedLangText.ROLLBACK}}
-                  </button>
-                  }
-                  @if (residueDS.canApprove(residueItem!)) {
-                  <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async)" class="m-l-5 bg-green"
-                    (click)="onApprove($event)">
-                    <mat-icon>
-                      @if (!(residueDS.loading$ | async)) {
-                      done
-                      } @else if ((residueDS.loading$ | async)) {
-                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                      }
-                    </mat-icon>
-                    {{translatedLangText.APPROVE}}
-                  </button>
-                  }
-                  @if (residueDS.canCancel(residueItem!)) {
-                  <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-l-5"
-                    (click)="onCancel($event)">
+                } -->
+                @if (residueDS.canAbort(residueItem, deList)) {
+                  <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                    (click)="onAbort($event)">
                     <mat-icon>
                       @if (!(residueDS.loading$ | async)) {
                       close
@@ -437,11 +406,15 @@
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.NO_ACTION}}
+                    {{translatedLangText.ABORT}}
                   </button>
-                  } -->
-            
-                </div>
+                  }
+                <!-- <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right"> -->
+
+                  <button mat-flat-button color="primary"  (click)="save()"
+                  >{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
+                
+                <!-- </div> -->
               </div>
             </div>
           </div>

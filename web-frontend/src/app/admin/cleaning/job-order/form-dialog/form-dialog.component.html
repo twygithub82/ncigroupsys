@@ -55,18 +55,20 @@
                     </div>
                   </div>
                   <div class="spacer"></div>
-                  <div mat-dialog-actions class="mb-1 align-right">
+                  <div mat-dialog-actions class="align-right">
                     
-                    @if (canEdit() && !buttonViewOnly()) {
-                      <button mat-flat-button color="primary"  (click)="save()" [disabled]="!canSave()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
-                    }
-
-                    @if(buttonViewOnly())
+                    @if(canAbort())
                     {
                       
-                      <button mat-flat-button color="primary"  (click)="abort($event)" [disabled]="!canAbort()">{{translatedLangText.ABORT}}</button>
+                      <button mat-flat-button color="warn"  (click)="onAbort($event)" class="m-r-5">{{translatedLangText.ABORT}}</button>
                     }
-                    <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+
+                    @if (canEdit() && !buttonViewOnly()) {
+                      <button mat-flat-button color="primary"  (click)="save()" [disabled]="!canSave()" class="m-r-5">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+                    }
+
+                   
+                    <button mat-flat-button (click)="onNoClick()" tabindex="-1" class="m-r-5">
                       @if(canEdit()){
                       {{translatedLangText.CANCEL}}
                       }

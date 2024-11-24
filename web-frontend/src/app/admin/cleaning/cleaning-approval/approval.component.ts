@@ -442,7 +442,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       }
     }
 
-    this.searchData(this.lastSearchCriteria,{},first,after,last,before,pageIndex);
+    this.searchData(this.lastSearchCriteria,this.lastOrderBy,first,after,last,before,pageIndex);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {

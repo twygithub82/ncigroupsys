@@ -10,7 +10,7 @@ import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 import { AnyObject } from 'chart.js/dist/types/basic';
 import { InGateSurveyItem } from './in-gate-survey';
 import { CustomerCompanyItem } from './customer-company';
-import { JobOrderItem } from './job-order';
+import { JobOrderGO, JobOrderItem } from './job-order';
 
 export class InGateCleaningGO {
   public action?: string = '';
@@ -76,6 +76,23 @@ export interface InGateCleaningResult {
   items: InGateCleaningItem[];
   totalCount: number;
 }
+
+
+// export class CleanJobOrderRequest {
+//   public guid?: string;
+//   public job_order?: JobOrderGO[];
+//   public remarks?: string;
+//   public sot_guid?: string;
+//   constructor(item: Partial<CleanJobOrderRequest> = {}) {
+   
+//     this.guid = item.guid;
+//     this.job_order = item.job_order;
+//     this.remarks = item.remarks;
+//     this.sot_guid = item.sot_guid;
+//   }
+// }
+
+
 
 const SEARCH_IN_GATE_CLEANING_QUERY = gql`
   query queryInGateCleaning($where: cleaningFilterInput, $order: [cleaningSortInput!], $first: Int, $after: String, $last: Int, $before: String) {

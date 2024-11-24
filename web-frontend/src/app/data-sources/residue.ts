@@ -653,6 +653,11 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
+  canAbort(re: ResidueItem | undefined, rp: ResiduePartItem[]): boolean {
+    return (re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS') && rp?.some(part => !part.job_order?.status_cv && part.job_order?.status_cv !== 'PENDING' && part.job_order?.status_cv !== 'CANCELED');
+  }
+
+
   canAmend(re: ResidueItem): boolean {
     if (!re) return true;
     return re.status_cv === 'PENDING';

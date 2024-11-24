@@ -36,6 +36,7 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { MatDividerModule } from '@angular/material/divider';
+import { ClnJobOrderRequest, JobOrderGO } from 'app/data-sources/job-order';
 
 export interface DialogData {
   action?: string;
@@ -418,6 +419,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
+
   save() {
 
     if (!this.pcForm?.valid) return;
@@ -442,17 +444,38 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         rep.remarks=this.pcForm.get("remarks")?.value;
         break;
     }
-    delete rep.job_order;
-    this.igCleanDS.updateInGateCleaning(rep).subscribe(result=>{
-        if(result.data.updateCleaning>0)
-        {
-         
-                  console.log('valid');
-                  this.handleSaveSuccess(result.data.updateCleaning);
-  
-        }
+   
+    if(this.action.toUpperCase()==="NO_ACTION")
+    {
+      const distinctJobOrders :any[] =[];
+      const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
+      distinctJobOrders.push(jobOrder);
+      const repJobOrder = new ClnJobOrderRequest({
+        guid: this.selectedItems[0]?.guid,
+        sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
+        remarks: this.selectedItems[0]?.remarks,
+        job_order: distinctJobOrders
       });
-
+  
+      console.log(repJobOrder)
+      this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result?.data?.abortCleaning);
+      });
+    }
+    else
+    {
+      delete rep.job_order;
+      this.igCleanDS.updateInGateCleaning(rep).subscribe(result=>{
+          if(result.data.updateCleaning>0)
+          {
+          
+                    console.log('valid');
+                    this.handleSaveSuccess(result.data.updateCleaning);
+    
+          }
+        });
+    }
    
   }
   
