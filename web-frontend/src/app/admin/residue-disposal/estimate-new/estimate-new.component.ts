@@ -46,7 +46,7 @@ import { Observable, of, Subscription } from 'rxjs';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning'
 import { ComponentUtil } from 'app/utilities/component-util';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { MatCardModule } from '@angular/material/card';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
@@ -59,7 +59,7 @@ import { RPDamageRepairGO, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { ResidueDS, ResidueItem,ResidueGO,ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 
@@ -216,6 +216,8 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     QUANTITY:'COMMON-FORM.QTY',
     UNIT_PRICE:'COMMON-FORM.UNIT-PRICE',
     COST:'COMMON-FORM.COST',
+    ROLLBACK: 'COMMON-FORM.ROLLBACK',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
 
   }
 
@@ -249,7 +251,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   packResidueList:PackageResidueItem[]=[];
   displayPackResidueList:PackageResidueItem[]=[];
   deList:any[]=[];
-  
+  reSelection = new SelectionModel<ResidueItem>(true, []);
 
   customerCodeControl = new UntypedFormControl();
 
@@ -800,44 +802,102 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     });
   }
 
-  rollbackSelectedRows(event: Event, row: ResiduePartItem, index: number) {
-    //this.preventDefault(event);  // Prevents the form submission
+  onCancel(event: Event) {
+    this.preventDefault(event);
+    console.log(this.sotItem)
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const item:any[]=[];
-    item.push(row);
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '1000px',
       data: {
-        action: "rollback",
-        item:row,
-        langText: this.translatedLangText
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        item: [this.residueItem],
+        translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const data: any[] = [...this.deList];
-       // result.item.forEach((newItem: ResiduePartItem) => {
-          const index = data.findIndex(existingItem => existingItem.guid === result.item.guid);
+        const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
+        console.log(reList);
 
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...result.item,
-              delete_dt:null,
-              action:'',
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'rollback'])]
-                : ['rollback']
-            };
+        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action="CANCEL";
+        residueStatus.guid = this.residueItem?.guid;
+        residueStatus.sot_guid= this.residueItem?.sot_guid;
+         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+
+          this.handleCancelSuccess(result?.data?.updateResidueStatus);
+          if(result?.data?.updateResidueStatus>0)
+            {
+              this.GoBackPrevious(event);
+            }
+         });
+        // this.residueDS.cancelResidue(reList).subscribe(result => {
+        //   this.handleCancelSuccess(result?.data?.cancelResidue)
+        // });
+      }
+    });
+  }
+
+  rollbackRow(event: Event) {
+    this.preventDefault(event)
+    const found = false;
+    let selectedList = [...this.reSelection.selected];
+    if (!found) {
+      // this.toggleRow(row);
+      selectedList.push(this.residueItem!);
+    }
+    this.rollbackSelectedRows(event,selectedList)
+  }
+
+  rollbackSelectedRows(event: Event,row: ResidueItem[]) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        item: [...row],
+        translatedLangText: this.translatedLangText
+
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+
+        const reList = result.item.map((item: any) => {
+          const ResidueEstimateRequestInput = {
+            customer_guid: item.customer_company_guid,
+            estimate_no: item.estimate_no,
+            guid: item.guid,
+            remarks: item.remarks,
+            sot_guid: item.sot_guid,
+            is_approved:item?.status_cv=="APPROVED"
           }
-       // });
-        this.updateData(data);
+          return ResidueEstimateRequestInput;
+        });
+        console.log(reList);
+        this.residueDS.rollbackResidue(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
+          this.handleRollbackSuccess(result?.data?.rollbackResidue)
+          if(result?.data?.rollbackResidue>0)
+          {
+            this.GoBackPrevious(event);
+          }
+          //this.performSearch(this.pageSize, 0, this.pageSize);
+        });
       }
     });
   }
@@ -975,7 +1035,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   handleRollback(event: Event, row: any, index: number): void {
     this.stopEventTrigger(event);
     this.preventDefault(event);
-     this.rollbackSelectedRows(event, row, index);
+    // this.rollbackSelectedRows(event, row, index);
    }
 
   handleDelete(event: Event, row: any, index: number): void {
@@ -1487,4 +1547,22 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   getFooterBackgroundColor():string{
     return 'light-green';
   }
+
+  handleRollbackSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      
+    }
+  }
+
+  handleCancelSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.CANCELED_SUCCESS;
+      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+     
+     
+    }
+  }
+  
 }
