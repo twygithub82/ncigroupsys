@@ -604,9 +604,8 @@ export class ResidueQCViewComponent extends UnsubscribeOnDestroyAdapter implemen
     const resJobOrder = new ResJobOrderRequest({
       guid: this.residueItem?.guid,
       sot_guid: this.residueItem?.sot_guid,
-      estimate_no: this.repairItem?.estimate_no,
       remarks: this.repairItem?.remarks,
-      job_order: distinctJobOrders
+      job_order: this.deList
     });
 
     console.log(resJobOrder)

@@ -505,6 +505,13 @@ export const APPROVE_RESIDUE_EST = gql`
   }
 `
 
+
+const ABORT_RESIDUE = gql`
+  mutation abortResidue($residueJobOrder: ResJobOrderRequestInput!) {
+    abortResidue(residueJobOrder: $residueJobOrder)
+  }
+`
+
 export class ResidueDS extends BaseDataSource<ResidueItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -723,4 +730,14 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   getNetCost(total_cost: number | undefined, discount_labour_cost: number | undefined, discount_mat_cost: number | undefined): any {
     return (total_cost ?? 0) - (discount_labour_cost ?? 0) - (discount_mat_cost ?? 0);
   }
+
+  abortResidue(residueJobOrder: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ABORT_RESIDUE,
+      variables: {
+        residueJobOrder
+      }
+    });
+  }
+  
 }
