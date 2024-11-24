@@ -542,40 +542,6 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        //private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
-        //                                        string jobType, string jobOrderGuid, List<string?>? partGuid)
-        //{
-        //    string tableName = "";
-
-        //    try
-        //    {
-        //        switch (jobType.ToUpper())
-        //        {
-        //            case JobType.REPAIR:
-        //                tableName = "repair_part";
-        //                break;
-        //            case JobType.CLEANING:
-        //                tableName = "cleaning";
-        //                break;
-        //            case JobType.RESIDUE:
-        //                tableName = "residue_part";
-        //                break;
-        //            case JobType.STEAM:
-        //                tableName = "steaming_part";
-        //                break;
-        //        }
-
-        //        var guids = string.Join(",", partGuid.Select(g => $"'{g}'"));
-        //        string sql = $"UPDATE {tableName} SET update_dt = {currentDateTime}, update_by = '{user}', job_order_guid = '{jobOrderGuid}' WHERE guid IN ({guids})";
-        //        var ret = context.Database.ExecuteSqlRaw(sql);
-
-        //        return ret;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
         private async Task<bool> UpdateAccumalateHour(ApplicationServiceDBContext context, string user, long currentDateTime, List<string?> jobOrderGuid)
         {
             try

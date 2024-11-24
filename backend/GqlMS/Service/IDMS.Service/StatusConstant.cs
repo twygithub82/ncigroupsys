@@ -14,6 +14,8 @@ namespace IDMS.Service.GqlTypes
         public const string KIV = "KIV";
         public const string COMPLETED = "COMPLETED";
         public const string JOB_IN_PROGRESS = "JOB_IN_PROGRESS";
+        public const string PARTIAL = "PARTIAL_ASSIGNED";
+        public const string ASSIGN = "ASSIGNED";
     }
 
     public static class JobStatus
@@ -34,6 +36,8 @@ namespace IDMS.Service.GqlTypes
         public const string NA = "NA";
         public const string COMPLETE = "COMPLETE";
         public const string IN_PROGRESS = "IN_PROGRESS";
+        public const string PARTIAL = "PARTIAL_ASSIGNED";
+        public const string ASSIGN = "ASSIGNED";
     }
 
     public static class JobType
