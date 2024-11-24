@@ -394,7 +394,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = addDefaultSelectOption(data, 'All');
+      // this.processStatusCvList = addDefaultSelectOption(data, 'All');
+      this.processStatusCvList = data;
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
       this.purposeOptionCvList = data;
@@ -474,7 +475,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    if (this.searchForm!.value['customer_code']) {
+    if (this.searchForm!.get('customer_code')?.value) {
       const soSome: any = {};
 
       if (this.searchForm!.value['customer_code']) {
@@ -482,7 +483,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    if (this.searchForm!.get('part_name')?.value || this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value || this.searchForm!.get('job_no')?.value || this.searchForm!.get('estimate_no')?.value) {
+    if (this.searchForm!.get('part_name')?.value || this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value || this.searchForm!.get('job_no')?.value || this.searchForm!.get('estimate_no')?.value || this.searchForm!.get('est_status_cv')?.value?.length) {
       let reSome: any = {};
 
       if (this.searchForm!.get('part_name')?.value) {
@@ -504,38 +505,34 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       if (this.searchForm!.get('estimate_no')?.value) {
         reSome.estimate_no = { contains: this.searchForm!.get('estimate_no')?.value };
       }
+
+      if (this.searchForm!.get('est_status_cv')?.value?.length) {
+        reSome.status_cv = { in: this.searchForm!.get('est_status_cv')?.value }
+      }
       where.repair = { some: reSome };
     }
 
-    // if (this.searchForm!.value['tank_no'] || this.searchForm!.get('job_no')?.value || (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
-    //   const sotSome: any = {};
-
-    //   if (this.searchForm!.get('job_no')?.value) {
-    //     sotSome.job_no = { contains: this.searchForm!.get('job_no')?.value };
+    // if (this.searchForm!.value['purpose']) {
+    //   const purposes = this.searchForm!.value['purpose'];
+    //   if (purposes.includes('STORAGE')) {
+    //     sotSome.purpose_storage = { eq: true }
+    //   }
+    //   if (purposes.includes('CLEANING')) {
+    //     sotSome.purpose_cleaning = { eq: true }
+    //   }
+    //   if (purposes.includes('STEAM')) {
+    //     sotSome.purpose_steam = { eq: true }
     //   }
 
-    //   if (this.searchForm!.value['purpose']) {
-    //     const purposes = this.searchForm!.value['purpose'];
-    //     if (purposes.includes('STORAGE')) {
-    //       sotSome.purpose_storage = { eq: true }
-    //     }
-    //     if (purposes.includes('CLEANING')) {
-    //       sotSome.purpose_cleaning = { eq: true }
-    //     }
-    //     if (purposes.includes('STEAM')) {
-    //       sotSome.purpose_steam = { eq: true }
-    //     }
-
-    //     const repairPurposes = [];
-    //     if (purposes.includes('REPAIR')) {
-    //       repairPurposes.push('REPAIR');
-    //     }
-    //     if (purposes.includes('OFFHIRE')) {
-    //       repairPurposes.push('OFFHIRE');
-    //     }
-    //     if (repairPurposes.length > 0) {
-    //       sotSome.purpose_repair_cv = { in: repairPurposes };
-    //     }
+    //   const repairPurposes = [];
+    //   if (purposes.includes('REPAIR')) {
+    //     repairPurposes.push('REPAIR');
+    //   }
+    //   if (purposes.includes('OFFHIRE')) {
+    //     repairPurposes.push('OFFHIRE');
+    //   }
+    //   if (repairPurposes.length > 0) {
+    //     sotSome.purpose_repair_cv = { in: repairPurposes };
     //   }
     //   where.storing_order_tank = { some: sotSome };
     // }
