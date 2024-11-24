@@ -561,54 +561,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     });
   }
 
-  onAbort(event: Event) {
-    this.preventDefault(event);
-    console.log(this.repairItem)
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const distinctJobOrders = this.repList
-          .filter((item, index, self) =>
-            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
-              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
-                t.job_order?.team?.description === item?.job_order?.team?.description))
-          )
-          .filter(item => item.job_order !== null && item.job_order !== undefined)
-          .map(item => new JobOrderGO(item.job_order!));
-
-        const repJobOrder = new RepJobOrderRequest({
-          guid: this.repairItem?.guid,
-          sot_guid: this.repairItem?.sot_guid,
-          estimate_no: this.repairItem?.estimate_no,
-          remarks: this.repairItem?.remarks,
-          job_order: distinctJobOrders
-        });
-
-        console.log(repJobOrder)
-        this.repairDS.abortRepair(repJobOrder).subscribe(result => {
-          console.log(result)
-          this.handleCancelSuccess(result?.data?.abortRepair)
-        });
-      }
-    });
-  }
-
   onRollback(event: Event) {
     this.preventDefault(event);
 
