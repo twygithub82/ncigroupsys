@@ -386,7 +386,8 @@ namespace IDMS.Residue.GqlTypes
             string tableName = processType;
 
             var sqlQuery = $@"SELECT guid FROM {tableName} 
-                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', '{CurrentServiceStatus.PENDING}')
+                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', 
+                            '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
                             AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
             var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
