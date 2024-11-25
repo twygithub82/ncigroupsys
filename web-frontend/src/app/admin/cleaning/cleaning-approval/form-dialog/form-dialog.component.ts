@@ -448,8 +448,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if(this.action.toUpperCase()==="NO_ACTION")
     {
       const distinctJobOrders :any[] =[];
+      if(this.selectedItems[0].job_order)
+      {
       const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
       distinctJobOrders.push(jobOrder);
+      }
       const repJobOrder = new ClnJobOrderRequest({
         guid: this.selectedItems[0]?.guid,
         sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
