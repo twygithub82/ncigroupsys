@@ -1244,7 +1244,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canAbort(re: RepairItem | undefined, rp: RepairPartItem[]): boolean {
-    return (re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS') && rp?.some(part => !part.job_order?.status_cv && part.job_order?.status_cv !== 'PENDING' && part.job_order?.status_cv !== 'CANCELED');
+    return (re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED');
   }
 
   canRollback(re: RepairItem | undefined): boolean {
@@ -1256,7 +1256,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canAssign(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'APPROVED';
+    return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED';
   }
 
   canCopy(re: RepairItem): boolean {
