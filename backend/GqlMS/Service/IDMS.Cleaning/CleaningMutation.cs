@@ -66,41 +66,87 @@ namespace IDMS.Cleaning.GqlTypes
                 updateCleaning.update_by = user;
                 updateCleaning.update_dt = currentDateTime;
 
-                if (ObjectAction.APPROVE.EqualsIgnore(cleaning.action))
+
+                switch (cleaning.action.ToUpper())
                 {
-                    updateCleaning.status_cv = CurrentServiceStatus.APPROVED;
-                    updateCleaning.approve_dt = cleaning.approve_dt;
-                    updateCleaning.approve_by = user;
+                    case ObjectAction.APPROVE:
+                        updateCleaning.status_cv = CurrentServiceStatus.APPROVED;
+                        updateCleaning.approve_dt = cleaning.approve_dt;
+                        updateCleaning.approve_by = user;
+                        break;
+                    case ObjectAction.KIV:
+                        updateCleaning.status_cv = CurrentServiceStatus.KIV;
+                        break;
+                    case ObjectAction.IN_PROGRESS:
+                        updateCleaning.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                        break;
+                    case ObjectAction.ASSIGN:
+                        updateCleaning.status_cv = CurrentServiceStatus.ASSIGNED;
+                        break;
+                    case ObjectAction.PARTIAL:
+                        updateCleaning.status_cv = CurrentServiceStatus.PARTIAL;
+                        break;
+                    case ObjectAction.COMPLETE:
+                        updateCleaning.status_cv = CurrentServiceStatus.COMPLETED;
+                        updateCleaning.complete_by = user;
+                        updateCleaning.complete_dt = currentDateTime;
+
+                        if (string.IsNullOrEmpty(cleaning.sot_guid))
+                            throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
+
+                        if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
+                            //if no other cleaning estimate or all completed. then we check cross process tank movement
+                            await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
+                        break;
+                    case ObjectAction.NA:
+                        updateCleaning.na_dt = cleaning.na_dt;
+                        updateCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
+
+                        if (string.IsNullOrEmpty(cleaning.sot_guid))
+                            throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
+
+                        if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
+                            //if no other cleaning estimate or all completed. then we check cross process tank movement
+                            await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
+                        break;
                 }
-                else if (ObjectAction.KIV.EqualsIgnore(cleaning.action))
-                    updateCleaning.status_cv = CurrentServiceStatus.KIV;
-                else if (ObjectAction.IN_PROGRESS.EqualsIgnore(cleaning.action))
-                    updateCleaning.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                else if (ObjectAction.COMPLETE.EqualsIgnore(cleaning.action))
-                {
-                    updateCleaning.status_cv = CurrentServiceStatus.COMPLETED;
-                    updateCleaning.complete_by = user;
-                    updateCleaning.complete_dt = currentDateTime;
 
-                    if (string.IsNullOrEmpty(cleaning.sot_guid))
-                        throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
-                    if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-                        //if no other cleaning estimate or all completed. then we check cross process tank movement
-                        await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
-                }
-                else if (ObjectAction.NA.EqualsIgnore(cleaning.action))
-                {
-                    updateCleaning.na_dt = cleaning.na_dt;
-                    updateCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
+                //if (ObjectAction.APPROVE.EqualsIgnore(cleaning.action))
+                //{
+                //    updateCleaning.status_cv = CurrentServiceStatus.APPROVED;
+                //    updateCleaning.approve_dt = cleaning.approve_dt;
+                //    updateCleaning.approve_by = user;
+                //}
+                //else if (ObjectAction.KIV.EqualsIgnore(cleaning.action))
+                //    updateCleaning.status_cv = CurrentServiceStatus.KIV;
+                //else if (ObjectAction.IN_PROGRESS.EqualsIgnore(cleaning.action))
+                //    updateCleaning.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                //else if (ObjectAction.COMPLETE.EqualsIgnore(cleaning.action))
+                //{
+                //    updateCleaning.status_cv = CurrentServiceStatus.COMPLETED;
+                //    updateCleaning.complete_by = user;
+                //    updateCleaning.complete_dt = currentDateTime;
 
-                    if (string.IsNullOrEmpty(cleaning.sot_guid))
-                        throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
+                //    if (string.IsNullOrEmpty(cleaning.sot_guid))
+                //        throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
-                    if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-                        //if no other cleaning estimate or all completed. then we check cross process tank movement
-                        await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
-                }
+                //    if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
+                //        //if no other cleaning estimate or all completed. then we check cross process tank movement
+                //        await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
+                //}
+                //else if (ObjectAction.NA.EqualsIgnore(cleaning.action))
+                //{
+                //    updateCleaning.na_dt = cleaning.na_dt;
+                //    updateCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
+
+                //    if (string.IsNullOrEmpty(cleaning.sot_guid))
+                //        throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
+
+                //    if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
+                //        //if no other cleaning estimate or all completed. then we check cross process tank movement
+                //        await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
+                //}
 
                 var res = await context.SaveChangesAsync();
                 return res;
@@ -159,7 +205,8 @@ namespace IDMS.Cleaning.GqlTypes
             string tableName = processType;
 
             var sqlQuery = $@"SELECT guid FROM {tableName} 
-                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', '{CurrentServiceStatus.PENDING}')
+                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', 
+                            '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
                             AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
             var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 

@@ -270,30 +270,64 @@ namespace IDMS.Residue.GqlTypes
                 updateResidue.update_dt = currentDateTime;
                 updateResidue.remarks = residue.remarks;
 
-                if (ObjectAction.IN_PROGRESS.EqualsIgnore(residue.action))
-                    updateResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                else if (ObjectAction.CANCEL.EqualsIgnore(residue.action))
-                    updateResidue.status_cv = CurrentServiceStatus.CANCELED;
-                else if (ObjectAction.COMPLETE.EqualsIgnore(residue.action))
+
+                switch (residue.action.ToUpper())
                 {
-                    updateResidue.status_cv = CurrentServiceStatus.COMPLETED;
-                    updateResidue.complete_by = user;
-                    updateResidue.complete_dt = currentDateTime;
+                    case ObjectAction.IN_PROGRESS:
+                        updateResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                        break;
+                    case ObjectAction.CANCEL:
+                        updateResidue.status_cv = CurrentServiceStatus.CANCELED;
+                        break;
+                    case ObjectAction.PARTIAL:
+                        updateResidue.status_cv = CurrentServiceStatus.PARTIAL;
+                        break;
+                    case ObjectAction.ASSIGN:
+                        updateResidue.status_cv = CurrentServiceStatus.ASSIGNED;
+                        break;
+                    case ObjectAction.COMPLETE:
+                        updateResidue.status_cv = CurrentServiceStatus.COMPLETED;
+                        updateResidue.complete_by = user;
+                        updateResidue.complete_dt = currentDateTime;
 
-                    if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
-                        //if no other residue estimate or all completed. then we check cross process tank movement
-                        await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
+                        if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
+                            //if no other residue estimate or all completed. then we check cross process tank movement
+                            await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
+                        break;
+                    case ObjectAction.NA:
+                        updateResidue.status_cv = CurrentServiceStatus.NO_ACTION;
+                        updateResidue.na_dt = currentDateTime;
+
+                        if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
+                            //if no other residue estimate or all completed. then we check cross process tank movement
+                            await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
+                        break;
                 }
-                else if (ObjectAction.NA.EqualsIgnore(residue.action))
-                {
-                    updateResidue.status_cv = CurrentServiceStatus.NO_ACTION;
-                    updateResidue.na_dt = currentDateTime;
 
-                    if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
-                        //if no other residue estimate or all completed. then we check cross process tank movement
-                        await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
+                //if (ObjectAction.IN_PROGRESS.EqualsIgnore(residue.action))
+                //    updateResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                //else if (ObjectAction.CANCEL.EqualsIgnore(residue.action))
+                //    updateResidue.status_cv = CurrentServiceStatus.CANCELED;
+                //else if (ObjectAction.COMPLETE.EqualsIgnore(residue.action))
+                //{
+                //    updateResidue.status_cv = CurrentServiceStatus.COMPLETED;
+                //    updateResidue.complete_by = user;
+                //    updateResidue.complete_dt = currentDateTime;
 
-                }
+                //    if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
+                //        //if no other residue estimate or all completed. then we check cross process tank movement
+                //        await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
+                //}
+                //else if (ObjectAction.NA.EqualsIgnore(residue.action))
+                //{
+                //    updateResidue.status_cv = CurrentServiceStatus.NO_ACTION;
+                //    updateResidue.na_dt = currentDateTime;
+
+                //    if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
+                //        //if no other residue estimate or all completed. then we check cross process tank movement
+                //        await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
+
+                //}
                 var res = await context.SaveChangesAsync();
                 return res;
 
@@ -304,13 +338,56 @@ namespace IDMS.Residue.GqlTypes
             }
         }
 
+        public async Task<int> AbortResidue(ApplicationServiceDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, ResJobOrderRequest residueJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (residueJobOrder == null)
+                    throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+
+                var abortResidue = new residue() { guid = residueJobOrder.guid };
+                context.residue.Attach(abortResidue);
+
+                abortResidue.update_by = user;
+                abortResidue.update_dt = currentDateTime;
+                abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
+                abortResidue.remarks = residueJobOrder.remarks;
+
+                foreach (var item in residueJobOrder.job_order)
+                {
+                    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                    {
+                        var job_order = new job_order() { guid = item.guid };
+                        context.job_order.Attach(job_order);
+
+                        job_order.status_cv = CurrentServiceStatus.CANCELED;
+                        job_order.update_by = user;
+                        job_order.update_dt = currentDateTime;
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
         private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
         {
             //First check if still have other steaming estimate havnt completed
             string tableName = processType;
 
             var sqlQuery = $@"SELECT guid FROM {tableName} 
-                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', '{CurrentServiceStatus.PENDING}')
+                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', 
+                            '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
                             AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
             var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
@@ -440,5 +517,5 @@ namespace IDMS.Residue.GqlTypes
         //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
         //    }
         //}
-        }
+    }
 }

@@ -10,6 +10,7 @@ using IDMS.Repair.GqlTypes.LocalModel;
 using HotChocolate.Types;
 using IDMS.Service.GqlTypes;
 using IDMS.Models.Inventory;
+using HotChocolate.Data.Projections;
 
 namespace IDMS.Repair.GqlTypes
 {
@@ -421,31 +422,65 @@ namespace IDMS.Repair.GqlTypes
                 updateRepair.update_by = user;
                 updateRepair.remarks = repair.remarks;
 
-                if (ObjectAction.IN_PROGRESS.EqualsIgnore(repair.action))
-                    updateRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                else if (ObjectAction.CANCEL.EqualsIgnore(repair.action))
-                    updateRepair.status_cv = CurrentServiceStatus.CANCELED;
-                else if (ObjectAction.COMPLETE.EqualsIgnore(repair.action))
-                {
-                    updateRepair.status_cv = CurrentServiceStatus.COMPLETED;
-                    //updateRepair.complete_by = user;
-                    updateRepair.complete_dt = currentDateTime;
-                }
-                else if (ObjectAction.NA.EqualsIgnore(repair.action))
-                {
-                    updateRepair.status_cv = CurrentServiceStatus.NO_ACTION;
-                    updateRepair.na_dt = currentDateTime;
 
-                    //Tank handling
-                    if (string.IsNullOrEmpty(repair.sot_guid))
-                        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+                switch (repair.action.ToUpper())
+                {
+                    case ObjectAction.IN_PROGRESS:
+                        updateRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                        break;
+                    case ObjectAction.PARTIAL:
+                        updateRepair.status_cv = CurrentServiceStatus.PARTIAL;
+                        break;
+                    case ObjectAction.ASSIGN:
+                        updateRepair.status_cv = CurrentServiceStatus.ASSIGNED;
+                        break;
+                    case ObjectAction.CANCEL:
+                        updateRepair.status_cv = CurrentServiceStatus.CANCELED;
+                        break;
+                    case ObjectAction.COMPLETE:
+                        updateRepair.status_cv = CurrentServiceStatus.COMPLETED;
+                        updateRepair.complete_dt = currentDateTime;
+                        break;
+                    case ObjectAction.NA:
+                        updateRepair.status_cv = CurrentServiceStatus.NO_ACTION;
+                        updateRepair.na_dt = currentDateTime;
 
-                    var sot = new storing_order_tank() { guid = repair.sot_guid };
-                    context.storing_order_tank.Attach(sot);
-                    sot.tank_status_cv = await TankMovementCheck(context, "repair", repair.sot_guid, repair.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
-                    sot.update_by = user;
-                    sot.update_dt = currentDateTime;
+                        //Tank handling
+                        if (string.IsNullOrEmpty(repair.sot_guid))
+                            throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                        var sot = new storing_order_tank() { guid = repair.sot_guid };
+                        context.storing_order_tank.Attach(sot);
+                        sot.tank_status_cv = await TankMovementCheck(context, "repair", repair.sot_guid, repair.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
+                        sot.update_by = user;
+                        sot.update_dt = currentDateTime;
+                        break;
                 }
+
+                //if (ObjectAction.IN_PROGRESS.EqualsIgnore(repair.action))
+                //    updateRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                //else if (ObjectAction.CANCEL.EqualsIgnore(repair.action))
+                //    updateRepair.status_cv = CurrentServiceStatus.CANCELED;
+                //else if (ObjectAction.COMPLETE.EqualsIgnore(repair.action))
+                //{
+                //    updateRepair.status_cv = CurrentServiceStatus.COMPLETED;
+                //    updateRepair.complete_dt = currentDateTime;
+                //}
+                //else if (ObjectAction.NA.EqualsIgnore(repair.action))
+                //{
+                //    updateRepair.status_cv = CurrentServiceStatus.NO_ACTION;
+                //    updateRepair.na_dt = currentDateTime;
+
+                //    //Tank handling
+                //    if (string.IsNullOrEmpty(repair.sot_guid))
+                //        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                //    var sot = new storing_order_tank() { guid = repair.sot_guid };
+                //    context.storing_order_tank.Attach(sot);
+                //    sot.tank_status_cv = await TankMovementCheck(context, "repair", repair.sot_guid, repair.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
+                //    sot.update_by = user;
+                //    sot.update_dt = currentDateTime;
+                //}
                 var res = await context.SaveChangesAsync();
                 return res;
 
@@ -645,7 +680,8 @@ namespace IDMS.Repair.GqlTypes
             string tableName = processType;
 
             var sqlQuery = $@"SELECT guid FROM {tableName} 
-                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', '{CurrentServiceStatus.PENDING}')
+                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}',
+                            '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
                             AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
             var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
