@@ -61,7 +61,7 @@
                         {{ccDS.displayName(sotItem?.customer_company)}}
                       </div>
                       <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner"
-                        [disabled]="!this.repairDS.canAmend(this.repairItem)">
+                        [disabled]="!this.repairDS.canAmend(this.repairItem)" (change)="onOwnerToggle($event)">
                       </mat-checkbox>
                     </div>
                   </div>

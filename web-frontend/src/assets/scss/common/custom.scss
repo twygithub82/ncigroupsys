@@ -22,192 +22,165 @@
   margin-bottom: auto;
 }
 
-/* Custom grid classes for half-step increments */
-// [class*="col-"] {
-//   padding-right: 15px;
-//   /* Bootstrap typically includes padding for gutters */
-//   padding-left: 15px;
-// }
+.col-0-25 {
+  width: 2.08333334%;
+}
 
 .col-0-5 {
   width: 4.16666667%;
-  /* 1/24 of the full width */
+}
+
+.col-0-75 {
+  width: 6.25%;
 }
 
 .col-1-5 {
   width: 12.5%;
-  /* 3/24 of the full width */
 }
 
 .col-2-5 {
   width: 20.83333333%;
-  /* 5/24 of the full width */
 }
 
 .col-3-5 {
   width: 29.16666667%;
-  /* 7/24 of the full width */
 }
 
 .col-4-5 {
   width: 37.5%;
-  /* 9/24 of the full width */
 }
 
 .col-5-5 {
   width: 45.83333333%;
-  /* 11/24 of the full width */
 }
 
 .col-6-5 {
   width: 54.16666667%;
-  /* 13/24 of the full width */
 }
 
 .col-7-5 {
   width: 62.5%;
-  /* 15/24 of the full width */
 }
 
 .col-8-5 {
   width: 70.83333333%;
-  /* 17/24 of the full width */
 }
 
 .col-9-5 {
   width: 79.16666667%;
-  /* 19/24 of the full width */
 }
 
 .col-10-5 {
   width: 87.5%;
-  /* 21/24 of the full width */
 }
 
 .col-11-5 {
   width: 95.83333333%;
-  /* 23/24 of the full width */
 }
 
 @media (min-width: 430px) and (max-width: 575.98px) {
+  .col-xs-0-25 {
+    width: 2.08333334%;
+  }
+  
   .col-xs-0-5 {
     width: 4.16666667%;
-    /* 0.5/12 of the full width */
+  }
+  
+  .col-xs-0-75 {
+    width: 6.25%;
   }
 
   .col-xs-1 {
     width: 8.33333333%;
-    /* 1/12 of the full width */
   }
 
   .col-xs-1-5 {
     width: 12.5%;
-    /* 1.5/12 of the full width */
   }
 
   .col-xs-2 {
     width: 16.66666667%;
-    /* 2/12 of the full width */
   }
 
   .col-xs-2-5 {
     width: 20.83333333%;
-    /* 2.5/12 of the full width */
   }
 
   .col-xs-3 {
     width: 25%;
-    /* 3/12 of the full width */
   }
 
   .col-xs-3-5 {
     width: 29.16666667%;
-    /* 3.5/12 of the full width */
   }
 
   .col-xs-4 {
     width: 33.33333333%;
-    /* 4/12 of the full width */
   }
 
   .col-xs-4-5 {
     width: 37.5%;
-    /* 4.5/12 of the full width */
   }
 
   .col-xs-5 {
     width: 41.66666667%;
-    /* 5/12 of the full width */
   }
 
   .col-xs-5-5 {
     width: 45.83333333%;
-    /* 5.5/12 of the full width */
   }
 
   .col-xs-6 {
     width: 50%;
-    /* 6/12 of the full width */
   }
 
   .col-xs-6-5 {
     width: 54.16666667%;
-    /* 6.5/12 of the full width */
   }
 
   .col-xs-7 {
     width: 58.33333333%;
-    /* 7/12 of the full width */
   }
 
   .col-xs-7-5 {
     width: 62.5%;
-    /* 7.5/12 of the full width */
   }
 
   .col-xs-8 {
     width: 66.66666667%;
-    /* 8/12 of the full width */
   }
 
   .col-xs-8-5 {
     width: 70.83333333%;
-    /* 8.5/12 of the full width */
   }
 
   .col-xs-9 {
     width: 75%;
-    /* 9/12 of the full width */
   }
 
   .col-xs-9-5 {
     width: 79.16666667%;
-    /* 9.5/12 of the full width */
   }
 
   .col-xs-10 {
     width: 83.33333333%;
-    /* 10/12 of the full width */
   }
 
   .col-xs-10-5 {
     width: 87.5%;
-    /* 10.5/12 of the full width */
   }
 
   .col-xs-11 {
     width: 91.66666667%;
-    /* 11/12 of the full width */
   }
 
   .col-xs-11-5 {
     width: 95.83333333%;
-    /* 11.5/12 of the full width */
   }
 
   .col-xs-12 {
     width: 100%;
-    /* 12/12 of the full width */
   }
 }
 
@@ -215,122 +188,106 @@
 @media (min-width: 576px) {
   .col-sm-12 {
     width: 100%;
-    /* 12/12 of the full width */
   }
 
   .col-sm-11-5 {
     width: 95.83333333%;
-    /* 11.5/12 of the full width */
   }
 
   .col-sm-11 {
     width: 91.66666667%;
-    /* 11/12 of the full width */
   }
 
   .col-sm-10-5 {
     width: 87.5%;
-    /* 10.5/12 of the full width */
   }
 
   .col-sm-10 {
     width: 83.33333333%;
-    /* 10/12 of the full width */
   }
 
   .col-sm-9-5 {
     width: 79.16666667%;
-    /* 9.5/12 of the full width */
   }
 
   .col-sm-9 {
     width: 75%;
-    /* 9/12 of the full width */
   }
 
   .col-sm-8-5 {
     width: 70.83333333%;
-    /* 8.5/12 of the full width */
   }
 
   .col-sm-8 {
     width: 66.66666667%;
-    /* 8/12 of the full width */
   }
 
   .col-sm-7-5 {
     width: 62.5%;
-    /* 7.5/12 of the full width */
   }
 
   .col-sm-7 {
     width: 58.33333333%;
-    /* 7/12 of the full width */
   }
 
   .col-sm-6-5 {
     width: 54.16666667%;
-    /* 6.5/12 of the full width */
   }
 
   .col-sm-6 {
     width: 50%;
-    /* 6/12 of the full width */
   }
 
   .col-sm-5-5 {
     width: 45.83333333%;
-    /* 5.5/12 of the full width */
   }
 
   .col-sm-5 {
     width: 41.66666667%;
-    /* 5/12 of the full width */
   }
 
   .col-sm-4-5 {
     width: 37.5%;
-    /* 4.5/12 of the full width */
   }
 
   .col-sm-4 {
     width: 33.33333333%;
-    /* 4/12 of the full width */
   }
 
   .col-sm-3-5 {
     width: 29.16666667%;
-    /* 3.5/12 of the full width */
   }
 
   .col-sm-3 {
     width: 25%;
-    /* 3/12 of the full width */
   }
 
   .col-sm-2-5 {
     width: 20.83333333%;
-    /* 2.5/12 of the full width */
   }
 
   .col-sm-2 {
     width: 16.66666667%;
-    /* 2/12 of the full width */
   }
 
   .col-sm-1-5 {
     width: 12.5%;
-    /* 1.5/12 of the full width */
   }
 
   .col-sm-1 {
     width: 8.33333333%;
-    /* 1/12 of the full width */
+  }
+
+  .col-sm-0-25 {
+    width: 2.08333334%;
   }
 
   .col-sm-0-5 {
     width: 4.16666667%;
-    /* 0.5/12 of the full width */
+  }
+  
+  .col-sm-0-75 {
+    width: 6.25%;
   }
 }
 
@@ -338,122 +295,106 @@
 @media (min-width: 768px) {
   .col-md-12 {
     width: 100%;
-    /* 12/12 of the full width */
   }
 
   .col-md-11-5 {
     width: 95.83333333%;
-    /* 11.5/12 of the full width */
   }
 
   .col-md-11 {
     width: 91.66666667%;
-    /* 11/12 of the full width */
   }
 
   .col-md-10-5 {
     width: 87.5%;
-    /* 10.5/12 of the full width */
   }
 
   .col-md-10 {
     width: 83.33333333%;
-    /* 10/12 of the full width */
   }
 
   .col-md-9-5 {
     width: 79.16666667%;
-    /* 9.5/12 of the full width */
   }
 
   .col-md-9 {
     width: 75%;
-    /* 9/12 of the full width */
   }
 
   .col-md-8-5 {
     width: 70.83333333%;
-    /* 8.5/12 of the full width */
   }
 
   .col-md-8 {
     width: 66.66666667%;
-    /* 8/12 of the full width */
   }
 
   .col-md-7-5 {
     width: 62.5%;
-    /* 7.5/12 of the full width */
   }
 
   .col-md-7 {
     width: 58.33333333%;
-    /* 7/12 of the full width */
   }
 
   .col-md-6-5 {
     width: 54.16666667%;
-    /* 6.5/12 of the full width */
   }
 
   .col-md-6 {
     width: 50%;
-    /* 6/12 of the full width */
   }
 
   .col-md-5-5 {
     width: 45.83333333%;
-    /* 5.5/12 of the full width */
   }
 
   .col-md-5 {
     width: 41.66666667%;
-    /* 5/12 of the full width */
   }
 
   .col-md-4-5 {
     width: 37.5%;
-    /* 4.5/12 of the full width */
   }
 
   .col-md-4 {
     width: 33.33333333%;
-    /* 4/12 of the full width */
   }
 
   .col-md-3-5 {
     width: 29.16666667%;
-    /* 3.5/12 of the full width */
   }
 
   .col-md-3 {
     width: 25%;
-    /* 3/12 of the full width */
   }
 
   .col-md-2-5 {
     width: 20.83333333%;
-    /* 2.5/12 of the full width */
   }
 
   .col-md-2 {
     width: 16.66666667%;
-    /* 2/12 of the full width */
   }
 
   .col-md-1-5 {
     width: 12.5%;
-    /* 1.5/12 of the full width */
   }
 
   .col-md-1 {
     width: 8.33333333%;
-    /* 1/12 of the full width */
+  }
+
+  .col-md-0-25 {
+    width: 2.08333334%;
   }
 
   .col-md-0-5 {
     width: 4.16666667%;
-    /* 0.5/12 of the full width */
+  }
+  
+  .col-md-0-75 {
+    width: 6.25%;
   }
 }
 
@@ -462,122 +403,106 @@
 
   .col-lg-12 {
     width: 100%;
-    /* 12/12 of the full width */
   }
 
   .col-lg-11-5 {
     width: 95.83333333%;
-    /* 11.5/12 of the full width */
   }
 
   .col-lg-11 {
     width: 91.66666667%;
-    /* 11/12 of the full width */
   }
 
   .col-lg-10-5 {
     width: 87.5%;
-    /* 10.5/12 of the full width */
   }
 
   .col-lg-10 {
     width: 83.33333333%;
-    /* 10/12 of the full width */
   }
 
   .col-lg-9-5 {
     width: 79.16666667%;
-    /* 9.5/12 of the full width */
   }
 
   .col-lg-9 {
     width: 75%;
-    /* 9/12 of the full width */
   }
 
   .col-lg-8-5 {
     width: 70.83333333%;
-    /* 8.5/12 of the full width */
   }
 
   .col-lg-8 {
     width: 66.66666667%;
-    /* 8/12 of the full width */
   }
 
   .col-lg-7-5 {
     width: 62.5%;
-    /* 7.5/12 of the full width */
   }
 
   .col-lg-7 {
     width: 58.33333333%;
-    /* 7/12 of the full width */
   }
 
   .col-lg-6-5 {
     width: 54.16666667%;
-    /* 6.5/12 of the full width */
   }
 
   .col-lg-6 {
     width: 50%;
-    /* 6/12 of the full width */
   }
 
   .col-lg-5-5 {
     width: 45.83333333%;
-    /* 5.5/12 of the full width */
   }
 
   .col-lg-5 {
     width: 41.66666667%;
-    /* 5/12 of the full width */
   }
 
   .col-lg-4-5 {
     width: 37.5%;
-    /* 4.5/12 of the full width */
   }
 
   .col-lg-4 {
     width: 33.33333333%;
-    /* 4/12 of the full width */
   }
 
   .col-lg-3-5 {
     width: 29.16666667%;
-    /* 3.5/12 of the full width */
   }
 
   .col-lg-3 {
     width: 25%;
-    /* 3/12 of the full width */
   }
 
   .col-lg-2-5 {
     width: 20.83333333%;
-    /* 2.5/12 of the full width */
   }
 
   .col-lg-2 {
     width: 16.66666667%;
-    /* 2/12 of the full width */
   }
 
   .col-lg-1-5 {
     width: 12.5%;
-    /* 1.5/12 of the full width */
   }
 
   .col-lg-1 {
     width: 8.33333333%;
-    /* 1/12 of the full width */
+  }
+
+  .col-lg-0-25 {
+    width: 2.08333334%;
   }
 
   .col-lg-0-5 {
     width: 4.16666667%;
-    /* 0.5/12 of the full width */
+  }
+  
+  .col-lg-0-75 {
+    width: 6.25%;
   }
 }
 
@@ -585,122 +510,106 @@
 @media (min-width: 1200px) {
   .col-xl-12 {
     width: 100%;
-    /* 12/12 of the full width */
   }
 
   .col-xl-11-5 {
     width: 95.83333333%;
-    /* 11.5/12 of the full width */
   }
 
   .col-xl-11 {
     width: 91.66666667%;
-    /* 11/12 of the full width */
   }
 
   .col-xl-10-5 {
     width: 87.5%;
-    /* 10.5/12 of the full width */
   }
 
   .col-xl-10 {
     width: 83.33333333%;
-    /* 10/12 of the full width */
   }
 
   .col-xl-9-5 {
     width: 79.16666667%;
-    /* 9.5/12 of the full width */
   }
 
   .col-xl-9 {
     width: 75%;
-    /* 9/12 of the full width */
   }
 
   .col-xl-8-5 {
     width: 70.83333333%;
-    /* 8.5/12 of the full width */
   }
 
   .col-xl-8 {
     width: 66.66666667%;
-    /* 8/12 of the full width */
   }
 
   .col-xl-7-5 {
     width: 62.5%;
-    /* 7.5/12 of the full width */
   }
 
   .col-xl-7 {
     width: 58.33333333%;
-    /* 7/12 of the full width */
   }
 
   .col-xl-6-5 {
     width: 54.16666667%;
-    /* 6.5/12 of the full width */
   }
 
   .col-xl-6 {
     width: 50%;
-    /* 6/12 of the full width */
   }
 
   .col-xl-5-5 {
     width: 45.83333333%;
-    /* 5.5/12 of the full width */
   }
 
   .col-xl-5 {
     width: 41.66666667%;
-    /* 5/12 of the full width */
   }
 
   .col-xl-4-5 {
     width: 37.5%;
-    /* 4.5/12 of the full width */
   }
 
   .col-xl-4 {
     width: 33.33333333%;
-    /* 4/12 of the full width */
   }
 
   .col-xl-3-5 {
     width: 29.16666667%;
-    /* 3.5/12 of the full width */
   }
 
   .col-xl-3 {
     width: 25%;
-    /* 3/12 of the full width */
   }
 
   .col-xl-2-5 {
     width: 20.83333333%;
-    /* 2.5/12 of the full width */
   }
 
   .col-xl-2 {
     width: 16.66666667%;
-    /* 2/12 of the full width */
   }
 
   .col-xl-1-5 {
     width: 12.5%;
-    /* 1.5/12 of the full width */
   }
 
   .col-xl-1 {
     width: 8.33333333%;
-    /* 1/12 of the full width */
+  }
+
+  .col-xl-0-25 {
+    width: 2.08333334%;
   }
 
   .col-xl-0-5 {
     width: 4.16666667%;
-    /* 0.5/12 of the full width */
+  }
+  
+  .col-xl-0-75 {
+    width: 6.25%;
   }
 }
 
@@ -708,19 +617,14 @@
   display: flex;
   align-items: center;
   height: 30px;
-  /* Adjust the height as needed */
 }
 
 .dialog-container-xl {
   margin: 0 auto;
-  /* Center horizontally */
   margin-top: 5vh;
-  /* Add vertical margins */
   margin-bottom: 5vh;
   max-width: 90%;
-  /* Ensure it doesn't exceed the screen width */
   box-sizing: border-box;
-  /* Include padding and border in the element's total width and height */
 }
 
 .deleted-row {
@@ -1050,4 +954,28 @@ $breakpoints: (
 
 .mat-icon {
   font-size: 24px;
+}
+
+@for $i from 1 through 10 {
+  .p-t-#{$i} {
+    padding-top: #{$i}px !important;
+  }
+}
+
+@for $i from 1 through 10 {
+  .p-b-#{$i} {
+    padding-bottom: #{$i}px !important;
+  }
+}
+
+@for $i from 1 through 10 {
+  .p-l-#{$i} {
+    padding-left: #{$i}px !important;
+  }
+}
+
+@for $i from 1 through 10 {
+  .p-r-#{$i} {
+    padding-right: #{$i}px !important;
+  }
 }

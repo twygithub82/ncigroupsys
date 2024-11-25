@@ -58,6 +58,7 @@ import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/m
 import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-estimate-new',
@@ -542,6 +543,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         }
       }
     }
+    this.isOwnerChanged();
   }
 
   populateFoundRepair(repair: RepairItem, isDuplicate: boolean) {
@@ -1028,12 +1030,44 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     event.preventDefault(); // Prevents the form submission
   }
 
-  isAnyItemEdited(): boolean {
-    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
+  onOwnerToggle(event: MatCheckboxChange): void {
+    this.isOwner = event.checked;
+    this.isOwnerChanged();
   }
 
-  isOwnerChange() {
-    this.isOwner = !this.isOwner;
+  isOwnerChanged(): void {
+    if (this.isOwner) {
+      this.displayedColumns = [
+        'seq',
+        'subgroup_name_cv',
+        'damange',
+        'repair',
+        'description',
+        'quantity',
+        'hour',
+        'price',
+        'material',
+        'isOwner',
+        'actions'
+      ];
+    } else {
+      this.displayedColumns = [
+        'seq',
+        'subgroup_name_cv',
+        'damange',
+        'repair',
+        'description',
+        'quantity',
+        'hour',
+        'price',
+        'material',
+        'actions'
+      ];
+    }
+  }
+
+  isAnyItemEdited(): boolean {
+    return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 
   getBadgeClass(status: string | undefined): string {

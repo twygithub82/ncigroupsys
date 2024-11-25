@@ -35,7 +35,7 @@
             @if (!(igDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                   <div class="row">
                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.TANK_NO}}:</span>
@@ -84,7 +84,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                   <div class="row">
                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.EIR_NO}}:</span>
@@ -160,7 +160,7 @@
                     <mat-panel-description>
                     </mat-panel-description>
                   </mat-expansion-panel-header>
-                  <div class="body">
+                  <div class="body p-l-0 p-r-0">
                     @if (igDS.loading$ | async) {
                     <div class="tbl-spinner">
                       <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
@@ -170,7 +170,7 @@
                     @if (!(igDS.loading$ | async)) {
                     <mat-card-content>
                       <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                           <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                               <span>{{translatedLangText.UNIT_TYPE}}:</span>
@@ -246,7 +246,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                           <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                               <span>{{translatedLangText.MANUFACTURER_DOM}}:</span>
@@ -297,7 +297,7 @@
                               <span>{{translatedLangText.WALKWAY}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{igs?.walkway_cv}}
+                              <div class="contact-detail-info font-bold">{{getWalkwayDescription(igs?.walkway_cv)}}
                               </div>
                             </div>
                           </div>
@@ -319,7 +319,7 @@
                     <mat-panel-description>
                     </mat-panel-description>
                   </mat-expansion-panel-header>
-                  <div class="body">
+                  <div class="body p-l-0 p-r-0">
                     @if ((igDS.loading$ | async) || (ogDS.loading$ | async)) {
                     <div class="tbl-spinner">
                       <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
@@ -329,7 +329,7 @@
                     @if (!(igDS.loading$ | async) && !(ogDS.loading$ | async)) {
                     <mat-card-content>
                       <div class="row">
-                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 col-xs-3 m-b-0 d-none d-md-block">
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-0 d-none d-md-block">
                           <div class="row">
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
@@ -337,57 +337,57 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.ORDER_NO}}:</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.ORDER_DATE}}:</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.JOB_NO}}:</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.TRANSACTION_ON}}:</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.HAULIER}}:</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.VEHICLE_NO}}:</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.DRIVER_NAME}}:</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.REMARKS}}:</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.DATE_OF_INSPECTION}}:</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="table-label">{{translatedLangText.UPDATE_STATUS}}:</span>
                             </div>
                           </div>
                         </div>
-                        <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                        <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                           <div class="row">
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
@@ -395,68 +395,68 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.ORDER_NO}}:</span>
                               <span class="font-bold table-label">{{sot?.storing_order?.so_no || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.ORDER_DATE}}:</span>
                               <span class="font-bold table-label">{{displayDate(sot?.storing_order?.create_dt) ||
                                 "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.JOB_NO}}:</span>
                               <span class="font-bold table-label">{{sot?.job_no || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.TRANSACTION_ON}}:</span>
                               <span class="font-bold table-label">{{displayDateTime(ig?.create_dt) || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.HAULIER}}:</span>
                               <span class="font-bold table-label">{{ig?.haulier || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.VEHICLE_NO}}:</span>
                               <span class="font-bold table-label">{{ig?.vehicle_no || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.DRIVER_NAME}}:</span>
                               <span class="font-bold table-label">{{ig?.driver_name || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.REMARKS}}:</span>
                               <span class="font-bold table-label">{{ig?.remarks || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.DATE_OF_INSPECTION}}:</span>
                               <span class="font-bold table-label">{{displayDate(igs?.create_dt) || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.UPDATE_STATUS}}:</span>
                               <span class="font-bold table-label">{{displayDateTime(igs?.update_dt) || "-"}}</span>
                             </div>
                           </div>
                         </div>
-                        <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                        <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                           <div class="row">
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
@@ -464,14 +464,14 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.ORDER_NO}}:</span>
                               <span class="font-bold table-label">{{sot?.release_order_sot?.[0]?.release_order?.ro_no ||
                                 "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.ORDER_DATE}}:</span>
                               <span
                                 class="font-bold table-label">{{displayDate(sot?.release_order_sot?.[0]?.release_order?.create_dt)
@@ -479,49 +479,49 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.JOB_NO}}:</span>
                               <span class="font-bold table-label">{{sot?.release_job_no || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.TRANSACTION_ON}}</span>
                               <span class="font-bold table-label">{{displayDateTime(og?.create_dt) || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.HAULIER}}</span>
                               <span class="font-bold table-label">{{og?.haulier || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.VEHICLE_NO}}</span>
                               <span class="font-bold table-label">{{og?.vehicle_no || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.DRIVER_NAME}}</span>
                               <span class="font-bold table-label">{{og?.driver_name || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.REMARKS}}</span>
                               <span class="font-bold table-label">{{og?.remarks || "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.DATE_OF_INSPECTION}}</span>
                               <span class="font-bold table-label">{{"TODO ::"}}</span>
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border d-flex">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
                               <span class="d-block d-sm-none m-r-10">{{translatedLangText.UPDATE_STATUS}}</span>
                               <span class="font-bold table-label">{{"TODO ::"}}</span>
                             </div>
@@ -545,10 +545,10 @@
                     <mat-panel-description>
                     </mat-panel-description>
                   </mat-expansion-panel-header>
-                  <div class="body p-t-0">
+                  <div class="body p-t-0 p-l-0 p-r-0">
                     <mat-card-content>
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                           <mat-tab-group dynamicHeight>
                             <mat-tab>
                               <ng-template mat-tab-label>
@@ -564,7 +564,7 @@
                               }
                               @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async)) {
                               <div class="row m-t-10">
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.STORAGE_BEGIN_DATE}}:</span>
@@ -605,7 +605,7 @@
                                     </div>
                                   </div>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.STORAGE_CLOSE_DATE}}:</span>
@@ -654,7 +654,7 @@
                               @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async)) {
                               @if (sot?.purpose_steam) {
                               <div class="row m-t-10">
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.STEAM_BEGIN_DATE}}:</span>
@@ -666,7 +666,7 @@
                                     </div>
                                   </div>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.STEAM_COMPLETED_DATE}}:</span>
@@ -709,7 +709,7 @@
                               @if (!(residueDS.loading$ | async) && !(sotDS.loading$ | async)) {
                               @if (sot?.purpose_cleaning) {
                               <div class="row m-t-10 contact-details-field">
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.QUOTATION_DATE}}:</span>
@@ -751,7 +751,7 @@
                                     </div>
                                   </div>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.APPROVED_DATE}}:</span>
@@ -825,7 +825,7 @@
                               @if (!(cleaningDS.loading$ | async) && !(sotDS.loading$ | async)) {
                               @if (sot?.purpose_cleaning) {
                               <div class="row m-t-10 contact-details-field">
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.QUOTATION_DATE}}:</span>
@@ -857,7 +857,7 @@
                                     </div>
                                   </div>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.APPROVED_DATE}}:</span>
@@ -908,7 +908,7 @@
                                 </div>
                               </div>
                               <div class="row m-t-10">
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.CLEANING_BEGIN_DATE}}:</span>
@@ -930,7 +930,7 @@
                                     </div>
                                   </div>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.DURATION_DAY_HR_MIN}}:</span>
@@ -977,29 +977,153 @@
                               @if (!(pdDS.loading$ | async) && !(sotDS.loading$ | async)) {
                               @if (sot?.purpose_repair_cv) {
                               <div class="row m-t-10">
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.REPAIR_BEGIN_DATE}}:</span>
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <div class="contact-detail-info font-bold">
-                                        {{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}
+                                        {{displayDate(repairDS.getRepairBeginDate(repairItem)) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.REPAIR_TYPE}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{getPurposeOptionDescription(sot!.purpose_repair_cv) || "-"}}
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                       <span>{{translatedLangText.REPAIR_COMPLETED_DATE}}:</span>
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <div class="contact-detail-info font-bold">
-                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                        {{displayDate(repairDS.getRepairCompleteDate(repairItem)) || "-"}}
                                       </div>
                                     </div>
                                   </div>
+                                  <div class="row">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                      <span>{{translatedLangText.PROCESSING_DAYS}}:</span>
+                                    </div>
+                                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                      <div class="contact-detail-info font-bold">
+                                        {{repairDS.getRepairProcessingDays(repairItem) || "-"}}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="responsive_table">
+                                    <table mat-table [dataSource]="repairItem" matSort
+                                      class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                      <ng-container matColumnDef="id">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                                        <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="estimate_no">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.ESTIMATE_NO}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span
+                                            class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="estimate_date">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.ESTIMATE_DATE}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_DATE}}:</span>
+                                          <span>{{displayDate(row.create_dt) ?? "-"}}</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="approve_dt">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.APPROVED_NO_ACTION}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span
+                                            class="mobile-tab-label">{{translatedLangText.APPROVED_NO_ACTION}}:</span>
+                                          <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="allocation_dt">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.ALLOCATION_DATE}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span class="mobile-tab-label">{{translatedLangText.ALLOCATION_DATE}}:</span>
+                                          <span>{{displayDate(row.allocate_dt) ?? "-"}}</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="qc_dt">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.QC_DATE}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span class="mobile-tab-label">{{translatedLangText.QC_DATE}}:</span>
+                                          <span>{{displayDate(row.complete_dt) ?? "-"}}</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="status_cv">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.STATUS}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span
+                                            class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="actions">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="">
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="">
+                                        </mat-cell>
+                                      </ng-container>
+                                      <mat-header-row *matHeaderRowDef="displayedColumnsRepair"></mat-header-row>
+                                      <mat-row *matRowDef="let row; columns: displayedColumnsRepair;"
+                                        [style.cursor]="'pointer'" matRipple>
+                                      </mat-row>
+                                    </table>
+                                  </div>
+                                  <!-- No result -->
+                                  @if (!(repairDS.loading$ | async) && !repairItem.length) {
+                                  <mat-divider></mat-divider>
+                                  <div class="no-results m-l-20 pt-3" [style.display]="repairItem.length ? '' : 'none'">
+                                    <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                                  </div>
+                                  }
+                                  <!-- Loading spinner -->
+                                  @if (repairDS.loading$ | async) {
+                                  <div class="tbl-spinner">
+                                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                    </mat-progress-spinner>
+                                  </div>
+                                  }
                                 </div>
                               </div>
                               }
@@ -1021,6 +1145,252 @@
                         </div>
                       </div>
                     </mat-card-content>
+                  </div>
+                </mat-expansion-panel>
+                <mat-expansion-panel [expanded]="section === 'depot_cost_details'"
+                  (opened)="setSection('depot_cost_details')">
+                  <mat-expansion-panel-header class="ps-0">
+                    <mat-panel-title>
+                      <div class="header">
+                        <h2>
+                          {{translatedLangText.DEPOT_COST_DETAILS}}
+                        </h2>
+                      </div>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <div class="body p-l-0 p-r-0">
+                    @if ((igDS.loading$ | async) || (ogDS.loading$ | async)) {
+                    <div class="tbl-spinner">
+                      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                      </mat-progress-spinner>
+                    </div>
+                    }
+                    @if (!(igDS.loading$ | async) && !(ogDS.loading$ | async)) {
+                    <mat-card-content>
+                      <div class="row">
+                        <div class="col-xl-0-75 col-lg-0-75 col-md-0-75 col-sm-0-75 col-xs-0-75 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
+                              <span class="font-bold table-label">{{translatedLangText.NO_DOT}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">1.</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">2.</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">3.</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">4.</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">5.</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 col-xs-2-5 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
+                              <span class="font-bold table-label">{{translatedLangText.DESCRIPTION}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{translatedLangText.PRE_INSPECTION}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{translatedLangText.LIFT_OFF}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{translatedLangText.LIFT_ON}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{translatedLangText.TAKE_IN_REFERENCE}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{translatedLangText.RELEASE_REFERENCE}}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-0-75 col-lg-0-75 col-md-0-75 col-sm-0-75 col-xs-0-75 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
+                              <span class="font-bold table-label"></span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{"-"}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{"-"}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{"-"}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{"-"}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="table-label">{{"-"}}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-2 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
+                              <span class="font-bold table-label">{{translatedLangText.JOB_NO}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label">{{sot?.preinspect_job_no || "-"}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label">{{sot?.liftoff_job_no || "-"}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label">{{sot?.lifton_job_no || "-"}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label">{{sot?.takein_job_no || "-"}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label">{{sot?.release_job_no || "-"}}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
+                              <span class="font-bold table-label">{{translatedLangText.INVOICE}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 p-t-3 p-b-4 m-b-0 border d-flex">
+                              <span class="font-bold table-label">
+                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 p-t-3 p-b-4 m-b-0 border d-flex">
+                              <span class="font-bold table-label">
+                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 p-t-3 p-b-4 m-b-0 border d-flex">
+                              <span class="font-bold table-label">
+                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 p-t-3 p-b-4 m-b-0 border d-flex">
+                              <span class="font-bold table-label">
+                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 p-t-3 p-b-4 m-b-0 border d-flex">
+                              <span class="font-bold table-label">
+                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 m-b-0">
+                          <div class="row">
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 border text-center bg-light-grey d-flex">
+                              <span class="font-bold table-label">{{translatedLangText.COST}}</span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label cost-label">
+                                <span>$</span><span>{{0.00}}</span>
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label cost-label">
+                                <span>$</span><span>{{0.00}}</span>
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label cost-label">
+                                <span>$</span><span>{{0.00}}</span>
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label cost-label">
+                                <span>$</span><span>{{0.00}}</span>
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
+                              <span class="font-bold table-label cost-label">
+                                <span>$</span><span>{{0.00}}</span>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </mat-card-content>
+                    }
                   </div>
                 </mat-expansion-panel>
               </mat-accordion>

@@ -709,7 +709,14 @@
     "NO-CLEANING-PURPOSE": "No Cleaning Purpose",
     "NO-RESIDUE": "No Residue",
     "ADD-STEAM-PURPOSE": "Add Steam Purpose",
-    "NO-STEAM-PURPOSE": "No Steam Purpose"
+    "NO-STEAM-PURPOSE": "No Steam Purpose",
+    "REPAIR-BEGIN-DATE": "Repair Begin Date",
+    "REPAIR-COMPLETED-DATE": "Repair Completed Date",
+    "ALLOCATION-DATE": "Allocation Date",
+    "APPROVED-NO-ACTION": "Approved/No Action",
+    "DEPOT-COST-DETAILS": "Depot Cost Details",
+    "NO-DOT": "No.",
+    "INVOICE": "Invoice"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -947,6 +947,173 @@ const GET_REPAIR_FOR_QC = gql`
   }
 `
 
+const GET_REPAIR_FOR_MOVEMENT = gql`
+  query QueryRepair($where: repairFilterInput) {
+    resultList: queryRepair(where: $where) {
+      nodes {
+        aspnetusers_guid
+        create_by
+        create_dt
+        delete_dt
+        estimate_no
+        guid
+        labour_cost
+        labour_cost_discount
+        material_cost_discount
+        owner_enable
+        remarks
+        sot_guid
+        status_cv
+        total_cost
+        update_by
+        update_dt
+        bill_to_guid
+        approve_dt
+        approve_by
+        complete_dt
+        repair_part {
+          action
+          create_by
+          create_dt
+          delete_dt
+          description
+          guid
+          hour
+          location_cv
+          comment
+          material_cost
+          owner
+          quantity
+          remarks
+          repair_guid
+          tariff_repair_guid
+          update_by
+          update_dt
+          approve_cost
+          approve_hour
+          approve_part
+          approve_qty
+          complete_dt
+          rp_damage_repair {
+            action
+            code_cv
+            code_type
+            create_by
+            create_dt
+            delete_dt
+            guid
+            rp_guid
+            update_by
+            update_dt
+          }
+          tariff_repair {
+            alias
+            create_by
+            create_dt
+            delete_dt
+            dimension
+            group_name_cv
+            guid
+            height_diameter
+            height_diameter_unit_cv
+            labour_hour
+            length
+            length_unit_cv
+            material_cost
+            part_name
+            remarks
+            subgroup_name_cv
+            thickness
+            thickness_unit_cv
+            update_by
+            update_dt
+            width_diameter
+            width_diameter_unit_cv
+          }
+          job_order {
+            guid
+            status_cv
+          }
+        }
+        aspnetsuser {
+          id
+          userName
+        }
+        storing_order_tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          etr_dt
+          guid
+          job_no
+          owner_guid
+          preinspect_job_no
+          liftoff_job_no
+          lifton_job_no
+          takein_job_no
+          release_job_no
+          last_cargo_guid
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          so_guid
+          status_cv
+          tank_no
+          tank_status_cv
+          update_by
+          update_dt
+          storing_order {
+            customer_company {
+              code
+              name
+              guid
+            }
+          }
+          tariff_cleaning {
+            alias
+            cargo
+            class_cv
+            create_by
+            create_dt
+            delete_dt
+            guid
+            update_by
+            update_dt
+          }
+          customer_company {
+            code
+            guid
+            name
+            delete_dt
+          }
+          in_gate {
+            eir_no
+            eir_dt
+            delete_dt
+            in_gate_survey {
+              last_test_cv
+              next_test_cv
+              test_dt
+              test_class_cv
+            }
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`
+
 export const ADD_REPAIR = gql`
   mutation AddRepair($repair: repairInput!, $customerCompany: customer_companyInput) {
     addRepair(repair: $repair, customerCompany: $customerCompany)
@@ -1149,6 +1316,29 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       );
   }
 
+  getRepairForMovement(sot_guid: any): Observable<RepairItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { sot_guid: { eq: sot_guid } }
+    return this.apollo
+      .query<any>({
+        query: GET_REPAIR_FOR_MOVEMENT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
   addRepair(repair: any, customerCompany: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_REPAIR,
@@ -1288,6 +1478,64 @@ export class RepairDS extends BaseDataSource<RepairItem> {
 
   getNetCost(total_cost: number | undefined, discount_labour_cost: number | undefined, discount_mat_cost: number | undefined): any {
     return (total_cost ?? 0) - (discount_labour_cost ?? 0) - (discount_mat_cost ?? 0);
+  }
+
+  getRepairBeginDate(repair: RepairItem[] | undefined) {
+    if (!repair || repair.length === 0) {
+      return undefined;
+    }
+
+    const earliestApproveDt = repair.reduce((earliest, item) => {
+      if (item.approve_dt !== null && item.approve_dt !== undefined) {
+        return earliest === undefined || item.approve_dt < earliest ? item.approve_dt : earliest;
+      }
+      return earliest;
+    }, undefined as number | undefined);
+
+    return earliestApproveDt;
+  }
+
+  getRepairCompleteDate(repair: RepairItem[] | undefined) {
+    if (!repair || repair.length === 0) {
+      return undefined;
+    }
+
+    const allCompleteDatesValid = repair.every(item => item.complete_dt !== null && item.complete_dt !== undefined);
+    if (!allCompleteDatesValid) {
+      return undefined;
+    }
+
+    const earliestApproveDt = repair.reduce((latest, item) => {
+      if (item.complete_dt !== null && item.complete_dt !== undefined) {
+        return latest === undefined || item.complete_dt > latest ? item.complete_dt : latest;
+      }
+      return latest;
+    }, undefined as number | undefined);
+
+    return earliestApproveDt;
+  }
+
+  getRepairProcessingDays(repair: RepairItem[] | undefined) {
+    if (!repair || repair.length === 0) {
+      return undefined;
+    }
+
+    const beginDate = this.getRepairBeginDate(repair);
+    const completeDate = this.getRepairCompleteDate(repair);
+
+    if (!beginDate || !completeDate) {
+      return undefined;
+    }
+
+    const timeTakenMs = completeDate - beginDate;
+
+    if (timeTakenMs === undefined || timeTakenMs < 0) {
+      return "Invalid time data";
+    }
+
+    const days = Math.floor(timeTakenMs / (3600 * 24));
+
+    return `${days}`;
   }
 
   calculateCost(repair: RepairItem, repList: RepairPartItem[], packageLabourCost?: number) {
