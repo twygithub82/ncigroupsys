@@ -222,7 +222,17 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       },
-     
+      {
+        path: "admin/package/package-steam",
+        title: "MENUITEMS.PACKAGE.LIST.PACKAGE-STEAMING",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
     ]
   },
   {

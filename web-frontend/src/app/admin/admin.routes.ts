@@ -58,6 +58,7 @@ import { TankMovementDetailsComponent } from './inventory/tank-movement-details/
 import { ResidueJobOrderTaskDetailsComponent } from './residue-disposal/job-order-task-details/job-order-task-details.component';
 import { ResidueQCViewComponent } from './residue-disposal/estimate-qc/estimate-qc.component';
 import { TariffSteamComponent } from './tariff/tariff-steam/tariff-steam.component';
+import { PackageSteamComponent } from './package/package-steam/package-steam.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -215,6 +216,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "package/package-repair",
     component: PackageRepairComponent,
+  },
+  {
+    path: "package/package-steam",
+    component: PackageSteamComponent,
   },
   {
     path: "package/package-buffer",
