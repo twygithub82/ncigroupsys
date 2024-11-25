@@ -932,6 +932,7 @@ const GET_REPAIR_FOR_QC = gql`
           }
           job_order {
             qc_dt
+            status_cv
           }
         }
       }

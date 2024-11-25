@@ -138,7 +138,7 @@
       <mat-cell mat-cell *matCellDef="let row"
         [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span
-          class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
+          class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{row?.status_cv !== "QC_COMPLETED" ? getJobStatusDescription(row?.repair_part?.[0]?.job_order?.status_cv) : getProcessStatusDescription(row?.status_cv)}}
       </mat-cell>
     </ng-container>
     <!-- <ng-container matColumnDef="actions">

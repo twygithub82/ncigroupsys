@@ -424,6 +424,22 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
       }
     });
   }
+
+  getProcessingDate(cleaning: InGateCleaningItem | undefined): string | undefined {
+    if (cleaning?.approve_dt && cleaning?.complete_dt) {
+      const timeTakenMs = cleaning?.complete_dt - cleaning?.approve_dt;
+
+      if (timeTakenMs === undefined || timeTakenMs < 0) {
+        return "Invalid time data";
+      }
+
+      const days = Math.floor(timeTakenMs / (3600 * 24));
+
+      return `${days}`;
+    } else {
+      return undefined;
+    }
+  }
 }
 
 

@@ -696,15 +696,19 @@
     "STORAGE-CLOSE-DATE": "Storage Close Date",
     "FREE-STORAGE-DAYS": "Free Storage Days",
     "JOB-STATUS": "Job Status",
-    "PROCESSING-DATE": "Processing Date",
+    "PROCESSING-DAYS": "Processing Days",
     "BILL": "Bill",
-    "CLEANING-BEGIN-ON": "Cleaning Begin On",
-    "COMPLETED-ON": "Completed On",
+    "CLEANING-BEGIN-DATE": "Cleaning Begin Date",
     "DURATION-DAY-HR-MIN": "Duration (Days:Hours:Mins)",
     "CLEANING-BAY": "Cleaning Bay",
     "COMPLETED-DATE": "Completed Date",
     "RESIDUE-QUANTITY": "Residue Quantity",
-    "CUSTOMER-REFERENCE": "Customer Reference"
+    "CUSTOMER-REFERENCE": "Customer Reference",
+    "ADD-CLEANING-PURPOSE": "Add Cleaning Purpose",
+    "NO-CLEANING-PURPOSE": "No Cleaning Purpose",
+    "NO-RESIDUE": "No Residue",
+    "ADD-STEAM-PURPOSE": "Add Steam Purpose",
+    "NO-STEAM-PURPOSE": "No Steam Purpose"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

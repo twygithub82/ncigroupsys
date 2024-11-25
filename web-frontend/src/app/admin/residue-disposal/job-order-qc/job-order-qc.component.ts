@@ -471,29 +471,4 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   isStarted(jobOrderItem: JobOrderItem | undefined) {
     return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
   }
-
-  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-    this.stopPropagation(event);  // Prevents the form submission
-    if (!isStarted) {
-      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: jobOrderItem })];
-      console.log(param)
-      this.ttDS.startJobTimer(param).subscribe(result => {
-        console.log(result)
-      });
-    } else {
-      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-      if (found?.length) {
-        const newParam = new TimeTableItem(found[0]);
-        newParam.stop_time = Utility.convertDate(new Date()) as number;
-        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-        const param = [newParam];
-        console.log(param)
-        this.ttDS.stopJobTimer(param).subscribe(result => {
-          console.log(result)
-        });
-      }
-    }
-  }
-
- 
 }

@@ -35,8 +35,8 @@ export class TimeTableGO {
 }
 
 export const START_JOB_TIMER = gql`
-  mutation startJobTimer($timeTable: [time_tableInput!]!) {
-    startJobTimer(timeTable: $timeTable)
+  mutation startJobTimer($timeTable: [time_tableInput!]!, $processGuid: String) {
+    startJobTimer(timeTable: $timeTable, processGuid: $processGuid)
   }
 `
 
@@ -64,11 +64,11 @@ export class TimeTableDS extends BaseDataSource<TimeTableItem> {
     super();
   }
 
-  startJobTimer(timeTable: any): Observable<any> {
+  startJobTimer(timeTable: any, processGuid: string): Observable<any> {
     return this.apollo.mutate({
       mutation: START_JOB_TIMER,
       variables: {
-        timeTable
+        timeTable, processGuid
       }
     });
   }

@@ -10,24 +10,25 @@ import { RepairItem } from './repair';
 //import { REPDamageRepairItem } from './rep-damage-repair';
 import { TariffResidueItem } from './tariff-residue';
 import { JobOrderItem } from './job-order';
+import { ResidueItem } from './residue';
 
 export class ResidueEstPartGO {
-  
-  
-  
-  
-  
+
+
+
+
+
   // public location_cv?: string;
   // public comment?: string;
   // public remarks?: string;
-  
+
   // public hour?: number;
   // public owner?: boolean;
   // public material_cost?: number;
   // public approve_qty?: number;
   // public approve_hour?: number;
   // public approve_cost?: number;
-  
+
   //public complete_dt?: number;
 
   public create_dt?: number;
@@ -37,23 +38,23 @@ export class ResidueEstPartGO {
   public delete_dt?: number;
 
   public approve_qty?: number;
-  
+
   public approve_cost?: number;
   public guid?: string;
-  public action?:string;
+  public action?: string;
   public approve_part?: boolean;
-  public cost?:number;
+  public cost?: number;
   public job_order_guid?: string;
   public quantity?: number;
   public residue_guid?: string;
   public tariff_residue_guid?: string;
-  public team_guid?:string;
+  public team_guid?: string;
   public description?: string;
 
 
   constructor(item: Partial<ResidueEstPartGO> = {}) {
-    this.action=item.action;
-    this.guid = item.guid?item.guid:'';
+    this.action = item.action;
+    this.guid = item.guid ? item.guid : '';
     this.job_order_guid = item.job_order_guid;
     this.residue_guid = item.residue_guid;
     this.description = item.description;
@@ -65,7 +66,7 @@ export class ResidueEstPartGO {
     // this.owner = item.owner || false;
     this.cost = item.cost;
     this.approve_qty = item.approve_qty;
-    
+
     this.approve_cost = item.approve_cost;
     this.approve_part = item.approve_part;
     // this.complete_dt = item.complete_dt;
@@ -80,12 +81,13 @@ export class ResidueEstPartGO {
 export class ResiduePartItem extends ResidueEstPartGO {
   public tariff_residue?: TariffResidueItem;
   public job_order?: JobOrderItem;
-  
+  public residue?: ResidueItem
+
   constructor(item: Partial<ResiduePartItem> = {}) {
     super(item)
     this.tariff_residue = item.tariff_residue;
-    this.job_order=item.job_order;
-    
+    this.job_order = item.job_order;
+    this.residue = item.residue;
   }
 }
 
@@ -173,7 +175,7 @@ export const GET_SCHEDULING_SOT = gql`
 `;
 
 export class ResiduePartDS extends BaseDataSource<ResiduePartItem> {
-  
+
 
   constructor(private apollo: Apollo) {
     super();

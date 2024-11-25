@@ -126,7 +126,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
-    
+
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -139,7 +139,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   repairDS: RepairDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
-  clnDS:InGateCleaningDS;
+  clnDS: InGateCleaningDS;
 
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
@@ -183,7 +183,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairDS = new RepairDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
-    this.clnDS= new InGateCleaningDS(this.apollo);
+    this.clnDS = new InGateCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -408,10 +408,12 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
       console.log(param)
-      this.ttDS.startJobTimer(param).subscribe(result => {
-        if(result.data.startJobTimer>0)
-        {
-          var item : InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+      const firstValidRepairPart = jobOrderItem.cleaning?.find(
+        (cleaning) => cleaning?.guid !== null
+      );
+      this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
+        if (result.data.startJobTimer > 0) {
+          var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
           this.UpdateCleaningStatusInProgress(item.guid!);
         }
       });
@@ -442,8 +444,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
       console.log(result)
-      if (jobOrderItem?.cleaning?.length! > 0 ) {
-         var item : InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+      if (jobOrderItem?.cleaning?.length! > 0) {
+        var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
         this.UpdateCleaningStatusCompleted(item.guid!);
       }
     });
@@ -505,71 +507,69 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
 
-  UpdateCleaningStatusInProgress( clean_guid:string) {
+  UpdateCleaningStatusInProgress(clean_guid: string) {
 
 
     const where: any = {
-      and:[]
+      and: []
     };
-    
-   
+
+
     where.and.push({
-      guid:{eq:clean_guid}
+      guid: { eq: clean_guid }
     });
 
 
     this.subs.sink = this.clnDS.search(where)
       .subscribe(data => {
-        if(data.length>0)
-        {
-           var cln =data[0];
-           var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-           rep.action='IN_PROGRESS';
-           delete rep.storing_order_tank;
-           delete rep.job_order;
-           delete rep.customer_company;
-           this.clnDS.updateInGateCleaning(rep).subscribe(result=>{
+        if (data.length > 0) {
+          var cln = data[0];
+          var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+          rep.action = 'IN_PROGRESS';
+          delete rep.storing_order_tank;
+          delete rep.job_order;
+          delete rep.customer_company;
+          this.clnDS.updateInGateCleaning(rep).subscribe(result => {
 
-             console.log(result);
+            console.log(result);
 
-           });
+          });
           //  this.clnDS.
         }
       });
   }
 
 
- UpdateCleaningStatusCompleted( clean_guid:string) {
+  UpdateCleaningStatusCompleted(clean_guid: string) {
 
 
     const where: any = {
-      and:[]
+      and: []
     };
-    
+
     where.and.push({
-      job_order: { status_cv: {eq:'COMPLETED' }}
+      job_order: { status_cv: { eq: 'COMPLETED' } }
     });
 
     where.and.push({
-      guid:{eq:clean_guid}
+      guid: { eq: clean_guid }
     });
 
 
     this.subs.sink = this.clnDS.search(where)
       .subscribe(data => {
-        if(data.length>0)
-        {
-           var cln =data[0];
-           var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-           rep.action='COMPLETE';
-           delete rep.storing_order_tank;
-           delete rep.job_order;
-           delete rep.customer_company;
-           this.clnDS.updateInGateCleaning(rep).subscribe(result=>{
+        if (data.length > 0) {
+          var cln = data[0];
+          var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+          rep.action = 'COMPLETE';
+          delete rep.storing_order_tank;
+          delete rep.job_order;
+          delete rep.customer_company;
+          this.clnDS.updateInGateCleaning(rep).subscribe(result => {
 
-             console.log(result);
+            console.log(result);
 
-           });
+          });
           //  this.clnDS.
         }
       });

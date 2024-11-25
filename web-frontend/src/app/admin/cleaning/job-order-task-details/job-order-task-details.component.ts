@@ -225,9 +225,9 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
     COMPLETE: 'COMMON-FORM.COMPLETE',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     DURATION: 'COMMON-FORM.DURATION',
-    CLEANING_METHOD:'COMMON-FORM.CLEANING-METHOD',
-    JOB_COMPLETION:"COMMON-FORM.JOB-COMPLETION",
-    BILLING_DETAILS:"COMMON-FORM.BILLING-DETAILS",
+    CLEANING_METHOD: 'COMMON-FORM.CLEANING-METHOD',
+    JOB_COMPLETION: "COMMON-FORM.JOB-COMPLETION",
+    BILLING_DETAILS: "COMMON-FORM.BILLING-DETAILS",
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -259,11 +259,11 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
 
   teamList?: TeamItem[];
 
-  igCleanItems:any=[];
+  igCleanItems: any = [];
 
   customerCodeControl = new UntypedFormControl();
 
-  clnDS:InGateCleaningDS;
+  clnDS: InGateCleaningDS;
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
@@ -303,7 +303,7 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
     this.teamDS = new TeamDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
-    this.clnDS=new InGateCleaningDS(this.apollo);
+    this.clnDS = new InGateCleaningDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -438,8 +438,8 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
           if (this.clean_guid) {
-            const where:any={
-              guid:{eq:this.clean_guid}
+            const where: any = {
+              guid: { eq: this.clean_guid }
             }
             this.clnDS.search(where).subscribe(clean => {
               if (clean?.length) {
@@ -461,9 +461,9 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
   }
 
   populateClean(cleanItem: InGateCleaningItem) {
-   // this.isOwner = repair.owner_enable ?? false;
-   // repair.repair_part = this.filterDeleted(repair.repair_part)
-    const clnItems:InGateCleaningItem[]=[];
+    // this.isOwner = repair.owner_enable ?? false;
+    // repair.repair_part = this.filterDeleted(repair.repair_part)
+    const clnItems: InGateCleaningItem[] = [];
     clnItems.push(cleanItem);
     this.updateData(clnItems);
     this.cleanForm?.patchValue({
@@ -583,7 +583,7 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
       //   }
       // }));
 
-    //  newData = this.repairPartDS.sortAndGroupByGroupName(newData);
+      //  newData = this.repairPartDS.sortAndGroupByGroupName(newData);
 
       this.repList = newData.map((row, index) => ({
         ...row,
@@ -838,12 +838,11 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: this.jobOrderItem?.guid, job_order: new JobOrderGO({ ...this.jobOrderItem }) })];
       console.log(param)
-      this.ttDS.startJobTimer(param).subscribe(result => {
-        if(result.data.startJobTimer>0)
-          {
-            //var item : InGateCleaningItem = new InGateCleaningItem(this.jobOrderItem?.cleaning![0]!);
-            this.UpdateCleaningStatusInProgress(this.clean_guid! );
-          }
+      this.ttDS.startJobTimer(param, this.clean_guid!).subscribe(result => {
+        if (result.data.startJobTimer > 0) {
+          //var item : InGateCleaningItem = new InGateCleaningItem(this.jobOrderItem?.cleaning![0]!);
+          this.UpdateCleaningStatusInProgress(this.clean_guid!);
+        }
       });
     } else {
       const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
@@ -886,9 +885,8 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
     const param = [newParam];
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
-      if(result.data.completeJobOrder>0)
-      {
-          this.UpdateCleaningStatusCompleted();
+      if (result.data.completeJobOrder > 0) {
+        this.UpdateCleaningStatusCompleted();
       }
     });
   }
@@ -1007,66 +1005,29 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
   }
 
 
-  UpdateCleaningStatusInProgress( clean_guid:string) {
+  UpdateCleaningStatusInProgress(clean_guid: string) {
 
 
     const where: any = {
-      and:[]
+      and: []
     };
-    
-   
+
+
     where.and.push({
-      guid:{eq:clean_guid}
+      guid: { eq: clean_guid }
     });
 
 
     this.subs.sink = this.clnDS.search(where)
       .subscribe(data => {
-        if(data.length>0)
-        {
-           var cln =data[0];
-           var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-           rep.action='IN_PROGRESS';
-           delete rep.storing_order_tank;
-           delete rep.job_order;
-           delete rep.customer_company;
-           this.clnDS.updateInGateCleaning(rep).subscribe(result=>{
-
-             console.log(result);
-
-           });
-          //  this.clnDS.
-        }
-      });
-  }
-
-  UpdateCleaningStatusCompleted() {
-
-
-    const where: any = {
-      and:[]
-    };
-    
-    where.and.push({
-      job_order: { status_cv: {eq:'COMPLETED' }}
-    });
-
-    where.and.push({
-      guid:{eq:this.clean_guid}
-    });
-
-
-    this.subs.sink = this.clnDS.search(where)
-      .subscribe(data => {
-        if(data.length>0)
-        {
-          var cln =data[0];
+        if (data.length > 0) {
+          var cln = data[0];
           var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-          rep.action='COMPLETE';
+          rep.action = 'IN_PROGRESS';
           delete rep.storing_order_tank;
           delete rep.job_order;
           delete rep.customer_company;
-          this.clnDS.updateInGateCleaning(rep).subscribe(result=>{
+          this.clnDS.updateInGateCleaning(rep).subscribe(result => {
 
             console.log(result);
 
@@ -1076,6 +1037,41 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
       });
   }
 
- 
+  UpdateCleaningStatusCompleted() {
+
+
+    const where: any = {
+      and: []
+    };
+
+    where.and.push({
+      job_order: { status_cv: { eq: 'COMPLETED' } }
+    });
+
+    where.and.push({
+      guid: { eq: this.clean_guid }
+    });
+
+
+    this.subs.sink = this.clnDS.search(where)
+      .subscribe(data => {
+        if (data.length > 0) {
+          var cln = data[0];
+          var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+          rep.action = 'COMPLETE';
+          delete rep.storing_order_tank;
+          delete rep.job_order;
+          delete rep.customer_company;
+          this.clnDS.updateInGateCleaning(rep).subscribe(result => {
+
+            console.log(result);
+
+          });
+          //  this.clnDS.
+        }
+      });
+  }
+
+
 
 }

@@ -104,12 +104,12 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
   displayedColumns = [
     'seq',
     // 'group_name_cv',
-     'desc',
+    'desc',
     //  'qty',
     //  'unit_price',
     //  'cost',
-     'approve_part',
-     'team',
+    'approve_part',
+    'team',
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
@@ -239,9 +239,9 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
 
   sotItem?: StoringOrderTankItem;
   jobOrderItem?: JobOrderItem;
-  residueItem?:ResidueItem;
+  residueItem?: ResidueItem;
 
-  
+
   repairItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repSelection = new SelectionModel<RepairPartItem>(true, []);
@@ -262,7 +262,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
 
   teamList?: TeamItem[];
 
-  deList:any[]=[];
+  deList: any[] = [];
 
   customerCodeControl = new UntypedFormControl();
 
@@ -275,7 +275,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
   repairPartDS: RepairPartDS;
   rpDmgRepairDS: RPDamageRepairDS;
 
-  residueDS:ResidueDS;
+  residueDS: ResidueDS;
 
   teamDS: TeamDS;
   joDS: JobOrderDS;
@@ -308,7 +308,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     this.teamDS = new TeamDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
+    this.residueDS = new ResidueDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -322,7 +322,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
   }
 
   initForm() {
-    this.residueForm= this.fb.group({
+    this.residueForm = this.fb.group({
       deList: ['']
     });
 
@@ -468,11 +468,11 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
   }
 
   populateResidue(residue: ResidueItem) {
-    
+
     residue.residue_part = this.filterDeleted(residue.residue_part)
     this.updateData(residue.residue_part);
     this.residueForm?.patchValue({
-     deList :this.deList
+      deList: this.deList
     });
   }
 
@@ -844,7 +844,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: this.jobOrderItem?.guid, job_order: new JobOrderGO({ ...this.jobOrderItem }) })];
       console.log(param)
-      this.ttDS.startJobTimer(param).subscribe(result => {
+      this.ttDS.startJobTimer(param, this.residue_guid!).subscribe(result => {
         console.log(result)
       });
     } else {
@@ -888,9 +888,8 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     const param = [newParam];
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
-      if(result.data.completeJobOrder>0)
-      {
-      this.UpdateResidueStatusCompleted(this.residueItem?.guid!);
+      if (result.data.completeJobOrder > 0) {
+        this.UpdateResidueStatusCompleted(this.residueItem?.guid!);
       }
     });
   }
@@ -1032,7 +1031,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     this.jobOrderSubscriptions.push(subscription);
   }
 
-  getFooterBackgroundColor():string{
+  getFooterBackgroundColor(): string {
     return 'light-green';
   }
 
@@ -1042,40 +1041,39 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
 
   getTotalCost(): number {
     return this.deList.reduce((acc, row) => {
-      if (row.approve_part!==false) {
+      if (row.approve_part !== false) {
         return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
       }
       return acc; // If row is approved, keep the current accumulator value
     }, 0);
   }
 
-  UpdateResidueStatusCompleted(residue_guid:string ){
+  UpdateResidueStatusCompleted(residue_guid: string) {
     const where: any = {
-      and:[]
+      and: []
     };
-    
+
     where.and.push({
-      residue_part:{all:{job_order: { status_cv: {eq:'COMPLETED' }}}}
+      residue_part: { all: { job_order: { status_cv: { eq: 'COMPLETED' } } } }
     });
 
     where.and.push({
-      guid:{eq:residue_guid}
+      guid: { eq: residue_guid }
     })
 
-    this.residueDS.search(where).subscribe(result=>{
+    this.residueDS.search(where).subscribe(result => {
 
-      if(result.length>0)
-      {
-        var resItem:ResidueItem=result[0];
-        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-        residueStatus.action="COMPLETE";
+      if (result.length > 0) {
+        var resItem: ResidueItem = result[0];
+        let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+        residueStatus.action = "COMPLETE";
         residueStatus.guid = resItem?.guid;
-        residueStatus.sot_guid= resItem?.sot_guid;
-         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+        residueStatus.sot_guid = resItem?.sot_guid;
+        this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
 
-            console.log(result);
-         });
-     
+          console.log(result);
+        });
+
 
       }
       this.handleSaveSuccess(1);

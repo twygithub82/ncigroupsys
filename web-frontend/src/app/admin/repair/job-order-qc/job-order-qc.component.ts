@@ -154,15 +154,13 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   customer_companyList?: CustomerCompanyItem[];
 
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 100;
+  pageSizeJobOrder = 10;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { create_dt: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
   startCursorJobOrder: string | undefined = undefined;
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
-
-  private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
     public httpClient: HttpClient,
@@ -199,7 +197,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   initSearchForm() {
     this.filterJobOrderForm = this.fb.group({
       filterRepair: [''],
-      jobStatusCv: [['PENDING', 'JOB_IN_PROGRESS']],
+      jobStatusCv: [['COMPLETED']],
       customer: this.customerCodeControl,
     });
   }
@@ -242,9 +240,9 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
-  onFilter() {
+  onFilter2() {
     const where: any = {
-      status_cv: { in: ["JOB_IN_PROGRESS", "QC_COMPLETED", "AV"] },
+      status_cv: { in: ["JOB_IN_PROGRESS", "QC_COMPLETED"] },
       repair_part: {
         all: {
           delete_dt: { eq: null },
@@ -281,9 +279,68 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+  onFilter() {
+    const where: any = {
+      tank_status_cv: { in: ['REPAIR'] },
+      repair: {
+        all: {
+          status_cv: { in: ["JOB_COMPLETED", "QC_COMPLETED"] },
+          repair_part: {
+            all: {
+              delete_dt: { eq: null },
+              or: [
+                { approve_part: { eq: false } },
+                {
+                  approve_part: { eq: true },
+                  job_order: { status_cv: { in: ["COMPLETED", "CANCELED"] } }
+                }
+              ]
+            }
+          }
+        }
+      }
+    };
+
+    if (this.filterJobOrderForm!.get('filterRepair')?.value) {
+      where.or = [
+        { tank_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } },
+        { repair: { some: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } }
+      ];
+    }
+
+    // if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
+    //   where.status_cv = {
+    //     in: this.filterJobOrderForm!.get('jobStatusCv')?.value
+    //   };
+    // }
+
+    // TODO:: Get login user team
+    // if (false) {
+    //   where.team_guid = { eq: "" }
+    // }
+
+    this.lastSearchCriteriaJobOrder = this.sotDS.addDeleteDtCriteria(where);
+    this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+  }
+
+  performSearch2(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.subs.sink = this.repairDS.getRepairForQC(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
+        this.repEstList = data;
+        // this.jobOrderList.forEach(jo => {
+        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
+        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
+        // })
+      });
+
+    this.pageSizeJobOrder = pageSize;
+    this.pageIndexJobOrder = pageIndex;
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairQC(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+      .subscribe(data => {
+        console.log('QC list', data)
         this.repEstList = data;
         // this.jobOrderList.forEach(jo => {
         //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
@@ -408,29 +465,6 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
 
   isStarted(jobOrderItem: JobOrderItem | undefined) {
     return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-  }
-
-  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-    this.stopPropagation(event);  // Prevents the form submission
-    if (!isStarted) {
-      const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: jobOrderItem })];
-      console.log(param)
-      this.ttDS.startJobTimer(param).subscribe(result => {
-        console.log(result)
-      });
-    } else {
-      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-      if (found?.length) {
-        const newParam = new TimeTableItem(found[0]);
-        newParam.stop_time = Utility.convertDate(new Date()) as number;
-        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-        const param = [newParam];
-        console.log(param)
-        this.ttDS.stopJobTimer(param).subscribe(result => {
-          console.log(result)
-        });
-      }
-    }
   }
 
   // private subscribeToJobOrderEvent(

@@ -245,7 +245,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   initSearchForm() {
     this.filterRepairForm = this.fb.group({
       filterRepair: [''],
-      status_cv: [['PARTIAL_ASSIGNED']],
+      status_cv: [['APPROVED', 'PARTIAL_ASSIGNED']],
       customer: this.customerCodeControl,
     });
   }

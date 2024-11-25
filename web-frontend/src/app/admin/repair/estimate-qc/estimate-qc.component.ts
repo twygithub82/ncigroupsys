@@ -582,7 +582,9 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     console.log(repJobOrder)
     this.joDS.completeQCRepair(repJobOrder).subscribe(result => {
       console.log(result)
-      this.handleSaveSuccess(result?.data?.completeQCRepair);
+      if ((result?.data?.completeQCRepair ?? 0) > 0) {
+        this.handleSaveSuccess(result?.data?.completeQCRepair);
+      }
     });
   }
 

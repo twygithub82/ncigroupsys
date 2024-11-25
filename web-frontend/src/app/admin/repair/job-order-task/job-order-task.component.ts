@@ -157,6 +157,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   startCursorJobOrder: string | undefined = undefined;
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
+  orderType = "DESC";
+
+  currentStartCursor: string | undefined = undefined;
+  currentEndCursor: string | undefined = undefined;
+  lastCursorDirection: string | undefined = undefined;
 
   private jobOrderSubscriptions: Subscription[] = [];
 
@@ -278,6 +283,14 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
         })
+
+        this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
+        this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
+        this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
+
+        this.currentEndCursor = after;
+        this.currentStartCursor = before;
       });
 
     this.pageSizeJobOrder = pageSize;
@@ -308,6 +321,48 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
+  }
+
+  triggerCurrentSearch() {
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    if (this.pageSizeJobOrder === 0) {
+      first = this.pageSizeJobOrder;
+    } else if (this.lastCursorDirection === 'forward') {
+      first = this.pageSizeJobOrder;
+      after = this.currentEndCursor;
+    } else if (this.lastCursorDirection === 'backward') {
+      last = this.pageSizeJobOrder;
+      before = this.currentStartCursor;
+    }
+
+    // Perform the search
+    this.performSearchJobOrder(
+      this.pageSizeJobOrder,
+      this.pageIndexJobOrder,
+      first,
+      after,
+      last,
+      before,
+      () => { }
+    );
+  }
+
+  toggleSortJobOrder(column: string) {
+    this.orderType = this.orderType === 'DESC' ? 'ASC' : 'DESC';
+    if (column === 'allocate_dt') {
+      this.lastOrderByJobOrder = {
+        create_dt: this.orderType
+      }
+    } else {
+      this.lastOrderByJobOrder = {
+        create_dt: this.orderType
+      }
+    }
+    this.triggerCurrentSearch();
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -403,8 +458,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.stopPropagation(event);  // Prevents the form submission
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-      console.log(param)
-      this.ttDS.startJobTimer(param).subscribe(result => {
+      const firstValidRepairPart = jobOrderItem.repair_part?.find(
+        (repairPart) => repairPart.repair?.guid !== null
+      );
+      console.log(`startJobTimer: ${JSON.stringify(param)}, ${firstValidRepairPart?.repair?.guid!}`)
+      this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
         console.log(result)
       });
     } else {
