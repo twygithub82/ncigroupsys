@@ -180,7 +180,9 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED'
+    'COMPLETED',
+    'PARTIAL_ASSIGNED',
+    'ASSIGNED'
   ]
 
   customerCodeControl = new UntypedFormControl();
@@ -243,7 +245,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   initSearchForm() {
     this.filterRepairForm = this.fb.group({
       filterRepair: [''],
-      status_cv: [['APPROVED']],
+      status_cv: [['PARTIAL_ASSIGNED']],
       customer: this.customerCodeControl,
     });
   }

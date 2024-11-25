@@ -462,6 +462,10 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       where.storing_order_tank = sotSome;
     }
 
+    if (this.searchForm!.get('est_status_cv')?.value?.length) {
+      where.status_cv = { in: this.searchForm!.get('est_status_cv')?.value }
+    }
+
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();

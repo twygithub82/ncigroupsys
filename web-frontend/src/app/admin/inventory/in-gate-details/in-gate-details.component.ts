@@ -63,12 +63,10 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
     RouterLink,
     TranslateModule,
     MatExpansionModule,
@@ -165,7 +163,8 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    OWNER: 'COMMON-FORM.OWNER'
+    OWNER: 'COMMON-FORM.OWNER',
+    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME'
   }
 
   inGateForm?: UntypedFormGroup;

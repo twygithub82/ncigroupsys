@@ -686,27 +686,27 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       if ((result?.data?.assignJobOrder ?? 0) > 0 && missingJobOrders?.length) {
         const jobOrderGuidToDelete = missingJobOrders.map(jo => jo?.guid!)
         this.joDS.deleteJobOrder(jobOrderGuidToDelete).subscribe(result => {
-          console.log(`deleteJobOrder: ${jobOrderGuidToDelete}, result: ${result}`);
+          console.log(`deleteJobOrder: ${JSON.stringify(jobOrderGuidToDelete)}, result: ${JSON.stringify(result)}`);
         });
       }
 
-      if (!without4x?.length) {
-        console.log("all parts are assigned");
-        var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
-          guid: this.repairItem!.guid,
-          sot_guid: this.sotItem!.guid,
-          action: "IN_PROGRESS"
-        });
-        console.log(repairStatusReq);
-        this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
-          console.log(result)
-          if (result.data.updateRepairStatus > 0) {
-            this.handleSaveSuccess(result.data.updateRepairStatus);
-          }
-        });
-      } else {
-        this.handleSaveSuccess(result?.data?.assignJobOrder);
-      }
+      const action = without4x?.length ? "PARTIAL_ASSIGNED" : "ASSIGNED";
+      console.log(without4x?.length ? "some parts are not assigned" : "all parts are assigned");
+
+      const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+        guid: this.repairItem!.guid,
+        sot_guid: this.sotItem!.guid,
+        action
+      });
+
+      console.log(repairStatusReq);
+
+      this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+        console.log(result);
+        if (result.data.updateRepairStatus > 0) {
+          this.handleSaveSuccess(result.data.updateRepairStatus);
+        }
+      });
     });
   }
 

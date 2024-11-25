@@ -335,6 +335,17 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.repairForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairForm?.get('material_cost_discount')?.setValue(value.labour_cost_discount);
           this.repairForm?.get('remarks')?.setValue(value.remarks);
+
+          const existingList: any[] = [];
+          const data: any[] = [...this.repList];
+          data.forEach(rep => {
+            if (rep.guid) {
+              rep.delete_dt = Utility.getDeleteDtEpoch();
+              rep.action = 'cancel'
+              existingList.push(rep);
+            }
+          });
+
           const repList: RepairPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
             const package_repair = tep.tariff_repair?.package_repair;
             let material_cost = 0;
@@ -363,7 +374,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
               action: "new"
             });
           });
-          this.updateData(repList);
+          this.updateData([...existingList, ...repList]);
 
           // estimate part
           // const tariff_repair_guid = value.template_est_part.map((tep: any) => tep.tariff_repair_guid);
