@@ -53,7 +53,7 @@ import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
+import { RepairDS, RepairGO, RepairItem, RepairStatusRequest } from 'app/data-sources/repair';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
 import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
@@ -827,6 +827,20 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
       console.log(`startJobTimer: ${JSON.stringify(param)}, ${this.repair_guid!}`)
       this.ttDS.startJobTimer(param, this.repair_guid!).subscribe(result => {
         console.log(result)
+        if ((result?.data?.startJobTimer ?? 0) > 0) {
+          const firstJobPart = this.jobOrderItem?.repair_part?.[0];
+          if (firstJobPart?.repair?.status_cv === 'ASSIGNED') {
+            const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+              guid: this.repairItem?.guid,
+              sot_guid: this.sotItem?.guid,
+              action: "IN_PROGRESS"
+            });
+            console.log(repairStatusReq);
+            this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+              console.log(result);
+            });
+          }
+        }
       });
     } else {
       const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);

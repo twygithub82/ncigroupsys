@@ -182,7 +182,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     'JOB_IN_PROGRESS',
     'COMPLETED',
     'PARTIAL_ASSIGNED',
-    'ASSIGNED'
+    'ASSIGNED',
+    'JOB_COMPLETED',
   ]
 
   customerCodeControl = new UntypedFormControl();

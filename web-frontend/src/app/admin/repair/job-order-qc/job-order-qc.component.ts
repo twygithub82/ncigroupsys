@@ -42,7 +42,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
@@ -98,6 +98,13 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     'status_cv'
   ];
 
+  displayedColumns = [
+    'estimate_no',
+    'job_no',
+    'status_cv',
+    'remarks'
+  ];
+
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -129,7 +136,9 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     QC_DATE: 'COMMON-FORM.QC-DATE',
-    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE'
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE'
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -143,6 +152,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
 
+  sotList: StoringOrderTankItem[] = [];
   repEstList: RepairItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   repairOptionCvList: CodeValuesItem[] = [];
@@ -341,7 +351,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.subs.sink = this.sotDS.searchStoringOrderTanksRepairQC(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         console.log('QC list', data)
-        this.repEstList = data;
+        this.sotList = data;
         // this.jobOrderList.forEach(jo => {
         //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
         //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
