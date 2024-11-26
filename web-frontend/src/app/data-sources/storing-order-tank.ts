@@ -1228,6 +1228,9 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
           eir_dt
           create_dt
           delete_dt
+          in_gate_survey {
+            tank_comp_guid
+          }
         }
         out_gate(where: { delete_dt: { eq: null } }) {
           guid

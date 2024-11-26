@@ -582,9 +582,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('thermometerCv').subscribe(data => {
       this.thermometerCvList = addDefaultSelectOption(data, "--Select--");
     });
-    this.cvDS.connectAlias('tankCompTypeCv').subscribe(data => {
-      this.tankCompTypeCvList = addDefaultSelectOption(data, "--Select--");
-    });
     this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
       this.valveBrandCvList = data;
     });

@@ -428,6 +428,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   populateRepair(repair: RepairItem) {
     this.isOwner = repair.owner_enable ?? false;
+    this.isOwnerChanged();
     repair.repair_part = this.filterDeleted(repair.repair_part)
     this.repairForm?.patchValue({
       job_no: repair.job_no || this.sotItem?.job_no,
@@ -669,7 +670,9 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       console.log(re)
       this.repairDS.approveRepair(re).subscribe(result => {
         console.log(result)
-        this.handleSaveSuccess(result?.data?.approveRepair);
+        if ((result?.data?.approveRepair ?? 0) > 0) {
+          this.handleSaveSuccess(result?.data?.approveRepair);
+        }
       });
     } else {
       bill_to?.setErrors({ required: true })
@@ -680,6 +683,37 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   onFormSubmit() {
     this.repairForm!.get('repList')?.setErrors(null);
+  }
+
+  isOwnerChanged(): void {
+    if (this.isOwner) {
+      this.displayedColumns = [
+        'seq',
+        'subgroup_name_cv',
+        'damange',
+        'repair',
+        'description',
+        'quantity',
+        'hour',
+        'price',
+        'material',
+        'isOwner',
+        'actions'
+      ];
+    } else {
+      this.displayedColumns = [
+        'seq',
+        'subgroup_name_cv',
+        'damange',
+        'repair',
+        'description',
+        'quantity',
+        'hour',
+        'price',
+        'material',
+        'actions'
+      ];
+    }
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {

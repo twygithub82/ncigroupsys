@@ -477,6 +477,7 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_MOVEMENT = gql`
           yard_cv
         }
         tariff_buffer {
+          guid
           buffer_type
         }
       }

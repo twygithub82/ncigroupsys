@@ -60,6 +60,7 @@ import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderDS } from 'app/data-sources/job-order';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -98,6 +99,15 @@ import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
   ]
 })
 export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  displayedColumnsRepair = [
+    'estimate_no',
+    'estimate_date',
+    'approve_dt',
+    'allocation_dt',
+    'qc_dt',
+    'status_cv'
+  ];
+
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT-DETAILS'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
@@ -260,6 +270,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     NO_STEAM_PURPOSE: 'COMMON-FORM.NO-STEAM-PURPOSE',
     REPAIR_BEGIN_DATE: 'COMMON-FORM.REPAIR-BEGIN-DATE',
     REPAIR_COMPLETED_DATE: 'COMMON-FORM.REPAIR-COMPLETED-DATE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
+    APPROVED_NO_ACTION: 'COMMON-FORM.APPROVED-NO-ACTION',
+    ALLOCATION_DATE: 'COMMON-FORM.ALLOCATION-DATE',
+    QC_DATE: 'COMMON-FORM.QC-DATE',
+    DEPOT_COST_DETAILS: 'COMMON-FORM.DEPOT-COST-DETAILS',
+    NO_DOT: 'COMMON-FORM.NO-DOT',
+    INVOICE: 'COMMON-FORM.INVOICE',
+    COST: 'COMMON-FORM.COST'
   }
 
   sot_guid: string | null | undefined;
@@ -270,6 +290,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   pdItem?: PackageDepotItem;
   cleaningItem?: InGateCleaningItem[];
   residueItem?: ResidueItem[];
+  repairItem: RepairItem[] = [];
 
   surveyForm?: UntypedFormGroup;
 
@@ -286,6 +307,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   residueDS: ResidueDS;
   cleaningDS: InGateCleaningDS;
   joDS: JobOrderDS;
+  repairDS: RepairDS;
 
   customerCodeControl = new UntypedFormControl();
   ownerControl = new UntypedFormControl();
@@ -318,7 +340,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   storageCalCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  packageBufferList?: PackageBufferItem[];
 
   unit_typeList: TankItem[] = []
 
@@ -390,6 +411,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.residueDS = new ResidueDS(this.apollo);
     this.cleaningDS = new InGateCleaningDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
+    this.repairDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -544,6 +566,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
             console.log(`packageDepot: `, data)
             this.pdItem = data[0];
           });
+          // if (this.sot?.in_gate?.length) {
+          //   this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
+          // }
         }
       });
       this.subs.sink = this.igsDS.getInGateSurveyByIDForMovement(this.sot_guid).subscribe(data => {
@@ -577,20 +602,29 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           this.cleaningItem = data;
         }
       });
+      this.subs.sink = this.repairDS.getRepairForMovement(this.sot_guid).subscribe(data => {
+        if (this.repairDS.totalCount > 0) {
+          console.log(`repair: `, data);
+          this.repairItem = data;
+          this.displayColumnChanged();
+        }
+      });
     }
   }
 
-  getCustomerLabourPackage(customer_company_guid: string | undefined) {
+  getCustomerBufferPackage(customer_company_guid: string | undefined, tank_comp_guid: string | undefined) {
     if (!customer_company_guid) return;
     const where = {
       and: [
-        { customer_company_guid: { eq: customer_company_guid } }
+        { customer_company_guid: { eq: customer_company_guid } },
+        { tariff_buffer_guid: { eq: tank_comp_guid } }
       ]
     }
     this.subs.sink = this.pbDS.getCustomerPackageCost(where).subscribe(data => {
       if (data?.length > 0) {
         console.log(data)
-        this.packageBufferList = data;
+        if (data?.length) {
+        }
       }
     });
   }
@@ -1245,6 +1279,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
+  getWalkwayDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.walkwayCvList);
+  }
+
   getAvailableDate(sot: StoringOrderTankItem) {
     const maxCompleteDt: number[] | undefined = sot.repair
       ?.map(item => item.complete_dt)
@@ -1255,6 +1293,28 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       : undefined;
 
     return max;
+  }
+
+  displayColumnChanged() {
+    if (true) {
+      this.displayedColumnsRepair = [
+        'estimate_no',
+        'estimate_date',
+        'approve_dt',
+        'allocation_dt',
+        'qc_dt',
+        'status_cv',
+        'actions'
+      ];
+    } else {
+      this.displayedColumnsRepair = [
+        'tank_no',
+        'customer',
+        'estimate_no',
+        'status_cv',
+        'actions'
+      ];
+    }
   }
 
   preventDefault(event: Event) {
