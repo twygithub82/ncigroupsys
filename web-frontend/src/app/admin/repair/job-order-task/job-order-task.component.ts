@@ -45,7 +45,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
-import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { RepairDS, RepairItem, RepairStatusRequest } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
@@ -275,7 +275,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+    this.subs.sink = this.joDS.searchJobOrderForRepair(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         this.jobOrderList = data;
         this.jobOrderList.forEach(jo => {
@@ -464,6 +464,20 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       console.log(`startJobTimer: ${JSON.stringify(param)}, ${firstValidRepairPart?.repair?.guid!}`)
       this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
         console.log(result)
+        if ((result?.data?.startJobTimer ?? 0) > 0) {
+          const firstJobPart = jobOrderItem.repair_part?.[0];
+          if (firstJobPart?.repair?.status_cv === 'ASSIGNED') {
+            const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+              guid: firstJobPart!.repair.guid,
+              sot_guid: jobOrderItem.storing_order_tank?.guid,
+              action: "IN_PROGRESS"
+            });
+            console.log(repairStatusReq);
+            this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+              console.log(result);
+            });
+          }
+        }
       });
     } else {
       const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
