@@ -690,7 +690,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
         });
       }
 
-      const action = without4x?.length ? "PARTIAL_ASSIGNED" : "ASSIGNED";
+      const action = without4x?.length ? "PARTIAL_ASSIGN" : "ASSIGN";
       console.log(without4x?.length ? "some parts are not assigned" : "all parts are assigned");
 
       const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({

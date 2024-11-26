@@ -698,7 +698,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         'price',
         'material',
         'isOwner',
-        'actions'
+        'approve_part',
+        'approve_qty',
+        'approve_hour',
+        'approve_cost'
       ];
     } else {
       this.displayedColumns = [
@@ -711,7 +714,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         'hour',
         'price',
         'material',
-        'actions'
+        'approve_part',
+        'approve_qty',
+        'approve_hour',
+        'approve_cost'
       ];
     }
   }
