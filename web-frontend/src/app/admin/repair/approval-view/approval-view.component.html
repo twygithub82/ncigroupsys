@@ -354,12 +354,12 @@
                       </ng-container>
                       <ng-container matColumnDef="approve_part">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="''"
                           mat-sort-header>
                           <mat-icon>more_vert</mat-icon>
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="''">
                           <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
                           @if (repairPartDS.is4X(row.rp_damage_repair)){
                           <mat-icon class="font-bold">close</mat-icon>

@@ -284,7 +284,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       tank_status_cv: { in: ['REPAIR'] },
       repair: {
         all: {
-          status_cv: { in: ["JOB_COMPLETED", "QC_COMPLETED"] },
+          status_cv: { in: ["JOB_IN_PROGRESS", "JOB_COMPLETED", "QC_COMPLETED"] },
           repair_part: {
             all: {
               delete_dt: { eq: null },
