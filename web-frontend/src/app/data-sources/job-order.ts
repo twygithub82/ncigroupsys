@@ -308,6 +308,7 @@ const GET_JOB_ORDER_FOR_REPAIR = gql`
           guid
         }
         storing_order_tank {
+          guid
           tank_no
           storing_order {
             customer_company {
@@ -320,6 +321,7 @@ const GET_JOB_ORDER_FOR_REPAIR = gql`
           repair {
             guid
             estimate_no
+            status_cv
           }
         }
         time_table(
@@ -375,12 +377,6 @@ const GET_STARTED_JOB_ORDER = gql`
               name
               code
             }
-          }
-        }
-        repair_part {
-          repair {
-            guid
-            estimate_no
           }
         }
         residue_part {
