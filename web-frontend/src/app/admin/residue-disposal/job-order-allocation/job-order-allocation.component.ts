@@ -1336,7 +1336,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
         });
       }
 
-      var act="PARTIAL";
+      var act="PARTIAL_ASSIGN";
       if(this.isAllAssignedToTeam()) {
         console.log("all parts are assigned");
         act="ASSIGN";

@@ -194,6 +194,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     'JOB_IN_PROGRESS',
     'COMPLETED',
     'ASSIGNED',
+    'PARTIAL_ASSIGNED',
   ]
 
   rsdEstList: ResidueItem[] = [];
