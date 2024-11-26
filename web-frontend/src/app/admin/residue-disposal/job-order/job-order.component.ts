@@ -192,7 +192,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED'
+    'COMPLETED',
+    'ASSIGNED',
   ]
 
   rsdEstList: ResidueItem[] = [];
@@ -267,7 +268,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   initSearchForm() {
     this.filterResidueForm = this.fb.group({
       filterResidue: [''],
-      status_cv:[['APPROVED']],
+      status_cv:[['APPROVED','ASSIGNED']],
       customer:['']
     });
     this.filterJobOrderForm = this.fb.group({
@@ -336,7 +337,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = addDefaultSelectOption(data, 'All');
+      this.processStatusCvList = data;
     });
   }
 

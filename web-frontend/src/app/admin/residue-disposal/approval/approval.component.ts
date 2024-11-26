@@ -159,12 +159,13 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
 
   
   availableProcessStatus: string[] = [
-    'ALL',
+    'ASSIGNED',
+    'PARTIAL_ASSIGNED',
     'APPROVED',
     'JOB_IN_PROGRESS',
     'COMPLETED',
-    'NO_ACTION',
-    'CANCELED'
+    'PENDING',
+    'NO_ACTION'
   ]
 
   searchForm?: UntypedFormGroup;
@@ -254,7 +255,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: ['ALL']
+      est_status_cv: ['']
     });
   }
 
@@ -379,7 +380,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = addDefaultSelectOption(data, 'All','ALL');
+      this.processStatusCvList = data;
     });
   }
 
@@ -439,11 +440,10 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     }
 
 
-    if (this.searchForm?.get("est_status_cv") ) {
-      if(this.searchForm?.value['est_status_cv']!=="ALL")
-      {
-         where.status_cv = { contains: this.searchForm!.value['est_status_cv'] };
-      }
+    if (this.searchForm?.get("est_status_cv")?.value ) {
+      
+         where.status_cv = { in: this.searchForm!.value['est_status_cv'] };
+      
     }
 
     if (this.searchForm!.value['customer_code']) {
@@ -716,8 +716,8 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
       approval_dt_end: '',
       est_status_cv: ''
     });
-    this.customerCodeControl.reset('');
-    this.lastCargoControl.reset('');
+    // this.customerCodeControl.reset('');
+    // this.lastCargoControl.reset('');
   }
 
   filterDeleted(resultList: any[] | undefined): any {

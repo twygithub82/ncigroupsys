@@ -1336,12 +1336,27 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
         });
       }
 
+      var act="PARTIAL";
       if(this.isAllAssignedToTeam()) {
         console.log("all parts are assigned");
-        var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
+        act="ASSIGN";
+        // var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
+        //   guid: this.residueItem!.guid,
+        //   sot_guid: this.sotItem!.guid,
+        //   action: "ASSIGN"
+        // });
+        // console.log(residueStatusReq);
+        // this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
+        //   console.log(result)
+        //   if (result.data.updateResidueStatus > 0) {
+        //     this.handleSaveSuccess(result.data.updateResidueStatus);
+        //   }
+        // });
+      } 
+      var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
           guid: this.residueItem!.guid,
           sot_guid: this.sotItem!.guid,
-          action: "IN_PROGRESS"
+          action:act
         });
         console.log(residueStatusReq);
         this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
@@ -1350,90 +1365,10 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
             this.handleSaveSuccess(result.data.updateResidueStatus);
           }
         });
-      } else {
-        this.handleSaveSuccess(result?.data?.assignJobOrder);
-      }
     });
   }
 
-  save_old() {
 
-    let job_type="RESIDUE";
-    this.residueEstForm?.get('deList')?.setErrors(null);
-    
-
-    const distinctJobOrders = this.deList
-    .filter((item, index, self) =>
-      index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
-        (t.job_order?.team?.guid === item?.job_order?.team_guid ||
-          t.job_order?.team?.description === item?.job_order?.team?.description))
-    )
-    .filter(item => item !== null && item !== undefined)
-    .map(item => item.job_order);
-
-  const finalJobOrder: any[] = [];
-  distinctJobOrders.forEach(jo => {
-    if (jo) {
-      const filteredParts = this.deList.filter(part =>
-        part.job_order?.guid === jo?.guid &&
-        (part.job_order?.team?.guid === jo?.team_guid ||
-          part.job_order?.team?.description === jo?.team?.description)
-      );
-      console.log(filteredParts)
-      const partList = filteredParts.map(part => part.guid);
-      const totalApproveHours = 3;
-
-      const joRequest = new JobOrderRequest();
-      joRequest.guid = jo.guid;
-      joRequest.job_type_cv = jo.job_type_cv ?? job_type;
-      joRequest.remarks = jo.remarks;
-      joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
-      joRequest.status_cv = jo.status_cv;
-      joRequest.team_guid = jo.team_guid;
-      joRequest.total_hour = jo.total_hour ?? totalApproveHours;
-      joRequest.working_hour = jo.working_hour ?? 0;
-      joRequest.part_guid = partList;
-      finalJobOrder.push(joRequest);
-    }
-  });
-  console.log(finalJobOrder);
-  if(finalJobOrder.length==0)
-  {
-    this.residueEstForm?.get('deList')?.setErrors({required:true});
-    return;
-  }
-  this.jobOrderDS.assignJobOrder(finalJobOrder).subscribe(result => {
-    console.log(result)
-    if(result?.data?.assignJobOrder>0)
-    {
-      if(this.isAllAssignedToTeam())
-      {
-        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-        residueStatus.action="IN_PROGRESS";
-        residueStatus.guid = this.residueItem?.guid;
-        residueStatus.sot_guid= this.residueItem?.sot_guid;
-        this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
-          if(result.data.updateResidueStatus>0)
-          {
-            this.handleSaveSuccess(result.data.updateResidueStatus);
-          }
-
-         });
-        // let residueGuid = this.residueItem?.guid;
-        // let process_status="JOB_IN_PROGRESS";
-        // this.updateJobProcessStatus(residueGuid!,job_type,process_status);
-
-      }
-      else
-      {
-        this.handleSaveSuccess(result?.data?.assignJobOrder);
-      }
-    }
-  });
-
- 
-
-  }
 
   isAllAssignedToTeam(): boolean {
 

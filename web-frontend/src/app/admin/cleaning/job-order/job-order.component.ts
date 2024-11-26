@@ -190,7 +190,10 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED'
+    'COMPLETED',
+    'ASSIGNED',
+    'NO_ACTION',
+    'CANCELED'
   ]
 
   clnEstList: InGateCleaningItem[] = [];
@@ -262,7 +265,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   initSearchForm() {
     this.filterCleanForm = this.fb.group({
       filterClean: [''],
-      status_cv: [['APPROVED']],
+      status_cv: [['APPROVED','ASSIGNED']],
       customer: [''],
     });
     this.filterJobOrderForm = this.fb.group({
@@ -331,7 +334,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = addDefaultSelectOption(data, 'All');
+      this.processStatusCvList = data;
     });
   }
 
@@ -403,7 +406,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       });
     }
 
-    if (this.filterCleanForm!.get('status_cv')?.value) {
+    if (this.filterCleanForm?.get('status_cv')?.value.length>0) {
       where.and.push({
         status_cv: { in: this.filterCleanForm!.get('status_cv')?.value} 
       });

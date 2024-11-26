@@ -357,7 +357,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }; 
     where.and.push({team: { guid:{in: teamGuids }}});
     where.and.push({job_type_cv: { eq:'CLEANING'}});
-    where.and.push({status_cv: { in:['JOB_IN_PROGRESS','PENDING']}});
+    where.and.push({status_cv: { in:['JOB_IN_PROGRESS','PENDING','ASSIGNED']}});
     where.and.push({delete_dt: { eq:null}});
 
     this.jobOrderDS?.searchStartedJobOrder(where).subscribe(data=>{
@@ -385,7 +385,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   buttonViewOnly():boolean
   {
     let bView:boolean=false;
-    let viewOnlyStatus:string[]=['JOB_IN_PROGRESS','COMPLETED'];
+    let viewOnlyStatus:string[]=['JOB_IN_PROGRESS','COMPLETED','NO_ACTION','CANCELED'];
     if(this.selectedItems?.length>0)
     {
        bView = viewOnlyStatus.includes(this.selectedItems[0]?.status_cv!);
@@ -583,22 +583,27 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.jobOrderDS?.assignJobOrder(newJobOrderReq).subscribe(result=>{
       if(result.data.assignJobOrder>0)
       {
-        this.handleSaveSuccess(result.data.assignJobOrder);
-        // var cleanItem:InGateCleaningItem = new InGateCleaningItem();
-        // cleanItem.guid =selItem.guid;
-        // cleanItem.action="IN_PROGRESS";
-        // cleanItem.job_no= selItem.job_no;
-        // cleanItem.remarks= selItem.remarks;
-        // this.igCleanDS.updateInGateCleaning(cleanItem).subscribe(result=>{
-        //   if(result.data.updateCleaning>0)
-        //   {
-        //     this.handleSaveSuccess(result.data.updateCleaning);
-        //   }
 
-        //  });
-        //  let cleanGuid =selItem.guid;
-        //  let process_status="JOB_IN_PROGRESS";
-        //  this.updateJobProcessStatus(cleanGuid,job_type,process_status);
+
+        // let cleanGuid =selItem.guid;
+        // let process_status="ASSIGN";
+        // this.updateJobProcessStatus(cleanGuid,job_type,process_status);
+
+        
+        var cleanItem:InGateCleaningItem = new InGateCleaningItem();
+        cleanItem.guid =selItem.guid;
+        cleanItem.action="ASSIGNED";
+        cleanItem.job_no= selItem.job_no;
+        cleanItem.remarks= selItem.remarks;
+        this.igCleanDS.updateInGateCleaning(cleanItem).subscribe(result=>{
+          if(result.data.updateCleaning>0)
+          {
+            this.handleSaveSuccess(result.data.updateCleaning);
+          }
+
+         });
+
+        
       }
     });
 
@@ -653,15 +658,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         const distinctJobOrders :any[] =[];
         const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
         distinctJobOrders.push(jobOrder);
-        const residueJobOrder = new ClnJobOrderRequest({
+        const repJobOrder = new ClnJobOrderRequest({
           guid: this.selectedItems[0]?.guid,
           sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
           remarks: this.selectedItems[0]?.remarks,
           job_order: distinctJobOrders
         });
     
-        console.log(residueJobOrder)
-        this.igCleanDS?.abortInGateCleaning(residueJobOrder).subscribe(result => {
+        console.log(repJobOrder)
+        this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.abortCleaning);
         });

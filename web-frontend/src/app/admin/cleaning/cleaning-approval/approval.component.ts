@@ -139,7 +139,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   
   availableProcessStatus: string[] = [
-    'ALL',
+    'ASSIGNED',
     'APPROVED',
     'JOB_IN_PROGRESS',
     'COMPLETED',
@@ -218,7 +218,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       last_cargo: this.lastCargoControl,
       start_quotation_date: [''],
       end_quotation_date: [''],
-      approval_status: ['ALL'],
+      approval_status: [''],
       
     });
   }
@@ -278,7 +278,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     });
 
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = addDefaultSelectOption(data, 'All','ALL');
+      this.processStatusCvList = data;
     });
     this.search();
   }
@@ -348,11 +348,13 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       where.storing_order_tank.in_gate = {some:{eir_no:{ contains: this.searchForm!.value['eir_no'] }}};
     }
 
-    if (this.searchForm?.get("approval_status") ) {
-      if(this.searchForm?.value['approval_status']!=="ALL")
-      {
-         where.status_cv = { contains: this.searchForm!.value['approval_status'] };
-      }
+    if (this.searchForm?.get("approval_status")?.value ) {
+    
+       if(this.searchForm?.get("approval_status")?.value .length>0)
+       {
+         where.status_cv = { in: this.searchForm!.value['approval_status'] };
+       }
+      
     }
     // if (this.searchForm!.get('approval_status')?.value) {
     //   let appStatus =this.searchForm!.get('approval_status')?.value;
@@ -651,6 +653,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
       bRetval = (row.status_cv===statusMenu);
       if(!bRetval)  bRetval = (row.status_cv=='JOB_IN_PROGRESS');
+      if(statusMenu==="APPROVED") bRetval = (row.status_cv=='ASSIGNED');
 
       return bRetval;
    }

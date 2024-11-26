@@ -168,11 +168,14 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
 
   
   availableProcessStatus: string[] = [
-    'ALL',
+    'ASSIGNED',
+    'PARTIAL_ASSIGNED',
     'APPROVED',
     'JOB_IN_PROGRESS',
     'COMPLETED',
     'PENDING',
+    'NO_ACTION'
+
   ]
   searchForm?: UntypedFormGroup;
 
@@ -286,7 +289,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: ['ALL'],
+      est_status_cv: [''],
       current_status_cv: ['']
     });
   }
@@ -416,6 +419,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
+  
   copyResidueEst(residueEst: ResidueItem) {
     this.copiedResidueEst = residueEst;
   }
@@ -447,7 +451,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      this.processStatusCvList = addDefaultSelectOption(data, 'All','ALL');
+      this.processStatusCvList = data;
     });
   }
 
@@ -556,6 +560,12 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
         where.residue.some.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
       }
 
+      if (this.searchForm!.value['est_status_cv']!==undefined&&this.searchForm!.value['est_status_cv'].length>0 )
+      {
+        if(!where.residue) where.residue={};
+        if(!where.residue.some) where.residue.some={};
+        where.residue.some.status_cv={in:this.searchForm!.value['est_status_cv']} ;
+      }
     // if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
     //   let reSome: any = {};
 
@@ -758,7 +768,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       est_dt_end: '',
       approval_dt_start: '',
       approval_dt_end: '',
-      est_status_cv: 'ALL',
+      est_status_cv: '',
       current_status_cv: ''
     });
     this.customerCodeControl.reset('');

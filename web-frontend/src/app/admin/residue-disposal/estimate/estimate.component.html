@@ -126,7 +126,7 @@
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
-                      <mat-select formControlName="est_status_cv">
+                      <mat-select multiple formControlName="est_status_cv">
                         @for (codeValue of processStatusCvList; track codeValue) {
                           @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
                             <mat-option [value]="codeValue.code_val">
