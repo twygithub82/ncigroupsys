@@ -25,6 +25,8 @@ export class RepairGO {
   public bill_to_guid?: string;
   public job_no?: string;
   public total_hour?: number;
+  public allocate_by?: string;
+  public allocate_dt?: number;
   public approve_by?: string;
   public approve_dt?: number;
   public complete_dt?: number;
@@ -50,6 +52,8 @@ export class RepairGO {
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
     this.total_hour = item.total_hour || 0;
+    this.allocate_by = item.allocate_by;
+    this.allocate_dt = item.allocate_dt;
     this.approve_by = item.approve_by;
     this.approve_dt = item.approve_dt;
     this.complete_dt = item.complete_dt;

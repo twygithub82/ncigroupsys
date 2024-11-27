@@ -1276,6 +1276,183 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANKS_FOR_REPAIR_QC = gql`
+  query queryStoringOrderTank($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        guid
+        tank_no
+        so_guid
+        tank_status_cv
+        create_dt
+        create_by
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        clean_status_cv
+        unit_type_guid
+        tariff_cleaning {
+          guid
+          open_on_gate_cv
+          cargo
+          nature_cv
+          in_gate_alert
+        }
+        customer_company {
+          code
+          guid
+          name
+        }
+        storing_order {
+          create_by
+          create_dt
+          customer_company_guid
+          delete_dt
+          guid
+          haulier
+          remarks
+          so_no
+          so_notes
+          status_cv
+          update_by
+          update_dt
+          customer_company {
+            code
+            guid
+            name
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          guid
+          eir_no
+          eir_dt
+          create_dt
+          delete_dt
+          in_gate_survey {
+            tank_comp_guid
+          }
+        }
+        tank {
+          unit_type
+          tariff_depot_guid
+        }
+        repair(where: { delete_dt: { eq: null }, status_cv: { in: ["JOB_COMPLETED"] } }) {
+          allocate_by
+          allocate_dt
+          approve_by
+          approve_dt
+          aspnetusers_guid
+          bill_to_guid
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          estimate_no
+          guid
+          job_no
+          labour_cost
+          labour_cost_discount
+          material_cost_discount
+          na_dt
+          owner_enable
+          remarks
+          sot_guid
+          status_cv
+          total_cost
+          total_hour
+          update_by
+          update_dt
+          repair_part {
+            action
+            approve_cost
+            approve_hour
+            approve_part
+            approve_qty
+            comment
+            complete_dt
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            hour
+            job_order_guid
+            location_cv
+            material_cost
+            owner
+            quantity
+            remarks
+            repair_guid
+            tariff_repair_guid
+            update_by
+            update_dt
+            rp_damage_repair {
+              action
+              code_cv
+              code_type
+              create_by
+              create_dt
+              delete_dt
+              guid
+              rp_guid
+              update_by
+              update_dt
+            }
+            tariff_repair {
+              group_name_cv
+              subgroup_name_cv
+            }
+            job_order {
+              team {
+                description
+              }
+            }
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          eir_dt
+          eir_no
+          eir_status_cv
+          guid
+          haulier
+          lolo_cv
+          preinspection_cv
+          remarks
+          so_tank_guid
+          update_by
+          update_dt
+          vehicle_no
+          yard_cv
+          in_gate_survey {
+            last_test_cv
+            test_class_cv
+            test_dt
+            next_test_cv
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const CANCEL_STORING_ORDER_TANK = gql`
   mutation CancelStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
     cancelStoringOrderTank(sot: $sot)
@@ -1647,6 +1824,33 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTankForRepairQC(guid: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+
+    const where = {
+      guid: { eq: guid }
+    }
+
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_REPAIR_QC,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

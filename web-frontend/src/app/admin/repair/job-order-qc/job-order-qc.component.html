@@ -50,7 +50,7 @@
 </form>
 <div class="responsive_table">
   @for(row of sotList; track row){
-  <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
+  <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple [routerLink]="['/admin/repair/qc/view', row.guid]">
     <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
       <mat-card-title [ngClass]="{'pt-1': true}">
         {{row.tank_no}}
@@ -114,8 +114,7 @@
             </mat-cell>
           </ng-container>
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-          <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-            [routerLink]="['/admin/repair/qc/view', row.guid]" matRipple>
+          <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
           </mat-row>
         </table>
       </div>

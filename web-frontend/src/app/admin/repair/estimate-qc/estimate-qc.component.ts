@@ -105,10 +105,10 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     'approve_part',
     'team',
   ];
-  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
+  pageTitleDetails = 'MENUITEMS.REPAIR.LIST.QC-DETAILS'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.APPROVAL'
+    'MENUITEMS.REPAIR.TEXT'
   ]
   translatedLangText: any = {}
   langText = {
@@ -214,12 +214,14 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   clean_statusList: CodeValuesItem[] = [];
 
+  sot_guid?: string | null;
   repair_guid?: string | null;
 
   repairForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
   repairItem?: RepairItem;
+  repairItemList?: RepairItem[] = [];
   // packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
@@ -347,7 +349,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
 
     this.cvDS.connectAlias('groupNameCv').subscribe(data => {
       this.groupNameCvList = data;
-      this.updateData(this.repList);
       const subqueries: any[] = [];
       data.map(d => {
         if (d.child_code) {
@@ -366,6 +367,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
           });
         });
       }
+      this.repairItemList?.forEach(repair => repair.repair_part = this.regroupRepairPart(repair.repair_part));
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
@@ -401,53 +403,79 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
       this.processStatusCvList = data;
     });
 
-    this.repair_guid = this.route.snapshot.paramMap.get('id');
-    if (this.repair_guid) {
-      this.subs.sink = this.repairDS.getRepairByIDForQC(this.repair_guid).subscribe(data => {
+    // this.repair_guid = this.route.snapshot.paramMap.get('id');
+    // if (this.repair_guid) {
+    //   this.subs.sink = this.repairDS.getRepairByIDForQC(this.repair_guid).subscribe(data => {
+    //     if (data?.length) {
+    //       this.repairItem = data[0];
+    //       console.log(this.repairItem);
+    //       this.sotItem = this.repairItem?.storing_order_tank;
+    //       this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+    //         if (cc?.length) {
+    //           const bill_to = this.repairForm?.get('bill_to');
+    //           this.customer_companyList = cc;
+    //           if (this.repairItem?.bill_to_guid) {
+    //             const found = this.customer_companyList?.filter(x => x.guid === this.repairItem?.bill_to_guid)
+    //             if (found?.length) {
+    //               bill_to?.setValue(found[0]);
+    //             }
+    //           } else if (this.customer_companyList?.length == 1) {
+    //             bill_to?.setValue(this.customer_companyList[0]);
+    //           }
+    //           if (!this.repairDS.canApprove(this.repairItem)) {
+    //             bill_to?.disable();
+    //           }
+    //         }
+    //       });
+    //       this.populateRepair(this.repairItem);
+    //     }
+    //   });
+    // }
+
+    this.sot_guid = this.route.snapshot.paramMap.get('id');
+    if (this.sot_guid) {
+      this.subs.sink = this.sotDS.getStoringOrderTankForRepairQC(this.sot_guid).subscribe(data => {
         if (data?.length) {
-          this.repairItem = data[0];
-          console.log(this.repairItem);
-          this.sotItem = this.repairItem?.storing_order_tank;
-          this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
-            if (cc?.length) {
-              const bill_to = this.repairForm?.get('bill_to');
-              this.customer_companyList = cc;
-              if (this.repairItem?.bill_to_guid) {
-                const found = this.customer_companyList?.filter(x => x.guid === this.repairItem?.bill_to_guid)
-                if (found?.length) {
-                  bill_to?.setValue(found[0]);
-                }
-              } else if (this.customer_companyList?.length == 1) {
-                bill_to?.setValue(this.customer_companyList[0]);
-              }
-              if (!this.repairDS.canApprove(this.repairItem)) {
-                bill_to?.disable();
-              }
-            }
-          });
-          this.populateRepair(this.repairItem);
+          console.log(data);
+          this.sotItem = data[0];
+          this.repairItemList = this.sotItem?.repair;
+          this.repairItemList?.forEach(repair => repair.repair_part = this.regroupRepairPart(repair.repair_part));
+          // this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+          //   if (cc?.length) {
+          //     const bill_to = this.repairForm?.get('bill_to');
+          //     this.customer_companyList = cc;
+          //     if (this.repairItem?.bill_to_guid) {
+          //       const found = this.customer_companyList?.filter(x => x.guid === this.repairItem?.bill_to_guid)
+          //       if (found?.length) {
+          //         bill_to?.setValue(found[0]);
+          //       }
+          //     } else if (this.customer_companyList?.length == 1) {
+          //       bill_to?.setValue(this.customer_companyList[0]);
+          //     }
+          //     if (!this.repairDS.canApprove(this.repairItem)) {
+          //       bill_to?.disable();
+          //     }
+          //   }
+          // });
+          // this.populateRepair(this.repairItem);
         }
       });
     }
   }
 
-  populateRepair(repair: RepairItem) {
-    this.isOwner = repair.owner_enable ?? false;
-    this.isOwnerChanged();
-    repair.repair_part = this.filterDeleted(repair.repair_part)
-    this.repairForm?.patchValue({
-      job_no: repair.job_no || this.sotItem?.job_no,
-      guid: repair.guid,
-      remarks: repair.remarks,
-      surveyor_id: repair.aspnetusers_guid,
-      labour_cost_discount: repair.labour_cost_discount,
-      material_cost_discount: repair.material_cost_discount
-    });
-    this.updateData(repair.repair_part);
-    if (!this.repairDS.canApprove(this.repairItem)) {
-      this.repairForm?.get('job_no')?.disable();
-    }
-  }
+  // populateRepair(repair: RepairItem) {
+  //   this.isOwner = repair.owner_enable ?? false;
+  //   this.isOwnerChanged();
+  //   repair.repair_part = this.filterDeleted(repair.repair_part)
+  //   this.repairForm?.patchValue({
+  //     job_no: repair.job_no || this.sotItem?.job_no,
+  //     guid: repair.guid,
+  //     remarks: repair.remarks,
+  //     surveyor_id: repair.aspnetusers_guid,
+  //     labour_cost_discount: repair.labour_cost_discount,
+  //     material_cost_discount: repair.material_cost_discount
+  //   });
+  // }
 
   // getCustomerLabourPackage(customer_company_guid: string) {
   //   const where = {
@@ -485,13 +513,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv === 'BRANCH' ? cc.type_cv : 'CUSTOMER'}` : '';
   }
 
-  selectOwner($event: Event, row: RepairPartItem) {
-    this.stopPropagation($event);
-    row.owner = !(row.owner || false);
-    this.calculateCost();
-    // this.getCalculateCost();
-  }
-
   editApproveDetails(event: Event, row: RepairPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -519,30 +540,12 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
         });
         if (result.index >= 0) {
           data[result.index] = updatedItem;
-          this.updateData(data);
+          this.regroupRepairPart(data);
         } else {
-          this.updateData([...this.repList, result.item]);
+          this.regroupRepairPart([...this.repList, result.item]);
         }
       }
     });
-  }
-
-  undoTempAction(row: any[], actionToBeRemove: string) {
-    const data: any[] = [...this.repList];
-    row.forEach((newItem: any) => {
-      const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-      if (index !== -1) {
-        data[index] = {
-          ...data[index],
-          ...newItem,
-          actions: Array.isArray(data[index].actions!)
-            ? data[index].actions!.filter((action: any) => action !== actionToBeRemove)
-            : []
-        };
-      }
-    });
-    this.updateData(data);
   }
 
   // context menu
@@ -624,7 +627,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
-  updateData(newData: RepairPartItem[] | undefined): void {
+  regroupRepairPart(newData: RepairPartItem[] | undefined): RepairPartItem[] {
     if (newData?.length) {
       newData = newData.map((row) => ({
         ...row,
@@ -635,15 +638,13 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
       }));
 
       newData = this.repairPartDS.sortAndGroupByGroupName(newData);
-      // newData = [...this.sortREP(newData)];
 
-      this.repList = newData.map((row, index) => ({
+      return newData.map((row, index) => ({
         ...row,
         index: index
       }));
-      this.calculateCost();
-      // this.getCalculateCost();
     }
+    return [];
   }
 
   handleSaveSuccess(count: any) {
@@ -677,6 +678,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     switch (status) {
       case 'APPROVED':
       case 'QC_COMPLETED':
+      case 'JOB_COMPLETED':
         return 'badge-solid-green';
       case 'PENDING':
         return 'badge-solid-cyan';
@@ -686,7 +688,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
       case 'JOB_IN_PROGRESS':
         return 'badge-solid-purple';
       default:
-        return '';
+        return 'badge-solid-green';
     }
   }
 
@@ -785,7 +787,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   displayDate(input: number | undefined): string | undefined {
-    if (!input) return 'NA';
     return Utility.convertEpochToDateStr(input);
   }
 
@@ -821,79 +822,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
       return figure.toFixed(2);
     }
     return "";
-  }
-
-  calculateCost() {
-    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt && (item.approve_part ?? true));
-    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (item.approve_part ?? true));
-    const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
-    const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
-
-    let total_hour = 0;
-    let total_labour_cost = 0;
-    let total_mat_cost = 0;
-    let total_cost = 0;
-    let discount_labour_cost = 0;
-    let discount_mat_cost = 0;
-    let net_cost = 0;
-
-    const totalOwner = this.repairDS.getTotal(ownerList);
-    const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-    const total_owner_mat_cost = totalOwner.total_mat_cost;
-    const total_owner_cost = this.repairDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    const discount_labour_owner_cost = this.repairDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    const discount_mat_owner_cost = this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    const net_owner_cost = this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
-
-    this.repairForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-    this.repairForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-    this.repairForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-    this.repairForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-    this.repairForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-    this.repairForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-    this.repairForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
-
-    total_hour += total_owner_hour;
-    total_labour_cost += total_owner_labour_cost;
-    total_mat_cost += total_owner_mat_cost;
-    total_cost += total_owner_cost;
-    discount_labour_cost += discount_labour_owner_cost;
-    discount_mat_cost += discount_mat_owner_cost;
-    net_cost += net_owner_cost;
-
-    const totalLessee = this.repairDS.getTotal(lesseeList);
-    const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-    const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    const total_lessee_cost = this.repairDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    const discount_labour_lessee_cost = this.repairDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    const discount_mat_lessee_cost = this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    const net_lessee_cost = this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
-
-    this.repairForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-    this.repairForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-    this.repairForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-    this.repairForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-    this.repairForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-    this.repairForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-    this.repairForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
-
-    total_hour += total_lessee_hour;
-    total_labour_cost += total_lessee_labour_cost;
-    total_mat_cost += total_lessee_mat_cost;
-    total_cost += total_lessee_cost;
-    discount_labour_cost += discount_labour_lessee_cost;
-    discount_mat_cost += discount_mat_lessee_cost;
-    net_cost += net_lessee_cost;
-
-    this.repairForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-    this.repairForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-    this.repairForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-    this.repairForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-    this.repairForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-    this.repairForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-    this.repairForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
   }
 
   filterDeleted(resultList: any[] | undefined): any {
