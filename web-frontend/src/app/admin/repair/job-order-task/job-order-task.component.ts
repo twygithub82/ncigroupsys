@@ -512,7 +512,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
           const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
             guid: firstJobPart!.repair.guid,
             sot_guid: jobOrderItem.storing_order_tank?.guid,
-            action: "JOB_COMPLETE"
+            action: "COMPLETE"
           });
           console.log(repairStatusReq);
           this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {

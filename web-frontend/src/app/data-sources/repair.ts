@@ -1454,6 +1454,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED';
   }
 
+  canQCComplete(re: RepairItem | undefined): boolean {
+    return (re?.status_cv === 'COMPLETED');
+  }
+
   canCopy(re: RepairItem): boolean {
     return true;
   }

@@ -367,7 +367,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
           });
         });
       }
-      this.repairItemList?.forEach(repair => repair.repair_part = this.regroupRepairPart(repair.repair_part));
+      this.repList = this.regroupRepairPart(this.repList);
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
@@ -403,79 +403,49 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
       this.processStatusCvList = data;
     });
 
-    // this.repair_guid = this.route.snapshot.paramMap.get('id');
-    // if (this.repair_guid) {
-    //   this.subs.sink = this.repairDS.getRepairByIDForQC(this.repair_guid).subscribe(data => {
-    //     if (data?.length) {
-    //       this.repairItem = data[0];
-    //       console.log(this.repairItem);
-    //       this.sotItem = this.repairItem?.storing_order_tank;
-    //       this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
-    //         if (cc?.length) {
-    //           const bill_to = this.repairForm?.get('bill_to');
-    //           this.customer_companyList = cc;
-    //           if (this.repairItem?.bill_to_guid) {
-    //             const found = this.customer_companyList?.filter(x => x.guid === this.repairItem?.bill_to_guid)
-    //             if (found?.length) {
-    //               bill_to?.setValue(found[0]);
-    //             }
-    //           } else if (this.customer_companyList?.length == 1) {
-    //             bill_to?.setValue(this.customer_companyList[0]);
-    //           }
-    //           if (!this.repairDS.canApprove(this.repairItem)) {
-    //             bill_to?.disable();
-    //           }
-    //         }
-    //       });
-    //       this.populateRepair(this.repairItem);
-    //     }
-    //   });
-    // }
-
-    this.sot_guid = this.route.snapshot.paramMap.get('id');
-    if (this.sot_guid) {
-      this.subs.sink = this.sotDS.getStoringOrderTankForRepairQC(this.sot_guid).subscribe(data => {
+    this.repair_guid = this.route.snapshot.paramMap.get('id');
+    if (this.repair_guid) {
+      this.subs.sink = this.repairDS.getRepairByIDForQC(this.repair_guid).subscribe(data => {
         if (data?.length) {
-          console.log(data);
-          this.sotItem = data[0];
-          this.repairItemList = this.sotItem?.repair;
-          this.repairItemList?.forEach(repair => repair.repair_part = this.regroupRepairPart(repair.repair_part));
-          // this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
-          //   if (cc?.length) {
-          //     const bill_to = this.repairForm?.get('bill_to');
-          //     this.customer_companyList = cc;
-          //     if (this.repairItem?.bill_to_guid) {
-          //       const found = this.customer_companyList?.filter(x => x.guid === this.repairItem?.bill_to_guid)
-          //       if (found?.length) {
-          //         bill_to?.setValue(found[0]);
-          //       }
-          //     } else if (this.customer_companyList?.length == 1) {
-          //       bill_to?.setValue(this.customer_companyList[0]);
-          //     }
-          //     if (!this.repairDS.canApprove(this.repairItem)) {
-          //       bill_to?.disable();
-          //     }
-          //   }
-          // });
-          // this.populateRepair(this.repairItem);
+          this.repairItem = data[0];
+          console.log(this.repairItem);
+          this.sotItem = this.repairItem?.storing_order_tank;
+          this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+            if (cc?.length) {
+              const bill_to = this.repairForm?.get('bill_to');
+              this.customer_companyList = cc;
+              if (this.repairItem?.bill_to_guid) {
+                const found = this.customer_companyList?.filter(x => x.guid === this.repairItem?.bill_to_guid)
+                if (found?.length) {
+                  bill_to?.setValue(found[0]);
+                }
+              } else if (this.customer_companyList?.length == 1) {
+                bill_to?.setValue(this.customer_companyList[0]);
+              }
+              if (!this.repairDS.canApprove(this.repairItem)) {
+                bill_to?.disable();
+              }
+            }
+          });
+          this.populateRepair(this.repairItem);
         }
       });
     }
   }
 
-  // populateRepair(repair: RepairItem) {
-  //   this.isOwner = repair.owner_enable ?? false;
-  //   this.isOwnerChanged();
-  //   repair.repair_part = this.filterDeleted(repair.repair_part)
-  //   this.repairForm?.patchValue({
-  //     job_no: repair.job_no || this.sotItem?.job_no,
-  //     guid: repair.guid,
-  //     remarks: repair.remarks,
-  //     surveyor_id: repair.aspnetusers_guid,
-  //     labour_cost_discount: repair.labour_cost_discount,
-  //     material_cost_discount: repair.material_cost_discount
-  //   });
-  // }
+  populateRepair(repair: RepairItem) {
+    this.isOwner = repair.owner_enable ?? false;
+    repair.repair_part = this.filterDeleted(repair.repair_part)
+    this.repairForm?.patchValue({
+      job_no: repair.job_no || this.sotItem?.job_no,
+      guid: repair.guid,
+      remarks: repair.remarks,
+      surveyor_id: repair.aspnetusers_guid,
+      labour_cost_discount: repair.labour_cost_discount,
+      material_cost_discount: repair.material_cost_discount
+    });
+    this.repList = this.regroupRepairPart(repair.repair_part);
+  }
 
   // getCustomerLabourPackage(customer_company_guid: string) {
   //   const where = {
@@ -511,41 +481,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   displayCustomerCompanyName(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv === 'BRANCH' ? cc.type_cv : 'CUSTOMER'}` : '';
-  }
-
-  editApproveDetails(event: Event, row: RepairPartItem, index: number) {
-    this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
-      data: {
-        item: row,
-        action: 'edit',
-        translatedLangText: this.translatedLangText,
-        index: index,
-        repairItem: this.repairItem
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const data = [...this.repList];
-        const updatedItem = new RepairPartItem({
-          ...result.item,
-        });
-        if (result.index >= 0) {
-          data[result.index] = updatedItem;
-          this.regroupRepairPart(data);
-        } else {
-          this.regroupRepairPart([...this.repList, result.item]);
-        }
-      }
-    });
   }
 
   // context menu
@@ -584,7 +519,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     });
 
     console.log(repJobOrder)
-    this.joDS.completeQCRepair(repJobOrder).subscribe(result => {
+    this.joDS.completeQCRepair([repJobOrder]).subscribe(result => {
       console.log(result)
       if ((result?.data?.completeQCRepair ?? 0) > 0) {
         this.handleSaveSuccess(result?.data?.completeQCRepair);
@@ -594,37 +529,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   onFormSubmit() {
     this.repairForm!.get('repList')?.setErrors(null);
-  }
-
-  isOwnerChanged(): void {
-    if (this.isOwner) {
-      this.displayedColumns = [
-        'seq',
-        'subgroup_name_cv',
-        'damange',
-        'repair',
-        'description',
-        'quantity',
-        'hour',
-        'price',
-        'material',
-        'isOwner',
-        'actions'
-      ];
-    } else {
-      this.displayedColumns = [
-        'seq',
-        'subgroup_name_cv',
-        'damange',
-        'repair',
-        'description',
-        'quantity',
-        'hour',
-        'price',
-        'material',
-        'actions'
-      ];
-    }
   }
 
   regroupRepairPart(newData: RepairPartItem[] | undefined): RepairPartItem[] {
