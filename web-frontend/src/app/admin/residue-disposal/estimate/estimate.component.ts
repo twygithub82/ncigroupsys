@@ -501,7 +501,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['CLEANING'] }
+      tank_status_cv: { in: ['CLEANING','STORAGE'] }
     };
 
     if (this.searchForm!.value['tank_no']) {

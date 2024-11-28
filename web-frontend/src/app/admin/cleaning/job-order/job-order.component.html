@@ -115,6 +115,7 @@
                           class="mobile-label">{{translatedLangText.METHOD}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description:'-'}}
                       </mat-cell>
                     </ng-container>
+                    
                     <ng-container matColumnDef="status_cv">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.STATUS}}
@@ -148,15 +149,15 @@
                   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventClean($event)">
                 </mat-paginator>
               </mat-tab>
-              <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
+              <!-- <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
                 <app-job-order-task></app-job-order-task>
-              </mat-tab>
-              <!-- <mat-tab>
+              </mat-tab> -->
+              <mat-tab>
                 <ng-template mat-tab-label>
                   <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
                 </ng-template>
                 <app-job-order-qc></app-job-order-qc>
-              </mat-tab> -->
+              </mat-tab>
             </mat-tab-group>
           </div>
         </div>

@@ -328,7 +328,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   search() {
     const where: any = {
-      
+      storing_order_tank:{tank_status_cv: { in: ['CLEANING','STORAGE'] }}
     };
 
     //where.storing_order_tank={};

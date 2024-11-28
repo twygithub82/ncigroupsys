@@ -148,8 +148,9 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   availableProcessStatus: string[] = [
     // 'APPROVED',
      'JOB_IN_PROGRESS',
-    // 'COMPLETED',
-     'QC_COMPLETED'
+     'COMPLETED',
+     'CANCELED',
+     'PENDING',
    ]
 
    
@@ -212,7 +213,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.filterJobOrderForm = this.fb.group({
       filterResidue: [''],
       jobStatusCv: [['PENDING', 'JOB_IN_PROGRESS']],
-      status_cv: [['QC_COMPLETED', 'JOB_IN_PROGRESS']],
+      status_cv: [['COMPLETED', 'JOB_IN_PROGRESS']],
       customer: [''],
     });
   }
@@ -257,12 +258,28 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
 
   onResidueFilter(){
     const where: any = {
-      and:[]
+     // status_cv: { in: ["JOB_IN_PROGRESS", "CANCELED", "AV","COMPLETED"] },
+      residue_part: {
+        all: {
+          delete_dt: { eq: null },
+          or: [
+            { approve_part: { eq: false } },
+            {
+              approve_part: { eq: true },
+              job_order: { status_cv: { in: ["COMPLETED", "CANCELED"] } }
+            },
+            {
+              approve_part: { eq: null },
+              job_order: { status_cv: { in: ["COMPLETED", "CANCELED"] } }
+            }
+          ]
+        }
+      }
     };
     
-    where.and.push({
-      residue_part:{all:{job_order: { status_cv: {eq:'COMPLETED' }}}}
-    });
+    // where.and.push({
+    //   residue_part:{some:{job_order: { status_cv: {eq:'COMPLETED' }}}}
+    // });
 
     // or: [
     //   { storing_order_tank: { tank_no: { contains: "" } } },
@@ -275,14 +292,16 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     }
 
     if (this.filterJobOrderForm!.get('customer')?.value) {
+      where.and = where.and || []; // Initialize if not already present
       where.and.push({
         customer_company: { code: { eq: (this.filterJobOrderForm!.get('customer')?.value).code } }
       });
     }
 
-    if (this.filterJobOrderForm!.get('status_cv')?.value) {
+    if (this.filterJobOrderForm?.get('status_cv')?.value) {
+      where.and = where.and || []; // Initialize if not already present
       where.and.push({
-        status_cv: { in: this.filterJobOrderForm!.get('status_cv')?.value} 
+        status_cv: { in: this.filterJobOrderForm?.get('status_cv')?.value }
       });
     }
 
@@ -306,7 +325,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
 
   onFilter() {
     const where: any = {
-      status_cv: { in: ["JOB_IN_PROGRESS", "QC_COMPLETED", "AV"] },
+      status_cv: { in: ["JOB_IN_PROGRESS", "QC_COMPLETED", "AV","COMPLETED"] },
       repair_part: {
         all: {
           delete_dt: { eq: null },
