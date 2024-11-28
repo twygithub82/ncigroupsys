@@ -643,6 +643,51 @@ export const ROUTES: RouteInfo[] = [
       }
     ]
   },
+  {
+    path: "admin/steam",
+    title: "MENUITEMS.STEAM.TEXT",
+    iconType: "material",
+    icon: "opacity",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/steam/estimate",
+        title: "MENUITEMS.STEAM.LIST.STEAM-ESTIMATE",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/steam/approval",
+        title: "MENUITEMS.STEAM.LIST.STEAM-APPROVAL",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/steam/job-order",
+        title: "MENUITEMS.STEAM.LIST.JOB-ORDER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      }
+    ]
+  },
   // {
   //   path: "advance-table",
   //   title: "MENUITEMS.ADVANCE-TABLE.TEXT",

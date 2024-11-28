@@ -59,6 +59,14 @@ import { ResidueJobOrderTaskDetailsComponent } from './residue-disposal/job-orde
 import { ResidueQCViewComponent } from './residue-disposal/estimate-qc/estimate-qc.component';
 import { TariffSteamComponent } from './tariff/tariff-steam/tariff-steam.component';
 import { PackageSteamComponent } from './package/package-steam/package-steam.component';
+import { SteamQCViewComponent } from './steam/estimate-qc/estimate-qc.component';
+import { SteamJobOrderTaskDetailsComponent } from './steam/job-order-task-details/job-order-task-details.component';
+import { JobOrderAllocationSteamComponent } from './steam/job-order-allocation/job-order-allocation.component';
+import { JobOrderSteamComponent } from './steam/job-order/job-order.component';
+import { SteamApprovalViewComponent } from './steam/approval-view/approval-view.component';
+import { SteamEstimateNewComponent } from './steam/estimate-new/estimate-new.component';
+import { SteamEstimateComponent } from './steam/estimate/estimate.component';
+import { SteamApprovalComponent } from './steam/approval/approval.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -335,7 +343,38 @@ export const ADMIN_ROUTE: Routes = [
     path: "residue-disposal/qc/view/:id",
     component: ResidueQCViewComponent,
   },
-  
+  {
+    path: "steam/approval",
+    component: SteamApprovalComponent,
+  },
+  {
+    path: "steam/estimate",
+    component: SteamEstimateComponent,
+  },
+  {
+    path: "steam/estimate/new/:id",
+    component: SteamEstimateNewComponent,
+  },
+  {
+    path: "steam/approval/view/:id",
+    component: SteamApprovalViewComponent,
+  },
+  {
+    path: "steam/job-order",
+    component: JobOrderSteamComponent,
+  },
+  {
+    path: "steam/job-order/allocation/:id",
+    component: JobOrderAllocationSteamComponent,
+  },
+  {
+    path: "steam/job-order/task/:id/:residue_id",
+    component: SteamJobOrderTaskDetailsComponent,
+  },
+  {
+    path: "steam/qc/view/:id",
+    component: SteamQCViewComponent,
+  },
 ];
 
 // @NgModule({

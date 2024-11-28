@@ -681,6 +681,10 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     return validStatus.includes(re?.status_cv!);
   }
 
+  canQCComplete(re: ResidueItem | undefined): boolean {
+    return (re?.status_cv === 'COMPLETED');
+  }
+
   canCancel(re: ResidueItem): boolean {
     return re.status_cv === 'PENDING';
   }

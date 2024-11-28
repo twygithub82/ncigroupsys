@@ -1,0 +1,478 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitleDetails" [items]="breadcrumsMiddleList"
+      [active_item]="translatedLangText.VIEW"></app-breadcrumb>
+    </div>
+    <div class="row">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <div class="header">
+            <h2>
+              {{translatedLangText.TANK_DETAILS}}
+            </h2>
+          </div>
+          <div class="body">
+            @if (sotDS.loading$ | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
+            </div>
+            }
+            @if (!(sotDS.loading$ | async)) {
+            <mat-card-content>
+              <div class="row">
+                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.TANK_NO}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">{{sotItem?.tank_no}}</div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.CUSTOMER}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.LAST_CARGO}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{sotItem?.tariff_cleaning?.cargo}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right pt-2">
+                      <span>{{translatedLangText.OWNER}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex">
+                      <div class="contact-detail-info font-bold pt-2">
+                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.EIR_NO}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.EIR_DATE}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{displayDateTime(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.PURPOSE}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">{{displayTankPurpose(sotItem!)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.LAST_TEST}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
+                      <span>{{translatedLangText.NEXT_TEST}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{getNextTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    <form class="ms-0" [formGroup]="residueEstForm!"  #formDirective="ngForm">
+    <div class="row">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <div class="header">
+            <h2>
+              {{translatedLangText.BILLING_PROFILE}}
+            </h2>
+          </div>
+          <div class="body">
+            @if (sotDS.loading$ | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
+            </div>
+            }
+            @if (!(sotDS.loading$ | async)) {
+            <mat-card-content>
+              <div class="row">
+                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row">
+                    
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
+                        <input matInput formControlName="customer_code" readonly>
+                      </mat-form-field>
+                    </div>
+                    <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">{{ccDS.displayName(sotItem?.storing_order?.customer_company)}}</div>
+                    </div> -->
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.DEPOT_REFERENCE}}</mat-label>
+                        <input matInput formControlName="job_no" readonly>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row">
+                  
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+                          <mat-select formControlName="billing_branch" readonly>
+                            @for (item of billingBranchList; track item) {
+                            <mat-option [value]="item">
+                              {{ this.ccDS.displayName(item)}}
+                            </mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                        <input matInput formControlName="remarks" readonly>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+   
+      <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.ESTIMATE_DETAILS}}
+              </h2>
+            </div>
+            <div class="body">
+              @if (sotDS.loadingSubject | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              @if (!(sotDS.loadingSubject | async)) {
+              <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
+                    <input matInput formControlName="desc" [matAutocomplete]="description" readonly>
+                    <mat-autocomplete #description="matAutocomplete" [displayWith]="displayResiduePart">
+                      @for (cc of displayPackResidueList; track cc) {
+                      <mat-option [value]="cc">
+                        {{cc.tariff_residue?.description}}
+                      </mat-option>
+                      }
+                    </mat-autocomplete>
+                    @if (residueEstForm?.get('desc')?.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
+                      @if (residueEstForm?.get('desc')?.hasError('duplicated')) {
+                        <mat-error>
+                          {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.EXISTED}}
+                        </mat-error>
+                        }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
+                    <input matInput formControlName="qty" type="number" required="true">
+                    @if (residueEstForm?.get('qty')?.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.UNIT_PRICE}}</mat-label>
+                    <input matInput formControlName="unit_price" type="number" required="true">
+                    @if (residueEstForm?.get('unit_price')?.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addEstDetails($event)"  [disabled]="!this.updateSelectedItem">
+                    <mat-icon class="col-white">
+                        edit
+                    </mat-icon>
+                    {{translatedLangText.ESTIMATE_DETAILS}}
+                  </button>
+                  @if(this.updateSelectedItem){
+                    <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="CancelEditEstDetails($event)">
+                    <mat-icon class="col-white">
+                      cancel
+                    </mat-icon>
+                      {{translatedLangText.CANCEL}}
+                    </button>
+                  }
+                </div>
+              </div> 
+              <div class="body overflow-auto">
+                <div class="responsive_table">
+                  <table mat-table [dataSource]="deList" matSort
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                    <!-- ID Column -->
+                    <ng-container matColumnDef="seq">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+                      <mat-cell *matCellDef="let row; let i = index"  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="desc">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        {{translatedLangText.DESCRIPTION}}
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row" class="">
+                        <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
+                      </mat-cell>
+                      <mat-footer-cell  *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}" >
+                      </mat-footer-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="qty">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        {{translatedLangText.QUANTITY}}
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row" class="">
+                        <span
+                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.approve_qty}}
+                      </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="unit_price">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        {{translatedLangText.UNIT_PRICE}}
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row" class="">
+                        <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.approve_cost)}}
+                      </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="cost">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef >
+                        {{translatedLangText.COST}}
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row" class="">
+                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.approve_qty*row.approve_cost)}}
+                      </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" >
+                        <span class="mobile-label" > </span>{{this.parse2Decimal( getTotalCost()) }}
+                      </mat-footer-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="approve_part">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        mat-sort-header>
+                        <mat-icon>more_vert</mat-icon>
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
+                      
+    
+                        @if (row.approve_part === null || row.approve_part === undefined ||
+                        IsApprovePart(row)){
+                        <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
+                        }
+                        
+                      </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                      <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row;" class="justify-content-end">
+                        <button mat-icon-button (click)="handleDelete($event, row, row.index)">
+                          <mat-icon>delete_forever</mat-icon>
+                          <span>{{translatedLangText.DELETE}}</span>
+                        </button>
+                      </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"  (click)="editEstDetails($event, row, row.index)"
+                    [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt&&row.edited}"
+                    [style.cursor]="'pointer'"  
+                      matRipple>
+                    </mat-row>
+                    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+                  </table>
+                </div>
+                <!-- No result -->
+                @if (!(igDS.loading$ | async) && !deList.length) {
+                <mat-divider></mat-divider>
+                <div class="no-results m-l-20 pt-3" [style.display]="deList.length === 0 ? '' : 'none'">
+                  <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                </div>
+                }
+                <!-- Loading spinner -->
+                @if (igDS.loading$ | async) {
+                <div class="tbl-spinner">
+                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                  </mat-progress-spinner>
+                </div>
+                }
+              </div>
+              }
+              <mat-divider></mat-divider>
+              @if (residueEstForm?.get('deList')?.hasError('required')) {
+              <mat-error class="ps-3">
+                {{translatedLangText.ADD_ATLEAST_ONE}}
+              </mat-error>
+              }
+            </div>
+
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
+                <button mat-flat-button type="button" aria-label="Back to previous page"
+                   (click)="GoBackPrevious($event)">
+                  <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                </button>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                @if (canExport()) {
+                <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5">
+                  @if (!(residueDS.loading$ | async)) {
+                  <i class="fas fa-file-export"></i>
+                  } @else if ((residueDS.loading$ | async)) {
+                  <mat-icon>
+                    <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                  </mat-icon>
+                  }
+                  {{translatedLangText.EXPORT}}
+                </button>
+                }
+                <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right">
+                  @if (residueDS.canRollback(residueItem!)) {
+                  <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)"
+                    (click)="onRollback($event)">
+                    <mat-icon>
+                      @if (!(residueDS.loading$ | async)) {
+                      undo
+                      } @else if ((residueDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.ROLLBACK}}
+                  </button>
+                  }
+                  @if (residueDS.canApprove(residueItem!)) {
+                  <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async)" class="m-l-5 bg-green"
+                    (click)="onApprove($event)">
+                    <mat-icon>
+                      @if (!(residueDS.loading$ | async)) {
+                      done
+                      } @else if ((residueDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.APPROVE}}
+                  </button>
+                  }
+                  @if (residueDS.canCancel(residueItem!)) {
+                  <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-l-5"
+                    (click)="onCancel($event)">
+                    <mat-icon>
+                      @if (!(residueDS.loading$ | async)) {
+                      close
+                      } @else if ((residueDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.CANCEL}}
+                  </button>
+                  }
+                   <!-- @if (residueDS.canSave(residueItem!)) {
+                  <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-l-5" (click)="onSave($event)">
+                    <mat-icon>
+                      @if (!(residueDS.loading$ | async)) {
+                      save
+                      } @else if ((residueDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.SAVE_AND_SUBMIT}}
+                  </button>
+                  }  -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     
+    </form>
+  </div>
+</section>

@@ -202,6 +202,16 @@
         "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval",
         "JOB-ORDER":"Job Order"
       }
+    },
+    "STEAM":{
+      "TEXT": "Steam",
+      "LIST": {
+        "STEAM-ESTIMATE": "Steam Estimate",
+        "STEAM-APPROVAL": "Steam Approval",
+        "JOB-ORDER":"Job Order",
+        "ESTIMATE-NEW": "New Estimate",
+        "ESTIMATE-EDIT": "Edit Estimate"
+      }
     }
 
   },
