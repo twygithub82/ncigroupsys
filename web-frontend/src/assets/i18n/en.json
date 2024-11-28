@@ -184,7 +184,8 @@
         "ESTIMATE-EDIT": "Edit Estimate",
         "APPROVAL": "Estimate Approval",
         "APPROVAL-DETAILS": "Estimate Approval Details",
-        "JOB-ORDER": "Job Order"
+        "JOB-ORDER": "Job Order",
+        "QC-DETAILS": "QC Details"
       }
     },
     "CLEANING": {

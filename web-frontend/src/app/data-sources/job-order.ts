@@ -568,7 +568,7 @@ const COMPLETE_JOB_ORDER = gql`
 `
 
 const QC_COMPLETE_REPAIR_JOB_ORDER = gql`
-  mutation completeQCRepair($repJobOrder: RepJobOrderRequestInput!) {
+  mutation completeQCRepair($repJobOrder: [RepJobOrderRequestInput!]!) {
     completeQCRepair(repJobOrder: $repJobOrder)
   }
 `
@@ -761,7 +761,7 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     });
   }
 
-  completeQCRepair(repJobOrder: RepJobOrderRequest): Observable<any> {
+  completeQCRepair(repJobOrder: RepJobOrderRequest[]): Observable<any> {
     return this.apollo.mutate({
       mutation: QC_COMPLETE_REPAIR_JOB_ORDER,
       variables: {

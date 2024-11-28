@@ -42,7 +42,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
@@ -98,6 +98,13 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     'status_cv'
   ];
 
+  displayedColumns = [
+    'estimate_no',
+    'job_no',
+    'status_cv',
+    'remarks'
+  ];
+
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -129,7 +136,9 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     QC_DATE: 'COMMON-FORM.QC-DATE',
-    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE'
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE'
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -143,6 +152,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
 
+  sotList: StoringOrderTankItem[] = [];
   repEstList: RepairItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   repairOptionCvList: CodeValuesItem[] = [];
@@ -161,6 +171,11 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   startCursorJobOrder: string | undefined = undefined;
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
+
+  availableProcessStatus: string[] = [
+    'COMPLETED',
+    'QC_COMPLETED',
+  ]
 
   constructor(
     public httpClient: HttpClient,
@@ -240,21 +255,9 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
-  onFilter2() {
+  onFilter() {
     const where: any = {
-      status_cv: { in: ["JOB_IN_PROGRESS", "QC_COMPLETED"] },
-      repair_part: {
-        all: {
-          delete_dt: { eq: null },
-          or: [
-            { approve_part: { eq: false } },
-            {
-              approve_part: { eq: true },
-              job_order: { status_cv: { in: ["COMPLETED", "CANCELED"] } }
-            }
-          ]
-        }
-      }
+      
     };
 
     if (this.filterJobOrderForm!.get('filterRepair')?.value) {
@@ -264,11 +267,11 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       ];
     }
 
-    // if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
-    //   where.status_cv = {
-    //     in: this.filterJobOrderForm!.get('jobStatusCv')?.value
-    //   };
-    // }
+    if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
+      where.status_cv = {
+        in: this.filterJobOrderForm!.get('jobStatusCv')?.value
+      };
+    }
 
     // TODO:: Get login user team
     // if (false) {
@@ -279,68 +282,53 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
-  onFilter() {
-    const where: any = {
-      tank_status_cv: { in: ['REPAIR'] },
-      repair: {
-        all: {
-          status_cv: { in: ["JOB_IN_PROGRESS", "JOB_COMPLETED", "QC_COMPLETED"] },
-          repair_part: {
-            all: {
-              delete_dt: { eq: null },
-              or: [
-                { approve_part: { eq: false } },
-                {
-                  approve_part: { eq: true },
-                  job_order: { status_cv: { in: ["COMPLETED", "CANCELED"] } }
-                }
-              ]
-            }
-          }
-        }
-      }
-    };
+  // onFilter() {
+  //   const where: any = {
+  //     tank_status_cv: { in: ['REPAIR'] },
+  //     repair: {
+  //       all: {
+  //         status_cv: { in: ["JOB_IN_PROGRESS", "JOB_COMPLETED", "QC_COMPLETED"] },
+  //         repair_part: {
+  //           all: {
+  //             delete_dt: { eq: null },
+  //             or: [
+  //               { approve_part: { eq: false } },
+  //               {
+  //                 approve_part: { eq: true },
+  //                 job_order: { status_cv: { in: ["COMPLETED", "CANCELED"] } }
+  //               }
+  //             ]
+  //           }
+  //         }
+  //       }
+  //     }
+  //   };
 
-    if (this.filterJobOrderForm!.get('filterRepair')?.value) {
-      where.or = [
-        { tank_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } },
-        { repair: { some: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } }
-      ];
-    }
+  //   if (this.filterJobOrderForm!.get('filterRepair')?.value) {
+  //     where.or = [
+  //       { tank_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } },
+  //       { repair: { some: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } }
+  //     ];
+  //   }
 
-    // if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
-    //   where.status_cv = {
-    //     in: this.filterJobOrderForm!.get('jobStatusCv')?.value
-    //   };
-    // }
+  //   // if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
+  //   //   where.status_cv = {
+  //   //     in: this.filterJobOrderForm!.get('jobStatusCv')?.value
+  //   //   };
+  //   // }
 
-    // TODO:: Get login user team
-    // if (false) {
-    //   where.team_guid = { eq: "" }
-    // }
+  //   // TODO:: Get login user team
+  //   // if (false) {
+  //   //   where.team_guid = { eq: "" }
+  //   // }
 
-    this.lastSearchCriteriaJobOrder = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
-  }
-
-  performSearch2(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.repairDS.getRepairForQC(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
-      .subscribe(data => {
-        this.repEstList = data;
-        // this.jobOrderList.forEach(jo => {
-        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
-        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
-        // })
-      });
-
-    this.pageSizeJobOrder = pageSize;
-    this.pageIndexJobOrder = pageIndex;
-  }
+  //   this.lastSearchCriteriaJobOrder = this.sotDS.addDeleteDtCriteria(where);
+  //   this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+  // }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairQC(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+    this.subs.sink = this.repairDS.getRepairForQC(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
-        console.log('QC list', data)
         this.repEstList = data;
         // this.jobOrderList.forEach(jo => {
         //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);

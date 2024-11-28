@@ -506,6 +506,20 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
       console.log(result)
+      if ((result?.data?.completeJobOrder ?? 0) > 0) {
+        const firstJobPart = jobOrderItem.repair_part?.[0];
+        if (firstJobPart?.repair?.status_cv === 'JOB_IN_PROGRESS') {
+          const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+            guid: firstJobPart!.repair.guid,
+            sot_guid: jobOrderItem.storing_order_tank?.guid,
+            action: "COMPLETE"
+          });
+          console.log(repairStatusReq);
+          this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+            console.log(result);
+          });
+        }
+      }
     });
   }
 

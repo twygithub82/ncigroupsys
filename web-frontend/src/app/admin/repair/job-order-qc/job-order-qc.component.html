@@ -26,10 +26,12 @@
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>{{translatedLangText.STATUS}}</mat-label>
         <mat-select multiple formControlName="jobStatusCv">
-          @for (codeValue of jobStatusCvList; track codeValue) {
+          @for (codeValue of processStatusCvList; track codeValue) {
+          @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
           <mat-option [value]="codeValue.code_val">
             {{codeValue.description}}
           </mat-option>
+          }
           }
         </mat-select>
       </mat-form-field>
@@ -137,31 +139,13 @@
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
         [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span
-          class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{row?.status_cv !== "QC_COMPLETED" ? getJobStatusDescription(row?.repair_part?.[0]?.job_order?.status_cv) : getProcessStatusDescription(row?.status_cv)}}
+        <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>
+        {{getProcessStatusDescription(row?.status_cv)}}
       </mat-cell>
     </ng-container>
-    <!-- <ng-container matColumnDef="actions">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-      </mat-header-cell>
-      <mat-cell *matCellDef="let row; let i=index;"
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-        @if (canStartJob(row)) {
-        <button mat-menu-item (click)="toggleJobState($event, isStarted(row), row)">
-          <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
-        </button>
-        }
-        @if (canCompleteJob(row)) {
-        <button mat-menu-item (click)="stopEventTrigger($event)">
-          <mat-icon>check_box</mat-icon>
-        </button>
-        }
-      </mat-cell>
-    </ng-container> -->
     <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
-      [routerLink]="['/admin/repair/qc/view', row.guid]" [style.cursor]="'pointer'" matRipple>
+    <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;" [routerLink]="['/admin/repair/job-order/qc/view', row.guid]"
+      [style.cursor]="'pointer'" matRipple>
     </mat-row>
   </table>
 </div>

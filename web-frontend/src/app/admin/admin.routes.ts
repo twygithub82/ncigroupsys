@@ -264,7 +264,7 @@ export const ADMIN_ROUTE: Routes = [
     component: JobOrderTaskDetailsComponent,
   },
   {
-    path: "repair/qc/view/:id",
+    path: "repair/job-order/qc/view/:id",
     component: RepairQCViewComponent,
   },
   {
