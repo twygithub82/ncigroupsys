@@ -727,7 +727,11 @@
     "APPROVED-NO-ACTION": "Approved/No Action",
     "DEPOT-COST-DETAILS": "Depot Cost Details",
     "NO-DOT": "No.",
-    "INVOICE": "Invoice"
+    "INVOICE": "Invoice",
+    "LIFT-OFF": "Lift Off",
+    "LIFT-ON": "Lift On",
+    "TAKE-IN-REFERENCE": "Take in Reference",
+    "RELEASE-REFERENCE": "Release Reference"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -319,8 +319,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       discount_mat_cost: [0],
       net_owner_cost: [0],
       net_lessee_cost: [0],
-      net_cost: [0],
-      repList: ['']
+      net_cost: [0]
     });
   }
 
@@ -726,6 +725,9 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     if (newData?.length) {
       newData = newData.map((row) => ({
         ...row,
+        approve_qty: this.displayApproveQty(row),
+        approve_hour: this.displayApproveHour(row),
+        approve_cost: this.displayApproveCost(row),
         tariff_repair: {
           ...row.tariff_repair,
           sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
@@ -1012,6 +1014,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     return !!this.repair_guid;
   }
 
+  isDisabled(repairPart: RepairPartItem): boolean {
+    return !this.repairDS.canApprove(this.repairItem) || (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true)
+  }
+
   getLabourCost(): number | undefined {
     return this.repairItem?.labour_cost;
   }
@@ -1033,6 +1039,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   displayApproveCost(rep: RepairPartItem) {
+    return Utility.convertNumber((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0, 2);
+  }
+
+  displayCost(rep: RepairPartItem) {
     return this.parse2Decimal((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
   }
 }
