@@ -806,7 +806,7 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   }
 
   canJobAllocate(jobOrderItem: JobOrderItem | undefined): boolean {
-    return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
+    return !jobOrderItem?.status_cv || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
   }
 
   getEstimateJobOrder(rpList: RepairPartItem[] | undefined) {
