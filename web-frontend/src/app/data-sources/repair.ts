@@ -1427,11 +1427,12 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canAmend(re: RepairItem | undefined): boolean {
-    return !re?.status_cv || re?.status_cv === 'PENDING';
+    return !re?.status_cv || re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED';
   }
 
   canApprove(re: RepairItem | undefined): boolean {
-    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS');
+    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED');
+    // return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS');
   }
 
   canCancel(re: RepairItem | undefined): boolean {
