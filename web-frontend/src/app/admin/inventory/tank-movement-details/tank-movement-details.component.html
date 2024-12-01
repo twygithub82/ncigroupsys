@@ -226,12 +226,13 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5 align-right">
                               <span>{{translatedLangText.SPECIAL_NOTES}}:</span>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">
-                                -
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
+                              <div class="contact-detail-info font-bold d-flex align-items-center">
+                                <span class="me-2">-</span>
+                                <mat-icon color="primary">mode_edit</mat-icon>
                               </div>
                             </div>
                           </div>
@@ -239,9 +240,10 @@
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                               <span>{{translatedLangText.RELEASE_NOTES}}:</span>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">
-                                -
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
+                              <div class="contact-detail-info font-bold d-flex align-items-center">
+                                <span class="me-2">-</span>
+                                <mat-icon color="primary">mode_edit</mat-icon>
                               </div>
                             </div>
                           </div>
@@ -1191,13 +1193,13 @@
                     </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div class="body p-l-0 p-r-0">
-                    @if ((igDS.loading$ | async) || (ogDS.loading$ | async)) {
+                    @if ((pdDS.loading$ | async)) {
                     <div class="tbl-spinner">
                       <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                       </mat-progress-spinner>
                     </div>
                     }
-                    @if (!(igDS.loading$ | async) && !(ogDS.loading$ | async)) {
+                    @if (!(pdDS.loading$ | async)) {
                     <mat-card-content>
                       <div class="row">
                         <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-0">
@@ -1215,15 +1217,15 @@
                               <span class="font-bold table-label"></span>
                             </div>
                             <div
-                              class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-1 m-b-0 border text-center bg-light-grey d-flex">
+                              class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 col-xs-2-5 pt-1 m-b-0 border text-center bg-light-grey d-flex">
                               <span class="font-bold table-label">{{translatedLangText.JOB_NO}}</span>
                             </div>
                             <div
-                              class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 pt-1 col-xs-1-5 m-b-0 border text-center bg-light-grey d-flex">
+                              class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border text-center bg-light-grey d-flex">
                               <span class="font-bold table-label">{{translatedLangText.INVOICE}}</span>
                             </div>
                             <div
-                              class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 pt-1 col-xs-1-5 m-b-0 border text-center bg-light-grey d-flex">
+                              class="col-xl-1-75 col-lg-1-75 col-md-1-75 col-sm-1-75 col-xs-1-75 pt-1 m-b-0 border text-center bg-light-grey d-flex">
                               <span class="font-bold table-label">{{translatedLangText.COST}}</span>
                             </div>
                           </div>
@@ -1237,7 +1239,7 @@
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
                               <span class="table-label">{{"-"}}</span>
                             </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
+                            <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 col-xs-2-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label">{{sot?.preinspect_job_no || "-"}}</span>
                             </div>
                             <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
@@ -1245,7 +1247,8 @@
                                 <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
                               </span>
                             </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
+                            <div
+                              class="col-xl-1-75 col-lg-1-75 col-md-1-75 col-sm-1-75 pt-1 col-xs-1-75 col-xs-1-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label cost-label">
                                 <span>$</span><span>{{parse2Decimal(pdItem?.preinspection_cost!)}}</span>
                               </span>
@@ -1261,7 +1264,7 @@
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
                               <span class="table-label">{{"-"}}</span>
                             </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
+                            <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 col-xs-2-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label">{{sot?.liftoff_job_no || "-"}}</span>
                             </div>
                             <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
@@ -1269,7 +1272,8 @@
                                 <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
                               </span>
                             </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
+                            <div
+                              class="col-xl-1-75 col-lg-1-75 col-md-1-75 col-sm-1-75 pt-1 col-xs-1-75 col-xs-1-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label cost-label">
                                 <span>$</span><span>{{parse2Decimal(pdItem?.lolo_cost!)}}</span>
                               </span>
@@ -1285,7 +1289,7 @@
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
                               <span class="table-label">{{"-"}}</span>
                             </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
+                            <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 col-xs-2-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label">{{sot?.lifton_job_no || "-"}}</span>
                             </div>
                             <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
@@ -1293,7 +1297,8 @@
                                 <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
                               </span>
                             </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
+                            <div
+                              class="col-xl-1-75 col-lg-1-75 col-md-1-75 col-sm-1-75 pt-1 col-xs-1-75 col-xs-1-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label cost-label">
                                 <span>$</span><span>{{parse2Decimal(pdItem?.lolo_cost!)}}</span>
                               </span>
@@ -1309,7 +1314,7 @@
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
                               <span class="table-label">{{"-"}}</span>
                             </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
+                            <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 col-xs-2-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label">{{sot?.takein_job_no || "-"}}</span>
                             </div>
                             <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
@@ -1317,7 +1322,8 @@
                                 <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
                               </span>
                             </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
+                            <div
+                              class="col-xl-1-75 col-lg-1-75 col-md-1-75 col-sm-1-75 pt-1 col-xs-1-75 col-xs-1-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label cost-label">
                                 <span>$</span><span>{{parse2Decimal(pdItem?.gate_in_cost!)}}</span>
                               </span>
@@ -1333,7 +1339,7 @@
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
                               <span class="table-label">{{"-"}}</span>
                             </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
+                            <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 col-xs-2-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label">{{sot?.release_job_no || "-"}}</span>
                             </div>
                             <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
@@ -1341,7 +1347,8 @@
                                 <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
                               </span>
                             </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
+                            <div
+                              class="col-xl-1-75 col-lg-1-75 col-md-1-75 col-sm-1-75 pt-1 col-xs-1-75 col-xs-1-5 pt-2 pb-2 m-b-0 border">
                               <span class="font-bold table-label cost-label">
                                 <span>$</span><span>{{parse2Decimal(pdItem?.gate_out_cost!)}}</span>
                               </span>
@@ -1372,7 +1379,8 @@
                             </div>
                             <div
                               class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{getStorageCalDescription(pdItem?.storage_cal_cv) ?? "-"}}</span>
+                              <span class="table-label">{{getStorageCalDescription(pdItem?.storage_cal_cv) ??
+                                "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
@@ -1392,7 +1400,8 @@
                             </div>
                             <div
                               class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}</span>
+                              <span class="table-label">{{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) ||
+                                "-"}}</span>
                             </div>
                           </div>
                           <div class="row">
@@ -1402,7 +1411,8 @@
                             </div>
                             <div
                               class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}</span>
+                              <span class="table-label">{{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) ||
+                                "-"}}</span>
                             </div>
                           </div>
                         </div>
@@ -1425,220 +1435,286 @@
                     </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div class="body p-l-0 p-r-0">
-                    @if ((igDS.loading$ | async) || (ogDS.loading$ | async)) {
+                    @if ((bkDS.loading$ | async) || (schedulingDS.loading$ | async)) {
                     <div class="tbl-spinner">
                       <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                       </mat-progress-spinner>
                     </div>
                     }
-                    @if (!(igDS.loading$ | async) && !(ogDS.loading$ | async)) {
+                    @if (!(bkDS.loading$ | async) && !(schedulingDS.loading$ | async)) {
                     <mat-card-content>
                       <div class="row">
-                        <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-1 m-b-0 border text-center bg-light-grey d-flex">
-                              <span class="font-bold table-label">{{translatedLangText.NO_DOT}}</span>
-                            </div>
-                            <div
-                              class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 pt-1 m-b-0 border text-center bg-light-grey d-flex">
-                              <span class="font-bold table-label">{{translatedLangText.DESCRIPTION}}</span>
-                            </div>
-                            <div
-                              class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-1 m-b-0 border text-center bg-light-grey d-flex">
-                              <span class="font-bold table-label"></span>
-                            </div>
-                            <div
-                              class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-1 m-b-0 border text-center bg-light-grey d-flex">
-                              <span class="font-bold table-label">{{translatedLangText.JOB_NO}}</span>
-                            </div>
-                            <div
-                              class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 pt-1 col-xs-1-5 m-b-0 border text-center bg-light-grey d-flex">
-                              <span class="font-bold table-label">{{translatedLangText.INVOICE}}</span>
-                            </div>
-                            <div
-                              class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 pt-1 col-xs-1-5 m-b-0 border text-center bg-light-grey d-flex">
-                              <span class="font-bold table-label">{{translatedLangText.COST}}</span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">1.</span>
-                            </div>
-                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{translatedLangText.PRE_INSPECTION}}</span>
-                            </div>
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{"-"}}</span>
-                            </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label">{{sot?.preinspect_job_no || "-"}}</span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
-                              <span class="font-bold table-label">
-                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                              </span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label cost-label">
-                                <span>$</span><span>{{parse2Decimal(pdItem?.preinspection_cost!)}}</span>
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">2.</span>
-                            </div>
-                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{translatedLangText.LIFT_OFF}}</span>
-                            </div>
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{"-"}}</span>
-                            </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label">{{sot?.liftoff_job_no || "-"}}</span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
-                              <span class="font-bold table-label">
-                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                              </span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label cost-label">
-                                <span>$</span><span>{{parse2Decimal(pdItem?.lolo_cost!)}}</span>
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">3.</span>
-                            </div>
-                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{translatedLangText.LIFT_ON}}</span>
-                            </div>
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{"-"}}</span>
-                            </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label">{{sot?.lifton_job_no || "-"}}</span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
-                              <span class="font-bold table-label">
-                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                              </span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label cost-label">
-                                <span>$</span><span>{{parse2Decimal(pdItem?.lolo_cost!)}}</span>
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">4.</span>
-                            </div>
-                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{translatedLangText.TAKE_IN_REFERENCE}}</span>
-                            </div>
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{"-"}}</span>
-                            </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label">{{sot?.takein_job_no || "-"}}</span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
-                              <span class="font-bold table-label">
-                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                              </span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label cost-label">
-                                <span>$</span><span>{{parse2Decimal(pdItem?.gate_in_cost!)}}</span>
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">5.</span>
-                            </div>
-                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{translatedLangText.RELEASE_REFERENCE}}</span>
-                            </div>
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 pt-2 pb-2 m-b-0 border">
-                              <span class="table-label">{{"-"}}</span>
-                            </div>
-                            <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 col-xs-2-75 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label">{{sot?.release_job_no || "-"}}</span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-1 m-b-0 border">
-                              <span class="font-bold table-label">
-                                <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                              </span>
-                            </div>
-                            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 col-xs-1-5 pt-2 pb-2 m-b-0 border">
-                              <span class="font-bold table-label cost-label">
-                                <span>$</span><span>{{parse2Decimal(pdItem?.gate_out_cost!)}}</span>
-                              </span>
-                            </div>
-                          </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                          <mat-tab-group dynamicHeight>
+                            <mat-tab>
+                              <ng-template mat-tab-label>
+                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                  {{translatedLangText.BOOKING}}
+                                </span>
+                              </ng-template>
+                              <div class="responsive_table">
+                                <table mat-table [dataSource]="bookingList" matSort
+                                  class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                  <ng-container matColumnDef="id">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                                    <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                                  </ng-container>
+                                  <ng-container matColumnDef="book_type_cv">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.BOOKING_TYPE}}
+                                    </mat-header-cell>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span
+                                        class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
+                                    </mat-cell>
+                                  </ng-container>
+                                  <ng-container matColumnDef="booking_dt">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.BOOKING_DATE}}
+                                    </mat-header-cell>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span class="mobile-tab-label">{{translatedLangText.BOOKING_DATE}}:</span>
+                                      <span>{{displayDate(row.booking_dt) ?? "-"}}</span>
+                                    </mat-cell>
+                                  </ng-container>
+                                  <ng-container matColumnDef="reference">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.REFERENCE}}
+                                    </mat-header-cell>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
+                                      <span>{{displayDate(row.remarks) ?? "-"}}</span>
+                                    </mat-cell>
+                                  </ng-container>
+                                  <ng-container matColumnDef="surveyor">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.SURVEYOR}}
+                                    </mat-header-cell>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>
+                                      <span>{{row.surveyor_guid ?? "-"}}</span>
+                                    </mat-cell>
+                                  </ng-container>
+                                  <ng-container matColumnDef="status_cv">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.STATUS}}
+                                    </mat-header-cell>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span
+                                        class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}}
+                                    </mat-cell>
+                                  </ng-container>
+                                  <mat-header-row *matHeaderRowDef="displayedColumnsBooking"></mat-header-row>
+                                  <mat-row *matRowDef="let row; columns: displayedColumnsBooking;"
+                                    [style.cursor]="'pointer'" matRipple>
+                                  </mat-row>
+                                </table>
+                              </div>
+                              <!-- No result -->
+                              @if (!(bkDS.loading$ | async) && !bookingList.length) {
+                              <mat-divider></mat-divider>
+                              <div class="no-results m-l-20 pt-3" [style.display]="bookingList.length ? '' : 'none'">
+                                <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                              </div>
+                              }
+                              <!-- Loading spinner -->
+                              @if (bkDS.loading$ | async) {
+                              <div class="tbl-spinner">
+                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                </mat-progress-spinner>
+                              </div>
+                              }
+                            </mat-tab>
+                            <mat-tab>
+                              <ng-template mat-tab-label>
+                                <span [ngClass]="'m-r-10 d-flex align-items-center'">
+                                  {{translatedLangText.SCHEDULING}}
+                                </span>
+                              </ng-template>
+                              <div class="responsive_table">
+                                <table mat-table [dataSource]="schedulingList" matSort
+                                  class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                  <ng-container matColumnDef="id">
+                                    <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                                    <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                                  </ng-container>
+                                  <ng-container matColumnDef="book_type_cv">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.BOOKING_TYPE}}
+                                    </mat-header-cell>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span
+                                        class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
+                                    </mat-cell>
+                                  </ng-container>
+                                  <ng-container matColumnDef="scheduling_dt">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.SCHEDULING_DATE}}
+                                    </mat-header-cell>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span class="mobile-tab-label">{{translatedLangText.SCHEDULING_DATE}}:</span>
+                                      <span>{{displayDate(row?.scheduling_sot?.[0]?.scheduling_dt) ?? "-"}}</span>
+                                    </mat-cell>
+                                  </ng-container>
+                                  <ng-container matColumnDef="reference">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.REFERENCE}}
+                                    </mat-header-cell>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
+                                      <span>{{displayDate(row.remarks) ?? "-"}}</span>
+                                    </mat-cell>
+                                  </ng-container>
+                                  <ng-container matColumnDef="status_cv">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.STATUS}}
+                                    </mat-header-cell>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span
+                                        class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}}
+                                    </mat-cell>
+                                  </ng-container>
+                                  <mat-header-row *matHeaderRowDef="displayedColumnsScheduling"></mat-header-row>
+                                  <mat-row *matRowDef="let row; columns: displayedColumnsScheduling;"
+                                    [style.cursor]="'pointer'" matRipple>
+                                  </mat-row>
+                                </table>
+                              </div>
+                              <!-- No result -->
+                              @if (!(schedulingDS.loading$ | async) && !schedulingList.length) {
+                              <mat-divider></mat-divider>
+                              <div class="no-results m-l-20 pt-3" [style.display]="schedulingList.length ? '' : 'none'">
+                                <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                              </div>
+                              }
+                              <!-- Loading spinner -->
+                              @if (schedulingDS.loading$ | async) {
+                              <div class="tbl-spinner">
+                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                </mat-progress-spinner>
+                              </div>
+                              }
+                            </mat-tab>
+                          </mat-tab-group>
                         </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                          <div class="row">
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-1 m-b-0 border text-center bg-light-grey d-flex">
-                              <span class="font-bold table-label">{{translatedLangText.STORAGE_BILLING_DETAILS}}</span>
-                            </div>
+                      </div>
+                    </mat-card-content>
+                    }
+                  </div>
+                </mat-expansion-panel>
+                <mat-expansion-panel [expanded]="section === 'booking_details'"
+                  (opened)="setSection('booking_details')">
+                  <mat-expansion-panel-header class="ps-0">
+                    <mat-panel-title>
+                      <div class="header">
+                        <h2>
+                          {{translatedLangText.SURVEY_DETAILS}}
+                        </h2>
+                      </div>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <div class="body p-l-0 p-r-0">
+                    @if ((bkDS.loading$ | async) || (schedulingDS.loading$ | async)) {
+                    <div class="tbl-spinner">
+                      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                      </mat-progress-spinner>
+                    </div>
+                    }
+                    @if (!(bkDS.loading$ | async) && !(schedulingDS.loading$ | async)) {
+                    <mat-card-content>
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                          <div class="responsive_table">
+                            <table mat-table [dataSource]="schedulingList" matSort
+                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                              <ng-container matColumnDef="id">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="book_type_cv">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.BOOKING_TYPE}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span
+                                    class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="scheduling_dt">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.SCHEDULING_DATE}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span class="mobile-tab-label">{{translatedLangText.SCHEDULING_DATE}}:</span>
+                                  <span>{{displayDate(row?.scheduling_sot?.[0]?.scheduling_dt) ?? "-"}}</span>
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="reference">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.REFERENCE}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
+                                  <span>{{displayDate(row.remarks) ?? "-"}}</span>
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="status_cv">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  {{translatedLangText.STATUS}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let row"
+                                  [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                  <span
+                                    class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}}
+                                </mat-cell>
+                              </ng-container>
+                              <mat-header-row *matHeaderRowDef="displayedColumnsScheduling"></mat-header-row>
+                              <mat-row *matRowDef="let row; columns: displayedColumnsScheduling;"
+                                [style.cursor]="'pointer'" matRipple>
+                              </mat-row>
+                            </table>
                           </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.BILLING_PROFILE}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{pdItem?.tariff_depot?.description}}</span>
-                            </div>
+                          <!-- No result -->
+                          @if (!(schedulingDS.loading$ | async) && !schedulingList.length) {
+                          <mat-divider></mat-divider>
+                          <div class="no-results m-l-20 pt-3" [style.display]="schedulingList.length ? '' : 'none'">
+                            <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                           </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.STORAGE_CALCULATE_BY}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{getStorageCalDescription(pdItem?.storage_cal_cv) ?? "-"}}</span>
-                            </div>
+                          }
+                          <!-- Loading spinner -->
+                          @if (schedulingDS.loading$ | async) {
+                          <div class="tbl-spinner">
+                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                            </mat-progress-spinner>
                           </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.FREE_STORAGE_DAYS}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{pdItem?.free_storage || "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.STORAGE_BEGIN_DATE}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div
-                              class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{translatedLangText.STORAGE_BILLED_UNTIL}}</span>
-                            </div>
-                            <div
-                              class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-0 border text-center d-flex">
-                              <span class="table-label">{{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}</span>
-                            </div>
-                          </div>
+                          }
                         </div>
                       </div>
                     </mat-card-content>

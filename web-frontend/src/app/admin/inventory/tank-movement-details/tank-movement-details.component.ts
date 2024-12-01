@@ -61,8 +61,8 @@ import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-c
 import { JobOrderDS } from 'app/data-sources/job-order';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
-import { BookingDS } from 'app/data-sources/booking';
-import { SchedulingDS } from 'app/data-sources/scheduling';
+import { BookingDS, BookingItem } from 'app/data-sources/booking';
+import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -108,6 +108,21 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'allocation_dt',
     'qc_dt',
     'status_cv'
+  ];
+
+  displayedColumnsBooking = [
+    'book_type_cv',
+    'booking_dt',
+    'reference',
+    'surveyor',
+    'status_cv',
+  ];
+
+  displayedColumnsScheduling = [
+    'book_type_cv',
+    'scheduling_dt',
+    'reference',
+    'status_cv',
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT-DETAILS'
@@ -291,6 +306,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     BILLING_PROFILE: 'COMMON-FORM.BILLING-PROFILE',
     STORAGE_BILLED_UNTIL: 'COMMON-FORM.STORAGE-BILLED-UNTIL',
     BOOKING_DETAILS: 'COMMON-FORM.BOOKING-DETAILS',
+    BOOKING: 'COMMON-FORM.BOOKING',
+    BOOKING_TYPE: 'COMMON-FORM.BOOKING-TYPE',
+    BOOKING_DATE: 'COMMON-FORM.BOOKING-DATE',
+    REFERENCE: 'COMMON-FORM.REFERENCE',
+    SURVEYOR: 'COMMON-FORM.SURVEYOR',
+    SCHEDULING: 'COMMON-FORM.SCHEDULING',
+    SCHEDULING_DATE: 'COMMON-FORM.SCHEDULING-DATE',
+    SURVEY_DETAILS: 'COMMON-FORM.SURVEY-DETAILS',
   }
 
   sot_guid: string | null | undefined;
@@ -302,6 +325,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   cleaningItem?: InGateCleaningItem[];
   residueItem?: ResidueItem[];
   repairItem: RepairItem[] = [];
+  bookingList: BookingItem[] = [];
+  schedulingList: SchedulingItem[] = [];
 
   surveyForm?: UntypedFormGroup;
 
@@ -353,6 +378,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   storageCalCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  bookingStatusCvList: CodeValuesItem[] = [];
+  bookingTypeCvList: CodeValuesItem[] = [];
 
   unit_typeList: TankItem[] = []
 
@@ -483,6 +510,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' },
+      { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -566,6 +595,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
     });
+    this.cvDS.connectAlias('bookingStatusCv').subscribe(data => {
+      this.bookingStatusCvList = data;
+    });
+    this.cvDS.connectAlias('bookingTypeCv').subscribe(data => {
+      this.bookingTypeCvList = data;
+    });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
     });
@@ -622,6 +657,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           console.log(`repair: `, data);
           this.repairItem = data;
           this.displayColumnChanged();
+        }
+      });
+      this.subs.sink = this.bkDS.getBookingForMovement(this.sot_guid).subscribe(data => {
+        if (this.bkDS.totalCount > 0) {
+          console.log(`booking: `, data);
+          this.bookingList = data;
+        }
+      });
+      this.subs.sink = this.schedulingDS.getSchedulingForMovement(this.sot_guid).subscribe(data => {
+        if (this.schedulingDS.totalCount > 0) {
+          console.log(`scheduling: `, data);
+          this.schedulingList = data;
         }
       });
     }
@@ -1305,6 +1352,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getWalkwayDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.walkwayCvList);
+  }
+
+  getBookingStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.bookingStatusCvList);
+  }
+
+  getBookingTypeDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.bookingTypeCvList);
   }
 
   getAvailableDate(sot: StoringOrderTankItem) {

@@ -733,7 +733,10 @@
     "TAKE-IN-REFERENCE": "Take in Reference",
     "RELEASE-REFERENCE": "Release Reference",
     "STORAGE-BILLING-DETAILS": "Storage Billing Details",
-    "STORAGE-BILLED-UNTIL": "Storage Billed Until"
+    "STORAGE-BILLED-UNTIL": "Storage Billed Until",
+    "BOOKING": "Booking",
+    "SCHEDULING": "Scheduling",
+    "SURVEY-DETAILS": "Survey Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
