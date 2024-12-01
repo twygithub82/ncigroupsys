@@ -731,7 +731,9 @@
     "LIFT-OFF": "Lift Off",
     "LIFT-ON": "Lift On",
     "TAKE-IN-REFERENCE": "Take in Reference",
-    "RELEASE-REFERENCE": "Release Reference"
+    "RELEASE-REFERENCE": "Release Reference",
+    "STORAGE-BILLING-DETAILS": "Storage Billing Details",
+    "STORAGE-BILLED-UNTIL": "Storage Billed Until"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

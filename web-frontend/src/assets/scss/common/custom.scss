@@ -38,8 +38,16 @@
   width: 12.5%;
 }
 
+.col-2-75 {
+  width: 22.91666667%;
+}
+
 .col-2-5 {
   width: 20.83333333%;
+}
+
+.col-2-25 {
+  width: 18.75%;
 }
 
 .col-3-5 {
@@ -103,8 +111,16 @@
     width: 16.66666667%;
   }
 
+  .col-xs-2-75 {
+    width: 22.91666667%;
+  }
+
   .col-xs-2-5 {
     width: 20.83333333%;
+  }
+  
+  .col-xs-2-25 {
+    width: 18.75%;
   }
 
   .col-xs-3 {
@@ -262,8 +278,16 @@
     width: 25%;
   }
 
+  .col-sm-2-75 {
+    width: 22.91666667%;
+  }
+
   .col-sm-2-5 {
     width: 20.83333333%;
+  }
+  
+  .col-sm-2-25 {
+    width: 18.75%;
   }
 
   .col-sm-2 {
@@ -369,8 +393,16 @@
     width: 25%;
   }
 
+  .col-md-2-75 {
+    width: 22.91666667%;
+  }
+
   .col-md-2-5 {
     width: 20.83333333%;
+  }
+  
+  .col-md-2-25 {
+    width: 18.75%;
   }
 
   .col-md-2 {
@@ -477,8 +509,16 @@
     width: 25%;
   }
 
+  .col-lg-2-75 {
+    width: 22.91666667%;
+  }
+
   .col-lg-2-5 {
     width: 20.83333333%;
+  }
+  
+  .col-lg-2-25 {
+    width: 18.75%;
   }
 
   .col-lg-2 {
@@ -584,8 +624,16 @@
     width: 25%;
   }
 
+  .col-xl-2-75 {
+    width: 22.91666667%;
+  }
+
   .col-xl-2-5 {
     width: 20.83333333%;
+  }
+  
+  .col-xl-2-25 {
+    width: 18.75%;
   }
 
   .col-xl-2 {
@@ -905,6 +953,11 @@ $breakpoints: (
 
 .table-label {
   min-height: 21px;
+}
+
+.table-column {
+  padding-top: 1rem;
+  margin-bottom: 0;
 }
 
 .cost-label {

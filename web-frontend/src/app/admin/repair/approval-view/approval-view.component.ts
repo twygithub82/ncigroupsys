@@ -545,11 +545,20 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: RepairItem) => new RepairGO(item));
+
+        const repReqList = this.repList?.map((rep: RepairPartItem) => {
+          return {
+            guid: rep?.guid,
+            approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)
+          }
+        });
+
         var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
           guid: reList[0].guid,
           sot_guid: this.sotItem!.guid,
           action: "NA",
-          remarks: reList[0].remarks
+          remarks: reList[0].remarks,
+          repairPartRequests: repReqList
         });
         console.log(repairStatusReq);
         this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {

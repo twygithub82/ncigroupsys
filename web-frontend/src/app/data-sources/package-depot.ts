@@ -313,11 +313,11 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
         const createDtInSeconds = sotItem.in_gate[0].create_dt;
         const createDate = new Date(createDtInSeconds * 1000);
         const currentDate = new Date();
-    
+
         const differenceInMs = currentDate.getTime() - createDate.getTime();
-    
+
         const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
-    
+
         return differenceInDays;
       }
     } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {

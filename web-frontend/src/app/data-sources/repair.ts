@@ -103,12 +103,14 @@ export class RepairStatusRequest {
   public guid?: string;
   public remarks?: string;
   public sot_guid?: string;
+  public repairPartRequests?: any[] | undefined;
 
   constructor(item: Partial<RepairStatusRequest> = {}) {
     this.action = item.action;
     this.guid = item.guid;
     this.remarks = item.remarks;
     this.sot_guid = item.sot_guid;
+    this.repairPartRequests = item.repairPartRequests;
   }
 }
 

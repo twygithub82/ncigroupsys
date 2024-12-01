@@ -61,6 +61,8 @@ import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-c
 import { JobOrderDS } from 'app/data-sources/job-order';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { BookingDS } from 'app/data-sources/booking';
+import { SchedulingDS } from 'app/data-sources/scheduling';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -285,6 +287,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     LIFT_ON: 'COMMON-FORM.LIFT-ON',
     TAKE_IN_REFERENCE: 'COMMON-FORM.TAKE-IN-REFERENCE',
     RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE',
+    STORAGE_BILLING_DETAILS: 'COMMON-FORM.STORAGE-BILLING-DETAILS',
+    BILLING_PROFILE: 'COMMON-FORM.BILLING-PROFILE',
+    STORAGE_BILLED_UNTIL: 'COMMON-FORM.STORAGE-BILLED-UNTIL',
+    BOOKING_DETAILS: 'COMMON-FORM.BOOKING-DETAILS',
   }
 
   sot_guid: string | null | undefined;
@@ -313,6 +319,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   cleaningDS: InGateCleaningDS;
   joDS: JobOrderDS;
   repairDS: RepairDS;
+  bkDS: BookingDS;
+  schedulingDS: SchedulingDS;
 
   customerCodeControl = new UntypedFormControl();
   ownerControl = new UntypedFormControl();
@@ -417,6 +425,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cleaningDS = new InGateCleaningDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.repairDS = new RepairDS(this.apollo);
+    this.bkDS = new BookingDS(this.apollo);
+    this.schedulingDS = new SchedulingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -841,6 +851,15 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
+  }
+
+  parse2Decimal(figure: number | string) {
+    if (typeof (figure) === 'string') {
+      return parseFloat(figure).toFixed(2);
+    } else if (typeof (figure) === 'number') {
+      return figure.toFixed(2);
+    }
+    return "";
   }
 
   convertDisplayDate(input: number | Date | undefined): string | undefined {
