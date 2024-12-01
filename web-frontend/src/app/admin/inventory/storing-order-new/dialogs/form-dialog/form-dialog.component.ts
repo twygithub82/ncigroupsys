@@ -345,6 +345,15 @@ export class FormDialogComponent {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
+  onPurposeChangeCheck(event: any) {
+    if ((this.storingOrderTankForm.get('purpose_cleaning')?.value || this.storingOrderTankForm.get('purpose_repair_cv')?.value)) {
+      this.storingOrderTankForm.get('purpose_storage')?.setValue(true);
+      this.storingOrderTankForm.get('purpose_storage')?.disable();
+    } else if (!this.storingOrderTankForm.get('purpose_cleaning')?.value && !this.storingOrderTankForm.get('purpose_repair_cv')?.value) {
+      this.storingOrderTankForm.get('purpose_storage')?.enable();
+    }
+  }
+
   validatePurpose(): boolean {
     let isValid = true;
     const purposeStorage = this.storingOrderTankForm.get('purpose_storage')?.value;
