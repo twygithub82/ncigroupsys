@@ -896,7 +896,7 @@
                     {{translatedLangText.ROLLBACK}}
                   </button>
                   }
-                  @if (repairDS.canApprove(repairItem)) {
+                  @if (canApprove()) {
                   <button mat-flat-button color="basic" [disabled]="(repairDS.loading$ | async)" class="m-l-5 bg-green"
                     (click)="onApprove($event)">
                     <mat-icon>

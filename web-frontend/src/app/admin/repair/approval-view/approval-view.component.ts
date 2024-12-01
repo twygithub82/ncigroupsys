@@ -251,6 +251,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   userDS: UserDS;
   joDS: JobOrderDS;
   isOwner = false;
+  canApproveFlag = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -1004,6 +1005,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.repairForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
     this.repairForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
     this.repairForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
+
+    this.checkApprovePart();
   }
 
   filterDeleted(resultList: any[] | undefined): any {
@@ -1025,9 +1028,17 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   toggleApprovePart(event: Event, rep: RepairPartItem) {
     this.stopPropagation(event);
     if (!this.repairDS.canAmend(this.repairItem)) return;
-    rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
+    rep.approve_part = rep.approve_part !== null ? !rep.approve_part : false;
     this.calculateCost();
     // this.getCalculateCost();
+  }
+
+  checkApprovePart() {
+    this.canApproveFlag = this.repList.some(rep => rep.approve_part || (rep.approve_part === null && !this.repairPartDS.is4X(rep.rp_damage_repair)));
+  }
+
+  canApprove() {
+    return this.canApproveFlag && this.repairDS.canApprove(this.repairItem) 
   }
 
   displayApproveQty(rep: RepairPartItem) {
