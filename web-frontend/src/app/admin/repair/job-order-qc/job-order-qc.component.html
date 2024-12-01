@@ -118,7 +118,7 @@
       <mat-cell mat-cell *matCellDef="let row"
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span class="mobile-tab-label">{{translatedLangText.QC_DATE}}:</span>
-        <span>{{displayDate(row.repair_part?.[0]?.job_order?.complete_dt)}}</span>
+        <span>{{displayDate(row.repair_part?.[0]?.job_order?.qc_dt)}}</span>
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="repair_type">
@@ -150,14 +150,14 @@
   </table>
 </div>
 <!-- No result -->
-@if (!(joDS.loading$ | async) && !repEstList.length) {
+@if (!(repairDS.loading$ | async) && !repEstList.length) {
 <mat-divider></mat-divider>
 <div class="no-results m-l-20 pt-3" [style.display]="repEstList.length === 0 ? '' : 'none'">
   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
 </div>
 }
 <!-- Loading spinner -->
-@if (joDS.loading$ | async) {
+@if (repairDS.loading$ | async) {
 <div class="tbl-spinner">
   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
   </mat-progress-spinner>
