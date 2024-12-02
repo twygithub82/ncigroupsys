@@ -285,6 +285,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     NO_RESIDUE: 'COMMON-FORM.NO-RESIDUE',
     ADD_STEAM_PURPOSE: 'COMMON-FORM.ADD-STEAM-PURPOSE',
     NO_STEAM_PURPOSE: 'COMMON-FORM.NO-STEAM-PURPOSE',
+    ADD_STORAGE_PURPOSE: 'COMMON-FORM.ADD-STORAGE-PURPOSE',
+    NO_STORAGE_PURPOSE: 'COMMON-FORM.NO-STORAGE-PURPOSE',
     REPAIR_BEGIN_DATE: 'COMMON-FORM.REPAIR-BEGIN-DATE',
     REPAIR_COMPLETED_DATE: 'COMMON-FORM.REPAIR-COMPLETED-DATE',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
@@ -315,6 +317,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SCHEDULING_DATE: 'COMMON-FORM.SCHEDULING-DATE',
     SURVEY_DETAILS: 'COMMON-FORM.SURVEY-DETAILS',
     UPDATE_TANK_NOTE: 'COMMON-FORM.UPDATE-TANK-NOTE',
+    TRANSFER_DETAILS: 'COMMON-FORM.TRANSFER-DETAILS',
   }
 
   sot_guid: string | null | undefined;
@@ -328,6 +331,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   repairItem: RepairItem[] = [];
   bookingList: BookingItem[] = [];
   schedulingList: SchedulingItem[] = [];
+  surveyList: any[] = [];
+  transferList: any[] = [];
 
   surveyForm?: UntypedFormGroup;
 
@@ -1417,16 +1422,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         'approve_dt',
         'allocation_dt',
         'qc_dt',
-        'status_cv',
-        'actions'
+        'status_cv'
       ];
     } else {
       this.displayedColumnsRepair = [
         'tank_no',
         'customer',
         'estimate_no',
-        'status_cv',
-        'actions'
+        'status_cv'
       ];
     }
   }
