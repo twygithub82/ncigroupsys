@@ -125,7 +125,7 @@ export const GET_SCHEDULING = gql`
 `;
 
 export const GET_SCHEDULING_FOR_RO = gql`
-  query QueryScheduling($where: schedulingFilterInput, $order: [schedulingSortInput!]) {
+  query QueryScheduling($where: schedulingFilterInput, $order: [schedulingSortInput!], $sot_guid: String) {
     resultList: queryScheduling(where: $where, order: $order) {
       totalCount
       nodes {
@@ -138,7 +138,7 @@ export const GET_SCHEDULING_FOR_RO = gql`
         status_cv
         update_by
         update_dt
-        scheduling_sot {
+        scheduling_sot(where: { sot_guid: { eq: $sot_guid } }) {
           guid
           scheduling_guid
           sot_guid
@@ -228,7 +228,7 @@ export class SchedulingDS extends BaseDataSource<SchedulingItem> {
   }
   searchScheduling(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<SchedulingItem[]> {
     this.loadingSubject.next(true);
-    
+
     return this.apollo
       .query<any>({
         query: GET_SCHEDULING,
@@ -251,11 +251,41 @@ export class SchedulingDS extends BaseDataSource<SchedulingItem> {
 
   searchSchedulingForRO(where: any, order?: any): Observable<SchedulingItem[]> {
     this.loadingSubject.next(true);
-    
+
     return this.apollo
       .query<any>({
         query: GET_SCHEDULING_FOR_RO,
         variables: { where, order },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  getSchedulingForMovement(sot_guid: any, order?: any): Observable<SchedulingItem[]> {
+    this.loadingSubject.next(true);
+    const where = {
+      scheduling_sot: {
+        some: {
+          sot_guid: { eq: sot_guid }
+        }
+      }
+    }
+
+    return this.apollo
+      .query<any>({
+        query: GET_SCHEDULING_FOR_RO,
+        variables: { where, order, sot_guid },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

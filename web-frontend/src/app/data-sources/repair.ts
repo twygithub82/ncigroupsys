@@ -103,12 +103,14 @@ export class RepairStatusRequest {
   public guid?: string;
   public remarks?: string;
   public sot_guid?: string;
+  public repairPartRequests?: any[] | undefined;
 
   constructor(item: Partial<RepairStatusRequest> = {}) {
     this.action = item.action;
     this.guid = item.guid;
     this.remarks = item.remarks;
     this.sot_guid = item.sot_guid;
+    this.repairPartRequests = item.repairPartRequests;
   }
 }
 
@@ -1427,11 +1429,12 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canAmend(re: RepairItem | undefined): boolean {
-    return !re?.status_cv || re?.status_cv === 'PENDING';
+    return !re?.status_cv || re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED';
   }
 
   canApprove(re: RepairItem | undefined): boolean {
-    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS');
+    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED');
+    // return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS');
   }
 
   canCancel(re: RepairItem | undefined): boolean {

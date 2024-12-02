@@ -70,7 +70,7 @@
                   </mat-checkbox>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
-                  <mat-checkbox formControlName="purpose_cleaning" class="m-r-5" color="primary">
+                  <mat-checkbox formControlName="purpose_cleaning" class="m-r-5" color="primary" (change)="onPurposeChangeCheck($event)">
                     {{data.translatedLangText.CLEANING}}
                   </mat-checkbox>
                 </div>
@@ -128,7 +128,7 @@
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
-                <mat-select formControlName="purpose_repair_cv">
+                <mat-select formControlName="purpose_repair_cv" (selectionChange)="onPurposeChangeCheck($event)">
                   @for (codeValue of data.populateData.repairCv; track codeValue) {
                   <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                   }

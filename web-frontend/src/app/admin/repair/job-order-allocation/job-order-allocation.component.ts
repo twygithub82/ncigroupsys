@@ -407,6 +407,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       this.subs.sink = this.teamDS.getTeamListByDepartment(["REPAIR"]).subscribe(data => {
         if (data?.length) {
           this.teamList = data;
+          this.autoAssignTeam();
         }
       });
     }
@@ -431,6 +432,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     console.log(this.oldJobOrderList)
 
     this.updateData(repair.repair_part);
+    this.autoAssignTeam();
     this.repairForm?.patchValue({
       job_no: repair.job_no || this.sotItem?.job_no,
       guid: repair.guid,
@@ -439,6 +441,18 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       labour_cost_discount: repair.labour_cost_discount,
       material_cost_discount: repair.material_cost_discount
     });
+  }
+
+  autoAssignTeam() {
+    if ((this.teamList?.length ?? 0) === 1 && this.repList?.length && this.repairItem?.status_cv === 'APPROVED') {
+      const selectedTeam = this.teamList![0];
+      this.repList.forEach(rep => {
+        rep.job_order = new JobOrderItem({
+          team_guid: selectedTeam?.guid,
+          team: selectedTeam
+        });
+      });
+    }
   }
 
   getCustomerLabourPackage(customer_company_guid: string) {

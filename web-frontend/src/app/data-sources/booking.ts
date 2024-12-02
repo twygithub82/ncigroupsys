@@ -97,6 +97,57 @@ const GET_BOOKING = gql`
   }
 `;
 
+const GET_BOOKING_FOR_MOVEMENT = gql`
+  query getBooking($where: bookingFilterInput, $order: [bookingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    bookingList: queryBooking(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      nodes {
+        book_type_cv
+        booking_dt
+        create_by
+        create_dt
+        delete_dt
+        guid
+        reference
+        sot_guid
+        status_cv
+        surveyor_guid
+        remarks
+        update_by
+        update_dt
+        storing_order_tank {
+          tank_no
+          tank_status_cv
+          tariff_cleaning {
+            cargo
+          }
+          storing_order {
+            customer_company {
+              code
+              name
+            }
+          }
+          in_gate {
+            eir_dt
+            eir_no
+            yard_cv
+          }
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          purpose_cleaning
+        }
+      }
+    }
+  }
+`;
+
 export const ADD_BOOKING = gql`
   mutation AddBooking($booking: BookingRequestInput!) {
     addBooking(booking: $booking)
@@ -132,6 +183,33 @@ export class BookingDS extends BaseDataSource<BookingItem> {
       .query<any>({
         query: GET_BOOKING,
         variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const bookingList = result.bookingList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(bookingList.nodes);
+          this.totalCount = bookingList.totalCount;
+          this.pageInfo = bookingList.pageInfo;
+          return bookingList.nodes;
+        })
+      );
+  }
+
+  getBookingForMovement(sot_guid: any, order?: any): Observable<BookingItem[]> {
+    this.loadingSubject.next(true);
+
+    const where = {
+      sot_guid: { eq: sot_guid }
+    }
+
+    return this.apollo
+      .query<any>({
+        query: GET_BOOKING_FOR_MOVEMENT,
+        variables: { where, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -200,7 +278,7 @@ export class BookingDS extends BaseDataSource<BookingItem> {
   getBookingWithType(booking: BookingItem[] | undefined, type: string): BookingItem | undefined {
     return booking?.find(item => item.book_type_cv === type);
   }
-  
+
   checkBooking(bookings: BookingItem[] | undefined): boolean {
     if (!bookings || !bookings.length) return false;
     if (bookings.some(booking => booking.status_cv === "NEW" || booking.status_cv === "MATCH"))

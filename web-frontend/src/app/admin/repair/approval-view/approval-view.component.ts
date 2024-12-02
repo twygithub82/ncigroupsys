@@ -251,6 +251,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   userDS: UserDS;
   joDS: JobOrderDS;
   isOwner = false;
+  canApproveFlag = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -319,8 +320,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       discount_mat_cost: [0],
       net_owner_cost: [0],
       net_lessee_cost: [0],
-      net_cost: [0],
-      repList: ['']
+      net_cost: [0]
     });
   }
 
@@ -545,11 +545,20 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: RepairItem) => new RepairGO(item));
+
+        const repReqList = this.repList?.map((rep: RepairPartItem) => {
+          return {
+            guid: rep?.guid,
+            approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)
+          }
+        });
+
         var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
           guid: reList[0].guid,
           sot_guid: this.sotItem!.guid,
           action: "NA",
-          remarks: reList[0].remarks
+          remarks: reList[0].remarks,
+          repairPartRequests: repReqList
         });
         console.log(repairStatusReq);
         this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
@@ -726,6 +735,9 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     if (newData?.length) {
       newData = newData.map((row) => ({
         ...row,
+        approve_qty: this.displayApproveQty(row),
+        approve_hour: this.displayApproveHour(row),
+        approve_cost: this.displayApproveCost(row),
         tariff_repair: {
           ...row.tariff_repair,
           sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
@@ -1002,6 +1014,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.repairForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
     this.repairForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
     this.repairForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
+
+    this.checkApprovePart();
   }
 
   filterDeleted(resultList: any[] | undefined): any {
@@ -1012,6 +1026,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     return !!this.repair_guid;
   }
 
+  isDisabled(repairPart: RepairPartItem): boolean {
+    return !this.repairDS.canApprove(this.repairItem) || (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true)
+  }
+
   getLabourCost(): number | undefined {
     return this.repairItem?.labour_cost;
   }
@@ -1019,9 +1037,17 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   toggleApprovePart(event: Event, rep: RepairPartItem) {
     this.stopPropagation(event);
     if (!this.repairDS.canAmend(this.repairItem)) return;
-    rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
+    rep.approve_part = rep.approve_part !== null ? !rep.approve_part : false;
     this.calculateCost();
     // this.getCalculateCost();
+  }
+
+  checkApprovePart() {
+    this.canApproveFlag = this.repList.some(rep => rep.approve_part || (rep.approve_part === null && !this.repairPartDS.is4X(rep.rp_damage_repair)));
+  }
+
+  canApprove() {
+    return this.canApproveFlag && this.repairDS.canApprove(this.repairItem) 
   }
 
   displayApproveQty(rep: RepairPartItem) {
@@ -1033,6 +1059,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   displayApproveCost(rep: RepairPartItem) {
+    return Utility.convertNumber((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0, 2);
+  }
+
+  displayCost(rep: RepairPartItem) {
     return this.parse2Decimal((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
   }
 }
