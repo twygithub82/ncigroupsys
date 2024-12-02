@@ -62,6 +62,9 @@ import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-r
 import { ResidueDS, ResidueItem,ResidueGO,ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
+import { SteamDS,SteamItem } from 'app/data-sources/steam';
+import { PackageSteamingDS,PackageSteamingItem } from 'app/data-sources/package-steam';
+import { SteamPartGO, SteamPartItem } from 'app/data-sources/steam-part';
 
 @Component({
   selector: 'app-estimate-new',
@@ -109,6 +112,18 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
      'desc',
      'qty',
      'unit_price',
+     'hour',
+     'cost',
+     "actions"
+   
+  ];
+  footerColumns = [
+    'seq',
+    // 'group_name_cv',
+     'desc',
+     'qty',
+     'unit_price',
+     'hour',
      'cost',
      "actions"
    
@@ -218,20 +233,21 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     COST:'COMMON-FORM.COST',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    
 
   }
 
   clean_statusList: CodeValuesItem[] = [];
 
   sot_guid?: string | null;
-  repair_guid?: string | null;
+  steam_guid?: string | null;
 
-  residueEstForm?: UntypedFormGroup;
+  steamEstForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
-  residueItem?:ResidueItem;
-  repairEstItem?: RepairItem;
+  steamItem?:SteamItem;
+  //repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
@@ -248,8 +264,8 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   templateList: MasterTemplateItem[] = []
   surveyorList: UserItem[] = []
   billingBranchList:CustomerCompanyItem[]=[];
-  packResidueList:PackageResidueItem[]=[];
-  displayPackResidueList:PackageResidueItem[]=[];
+  packSteamList:PackageRepairItem[]=[];
+  displayPackSteamList:PackageRepairItem[]=[];
   deList:any[]=[];
   reSelection = new SelectionModel<ResidueItem>(true, []);
 
@@ -260,14 +276,15 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
   plDS: PackageLabourDS;
+  packRepDS:PackageRepairDS;
   repairEstDS: RepairDS;
   repairEstPartDS: RepairPartDS;
-  residueDS:ResidueDS;
+  steamDS:SteamDS;
   
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
   
-  packResidueDS:PackageResidueDS;
+  packSteamDS:PackageSteamingDS;
 
   userDS: UserDS;
   isOwner = false;
@@ -300,8 +317,9 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
-    this.packResidueDS= new PackageResidueDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
+    this.packSteamDS= new PackageSteamingDS(this.apollo);
+    this.steamDS=new SteamDS(this.apollo);
+    this.packRepDS= new PackageRepairDS(this.apollo);
 
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -316,19 +334,19 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initForm() {
-    this.residueEstForm = this.fb.group({
+    this.steamEstForm = this.fb.group({
       guid: [''],
       customer_code:[''],
       billing_branch:[''],
       job_no:[''],
-    
       remarks: [''],
       last_test: [''],
       next_test: [''],
       desc:[''],
       qty:[''],
       unit_price:[''],
-   
+      hour:[''],
+      labour:[''],
       deList: ['']
     });
   }
@@ -337,18 +355,21 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
    
 
 
-    this.residueEstForm?.get('desc')?.valueChanges.pipe(
+    this.steamEstForm?.get('desc')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-        var desc_value = this.residueEstForm?.get("desc")?.value;
-        this.displayPackResidueList= this.packResidueList.filter(data=> data.description && data.description.includes(desc_value));
-        if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
+        var desc_value = this.steamEstForm?.get("desc")?.value;
+
+        this.displayPackSteamList= this.packSteamList.filter(data=> data.tariff_repair?.alias && data.tariff_repair?.alias?.includes(desc_value));
+        if(!desc_value) this.displayPackSteamList= [...this.packSteamList];
         else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
         {
-          this.residueEstForm?.patchValue({
+          this.steamEstForm?.patchValue({
 
-             unit_price: desc_value?.cost.toFixed(2)
+             unit_price: desc_value?.material_cost?.toFixed(2),
+             qty: 1,
+             hour: desc_value?.labour_hour?desc_value?.labour_hour:0,
           });
         }
 
@@ -425,7 +446,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     //this.getSurveyorList();
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
-    this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
+    this.steam_guid = this.route.snapshot.paramMap.get('steam_est_id');
 
     this.route.data.subscribe(routeData => {
       this.isDuplicate = routeData['action'] === 'duplicate';
@@ -530,9 +551,9 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       if (data?.length > 0) {
         this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
         const def_guid = this.getCustomer()?.def_template_guid;
-        if (!this.repair_guid) {
+        if (!this.steam_guid) {
           if (def_guid) {
-            this.residueEstForm?.get('is_default_template')?.setValue(true);
+            this.steamEstForm?.get('is_default_template')?.setValue(true);
           }
 
           const def_template = this.templateList.find(x =>
@@ -541,10 +562,10 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
           if (def_guid !== def_template?.guid) {
             this.getCustomer()!.def_template_guid = def_guid;
-            this.residueEstForm?.get('is_default_template')?.setValue(true);
+            this.steamEstForm?.get('is_default_template')?.setValue(true);
           }
 
-          this.residueEstForm?.get('est_template')?.setValue(def_template);
+          this.steamEstForm?.get('est_template')?.setValue(def_template);
         }
       }
     });
@@ -588,10 +609,11 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   checkCompulsoryEst(fields:string[])
   {
     fields.forEach(name=>{
-    if( !this.residueEstForm?.get(name)?.value)
+    //if( !this.steamEstForm?.get(name)?.value)
+    if(this.steamEstForm?.get(name)?.value == null || this.steamEstForm?.get(name)?.value === "")
       {
-        this.residueEstForm?.get(name)?.setErrors({ required: true });
-        this.residueEstForm?.get(name)?.markAsTouched(); // Trigger validation display
+        this.steamEstForm?.get(name)?.setErrors({ required: true });
+        this.steamEstForm?.get(name)?.markAsTouched(); // Trigger validation display
       }
     });
   }
@@ -603,7 +625,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     {
       if(index==-1 || index!=existItems[0].index)
       {
-        this.residueEstForm?.get("desc")?.setErrors({ duplicated: true });
+        this.steamEstForm?.get("desc")?.setErrors({ duplicated: true });
       }
     }
   }
@@ -612,29 +634,34 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     
     this.preventDefault(event);  // Prevents the form submission
     
-    var descObject :PackageResidueItem;
+    var descObject :SteamPartItem;
 
-    if(typeof this.residueEstForm?.get("desc")?.value==="object")
+    if(typeof this.steamEstForm?.get("desc")?.value==="object")
     {
-      descObject = new PackageResidueItem(this.residueEstForm?.get("desc")?.value);
-      descObject.description = descObject.tariff_residue?.description;
+      var repItm:RepairPartItem = this.steamEstForm?.get("desc")?.value;
+
+      descObject = new SteamPartItem();
+      descObject.description=repItm.tariff_repair?.alias;
     }
     else
     {
-      descObject = new PackageResidueItem();
-      descObject.description= this.residueEstForm?.get("desc")?.value;
-      descObject.cost= Number(this.residueEstForm?.get("unit_price")?.value);
+      descObject = new SteamPartItem();
+      descObject.description=this.steamEstForm?.get("desc")?.value;
+    
     }
+    descObject.cost=this.steamEstForm?.get("unit_price")?.value;
+    descObject.labour=this.steamEstForm?.get("hour")?.value;
+    descObject.quantity=this.steamEstForm?.get("qty")?.value;
 
 
-    this.checkCompulsoryEst(["desc","qty","unit_price"]);
+    this.checkCompulsoryEst(["desc","qty","hour","unit_price"]);
     var index :number =-1;
     if(this.updateSelectedItem)
     {
       index = this.updateSelectedItem.index;
     }
     this.checkDuplicationEst(descObject,index);
-    if(!this.residueEstForm?.valid)return;
+    if(!this.steamEstForm?.valid)return;
     
 
     let tempDirection: Direction;
@@ -645,26 +672,27 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     
-    let residuePartItem = new ResiduePartItem();
+    let steamPartItem = new SteamPartItem();
     if(index==-1)
     {
-      residuePartItem.action="NEW";
+      steamPartItem.action="NEW";
     }
     else
     {
-      residuePartItem = this.deList[index];
-      residuePartItem.action = residuePartItem.guid?"EDIT":"NEW";
+      steamPartItem = this.deList[index];
+      steamPartItem.action = steamPartItem.guid?"EDIT":"NEW";
     }
 
-    residuePartItem.cost= Number(this.residueEstForm?.get("unit_price")?.value);
-    residuePartItem.description= descObject.description;
-    residuePartItem.quantity=this.residueEstForm?.get("qty")?.value;
-    residuePartItem.residue_guid = this.historyState.selectedResidue?.guid;
-    residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
+    steamPartItem.cost= Number(this.steamEstForm?.get("unit_price")?.value);
+    steamPartItem.description= descObject.description;
+    steamPartItem.quantity=descObject.quantity;
+    steamPartItem.labour = descObject.labour;
+    steamPartItem.cost= descObject.cost;
+   // residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
 
     if(index===-1)
     {
-      var newData =[...this.deList,residuePartItem];
+      var newData =[...this.deList,steamPartItem];
       this.updateData(newData);
     }
   this.resetSelectedItemForUpdating();
@@ -678,7 +706,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     // this.resetValue();
   }
 
-  editEstDetails(event: Event, row: ResiduePartItem, index: number) {
+  editEstDetails(event: Event, row: SteamPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
     var itm =this.deList[index];
@@ -698,7 +726,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     }
     this.updateSelectedItem.item.edited=true;
 
-    var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
+    var descValues = this.packSteamList.filter(data=>data.tariff_repair?.alias===row.description);
     var descValue:any;
     if(descValues.length>0)
     {
@@ -706,7 +734,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     }
     else
     {
-      descValue = new PackageResidueItem();
+      descValue = new SteamPartItem();
       descValue.guid=row.guid;
       descValue.description= row.description;
       descValue.tariff_residue= new TariffResidueItem();
@@ -714,7 +742,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       descValue.cost= Number(row.cost);
       
     }
-    this.residueEstForm?.patchValue({
+    this.steamEstForm?.patchValue({
        desc:descValue,
        qty:row.quantity,
        unit_price:row.cost
@@ -817,7 +845,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-        item: [this.residueItem],
+        item: [this.steamItem],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
@@ -829,12 +857,12 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
         let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
         residueStatus.action="CANCEL";
-        residueStatus.guid = this.residueItem?.guid;
-        residueStatus.sot_guid= this.residueItem?.sot_guid;
-         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+        residueStatus.guid = this.steamItem?.guid;
+        residueStatus.sot_guid= this.steamItem?.sot_guid;
+         this.steamDS.updateSteamStatus(residueStatus).subscribe(result=>{
 
-          this.handleCancelSuccess(result?.data?.updateResidueStatus);
-          if(result?.data?.updateResidueStatus>0)
+          this.handleCancelSuccess(result?.data?.updateSteamStatus);
+          if(result?.data?.updateSteamStatus>0)
             {
               this.GoBackPrevious(event);
             }
@@ -852,7 +880,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     let selectedList = [...this.reSelection.selected];
     if (!found) {
       // this.toggleRow(row);
-      selectedList.push(this.residueItem!);
+      selectedList.push(this.steamItem!);
     }
     this.rollbackSelectedRows(event,selectedList)
   }
@@ -890,7 +918,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
           return ResidueEstimateRequestInput;
         });
         console.log(reList);
-        this.residueDS.rollbackResidue(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
+        this.steamDS.rollbackSteam(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
           this.handleRollbackSuccess(result?.data?.rollbackResidue)
           if(result?.data?.rollbackResidue>0)
           {
@@ -949,24 +977,24 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   onFormSubmit() {
 
-    this.residueEstForm!.get('desc')?.setErrors(null);
-    this.residueEstForm!.get('qty')?.setErrors(null);
-    this.residueEstForm!.get('unit_price')?.setErrors(null);
-    this.residueEstForm!.get('deList')?.setErrors(null);
+    this.steamEstForm!.get('desc')?.setErrors(null);
+    this.steamEstForm!.get('qty')?.setErrors(null);
+    this.steamEstForm!.get('unit_price')?.setErrors(null);
+    this.steamEstForm!.get('deList')?.setErrors(null);
 
     if(!this.deList.length){
-      this.residueEstForm?.get('deList')?.setErrors({ required: true });
+      this.steamEstForm?.get('deList')?.setErrors({ required: true });
     }
-    if(!this.residueEstForm?.valid) return;
+    if(!this.steamEstForm?.valid) return;
 
 
     if(this.historyState.action==="NEW" ||this.historyState.action==="DUPLICATE")
     {
        var newResidueItem :ResidueItem =new ResidueItem();
-       var billGuid:string =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
+       var billGuid:string =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
        newResidueItem.bill_to_guid= billGuid;
-       newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
-       newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
+       newResidueItem.job_no = this.steamEstForm.get("job_no")?.value;
+       newResidueItem.remarks = this.steamEstForm.get("remarks")?.value;
        newResidueItem.status_cv="PENDING";
        newResidueItem.sot_guid=this.sotItem?.guid;
        newResidueItem.residue_part= [];
@@ -978,7 +1006,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
        delete newResidueItem.customer_company;
       
-       this.residueDS.addResidue(newResidueItem).subscribe(result=>{
+       this.steamDS.addSteam(newResidueItem).subscribe(result=>{
 
           if(result.data.addResidue>0)
           {
@@ -988,27 +1016,27 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     }
     else if(this.historyState.action==="UPDATE")
     {
-      var updResidueItem :ResidueItem =new ResidueItem(this.residueItem);
-      var billGuid:string =(this.residueEstForm.get("billing_branch")?.value?this.residueEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
-      updResidueItem.bill_to_guid= billGuid;
-      updResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
-      updResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
-      updResidueItem.sot_guid=this.sotItem?.guid;
-      updResidueItem.residue_part= [];
+      var updSteamItem :SteamItem =new SteamItem(this.steamItem);
+      var billGuid:string =(this.steamEstForm.get("billing_branch")?.value?this.steamEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
+     // updSteamItem.bill_to_guid= billGuid;
+      updSteamItem.job_no = this.steamEstForm.get("job_no")?.value;
+      updSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
+      updSteamItem.sot_guid=this.sotItem?.guid;
+      updSteamItem.steaming_part= [];
       this.deList.forEach(data=>{
-         var residuePart : ResiduePartItem = new ResiduePartItem(data);
-         updResidueItem.residue_part?.push(residuePart);
+         var steamPart : ResiduePartItem = new ResiduePartItem(data);
+         updSteamItem.steaming_part?.push(steamPart);
 
       });
 
-      delete updResidueItem.customer_company;
-      delete updResidueItem.storing_order_tank;
+     // delete updSteamItem.customer_company;
+      delete updSteamItem.storing_order_tank;
 
-      this.residueDS.updateResidue(updResidueItem).subscribe(result=>{
+      this.steamDS.updateSteam(updSteamItem).subscribe(result=>{
 
-        if(result.data.updateResidue>0)
+        if(result.data.UpdateSteaming>0)
         {
-          this.handleSaveSuccess(result.data.updateResidue);
+          this.handleSaveSuccess(result.data.UpdateSteaming);
         }
      });
 
@@ -1072,7 +1100,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
         //this.router.navigate(['/admin/master/estimate-template']);
 
         // Navigate to the route and pass the JSON object
-        this.router.navigate(['/admin/residue-disposal/estimate'], {
+        this.router.navigate(['/admin/steam/estimate'], {
           state: this.historyState
 
         }
@@ -1289,76 +1317,76 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   calculateCost() {
-    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
-    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
-    const labourDiscount = this.residueEstForm?.get('labour_cost_discount')?.value;
-    const matDiscount = this.residueEstForm?.get('material_cost_discount')?.value;
+    // const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
+    // const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
+    // const labourDiscount = this.steamEstForm?.get('labour_cost_discount')?.value;
+    // const matDiscount = this.steamEstForm?.get('material_cost_discount')?.value;
 
-    let total_hour = 0;
-    let total_labour_cost = 0;
-    let total_mat_cost = 0;
-    let total_cost = 0;
-    let discount_labour_cost = 0;
-    let discount_mat_cost = 0;
-    let net_cost = 0;
+    // let total_hour = 0;
+    // let total_labour_cost = 0;
+    // let total_mat_cost = 0;
+    // let total_cost = 0;
+    // let discount_labour_cost = 0;
+    // let discount_mat_cost = 0;
+    // let net_cost = 0;
 
-    const totalOwner = this.repairEstDS.getTotal(ownerList);
-    const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-    const total_owner_mat_cost = totalOwner.total_mat_cost;
-    const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    const discount_mat_owner_cost = this.repairEstDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    const net_owner_cost = this.repairEstDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
+    // const totalOwner = this.repairEstDS.getTotal(ownerList);
+    // const total_owner_hour = totalOwner.hour;
+    // //const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
+    // const total_owner_mat_cost = totalOwner.total_mat_cost;
+    // const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
+    // const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
+    // const discount_mat_owner_cost = this.repairEstDS.getDiscountCost(matDiscount, total_owner_mat_cost);
+    // const net_owner_cost = this.repairEstDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
 
-    this.residueEstForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-    this.residueEstForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-    this.residueEstForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-    this.residueEstForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-    this.residueEstForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-    this.residueEstForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-    this.residueEstForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
+    // this.steamEstForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
+    // this.steamEstForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
+    // this.steamEstForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
+    // this.steamEstForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
+    // this.steamEstForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
+    // this.steamEstForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
+    // this.steamEstForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
 
-    total_hour += total_owner_hour;
-    total_labour_cost += total_owner_labour_cost;
-    total_mat_cost += total_owner_mat_cost;
-    total_cost += total_owner_cost;
-    discount_labour_cost += discount_labour_owner_cost;
-    discount_mat_cost += discount_mat_owner_cost;
-    net_cost += net_owner_cost;
+    // total_hour += total_owner_hour;
+    // total_labour_cost += total_owner_labour_cost;
+    // total_mat_cost += total_owner_mat_cost;
+    // total_cost += total_owner_cost;
+    // discount_labour_cost += discount_labour_owner_cost;
+    // discount_mat_cost += discount_mat_owner_cost;
+    // net_cost += net_owner_cost;
 
-    const totalLessee = this.repairEstDS.getTotal(lesseeList);
-    const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-    const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    const discount_mat_lessee_cost = this.repairEstDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    const net_lessee_cost = this.repairEstDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
+    // const totalLessee = this.repairEstDS.getTotal(lesseeList);
+    // const total_lessee_hour = totalLessee.hour;
+    // const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
+    // const total_lessee_mat_cost = totalLessee.total_mat_cost;
+    // const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
+    // const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
+    // const discount_mat_lessee_cost = this.repairEstDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
+    // const net_lessee_cost = this.repairEstDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
 
-    this.residueEstForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-    this.residueEstForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-    this.residueEstForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-    this.residueEstForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-    this.residueEstForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-    this.residueEstForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-    this.residueEstForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
+    // this.steamEstForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
+    // this.steamEstForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
+    // this.steamEstForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
+    // this.steamEstForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
+    // this.steamEstForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
+    // this.steamEstForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
+    // this.steamEstForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
 
-    total_hour += total_lessee_hour;
-    total_labour_cost += total_lessee_labour_cost;
-    total_mat_cost += total_lessee_mat_cost;
-    total_cost += total_lessee_cost;
-    discount_labour_cost += discount_labour_lessee_cost;
-    discount_mat_cost += discount_mat_lessee_cost;
-    net_cost += net_lessee_cost;
+    // total_hour += total_lessee_hour;
+    // total_labour_cost += total_lessee_labour_cost;
+    // total_mat_cost += total_lessee_mat_cost;
+    // total_cost += total_lessee_cost;
+    // discount_labour_cost += discount_labour_lessee_cost;
+    // discount_mat_cost += discount_mat_lessee_cost;
+    // net_cost += net_lessee_cost;
 
-    this.residueEstForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-    this.residueEstForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-    this.residueEstForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-    this.residueEstForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-    this.residueEstForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-    this.residueEstForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-    this.residueEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
+    // this.steamEstForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
+    // this.steamEstForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
+    // this.steamEstForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
+    // this.steamEstForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
+    // this.steamEstForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
+    // this.steamEstForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
+    // this.steamEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
   }
 
   filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
@@ -1378,25 +1406,33 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   canExport(): boolean {
-    return !!this.repair_guid;
+    return !!this.steam_guid;
   }
 
-  getLabourCost(): number | undefined {
-    return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
-  }
+  // getLabourCost(): number | undefined {
+  //   return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
+  // }
 
-  getPackageResidue()
+  getPackageSteam()
   {
     let where:any={};
     let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
     where.customer_company_guid = {eq:custCompanyGuid};
 
-    this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
+    this.packRepDS.SearchPackageRepair(where,{}).subscribe(data=>{
 
-      this.packResidueList=data;
-      this.displayPackResidueList=data;
-      this.populateResiduePartList(this.residueItem!);
+      this.packSteamList=data;
+     // this.displayPackResidueList=data;
+      this.populateSteamPartList(this.steamItem!);
+      //this.populateResiduePartList(this.residueItem!);
     });
+
+    // this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
+
+    //   this.packResidueList=data;
+    //   this.displayPackResidueList=data;
+    //   this.populateResiduePartList(this.residueItem!);
+    // });
 
   }
 
@@ -1411,7 +1447,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
       this.billingBranchList=[def, ...data];;
 
-      this.patchResidueEstForm(this.residueItem!);
+      this.patchSteamEstForm(this.steamItem!);
     });
 
   }
@@ -1424,28 +1460,28 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
       this.isDuplicate = this.historyState.action==='DUPLICATE';
       this.sotItem = this.historyState.selectedRow;
-      this.residueItem=this.historyState.selectedResidue;
-      this.getPackageResidue();
+      this.steamItem=this.historyState.selectedSteam;
+      this.getPackageSteam();
       this.loadBillingBranch();
       
       
     }
   }
 
-  patchResidueEstForm(residue:ResidueItem)
+  patchSteamEstForm(steam:SteamItem)
   {
     let billingGuid= "";
-    if(residue)
+    if(steam)
     {
-      billingGuid=residue.bill_to_guid!;
+      //billingGuid=steam.bill_to_guid!;
     }
     
-    this.residueEstForm?.patchValue({
+    this.steamEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no: residue?.job_no?residue.job_no:this.sotItem?.job_no,
-       billing_branch:this.getBillingBranch(billingGuid),
-       remarks:residue?.remarks
+      job_no: steam?.job_no?steam.job_no:this.sotItem?.job_no,
+      // billing_branch:this.getBillingBranch(billingGuid),
+       remarks:steam?.remarks
 
     });
   }
@@ -1472,52 +1508,53 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   }
 
-  displayResiduePart(cc: any): string {
-    return cc && cc.tariff_residue ? cc.tariff_residue.description : '';
+  displaySteamPart(cc: any): string {
+    return cc && cc.tariff_repair ? cc.tariff_repair.alias : '';
   }
 
   
 
   resetValue(){
 
-    this.residueEstForm?.patchValue({
+    this.steamEstForm?.patchValue({
       desc:'',
       qty:'',
-      unit_price:''
+      unit_price:'',
+      hour:''
     },{emitEvent:false});
-    this.residueEstForm?.get('desc')?.setErrors(null);
-    this.residueEstForm?.get('qty')?.setErrors(null);
-    this.residueEstForm?.get('unit_price')?.setErrors(null);
-    this.displayPackResidueList=[...this.packResidueList];
+    this.steamEstForm?.get('desc')?.setErrors(null);
+    this.steamEstForm?.get('qty')?.setErrors(null);
+    this.steamEstForm?.get('unit_price')?.setErrors(null);
+    this.displayPackSteamList=[...this.packSteamList];
   
   }
 
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/estimate'], {
+    this.router.navigate(['/admin/steam/estimate'], {
       state: this.historyState
 
     }
     );
   }
 
-  populateResiduePartList(residue:ResidueItem){
+  populateSteamPartList(steam:SteamItem){
 
-    if(residue)
+    if(steam)
     {
-      var dataList = residue.residue_part?.map(data=>
+      var dataList = steam.steaming_part?.map(data=>
         {
           if (this.isDuplicate && data.description) {
             data.action='NEW';
             // Filter packResidueList for matching tariff_residue_guid
-            const packResidue = this.packResidueList.find(res => res.tariff_residue?.guid === data.tariff_residue_guid);
-            if (packResidue) {
-                data.cost = packResidue.cost;
-            }
+            // const packSteam = this.packSteamList.find(res => res.tariff_repair?.guid === data.tariff_steaming_guid);
+            // if (packSteam) {
+            //     data.cost = packSteam.cost;
+            // }
           }
           
-          return new ResidueEstPartGO(data)
+          return new SteamPartGO(data)
 
         } );
       this.updateData(dataList);

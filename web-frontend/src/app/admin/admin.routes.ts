@@ -368,7 +368,7 @@ export const ADMIN_ROUTE: Routes = [
     component: JobOrderAllocationSteamComponent,
   },
   {
-    path: "steam/job-order/task/:id/:residue_id",
+    path: "steam/job-order/task/:id/:steam_id",
     component: SteamJobOrderTaskDetailsComponent,
   },
   {

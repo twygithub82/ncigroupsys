@@ -100,14 +100,14 @@ export class SteamItem extends SteamGO {
   }
 }
 
-export class ResidueStatusRequest {
+export class SteamStatusRequest {
   public guid?: string;
   public action?: string;
 
   public sot_guid?: string;
   //public aspnetsuser?: UserItem;
 
-  constructor(item: Partial<ResidueStatusRequest> = {}) {
+  constructor(item: Partial<SteamStatusRequest> = {}) {
 
     this.guid = item.guid;
     this.sot_guid = item.sot_guid;
@@ -117,9 +117,10 @@ export class ResidueStatusRequest {
 }
 
 export const GET_STEAM_EST = gql`
-  query QuerySteam($where: residueFilterInput, $order: [residueSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    resultList: querySteam(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+  query querySteaming($where: residueFilterInput, $order: [residueSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: querySteaming(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
+        na_dt
         allocate_by
         allocate_dt
         approve_by
@@ -256,8 +257,8 @@ export const GET_STEAM_EST = gql`
 `;
 
 export const GET_STEAM_EST_JOB_ORDER = gql`
-  query queryResidue($where: residueFilterInput,$residue_part_where:residue_partFilterInput) {
-    resultList: queryResidue(where: $where) {
+  query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
+    resultList: querySteaming(where: $where) {
       nodes {
        allocate_by
       allocate_dt
@@ -270,6 +271,7 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
       create_dt
       delete_dt
       estimate_no
+      na_dt
       guid
       job_no
       remarks
@@ -397,8 +399,8 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
 `;
 
 export const GET_STEAM_FOR_MOVEMENT = gql`
-  query queryResidue($where: residueFilterInput) {
-    resultList: queryResidue(where: $where) {
+  query querySteaming($where: residueFilterInput) {
+    resultList: querySteaming(where: $where) {
       nodes {
         allocate_by
         allocate_dt
@@ -411,6 +413,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         create_dt
         delete_dt
         estimate_no
+        na_dt
         guid
         job_no
         remarks
@@ -479,28 +482,28 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
 `;
 
 export const ADD_STEAM_EST = gql`
-  mutation AddResidue($residue: residueInput!) {
-    addResidue(residue: $residue)
+  mutation AddSteaming($steam: steamingInput!) {
+    addResidue(steaming: $steam)
   }
 `;
 
 export const UPDATE_STEAM_EST = gql`
-  mutation UpdateResidue($residue: residueInput!) {
-    updateResidue(residue: $residue)
+  mutation UpdateSteaming($steam: steamingInput!) {
+    updateSteaming(steaming: $steam)
   }
 `;
 
 export const UPDATE_STEAM_STATUS = gql`
-  mutation UpdateResidueStatus($residue: ResidueStatusRequestInput!) {
-    updateResidueStatus(residue: $residue)
+  mutation UpdateSteamingStatus($steam: SteamingStatusRequestInput!) {
+    updateSteamingStatus(steaming: $steam)
   }
 `;
 
-export const CANCEL_STEAM_EST = gql`
-  mutation CancelSteaming($steam: [SteamingInput!]!) {
-    cancelSteaming(steaming: $steam)
-  }
-`
+// export const CANCEL_STEAM_EST = gql`
+//   mutation CancelSteaming($steam: [SteamingInput!]!) {
+//     cancelSteaming(steaming: $steam)
+//   }
+// `
 
 export const ROLLBACK_STEAM_EST = gql`
   mutation RollbackSteaming($steam: [SteamingRequestInput!]!) {
@@ -508,17 +511,6 @@ export const ROLLBACK_STEAM_EST = gql`
   }
 `
 
-// export const ROLLBACK_STEAM_STATUS_EST = gql`
-//   mutation RollbackSteaStatus($residue: ResidueRequestInput!) {
-//     rollbackResidueStatus(residue: $residue)
-//   }
-// `
-
-// export const ROLLBACK_STEAM_APPROVAL_EST = gql`
-//   mutation RollbackResidueApproval($residue: [ResidueRequestInput!]!) {
-//     rollbackResidueApproval(residue: $residue)
-//   }
-// `
 
 export const APPROVE_STEAM_EST = gql`
   mutation ApproveSteaming($steam: steamingInput!) {
@@ -533,7 +525,7 @@ const ABORT_STEAM = gql`
   }
 `
 
-export class ResidueDS extends BaseDataSource<SteamItem> {
+export class SteamDS extends BaseDataSource<SteamItem> {
   constructor(private apollo: Apollo) {
     super();
   }
@@ -636,16 +628,16 @@ export class ResidueDS extends BaseDataSource<SteamItem> {
     });
   }
 
-  cancelSteam(steaming: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: CANCEL_STEAM_EST,
-      variables: {
-        steaming
-      }
-    });
-  }
+  // cancelSteam(steaming: any): Observable<any> {
+  //   return this.apollo.mutate({
+  //     mutation: CANCEL_STEAM_EST,
+  //     variables: {
+  //       steaming
+  //     }
+  //   });
+  // }
 
-  rollbackStean(steaming: any): Observable<any> {
+  rollbackSteam(steaming: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_STEAM_EST,
       variables: {
@@ -707,7 +699,7 @@ export class ResidueDS extends BaseDataSource<SteamItem> {
   }
 
   canCancel(re: SteamItem): boolean {
-    return re.status_cv === 'PENDING';
+    return re?.status_cv === 'PENDING';
   }
 
   canRollback(re: SteamItem): boolean {

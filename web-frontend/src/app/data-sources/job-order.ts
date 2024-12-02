@@ -574,8 +574,8 @@ const QC_COMPLETE_REPAIR_JOB_ORDER = gql`
 `
 
 const QC_COMPLETE_RESIDUE_JOB_ORDER = gql`
-  mutation completeQCResidue($resJobOrder: ResJobOrderRequestInput!) {
-    completeQCResidue(resJobOrder: $resJobOrder)
+  mutation completeQCResidue($resJobOrder: [ResJobOrderRequestInput!]!) {
+    completeQCResidue(residueJobOrder: $resJobOrder)
   }
 `
 

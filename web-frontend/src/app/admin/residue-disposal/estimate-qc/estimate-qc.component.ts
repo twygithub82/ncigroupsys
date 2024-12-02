@@ -605,7 +605,7 @@ export class ResidueQCViewComponent extends UnsubscribeOnDestroyAdapter implemen
       guid: this.residueItem?.guid,
       sot_guid: this.residueItem?.sot_guid,
       remarks: this.repairItem?.remarks,
-      job_order: this.deList
+      job_order: distinctJobOrders
     });
 
     console.log(resJobOrder)

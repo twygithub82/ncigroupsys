@@ -686,7 +686,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canCancel(re: ResidueItem): boolean {
-    return re.status_cv === 'PENDING';
+    return re?.status_cv === 'PENDING';
   }
 
   canRollback(re: ResidueItem): boolean {

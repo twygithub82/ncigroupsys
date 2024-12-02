@@ -97,8 +97,8 @@
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.RESIDUE_JOB_NO}}</mat-label>
-                      <input matInput formControlName="residue_job_no">
+                      <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
+                      <input matInput formControlName="job_no">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
@@ -217,9 +217,9 @@
                   </div>
                 </div>
                 <mat-divider></mat-divider>
-                @if ((filterDeleted(row.residue || [])?.length ?? 0) > 0) {
+                @if ((filterDeleted(row.steaming || [])?.length ?? 0) > 0) {
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="filterDeleted(row.residue || [])" matSort
+                  <table mat-table [dataSource]="filterDeleted(row.steaming || [])" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="select">
                       <mat-header-cell *matHeaderCellDef
@@ -234,47 +234,47 @@
                     </ng-container>
                     <ng-container matColumnDef="id">
                       <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-                      <mat-cell *matCellDef="let residueRow">{{residueRow.guid}}</mat-cell>
+                      <mat-cell *matCellDef="let steamRow">{{steamRow.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="estimate_no">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.ESTIMATE_NO}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let residueRow" class="">
+                      <mat-cell mat-cell *matCellDef="let steamRow" class="">
                         <span
-                          class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{residueRow.estimate_no}}
+                          class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{steamRow.estimate_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="net_cost">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>
                         {{translatedLangText.NET_COST}}
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let residueRow">
+                      <mat-cell *matCellDef="let steamRow">
                         <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
-                        <span>$</span><span class="ms-3">{{residueRow.net_cost}}</span>
+                        <span>$</span><span class="ms-3">{{steamRow.net_cost}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="status_cv">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let residueRow" class="">
-                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(residueRow.status_cv)}}
+                      <mat-cell mat-cell *matCellDef="let steamRow" class="">
+                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(steamRow.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="remarks">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.REMARKS}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let residueRow" class="">
-                        <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{residueRow.remarks}}
+                      <mat-cell mat-cell *matCellDef="let steamRow" class="">
+                        <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{steamRow.remarks}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">
                       <mat-header-cell
                         [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matHeaderCellDef></mat-header-cell>
-                      <mat-cell *matCellDef="let residueRow; let i=index;"
+                      <mat-cell *matCellDef="let steamRow; let i=index;"
                         [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                         <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                           <mat-icon>more_vert</mat-icon>
@@ -287,20 +287,20 @@
                             <span>{{translatedLangText.AMEND}}</span>
                           </button>
                           } -->
-                          @if (residueDS.canCopy(residueRow)) {
-                          <button mat-menu-item (click)="copyResidueEst(residueRow)">
+                          @if (steamDS.canCopy(steamRow)) {
+                          <button mat-menu-item (click)="copyResidueEst(steamRow)">
                             <mat-icon>content_copy</mat-icon>
                             <span>{{translatedLangText.COPY}}</span>
                           </button>
                           }
-                          @if (residueDS.canRollback(residueRow)) {
-                          <button mat-menu-item (click)="rollbackRow(residueRow)">
+                          @if (steamDS.canRollback(steamRow)) {
+                          <button mat-menu-item (click)="rollbackRow(steamRow)">
                             <mat-icon>undo</mat-icon>
                             <span>{{translatedLangText.ROLLBACK}}</span>
                           </button>
                           }
-                          @if (residueDS.canCancel(residueRow)) {
-                          <button mat-menu-item (click)="cancelRow(residueRow)">
+                          @if (steamDS.canCancel(steamRow)) {
+                          <button mat-menu-item (click)="cancelRow(steamRow)">
                             <mat-icon>cancel</mat-icon>
                             <span>{{translatedLangText.CANCEL}}</span>
                           </button>
@@ -310,7 +310,7 @@
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let residueRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                       matRipple (click)="updateResidueEstimate($event,row,residueRow)">
+                       matRipple (click)="updateSteamEstimate($event,row,residueRow)">
                     </mat-row>
                   </table>
                 </div>

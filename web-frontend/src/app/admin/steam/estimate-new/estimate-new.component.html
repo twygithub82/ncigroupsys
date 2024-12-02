@@ -2,8 +2,8 @@
   <div class="content-block">
     <div class="block-header">
       <!-- breadcrumb -->
-      <app-breadcrumb [title]="repair_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
-        [active_item]="repair_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
+      <app-breadcrumb [title]="steam_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
+        [active_item]="steam_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -121,7 +121,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="residueEstForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="steamEstForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
@@ -157,7 +157,7 @@
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
-                        <input matInput formControlName="job_no" [readonly]="!(residueDS.canAmend(this.residueItem!))">
+                        <input matInput formControlName="job_no" [readonly]="!(steamDS.canAmend(this.steamItem!))">
                       </mat-form-field>
                     </div>
                   </div>
@@ -184,7 +184,7 @@
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                        <input matInput formControlName="remarks" [readonly]="!(residueDS.canAmend(this.residueItem!))">
+                        <input matInput formControlName="remarks" [readonly]="!(steamDS.canAmend(this.steamItem!))">
                       </mat-form-field>
                     </div>
                   </div>
@@ -213,36 +213,36 @@
               </div>
               }
               @if (!(sotDS.loadingSubject | async)) {
-                @if (residueDS.canAmend(this.residueItem!)) {
+                @if (steamDS.canAmend(this.steamItem!)) {
               <div class="row">
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
                     <input matInput formControlName="desc" [matAutocomplete]="description" required="true">
-                    <mat-autocomplete #description="matAutocomplete" [displayWith]="displayResiduePart">
-                      @for (cc of displayPackResidueList; track cc) {
+                    <mat-autocomplete #description="matAutocomplete" [displayWith]="displaySteamPart">
+                      @for (cc of displayPackSteamList; track cc) {
                       <mat-option [value]="cc">
-                        {{cc.tariff_residue?.description}}
+                        {{cc.tariff_repair?.alias}}
                       </mat-option>
                       }
                     </mat-autocomplete>
-                    @if (residueEstForm?.get('desc')?.hasError('required')) {
+                    @if (steamEstForm?.get('desc')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
                       }
-                      @if (residueEstForm?.get('desc')?.hasError('duplicated')) {
+                      @if (steamEstForm?.get('desc')?.hasError('duplicated')) {
                         <mat-error>
                           {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.EXISTED}}
                         </mat-error>
                         }
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
                     <input matInput formControlName="qty" type="number" required="true">
-                    @if (residueEstForm?.get('qty')?.hasError('required')) {
+                    @if (steamEstForm?.get('qty')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
@@ -250,11 +250,23 @@
                   </mat-form-field>
                  
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.HOUR}}</mat-label>
+                    <input matInput formControlName="hour" type="number" required="true">
+                    @if (steamEstForm?.get('hour')?.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.HOUR}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
+                  </mat-form-field>
+                 
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.UNIT_PRICE}}</mat-label>
                     <input matInput formControlName="unit_price" type="number" required="true">
-                    @if (residueEstForm?.get('unit_price')?.hasError('required')) {
+                    @if (steamEstForm?.get('unit_price')?.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
@@ -295,6 +307,7 @@
                       <mat-header-cell *matHeaderCellDef mat-sort-header  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                       <mat-cell *matCellDef="let row; let i = index"  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="desc">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -303,6 +316,7 @@
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
                       </mat-cell>
+                      <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                       <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="qty">
@@ -313,8 +327,19 @@
                         <span
                           class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
                       </mat-cell>
+                      <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}"> </mat-footer-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>
+                    <ng-container matColumnDef="hour">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        {{translatedLangText.HOUR}}
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row" class="">
+                        <span class="mobile-label">{{translatedLangText.HOUR}}:</span>{{ (row.labour)}}
+                      </mat-cell>
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" ></mat-footer-cell>
+                    </ng-container>
+              
                     <ng-container matColumnDef="unit_price">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.UNIT_PRICE}}
@@ -322,7 +347,11 @@
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}}
                       </mat-cell>
+                      
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
+                    </ng-container>
+                    <ng-container matcolumnDef="unit_price">
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.LABOUR}}:</mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="cost">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
@@ -331,6 +360,7 @@
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity*row.cost)}}
                       </mat-cell>
+                    
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"  >
                         <span class="mobile-label" > </span>{{this.parse2Decimal( getTotalCost()) }}
                       </mat-footer-cell>
@@ -339,13 +369,13 @@
                       <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row;" class="justify-content-end">
-                        @if (residueDS.canAmend(this.residueItem!)) {
+                        @if (steamDS.canAmend(this.steamItem!)) {
                         @if (!row.delete_dt){
                         <button mat-icon-button  (click)="handleDelete($event, row, row.index)">
                           <mat-icon>delete_forever</mat-icon>
                         </button>
                         }
-                        @if (residueDS.canRollback(this.residueItem!)) {
+                        @if (steamDS.canRollback(this.steamItem!)) {
                           <button mat-icon-button  (click)="handleRollback($event, row, row.index)">
                             <mat-icon>undo</mat-icon>
                           </button>
@@ -368,7 +398,9 @@
                     (click)="editEstDetails($event, row, row.index)" [style.cursor]="'pointer'"  
                       matRipple>
                     </mat-row>
+                    <mat-footer-row *matFooterRowDef="footerColumns"></mat-footer-row>
                     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+                    
                   </table>
                 </div>
                 <!-- No result -->
@@ -388,7 +420,7 @@
               </div>
               }
               <mat-divider></mat-divider>
-              @if (residueEstForm?.get('deList')?.hasError('required')) {
+              @if (steamEstForm?.get('deList')?.hasError('required')) {
               <mat-error class="ps-3">
                 {{translatedLangText.ADD_ATLEAST_ONE}}
               </mat-error>
@@ -404,10 +436,10 @@
               </div>
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                 @if (canExport()) {
-                <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5">
-                  @if (!(residueDS.loading$ | async)) {
+                <button mat-flat-button color="accent" [disabled]="(steamDS.loading$ | async)" class="m-r-5">
+                  @if (!(steamDS.loading$ | async)) {
                   <i class="fas fa-file-export"></i>
-                  } @else if ((residueDS.loading$ | async)) {
+                  } @else if ((steamDS.loading$ | async)) {
                   <mat-icon>
                     <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   </mat-icon>
@@ -415,38 +447,38 @@
                   {{translatedLangText.EXPORT}}
                 </button>
                 }
-                @if (residueDS.canAmend(this.residueItem!)) {
-                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5">
+                @if (steamDS.canAmend(this.steamItem!)) {
+                <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)" class="m-r-5">
                   <mat-icon>
-                    @if (!(residueDS.loading$ | async)) {
+                    @if (!(steamDS.loading$ | async)) {
                     save
-                    } @else if ((residueDS.loading$ | async)) {
+                    } @else if ((steamDS.loading$ | async)) {
                     <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                     }
                   </mat-icon>
                   {{translatedLangText.SAVE_AND_SUBMIT}}
                 </button>
                 }
-                @if (residueDS.canRollback(this.residueItem!)) {
-                  <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                @if (steamDS.canRollback(this.steamItem!)) {
+                  <button mat-flat-button color="accent" [disabled]="(steamDS.loading$ | async)" class="m-r-5"
                     (click)="rollbackRow($event)">
                     <mat-icon>
-                      @if (!(residueDS.loading$ | async)) {
+                      @if (!(steamDS.loading$ | async)) {
                       undo
-                      } @else if ((residueDS.loading$ | async)) {
+                      } @else if ((steamDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
                     {{translatedLangText.ROLLBACK}}
                   </button>
                   }
-                  @if (residueDS.canCancel(residueItem!)) {
-                    <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                  @if (steamDS.canCancel(steamItem!)) {
+                    <button mat-flat-button color="warn" [disabled]="(steamDS.loading$ | async)" class="m-r-5"
                       (click)="onCancel($event)">
                       <mat-icon>
-                        @if (!(residueDS.loading$ | async)) {
+                        @if (!(steamDS.loading$ | async)) {
                         close
-                        } @else if ((residueDS.loading$ | async)) {
+                        } @else if ((steamDS.loading$ | async)) {
                         <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                         }
                       </mat-icon>

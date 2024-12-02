@@ -51,6 +51,7 @@ import { MatCardModule } from '@angular/material/card';
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { ResidueDS,ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { RepairItem } from 'app/data-sources/repair';
+import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 
 @Component({
   selector: 'app-estimate',
@@ -163,7 +164,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     COPY: 'COMMON-FORM.COPY',
     NO_OF_PARTS: 'COMMON-FORM.NO-OF-PARTS',
     REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
-    RESIDUE_JOB_NO: 'COMMON-FORM.RESIDUE-JOB-NO',
+    
   }
 
   
@@ -185,11 +186,11 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  residueDS:ResidueDS;
+  steamDS:SteamDS;
  // repairEstDS: RepairDS;
 
   sotList: StoringOrderTankItem[] = [];
-  reSelection = new SelectionModel<ResidueItem>(true, []);
+  reSelection = new SelectionModel<SteamItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   reStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -206,7 +207,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { storing_order: { so_no: "DESC" } };
+  lastOrderBy: any = { storing_order: { so_no: "ASC" } };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -234,7 +235,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.residueDS= new ResidueDS(this.apollo);
+    this.steamDS= new SteamDS(this.apollo);
     //this.repairEstDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -283,8 +284,8 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
       bill_completed_cv: [''],
       status_cv: [''],
       eir_no: [''],
-      residue_job_no: [''],
-      repair_type_cv: [''],
+      job_no: [''],
+//      repair_type_cv: [''],
       est_dt_start: [''],
       est_dt_end: [''],
       approval_dt_start: [''],
@@ -349,16 +350,16 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-         const reList = result.item.map((item: ResidueItem) => new ResidueItem(item));
+         const reList = result.item.map((item: SteamItem) => new SteamItem(item));
          console.log(reList);
 
-         let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+         let residueStatus : SteamStatusRequest = new SteamStatusRequest();
          residueStatus.action="CANCEL";
          residueStatus.guid = row[0]?.guid;
          residueStatus.sot_guid= row[0]?.sot_guid;
-          this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+          this.steamDS.updateSteamStatus(residueStatus).subscribe(result=>{
  
-            this.handleCancelSuccess(result?.data?.UpdateResidueStatus)
+            this.handleCancelSuccess(result?.data?.UpdateSteamStatus)
             this.performSearch(this.pageSize, 0, this.pageSize);
           });
         //  this.residueDS.cancelResidue(reList).subscribe((result: { data: { cancelResidue: any; }; }) => {
@@ -400,7 +401,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
       if (result?.action === 'confirmed') {
 
         const reList = result.item.map((item: any) => {
-          const ResidueEstimateRequestInput = {
+          const SteamEstimateRequestInput = {
             customer_guid: item.customer_company_guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
@@ -408,10 +409,10 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
             sot_guid: item.sot_guid,
             is_approved:item?.status_cv=="APPROVED"
           }
-          return ResidueEstimateRequestInput;
+          return SteamEstimateRequestInput;
         });
         console.log(reList);
-        this.residueDS.rollbackResidue(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
+        this.steamDS.rollbackSteam(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
           this.handleRollbackSuccess(result?.data?.rollbackResidue)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
@@ -501,7 +502,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['CLEANING','STORAGE'] }
+      tank_status_cv: { in: ['STEAM','STORAGE'] }
     };
 
     if (this.searchForm!.value['tank_no']) {
@@ -566,28 +567,6 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
         if(!where.residue.some) where.residue.some={};
         where.residue.some.status_cv={in:this.searchForm!.value['est_status_cv']} ;
       }
-    // if (this.searchForm!.value['part_name'] || this.searchForm!.value['est_dt_start'] || this.searchForm!.value['est_dt_end']) {
-    //   let reSome: any = {};
-
-    //   if (this.searchForm!.value['part_name']) {
-    //     reSome = {
-    //       repair_est_part: {
-    //         some: {
-    //           tariff_repair: {
-    //             part_name: { contains: this.searchForm!.value['part_name'] }
-    //           }
-    //         }
-    //       }
-    //     };
-    //   }
-
-    //   if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end']) {
-    //     reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.value['est_dt_start']), lte: Utility.convertDate(this.searchForm!.value['est_dt_end']) };
-    //   }
-    //   where.repair_est = { some: reSome };
-    // }
-
-   
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
@@ -596,13 +575,13 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksSteamEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data.map(sot => {
-          sot.residue = sot.residue?.map(res => {
-             var res_part=[...res.residue_part!];
-             res.residue_part=res_part?.filter(data => !data.delete_dt);
-            return { ...res, net_cost: this.calculateNetCost(res) }
+          sot.steaming = sot.steaming?.map(stm => {
+             var stm_part=[...stm.steaming_part!];
+             stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
+            return { ...stm, net_cost: this.calculateNetCost(stm) }
           })
           
           return sot;
@@ -706,10 +685,10 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  calculateNetCost(residue: ResidueItem): any {
+  calculateNetCost(steam: SteamItem): any {
     
 
-    const total = this.residueDS.getTotal(residue?.residue_part)
+    const total = this.steamDS.getTotal(steam?.steaming_part)
      
      return total.total_mat_cost.toFixed(2);
   }
@@ -796,12 +775,12 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
   {
     event.stopPropagation(); // Stop the click event from propagating
  // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
+    this.router.navigate(['/admin/steam/estimate/new/',row.guid], {
       state: { id: '' ,
         action:"NEW",
-        selectedResidue:undefined,
+        selectedSteam:undefined,
         selectedRow:row,
-        type:'residue-estimate',
+        type:'steam-estimate',
         pagination:{
           where :this.lastSearchCriteria,
           pageSize:this.pageSize,
@@ -822,12 +801,12 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
   {
     event.stopPropagation(); // Stop the click event from propagating
  // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
+    this.router.navigate(['/admin/steam/estimate/new/',row.guid], {
       state: { id: '' ,
         action:"DUPLICATE",
-        selectedResidue:row,
+        selectedSteam:row,
         selectedRow:sot,
-        type:'residue-estimate',
+        type:'steam-estimate',
         pagination:{
           where :this.lastSearchCriteria,
           pageSize:this.pageSize,
@@ -843,16 +822,16 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
       }
     });
   }
-  updateResidueEstimate(event: Event, sot:StoringOrderItem, row:ResidueItem)
+  updateSteamEstimate(event: Event, sot:StoringOrderItem, row:SteamItem)
   {
     event.stopPropagation(); // Stop the click event from propagating
  // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/estimate/new/',row.guid], {
+    this.router.navigate(['/admin/steam/estimate/new/',row.guid], {
       state: { id: '' ,
         action:"UPDATE",
-        selectedResidue:row,
+        selectedSteam:row,
         selectedRow:sot,
-        type:'residue-estimate',
+        type:'steam-estimate',
         pagination:{
           where :this.lastSearchCriteria,
           pageSize:this.pageSize,
