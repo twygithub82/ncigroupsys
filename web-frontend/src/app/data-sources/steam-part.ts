@@ -54,9 +54,9 @@ export class SteamPartGO {
     this.tariff_steaming_guid = item.tariff_steaming_guid;
     this.job_order_guid = item.job_order_guid;
     this.description = item.description;
-    this.quantity = item.quantity;
-    this.labour = item.labour;
-    this.cost = item.cost;
+    this.quantity = Number(item.quantity);
+    this.labour = Number(item.labour);
+    this.cost = Number(item.cost);
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;

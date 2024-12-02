@@ -20,7 +20,7 @@ export class SteamGO {
   public approve_by?: string;
   public approve_dt?: number;
 
- // public bill_to_guid?: string;
+  public bill_to_guid?: string;
   public complete_by?: string;
   public complete_dt?: number;
   public guid?: string;
@@ -75,7 +75,7 @@ export class SteamGO {
     this.total_cost=item.total_cost;
     this.invoice_by=item.invoice_by;
     this.invoice_dt=item.invoice_dt;
-    //this.bill_to_guid = item.bill_to_guid;
+    this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
@@ -483,7 +483,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
 
 export const ADD_STEAM_EST = gql`
   mutation AddSteaming($steam: steamingInput!) {
-    addResidue(steaming: $steam)
+    addSteaming(steaming: $steam)
   }
 `;
 

@@ -982,6 +982,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.steamEstForm!.get('qty')?.setErrors(null);
     this.steamEstForm!.get('unit_price')?.setErrors(null);
     this.steamEstForm!.get('deList')?.setErrors(null);
+    this.steamEstForm!.get('hour')?.setErrors(null);
 
     if(!this.deList.length){
       this.steamEstForm?.get('deList')?.setErrors({ required: true });
@@ -991,29 +992,56 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
     if(this.historyState.action==="NEW" ||this.historyState.action==="DUPLICATE")
     {
-       var newResidueItem :ResidueItem =new ResidueItem();
-       var billGuid:string =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
-       newResidueItem.bill_to_guid= billGuid;
-       newResidueItem.job_no = this.steamEstForm.get("job_no")?.value;
-       newResidueItem.remarks = this.steamEstForm.get("remarks")?.value;
-       newResidueItem.status_cv="PENDING";
-       newResidueItem.sot_guid=this.sotItem?.guid;
-       newResidueItem.residue_part= [];
+      var newSteamItem:any= new SteamItem();
+      var billGuid:string =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
+      if(!this.steamEstForm?.get("billing_branch")?.value)
+      {
+        billGuid="";
+      }
+      newSteamItem.action="NEW";
+      newSteamItem.bill_to_guid = billGuid;
+      newSteamItem.job_no = this.steamEstForm.get("job_no")?.value;
+      newSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
+      newSteamItem.status_cv="PENDING";
+      newSteamItem.sot_guid=this.sotItem?.guid;
+      newSteamItem.steaming_part= [];
        this.deList.forEach(data=>{
-          var residuePart : ResiduePartItem = new ResiduePartItem(data);
-          newResidueItem.residue_part?.push(residuePart);
+          var steamPart : SteamPartItem = new SteamPartItem(data);
+          newSteamItem.steaming_part?.push(steamPart);
 
        });
 
-       delete newResidueItem.customer_company;
+       this.steamDS.addSteam(newSteamItem).subscribe(result=>{
+
+            if(result.data.addSteam>0)
+            {
+              this.handleSaveSuccess(result.data.addSteam);
+            }
+         });
+       
+      //  var newResidueItem :ResidueItem =new ResidueItem();
+      //  var billGuid:string =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
+      //  newResidueItem.bill_to_guid= billGuid;
+      //  newResidueItem.job_no = this.steamEstForm.get("job_no")?.value;
+      //  newResidueItem.remarks = this.steamEstForm.get("remarks")?.value;
+      //  newResidueItem.status_cv="PENDING";
+      //  newResidueItem.sot_guid=this.sotItem?.guid;
+      //  newResidueItem.residue_part= [];
+      //  this.deList.forEach(data=>{
+      //     var residuePart : ResiduePartItem = new ResiduePartItem(data);
+      //     newResidueItem.residue_part?.push(residuePart);
+
+      //  });
+
+      //  delete newResidueItem.customer_company;
       
-       this.steamDS.addSteam(newResidueItem).subscribe(result=>{
+      //  this.steamDS.addSteam(newResidueItem).subscribe(result=>{
 
-          if(result.data.addResidue>0)
-          {
-            this.handleSaveSuccess(result.data.addResidue);
-          }
-       });
+      //     if(result.data.addResidue>0)
+      //     {
+      //       this.handleSaveSuccess(result.data.addResidue);
+      //     }
+      //  });
     }
     else if(this.historyState.action==="UPDATE")
     {
