@@ -42,6 +42,8 @@ export class StoringOrderTank {
   public certificate_cv?: string;
   public required_temp?: number;
   public remarks?: string;
+  public tank_note?: string;
+  public release_note?: string;
   public etr_dt?: number | Date;
   public status_cv?: string;
   public tank_status_cv?: string;
@@ -73,6 +75,8 @@ export class StoringOrderTank {
     this.certificate_cv = item.certificate_cv || '';
     this.required_temp = item.required_temp || undefined;
     this.remarks = item.remarks || '';
+    this.tank_note = item.tank_note || '';
+    this.release_note = item.release_note || '';
     this.etr_dt = item.etr_dt || undefined;
     this.status_cv = item.status_cv || '';
     this.tank_status_cv = item.tank_status_cv || '';
@@ -1284,6 +1288,8 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
         purpose_storage
         clean_status_cv
         unit_type_guid
+        tank_note
+        release_note
         tariff_cleaning {
           guid
           open_on_gate_cv
@@ -1573,6 +1579,12 @@ export const CANCEL_STORING_ORDER_TANK = gql`
 export const ROLLBACK_STORING_ORDER_TANK = gql`
   mutation RollbackStoringOrderTank($sot: [StoringOrderTankRequestInput!]!) {
     rollbackStoringOrderTank(sot: $sot)
+  }
+`;
+
+export const UPDATE_STORING_ORDER_TANK = gql`
+  mutation updateStoringOrderTank($soTank: StoringOrderTankRequestInput!) {
+    updateStoringOrderTank(soTank: $soTank)
   }
 `;
 
@@ -2017,6 +2029,15 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       mutation: ROLLBACK_STORING_ORDER_TANK,
       variables: {
         sot
+      }
+    });
+  }
+
+  updateStoringOrderTank(soTank: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_STORING_ORDER_TANK,
+      variables: {
+        soTank
       }
     });
   }

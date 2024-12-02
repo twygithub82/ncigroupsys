@@ -738,7 +738,8 @@
     "STORAGE-BILLED-UNTIL": "Storage Billed Until",
     "BOOKING": "Booking",
     "SCHEDULING": "Scheduling",
-    "SURVEY-DETAILS": "Survey Details"
+    "SURVEY-DETAILS": "Survey Details",
+    "UPDATE-TANK-NOTES": "Update Tank Notes"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

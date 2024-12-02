@@ -10,15 +10,22 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <form class="register-form" [formGroup]="remarksForm" #formDirective="ngForm">
+    <form class="register-form" [formGroup]="tankNoteForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-          <h5>{{data.translatedLangText.FILL_IN_REMARKS}}</h5>
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
-                <mat-label>{{remarksTitle}}</mat-label>
-                <textarea matInput formControlName="remarks"></textarea>
+                <mat-label>{{data.translatedLangText.SPECIAL_NOTES}}</mat-label>
+                <textarea matInput formControlName="tank_note"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.RELEASE_NOTES}}</mat-label>
+                <textarea matInput formControlName="release_note"></textarea>
               </mat-form-field>
             </div>
           </div>

@@ -36,14 +36,15 @@ import { CodeValuesItem } from 'app/data-sources/code-values';
 export interface DialogData {
   action?: string;
   translatedLangText?: any;
-  remarksTitle?: string;
+  tankNote?: string;
+  releaseNote?: string;
   previousRemarks?: string;
 }
 
 @Component({
-  selector: 'app-form-in-gate-survey-form-dialog',
-  templateUrl: './form-dialog.component.html',
-  styleUrls: ['./form-dialog.component.scss'],
+  selector: 'app-tank-note-form-dialog',
+  templateUrl: './tank-note-form-dialog.component.html',
+  styleUrls: ['./tank-note-form-dialog.component.scss'],
   providers: [provideNgxMask()],
   standalone: true,
   imports: [
@@ -58,55 +59,45 @@ export interface DialogData {
     MatDatepickerModule,
     MatSelectModule,
     MatOptionModule,
-    MatDialogClose,
-    DatePipe,
     MatNativeDateModule,
     TranslateModule,
     MatCheckboxModule,
     MatAutocompleteModule,
     CommonModule,
-    NgxMaskDirective,
     MatTableModule,
     MatDividerModule,
     MatCardModule,
   ],
 })
-export class FormDialogComponent {
+export class TankNoteFormDialogComponent {
   action: string;
   dialogTitle: string;
-  remarksTitle?: string;
-  remarksForm: UntypedFormGroup;
-
-  previousRemarks?: string;
+  tankNoteForm: UntypedFormGroup;
   constructor(
-    public dialogRef: MatDialogRef<FormDialogComponent>,
+    public dialogRef: MatDialogRef<TankNoteFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
 
   ) {
     // Set the defaults
     this.action = data.action!;
-    this.remarksTitle = data.remarksTitle;
-    this.previousRemarks = data.previousRemarks;
-    if (this.action === 'edit') {
-      this.dialogTitle = 'Edit Remarks';
-    } else {
-      this.dialogTitle = 'New Remarks';
-    }
-    this.remarksForm = this.createForm();
+    this.dialogTitle = 'Update Tank Notes';
+    this.tankNoteForm = this.createForm();
   }
 
   createForm(): UntypedFormGroup {
     const formGroup = this.fb.group({
-      remarks: [this.previousRemarks],
+      tank_note: [this.data?.tankNote],
+      release_note: [this.data?.releaseNote],
     });
     return formGroup;
   }
 
   submit() {
-    if (this.remarksForm?.valid) {
+    if (this.tankNoteForm?.valid) {
       const returnDialog: any = {
-        remarks: this.remarksForm.get('remarks')?.value
+        tank_note: this.tankNoteForm.get('tank_note')?.value,
+        release_note: this.tankNoteForm.get('release_note')?.value
       }
       this.dialogRef.close(returnDialog);
     } else {
@@ -120,7 +111,7 @@ export class FormDialogComponent {
   }
 
   findInvalidControls() {
-    const controls = this.remarksForm.controls;
+    const controls = this.tankNoteForm.controls;
     for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);
