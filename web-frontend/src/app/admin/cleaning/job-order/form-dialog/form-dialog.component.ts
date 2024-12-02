@@ -592,7 +592,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         
         var cleanItem:InGateCleaningItem = new InGateCleaningItem();
         cleanItem.guid =selItem.guid;
-        cleanItem.action="ASSIGNED";
+        cleanItem.action="ASSIGN";
         cleanItem.job_no= selItem.job_no;
         cleanItem.remarks= selItem.remarks;
         this.igCleanDS.updateInGateCleaning(cleanItem).subscribe(result=>{

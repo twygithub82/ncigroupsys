@@ -156,7 +156,7 @@
                   <div class="row">
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                       <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.DEPOT_REFERENCE}}</mat-label>
+                        <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
                         <input matInput formControlName="job_no" readonly>
                       </mat-form-field>
                     </div>
@@ -213,7 +213,7 @@
               </div>
               }
               @if (!(sotDS.loadingSubject | async)) {
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
@@ -277,7 +277,7 @@
                     </button>
                   }
                 </div>
-              </div> 
+              </div>  -->
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="deList" matSort
@@ -303,8 +303,13 @@
                         {{translatedLangText.QUANTITY}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
+                        <ng-container *ngIf="row.edited; else displayValue">
+                          <input matInput  [formControl]="editRow.qty" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)">
+                        </ng-container>
+                        <ng-template #displayValue>
                         <span
                           class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.approve_qty}}
+                        </ng-template>
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>
@@ -313,7 +318,13 @@
                         {{translatedLangText.UNIT_PRICE}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.approve_cost)}}
+                        <ng-container *ngIf="row.edited; else displayValue">
+                          <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)">
+                        </ng-container>
+                        <ng-template #displayValue>
+                          <span class="mobile-label">{{ translatedLangText.UNIT_PRICE }}:</span>
+                          {{ this.parse2Decimal(row.approve_cost) }}
+                        </ng-template>
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
                     </ng-container>

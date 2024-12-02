@@ -547,8 +547,10 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
    // this.subs.sink = this.repairDS.searchRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
    this.subs.sink=this.residueDS.search(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.repList = data.map(re => {
-          return {...re, net_cost: this.calculateNetCost(re)}
+        this.repList = data.map(res => {
+          var res_part=[...res.residue_part!];
+          res.residue_part=res_part?.filter(data => !data.delete_dt);
+          return {...res, net_cost: this.calculateNetCost(res)}
         });
         this.endCursor = this.residueDS.pageInfo?.endCursor;
         this.startCursor = this.residueDS.pageInfo?.startCursor;

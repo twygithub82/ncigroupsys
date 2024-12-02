@@ -345,20 +345,13 @@
                           <mat-icon>delete_forever</mat-icon>
                         </button>
                         }
-                        @if (residueDS.canRollback(this.residueItem!)) {
-                          <button mat-icon-button  (click)="handleRollback($event, row, row.index)">
+                        @if (row.delete_dt) {
+                          <button mat-icon-button  (click)="undeleteItem($event, row, row.index)">
                             <mat-icon>undo</mat-icon>
                           </button>
                           }
                         }
-                        <!-- <mat-menu #menu="matMenu">
-                          @if (sotDS.canAddRemove(row)) {
-                          <button mat-menu-item (click)="handleDelete($event, row, row.index)">
-                            <mat-icon>delete_forever</mat-icon>
-                            <span>{{translatedLangText.DELETE}}</span>
-                          </button>
-                          }
-                        </mat-menu> -->
+                        
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container>

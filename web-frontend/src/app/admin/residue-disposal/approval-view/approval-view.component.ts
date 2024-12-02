@@ -220,6 +220,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    JOB_REFERENCE:"COMMON-FORM.JOB-REFERENCE"
 
   }
 
@@ -278,6 +279,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
 
   historyState: any = {};
   updateSelectedItem:any=undefined;
+  editRow ={ qty:new FormControl('0'), cost :new FormControl('0'),index:0}; 
 
   constructor(
     public httpClient: HttpClient,
@@ -931,7 +933,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     this.residueEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no:this.sotItem?.job_no,
+      job_no:residue?residue.job_no:this.sotItem?.job_no,
        billing_branch:this.getBillingBranch(billingGuid),
        remarks:residue?.remarks
 
@@ -1294,6 +1296,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
     // this.resetValue();
   }
 
+
   editEstDetails(event: Event, row: ResiduePartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
@@ -1306,38 +1309,57 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
 
     this.resetSelectedItemForUpdating();
 
-    if(IsEditedRow) return;
+   
 
-    
-    this.updateSelectedItem ={
-      item:this.deList[index],
-      index:index,
-      action:"update",
-      
-    }
-    this.updateSelectedItem.item.edited=true;
-
-    var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
-    var descValue:any;
-    if(descValues.length>0)
+    if(!IsEditedRow)
     {
-      descValue = descValues[0];
+      this.editRow.qty.setValue( String(row.approve_qty));
+      this.editRow.cost.setValue( row.approve_cost!.toFixed(2));
+      this.editRow.index=index;
+      this.updateSelectedItem ={
+        item:this.deList[index],
+        index:index,
+        action:"update",
+        
+      }
+      this.updateSelectedItem.item.edited=true;
+      return;
     }
     else
-    {
-      descValue = new PackageResidueItem();
-      descValue.guid=row.guid;
-      descValue.description= row.description;
-      descValue.tariff_residue= new TariffResidueItem();
-      descValue.tariff_residue.description= row.description;
-      descValue.cost= Number(row.cost);
-      
+    { 
+        var updItem = this.deList[this.editRow.index];
+        updItem.action="EDIT";
+        updItem.approve_qty=Number(this.editRow?.qty.value);
+        updItem.approve_cost=Number(this.editRow?.cost.value);
+        // var newData =[...this.deList];
+        // this.updateData(newData);
     }
-    this.residueEstForm?.patchValue({
-       desc:descValue,
-       qty:(this.residueItem?.status_cv==='PENDING')? row.quantity:row.approve_qty,
-       unit_price:(this.residueItem?.status_cv==='PENDING')?row.cost?.toFixed(2):row.approve_cost?.toFixed(2)
-    });
+    
+
+    
+  
+
+    // var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
+    // var descValue:any;
+    // if(descValues.length>0)
+    // {
+    //   descValue = descValues[0];
+    // }
+    // else
+    // {
+    //   descValue = new PackageResidueItem();
+    //   descValue.guid=row.guid;
+    //   descValue.description= row.description;
+    //   descValue.tariff_residue= new TariffResidueItem();
+    //   descValue.tariff_residue.description= row.description;
+    //   descValue.cost= Number(row.cost);
+      
+    // }
+    // this.residueEstForm?.patchValue({
+    //    desc:descValue,
+    //    qty:(this.residueItem?.status_cv==='PENDING')? row.quantity:row.approve_qty,
+    //    unit_price:(this.residueItem?.status_cv==='PENDING')?row.cost?.toFixed(2):row.approve_cost?.toFixed(2)
+    // });
 
    
     
@@ -1354,5 +1376,10 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
 
   getFooterBackgroundColor():string{
     return 'light-green';
+  }
+
+  selectAllText(event: FocusEvent): void {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.select();
   }
 }

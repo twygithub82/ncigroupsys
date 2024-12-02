@@ -653,7 +653,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
       bRetval = (row.status_cv===statusMenu);
       if(!bRetval)  bRetval = (row.status_cv=='JOB_IN_PROGRESS');
-      if(statusMenu==="APPROVED") bRetval = (row.status_cv=='ASSIGNED');
+      if(statusMenu==="APPROVED") bRetval = (row.status_cv=='ASSIGNED' ||row.status_cv=='APPROVED');
 
       return bRetval;
    }

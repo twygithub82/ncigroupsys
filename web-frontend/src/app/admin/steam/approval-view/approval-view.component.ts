@@ -220,7 +220,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
-
+    JOB_REFERENCE:"COMMON-FORM.JOB-REFERENCE"
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -931,7 +931,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     this.residueEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no:this.sotItem?.job_no,
+      job_no:residue?residue.job_no:this.sotItem?.job_no,
        billing_branch:this.getBillingBranch(billingGuid),
        remarks:residue?.remarks
 
