@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FormDialogComponent } from './form-dialog.component';
+import { TankNoteFormDialogComponent } from './tank-note-form-dialog.component';
 
-describe('FormDialogComponent', () => {
-  let component: FormDialogComponent;
-  let fixture: ComponentFixture<FormDialogComponent>;
+describe('TankNoteFormDialogComponent', () => {
+  let component: TankNoteFormDialogComponent;
+  let fixture: ComponentFixture<TankNoteFormDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [FormDialogComponent]
+    imports: [TankNoteFormDialogComponent]
 })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FormDialogComponent);
+    fixture = TestBed.createComponent(TankNoteFormDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

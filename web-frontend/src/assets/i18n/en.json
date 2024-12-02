@@ -303,7 +303,6 @@
     "ARE-YOU-SURE-ABORT": "Are you sure to abort?",
     "ARE-YOU-SURE-UNDO": "Are you sure to undo?",
     "ARE-YOU-SURE-ROLLBACK": "Are you sure to rollback?",
-    "UNDO": "Undo",
     "DELETE": "Delete",
     "OK": "Ok",
     "CLOSE": "Close",
@@ -723,6 +722,8 @@
     "NO-RESIDUE": "No Residue",
     "ADD-STEAM-PURPOSE": "Add Steam Purpose",
     "NO-STEAM-PURPOSE": "No Steam Purpose",
+    "ADD-STORAGE-PURPOSE": "Add Storage Purpose",
+    "NO-STORAGE-PURPOSE": "No Storage Purpose",
     "REPAIR-BEGIN-DATE": "Repair Begin Date",
     "REPAIR-COMPLETED-DATE": "Repair Completed Date",
     "ALLOCATION-DATE": "Allocation Date",
@@ -738,7 +739,9 @@
     "STORAGE-BILLED-UNTIL": "Storage Billed Until",
     "BOOKING": "Booking",
     "SCHEDULING": "Scheduling",
-    "SURVEY-DETAILS": "Survey Details"
+    "SURVEY-DETAILS": "Survey Details",
+    "UPDATE-TANK-NOTES": "Update Tank Notes",
+    "TRANSFER-DETAILS": "Transfer Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

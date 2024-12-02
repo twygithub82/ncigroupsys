@@ -49,7 +49,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { Moment } from 'moment';
 import * as moment from 'moment';
 import { testTypeMapping } from 'environments/environment.development';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
@@ -285,6 +285,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     NO_RESIDUE: 'COMMON-FORM.NO-RESIDUE',
     ADD_STEAM_PURPOSE: 'COMMON-FORM.ADD-STEAM-PURPOSE',
     NO_STEAM_PURPOSE: 'COMMON-FORM.NO-STEAM-PURPOSE',
+    ADD_STORAGE_PURPOSE: 'COMMON-FORM.ADD-STORAGE-PURPOSE',
+    NO_STORAGE_PURPOSE: 'COMMON-FORM.NO-STORAGE-PURPOSE',
     REPAIR_BEGIN_DATE: 'COMMON-FORM.REPAIR-BEGIN-DATE',
     REPAIR_COMPLETED_DATE: 'COMMON-FORM.REPAIR-COMPLETED-DATE',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
@@ -314,6 +316,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SCHEDULING: 'COMMON-FORM.SCHEDULING',
     SCHEDULING_DATE: 'COMMON-FORM.SCHEDULING-DATE',
     SURVEY_DETAILS: 'COMMON-FORM.SURVEY-DETAILS',
+    UPDATE_TANK_NOTE: 'COMMON-FORM.UPDATE-TANK-NOTE',
+    TRANSFER_DETAILS: 'COMMON-FORM.TRANSFER-DETAILS',
   }
 
   sot_guid: string | null | undefined;
@@ -327,6 +331,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   repairItem: RepairItem[] = [];
   bookingList: BookingItem[] = [];
   schedulingList: SchedulingItem[] = [];
+  surveyList: any[] = [];
+  transferList: any[] = [];
 
   surveyForm?: UntypedFormGroup;
 
@@ -685,8 +691,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = this.pbDS.getCustomerPackageCost(where).subscribe(data => {
       if (data?.length > 0) {
         console.log(data)
-        if (data?.length) {
-        }
       }
     });
   }
@@ -1082,6 +1086,42 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     input.value = '';
   }
 
+  editTankNotes(event: Event) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(TankNoteFormDialogComponent, {
+      width: '600px',
+      data: {
+        tankNote: this.sot?.tank_note,
+        releaseNote: this.sot?.release_note,
+        action: 'edit',
+        translatedLangText: this.translatedLangText,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        this.sot.tank_note = result.tank_note;
+        this.sot.release_note = result.release_note;
+        const updateSotReq = new StoringOrderTankGO({
+          guid: this.sot.guid,
+          tank_note: this.sot.tank_note,
+          release_note: this.sot.release_note,
+        });
+        console.log(updateSotReq);
+        this.sotDS.updateStoringOrderTank(updateSotReq).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateStoringOrderTank);
+        });
+      }
+    });
+  }
+
   editRemarks(event: Event, remarksTitle: string, remarksValue: any) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -1090,7 +1130,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
+    const dialogRef = this.dialog.open(TankNoteFormDialogComponent, {
       data: {
         remarksTitle: remarksTitle,
         previousRemarks: remarksValue.value,
@@ -1382,16 +1422,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         'approve_dt',
         'allocation_dt',
         'qc_dt',
-        'status_cv',
-        'actions'
+        'status_cv'
       ];
     } else {
       this.displayedColumnsRepair = [
         'tank_no',
         'customer',
         'estimate_no',
-        'status_cv',
-        'actions'
+        'status_cv'
       ];
     }
   }
