@@ -17,7 +17,7 @@ namespace IDMS.Steaming.GqlTypes.LocalModel
         public bool is_approved { get; set; } = false;
     }
 
-    public class SteamingJobOrder
+    public class SteamJobOrderRequest
     {
         public string guid { get; set; }
         public string? sot_guid { get; set; }
