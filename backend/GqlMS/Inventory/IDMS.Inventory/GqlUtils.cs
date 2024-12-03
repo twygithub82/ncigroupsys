@@ -256,7 +256,7 @@ namespace IDMS.Inventory.GqlTypes
             {
                 var ingateCleaning = new cleaning();
                 ingateCleaning.guid = Util.GenerateGUID();
-                ingateCleaning.create_by = user;
+                ingateCleaning.create_by = "system";
                 ingateCleaning.create_dt = currentDateTime;
                 ingateCleaning.sot_guid = sot.guid;
                 ingateCleaning.approve_dt = ingate_date;
@@ -318,7 +318,7 @@ namespace IDMS.Inventory.GqlTypes
                 //steaming handling
                 var newSteam = new steaming();
                 newSteam.guid = Util.GenerateGUID();
-                newSteam.create_by = user;
+                newSteam.create_by = "system";
                 newSteam.create_dt = currentDateTime;
                 newSteam.sot_guid = sot.guid;
                 newSteam.status_cv = CurrentServiceStatus.APPROVED;
