@@ -5,22 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IDMS.Cleaning.GqlTypes.LocalModel
+namespace IDMS.Inventory.GqlTypes.LocalModel
 {
-    public class CleaningJobOrder
+    public class ProcessJobOrder
     {
         public string guid { get; set; }
         public string? sot_guid { get; set; }
         public string? remarks { get; set; }
         public List<job_order?>? job_order { get; set; }
-    }
-
-    public class CleaningStatusRequest
-    {
-        public string guid { get; set; }
-        public string sot_guid { get; set; }
-        public string? remarks { get; set; }
-        public string action { get; set; }
-
     }
 }

@@ -8,6 +8,7 @@ using IDMS.Residue.GqlTypes;
 using IDMS.Cleaning.GqlTypes;
 using IDMS.Service.GqlTypes;
 using IDMS.Repair;
+using IDMS.Steaming.GqlTypes;
 
 namespace IDMS.ServiceMS
 {
@@ -65,8 +66,8 @@ namespace IDMS.ServiceMS
                        .AddTypeExtension<ResidueMutation>()
                        .AddTypeExtension<CleaningQuery>()
                        .AddTypeExtension<CleaningMutation>()
-                       //.AddMutationType<TemplateEstMutation>()
-                       //.AddTypeExtension<ReleaseOrderMutation>()
+                       .AddTypeExtension<SteamingQuery>()
+                       .AddTypeExtension<SteamingMutation>()
                        //.AddTypeExtension<SchedulingMutation>()
                        .AddFiltering()
                        .AddSorting()

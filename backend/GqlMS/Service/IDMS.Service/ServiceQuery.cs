@@ -21,6 +21,7 @@ namespace IDMS.Service.GqlTypes
                 var jobOrders = context.job_order
                                 .Include(j => j.storing_order_tank)
                                 .Include(j => j.team)
+                                .Include(j=>j.repair_part).ThenInclude(p=>p.repair)
                                 .Where(d => d.delete_dt == null || d.delete_dt == 0);
 
                 return jobOrders;

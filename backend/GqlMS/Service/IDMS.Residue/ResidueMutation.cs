@@ -10,6 +10,7 @@ using IDMS.Residue.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory;
 using System.Globalization;
+using IDMS.Repair.GqlTypes.LocalModel;
 
 
 namespace IDMS.Residue.GqlTypes
@@ -176,6 +177,8 @@ namespace IDMS.Residue.GqlTypes
                             part.update_dt = currentDateTime;
                         }
                     }
+
+                    await GqlUtils.JobOrderHandling(context, "residue", user, currentDateTime, ObjectAction.APPROVE, processGuid: residue.guid);
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -270,12 +273,16 @@ namespace IDMS.Residue.GqlTypes
                 updateResidue.update_dt = currentDateTime;
                 updateResidue.remarks = residue.remarks;
 
-
                 switch (residue.action.ToUpper())
                 {
                     case ObjectAction.IN_PROGRESS:
-                        updateResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                        if (await GqlUtils.StatusChangeConditionCheck(context, "residue", residue.guid, CurrentServiceStatus.JOB_IN_PROGRESS))
+                            updateResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
                         break;
+                    //case ObjectAction.JOB_COMPLETE:
+                    //    if (await GqlUtils.StatusChangeConditionCheck(context, "residue", residue.guid, CurrentServiceStatus.JOB_COMPLETED))
+                    //        updateResidue.status_cv = CurrentServiceStatus.JOB_COMPLETED;
+                    //    break;
                     case ObjectAction.CANCEL:
                         updateResidue.status_cv = CurrentServiceStatus.CANCELED;
                         break;
@@ -286,9 +293,12 @@ namespace IDMS.Residue.GqlTypes
                         updateResidue.status_cv = CurrentServiceStatus.ASSIGNED;
                         break;
                     case ObjectAction.COMPLETE:
-                        updateResidue.status_cv = CurrentServiceStatus.COMPLETED;
-                        updateResidue.complete_by = user;
-                        updateResidue.complete_dt = currentDateTime;
+                        if (await GqlUtils.StatusChangeConditionCheck(context, "residue", residue.guid, CurrentServiceStatus.COMPLETED))
+                        {
+                            updateResidue.status_cv = CurrentServiceStatus.COMPLETED;
+                            updateResidue.complete_by = user;
+                            updateResidue.complete_dt = currentDateTime;
+                        }
 
                         if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
                             //if no other residue estimate or all completed. then we check cross process tank movement
@@ -303,31 +313,6 @@ namespace IDMS.Residue.GqlTypes
                             await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
                         break;
                 }
-
-                //if (ObjectAction.IN_PROGRESS.EqualsIgnore(residue.action))
-                //    updateResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                //else if (ObjectAction.CANCEL.EqualsIgnore(residue.action))
-                //    updateResidue.status_cv = CurrentServiceStatus.CANCELED;
-                //else if (ObjectAction.COMPLETE.EqualsIgnore(residue.action))
-                //{
-                //    updateResidue.status_cv = CurrentServiceStatus.COMPLETED;
-                //    updateResidue.complete_by = user;
-                //    updateResidue.complete_dt = currentDateTime;
-
-                //    if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
-                //        //if no other residue estimate or all completed. then we check cross process tank movement
-                //        await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
-                //}
-                //else if (ObjectAction.NA.EqualsIgnore(residue.action))
-                //{
-                //    updateResidue.status_cv = CurrentServiceStatus.NO_ACTION;
-                //    updateResidue.na_dt = currentDateTime;
-
-                //    if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
-                //        //if no other residue estimate or all completed. then we check cross process tank movement
-                //        await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
-
-                //}
                 var res = await context.SaveChangesAsync();
                 return res;
 
@@ -357,18 +342,23 @@ namespace IDMS.Residue.GqlTypes
                 abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
                 abortResidue.remarks = residueJobOrder.remarks;
 
-                foreach (var item in residueJobOrder.job_order)
-                {
-                    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
-                    {
-                        var job_order = new job_order() { guid = item.guid };
-                        context.job_order.Attach(job_order);
+                await GqlUtils.JobOrderHandling(context, "residue", user, currentDateTime, ObjectAction.CANCEL, jobOrders: residueJobOrder.job_order);
+                //foreach (var item in residueJobOrder.job_order)
+                //{
+                //    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                //    {
+                //        var job_order = new job_order() { guid = item.guid };
+                //        context.job_order.Attach(job_order);
 
-                        job_order.status_cv = CurrentServiceStatus.CANCELED;
-                        job_order.update_by = user;
-                        job_order.update_dt = currentDateTime;
-                    }
-                }
+                //        job_order.status_cv = JobStatus.CANCELED;
+                //        job_order.update_by = user;
+                //        job_order.update_dt = currentDateTime;
+                //    }
+                //}
+
+                if (!await TankMovementCheckInternal(context, "residue", residueJobOrder.sot_guid, residueJobOrder.guid))
+                    //if no other residue estimate or all completed. then we check cross process tank movement
+                    await TankMovementCheckCrossProcess(context, residueJobOrder.sot_guid, user, currentDateTime);
 
                 var res = await context.SaveChangesAsync();
                 return res;
@@ -379,6 +369,75 @@ namespace IDMS.Residue.GqlTypes
             }
         }
 
+        public async Task<int> CompleteQCResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<ResJobOrderRequest> residueJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (residueJobOrder == null)
+                    throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+
+                using var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    foreach (var item in residueJobOrder)
+                    {
+                        //Repair handling
+                        var completedResidue = new residue() { guid = item.guid };
+                        context.residue.Attach(completedResidue);
+                        completedResidue.update_by = user;
+                        completedResidue.update_dt = currentDateTime;
+                        completedResidue.complete_dt = currentDateTime;
+                        completedResidue.status_cv = CurrentServiceStatus.QC;
+                        completedResidue.remarks = item.remarks;
+
+                        //job_orders handling
+                        var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                        string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
+                                $"update_by = '{user}' WHERE guid IN ({guids})";
+                        context.Database.ExecuteSqlRaw(sql);
+                    }
+
+                    //Tank handling
+                    var sotGuid = residueJobOrder.Select(r => r.sot_guid).FirstOrDefault();
+                    var processGuid = string.Join(",", residueJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
+                    if (string.IsNullOrEmpty(sotGuid))
+                        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                    //var sot = new storing_order_tank() { guid = sotGuid };
+                    //context.storing_order_tank.Attach(sot);
+
+                    //TODO:
+                    //sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
+                    if (!await TankMovementCheckInternal(context, "residue", sotGuid, processGuid))
+                        //if no other residue estimate or all completed. then we check cross process tank movement
+                        await TankMovementCheckCrossProcess(context, sotGuid, user, currentDateTime);
+
+
+                    //sot.update_by = user;
+                    //sot.update_dt = currentDateTime;
+
+                    var res = await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return res;
+                }
+                catch (Exception ex)
+                {
+                    // Rollback in case of an error
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
 
         private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
         {
@@ -388,7 +447,7 @@ namespace IDMS.Residue.GqlTypes
             var sqlQuery = $@"SELECT guid FROM {tableName} 
                             WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', 
                             '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
-                            AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+                            AND sot_guid = '{sotGuid}' AND guid NOT IN ({processGuid}) AND delete_dt IS NULL";
             var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
             if (result.Count > 0)
@@ -401,6 +460,7 @@ namespace IDMS.Residue.GqlTypes
         {
             var sot = await context.storing_order_tank.FindAsync(sotGuid);
 
+
             if (sot?.purpose_cleaning ?? false)
                 sot.tank_status_cv = TankMovementStatus.CLEANING;
             else if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
@@ -410,6 +470,36 @@ namespace IDMS.Residue.GqlTypes
             sot.update_by = user;
             sot.update_dt = currentDateTime;
         }
+
+        //private async Task<bool> JobInProgessCheck(ApplicationServiceDBContext context, string processGuid)
+        //{
+        //    try
+        //    {
+        //        var residue = await context.residue.Include(r => r.residue_part).ThenInclude(p => p.job_order)
+        //                                    .Where(r => r.guid == processGuid).FirstOrDefaultAsync();
+
+        //        if (residue != null)
+        //        {
+        //            var jobOrderList = residue?.residue_part?.Where(p => p.approve_part == true && (p.delete_dt == null || p.delete_dt == 0))
+        //                                                    .Select(p => p.job_order).ToList();
+        //            if (jobOrderList != null && !jobOrderList.Any(j => j == null))
+        //            {
+        //                bool allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
+        //                                                    jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
+        //                if (allValid)
+        //                {
+        //                    return true;
+        //                }
+        //            }
+        //        }
+        //        return false;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
+
 
         //public async Task<int> RollbackResidueApproval(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
         //    [Service] IConfiguration config, List<ResidueRequest> residue)

@@ -37,6 +37,13 @@ namespace IDMS.Repair.GqlTypes.LocalModel
         public string sot_guid { get; set; }
         public string? remarks { get; set; }
         public string action { get; set; }
+        public List<RepairPartRequest?>? repairPartRequests { get; set; }
 
+    }
+
+    public class RepairPartRequest
+    {
+        public string guid { get; set; }
+        public bool approve_part { get; set; }
     }
 }

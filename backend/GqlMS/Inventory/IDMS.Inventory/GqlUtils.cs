@@ -1,7 +1,13 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate;
+using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.Models.Package;
+using IDMS.Models.Service;
+using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+
 //using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -21,7 +27,6 @@ namespace IDMS.Inventory.GqlTypes
             // Get the epoch time
             return now.ToUnixTimeSeconds();
         }
-
 
         public static async Task<JToken> RunNonQueryCommands([Service] IConfiguration config, List<string> commands)
         {
@@ -242,6 +247,112 @@ namespace IDMS.Inventory.GqlTypes
             }
             catch (Exception ex)
             { }
+        }
+
+        public static async Task<int> AddCleaning1(ApplicationInventoryDBContext context, string user, long currentDateTime, storing_order_tank sot, long? ingate_date, string tariffBufferGuid)
+        {
+            int retval = 0;
+            try
+            {
+                var ingateCleaning = new cleaning();
+                ingateCleaning.guid = Util.GenerateGUID();
+                ingateCleaning.create_by = user;
+                ingateCleaning.create_dt = currentDateTime;
+                ingateCleaning.sot_guid = sot.guid;
+                ingateCleaning.approve_dt = ingate_date;
+                ingateCleaning.approve_by = "system";
+                ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
+                ingateCleaning.job_no = sot?.job_no;
+                var customerGuid = sot?.storing_order?.customer_company_guid;
+                ingateCleaning.bill_to_guid = customerGuid;
+
+                var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
+                var adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
+                               .Select(c => c.adjusted_price).FirstOrDefaultAsync();
+                ingateCleaning.cleaning_cost = adjustedPrice;
+
+                var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
+                                                   .Select(b => b.cost).FirstOrDefaultAsync();
+                ingateCleaning.buffer_cost = bufferPrice;
+
+                await context.AddAsync(ingateCleaning);
+                retval = await context.SaveChangesAsync();  
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public static async Task<int> AddSteaming1(ApplicationInventoryDBContext context, string user, long currentDateTime, storing_order_tank sot, long? ingate_date)
+        {
+            int retval = 0;
+
+            try
+            {
+                var customerGuid = sot?.storing_order?.customer_company_guid;
+                var last_cargo_guid = sot?.last_cargo_guid;
+                var last_cargo = await context.Set<tariff_cleaning>().Where(x => x.guid == last_cargo_guid).Select(x => x.cargo).FirstOrDefaultAsync();
+                var description = $"Steaming/Heating cost of ({last_cargo})";
+
+
+                var repTemp = sot?.required_temp;
+                var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
+                            .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
+                            .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
+                            .Select(joined => new
+                            {
+                                joined.p.cost,  // Selecting cost
+                                joined.p.labour, // Selecting labour
+                                joined.p.tariff_steaming_guid
+                            })
+                            .FirstOrDefaultAsync();
+
+                if (result == null || string.IsNullOrEmpty(result.tariff_steaming_guid))
+                    throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
+
+                var defQty = 1;
+                var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
+
+                //steaming handling
+                var newSteam = new steaming();
+                newSteam.guid = Util.GenerateGUID();
+                newSteam.create_by = user;
+                newSteam.create_dt = currentDateTime;
+                newSteam.sot_guid = sot.guid;
+                newSteam.status_cv = CurrentServiceStatus.APPROVED;
+                newSteam.job_no = sot?.job_no;
+                newSteam.total_cost = totalCost;
+                newSteam.approve_dt = ingate_date;
+                newSteam.approve_by = "system";
+                newSteam.estimate_by = "system";
+                newSteam.estimate_dt = ingate_date;
+                await context.AddAsync(newSteam);
+
+                //steaming_part handling
+                var steamingPart = new steaming_part();
+                steamingPart.guid = Util.GenerateGUID();
+                steamingPart.create_by = "system";
+                steamingPart.create_dt = currentDateTime;
+                steamingPart.steaming_guid = newSteam.guid;
+                steamingPart.tariff_steaming_guid = result.tariff_steaming_guid;
+                steamingPart.description = description;
+                steamingPart.quantity = defQty;
+                steamingPart.labour = result.labour;
+                steamingPart.cost = result.cost;
+                steamingPart.approve_part = true;
+                steamingPart.approve_cost = result.cost;
+                steamingPart.approve_labour = result.labour;
+                await context.AddAsync(steamingPart);
+
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+            return retval;
         }
     }
 }

@@ -10,42 +10,6 @@ namespace IDMS.Inventory.GqlTypes
 {
     public class InventoryQuery
     {
-        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        //[UseProjection]
-        //[UseFiltering]
-        //[UseSorting]
-        //public IQueryable<customer_company> QueryCustomerCompany([Service] IHttpContextAccessor httpContextAccessor,
-        //    ApplicationInventoryDBContext context)
-        //{
-        //    try
-        //    {
-        //        return context.customer_company.Where(d => d.delete_dt == null || d.delete_dt == 0);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
-        //    }
-        //}
-
-        //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        //[UseProjection]
-        //[UseFiltering]
-        //[UseSorting]
-        //public IQueryable<customer_company_contact_person> QueryContactPerson([Service] IHttpContextAccessor httpContextAccessor,
-        //    ApplicationInventoryDBContext context)
-        //{
-        //    try
-        //    {
-        //        return context.customer_company_contact_person.Where(d => d.delete_dt == null || d.delete_dt == 0);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
-        //    }
-        //}
-
-        //[UsePaging]
-
         [UseProjection]
         [UseFiltering]
         [UseSorting]

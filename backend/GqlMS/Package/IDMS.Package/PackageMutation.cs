@@ -922,7 +922,7 @@ namespace IDMS.Models.Package.GqlTypes
                 foreach (var item in dbPackageSteaming)
                 {
                     if (cost > -1) item.cost = cost;
-                    if (labour > -1) item.cost = labour;
+                    if (labour > -1) item.labour = labour;
                     if (!string.IsNullOrEmpty(remarks)) item.remarks = remarks;
 
                     item.update_by = uid;

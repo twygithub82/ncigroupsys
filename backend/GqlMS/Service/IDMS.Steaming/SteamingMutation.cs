@@ -71,7 +71,7 @@ namespace IDMS.Steaming.GqlTypes
                 if (CurrentServiceStatus.PENDING.EqualsIgnore(steaming.status_cv))
                 {
                     approveSteam.status_cv = CurrentServiceStatus.APPROVED;
-                    approveSteam.approve_by = steaming?.storing_order_tank?.storing_order?.customer_company_guid;
+                    approveSteam.approve_by = user;
                     approveSteam.approve_dt = currentDateTime;
                 }
 
@@ -90,6 +90,9 @@ namespace IDMS.Steaming.GqlTypes
                         part.update_dt = currentDateTime;
                     }
                 }
+
+                await GqlUtils.JobOrderHandling(context, "steaming", user, currentDateTime, ObjectAction.APPROVE, processGuid: steaming.guid);
+                
                 var res = await context.SaveChangesAsync();
                 return res;
             }
@@ -119,6 +122,7 @@ namespace IDMS.Steaming.GqlTypes
                 updateSteaming.invoice_by = steaming.invoice_by;
                 updateSteaming.invoice_dt = steaming.invoice_dt;
                 updateSteaming.remarks = steaming.remarks;
+                updateSteaming.bill_to_guid = steaming.bill_to_guid;    
 
 
                 //Handling For steaming_part
@@ -374,8 +378,13 @@ namespace IDMS.Steaming.GqlTypes
                 switch (steaming.action.ToUpper())
                 {
                     case ObjectAction.IN_PROGRESS:
-                        updateSteaming.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                        if (await GqlUtils.StatusChangeConditionCheck(context, "steaming", steaming.guid, CurrentServiceStatus.JOB_IN_PROGRESS))
+                                updateSteaming.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
                         break;
+                    //case ObjectAction.JOB_COMPLETE:
+                    //    if (await GqlUtils.StatusChangeConditionCheck(context, "steaming", steaming.guid, CurrentServiceStatus.JOB_COMPLETED))
+                    //        updateSteaming.status_cv = CurrentServiceStatus.JOB_COMPLETED;
+                    //    break;
                     case ObjectAction.CANCEL:
                         updateSteaming.status_cv = CurrentServiceStatus.CANCELED;
                         break;
@@ -386,9 +395,12 @@ namespace IDMS.Steaming.GqlTypes
                         updateSteaming.status_cv = CurrentServiceStatus.ASSIGNED;
                         break;
                     case ObjectAction.COMPLETE:
-                        updateSteaming.status_cv = CurrentServiceStatus.COMPLETED;
-                        updateSteaming.complete_by = user;
-                        updateSteaming.complete_dt = currentDateTime;
+                        if (await GqlUtils.StatusChangeConditionCheck(context, "steaming", steaming.guid, CurrentServiceStatus.COMPLETED))
+                        {
+                            updateSteaming.status_cv = CurrentServiceStatus.COMPLETED;
+                            updateSteaming.complete_by = user;
+                            updateSteaming.complete_dt = currentDateTime;
+                        }
 
                         if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
                             //if no other steaming estimate or all completed. then we check cross process tank movement
@@ -404,33 +416,126 @@ namespace IDMS.Steaming.GqlTypes
                         break;
                 }
 
-
-                //if (ObjectAction.IN_PROGRESS.EqualsIgnore(steaming.action))
-                //    updateSteaming.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                //else if (ObjectAction.CANCEL.EqualsIgnore(steaming.action))
-                //    updateSteaming.status_cv = CurrentServiceStatus.CANCELED;
-                //else if (ObjectAction.COMPLETE.EqualsIgnore(steaming.action))
-                //{
-                //    updateSteaming.status_cv = CurrentServiceStatus.COMPLETED;
-                //    updateSteaming.complete_by = user;
-                //    updateSteaming.complete_dt = currentDateTime;
-
-                //    if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
-                //        //if no other steaming estimate or all completed. then we check cross process tank movement
-                //        await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
-                //}
-                //else if (ObjectAction.NA.EqualsIgnore(steaming.action))
-                //{
-                //    updateSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
-                //    updateSteaming.na_dt = currentDateTime;
-
-                //    if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
-                //        //if no other steaming estimate or all completed. then we check cross process tank movement
-                //        await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
-                //}
                 var res = await context.SaveChangesAsync();
                 return res;
 
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> AbortSteaming(ApplicationServiceDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, SteamJobOrderRequest steamingJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (steamingJobOrder == null)
+                    throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+
+                var abortSteaming = new steaming() { guid = steamingJobOrder.guid };
+                context.steaming.Attach(abortSteaming);
+
+                abortSteaming.update_by = user;
+                abortSteaming.update_dt = currentDateTime;
+                abortSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
+                abortSteaming.remarks = steamingJobOrder.remarks;
+
+                //job order handling
+                await GqlUtils.JobOrderHandling(context, "residue", user, currentDateTime, ObjectAction.CANCEL, jobOrders: steamingJobOrder.job_order);
+
+                //foreach (var item in steamingJobOrder.job_order)
+                //{
+                //    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                //    {
+                //        var job_order = new job_order() { guid = item.guid };
+                //        context.job_order.Attach(job_order);
+
+                //        job_order.status_cv = JobStatus.CANCELED;
+                //        job_order.update_by = user;
+                //        job_order.update_dt = currentDateTime;
+                //    }
+                //}
+
+                if (!await TankMovementCheckInternal(context, "steaming", steamingJobOrder.sot_guid, steamingJobOrder.guid))
+                    //if no other steaming estimate or all completed. then we check cross process tank movement
+                    await TankMovementCheckCrossProcess(context, steamingJobOrder.sot_guid, user, currentDateTime);
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        public async Task<int> CompleteQCSteaming(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<SteamJobOrderRequest> steamingJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (steamingJobOrder == null)
+                    throw new GraphQLException(new Error($"Steaming object cannot be null or empty", "ERROR"));
+
+                using var transaction = context.Database.BeginTransaction();
+                try
+                {
+                    foreach (var item in steamingJobOrder)
+                    {
+                        //Repair handling
+                        var completedSteaming = new steaming() { guid = item.guid };
+                        context.steaming.Attach(completedSteaming);
+                        completedSteaming.update_by = user;
+                        completedSteaming.update_dt = currentDateTime;
+                        completedSteaming.complete_dt = currentDateTime;
+                        completedSteaming.status_cv = CurrentServiceStatus.QC;
+                        completedSteaming.remarks = item.remarks;
+
+                        //job_orders handling
+                        var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                        string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
+                                $"update_by = '{user}' WHERE guid IN ({guids})";
+                        context.Database.ExecuteSqlRaw(sql);
+                    }
+
+                    //Tank handling
+                    var sotGuid = steamingJobOrder.Select(r => r.sot_guid).FirstOrDefault();
+                    var processGuid = string.Join(",", steamingJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
+                    if (string.IsNullOrEmpty(sotGuid))
+                        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                    //var sot = new storing_order_tank() { guid = sotGuid };
+                    //context.storing_order_tank.Attach(sot);
+
+                    //TODO:
+                    //sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
+                    if (!await TankMovementCheckInternal(context, "steaming", sotGuid, processGuid))
+                        //if no other residue estimate or all completed. then we check cross process tank movement
+                        await TankMovementCheckCrossProcess(context, sotGuid, user, currentDateTime);
+
+
+                    //sot.update_by = user;
+                    //sot.update_dt = currentDateTime;
+
+                    var res = await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return res;
+                }
+                catch (Exception ex)
+                {
+                    // Rollback in case of an error
+                    transaction.Rollback();
+                    throw;
+                }
             }
             catch (Exception ex)
             {
@@ -474,5 +579,33 @@ namespace IDMS.Steaming.GqlTypes
                 sot.update_dt = currentDateTime;
             }
         }
+
+        //private async Task<bool> JobInProgessCheck(ApplicationServiceDBContext context, string processGuid)
+        //{
+        //    try
+        //    {
+        //        var steaming = await context.steaming.Include(r => r.steaming_part).ThenInclude(p => p.job_order)
+        //                                    .Where(r => r.guid == processGuid).FirstOrDefaultAsync();
+        //        if (steaming != null)
+        //        {
+        //            var jobOrderList = steaming?.steaming_part?.Where(p => p.approve_part == true && (p.delete_dt == null || p.delete_dt == 0))
+        //                                                        .Select(p => p.job_order).ToList();
+        //            if (jobOrderList != null && !jobOrderList.Any(j => j == null))
+        //            {
+        //                bool allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
+        //                                                    jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
+        //                if (allValid)
+        //                {
+        //                    return true;
+        //                }
+        //            }
+        //        }
+        //        return false;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
     }
 }

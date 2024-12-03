@@ -271,12 +271,12 @@ namespace IDMS.Survey.GqlTypes
 
                 var ingateCleaning = new cleaning();
                 ingateCleaning.guid = Util.GenerateGUID();
-                ingateCleaning.create_by = user;
+                ingateCleaning.create_by = "system";
                 ingateCleaning.create_dt = currentDateTime;
                 ingateCleaning.sot_guid = sot.guid;
                 ingateCleaning.approve_dt = ingate_date;
                 ingateCleaning.approve_by = "system";
-                ingateCleaning.status_cv = CurrentProcessStatus.APPROVED;
+                ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
                 ingateCleaning.job_no = sot?.job_no;
                 var customerGuid = sot?.storing_order?.customer_company_guid;
                 ingateCleaning.bill_to_guid = customerGuid;
@@ -303,7 +303,7 @@ namespace IDMS.Survey.GqlTypes
             return retval;
         }
 
-        public async Task<int> AddSteaming(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        private async Task<int> AddSteaming(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, storing_order_tank sot, long? ingate_date)
         {
             int retval = 0;
@@ -339,15 +339,15 @@ namespace IDMS.Survey.GqlTypes
                 //steaming handling
                 var newSteam = new steaming();
                 newSteam.guid = Util.GenerateGUID();
-                newSteam.create_by = user;
+                newSteam.create_by = "system";
                 newSteam.create_dt = currentDateTime;
                 newSteam.sot_guid = sot.guid;
-                newSteam.status_cv = CurrentProcessStatus.APPROVED;
+                newSteam.status_cv = CurrentServiceStatus.APPROVED;
                 newSteam.job_no = sot?.job_no;
                 newSteam.total_cost = totalCost;
                 newSteam.approve_dt = ingate_date;
                 newSteam.approve_by = "system";
-                newSteam.estimate_by = "system";
+                newSteam.estimate_by = "system";    
                 newSteam.estimate_dt = ingate_date;
                 await context.AddAsync(newSteam);
 

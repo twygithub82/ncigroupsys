@@ -72,8 +72,32 @@ namespace IDMS.Inventory.GqlTypes
         public const string NEW = "NEW";
     }
 
-    public static class CurrentProcessStatus
+    public static class CurrentServiceStatus
     {
+        public const string PENDING = "PENDING";
         public const string APPROVED = "APPROVED";
+        public const string QC = "QC_COMPLETED";
+        public const string BILL = "BILL_COMPLETED";
+        public const string CANCELED = "CANCELED";
+        public const string NO_ACTION = "NO_ACTION";
+        public const string KIV = "KIV";
+        public const string COMPLETED = "COMPLETED";
+        public const string JOB_IN_PROGRESS = "JOB_IN_PROGRESS";
+        public const string PARTIAL = "PARTIAL_ASSIGNED";
+        public const string ASSIGNED = "ASSIGNED";
+    }
+
+    public static class PurposeType
+    {
+        public const string CLEAN = "CLEANING";
+        public const string STEAM = "STEAMING";
+        public const string REPAIR = "REPAIR";
+    }
+
+    public static class PurposeAction
+    {
+        public const string ADD = "ADD";
+        public const string REMOVE = "REMOVE";
+
     }
 }
