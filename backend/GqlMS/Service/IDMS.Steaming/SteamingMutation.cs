@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Steaming.GqlTypes.LocalModel;
+using IDMS.Models.Inventory;
 
 namespace IDMS.Steaming.GqlTypes
 {
@@ -40,6 +41,16 @@ namespace IDMS.Steaming.GqlTypes
                 }
 
                 await context.AddAsync(newSteaming);
+
+                //Handing of SOT movement status
+                if (string.IsNullOrEmpty(steaming.sot_guid))
+                    throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                var sot = new storing_order_tank() { guid = steaming.sot_guid };
+                context.storing_order_tank.Attach(sot);
+                sot.tank_status_cv = TankMovementStatus.STEAM;
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+
                 var res = await context.SaveChangesAsync();
 
                 return res;

@@ -8,6 +8,7 @@ using IDMS.Models.Service;
 using IDMS.Service.GqlTypes;
 using IDMS.Cleaning.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
+using IDMS.Models.Inventory;
 
 namespace IDMS.Cleaning.GqlTypes
 {
@@ -37,8 +38,17 @@ namespace IDMS.Cleaning.GqlTypes
                     newCleaning.job_no = cleaning.storing_order_tank.job_no;
 
                 await context.cleaning.AddAsync(newCleaning);
-                var res = await context.SaveChangesAsync();
 
+                //Handing of SOT movement status
+                if (string.IsNullOrEmpty(cleaning.sot_guid))
+                    throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                var sot = new storing_order_tank() { guid = cleaning.sot_guid };
+                context.storing_order_tank.Attach(sot);
+                sot.tank_status_cv = TankMovementStatus.CLEANING;
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+
+                var res = await context.SaveChangesAsync();
                 return res;
             }
             catch (Exception ex)

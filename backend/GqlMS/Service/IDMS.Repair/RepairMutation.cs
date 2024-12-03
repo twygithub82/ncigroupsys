@@ -70,6 +70,17 @@ namespace IDMS.Repair.GqlTypes
                     cust.update_dt = currentDateTime;
                 }
 
+
+                //Handing of SOT movement status
+                if (string.IsNullOrEmpty(repair.sot_guid))
+                    throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                var sot = new storing_order_tank() { guid = repair.sot_guid };
+                context.storing_order_tank.Attach(sot);
+                sot.tank_status_cv = TankMovementStatus.REPAIR;
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+
+
                 var res = await context.SaveChangesAsync();
 
                 //TODO
@@ -445,8 +456,8 @@ namespace IDMS.Repair.GqlTypes
                     case ObjectAction.NA:
                         updateRepair.status_cv = CurrentServiceStatus.NO_ACTION;
                         updateRepair.na_dt = currentDateTime;
-                        
-                        foreach(var item in repair.repairPartRequests)
+
+                        foreach (var item in repair.repairPartRequests)
                         {
                             var repPart = new repair_part() { guid = item.guid };
                             context.repair_part.Attach(repPart);

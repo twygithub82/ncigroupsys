@@ -56,6 +56,15 @@ namespace IDMS.Residue.GqlTypes
                 }
                 await context.residue_part.AddRangeAsync(partList);
 
+                //Handing of SOT movement status
+                if (string.IsNullOrEmpty(residue.sot_guid))
+                    throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                var sot = new storing_order_tank() { guid = residue.sot_guid };
+                context.storing_order_tank.Attach(sot);
+                sot.tank_status_cv = TankMovementStatus.CLEANING;
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+
                 var res = await context.SaveChangesAsync();
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
