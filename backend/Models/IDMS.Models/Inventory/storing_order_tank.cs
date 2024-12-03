@@ -50,6 +50,9 @@ namespace IDMS.Models.Inventory
         public long? etr_dt { get; set; }
         public string? status_cv { get; set; }
         public string? tank_status_cv { get; set; }
+        public string? tank_note { get; set; }
+        public string? release_note { get; set; }
+
         public storing_order? storing_order { get; set; }
         public tariff_cleaning? tariff_cleaning { get; set; }
         public customer_company? customer_company { get; set; }
