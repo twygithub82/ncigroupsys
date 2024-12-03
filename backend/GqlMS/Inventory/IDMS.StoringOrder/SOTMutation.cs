@@ -1,9 +1,10 @@
-﻿    using AutoMapper;
+﻿using AutoMapper;
 using CommonUtil.Core.Service;
 using HotChocolate;
 using HotChocolate.Subscriptions;
 using HotChocolate.Types;
 using IDMS.Inventory.GqlTypes;
+using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.StoringOrder.GqlTypes.LocalModel;
 
@@ -12,6 +13,7 @@ using IDMS.StoringOrder.GqlTypes.LocalModel;
 //using IDMS.StoringOrder.Model.Domain.StoringOrder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -21,7 +23,7 @@ namespace IDMS.StoringOrder.GqlTypes
     public class SOTMutation
     {
         private async Task<int> CancelStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
-            [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, 
+            [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper,
             ApplicationInventoryDBContext context)
         {
             try
@@ -35,12 +37,28 @@ namespace IDMS.StoringOrder.GqlTypes
         }
 
 
-        private async Task<int> RollbackStoringOrderTank(List<StoringOrderTankRequest> sot, [Service] ITopicEventSender sender,
-          [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, ApplicationInventoryDBContext context)
+        public async Task<int> UpdateStoringOrderTank([Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, StoringOrderTankRequest soTank, ApplicationInventoryDBContext context)
         {
             try
             {
-                return await StoringOrderTankChanges(context, sot, false);
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (string.IsNullOrEmpty(soTank.guid))
+                    throw new GraphQLException(new Error($"Tank guid cannot be emptry or null", "ERROR"));
+
+                var sot = new storing_order_tank() { guid = soTank.guid };
+                context.Attach(sot);
+
+                sot.tank_note = soTank.tank_note;
+                sot.release_note = soTank.release_note;
+                sot.update_by = user;
+                sot.update_dt  = currentDateTime;
+
+                var res = await context.SaveChangesAsync();
+
+                return res;
             }
             catch (Exception ex)
             {
@@ -60,7 +78,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 throw new GraphQLException(new Error("Storing Order Guid Cannot Null", "INVALID_OPERATION"));
 
 
-            if(!soGuids.All(x => x == soGuids[0]))
+            if (!soGuids.All(x => x == soGuids[0]))
                 throw new GraphQLException(new Error("Storing Order Guid Not Match", "INVALID_OPERATION"));
 
             var storingOrder = context.storing_order.Where(s => s.guid == soGuids.First() && (s.delete_dt == null || s.delete_dt == 0))

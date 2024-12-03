@@ -42,6 +42,9 @@ namespace IDMS.StoringOrder.GqlTypes.LocalModel
         public long? eta_dt { get; set; } = 0;
         public long? etr_dt { get; set; } = 0;
 
+        public string? tank_note { get; set; }
+        public string? release_note { get; set; }
+
         [NotMapped]
         public string? action { get; set; }
     }
