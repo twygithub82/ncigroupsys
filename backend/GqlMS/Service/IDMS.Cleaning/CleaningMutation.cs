@@ -259,20 +259,17 @@ namespace IDMS.Cleaning.GqlTypes
                 abortCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
                 abortCleaning.remarks = cleaningJobOrder.remarks;
 
-                //foreach (var item in cleaningJobOrder.job_order)
-                //{
-                //    var job_order = new job_order() { guid = item.guid };
-                //    context.job_order.Attach(job_order);
-                //    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
-                //    {
-                //        job_order.status_cv = JobStatus.CANCELED;
-                //        job_order.update_by = user;
-                //        job_order.update_dt = currentDateTime;
-                //    }
-                //}
-
                 //job order handling
                 await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.CANCEL, jobOrders: cleaningJobOrder.job_order);
+
+                //Status condition chehck handling
+                if (await GqlUtils.StatusChangeConditionCheck(context, "cleaning", cleaningJobOrder.guid, CurrentServiceStatus.COMPLETED))
+                {
+                    abortCleaning.status_cv = CurrentServiceStatus.COMPLETED;
+                    abortCleaning.complete_dt = currentDateTime;
+                }
+                else
+                    abortCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
 
                 if (string.IsNullOrEmpty(cleaningJobOrder.sot_guid))
                     throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));

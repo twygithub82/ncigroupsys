@@ -388,11 +388,19 @@ namespace IDMS.Repair.GqlTypes
                 context.repair.Attach(abortRepair);
                 abortRepair.update_by = user;
                 abortRepair.update_dt = currentDateTime;
-                abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
+                abortRepair.na_dt = currentDateTime;
                 abortRepair.remarks = repJobOrder.remarks;
-
+  
                 //job order handling
                 await GqlUtils.JobOrderHandling(context, "repair", user, currentDateTime, ObjectAction.CANCEL, jobOrders: repJobOrder.job_order);
+
+                if (await GqlUtils.StatusChangeConditionCheck(context, "repair", repJobOrder.guid, CurrentServiceStatus.COMPLETED))
+                {
+                    abortRepair.status_cv = CurrentServiceStatus.COMPLETED;
+                    abortRepair.complete_dt = currentDateTime;
+                }
+                else
+                    abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
 
                 //tank movement status handling
                 var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };

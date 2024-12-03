@@ -457,20 +457,16 @@ namespace IDMS.Steaming.GqlTypes
                 abortSteaming.remarks = steamingJobOrder.remarks;
 
                 //job order handling
-                await GqlUtils.JobOrderHandling(context, "residue", user, currentDateTime, ObjectAction.CANCEL, jobOrders: steamingJobOrder.job_order);
+                await GqlUtils.JobOrderHandling(context, "steaming", user, currentDateTime, ObjectAction.CANCEL, jobOrders: steamingJobOrder.job_order);
 
-                //foreach (var item in steamingJobOrder.job_order)
-                //{
-                //    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
-                //    {
-                //        var job_order = new job_order() { guid = item.guid };
-                //        context.job_order.Attach(job_order);
-
-                //        job_order.status_cv = JobStatus.CANCELED;
-                //        job_order.update_by = user;
-                //        job_order.update_dt = currentDateTime;
-                //    }
-                //}
+                //Status condition chehck handling
+                if (await GqlUtils.StatusChangeConditionCheck(context, "steaming", steamingJobOrder.guid, CurrentServiceStatus.COMPLETED))
+                {
+                    abortSteaming.status_cv = CurrentServiceStatus.COMPLETED;
+                    abortSteaming.complete_dt = currentDateTime;
+                }
+                else
+                    abortSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
 
                 if (!await TankMovementCheckInternal(context, "steaming", steamingJobOrder.sot_guid, steamingJobOrder.guid))
                     //if no other steaming estimate or all completed. then we check cross process tank movement
