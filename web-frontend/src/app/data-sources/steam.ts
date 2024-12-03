@@ -103,7 +103,7 @@ export class SteamItem extends SteamGO {
 export class SteamStatusRequest {
   public guid?: string;
   public action?: string;
-
+  public remarks?:string;
   public sot_guid?: string;
   //public aspnetsuser?: UserItem;
 
@@ -113,6 +113,7 @@ export class SteamStatusRequest {
     this.sot_guid = item.sot_guid;
     // this.aspnetsuser = item.aspnetsuser;
     this.action = item.action;
+    this.remarks=item.remarks;
   }
 }
 
@@ -342,6 +343,7 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
           action
           approve_part
           cost
+          labour
           create_by
           create_dt
           delete_dt
@@ -637,11 +639,11 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   //   });
   // }
 
-  rollbackSteam(steaming: any): Observable<any> {
+  rollbackSteam(steam: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_STEAM_EST,
       variables: {
-        steaming
+        steam
       }
     });
   }

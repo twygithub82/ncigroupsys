@@ -52,6 +52,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ResidueDS,ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { RepairItem } from 'app/data-sources/repair';
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
+import { PackageRepairDS } from 'app/data-sources/package-repair';
 
 @Component({
   selector: 'app-estimate',
@@ -180,6 +181,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
   ]
   searchForm?: UntypedFormGroup;
 
+  pckRepDS:PackageRepairDS;
   cvDS: CodeValuesDS;
   soDS: StoringOrderDS;
   sotDS: StoringOrderTankDS;
@@ -202,7 +204,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  copiedResidueEst?: ResidueItem;
+  copiedSteamEst?: SteamItem;
 
   pageIndex = 0;
   pageSize = 10;
@@ -236,6 +238,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.steamDS= new SteamDS(this.apollo);
+    this.pckRepDS=new PackageRepairDS(this.apollo);
     //this.repairEstDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -353,11 +356,11 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
          const reList = result.item.map((item: SteamItem) => new SteamItem(item));
          console.log(reList);
 
-         let residueStatus : SteamStatusRequest = new SteamStatusRequest();
-         residueStatus.action="CANCEL";
-         residueStatus.guid = row[0]?.guid;
-         residueStatus.sot_guid= row[0]?.sot_guid;
-          this.steamDS.updateSteamStatus(residueStatus).subscribe(result=>{
+         let steamStatus : SteamStatusRequest = new SteamStatusRequest();
+         steamStatus.action="CANCEL";
+         steamStatus.guid = row[0]?.guid;
+         steamStatus.sot_guid= row[0]?.sot_guid;
+          this.steamDS.updateSteamStatus(steamStatus).subscribe(result=>{
  
             this.handleCancelSuccess(result?.data?.UpdateSteamStatus)
             this.performSearch(this.pageSize, 0, this.pageSize);
@@ -370,7 +373,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
-  rollbackRow(row: ResidueItem) {
+  rollbackRow(row: SteamItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
     if (!found) {
@@ -380,7 +383,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     this.rollbackSelectedRows(selectedList)
   }
 
-  rollbackSelectedRows(row: ResidueItem[]) {
+  rollbackSelectedRows(row: SteamItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -412,8 +415,8 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
           return SteamEstimateRequestInput;
         });
         console.log(reList);
-        this.steamDS.rollbackSteam(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
-          this.handleRollbackSuccess(result?.data?.rollbackResidue)
+        this.steamDS.rollbackSteam(reList).subscribe((result: { data: { rollbackSteaming: any; }; }) => {
+          this.handleRollbackSuccess(result?.data?.rollbackSteaming)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
       }
@@ -421,12 +424,12 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   
-  copyResidueEst(residueEst: ResidueItem) {
-    this.copiedResidueEst = residueEst;
+  copyResidueEst(steamEst: SteamItem) {
+    this.copiedSteamEst = steamEst;
   }
 
   clearCopiedRepairEst() {
-    this.copiedResidueEst = undefined;
+    this.copiedSteamEst = undefined;
   }
 
   public loadData() {
@@ -797,7 +800,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
-  pasteResidueEstimate(event: Event, sot:StoringOrderItem, row:ResidueItem)
+  pasteSteamEstimate(event: Event, sot:StoringOrderItem, row:ResidueItem)
   {
     event.stopPropagation(); // Stop the click event from propagating
  // Navigate to the route and pass the JSON object
