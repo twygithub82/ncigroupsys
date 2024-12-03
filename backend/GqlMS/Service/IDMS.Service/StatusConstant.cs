@@ -1,4 +1,4 @@
-﻿
+﻿    
 namespace IDMS.Service.GqlTypes
 {
     //public class StatusConstant
@@ -14,6 +14,7 @@ namespace IDMS.Service.GqlTypes
         public const string KIV = "KIV";
         public const string COMPLETED = "COMPLETED";
         public const string JOB_IN_PROGRESS = "JOB_IN_PROGRESS";
+        public const string JOB_COMPLETED = "JOB_COMPLETED";
         public const string PARTIAL = "PARTIAL_ASSIGNED";
         public const string ASSIGNED = "ASSIGNED";
     }
@@ -23,6 +24,7 @@ namespace IDMS.Service.GqlTypes
         public const string IN_PROGRESS = "JOB_IN_PROGRESS";
         public const string PENDING = "PENDING";
         public const string COMPLETED = "COMPLETED";
+        public const string CANCELED = "CANCELED";
     }
 
     public static class ObjectAction
@@ -36,8 +38,9 @@ namespace IDMS.Service.GqlTypes
         public const string NA = "NA";
         public const string COMPLETE = "COMPLETE";
         public const string IN_PROGRESS = "IN_PROGRESS";
-        public const string PARTIAL = "PARTIAL_ASSIGNED";
-        public const string ASSIGN = "ASSIGNED";
+        public const string JOB_COMPLETE = "JOB_COMPLETE";
+        public const string PARTIAL = "PARTIAL_ASSIGN";
+        public const string ASSIGN = "ASSIGN";
     }
 
     public static class JobType

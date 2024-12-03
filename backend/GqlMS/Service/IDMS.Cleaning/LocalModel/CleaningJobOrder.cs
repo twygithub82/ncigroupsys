@@ -14,4 +14,13 @@ namespace IDMS.Cleaning.GqlTypes.LocalModel
         public string? remarks { get; set; }
         public List<job_order?>? job_order { get; set; }
     }
+
+    public class CleaningStatusRequest
+    {
+        public string guid { get; set; }
+        public string sot_guid { get; set; }
+        public string? remarks { get; set; }
+        public string action { get; set; }
+
+    }
 }

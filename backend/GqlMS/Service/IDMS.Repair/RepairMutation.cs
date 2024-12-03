@@ -126,6 +126,10 @@ namespace IDMS.Repair.GqlTypes
                             part.update_dt = currentDateTime;
                         }
                     }
+
+                    //JobOrder Handling
+                    //await JobOrderHandling(context, user, currentDateTime, ObjectAction.APPROVE, processGuid: repair.guid);
+                    await GqlUtils.JobOrderHandling(context, "repair", user, currentDateTime, ObjectAction.APPROVE, processGuid: repair.guid);
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -377,17 +381,7 @@ namespace IDMS.Repair.GqlTypes
                 abortRepair.remarks = repJobOrder.remarks;
 
                 //job order handling
-                foreach (var item in repJobOrder.job_order)
-                {
-                    var job_order = new job_order() { guid = item.guid };
-                    context.job_order.Attach(job_order);
-                    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
-                    {
-                        job_order.status_cv = CurrentServiceStatus.CANCELED;
-                        job_order.update_by = user;
-                        job_order.update_dt = currentDateTime;
-                    }
-                }
+                await GqlUtils.JobOrderHandling(context, "repair", user, currentDateTime, ObjectAction.CANCEL, jobOrders: repJobOrder.job_order);
 
                 //tank movement status handling
                 var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };
@@ -422,12 +416,16 @@ namespace IDMS.Repair.GqlTypes
                 updateRepair.update_by = user;
                 updateRepair.remarks = repair.remarks;
 
-
                 switch (repair.action.ToUpper())
                 {
                     case ObjectAction.IN_PROGRESS:
-                        updateRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                        if (await GqlUtils.StatusChangeConditionCheck(context, "repair", repair.guid, CurrentServiceStatus.JOB_IN_PROGRESS))
+                            updateRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
                         break;
+                    //case ObjectAction.JOB_COMPLETE:
+                    //    if (await GqlUtils.StatusChangeConditionCheck(context, "repair", repair.guid, CurrentServiceStatus.JOB_COMPLETED))
+                    //        updateRepair.status_cv = CurrentServiceStatus.JOB_COMPLETED;
+                    //    break;
                     case ObjectAction.PARTIAL:
                         updateRepair.status_cv = CurrentServiceStatus.PARTIAL;
                         break;
@@ -438,12 +436,24 @@ namespace IDMS.Repair.GqlTypes
                         updateRepair.status_cv = CurrentServiceStatus.CANCELED;
                         break;
                     case ObjectAction.COMPLETE:
-                        updateRepair.status_cv = CurrentServiceStatus.COMPLETED;
-                        updateRepair.complete_dt = currentDateTime;
+                        if (await GqlUtils.StatusChangeConditionCheck(context, "repair", repair.guid, CurrentServiceStatus.COMPLETED))
+                        {
+                            updateRepair.status_cv = CurrentServiceStatus.COMPLETED;
+                            updateRepair.complete_dt = currentDateTime;
+                        }
                         break;
                     case ObjectAction.NA:
                         updateRepair.status_cv = CurrentServiceStatus.NO_ACTION;
                         updateRepair.na_dt = currentDateTime;
+                        
+                        foreach(var item in repair.repairPartRequests)
+                        {
+                            var repPart = new repair_part() { guid = item.guid };
+                            context.repair_part.Attach(repPart);
+                            repPart.approve_part = false;
+                            repPart.update_dt = currentDateTime;
+                            repPart.update_by = user;
+                        }
 
                         //Tank handling
                         if (string.IsNullOrEmpty(repair.sot_guid))
@@ -451,36 +461,13 @@ namespace IDMS.Repair.GqlTypes
 
                         var sot = new storing_order_tank() { guid = repair.sot_guid };
                         context.storing_order_tank.Attach(sot);
-                        sot.tank_status_cv = await TankMovementCheck(context, "repair", repair.sot_guid, repair.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
+                        var processGuid = $"'{repair.guid}'";
+                        sot.tank_status_cv = await TankMovementCheck(context, "repair", repair.sot_guid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
                         break;
                 }
 
-                //if (ObjectAction.IN_PROGRESS.EqualsIgnore(repair.action))
-                //    updateRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                //else if (ObjectAction.CANCEL.EqualsIgnore(repair.action))
-                //    updateRepair.status_cv = CurrentServiceStatus.CANCELED;
-                //else if (ObjectAction.COMPLETE.EqualsIgnore(repair.action))
-                //{
-                //    updateRepair.status_cv = CurrentServiceStatus.COMPLETED;
-                //    updateRepair.complete_dt = currentDateTime;
-                //}
-                //else if (ObjectAction.NA.EqualsIgnore(repair.action))
-                //{
-                //    updateRepair.status_cv = CurrentServiceStatus.NO_ACTION;
-                //    updateRepair.na_dt = currentDateTime;
-
-                //    //Tank handling
-                //    if (string.IsNullOrEmpty(repair.sot_guid))
-                //        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
-
-                //    var sot = new storing_order_tank() { guid = repair.sot_guid };
-                //    context.storing_order_tank.Attach(sot);
-                //    sot.tank_status_cv = await TankMovementCheck(context, "repair", repair.sot_guid, repair.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
-                //    sot.update_by = user;
-                //    sot.update_dt = currentDateTime;
-                //}
                 var res = await context.SaveChangesAsync();
                 return res;
 
@@ -492,7 +479,7 @@ namespace IDMS.Repair.GqlTypes
         }
 
         public async Task<int> CompleteQCRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, RepJobOrderRequest repJobOrder)
+            [Service] IConfiguration config, List<RepJobOrderRequest> repJobOrder)
         {
             try
             {
@@ -505,27 +492,33 @@ namespace IDMS.Repair.GqlTypes
                 using var transaction = context.Database.BeginTransaction();
                 try
                 {
-                    //Repair handling
-                    var completedRepair = new repair() { guid = repJobOrder.guid };
-                    context.repair.Attach(completedRepair);
-                    completedRepair.update_by = user;
-                    completedRepair.update_dt = currentDateTime;
-                    completedRepair.status_cv = CurrentServiceStatus.QC;
-                    completedRepair.remarks = repJobOrder.remarks;
+                    foreach (var item in repJobOrder)
+                    {
+                        //Repair handling
+                        var completedRepair = new repair() { guid = item.guid };
+                        context.repair.Attach(completedRepair);
+                        completedRepair.update_by = user;
+                        completedRepair.update_dt = currentDateTime;
+                        completedRepair.complete_dt = currentDateTime;
+                        completedRepair.status_cv = CurrentServiceStatus.QC;
+                        completedRepair.remarks = item.remarks;
 
-                    //job_orders handling
-                    var guids = string.Join(",", repJobOrder.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
-                            $"update_by = '{user}' WHERE guid IN ({guids})";
-                    context.Database.ExecuteSqlRaw(sql);
+                        //job_orders handling
+                        var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                        string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
+                                $"update_by = '{user}' WHERE guid IN ({guids})";
+                        context.Database.ExecuteSqlRaw(sql);
+                    }
 
                     //Tank handling
-                    if (string.IsNullOrEmpty(repJobOrder.sot_guid))
+                    var sotGuid = repJobOrder.Select(r => r.sot_guid).FirstOrDefault();
+                    var processGuid = string.Join(",", repJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
+                    if (string.IsNullOrEmpty(sotGuid))
                         throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
 
-                    var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };
+                    var sot = new storing_order_tank() { guid = sotGuid };
                     context.storing_order_tank.Attach(sot);
-                    sot.tank_status_cv = await TankMovementCheck(context, "repair", repJobOrder.sot_guid, repJobOrder.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
+                    sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
 
@@ -669,20 +662,56 @@ namespace IDMS.Repair.GqlTypes
         //    }
         //}
 
+        //private async Task<bool> StatusChangeConditionCheck(ApplicationServiceDBContext context, string processGuid, string newStatus)
+        //{
+        //    try
+        //    {
+        //        var repair = await context.repair.Include(r => r.repair_part).ThenInclude(p => p.job_order)
+        //                                    .Where(r => r.guid == processGuid).FirstOrDefaultAsync();
+
+        //        if (repair != null)
+        //        {
+        //            var jobOrderList = repair?.repair_part?.Where(p => p.approve_part == true && (p.delete_dt == null || p.delete_dt == 0))
+        //                                                    .Select(p => p.job_order).ToList();
+        //            if (jobOrderList != null && !jobOrderList.Any(j => j == null))
+        //            {
+        //                bool allValid = false;
+        //                if (newStatus.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
+        //                {
+        //                    allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
+        //                                                    jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
+        //                }
+        //                else if (newStatus.EqualsIgnore(CurrentServiceStatus.JOB_COMPLETED))
+        //                {
+        //                    allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
+        //                        jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED));
+        //                }
+
+        //                return allValid;
+        //            }
+        //        }
+        //        return false;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
 
         private async Task<bool> TankMovementCheck(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
         {
-            //List<string> status = new List<string> { CurrentServiceStatus.APPROVED, CurrentServiceStatus.JOB_IN_PROGRESS, CurrentServiceStatus.QC, CurrentServiceStatus.PENDING };
-            //var result = await context.repair
-            //            .Where(r => status.Contains(r.status_cv) && r.sot_guid == sotGuid && r.guid != processGuid).Select(r => r.guid)
-            //            .ToListAsync();
-
             string tableName = processType;
+
+            //var sqlQuery = $@"SELECT guid FROM {tableName} 
+            //                WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}',
+            //                '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
+            //                AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+
 
             var sqlQuery = $@"SELECT guid FROM {tableName} 
                             WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}',
                             '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
-                            AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+                            AND sot_guid = '{sotGuid}' AND guid NOT IN ({processGuid}) AND delete_dt IS NULL";
             var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
             if (result.Count > 0)
@@ -691,5 +720,49 @@ namespace IDMS.Repair.GqlTypes
                 return false;
             //}
         }
+
+        //private async Task JobOrderHandling(ApplicationServiceDBContext context, string user, long currentDateTime, string action, string? processGuid = "", List<job_order>? jobOrders = null)
+        //{
+        //    try
+        //    {
+        //        if (ObjectAction.APPROVE.EqualsIgnore(action))
+        //        {
+        //            var repair = await context.repair.Include(r => r.repair_part).ThenInclude(p => p.job_order)
+        //                    .Where(r => r.guid == processGuid).FirstOrDefaultAsync();
+        //            if (repair != null)
+        //            {
+        //                var jobOrderList = repair?.repair_part?.Select(p => p.job_order).ToList();
+        //                foreach (var item in jobOrderList)
+        //                {
+        //                    if (item != null && JobStatus.CANCELED.EqualsIgnore(item.status_cv))
+        //                    {
+        //                        item.status_cv = JobStatus.PENDING;
+        //                        item.update_by = user;
+        //                        item.update_dt = currentDateTime;
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        if (ObjectAction.CANCEL.EqualsIgnore(action))
+        //        {
+        //            foreach (var item in jobOrders)
+        //            {
+        //                var job_order = new job_order() { guid = item.guid };
+        //                context.job_order.Attach(job_order);
+        //                if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+        //                {
+        //                    job_order.status_cv = JobStatus.CANCELED;
+        //                    job_order.update_by = user;
+        //                    job_order.update_dt = currentDateTime;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
     }
 }

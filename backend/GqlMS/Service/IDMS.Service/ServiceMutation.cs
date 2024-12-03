@@ -7,6 +7,7 @@ using CommonUtil.Core.Service;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Service.GqlTypes.LocalModel;
 using IDMS.Models.Notification;
+using System.Globalization;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -312,7 +313,7 @@ namespace IDMS.Service.GqlTypes
         /// Start current job, and update current Job Order to JOB-IN-PROGRESS
         /// </summary>
         public async Task<int> StartJobTimer(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<time_table> timeTable)
+            [Service] IConfiguration config, List<time_table> timeTable, string? processGuid)
         {
             try
             {
@@ -361,20 +362,10 @@ namespace IDMS.Service.GqlTypes
                     notificationList.Add(jobNotification);
                 }
 
-                ////Change the job_order status
-                //var jobOrderGuids = timeTable.Select(t => t.job_order_guid).ToList();
-                //foreach (var item in jobOrderGuids)
-                //{
-                //    var job_order = new job_order() { guid = item };
-                //    context.job_order.Attach(job_order);
-                //    job_order.status_cv = JobStatus.IN_PROGRESS;
-                //    job_order.update_by = user;
-                //    job_order.update_dt = currentDateTime;
-                //    job_order.start_dt = currentDateTime;
-                //}
-
                 await context.time_table.AddRangeAsync(newTimeTableList);
                 var res = await context.SaveChangesAsync();
+
+                //var ret = await UpdateProcessStatus(context, user, currentDateTime, processGuid);
 
                 //TODO
                 foreach (var item in notificationList)
@@ -567,5 +558,38 @@ namespace IDMS.Service.GqlTypes
                 throw;
             }
         }
+
+        //private async Task<int> UpdateProcessStatus(ApplicationServiceDBContext context, string user, long currentDateTime, string processGuid)
+        //{
+        //    try
+        //    {
+        //        var repair = await context.repair.Include(r => r.repair_part).ThenInclude(p => p.job_order)
+        //                                    .Where(r => r.guid == processGuid).FirstOrDefaultAsync();
+
+        //        if (repair != null)
+        //        {
+        //            var jobOrderList = repair?.repair_part?.Select(p => p.job_order).ToList();
+        //            if (jobOrderList != null && !jobOrderList.Any(j => j == null))
+        //            {
+        //                bool allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
+        //                                                    jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
+        //                if (allValid)
+        //                {
+        //                    repair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+        //                    repair.update_by = user;
+        //                    repair.update_dt = currentDateTime;
+        //                }
+        //            }
+        //        }
+
+        //        var ret = await context.SaveChangesAsync();
+        //        return ret;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
+
     }
 }
