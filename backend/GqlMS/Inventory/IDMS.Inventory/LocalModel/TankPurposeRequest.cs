@@ -1,0 +1,24 @@
+﻿using IDMS.Models.Inventory;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace IDMS.Inventory.GqlTypes.LocalModel
+{
+    public class TankPurposeRequest
+    {
+        public string? guid { get; set; }
+        public storing_order_tank storing_order_tank { get; set; }
+        public string last_comp_guid { get; set; }  
+        public long in_gate_dt { get; set; }
+        public List<PurposeChanges> purpose_changes { get; set; } 
+    }
+
+    public class PurposeChanges
+    {
+        public string type { get; set; }
+        public string action { get; set; }
+    }
+}
