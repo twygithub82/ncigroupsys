@@ -837,6 +837,7 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
         }
         steaming {
           estimate_no
+          bill_to_guid
           allocate_by
           allocate_dt
           approve_by
@@ -861,7 +862,9 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
             approve_labour
             approve_qty
             approve_part
+            
             cost
+            labour
             delete_dt
             description
             guid

@@ -62,9 +62,10 @@ import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-r
 import { ResidueDS, ResidueItem,ResidueGO,ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
-import { SteamDS,SteamItem } from 'app/data-sources/steam';
+import { SteamDS,SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { PackageSteamingDS,PackageSteamingItem } from 'app/data-sources/package-steam';
 import { SteamPartGO, SteamPartItem } from 'app/data-sources/steam-part';
+import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -117,7 +118,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
      "actions"
    
   ];
-  footerColumns = [
+  footerColumns1 = [
     'seq',
     // 'group_name_cv',
      'desc',
@@ -128,6 +129,8 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
      "actions"
    
   ];
+
+ 
   pageTitleNew = 'MENUITEMS.STEAM.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.STEAM.LIST.ESTIMATE-EDIT'
   breadcrumsMiddleList = [
@@ -710,13 +713,17 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   editEstDetails(event: Event, row: SteamPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
+    if(row.delete_dt) return;
     var itm =this.deList[index];
     var IsEditedRow = itm.edited;
   
 
     this.resetSelectedItemForUpdating();
 
-    if(IsEditedRow) return;
+    if(IsEditedRow) 
+    { itm.edited=false;
+        return;
+    }
 
     
     this.updateSelectedItem ={
@@ -746,6 +753,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.steamEstForm?.patchValue({
        desc:descValue,
        qty:row.quantity,
+       hour:row.labour,
        unit_price:row.cost
     });
 
@@ -853,17 +861,18 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
+        const reList = result.item.map((item: SteamItem) => new SteamItem(item));
         console.log(reList);
 
-        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-        residueStatus.action="CANCEL";
-        residueStatus.guid = this.steamItem?.guid;
-        residueStatus.sot_guid= this.steamItem?.sot_guid;
-         this.steamDS.updateSteamStatus(residueStatus).subscribe(result=>{
+        let steamStatus : SteamStatusRequest = new SteamStatusRequest();
+        steamStatus.action="CANCEL";
+        steamStatus.guid = this.steamItem?.guid;
+        steamStatus.sot_guid= this.steamItem?.sot_guid;
+        steamStatus.remarks=reList[0].remarks;
+         this.steamDS.updateSteamStatus(steamStatus).subscribe(result=>{
 
-          this.handleCancelSuccess(result?.data?.updateSteamStatus);
-          if(result?.data?.updateSteamStatus>0)
+          this.handleCancelSuccess(result?.data?.updateSteamingStatus);
+          if(result?.data?.updateSteamingStatus>0)
             {
               this.GoBackPrevious(event);
             }
@@ -908,7 +917,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       if (result?.action === 'confirmed') {
 
         const reList = result.item.map((item: any) => {
-          const ResidueEstimateRequestInput = {
+          const SteamEstimateRequestInput = {
             customer_guid: item.customer_company_guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
@@ -916,12 +925,12 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
             sot_guid: item.sot_guid,
             is_approved:item?.status_cv=="APPROVED"
           }
-          return ResidueEstimateRequestInput;
+          return SteamEstimateRequestInput;
         });
         console.log(reList);
-        this.steamDS.rollbackSteam(reList).subscribe((result: { data: { rollbackResidue: any; }; }) => {
-          this.handleRollbackSuccess(result?.data?.rollbackResidue)
-          if(result?.data?.rollbackResidue>0)
+        this.steamDS.rollbackSteam(reList).subscribe((result: { data: { rollbackSteaming: any; }; }) => {
+          this.handleRollbackSuccess(result?.data?.rollbackSteaming)
+          if(result?.data?.rollbackSteaming>0)
           {
             this.GoBackPrevious(event);
           }
@@ -984,9 +993,10 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.steamEstForm!.get('deList')?.setErrors(null);
     this.steamEstForm!.get('hour')?.setErrors(null);
 
-    if(!this.deList.length){
+    if(!this.isPartValid()){
       this.steamEstForm?.get('deList')?.setErrors({ required: true });
     }
+
     if(!this.steamEstForm?.valid) return;
 
 
@@ -1004,6 +1014,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       newSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
       newSteamItem.status_cv="PENDING";
       newSteamItem.sot_guid=this.sotItem?.guid;
+      newSteamItem.total_cost=this.getTotalCost();
       newSteamItem.steaming_part= [];
        this.deList.forEach(data=>{
           var steamPart : SteamPartItem = new SteamPartItem(data);
@@ -1013,47 +1024,31 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
        this.steamDS.addSteam(newSteamItem).subscribe(result=>{
 
-            if(result.data.addSteam>0)
+            if(result.data.addSteaming>0)
             {
-              this.handleSaveSuccess(result.data.addSteam);
+              this.handleSaveSuccess(result.data.addSteaming);
             }
          });
-       
-      //  var newResidueItem :ResidueItem =new ResidueItem();
-      //  var billGuid:string =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
-      //  newResidueItem.bill_to_guid= billGuid;
-      //  newResidueItem.job_no = this.steamEstForm.get("job_no")?.value;
-      //  newResidueItem.remarks = this.steamEstForm.get("remarks")?.value;
-      //  newResidueItem.status_cv="PENDING";
-      //  newResidueItem.sot_guid=this.sotItem?.guid;
-      //  newResidueItem.residue_part= [];
-      //  this.deList.forEach(data=>{
-      //     var residuePart : ResiduePartItem = new ResiduePartItem(data);
-      //     newResidueItem.residue_part?.push(residuePart);
-
-      //  });
-
-      //  delete newResidueItem.customer_company;
       
-      //  this.steamDS.addSteam(newResidueItem).subscribe(result=>{
-
-      //     if(result.data.addResidue>0)
-      //     {
-      //       this.handleSaveSuccess(result.data.addResidue);
-      //     }
-      //  });
     }
     else if(this.historyState.action==="UPDATE")
     {
-      var updSteamItem :SteamItem =new SteamItem(this.steamItem);
+      var updSteamItem :any =new SteamItem(this.steamItem);
       var billGuid:string =(this.steamEstForm.get("billing_branch")?.value?this.steamEstForm.get("billing_branch")?.value?.guid:this.sotItem?.storing_order?.customer_company?.guid);
-     // updSteamItem.bill_to_guid= billGuid;
+      if(!this.steamEstForm?.get("billing_branch")?.value)
+        {
+          billGuid="";
+        }
+      updSteamItem.action="EDIT";
+      updSteamItem.bill_to_guid= billGuid;
       updSteamItem.job_no = this.steamEstForm.get("job_no")?.value;
       updSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
       updSteamItem.sot_guid=this.sotItem?.guid;
       updSteamItem.steaming_part= [];
+      updSteamItem.total_cost=this.getTotalCost();
       this.deList.forEach(data=>{
-         var steamPart : ResiduePartItem = new ResiduePartItem(data);
+         var steamPart : SteamPartItem = new SteamPartItem(data);
+         steamPart.action='';
          updSteamItem.steaming_part?.push(steamPart);
 
       });
@@ -1063,9 +1058,9 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
 
       this.steamDS.updateSteam(updSteamItem).subscribe(result=>{
 
-        if(result.data.UpdateSteaming>0)
+        if(result.data.updateSteaming>0)
         {
-          this.handleSaveSuccess(result.data.UpdateSteaming);
+          this.handleSaveSuccess(result.data.updateSteaming);
         }
      });
 
@@ -1451,6 +1446,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.packRepDS.SearchPackageRepair(where,{}).subscribe(data=>{
 
       this.packSteamList=data;
+      this.displayPackSteamList=this.packSteamList;
      // this.displayPackResidueList=data;
       this.populateSteamPartList(this.steamItem!);
       //this.populateResiduePartList(this.residueItem!);
@@ -1492,6 +1488,8 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       this.steamItem=this.historyState.selectedSteam;
       this.getPackageSteam();
       this.loadBillingBranch();
+      var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
+      this.getCustomerLabourPackage(ccGuid!);
       
       
     }
@@ -1502,14 +1500,14 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     let billingGuid= "";
     if(steam)
     {
-      //billingGuid=steam.bill_to_guid!;
+      billingGuid=steam.bill_to_guid!;
     }
     
     this.steamEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
       job_no: steam?.job_no?steam.job_no:this.sotItem?.job_no,
-      // billing_branch:this.getBillingBranch(billingGuid),
+       billing_branch:this.getBillingBranch(billingGuid),
        remarks:steam?.remarks
 
     });
@@ -1554,6 +1552,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.steamEstForm?.get('desc')?.setErrors(null);
     this.steamEstForm?.get('qty')?.setErrors(null);
     this.steamEstForm?.get('unit_price')?.setErrors(null);
+    this.steamEstForm?.get('hour')?.setErrors(null);
     this.displayPackSteamList=[...this.packSteamList];
   
   }
@@ -1601,14 +1600,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.resetValue();
   }
 
-  getTotalCost(): number {
-    return this.deList.reduce((acc, row) => {
-      if (row.delete_dt===null) {
-        return acc + ((row.quantity || 0) * (row.cost || 0));
-      }
-      return acc; // If row is approved, keep the current accumulator value
-    }, 0);
-  }
+  
 
   getFooterBackgroundColor():string{
     return 'light-green';
@@ -1630,5 +1622,89 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
      
     }
   }
+
+  getTotalLabourHours():string{
+    let ret=0;
+    if(this.deList.length>0)
+    {
+        this.deList.map(d=>ret+=d.labour);
+    }
+    return String(ret);
+  }
   
+  getTotalLabourCost():string{
+    let ret=0;
+    if(this.deList.length>0)
+    {
+        this.deList.map(d=>
+          ret+= d.labour * this.packageLabourItem?.cost!);
+    }
+    return ret.toFixed(2);
+  }
+
+   
+  getTotalCost(): number {
+    return this.deList.reduce((acc, row) => {
+      if (row.delete_dt===undefined ||row.delete_dt===null ) {
+        return acc + ((row.quantity || 0) * (row.cost || 0)+((row.labour||0)*(this.packageLabourItem?.cost||0)));
+      }
+      return acc; // If row is approved, keep the current accumulator value
+    }, 0);
+  }
+
+  undeleteItem(event: Event, row: SteamItem, index: number)
+  {
+    //  if(row.guid){
+
+    //   const data: any[] = [...this.deList];
+    //   const updatedItem = {
+    //     ...row,
+    //     delete_dt: null,
+    //     action: ''
+    //   };
+      
+    //   data[index] = updatedItem;
+    //   this.updateData(data); // Refresh the data source
+    //  }
+
+     let tempDirection: Direction;
+     if (localStorage.getItem('isRtl') === 'true') {
+       tempDirection = 'rtl';
+     } else {
+       tempDirection = 'ltr';
+     }
+     const dialogRef = this.dialog.open(UndeleteDialogComponent, {
+       width: '1000px',
+       data: {
+         item: row,
+         langText: this.langText,
+         index: index
+       },
+       direction: tempDirection
+     });
+     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+       if (result?.action === 'confirmed') {
+         if (result.item.guid) {
+           const data: any[] = [...this.deList];
+           const updatedItem = {
+             ...result.item,
+             delete_dt: null,
+             action: ''
+           };
+           data[result.index] = updatedItem;
+           this.updateData(data); // Refresh the data source
+         } 
+         this.resetSelectedItemForUpdating();
+       }
+     });
+
+  }
+
+  isPartValid():Boolean{
+    if(this.deList.length>0)
+    {
+      return this.deList.some(row => row.delete_dt === undefined || row.delete_dt === null);
+    }
+    return false;
+  }
 }
