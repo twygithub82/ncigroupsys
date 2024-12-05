@@ -741,7 +741,9 @@
     "SCHEDULING": "Scheduling",
     "SURVEY-DETAILS": "Survey Details",
     "UPDATE-TANK-NOTES": "Update Tank Notes",
-    "TRANSFER-DETAILS": "Transfer Details"
+    "TRANSFER-DETAILS": "Transfer Details",
+    "RESIDUE-COMPLETE-DATE": "Residue Complete Date",
+    "RESIDUE-BEGIN-DATE": "Residue Begin Date"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

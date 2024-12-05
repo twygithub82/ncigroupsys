@@ -764,7 +764,7 @@
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <div class="contact-detail-info font-bold">
-                                        {{displayDate(residueItem[0].create_dt) || "-"}}
+                                        {{displayDate(residueDS.getResidueBeginDate(residueItem)) || "-"}}
                                       </div>
                                     </div>
                                   </div>
@@ -806,7 +806,7 @@
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <div class="contact-detail-info font-bold">
-                                        {{displayDate(residueItem[0].create_dt) || "-"}}
+                                        {{displayDate(residueDS.getResidueCompleteDate(residueItem)) || "-"}}
                                       </div>
                                     </div>
                                   </div>
@@ -816,7 +816,7 @@
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <div class="contact-detail-info font-bold">
-                                        {{repairDS.getRepairProcessingDays(repairItem) || "-"}}
+                                        {{residueDS.getResidueProcessingDays(repairItem) || "-"}}
                                       </div>
                                     </div>
                                   </div>

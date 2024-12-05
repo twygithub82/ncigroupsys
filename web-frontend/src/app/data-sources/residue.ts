@@ -690,7 +690,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canRollback(re: ResidueItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'CANCELED','NO_ACTION']
+    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION']
     return validStatus.includes(re?.status_cv!);
   }
 
@@ -736,6 +736,64 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     return (total_cost ?? 0) - (discount_labour_cost ?? 0) - (discount_mat_cost ?? 0);
   }
 
+  getResidueBeginDate(residue: ResidueItem[] | undefined) {
+    if (!residue || residue.length === 0) {
+      return undefined;
+    }
+
+    const earliestApproveDt = residue.reduce((earliest, item) => {
+      if (item.approve_dt !== null && item.approve_dt !== undefined) {
+        return earliest === undefined || item.approve_dt < earliest ? item.approve_dt : earliest;
+      }
+      return earliest;
+    }, undefined as number | undefined);
+
+    return earliestApproveDt;
+  }
+
+  getResidueCompleteDate(residue: ResidueItem[] | undefined) {
+    if (!residue || residue.length === 0) {
+      return undefined;
+    }
+
+    const allCompleteDatesValid = residue.every(item => item.complete_dt !== null && item.complete_dt !== undefined);
+    if (!allCompleteDatesValid) {
+      return undefined;
+    }
+
+    const earliestApproveDt = residue.reduce((latest, item) => {
+      if (item.complete_dt !== null && item.complete_dt !== undefined) {
+        return latest === undefined || item.complete_dt > latest ? item.complete_dt : latest;
+      }
+      return latest;
+    }, undefined as number | undefined);
+
+    return earliestApproveDt;
+  }
+
+  getResidueProcessingDays(residue: ResidueItem[] | undefined) {
+    if (!residue || residue.length === 0) {
+      return undefined;
+    }
+
+    const beginDate = this.getResidueBeginDate(residue);
+    const completeDate = this.getResidueCompleteDate(residue);
+
+    if (!beginDate || !completeDate) {
+      return undefined;
+    }
+
+    const timeTakenMs = completeDate - beginDate;
+
+    if (timeTakenMs === undefined || timeTakenMs < 0) {
+      return "Invalid time data";
+    }
+
+    const days = Math.floor(timeTakenMs / (3600 * 24));
+
+    return `${days}`;
+  }
+
   abortResidue(residueJobOrder: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ABORT_RESIDUE,
@@ -744,5 +802,5 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       }
     });
   }
-  
+
 }

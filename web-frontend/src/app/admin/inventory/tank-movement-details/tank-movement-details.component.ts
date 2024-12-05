@@ -63,6 +63,7 @@ import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
+import { SteamDS } from 'app/data-sources/steam';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -318,6 +319,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SURVEY_DETAILS: 'COMMON-FORM.SURVEY-DETAILS',
     UPDATE_TANK_NOTE: 'COMMON-FORM.UPDATE-TANK-NOTE',
     TRANSFER_DETAILS: 'COMMON-FORM.TRANSFER-DETAILS',
+    RESIDUE_COMPLETE_DATE: 'COMMON-FORM.RESIDUE-COMPLETE-DATE',
+    RESIDUE_BEGIN_DATE: 'COMMON-FORM.RESIDUE-BEGIN-DATE',
   }
 
   sot_guid: string | null | undefined;
@@ -345,7 +348,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tDS: TankDS;
   pbDS: PackageBufferDS;
   pdDS: PackageDepotDS;
-  // steamDS: SteamDS;
+  steamDS: SteamDS;
   residueDS: ResidueDS;
   cleaningDS: InGateCleaningDS;
   joDS: JobOrderDS;
@@ -454,6 +457,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.tDS = new TankDS(this.apollo);
     this.pbDS = new PackageBufferDS(this.apollo);
     this.pdDS = new PackageDepotDS(this.apollo);
+    this.steamDS = new SteamDS(this.apollo);
     this.residueDS = new ResidueDS(this.apollo);
     this.cleaningDS = new InGateCleaningDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
@@ -645,11 +649,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           this.og = data[0];
         }
       });
+      this.subs.sink = this.steamDS.getSteamForMovement(this.sot_guid).subscribe(data => {
+        if (this.steamDS.totalCount > 0) {
+          console.log(`steam: `, data)
+          // this.residueItem = data;
+        }
+      });
       this.subs.sink = this.residueDS.getResidueForMovement(this.sot_guid).subscribe(data => {
         if (this.residueDS.totalCount > 0) {
           console.log(`residue: `, data)
           this.residueItem = data;
-          // TODO :: get job
         }
       });
       this.subs.sink = this.cleaningDS.getCleaningForMovement(this.sot_guid).subscribe(data => {

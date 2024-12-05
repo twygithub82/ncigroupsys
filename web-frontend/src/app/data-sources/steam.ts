@@ -401,31 +401,43 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
 `;
 
 export const GET_STEAM_FOR_MOVEMENT = gql`
-  query querySteaming($where: residueFilterInput) {
+  query querySteaming($where: steamingFilterInput) {
     resultList: querySteaming(where: $where) {
       nodes {
+        action
         allocate_by
         allocate_dt
         approve_by
         approve_dt
+        begin_by
+        begin_dt
         bill_to_guid
         complete_by
         complete_dt
         create_by
         create_dt
         delete_dt
+        estimate_by
+        estimate_dt
         estimate_no
-        na_dt
         guid
+        invoice_by
+        invoice_dt
         job_no
+        na_dt
         remarks
         sot_guid
         status_cv
+        total_cost
         update_by
         update_dt
-        residue_part {
+        steaming_part {
           action
+          approve_cost
+          approve_labour
           approve_part
+          approve_qty
+          complete_dt
           cost
           create_by
           create_dt
@@ -433,42 +445,28 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
           description
           guid
           job_order_guid
-          approve_qty
-          approve_cost
+          labour
           quantity
-          residue_guid
-          tariff_residue_guid
+          steaming_guid
+          tariff_steaming_guid
           update_by
           update_dt
-          job_order {
-            team {
-              create_by
-              create_dt
-              delete_dt
-              department_cv
-              description
-              guid
-              update_by
-              update_dt
-            }
-            complete_dt
+          tariff_steaming {
+            cost
             create_by
             create_dt
             delete_dt
-            qc_dt
-            qc_by
             guid
-            job_order_no
-            job_type_cv
+            labour
             remarks
-            sot_guid
-            start_dt
-            status_cv
-            team_guid
-            total_hour
+            temp_max
+            temp_min
             update_by
             update_dt
-            working_hour
+          }
+          job_order {
+            guid
+            status_cv
           }
         }
       }
