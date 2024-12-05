@@ -56,6 +56,15 @@ namespace IDMS.Residue.GqlTypes
                 }
                 await context.residue_part.AddRangeAsync(partList);
 
+                //Handing of SOT movement status
+                if (string.IsNullOrEmpty(residue.sot_guid))
+                    throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                var sot = new storing_order_tank() { guid = residue.sot_guid };
+                context.storing_order_tank.Attach(sot);
+                sot.tank_status_cv = TankMovementStatus.CLEANING;
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+
                 var res = await context.SaveChangesAsync();
                 //TODO
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
@@ -342,19 +351,17 @@ namespace IDMS.Residue.GqlTypes
                 abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
                 abortResidue.remarks = residueJobOrder.remarks;
 
+                //Job order handling
                 await GqlUtils.JobOrderHandling(context, "residue", user, currentDateTime, ObjectAction.CANCEL, jobOrders: residueJobOrder.job_order);
-                //foreach (var item in residueJobOrder.job_order)
-                //{
-                //    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
-                //    {
-                //        var job_order = new job_order() { guid = item.guid };
-                //        context.job_order.Attach(job_order);
 
-                //        job_order.status_cv = JobStatus.CANCELED;
-                //        job_order.update_by = user;
-                //        job_order.update_dt = currentDateTime;
-                //    }
-                //}
+                //Status condition chehck handling
+                if (await GqlUtils.StatusChangeConditionCheck(context, "residue", residueJobOrder.guid, CurrentServiceStatus.COMPLETED))
+                {
+                    abortResidue.status_cv = CurrentServiceStatus.COMPLETED;
+                    abortResidue.complete_dt = currentDateTime;
+                }
+                else
+                    abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
 
                 if (!await TankMovementCheckInternal(context, "residue", residueJobOrder.sot_guid, residueJobOrder.guid))
                     //if no other residue estimate or all completed. then we check cross process tank movement
@@ -436,8 +443,6 @@ namespace IDMS.Residue.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
-
 
         private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
         {

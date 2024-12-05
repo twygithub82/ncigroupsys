@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Steaming.GqlTypes.LocalModel;
+using IDMS.Models.Inventory;
 
 namespace IDMS.Steaming.GqlTypes
 {
@@ -40,6 +41,16 @@ namespace IDMS.Steaming.GqlTypes
                 }
 
                 await context.AddAsync(newSteaming);
+
+                //Handing of SOT movement status
+                if (string.IsNullOrEmpty(steaming.sot_guid))
+                    throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+                var sot = new storing_order_tank() { guid = steaming.sot_guid };
+                context.storing_order_tank.Attach(sot);
+                sot.tank_status_cv = TankMovementStatus.STEAM;
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+
                 var res = await context.SaveChangesAsync();
 
                 return res;
@@ -446,20 +457,16 @@ namespace IDMS.Steaming.GqlTypes
                 abortSteaming.remarks = steamingJobOrder.remarks;
 
                 //job order handling
-                await GqlUtils.JobOrderHandling(context, "residue", user, currentDateTime, ObjectAction.CANCEL, jobOrders: steamingJobOrder.job_order);
+                await GqlUtils.JobOrderHandling(context, "steaming", user, currentDateTime, ObjectAction.CANCEL, jobOrders: steamingJobOrder.job_order);
 
-                //foreach (var item in steamingJobOrder.job_order)
-                //{
-                //    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
-                //    {
-                //        var job_order = new job_order() { guid = item.guid };
-                //        context.job_order.Attach(job_order);
-
-                //        job_order.status_cv = JobStatus.CANCELED;
-                //        job_order.update_by = user;
-                //        job_order.update_dt = currentDateTime;
-                //    }
-                //}
+                //Status condition chehck handling
+                if (await GqlUtils.StatusChangeConditionCheck(context, "steaming", steamingJobOrder.guid, CurrentServiceStatus.COMPLETED))
+                {
+                    abortSteaming.status_cv = CurrentServiceStatus.COMPLETED;
+                    abortSteaming.complete_dt = currentDateTime;
+                }
+                else
+                    abortSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
 
                 if (!await TankMovementCheckInternal(context, "steaming", steamingJobOrder.sot_guid, steamingJobOrder.guid))
                     //if no other steaming estimate or all completed. then we check cross process tank movement
