@@ -1313,7 +1313,7 @@ export class ResidueDisposalApprovalViewComponent extends UnsubscribeOnDestroyAd
 
     if(!IsEditedRow)
     {
-      this.editRow.qty.setValue( String(row.approve_qty));
+      this.editRow.qty.setValue( String(row.approve_qty!));
       this.editRow.cost.setValue( row.approve_cost!.toFixed(2));
       this.editRow.index=index;
       this.updateSelectedItem ={

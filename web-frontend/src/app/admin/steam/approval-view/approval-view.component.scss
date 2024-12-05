@@ -11,3 +11,8 @@
   .selected-row {
     background-color: #FF00FF; /* Change to your desired color */
   }
+
+  
+  .ignore-click {
+    pointer-events: none;
+  }

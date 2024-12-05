@@ -121,7 +121,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="residueEstForm!"  #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="steamEstForm!"  #formDirective="ngForm">
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
@@ -200,13 +200,13 @@
             </h2>
           </div>
           <div class="body">
-            @if (residueDS.loadingSubject | async) {
+            @if (steamDs.loadingSubject | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            @if (!(residueDS.loadingSubject | async)) {
+            @if (!(steamDs.loadingSubject | async)) {
             <div class="row">
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                 <mat-form-field class="example-full-width">
@@ -369,7 +369,7 @@
               </div>
               }
               <mat-divider></mat-divider>
-              @if (residueEstForm?.get('deList')?.hasError('required')) {
+              @if (steamEstForm?.get('deList')?.hasError('required')) {
               <mat-error class="ps-3">
                 {{translatedLangText.ADD_ATLEAST_ONE}}
               </mat-error>
@@ -396,13 +396,13 @@
                   {{translatedLangText.EXPORT}}
                 </button>
                 } -->
-                @if (residueDS.canAbort(residueItem, deList)) {
-                  <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                @if (steamDs.canAbort(residueItem, deList)) {
+                  <button mat-flat-button color="warn" [disabled]="(steamDs.loading$ | async)" class="m-r-5"
                     (click)="onAbort($event)">
                     <mat-icon>
-                      @if (!(residueDS.loading$ | async)) {
+                      @if (!(steamDs.loading$ | async)) {
                       close
-                      } @else if ((residueDS.loading$ | async)) {
+                      } @else if ((steamDs.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>

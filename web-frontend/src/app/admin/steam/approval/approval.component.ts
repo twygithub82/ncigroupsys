@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -49,6 +49,7 @@ import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { SteamDS,SteamItem } from 'app/data-sources/steam';
 
 @Component({
   selector: 'app-approval',
@@ -177,10 +178,10 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
   // repairDS: RepairDS;
-  residueDS:ResidueDS;
+  steamDs:SteamDS;
 
-  repList: ResidueItem[] = [];
-  reSelection = new SelectionModel<RepairItem>(true, []);
+  stmList: SteamItem[] = [];
+  reSelection = new SelectionModel<SteamItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -201,7 +202,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
   hasNextPage = false;
   hasPreviousPage = false;
   previous_endCursor:string| undefined = undefined;
-
+  editRow ={ qty:new FormControl('0'), cost :new FormControl('0'),labour:new FormControl('0'),index:0}; 
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -222,7 +223,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     // this.repairDS = new RepairDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
+    this.steamDs=new SteamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -272,7 +273,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
   isAllSelected() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     const numSelected = selectedItems.size;
-    const numRows = this.repList.length;
+    const numRows = this.stmList.length;
     return numSelected === numRows;
   }
 
@@ -288,7 +289,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
   /** Clear selection on the current page */
   clearPageSelection() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.repList.forEach(row => {
+    this.stmList.forEach(row => {
       this.reSelection.deselect(row);
       selectedItems.delete(row.guid!);
     });
@@ -298,7 +299,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
   /** Select all items on the current page */
   selectAllOnPage() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.repList.forEach(row => {
+    this.stmList.forEach(row => {
       this.reSelection.select(row);
       selectedItems.add(row.guid!);
     });
@@ -306,7 +307,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   /** Handle row selection */
-  toggleRow(row: RepairItem) {
+  toggleRow(row: SteamItem) {
     this.reSelection.toggle(row);
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
     if (this.reSelection.isSelected(row)) {
@@ -321,7 +322,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
   updatePageSelection() {
     this.reSelection.clear();
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set();
-    this.repList.forEach(row => {
+    this.stmList.forEach(row => {
       if (selectedItems.has(row.guid!)) {
         this.reSelection.select(row);
       }
@@ -474,8 +475,8 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
 
     if (this.searchForm!.value['part_name'] )
       {
-        if(!where.residue_part) where.residue_part={};
-        where.residue_part.some = {description:{contains:this.searchForm!.value['part_name']} };
+        if(!where.steaming_part) where.steaming_part={};
+        where.steaming_part.some = {description:{contains:this.searchForm!.value['part_name']} };
       }
     
     if ( this.searchForm!.value['residue_job_no'])
@@ -493,49 +494,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
       {
         where.approve_dt = { gte: Utility.convertDate(this.searchForm!.value['approval_dt_start']), lte: Utility.convertDate(this.searchForm!.value['approval_dt_end']) };
       }
-    // if ( this.searchForm!.value['residue_job_no'] || 
-    //   (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) || this.searchForm!.value['purpose']) {
-    //   const sotSome: any = {};
-
-      
-
-    //   if (this.searchForm!.value['tank_no']) {
-    //     sotSome.tank_no = { contains: this.searchForm!.value['tank_no'] };
-    //   }
-
-    //   if (this.searchForm!.value['job_no']) {
-    //     sotSome.job_no = { contains: this.searchForm!.value['job_no'] };
-    //   }
-
-    //   if (this.searchForm!.value['eta_dt_start'] && this.searchForm!.value['eta_dt_end']) {
-    //     sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.value['eta_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eta_dt_end']) };
-    //   }
-
-    //   if (this.searchForm!.value['purpose']) {
-    //     const purposes = this.searchForm!.value['purpose'];
-    //     if (purposes.includes('STORAGE')) {
-    //       sotSome.purpose_storage = { eq: true }
-    //     }
-    //     if (purposes.includes('CLEANING')) {
-    //       sotSome.purpose_cleaning = { eq: true }
-    //     }
-    //     if (purposes.includes('STEAM')) {
-    //       sotSome.purpose_steam = { eq: true }
-    //     }
-
-    //     const repairPurposes = [];
-    //     if (purposes.includes('REPAIR')) {
-    //       repairPurposes.push('REPAIR');
-    //     }
-    //     if (purposes.includes('OFFHIRE')) {
-    //       repairPurposes.push('OFFHIRE');
-    //     }
-    //     if (repairPurposes.length > 0) {
-    //       sotSome.purpose_repair_cv = { in: repairPurposes };
-    //     }
-    //   }
-    //   where.storing_order_tank = { some: sotSome };
-    // }
+   
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
@@ -545,17 +504,17 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
    // this.subs.sink = this.repairDS.searchRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-   this.subs.sink=this.residueDS.search(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+   this.subs.sink=this.steamDs.search(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.repList = data.map(res => {
-          var res_part=[...res.residue_part!];
-          res.residue_part=res_part?.filter(data => !data.delete_dt);
-          return {...res, net_cost: this.calculateNetCost(res)}
+        this.stmList = data.map(stm => {
+          var stm_part=[...stm.steaming_part!];
+          stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
+          return {...stm, net_cost: this.calculateNetCost(stm)}
         });
-        this.endCursor = this.residueDS.pageInfo?.endCursor;
-        this.startCursor = this.residueDS.pageInfo?.startCursor;
-        this.hasNextPage = this.residueDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.residueDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.steamDs.pageInfo?.endCursor;
+        this.startCursor = this.steamDs.pageInfo?.startCursor;
+        this.hasNextPage = this.steamDs.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.steamDs.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSize = pageSize;
@@ -654,10 +613,10 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  calculateNetCost(residue: ResidueItem): any {
+  calculateNetCost(steam: SteamItem): any {
     
 
-    const total =  (residue.status_cv=="PENDING")?this.residueDS.getTotal(residue?.residue_part) : this.residueDS.getApprovedTotal(residue?.residue_part)
+    const total =  (steam.status_cv=="PENDING")?this.steamDs.getTotal(steam?.steaming_part) : this.steamDs.getApprovedTotal(steam?.steaming_part)
 
      
      return total.total_mat_cost.toFixed(2);
@@ -739,15 +698,15 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
     event.preventDefault(); // Prevents the form submission
   }
 
-  ApproveResidueDisposalEstimate(event:Event, row:ResidueItem)
+  ApproveResidueDisposalEstimate(event:Event, row:SteamItem)
   {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-       this.router.navigate(['/admin/residue-disposal/approval/view/',row.guid], {
+       this.router.navigate(['/admin/steam/approval/view/',row.guid], {
          state: { id: '' ,
            action:"UPDATE",
            selectedRow:row,
-           type:'residue-approval',
+           type:'steam-approval',
            pagination:{
              where :this.lastSearchCriteria,
              pageSize:this.pageSize,

@@ -10,7 +10,7 @@
           <div class="body overflow-auto">
             <mat-tab-group dynamicHeight>
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
-                <form class="ms-0" [formGroup]="filterResidueForm!" (ngSubmit)="onFilterResidue()" #formDirective="ngForm">
+                <form class="ms-0" [formGroup]="filterSteamForm!" (ngSubmit)="onFilterSteam()" #formDirective="ngForm">
                   <div class="row">
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
@@ -18,7 +18,7 @@
                         <mat-label>
                           {{translatedLangText.TANK_NO}}
                         </mat-label>
-                        <input matInput formControlName="filterResidue">
+                        <input matInput formControlName="filterSteam">
                       </mat-form-field>
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
@@ -49,7 +49,7 @@
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
-                      <button mat-mini-fab color="primary" (click)="onFilterResidue()">
+                      <button mat-mini-fab color="primary" (click)="onFilterSteam()">
                         <mat-icon>search</mat-icon>
                       </button>
                     </div>
@@ -107,27 +107,27 @@
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
-                     (click)="this.AllocationResidueDisposalEstimate($event,row)"
+                     (click)="this.AllocationSteamEstimate($event,row)"
                       [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                   </table>
                 </div>
                 <!-- No result -->
-                @if (!(residueDS.loading$ | async) && !rsdEstList.length) {
+                @if (!(steamDs.loading$ | async) && !rsdEstList.length) {
                 <mat-divider></mat-divider>
                 <div class="no-results m-l-20 pt-3" [style.display]="rsdEstList.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>
                 }
                 <!-- Loading spinner -->
-                @if (residueDS.loading$ | async) {
+                @if (steamDs.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="0" [pageSize]="10"
-                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventClean($event)">
+                <mat-paginator #paginator [length]="steamDs.totalCount" [pageIndex]="0" [pageSize]="10"
+                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventSteam($event)">
                 </mat-paginator>
               </mat-tab>
               <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">

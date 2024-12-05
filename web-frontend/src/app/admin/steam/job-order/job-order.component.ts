@@ -53,6 +53,9 @@ import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-c
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { JobOrderQCComponent } from "../job-order-qc/job-order-qc.component";
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
+import {SteamDS,SteamItem} from "app/data-sources/steam";
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
+
 //import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
@@ -177,7 +180,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE'
   }
 
-  filterResidueForm?: UntypedFormGroup;
+  filterSteamForm?: UntypedFormGroup;
   filterJobOrderForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
@@ -186,7 +189,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  residueDS:ResidueDS;
+  steamDs:SteamDS;
   joDS: JobOrderDS;
 
   availableProcessStatus: string[] = [
@@ -209,15 +212,15 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
-  previous_endCursorResidue:string|undefined=undefined;
-  pageIndexResidue = 0;
-  pageSizeResidue = 10;
-  lastSearchCriteriaResidue: any;
-  lastOrderByResidue: any = { storing_order_tank:{tank_no: "DESC" }};
-  endCursorResidue: string | undefined = undefined;
-  startCursorResidue: string | undefined = undefined;
-  hasNextPageResidue = false;
-  hasPreviousPageResidue = false;
+  previous_endCursorSteam:string|undefined=undefined;
+  pageIndexSteam = 0;
+  pageSizeSteam = 10;
+  lastSearchCriteriaSteam: any;
+  lastOrderBySteam: any = { storing_order_tank:{tank_no: "DESC" }};
+  endCursorSteam: string | undefined = undefined;
+  startCursorSteam: string | undefined = undefined;
+  hasNextPageSteam = false;
+  hasPreviousPageSteam = false;
 
   pageIndexJobOrder = 0;
   pageSizeJobOrder = 10;
@@ -249,7 +252,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     this.igDS = new InGateDS(this.apollo);
     
     this.joDS = new JobOrderDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
+    this.steamDs=new SteamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -267,8 +270,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   initSearchForm() {
-    this.filterResidueForm = this.fb.group({
-      filterResidue: [''],
+    this.filterSteamForm = this.fb.group({
+      filterSteam: [''],
       status_cv:[['APPROVED','ASSIGNED']],
       customer:['']
     });
@@ -318,7 +321,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   public loadData() {
-    this.onFilterResidue();
+    this.onFilterSteam();
     this.onFilterJobOrder();
 
     const queries = [
@@ -386,40 +389,40 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     }
   }
 
-  onFilterResidue() {
+  onFilterSteam() {
     const where: any = {
      and:[]
     };
 
-    if (this.filterResidueForm!.get('status_cv')?.value?.length) {
+    if (this.filterSteamForm!.get('status_cv')?.value?.length) {
       where.and.push({status_cv : {
-        in: this.filterResidueForm!.get('status_cv')?.value
+        in: this.filterSteamForm!.get('status_cv')?.value
       }});
     }
     // or: [
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }
     // ]
-    if (this.filterResidueForm!.get('filterResidue')?.value) {
+    if (this.filterSteamForm!.get('filterSteam')?.value) {
       where.AND.push({
-        storing_order_tank: { tank_no: { contains: this.filterResidueForm!.get('filterResidue')?.value } }
+        storing_order_tank: { tank_no: { contains: this.filterSteamForm!.get('filterSteam')?.value } }
       });
     }
 
-    if (this.filterResidueForm!.get('customer')?.value) {
+    if (this.filterSteamForm!.get('customer')?.value) {
       where.and.push({
-        customer_company: { code: { eq: (this.filterResidueForm!.get('customer')?.value).code } }
+        customer_company: { code: { eq: (this.filterSteamForm!.get('customer')?.value).code } }
       });
     }
 
 
-    this.lastSearchCriteriaResidue = this.residueDS.addDeleteDtCriteria(where);
-    this.performSearchClean(this.pageSizeResidue, this.pageIndexResidue, this.pageSizeResidue, undefined, undefined, undefined, () => { });
+    this.lastSearchCriteriaSteam = this.steamDs.addDeleteDtCriteria(where);
+    this.performSearch(this.pageSizeSteam, this.pageIndexSteam, this.pageSizeSteam, undefined, undefined, undefined, () => { });
   }
 
   onFilterJobOrder() {
     const where: any = {
-      job_type_cv: { eq: "RESIDUE" }
+      job_type_cv: { eq: "STEAM" }
     };
 
     // if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
@@ -435,20 +438,20 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
-  performSearchClean(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.residueDS.search(this.lastSearchCriteriaResidue, this.lastOrderByResidue, first, after, last, before)
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.subs.sink = this.steamDs.search(this.lastSearchCriteriaSteam, this.lastOrderBySteam, first, after, last, before)
       .subscribe(data => {
         this.rsdEstList = data.map(re => {
           return {...re, net_cost: this.calculateNetCost(re)}
         });
-        this.endCursorResidue = this.residueDS.pageInfo?.endCursor;
-        this.startCursorResidue = this.residueDS.pageInfo?.startCursor;
-        this.hasNextPageResidue = this.residueDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPageResidue = this.residueDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursorSteam = this.steamDs.pageInfo?.endCursor;
+        this.startCursorSteam = this.steamDs.pageInfo?.startCursor;
+        this.hasNextPageSteam = this.steamDs.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageSteam = this.steamDs.pageInfo?.hasPreviousPage ?? false;
       });
 
-    this.pageSizeResidue = pageSize;
-    this.pageIndexResidue = pageIndex;
+    this.pageSizeSteam = pageSize;
+    this.pageIndexSteam = pageIndex;
   }
 
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
@@ -465,7 +468,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     this.pageIndexJobOrder = pageIndex;
   }
 
-  onPageEventClean(event: PageEvent) {
+  onPageEventSteam(event: PageEvent) {
     const { pageIndex, pageSize } = event;
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;
@@ -473,26 +476,26 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     let before: string | undefined = undefined;
 
     // Check if the page size has changed
-    if (this.pageSizeResidue !== pageSize) {
+    if (this.pageSizeSteam !== pageSize) {
       // Reset pagination if page size has changed
-      this.pageIndexResidue = 0;
+      this.pageIndexSteam = 0;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
-      if (pageIndex > this.pageIndexResidue && this.hasNextPageResidue) {
+      if (pageIndex > this.pageIndexSteam && this.hasNextPageSteam) {
         // Navigate forward
         first = pageSize;
-        after = this.endCursorResidue;
-      } else if (pageIndex < this.pageIndexResidue && this.hasPreviousPageResidue) {
+        after = this.endCursorSteam;
+      } else if (pageIndex < this.pageIndexSteam && this.hasPreviousPageSteam) {
         // Navigate backward
         last = pageSize;
-        before = this.startCursorResidue;
+        before = this.startCursorSteam;
       }
     }
 
-    this.performSearchClean(pageSize, pageIndex, first, after, last, before, () => { });
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
   onPageEventJobOrder(event: PageEvent) {
@@ -551,12 +554,12 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
-  calculateNetCost(residue: ResidueItem): any {
+  calculateNetCost(steam: SteamItem): any {
     
 
-    const total = this.residueDS.getTotal(residue?.residue_part)
+    const total = this.steamDs.getTotal(steam?.steaming_part)
      
-     return total.total_mat_cost.toFixed(2);
+     return total.total_mat_cost?.toFixed(2);
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
@@ -598,7 +601,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   resetForm() {
-    this.filterResidueForm?.patchValue({
+    this.filterSteamForm?.patchValue({
       filterResidue: '',
     });
   }
@@ -631,23 +634,25 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     return retval;
   }
 
-  AllocationResidueDisposalEstimate(event:Event, row:ResidueItem)
+  AllocationSteamEstimate(event:Event, row:SteamItem)
   {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-       this.router.navigate(['/admin/residue-disposal/job-order/allocation/',row.guid], {
+      if(row.approve_by?.toUpperCase()!=="SYSTEM")
+      {
+       this.router.navigate(['/admin/steam/job-order/allocation/',row.guid], {
          state: { id: '' ,
            action:"UPDATE",
            selectedRow:row,
-           type:'residue-approval',
+           type:'steam',
            pagination:{
-             where :this.lastSearchCriteriaResidue,
-             pageSize:this.pageSizeResidue,
-             pageIndex:this.pageIndexResidue,
-             hasPreviousPage:this.hasPreviousPageResidue,
-             startCursor:this.startCursorResidue,
-             endCursor:this.endCursorResidue,
-             previous_endCursor:this.previous_endCursorResidue,
+             where :this.lastSearchCriteriaSteam,
+             pageSize:this.pageSizeSteam,
+             pageIndex:this.pageIndexSteam,
+             hasPreviousPage:this.hasPreviousPageSteam,
+             startCursor:this.startCursorSteam,
+             endCursor:this.endCursorSteam,
+             previous_endCursor:this.previous_endCursorSteam,
              
              showResult: this.sotDS.totalCount>0
              
@@ -655,9 +660,54 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
          }
        });
       }
-    
-      getStatusDescription(codeValType: string | undefined): string | undefined {
-        return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
+      else
+      {
+          this.popupDialogForm(row,"allocation");
       }
+    }
+    
+    getStatusDescription(codeValType: string | undefined): string | undefined {
+      return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
+    }
+
+    popupDialogForm(row:SteamItem, action:string)
+  {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    if(row.status_cv==='QC_COMPLETED') action='view';
+    var rows :SteamItem[] =[] ;
+    rows.push(row);
+    
+
+    const dialogRef = this.dialog.open(FormDialogComponent,{
+      
+      width: '1000px',
+      data: {
+        action: action,
+        langText: this.langText,
+        selectedItems:rows
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      }
+        
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         if (result) {
+          if(result>0)
+            {
+             
+              this.onPageEventSteam({pageIndex:this.pageIndexSteam,pageSize:this.pageSizeSteam,length:this.pageSizeSteam});
+            }
+      }
+      });
+   
+   }
  
 }

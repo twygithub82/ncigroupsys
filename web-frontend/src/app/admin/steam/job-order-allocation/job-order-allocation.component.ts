@@ -64,6 +64,7 @@ import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest, ResJobOrderRequest } from 'app/data-sources/job-order';
+import { SteamDS } from 'app/data-sources/steam';
 
 @Component({
   selector: 'app-estimate-new',
@@ -242,7 +243,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   sot_guid?: string | null;
   repair_guid?: string | null;
 
-  residueEstForm?: UntypedFormGroup;
+  steamEstForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
@@ -279,7 +280,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   // plDS: PackageLabourDS;
   // repairEstDS: RepairDS;
   // repairEstPartDS: RepairPartDS;
-  residueDS:ResidueDS;
+  steamDs:SteamDS;
   teamDS:TeamDS;
   mtDS: MasterEstimateTemplateDS;
   prDS: PackageRepairDS;
@@ -322,7 +323,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
     this.packResidueDS= new PackageResidueDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
+    this.steamDs=new SteamDS(this.apollo);
     this.teamDS=new TeamDS(this.apollo);
     this.jobOrderDS=new JobOrderDS(this.apollo);
 
@@ -340,7 +341,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
 
   initForm() {
     console.log('initForm');
-    this.residueEstForm = this.fb.group({
+    this.steamEstForm = this.fb.group({
       guid: [''],
       customer_code:[''],
       billing_branch:[''],
@@ -366,16 +367,16 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
    
 
     console.log('initializeValueChanges');
-    this.residueEstForm?.get('desc')?.valueChanges.pipe(
+    this.steamEstForm?.get('desc')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-        var desc_value = this.residueEstForm?.get("desc")?.value;
+        var desc_value = this.steamEstForm?.get("desc")?.value;
         this.displayPackResidueList= this.packResidueList.filter(data=> data.description && data.description.includes(desc_value));
         if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
         else if(typeof desc_value==='object')
         {
-          this.residueEstForm?.patchValue({
+          this.steamEstForm?.patchValue({
 
              unit_price: desc_value?.cost.toFixed(2)
           });
@@ -489,10 +490,10 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   checkCompulsoryEst(fields:string[])
   {
     fields.forEach(name=>{
-    if( !this.residueEstForm?.get(name)?.value)
+    if( !this.steamEstForm?.get(name)?.value)
       {
-        this.residueEstForm?.get(name)?.setErrors({ required: true });
-        this.residueEstForm?.get(name)?.markAsTouched(); // Trigger validation display
+        this.steamEstForm?.get(name)?.setErrors({ required: true });
+        this.steamEstForm?.get(name)?.markAsTouched(); // Trigger validation display
       }
     });
   }
@@ -693,7 +694,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         //this.router.navigate(['/admin/master/estimate-template']);
 
         // Navigate to the route and pass the JSON object
-        this.router.navigate(['/admin/residue-disposal/job-order'], {
+        this.router.navigate(['/admin/steam/job-order'], {
           state: this.historyState
 
         }
@@ -965,7 +966,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       billingGuid=residue.bill_to_guid!;
     }
     this.populateResiduePartList(residue);
-    this.residueEstForm?.patchValue({
+    this.steamEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
       job_no:this.sotItem?.job_no,
@@ -1005,14 +1006,14 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
 
   resetValue(){
 
-    this.residueEstForm?.patchValue({
+    this.steamEstForm?.patchValue({
       desc:'',
       qty:'',
       unit_price:''
     },{emitEvent:false});
-    this.residueEstForm?.get('desc')?.setErrors(null);
-    this.residueEstForm?.get('qty')?.setErrors(null);
-    this.residueEstForm?.get('unit_price')?.setErrors(null);
+    this.steamEstForm?.get('desc')?.setErrors(null);
+    this.steamEstForm?.get('qty')?.setErrors(null);
+    this.steamEstForm?.get('unit_price')?.setErrors(null);
     this.displayPackResidueList=[...this.packResidueList];
   
   }
@@ -1020,7 +1021,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/job-order'], {
+    this.router.navigate(['/admin/steam/job-order'], {
       state: this.historyState
 
     }
@@ -1072,39 +1073,39 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   }
 
   toggleApprovePart(rep: ResiduePartItem) {
-    if (!this.residueDS.canApprove(this.residueItem!)) return;
+    if (!this.steamDs.canApprove(this.residueItem!)) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
   }
 
   onCancel(event: Event) {
     this.preventDefault(event);
-    console.log(this.sotItem)
+    // console.log(this.sotItem)
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-        item: [this.residueItem],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
-        console.log(reList);
-        this.residueDS.cancelResidue(reList).subscribe(result => {
-          this.handleCancelSuccess(result?.data?.cancelResidue)
-        });
-      }
-    });
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    //   width: '1000px',
+    //   data: {
+    //     action: 'cancel',
+    //     dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+    //     item: [this.residueItem],
+    //     translatedLangText: this.translatedLangText
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result?.action === 'confirmed') {
+    //     const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
+    //     console.log(reList);
+    //     this.steamDs.cancelResidue(reList).subscribe(result => {
+    //       this.handleCancelSuccess(result?.data?.cancelResidue)
+    //     });
+    //   }
+    // });
   }
 
   onRollback(event: Event) {
@@ -1140,7 +1141,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
           return RepairRequestInput
         });
         console.log(reList);
-        this.residueDS.rollbackResidue(reList).subscribe(result => {
+        this.steamDs.rollbackSteam(reList).subscribe(result => {
           this.handleRollbackSuccess(result?.data?.rollbackResidue)
         });
       }
@@ -1150,7 +1151,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/residue-disposal/approval'], {
+      this.router.navigate(['/admin/steam/approval'], {
         state: this.historyState
 
       }
@@ -1162,7 +1163,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/residue-disposal/approval'], {
+      this.router.navigate(['/admin/steam/approval'], {
         state: this.historyState
 
       }
@@ -1198,7 +1199,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
 
   assignTeam(event: Event) {
     const selectedRep = this.repSelection.selected;
-    const selectedTeam = this.residueEstForm?.get('team_allocation');
+    const selectedTeam = this.steamEstForm?.get('team_allocation');
     const oldTeamFound = this.oldJobOrderList?.find(oldJob => oldJob?.team?.guid === selectedTeam?.value?.guid)
 
     selectedRep.forEach(rep => {
@@ -1232,13 +1233,13 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     
   }
   isAssignEnabled() {
-    return this.repSelection.hasValue() && this.residueEstForm?.get('team_allocation')?.value;
+    return this.repSelection.hasValue() && this.steamEstForm?.get('team_allocation')?.value;
   }
 
 
   onApprove(event: Event) {
     event.preventDefault();
-    const bill_to =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
+    const bill_to =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
    
     if (bill_to) {
       let re: ResidueItem = new ResidueItem();
@@ -1253,7 +1254,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         })
       });
       console.log(re)
-      this.residueDS.approveResidue(re).subscribe(result => {
+      this.steamDs.approveSteaming(re).subscribe(result => {
         console.log(result)
         this.handleSaveSuccess(result?.data?.approveResidue);
       });
@@ -1359,7 +1360,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
           action:act
         });
         console.log(residueStatusReq);
-        this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
+        this.steamDs.updateSteamStatus(residueStatusReq).subscribe(result => {
           console.log(result)
           if (result.data.updateResidueStatus > 0) {
             this.handleSaveSuccess(result.data.updateResidueStatus);
@@ -1458,7 +1459,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         });
 
         console.log(residueJobOrder)
-         this.residueDS.abortResidue(residueJobOrder).subscribe(result => {
+         this.steamDs.abortSteaming(residueJobOrder).subscribe(result => {
            console.log(result)
            this.handleCancelSuccess(result?.data?.abortResidue)
          });

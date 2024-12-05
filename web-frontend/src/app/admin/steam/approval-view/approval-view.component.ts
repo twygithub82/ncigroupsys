@@ -62,7 +62,8 @@ import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-r
 import { ResidueDS, ResidueGO, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResidueEstPartGO, ResiduePartItem } from 'app/data-sources/residue-part';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
-
+import {SteamDS,SteamItem} from 'app/data-sources/steam';
+import {SteamPartItem} from 'app/data-sources/steam-part';
 @Component({
   selector: 'app-estimate-new',
   standalone: true,
@@ -109,15 +110,16 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
      'desc',
      'qty',
      'unit_price',
+     'hour',
      'cost',
      'approve_part',
      //"actions"
    
   ];
-  pageTitleDetails = 'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL'
+  pageTitleDetails = 'MENUITEMS.STEAM.LIST.STEAM-APPROVAL'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-APPROVAL'
+    'MENUITEMS.STEAM.LIST.STEAM-APPROVAL'
   ]
   translatedLangText: any = {}
   langText = {
@@ -228,11 +230,11 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
   sot_guid?: string | null;
   repair_guid?: string | null;
 
-  residueEstForm?: UntypedFormGroup;
+  steamEstForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
-  residueItem?:ResidueItem;
+  steamItem?:SteamItem;
   repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
@@ -264,7 +266,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
   plDS: PackageLabourDS;
   // repairEstDS: RepairDS;
   // repairEstPartDS: RepairPartDS;
-  residueDS:ResidueDS;
+  steamDs:SteamDS;
   
   mtDS: MasterEstimateTemplateDS;
   // prDS: PackageRepairDS;
@@ -278,7 +280,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
   historyState: any = {};
   updateSelectedItem:any=undefined;
-
+  editRow ={ qty:new FormControl('0'), cost :new FormControl('0'),labour:new FormControl('0'),index:0}; 
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -303,7 +305,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     // this.prDS = new PackageRepairDS(this.apollo);
     // this.userDS = new UserDS(this.apollo);
     this.packResidueDS= new PackageResidueDS(this.apollo);
-    this.residueDS=new ResidueDS(this.apollo);
+    this.steamDs=new SteamDS(this.apollo);
 
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -319,7 +321,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
   initForm() {
     console.log('initForm');
-    this.residueEstForm = this.fb.group({
+    this.steamEstForm = this.fb.group({
       guid: [''],
       customer_code:[''],
       billing_branch:[''],
@@ -344,16 +346,16 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
    
 
     console.log('initializeValueChanges');
-    this.residueEstForm?.get('desc')?.valueChanges.pipe(
+    this.steamEstForm?.get('desc')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-        var desc_value = this.residueEstForm?.get("desc")?.value;
+        var desc_value = this.steamEstForm?.get("desc")?.value;
         this.displayPackResidueList= this.packResidueList.filter(data=> data.description && data.description.includes(desc_value));
         if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
         else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
         {
-          this.residueEstForm?.patchValue({
+          this.steamEstForm?.patchValue({
 
              unit_price: desc_value?.cost.toFixed(2)
           });
@@ -461,10 +463,10 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
   checkCompulsoryEst(fields:string[])
   {
     fields.forEach(name=>{
-    if( !this.residueEstForm?.get(name)?.value)
+    if( !this.steamEstForm?.get(name)?.value)
       {
-        this.residueEstForm?.get(name)?.setErrors({ required: true });
-        this.residueEstForm?.get(name)?.markAsTouched(); // Trigger validation display
+        this.steamEstForm?.get(name)?.setErrors({ required: true });
+        this.steamEstForm?.get(name)?.markAsTouched(); // Trigger validation display
       }
     });
   }
@@ -626,8 +628,8 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     if (newData?.length) {
       this.deList = newData.map((row, index) => ({
         ...row,
-        approve_cost: (this.residueItem?.status_cv==='PENDING')?row.cost:(row.approve_cost?row.approve_cost:row.cost),
-        approve_qty:(this.residueItem?.status_cv==='PENDING')?row.quantity:(row.approve_qty?row.approve_qty:row.quantity),
+        approve_cost: (this.steamItem?.status_cv==='PENDING')?row.cost:(row.approve_cost?row.approve_cost:row.cost),
+        approve_qty:(this.steamItem?.status_cv==='PENDING')?row.quantity:(row.approve_qty?row.approve_qty:row.quantity),
         index: index
       }));
       
@@ -667,7 +669,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
         //this.router.navigate(['/admin/master/estimate-template']);
 
         // Navigate to the route and pass the JSON object
-        this.router.navigate(['/admin/residue-disposal/approval'], {
+        this.router.navigate(['/admin/steam/approval'], {
           state: this.historyState
 
         }
@@ -862,17 +864,17 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
   }
 
-  getPackageResidue()
+  getPackageSteam()
   {
-    let where:any={};
-    let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
-    where.customer_company_guid = {eq:custCompanyGuid};
+    // let where:any={};
+    // let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
+    // where.customer_company_guid = {eq:custCompanyGuid};
 
-    this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
+    // this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
 
-      this.packResidueList=data;
-      this.displayPackResidueList=data;
-    });
+    //   this.packResidueList=data;
+    //   this.displayPackResidueList=data;
+    // });
 
   }
 
@@ -889,7 +891,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
         this.billingBranchList=[def, ...data];;
 
-        this.patchResidueEstForm(this.residueItem!);
+        this.patchSteamEstForm(this.steamItem!);
         console.log('loadBillingBranch-1');
       });
     }
@@ -898,7 +900,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
       var def =this.createDefaultCustomerCompany("--Select--","");
       this.billingBranchList=[];
       this.billingBranchList.push(def);
-      this.patchResidueEstForm(this.residueItem!);
+      this.patchSteamEstForm(this.steamItem!);
       console.log('loadBillingBranch-2');
     }
 
@@ -910,30 +912,32 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
     if (this.historyState.selectedRow != null) {
 
-      this.residueItem=this.historyState.selectedRow;
-      this.sotItem = this.residueItem?.storing_order_tank;
+      this.steamItem=this.historyState.selectedRow;
+      this.sotItem = this.steamItem?.storing_order_tank;
       
-      this.getPackageResidue();
+     // this.getPackageSteam();
       this.loadBillingBranch();
+      var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
+      this.getCustomerLabourPackage(ccGuid!);
       
       
     }
   }
 
-  patchResidueEstForm(residue:ResidueItem)
+  patchSteamEstForm(steam:SteamItem)
   {
     let billingGuid= "";
-    if(residue)
+    if(steam)
     {
-      billingGuid=residue.bill_to_guid!;
+      billingGuid=steam.bill_to_guid!;
     }
-    this.populateResiduePartList(residue);
-    this.residueEstForm?.patchValue({
+    this.populateSteamPartList(steam);
+    this.steamEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no:residue?residue.job_no:this.sotItem?.job_no,
+      job_no:steam?steam.job_no:this.sotItem?.job_no,
        billing_branch:this.getBillingBranch(billingGuid),
-       remarks:residue?.remarks
+       remarks:steam?.remarks
 
     });
   }
@@ -968,14 +972,14 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
   resetValue(){
 
-    this.residueEstForm?.patchValue({
+    this.steamEstForm?.patchValue({
       desc:'',
       qty:'',
       unit_price:''
     },{emitEvent:false});
-    this.residueEstForm?.get('desc')?.setErrors(null);
-    this.residueEstForm?.get('qty')?.setErrors(null);
-    this.residueEstForm?.get('unit_price')?.setErrors(null);
+    this.steamEstForm?.get('desc')?.setErrors(null);
+    this.steamEstForm?.get('qty')?.setErrors(null);
+    this.steamEstForm?.get('unit_price')?.setErrors(null);
     this.displayPackResidueList=[...this.packResidueList];
   
   }
@@ -983,18 +987,18 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/residue-disposal/approval'], {
+    this.router.navigate(['/admin/steam/approval'], {
       state: this.historyState
 
     }
     );
   }
 
-  populateResiduePartList(residue:ResidueItem){
+  populateSteamPartList(steam:SteamItem){
 
-    if(residue)
+    if(steam)
     {
-      var dataList = residue.residue_part?.map(data=>new ResidueEstPartGO(data) );
+      var dataList = steam.steaming_part?.map(data=>new SteamPartItem(data) );
       this.updateData(dataList);
     }
   }
@@ -1014,7 +1018,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
   toggleApprovePart(event:Event,rep: ResiduePartItem) {
     event.stopPropagation(); // Prevents click event from bubbling up
-    if (!this.residueDS.canApprove(this.residueItem!)) return;
+    if (!this.steamDs.canApprove(this.steamItem!)) return;
     rep.approve_part = rep.approve_part != null ? !rep.approve_part : false;
   }
 
@@ -1033,7 +1037,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-        item: [this.residueItem],
+        item: [this.steamItem],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
@@ -1045,11 +1049,11 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
         let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
         residueStatus.action="CANCEL";
-        residueStatus.guid = this.residueItem?.guid;
-        residueStatus.sot_guid= this.residueItem?.sot_guid;
-         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+        residueStatus.guid = this.steamItem?.guid;
+        residueStatus.sot_guid= this.steamItem?.sot_guid;
+         this.steamDs.updateSteamStatus(residueStatus).subscribe(result=>{
 
-          this.handleCancelSuccess(result?.data?.updateResidueStatus);
+          this.handleCancelSuccess(result?.data?.updateSteamingStatus);
          });
         // this.residueDS.cancelResidue(reList).subscribe(result => {
         //   this.handleCancelSuccess(result?.data?.cancelResidue)
@@ -1073,7 +1077,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [this.residueItem],
+        item: [this.steamItem],
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
@@ -1087,7 +1091,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
             guid: item?.guid,
             remarks: item.remarks,
             sot_guid: item.sot_guid,
-            is_approved:this.residueItem?.status_cv=="APPROVED"
+            is_approved:this.steamItem?.status_cv=="APPROVED"
           }
           return RepairRequestInput
         });
@@ -1095,8 +1099,8 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
         // if(this.residueItem?.status_cv=="PENDING")
         // {
       
-          this.residueDS.rollbackResidue(reList[0]).subscribe(result => {
-            this.handleRollbackSuccess(result?.data?.rollbackResidue)
+          this.steamDs.rollbackSteam(reList[0]).subscribe(result => {
+            this.handleRollbackSuccess(result?.data?.rollbackSteaming)
           });
         // }
         // else
@@ -1108,11 +1112,12 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
       }
     });
   }
+
   handleCancelSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/residue-disposal/approval'], {
+      this.router.navigate(['/admin/steam/approval'], {
         state: this.historyState
 
       }
@@ -1124,7 +1129,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/residue-disposal/approval'], {
+      this.router.navigate(['/admin/steam/approval'], {
         state: this.historyState
 
       }
@@ -1134,35 +1139,37 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
   onApprove(event: Event) {
     event.preventDefault();
-    const bill_to =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
+    const bill_to =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
    
     if (bill_to) {
-      let re: ResidueItem = new ResidueItem();
-      re.guid = this.residueItem?.guid;
-      re.sot_guid = this.residueItem?.sot_guid;
+      let re: any = new SteamItem();
+      re.guid = this.steamItem?.guid;
+      re.sot_guid = this.steamItem?.sot_guid;
       re.bill_to_guid = bill_to;
-      re.status_cv=this.residueItem?.status_cv;
+      re.status_cv=this.steamItem?.status_cv;
       // this.deList?.forEach((rep: ResiduePartItem) => {
       //   rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
       //   rep.approve_qty = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 1;
       //   rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
       //   rep.approve_cost = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
       // })
-
-      re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
-        return new ResiduePartItem({
+      re.action="APPROVE";
+      re.steaming_part = this.deList?.map((rep: SteamPartItem) => {
+        return new SteamPartItem({
           ...rep,
-          tariff_residue: undefined,
+          action:'',
+         // tariff_residue: undefined,
           approve_part: rep.approve_part,
-          // approve_qty:rep.approve_qty,
-          // approve_cost:rep.approve_cost
+          approve_qty:rep.quantity,
+          approve_cost:rep.cost,
+          approve_labour:rep.labour
         })
       });
       
       console.log(re)
-      this.residueDS.approveResidue(re).subscribe(result => {
+      this.steamDs.approveSteaming(re).subscribe(result => {
         console.log(result)
-        this.handleSaveSuccess(result?.data?.approveResidue);
+        this.handleSaveSuccess(result?.data?.approveSteaming);
       });
     } else {
       bill_to?.setErrors({ required: true })
@@ -1173,14 +1180,14 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
   onSave(event: Event) {
     event.preventDefault();
-    const bill_to =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
+    const bill_to =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
    
     if (bill_to) {
-      let re: ResidueItem = new ResidueItem();
-      re.guid = this.residueItem?.guid;
-      re.sot_guid = this.residueItem?.sot_guid;
+      let re: SteamItem = new SteamItem();
+      re.guid = this.steamItem?.guid;
+      re.sot_guid = this.steamItem?.sot_guid;
       re.bill_to_guid = bill_to;
-      re.status_cv=this.residueItem?.status_cv;
+      re.status_cv=this.steamItem?.status_cv;
       
       // this.deList?.forEach((rep: ResiduePartItem) => {
       //   rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
@@ -1189,18 +1196,18 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
       //   rep.approve_cost = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
       // })
 
-      re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
-        return new ResiduePartItem({
-          ...rep,
-          tariff_residue: undefined,
-          approve_part: rep.approve_part,
+      re.steaming_part = this.deList?.map((stm: SteamPartItem) => {
+        return new SteamPartItem({
+          ...stm,
+//          tariff_residue: undefined,
+          approve_part: stm.approve_part,
           // approve_qty:rep.approve_qty,
           // approve_cost:rep.approve_cost
         })
       });
       
       console.log(re)
-      this.residueDS.updateResidue(re).subscribe(result => {
+      this.steamDs.updateSteam(re).subscribe(result => {
         console.log(result)
         this.handleSaveSuccess(result?.data?.updateResidue);
       });
@@ -1217,16 +1224,16 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     
     var descObject :PackageResidueItem;
 
-    if(typeof this.residueEstForm?.get("desc")?.value==="object")
+    if(typeof this.steamEstForm?.get("desc")?.value==="object")
     {
-      descObject = new PackageResidueItem(this.residueEstForm?.get("desc")?.value);
+      descObject = new PackageResidueItem(this.steamEstForm?.get("desc")?.value);
       descObject.description = descObject.tariff_residue?.description;
     }
     else
     {
       descObject = new PackageResidueItem();
-      descObject.description= this.residueEstForm?.get("desc")?.value;
-      descObject.cost= Number(this.residueEstForm?.get("unit_price")?.value);
+      descObject.description= this.steamEstForm?.get("desc")?.value;
+      descObject.cost= Number(this.steamEstForm?.get("unit_price")?.value);
     }
 
 
@@ -1237,7 +1244,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
       index = this.updateSelectedItem.index;
     }
     this.checkDuplicationEst(descObject,index);
-    if(!this.residueEstForm?.valid)return;
+    if(!this.steamEstForm?.valid)return;
     
 
     let tempDirection: Direction;
@@ -1259,9 +1266,9 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
       residuePartItem.action = residuePartItem.guid?"EDIT":"NEW";
     }
 
-    residuePartItem.approve_cost= Number(this.residueEstForm?.get("unit_price")?.value);
+    residuePartItem.approve_cost= Number(this.steamEstForm?.get("unit_price")?.value);
     residuePartItem.description= descObject.description;
-    residuePartItem.approve_qty=this.residueEstForm?.get("qty")?.value;
+    residuePartItem.approve_qty=this.steamEstForm?.get("qty")?.value;
     residuePartItem.residue_guid = this.historyState.selectedResidue?.guid;
     residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
 
@@ -1280,7 +1287,7 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     {
       if(index==-1 || index!=existItems[0].index)
       {
-        this.residueEstForm?.get("desc")?.setErrors({ duplicated: true });
+        this.steamEstForm?.get("desc")?.setErrors({ duplicated: true });
       }
     }
   }
@@ -1294,11 +1301,11 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
     // this.resetValue();
   }
 
-  editEstDetails(event: Event, row: ResiduePartItem, index: number) {
+  editEstDetails(event: Event, row: SteamPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
     const status_NotEditable:string[]=['CANCELED','JOB_IN_PROGRESS'];
-    if( status_NotEditable.includes(this.residueItem?.status_cv!)) return;
+    if( status_NotEditable.includes(this.steamItem?.status_cv!)) return;
 
     var itm =this.deList[index];
     var IsEditedRow = itm.edited;
@@ -1306,53 +1313,113 @@ export class SteamApprovalViewComponent extends UnsubscribeOnDestroyAdapter impl
 
     this.resetSelectedItemForUpdating();
 
-    if(IsEditedRow) return;
+    if(!IsEditedRow)
+      {
+        this.editRow.qty.setValue( String(row.quantity));
+        this.editRow.cost.setValue( row.cost!.toFixed(2));
+        this.editRow.labour.setValue(String(row.labour!));
+        this.editRow.index=index;
+        this.updateSelectedItem ={
+          item:this.deList[index],
+          index:index,
+          action:"update",
+          
+        }
+        this.updateSelectedItem.item.edited=true;
+        return;
+      }
+      else
+      { 
+          var updItem = this.deList[this.editRow.index];
+          updItem.action="EDIT";
+          updItem.quantity=Number(this.editRow?.qty.value);
+          updItem.cost=Number(this.editRow?.cost.value);
+          updItem.labour=Number(this.editRow?.labour.value);
+          // var newData =[...this.deList];
+          // this.updateData(newData);
+      }
+      
+
+    // if(IsEditedRow) return;
 
     
-    this.updateSelectedItem ={
-      item:this.deList[index],
-      index:index,
-      action:"update",
+    // this.updateSelectedItem ={
+    //   item:this.deList[index],
+    //   index:index,
+    //   action:"update",
       
-    }
-    this.updateSelectedItem.item.edited=true;
+    // }
+    // this.updateSelectedItem.item.edited=true;
 
-    var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
-    var descValue:any;
-    if(descValues.length>0)
-    {
-      descValue = descValues[0];
-    }
-    else
-    {
-      descValue = new PackageResidueItem();
-      descValue.guid=row.guid;
-      descValue.description= row.description;
-      descValue.tariff_residue= new TariffResidueItem();
-      descValue.tariff_residue.description= row.description;
-      descValue.cost= Number(row.cost);
+    // var descValues = this.packResidueList.filter(data=>data.tariff_residue?.description===row.description);
+    // var descValue:any;
+    // if(descValues.length>0)
+    // {
+    //   descValue = descValues[0];
+    // }
+    // else
+    // {
+    //   descValue = new PackageResidueItem();
+    //   descValue.guid=row.guid;
+    //   descValue.description= row.description;
+    //   descValue.tariff_residue= new TariffResidueItem();
+    //   descValue.tariff_residue.description= row.description;
+    //   descValue.cost= Number(row.cost);
       
-    }
-    this.residueEstForm?.patchValue({
-       desc:descValue,
-       qty:(this.residueItem?.status_cv==='PENDING')? row.quantity:row.approve_qty,
-       unit_price:(this.residueItem?.status_cv==='PENDING')?row.cost?.toFixed(2):row.approve_cost?.toFixed(2)
-    });
+    // }
+    // this.steamEstForm?.patchValue({
+    //    desc:descValue,
+    //    qty:(this.steamItem?.status_cv==='PENDING')? row.quantity:row.approve_qty,
+    //    unit_price:(this.steamItem?.status_cv==='PENDING')?row.cost?.toFixed(2):row.approve_cost?.toFixed(2)
+    // });
 
    
     
   }
 
+  // getTotalCost(): number {
+  //   return this.deList.reduce((acc, row) => {
+  //     if (row.approve_part!==false) {
+  //       return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
+  //     }
+  //     return acc; // If row is approved, keep the current accumulator value
+  //   }, 0);
+  // }
+
+  getFooterBackgroundColor():string{
+    return 'light-green';
+  }
+
+  getTotalLabourHours():string{
+    let ret=0;
+    if(this.deList.length>0)
+    {
+        this.deList.map(d=>ret+=d.labour);
+    }
+    return String(ret);
+  }
+  
+  getTotalLabourCost():string{
+    let ret=0;
+    if(this.deList.length>0)
+    {
+        this.deList.map(d=>
+          ret+= d.labour * this.packageLabourItem?.cost!);
+    }
+    return ret.toFixed(2);
+  }
+
+   
   getTotalCost(): number {
     return this.deList.reduce((acc, row) => {
-      if (row.approve_part!==false) {
-        return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
+      if (row.delete_dt===undefined ||row.delete_dt===null ) {
+        return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)+((row.approve_labour||0)*(this.packageLabourItem?.cost||0)));
       }
       return acc; // If row is approved, keep the current accumulator value
     }, 0);
   }
-
-  getFooterBackgroundColor():string{
-    return 'light-green';
+  selectAllText(event: FocusEvent): void {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.select();
   }
 }

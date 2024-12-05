@@ -118,7 +118,7 @@ export class SteamStatusRequest {
 }
 
 export const GET_STEAM_EST = gql`
-  query querySteaming($where: residueFilterInput, $order: [residueSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+  query querySteaming($where: steamingFilterInput, $order: [steamingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: querySteaming(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         na_dt
@@ -199,7 +199,7 @@ export const GET_STEAM_EST = gql`
             }
           }
         }
-        residue_part {
+        steaming_part {
             approve_cost
             approve_labour
             approve_part
@@ -666,11 +666,11 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   //   });
   // }
 
-  approveSteaming(steaming: any): Observable<any> {
+  approveSteaming(steam: any): Observable<any> {
     return this.apollo.mutate({
       mutation: APPROVE_STEAM_EST,
       variables: {
-        steaming
+        steam
       }
     });
   }
