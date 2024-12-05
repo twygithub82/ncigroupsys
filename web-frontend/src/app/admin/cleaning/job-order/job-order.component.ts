@@ -216,6 +216,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   startCursorClean: string | undefined = undefined;
   hasNextPageClean = false;
   hasPreviousPageClean = false;
+  previous_endCursorClean: string | undefined = undefined;
 
   pageIndexJobOrder = 0;
   pageSizeJobOrder = 10;
@@ -225,7 +226,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   startCursorJobOrder: string | undefined = undefined;
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
-
+  previous_endCursorJobOrder: string | undefined = undefined;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -442,6 +443,15 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
         this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
+        this.pageIndexClean=pageIndex;
+        this.paginator.pageIndex=this.pageIndexClean;
+        //this.selection.clear();
+        if(!this.hasPreviousPageClean)
+          this.previous_endCursorClean=undefined;
+        // this.endCursorClean = this.cleanDS.pageInfo?.endCursor;
+        // this.startCursorClean = this.cleanDS.pageInfo?.startCursor;
+        // this.hasNextPageClean = this.cleanDS.pageInfo?.hasNextPage ?? false;
+        // this.hasPreviousPageClean = this.cleanDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSizeClean = pageSize;
@@ -456,13 +466,65 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
         this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
+        this.pageIndexJobOrder=pageIndex;
+        this.paginator.pageIndex=this.pageIndexJobOrder;
+        //this.selection.clear();
+        if(!this.hasPreviousPageJobOrder)
+          this.previous_endCursorJobOrder=undefined;
+        // this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
+        // this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
+        // this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
+        // this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSizeJobOrder = pageSize;
     this.pageIndexJobOrder = pageIndex;
   }
 
+  
   onPageEventClean(event: PageEvent) {
+    const { pageIndex, pageSize,previousPageIndex } = event;
+    let first : number| undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+   // let order:any|undefined=this.lastOrderBy;
+    // Check if the page size has changed
+    if (this.pageSizeClean !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndexClean = 0;
+      this.pageSizeClean=pageSize;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      //if (pageIndex > this.pageIndex && this.hasNextPage) {
+        if (pageIndex > this.pageIndexClean ) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursorClean;
+      } else if (pageIndex < this.pageIndexClean && this.hasPreviousPageClean) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursorClean;
+      }
+      else if (pageIndex==this.pageIndexClean)
+      {
+        
+          first = pageSize;
+          after = this.previous_endCursorClean;
+     
+          
+          //this.paginator.pageIndex=this.pageIndex;
+          
+      }
+    }
+
+    this.performSearchClean(pageSize, pageIndex, first, after, last, before, () => { });
+  }
+
+  onPageEventClean1(event: PageEvent) {
     const { pageIndex, pageSize } = event;
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;
@@ -493,6 +555,48 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onPageEventJobOrder(event: PageEvent) {
+    const { pageIndex, pageSize,previousPageIndex } = event;
+    let first : number| undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+   // let order:any|undefined=this.lastOrderBy;
+    // Check if the page size has changed
+    if (this.pageSizeClean !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndexClean = 0;
+      this.pageSizeClean=pageSize;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      //if (pageIndex > this.pageIndex && this.hasNextPage) {
+        if (pageIndex > this.pageIndexJobOrder ) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursorJobOrder;
+      } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursorJobOrder;
+      }
+      else if (pageIndex==this.pageIndexJobOrder)
+      {
+        
+          first = pageSize;
+          after = this.previous_endCursorJobOrder;
+     
+          
+          //this.paginator.pageIndex=this.pageIndex;
+          
+      }
+    }
+    
+    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
+  }
+
+  onPageEventJobOrder1(event: PageEvent) {
     const { pageIndex, pageSize } = event;
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;

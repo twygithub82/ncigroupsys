@@ -129,6 +129,15 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   }
 
+  availableProcessStatus: string[] = [
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED',
+    'ASSIGNED',
+    'NO_ACTION',
+    'CANCELED'
+  ]
+
   filterJobOrderForm?: UntypedFormGroup;
 
   cvDS: CodeValuesDS;
@@ -153,7 +162,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   customer_companyList?: CustomerCompanyItem[];
 
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 100;
+  pageSizeJobOrder = 10;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { job_order_no: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
