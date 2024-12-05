@@ -326,8 +326,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   ig?: InGateItem;
   og?: OutGateItem;
   pdItem?: PackageDepotItem;
-  cleaningItem?: InGateCleaningItem[];
-  residueItem?: ResidueItem[];
+  cleaningItem: InGateCleaningItem[] = [];
+  residueItem: ResidueItem[] = [];
   repairItem: RepairItem[] = [];
   bookingList: BookingItem[] = [];
   schedulingList: SchedulingItem[] = [];
