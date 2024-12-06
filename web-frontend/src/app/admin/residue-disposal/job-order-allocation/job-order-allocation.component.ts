@@ -1188,7 +1188,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     this.isAllSelected()
       ? this.repSelection.clear()
       : this.deList.forEach((row) =>{
-          if(row.approve_part===null)
+          if(row.approve_part===null|| row.approve_part)
           {
             this.repSelection.select(row)
           }

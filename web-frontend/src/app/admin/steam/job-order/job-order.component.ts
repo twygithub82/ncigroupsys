@@ -654,7 +654,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
              endCursor:this.endCursorSteam,
              previous_endCursor:this.previous_endCursorSteam,
              
-             showResult: this.sotDS.totalCount>0
+             showResult: this.steamDs.totalCount>0
              
            }
          }

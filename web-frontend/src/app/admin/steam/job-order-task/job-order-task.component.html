@@ -84,7 +84,7 @@
       <mat-cell mat-cell *matCellDef="let row"
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span
-          class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.residue_part?.[0]?.residue?.estimate_no}}
+          class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.steaming_part?.[0]?.steam?.estimate_no}}
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="allocate_dt">
@@ -128,7 +128,7 @@
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
-      [routerLink]="['/admin/residue-disposal/job-order/task', row.guid, row.residue_part?.[0]?.residue?.guid]"
+      [routerLink]="['/admin/steam/job-order/task', row.guid, row.steaming_part?.[0]?.steam?.guid]"
       [style.cursor]="'pointer'" matRipple>
     </mat-row>
   </table>

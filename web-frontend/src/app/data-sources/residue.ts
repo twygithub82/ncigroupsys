@@ -661,7 +661,10 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canAbort(re: ResidueItem | undefined, rp: ResiduePartItem[]): boolean {
-    return (re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS') && rp?.some(part => !part.job_order?.status_cv && part.job_order?.status_cv !== 'PENDING' && part.job_order?.status_cv !== 'CANCELED');
+    const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS','PARTIAL_ASSIGNED','ASSIGNED']
+    const status:string = String(re?.status_cv);
+    return (validStatus.includes(status) && rp?.some(part => part.job_order?.status_cv && (part.job_order?.status_cv == 'PENDING')));
+   // return (re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS') && rp?.some(part => !part.job_order?.status_cv && part.job_order?.status_cv !== 'PENDING' && part.job_order?.status_cv !== 'CANCELED');
   }
 
 

@@ -396,7 +396,7 @@
                   {{translatedLangText.EXPORT}}
                 </button>
                 } -->
-                @if (steamDs.canAbort(residueItem, deList)) {
+                @if (steamDs.canAbort(steamItem, deList)) {
                   <button mat-flat-button color="warn" [disabled]="(steamDs.loading$ | async)" class="m-r-5"
                     (click)="onAbort($event)">
                     <mat-icon>
@@ -410,10 +410,10 @@
                   </button>
                   }
                 <!-- <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right"> -->
-
+                  @if (steamDs.canSave(steamItem!)) {
                   <button mat-flat-button color="primary"  (click)="save()"
                   >{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
-                
+                  }
                 <!-- </div> -->
               </div>
             </div>

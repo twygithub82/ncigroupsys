@@ -38,9 +38,11 @@ import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-c
 import { MatDividerModule } from '@angular/material/divider';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ClnJobOrderRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest } from 'app/data-sources/job-order';
+import { ClnJobOrderRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest, SteamJobOrderRequest } from 'app/data-sources/job-order';
 import { Direction } from '@angular/cdk/bidi';
 import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component'
+import {SteamDS, SteamItem, SteamStatusRequest} from 'app/data-sources/steam'
+import { SteamPartItem } from 'app/data-sources/steam-part';
 
 export interface DialogData {
   action?: string;
@@ -242,12 +244,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     TEAM: 'COMMON-FORM.TEAM',
     BAY_ALLOCATION: 'COMMON-FORM.BAY-ALLOCATION',
     ABORT: 'COMMON-FORM.ABORT',
+    ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
   };
 
   
   selectedItems: any;
   selectedItem:any;
-  igCleanDS:InGateCleaningDS;
+  steamDs:SteamDS;
   teamDS: TeamDS;
   igCleanItems:any=[];
   totalCost_depot: number = 0;
@@ -268,7 +271,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     super();
     this.selectedItems = data.selectedItems;
     this.pcForm = this.createPackageCleaning();
-    this.igCleanDS=new InGateCleaningDS(this.apollo);
+    this.steamDs=new SteamDS(this.apollo);
     this.packageDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
@@ -518,7 +521,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     let retval:boolean=true;
     var selItem =this.selectedItems[0];
-    return selItem.status_cv==="APPROVED";
+    retval =selItem.status_cv==="ASSIGNED";
+
+    if(retval)
+    {
+      retval = (selItem.steaming_part?.[0]?.job_order !=null);
+    }
+
+    return retval;
     // retval =selItem.job_order?.status_cv==="COMPLETED" && selItem.status_cv!=="COMPLETED";
     // if(!retval)
     // {
@@ -540,17 +550,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const distinctJobOrders :any[] =[];
     const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
     distinctJobOrders.push(jobOrder);
-    const repJobOrder = new ClnJobOrderRequest({
+    const steamJobOrder = new SteamJobOrderRequest({
       guid: this.selectedItems[0]?.guid,
       sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
       remarks: this.selectedItems[0]?.remarks,
       job_order: distinctJobOrders
     });
 
-    console.log(repJobOrder)
-    this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
+    console.log(steamJobOrder)
+    this.steamDs?.abortSteaming(steamJobOrder).subscribe(result => {
       console.log(result)
-      this.handleSaveSuccess(result?.data?.abortCleaning);
+      this.handleSaveSuccess(result?.data?.abortSteaming);
     });
 
   }
@@ -561,14 +571,20 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     var selItem =this.selectedItems[0];
     var newJobOrderReq :JobOrderRequest = new JobOrderRequest();
-    let job_type="CLEANING";
+    let job_type="STEAM";
     var team : TeamItem = this.pcForm!.get("team_allocation")?.value;
     newJobOrderReq.job_type_cv=job_type;
     newJobOrderReq.team_guid =team?.guid;
+    newJobOrderReq.process_guid=selItem.guid;
     newJobOrderReq.sot_guid=selItem.storing_order_tank?.guid;
     newJobOrderReq.total_hour=this.cleaningTotalHours;
     newJobOrderReq.part_guid=[];
-    newJobOrderReq.part_guid.push(selItem.guid);
+    if (selItem.steaming_part != null)
+    {
+      selItem.steaming_part.forEach((itm:SteamPartItem) => {
+        newJobOrderReq.part_guid?.push(itm.guid!);
+     });
+    }
     
     if(selItem.job_order)
     {
@@ -589,16 +605,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         // let process_status="ASSIGN";
         // this.updateJobProcessStatus(cleanGuid,job_type,process_status);
 
-        
-        var cleanItem:InGateCleaningItem = new InGateCleaningItem();
-        cleanItem.guid =selItem.guid;
-        cleanItem.action="ASSIGN";
-        cleanItem.job_no= selItem.job_no;
-        cleanItem.remarks= selItem.remarks;
-        this.igCleanDS.updateInGateCleaning(cleanItem).subscribe(result=>{
-          if(result.data.updateCleaning>0)
+       
+        var steamItem:any = new SteamStatusRequest();
+        steamItem.guid =selItem.guid;
+        steamItem.action="ASSIGN";
+        steamItem.sot_guid= selItem.storing_order_tank?.guid;
+        steamItem.remarks= selItem.remarks;
+        this.steamDs.updateSteamStatus(steamItem).subscribe(result=>{
+          if(result.data.updateSteamingStatus>0)
           {
-            this.handleSaveSuccess(result.data.updateCleaning);
+            this.handleSaveSuccess(result.data.updateSteamingStatus);
           }
 
          });
@@ -656,19 +672,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
         
         const distinctJobOrders :any[] =[];
-        const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
+        const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].steaming_part[0].job_order);
         distinctJobOrders.push(jobOrder);
-        const repJobOrder = new ClnJobOrderRequest({
+        const steamJobOrder = new SteamJobOrderRequest({
           guid: this.selectedItems[0]?.guid,
           sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
           remarks: this.selectedItems[0]?.remarks,
           job_order: distinctJobOrders
         });
     
-        console.log(repJobOrder)
-        this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
+        console.log(steamJobOrder)
+        this.steamDs?.abortSteaming(steamJobOrder).subscribe(result => {
           console.log(result)
-          this.handleSaveSuccess(result?.data?.abortCleaning);
+          this.handleSaveSuccess(result?.data?.abortSteaming);
         });
       }
     });
@@ -814,7 +830,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     var color='orange';
     let natureCv=this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv;
-    switch(natureCv.toUpperCase())
+    switch(natureCv?.toUpperCase())
     {
       
       case "HAZARDOUS":
@@ -832,7 +848,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   toggleTeam(team: any) {
-    let selected:boolean =!team.isSelected;
+    let selected:boolean =team.isSelected;
     if(team.isViewOnly) return;
     if(selected)
     {

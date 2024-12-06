@@ -675,8 +675,10 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     });
   }
 
-  canAbort(re: SteamItem | undefined, rp: ResiduePartItem[]): boolean {
-    return (re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS') && rp?.some(part => !part.job_order?.status_cv && part.job_order?.status_cv !== 'PENDING' && part.job_order?.status_cv !== 'CANCELED');
+  canAbort(re: SteamItem | undefined, rp: SteamPartItem[]): boolean {
+    const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS','PARTIAL_ASSIGNED','ASSIGNED']
+    const status:string = String(re?.status_cv);
+    return (validStatus.includes(status) && rp?.some(part => part.job_order?.status_cv && (part.job_order?.status_cv == 'PENDING')));
   }
 
 
@@ -687,8 +689,8 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canSave(re: SteamItem): boolean {
-    const validStatus = ['APPROVED', 'JOB_IN_PROGRESS']
-    return false;
+    const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED','PARTIAL_ASSIGNED']
+    return validStatus.includes(re?.status_cv!);
   }
 
   canApprove(re: SteamItem): boolean {
@@ -751,11 +753,11 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     return (total_cost ?? 0) - (discount_labour_cost ?? 0) - (discount_mat_cost ?? 0);
   }
 
-  abortSteaming(steamJobOrder: any): Observable<any> {
+  abortSteaming(steamingJobOrder: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ABORT_STEAM,
       variables: {
-        steamJobOrder
+        steamingJobOrder
       }
     });
   }

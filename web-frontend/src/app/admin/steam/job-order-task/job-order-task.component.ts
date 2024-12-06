@@ -409,10 +409,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.stopPropagation(event);  // Prevents the form submission
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-      const firstValidRepairPart = jobOrderItem.residue_part?.find(
-        (residuePart) => residuePart.residue?.guid !== null
+      const firstValidRepairPart = jobOrderItem.steam_part?.find(
+        (steamPart) => steamPart.steam_guid !== null
       );
-      this.ttDS.startJobTimer(param, firstValidRepairPart?.residue?.guid!).subscribe(result => {
+      this.ttDS.startJobTimer(param, firstValidRepairPart?.steam_guid!).subscribe(result => {
         console.log(result)
       });
     } else {
