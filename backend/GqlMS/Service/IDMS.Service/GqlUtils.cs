@@ -218,9 +218,19 @@ namespace IDMS.Service.GqlTypes
 
                 if (partTableName != "")
                 {
-                    var sqlQuery = $@"SELECT * FROM job_order WHERE delete_dt IS NULL AND guid IN (
+                    string sqlQuery = "";
+                    if (partTableName == "cleaning")
+                    {
+                        sqlQuery = $@"SELECT * FROM job_order WHERE delete_dt IS NULL AND guid IN (
+                                            SELECT job_order_guid FROM {partTableName} 
+                                            WHERE {processGuidName} = '{processGuid}' AND delete_dt IS NULL)";
+                    }
+                    else
+                    {
+                        sqlQuery = $@"SELECT * FROM job_order WHERE delete_dt IS NULL AND guid IN (
                                         SELECT job_order_guid FROM {partTableName} 
                                         WHERE {processGuidName} = '{processGuid}' AND approve_part = 1 AND delete_dt IS NULL)";
+                    }
 
                     var jobOrderList = await context.job_order.FromSqlRaw(sqlQuery).ToListAsync();
                     if (jobOrderList != null && !jobOrderList.Any(j => j == null))

@@ -77,6 +77,7 @@ namespace IDMS.Steaming.GqlTypes
                 context.steaming.Attach(approveSteam);
                 approveSteam.update_by = user;
                 approveSteam.update_dt = currentDateTime;
+              
                 approveSteam.total_cost = steaming.total_cost;
 
                 if (CurrentServiceStatus.PENDING.EqualsIgnore(steaming.status_cv))
@@ -446,7 +447,7 @@ namespace IDMS.Steaming.GqlTypes
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 if (steamingJobOrder == null)
-                    throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
+                    throw new GraphQLException(new Error($"Steaming object cannot be null or empty", "ERROR"));
 
                 var abortSteaming = new steaming() { guid = steamingJobOrder.guid };
                 context.steaming.Attach(abortSteaming);
