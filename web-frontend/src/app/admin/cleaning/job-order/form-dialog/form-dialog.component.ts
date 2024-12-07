@@ -518,7 +518,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     let retval:boolean=true;
     var selItem =this.selectedItems[0];
-    return selItem.status_cv==="APPROVED";
+    return selItem.status_cv==="ASSIGNED"||selItem.status_cv==="PARTIAL_ASSIGNED";
     // retval =selItem.job_order?.status_cv==="COMPLETED" && selItem.status_cv!=="COMPLETED";
     // if(!retval)
     // {

@@ -51,7 +51,7 @@ import { JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
 
 @Component({
   selector: 'app-job-order-qc',
@@ -95,7 +95,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     // 'estimate_dt',
     // 'approve_dt',
     'qc_dt',
-    'repair_type',
+  //  'repair_type',
     'status_cv'
   ];
 
@@ -143,7 +143,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   repairDS: RepairDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
-  residueDS:ResidueDS;
+  steamDs:SteamDS;
 
   availableProcessStatus: string[] = [
     // 'APPROVED',
@@ -154,7 +154,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
    ]
 
    
-  deList:ResidueItem[]=[];
+  deList:SteamItem[]=[];
   repEstList: RepairItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   repairOptionCvList: CodeValuesItem[] = [];
@@ -196,7 +196,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.repairDS = new RepairDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
-    this.residueDS= new ResidueDS(this.apollo);
+    this.steamDs= new SteamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -211,7 +211,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
 
   initSearchForm() {
     this.filterJobOrderForm = this.fb.group({
-      filterResidue: [''],
+      filterSteam: [''],
       jobStatusCv: [['PENDING', 'JOB_IN_PROGRESS']],
       status_cv: [['COMPLETED', 'JOB_IN_PROGRESS']],
       customer: [''],
@@ -219,7 +219,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   public loadData() {
-    this.onResidueFilter();
+    this.onSteamFilter();
 
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -256,10 +256,11 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
-  onResidueFilter(){
+  onSteamFilter(){
     const where: any = {
      // status_cv: { in: ["JOB_IN_PROGRESS", "CANCELED", "AV","COMPLETED"] },
-      residue_part: {
+      approve_by:{neq:"system"},
+      steaming_part: {
         all: {
           delete_dt: { eq: null },
           or: [
@@ -285,9 +286,9 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }
     // ]
-    if (this.filterJobOrderForm!.get('filterResidue')?.value) {
+    if (this.filterJobOrderForm!.get('filterSteam')?.value) {
       where.and.push({
-        storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterResidue')?.value } }
+        storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterSteam')?.value } }
       });
     }
 
@@ -305,12 +306,12 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       });
     }
 
-    this.lastSearchCriteriaJobOrder = this.residueDS.addDeleteDtCriteria(where);
-    this.performSearchResidue(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+    this.lastSearchCriteriaJobOrder = this.steamDs.addDeleteDtCriteria(where);
+    this.performSearchSteam(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
-  performSearchResidue(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.subs.sink = this.residueDS.search(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
+  performSearchSteam(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.subs.sink = this.steamDs.search(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         this.deList = data;
         // this.jobOrderList.forEach(jo => {
@@ -340,10 +341,10 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       }
     };
 
-    if (this.filterJobOrderForm!.get('filterResidue')?.value) {
+    if (this.filterJobOrderForm!.get('filterSteam')?.value) {
       where.or = [
-        { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterResidue')?.value } } },
-        { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterResidue')?.value } } } } }
+        { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterSteam')?.value } } },
+        { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterSteam')?.value } } } } }
       ];
     }
 

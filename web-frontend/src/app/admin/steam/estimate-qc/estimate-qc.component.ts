@@ -57,9 +57,9 @@ import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
-import { JobOrderDS, JobOrderGO, JobProcessRequest, RepJobOrderRequest, ResJobOrderRequest } from 'app/data-sources/job-order';
-import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
-import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { JobOrderDS, JobOrderGO, JobProcessRequest, RepJobOrderRequest, ResJobOrderRequest,SteamJobOrderRequest } from 'app/data-sources/job-order';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import {SteamPartItem } from 'app/data-sources/steam-part';
 
 @Component({
   selector: 'app-estimate-qc',
@@ -224,13 +224,13 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
    
   clean_statusList: CodeValuesItem[] = [];
 
-  residue_guid?: string | null;
+  steam_guid?: string | null;
 
-  residueForm?: UntypedFormGroup;
+  steamForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
   repairItem?: RepairItem;
-  residueItem?:ResidueItem;
+  steamItem?:SteamItem;
   // packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
   deList:any[]=[];
@@ -262,7 +262,7 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
   repDmgRepairDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
 
-  residueDS: ResidueDS;
+  steamDs: SteamDS;
   userDS: UserDS;
   joDS: JobOrderDS;
   isOwner = false;
@@ -291,7 +291,7 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
-    this.residueDS= new ResidueDS(this.apollo);
+    this.steamDs= new SteamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -305,7 +305,7 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   initForm() {
-    this.residueForm = this.fb.group({
+    this.steamForm = this.fb.group({
       bill_to: [''],
       job_no: [''],
       guid: [''],
@@ -416,13 +416,13 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
       this.processStatusCvList = data;
     });
 
-    this.residue_guid = this.route.snapshot.paramMap.get('id');
-    if (this.residue_guid) {
-      this.subs.sink = this.residueDS.getResidueIDForJobOrder(this.residue_guid,undefined).subscribe(data => {
+    this.steam_guid = this.route.snapshot.paramMap.get('id');
+    if (this.steam_guid) {
+      this.subs.sink = this.steamDs.getSteamIDForJobOrder(this.steam_guid,undefined).subscribe(data => {
         if (data?.length) {
-          this.residueItem = data[0];
-          console.log(this.residueItem);
-          this.sotItem = this.residueItem?.storing_order_tank;
+          this.steamItem = data[0];
+          console.log(this.steamItem);
+          this.sotItem = this.steamItem?.storing_order_tank;
           this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
             // if (cc?.length) {
             //   const bill_to = this.residueForm?.get('bill_to');
@@ -440,26 +440,26 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
             //   }
             // }
           });
-          this.populateResidue(this.residueItem);
+          this.populateSteam(this.steamItem);
         }
       });
     }
   }
 
-  populateResidue(residue: ResidueItem) {
+  populateSteam(steam:SteamItem) {
     // this.isOwner = repair.owner_enable ?? false;
-    residue.residue_part = this.filterDeleted(residue.residue_part)
-    this.residueForm?.patchValue({
-      job_no: residue.job_no || this.sotItem?.job_no,
-      guid: residue.guid,
-      remarks: residue.remarks,
+    steam.steaming_part = this.filterDeleted(steam.steaming_part)
+    this.steamForm?.patchValue({
+      job_no: steam.job_no || this.sotItem?.job_no,
+      guid: steam.guid,
+      remarks: steam.remarks,
       // surveyor_id: repair.aspnetusers_guid,
       // labour_cost_discount: repair.labour_cost_discount,
       // material_cost_discount: repair.material_cost_discount
     });
-    this.updateData(residue.residue_part);
-    if (!this.residueDS.canApprove(this.residueItem!)) {
-      this.residueForm?.get('job_no')?.disable();
+    this.updateData(steam.steaming_part);
+    if (!this.steamDs.canApprove(this.steamItem!)) {
+      this.steamForm?.get('job_no')?.disable();
     }
   }
 
@@ -601,28 +601,28 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
       .filter(item => item.job_order !== null && item.job_order !== undefined)
       .map(item => new JobOrderGO(item.job_order!));
 
-    const resJobOrder = new ResJobOrderRequest({
-      guid: this.residueItem?.guid,
-      sot_guid: this.residueItem?.sot_guid,
-      remarks: this.repairItem?.remarks,
-      job_order: this.deList
+    const stmJobOrder = new SteamJobOrderRequest({
+      guid: this.steamItem?.guid,
+      sot_guid: this.steamItem?.sot_guid,
+      remarks: this.steamItem?.remarks,
+      job_order: distinctJobOrders
     });
 
-    console.log(resJobOrder)
-    this.joDS.completeQCResidue(resJobOrder).subscribe(result => {
+    console.log(stmJobOrder)
+    this.joDS.completeQCSteaming(stmJobOrder).subscribe(result => {
       console.log(result)
-      this.handleSaveSuccess(result?.data?.completeQCResidue);
+      this.handleSaveSuccess(result?.data?.completeQCSteaming);
     });
   }
 
   onFormSubmit() {
-    this.residueForm!.get('deList')?.setErrors(null);
+    this.steamForm!.get('deList')?.setErrors(null);
   }
 
-  updateJobProcessStatus(repair_guid: string, process_status: string) {
+  updateJobProcessStatus(steamGuid: string, process_status: string) {
     var updateJobProcess: JobProcessRequest = new JobProcessRequest();
-    updateJobProcess.guid = repair_guid;
-    updateJobProcess.job_type_cv = "RESIDUE";
+    updateJobProcess.guid = steamGuid;
+    updateJobProcess.job_type_cv = "STEAM";
     updateJobProcess.process_status = process_status;
 
     this.joDS.updateJobProcessStatus(updateJobProcess).subscribe(result => {
@@ -837,10 +837,10 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   canExport(): boolean {
-    return !!this.residue_guid;
+    return !!this.steam_guid;
   }
 
-  IsApprovePart(rep: ResiduePartItem) {
-    return rep.approve_part;
+  IsApprovePart(stm: SteamPartItem) {
+    return stm.approve_part;
   }
 }

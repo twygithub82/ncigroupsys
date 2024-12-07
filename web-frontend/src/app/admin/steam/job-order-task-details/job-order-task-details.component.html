@@ -333,15 +333,15 @@
               @if (!(joDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
-                  {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{residueItem?.estimate_no}}</span>
+                  {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{steamItem?.estimate_no}}</span>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.ESTIMATE_DATE}}: <span
-                    class="font-bold">{{displayDate(residueItem?.create_dt)}}</span>
+                    class="font-bold">{{displayDate(steamItem?.create_dt)}}</span>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.STATUS}}: <span
-                    [ngClass]="'font-bold badge ' + getBadgeClass(residueItem?.status_cv)">{{getProcessStatusDescription(residueItem?.status_cv)}}</span>
+                    [ngClass]="'font-bold badge ' + getBadgeClass(steamItem?.status_cv)">{{getProcessStatusDescription(steamItem?.status_cv)}}</span>
                 </div>
               </div>
               <div class="row">
@@ -388,7 +388,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label">
-                            {{residueItem?.update_by}}
+                            {{steamItem?.update_by}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -409,7 +409,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{displayDate(residueItem?.update_dt)}}
+                            {{displayDate(steamItem?.update_dt)}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
@@ -430,7 +430,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                           <div class="table-label">
-                            {{residueItem?.remarks}}
+                            {{steamItem?.remarks}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
@@ -451,7 +451,7 @@
               <div class="row m-t-5">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
-                    (click)="$event.preventDefault();" [routerLink]="['/admin/residue-disposal/job-order']">
+                    (click)="$event.preventDefault();" [routerLink]="['/admin/steam/job-order']">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>

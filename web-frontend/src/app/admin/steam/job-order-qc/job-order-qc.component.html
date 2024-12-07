@@ -1,4 +1,4 @@
-<form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onResidueFilter()" #formDirective="ngForm">
+<form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onSteamFilter()" #formDirective="ngForm">
   <div class="row">
     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
       <mat-form-field class="example-full-width" appearance="fill">
@@ -54,7 +54,7 @@
           [class.selected-toggle-btn]="isSelectedJobStatus(codeValue.code_val!)">{{codeValue.description}}</mat-button-toggle>
         }
       </mat-button-toggle-group> -->
-      <button mat-mini-fab color="primary" class="mt-4" (click)="onResidueFilter()">
+      <button mat-mini-fab color="primary" class="mt-4" (click)="onSteamFilter()">
         <mat-icon>search</mat-icon>
       </button>
     </div>
@@ -143,12 +143,12 @@
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="status_cv">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+      <mat-header-cell mat-header-cell *matHeaderCellDef>
+        <!-- [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"> -->
         {{translatedLangText.STATUS}}
       </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+      <mat-cell mat-cell *matCellDef="let row">
+        <!-- [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"> -->
         <span
           class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
       </mat-cell>
@@ -173,7 +173,7 @@
     </ng-container> -->
     <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
-      [routerLink]="['/admin/residue-disposal/qc/view', row.guid]" [style.cursor]="'pointer'" matRipple>
+      [routerLink]="['/admin/steam/qc/view', row.guid]" [style.cursor]="'pointer'" matRipple>
     </mat-row>
   </table>
 </div>
@@ -191,6 +191,6 @@
   </mat-progress-spinner>
 </div>
 }
-<mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="0" [pageSize]="10"
+<mat-paginator #paginator [length]="steamDs.totalCount" [pageIndex]="0" [pageSize]="10"
   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
 </mat-paginator>

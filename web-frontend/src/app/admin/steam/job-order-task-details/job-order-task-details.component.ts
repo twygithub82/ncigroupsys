@@ -62,8 +62,8 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { ResidueDS, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
-import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { SteamItem, SteamDS, SteamStatusRequest } from 'app/data-sources/steam';
+import { SteamPartItem } from 'app/data-sources/steam-part';
 
 @Component({
   selector: 'job-order-task-details',
@@ -232,14 +232,14 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
   clean_statusList: CodeValuesItem[] = [];
 
   job_order_guid?: string | null;
-  residue_guid?: string | null;
+  steam_guid?: string | null;
 
   repairForm?: UntypedFormGroup;
-  residueForm?: UntypedFormGroup;
+  steamForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
   jobOrderItem?: JobOrderItem;
-  residueItem?: ResidueItem;
+  steamItem?: SteamItem;
 
 
   repairItem?: RepairItem;
@@ -275,7 +275,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
   repairPartDS: RepairPartDS;
   rpDmgRepairDS: RPDamageRepairDS;
 
-  residueDS: ResidueDS;
+  steamDS: SteamDS;
 
   teamDS: TeamDS;
   joDS: JobOrderDS;
@@ -308,7 +308,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     this.teamDS = new TeamDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
-    this.residueDS = new ResidueDS(this.apollo);
+    this.steamDS = new SteamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -322,7 +322,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
   }
 
   initForm() {
-    this.residueForm = this.fb.group({
+    this.steamForm = this.fb.group({
       deList: ['']
     });
 
@@ -437,7 +437,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     });
 
     this.job_order_guid = this.route.snapshot.paramMap.get('id');
-    this.residue_guid = this.route.snapshot.paramMap.get('residue_id');
+    this.steam_guid = this.route.snapshot.paramMap.get('steam_id');
     if (this.job_order_guid) {
       this.subs.sink = this.joDS.getJobOrderByID(this.job_order_guid).subscribe(jo => {
         if (jo?.length) {
@@ -446,14 +446,14 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
-          if (this.residue_guid) {
+          if (this.steam_guid) {
 
-            this.residueDS.getResidueIDForJobOrder(this.residue_guid, this.job_order_guid!).subscribe(residue => {
-              if (residue?.length) {
-                console.log(residue)
-                this.residueItem = residue[0];
-                this.sotItem = this.residueItem?.storing_order_tank;
-                this.populateResidue(this.residueItem);
+            this.steamDS.getSteamIDForJobOrder(this.steam_guid, this.job_order_guid!).subscribe(steam => {
+              if (steam?.length) {
+                console.log(steam)
+                this.steamItem = steam[0];
+                this.sotItem = this.steamItem?.storing_order_tank;
+                this.populateSteam(this.steamItem);
               }
             });
           }
@@ -467,11 +467,11 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     }
   }
 
-  populateResidue(residue: ResidueItem) {
+  populateSteam(steam: SteamItem) {
 
-    residue.residue_part = this.filterDeleted(residue.residue_part)
-    this.updateData(residue.residue_part);
-    this.residueForm?.patchValue({
+    steam.steaming_part = this.filterDeleted(steam.steaming_part)
+    this.updateData(steam.steaming_part);
+    this.steamForm?.patchValue({
       deList: this.deList
     });
   }
@@ -587,7 +587,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-  updateData(newData: ResidueItem[] | undefined): void {
+  updateData(newData: SteamItem[] | undefined): void {
     if (newData?.length) {
 
 
@@ -597,7 +597,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
       }));
 
       this.deList.forEach(item => {
-        this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "RESIDUE")
+        this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "STEAM")
       })
     }
   }
@@ -625,7 +625,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/residue-disposal/job-order']);
+      this.router.navigate(['/admin/steam/job-order']);
     }
   }
 
@@ -844,7 +844,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: this.jobOrderItem?.guid, job_order: new JobOrderGO({ ...this.jobOrderItem }) })];
       console.log(param)
-      this.ttDS.startJobTimer(param, this.residue_guid!).subscribe(result => {
+      this.ttDS.startJobTimer(param, this.steam_guid!).subscribe(result => {
         console.log(result)
       });
     } else {
@@ -889,7 +889,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
       if (result.data.completeJobOrder > 0) {
-        this.UpdateResidueStatusCompleted(this.residueItem?.guid!);
+        this.UpdateResidueStatusCompleted(this.steamItem?.guid!);
       }
     });
   }
@@ -1035,7 +1035,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     return 'light-green';
   }
 
-  IsApprovePart(rep: ResiduePartItem) {
+  IsApprovePart(rep: SteamPartItem) {
     return rep.approve_part;
   }
 
@@ -1048,28 +1048,28 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     }, 0);
   }
 
-  UpdateResidueStatusCompleted(residue_guid: string) {
+  UpdateResidueStatusCompleted(steam_guid: string) {
     const where: any = {
       and: []
     };
 
     where.and.push({
-      residue_part: { all: { job_order: { status_cv: { eq: 'COMPLETED' } } } }
+      steaming_part: { all: { job_order: { status_cv: { eq: 'COMPLETED' } } } }
     });
 
     where.and.push({
-      guid: { eq: residue_guid }
+      guid: { eq: steam_guid }
     })
 
-    this.residueDS.search(where).subscribe(result => {
+    this.steamDS.search(where).subscribe(result => {
 
       if (result.length > 0) {
-        var resItem: ResidueItem = result[0];
-        let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
+        var resItem: SteamItem = result[0];
+        let residueStatus: SteamStatusRequest = new SteamStatusRequest();
         residueStatus.action = "COMPLETE";
         residueStatus.guid = resItem?.guid;
         residueStatus.sot_guid = resItem?.sot_guid;
-        this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
+        this.steamDS.updateSteamStatus(residueStatus).subscribe(result => {
 
           console.log(result);
         });

@@ -95,7 +95,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     // 'estimate_dt',
     // 'approve_dt',
     'qc_dt',
-    'repair_type',
+    //'residue_type',
     'status_cv'
   ];
 
@@ -130,7 +130,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     QC_DATE: 'COMMON-FORM.QC-DATE',
-    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE'
+    RESIDUE_TYPE: 'COMMON-FORM.RESIDUE-TYPE'
   }
 
   filterJobOrderForm?: UntypedFormGroup;

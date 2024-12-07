@@ -344,7 +344,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       debounceTime(300),
       tap(value => {
         var desc_value = this.residueEstForm?.get("desc")?.value;
-        this.displayPackResidueList= this.packResidueList.filter(data=> data.description && data.description.includes(desc_value));
+        this.displayPackResidueList= this.packResidueList.filter(data=> data.tariff_residue?.description && data.tariff_residue?.description.includes(desc_value));
         if(!desc_value) this.displayPackResidueList= [...this.packResidueList];
         else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
         {
@@ -729,18 +729,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
 
   undeleteItem(event: Event, row: ResiduePartItem, index: number)
   {
-    //  if(row.guid){
-
-    //   const data: any[] = [...this.deList];
-    //   const updatedItem = {
-    //     ...row,
-    //     delete_dt: null,
-    //     action: ''
-    //   };
-      
-    //   data[index] = updatedItem;
-    //   this.updateData(data); // Refresh the data source
-    //  }
+    
 
      let tempDirection: Direction;
      if (localStorage.getItem('isRtl') === 'true') {

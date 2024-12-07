@@ -298,7 +298,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       selectedItem: null,
       action:"new",
       min_temp:['',[Validators.required]],
-      max_temp:['',[Validators.required]],
+      max_temp:[''],
       labour:[''],
      // qty:[''],
       cost:[''],
@@ -382,7 +382,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     let maxTemp =this.pcForm?.value['max_temp'];
     let minTemp=this.pcForm?.value['min_temp']
-    
+    if(!maxTemp)maxTemp=9999;
     where.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
     where.or.push ({and:[{temp_min:{lte:maxTemp}},{temp_max:{gte:maxTemp}}]})
     where.or.push ({and:[{temp_min:{gte:minTemp}},{temp_min:{lte:maxTemp}}]})
@@ -394,7 +394,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
             let newSteam = new TariffSteamingItem();
             newSteam.cost= Number(this.pcForm!.value['cost']);
             newSteam.remarks= String(this.pcForm.value['remarks']);
-            newSteam.temp_max= Number(this.pcForm.value['max_temp']);
+            newSteam.temp_max= Number(maxTemp);
             newSteam.temp_min= Number(this.pcForm.value['min_temp']);
             newSteam.labour= Number(this.pcForm.value['labour']);
             this.trfSteamDS.addNewTariffSteam(newSteam).subscribe(result=>{
@@ -424,7 +424,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     let maxTemp =this.pcForm?.value['max_temp'];
     let minTemp=this.pcForm?.value['min_temp']
-    
+    if(!maxTemp)maxTemp=9999;
     where.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
     where.or.push ({and:[{temp_min:{lte:maxTemp}},{temp_max:{gte:maxTemp}}]})
     where.or.push ({and:[{temp_min:{gte:minTemp}},{temp_min:{lte:maxTemp}}]})
@@ -447,7 +447,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
             updSteam.guid = this.selectedItem.guid;
             updSteam.cost= Number(this.pcForm!.value['cost']);
             updSteam.remarks= String(this.pcForm.value['remarks']);
-            updSteam.temp_max= Number(this.pcForm.value['max_temp']);
+            updSteam.temp_max= Number(maxTemp);
             updSteam.temp_min= Number(this.pcForm.value['min_temp']);
             updSteam.labour= Number(this.pcForm.value['labour']);
             this.trfSteamDS.updateTariffSteam(updSteam).subscribe(result=>{
@@ -506,4 +506,17 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
   
+  onMaxTempInput(event: Event)
+  {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = inputElement.value.split('.')[0];
+    this.pcForm.get('max_temp')?.setValue(Number(inputElement.value));
+  }
+
+  onMinTempInput(event: Event)
+  {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = inputElement.value.split('.')[0];
+    this.pcForm.get('min_temp')?.setValue(Number(inputElement.value));
+  }
 }

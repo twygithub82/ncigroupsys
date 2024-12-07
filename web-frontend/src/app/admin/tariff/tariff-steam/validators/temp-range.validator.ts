@@ -5,6 +5,7 @@ export const tempRangeValidator: ValidatorFn = (control: AbstractControl): Valid
   const minTemp = formGroup.get('min_temp')?.value;
   const maxTemp = formGroup.get('max_temp')?.value;
 
+ 
   return minTemp !== "" && maxTemp !== "" && maxTemp <= minTemp
     ? { tempRangeInvalid: true }
     : null;

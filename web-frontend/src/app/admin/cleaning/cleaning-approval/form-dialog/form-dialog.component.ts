@@ -425,6 +425,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (!this.pcForm?.valid) return;
 
     var selItem =this.selectedItems[0];
+    var st
     delete selItem.storing_order_tank;
     var rep: InGateCleaningItem = new InGateCleaningItem(selItem);
     rep.action=this.action.toUpperCase();
@@ -455,7 +456,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
       const repJobOrder = new ClnJobOrderRequest({
         guid: this.selectedItems[0]?.guid,
-        sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
+        sot_guid: this.selectedItems[0]?.sot_guid,
         remarks: this.selectedItems[0]?.remarks,
         job_order: distinctJobOrders
       });

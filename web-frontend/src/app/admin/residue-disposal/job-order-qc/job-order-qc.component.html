@@ -131,46 +131,28 @@
         <span>{{displayDate(row.residue_part?.[0]?.job_order?.complete_dt)}}</span>
       </mat-cell>
     </ng-container>
-    <ng-container matColumnDef="repair_type">
+    <ng-container matColumnDef="residue_type">
       <mat-header-cell mat-header-cell *matHeaderCellDef
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        {{translatedLangText.REPAIR_TYPE}}
+        {{translatedLangText.RESIDUE_TYPE}}
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span class="mobile-tab-label">{{translatedLangText.REPAIR_TYPE}}:</span>
+        <span class="mobile-tab-label">{{translatedLangText.RESIDUE_TYPE}}:</span>
         <span>{{getRepairOptionStatusDescription(row.storing_order_tank?.purpose_repair_cv)}}</span>
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="status_cv">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+      <mat-header-cell mat-header-cell *matHeaderCellDef>
+        <!-- [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"> -->
         {{translatedLangText.STATUS}}
       </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+      <mat-cell mat-cell *matCellDef="let row">
+        <!-- [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"> -->
         <span
           class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
       </mat-cell>
     </ng-container>
-    <!-- <ng-container matColumnDef="actions">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-      </mat-header-cell>
-      <mat-cell *matCellDef="let row; let i=index;"
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-        @if (canStartJob(row)) {
-        <button mat-menu-item (click)="toggleJobState($event, isStarted(row), row)">
-          <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
-        </button>
-        }
-        @if (canCompleteJob(row)) {
-        <button mat-menu-item (click)="stopEventTrigger($event)">
-          <mat-icon>check_box</mat-icon>
-        </button>
-        }
-      </mat-cell>
-    </ng-container> -->
     <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
       [routerLink]="['/admin/residue-disposal/qc/view', row.guid]" [style.cursor]="'pointer'" matRipple>

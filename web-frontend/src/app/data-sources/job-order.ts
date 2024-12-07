@@ -113,7 +113,7 @@ export class JobOrderItem extends JobOrderGO {
   public repair_part?: RepairPartItem[];
   public cleaning?: InGateCleaningItem[];
   public residue_part?: ResiduePartItem[];
-  public steam_part?:SteamPartItem[];
+  public steaming_part?:SteamPartItem[];
 
   public time_table?: TimeTableItem[];
   constructor(item: Partial<JobOrderItem> = {}) {
@@ -124,7 +124,7 @@ export class JobOrderItem extends JobOrderGO {
     this.residue_part = item.residue_part;
     this.time_table = item.time_table;
     this.storing_order_tank = item.storing_order_tank;
-    this.steam_part = item.steam_part;
+    this.steaming_part = item.steaming_part;
   }
 }
 
@@ -397,6 +397,13 @@ const GET_STARTED_JOB_ORDER = gql`
             }
           }
         }
+        steaming_part {
+          steaming {
+            guid
+            estimate_no
+          }
+          steaming_guid
+        }
         residue_part {
           residue {
             guid
@@ -603,6 +610,12 @@ const QC_COMPLETE_CLEANING_JOB_ORDER = gql`
   }
 `
 
+const QC_COMPLETE_STEAMING_JOB_ORDER = gql`
+  mutation completeQCSteaming($steamingJobOrder: [SteamJobOrderRequestInput!]!) {
+    completeQCSteaming(steamingJobOrder: $steamingJobOrder)
+  }
+`
+
 const DELETE_JOB_ORDER = gql`
   mutation deleteJobOrder($jobOrderGuid: [String!]!) {
     deleteJobOrder(jobOrderGuid: $jobOrderGuid)
@@ -802,6 +815,15 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
       mutation: QC_COMPLETE_CLEANING_JOB_ORDER,
       variables: {
         clnJobOrder
+      }
+    });
+  }
+
+  completeQCSteaming(steamingJobOrder: SteamJobOrderRequest): Observable<any> {
+    return this.apollo.mutate({
+      mutation: QC_COMPLETE_STEAMING_JOB_ORDER,
+      variables: {
+        steamingJobOrder
       }
     });
   }

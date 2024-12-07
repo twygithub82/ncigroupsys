@@ -339,8 +339,7 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
           }
         }
       }
-      residue_part(where:$residue_part_where) {
-          action
+      steaming_part(where:$steam_part_where) {
           approve_part
           cost
           labour
@@ -353,8 +352,8 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
           approve_qty
           approve_cost
           quantity
-          residue_guid
-          tariff_residue_guid
+          steaming_guid
+          tariff_steaming_guid
           update_by
           update_dt
          job_order {
@@ -555,14 +554,14 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   getSteamIDForJobOrder(id: string, job_order_guid: string | undefined): Observable<SteamItem[]> {
     this.loadingSubject.next(true);
     const where: any = { guid: { eq: id } }
-    const residue_part_where: any = {}
+    const steam_part_where: any = {}
     if (job_order_guid) {
-      residue_part_where.job_order_guid = { eq: job_order_guid };
+      steam_part_where.job_order_guid = { eq: job_order_guid };
     }
     return this.apollo
       .query<any>({
         query: GET_STEAM_EST_JOB_ORDER,
-        variables: { where, residue_part_where },
+        variables: { where, steam_part_where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

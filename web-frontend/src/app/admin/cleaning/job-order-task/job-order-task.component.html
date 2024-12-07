@@ -157,3 +157,17 @@
 <mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="0" [pageSize]="10"
   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
 </mat-paginator>
+<div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
+  <div class="legend-item d-flex align-items-center me-4 mb-2">
+    <mat-icon class="me-2">timer</mat-icon>
+    <span>{{translatedLangText.YET_START}}</span>
+  </div>
+  <div class="legend-item d-flex align-items-center me-4 mb-2">
+    <mat-icon class="text-success me-2">timer</mat-icon>
+    <span>{{translatedLangText.STARTED}}</span>
+  </div>
+  <div class="legend-item d-flex align-items-center me-4 mb-2">
+    <mat-icon class="me-2">check_box</mat-icon>
+    <span>{{translatedLangText.YET_COMPLETE}}</span>
+  </div>
+</div>

@@ -128,6 +128,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
+    YET_START:"COMMON-FORM.YET-START",
+    STARTED:"COMMON-FORM.STARTED",
+    YET_COMPLETE:"COMMON-FORM.YET-COMPLETE",
     
   }
 
@@ -410,9 +413,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
       const firstValidRepairPart = jobOrderItem.residue_part?.find(
-        (residuePart) => residuePart.residue?.guid !== null
+        (residuePart) => residuePart.residue_guid !== null
       );
-      this.ttDS.startJobTimer(param, firstValidRepairPart?.residue?.guid!).subscribe(result => {
+      this.ttDS.startJobTimer(param, firstValidRepairPart?.residue_guid!).subscribe(result => {
         console.log(result)
       });
     } else {

@@ -14,13 +14,13 @@
             </h2>
           </div>
           <div class="body">
-            @if (residueDS.loading$ | async) {
+            @if (steamDs.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
-            @if (!(residueDS.loading$ | async)) {
+            @if (!(steamDs.loading$ | async)) {
             <mat-card-content>
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -123,7 +123,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="residueForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
+    <form class="ms-0" [formGroup]="steamForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -142,15 +142,15 @@
               @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
-                  {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{residueItem?.estimate_no}}</span>
+                  {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{steamItem?.estimate_no}}</span>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.ESTIMATE_DATE}}: <span
-                    class="font-bold">{{displayDate(residueItem?.create_dt)}}</span>
+                    class="font-bold">{{displayDate(steamItem?.create_dt)}}</span>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.STATUS}}: <span
-                    [ngClass]="'font-bold badge ' + getBadgeClass(residueItem?.status_cv)">{{getProcessStatusDescription(residueItem?.status_cv)}}</span>
+                    [ngClass]="'font-bold badge ' + getBadgeClass(steamItem?.status_cv)">{{getProcessStatusDescription(steamItem?.status_cv)}}</span>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.QC_DATE}}: <span
@@ -303,13 +303,13 @@
               </h2>
             </div>
             <div class="body">
-              @if (residueDS.loadingSubject | async) {
+              @if (steamDs.loadingSubject | async) {
               <div class="tbl-spinner">
                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                 </mat-progress-spinner>
               </div>
               }
-              @if (!(residueDS.loadingSubject | async)) {
+              @if (!(steamDs.loadingSubject | async)) {
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row p-l-10 p-r-10">
@@ -338,16 +338,16 @@
                           <span class="font-bold">{{translatedLangText.UPDATE_BY}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label">{{residueItem?.create_by}}</div>
+                          <div class="table-label">{{steamItem?.create_by}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label">{{residueItem?.approve_by}}</div>
+                          <div class="table-label">{{steamItem?.approve_by}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label">{{joDS.getEstimateJobOrder(residueItem?.residue_part)?.create_by}}</div>
+                          <div class="table-label">{{joDS.getEstimateJobOrder(steamItem?.steaming_part)?.create_by}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 text-center border">
-                          <div class="table-label">{{joDS.getQCJobOrder(residueItem?.residue_part)?.qc_by}}</div>
+                          <div class="table-label">{{joDS.getQCJobOrder(steamItem?.steaming_part)?.qc_by}}</div>
                         </div>
                       </div>
                     </div>
@@ -358,17 +358,17 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{displayDate(residueItem?.create_dt)}}
+                            {{displayDate(steamItem?.create_dt)}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label">{{displayDate(residueItem?.approve_dt)}}</div>
+                          <div class="table-label">{{displayDate(steamItem?.approve_dt)}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label">{{displayDate(joDS.getEstimateJobOrder(residueItem?.residue_part)?.create_dt)}}</div>
+                          <div class="table-label">{{displayDate(joDS.getEstimateJobOrder(steamItem?.steaming_part)?.create_dt)}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 text-center border">
-                          <div class="table-label">{{displayDate(joDS.getQCJobOrder(residueItem?.residue_part)?.qc_dt)}}</div>
+                          <div class="table-label">{{displayDate(joDS.getQCJobOrder(steamItem?.steaming_part)?.qc_dt)}}</div>
                         </div>
                       </div>
                     </div>
@@ -400,13 +400,13 @@
               <div class="row m-t-5">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
-                    (click)="$event.preventDefault();" [routerLink]="['/admin/residue-disposal/job-order']">
+                    (click)="$event.preventDefault();" [routerLink]="['/admin/steam/job-order']">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (residueDS.canQCComplete(residueItem!)) {
-                  <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async)" class="m-l-5 bg-green"
+                  @if (steamDs.canQCComplete(steamItem!)) {
+                  <button mat-flat-button color="basic" [disabled]="(steamDs.loading$ | async)" class="m-l-5 bg-green"
                     (click)="onQCComplete($event)">
                     <mat-icon>
                       @if (!(repairDS.loading$ | async)) {

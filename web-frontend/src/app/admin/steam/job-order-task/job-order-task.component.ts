@@ -51,9 +51,11 @@ import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { ResidueDS, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
+//import { ResidueDS, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
-import { ResiduePartItem } from 'app/data-sources/residue-part';
+//import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
+import { SteamPartItem } from 'app/data-sources/steam-part';
 
 @Component({
   selector: 'app-job-order-task',
@@ -128,6 +130,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
+    YET_START:"COMMON-FORM.YET-START",
+    STARTED:"COMMON-FORM.STARTED",
+    YET_COMPLETE:"COMMON-FORM.YET-COMPLETE",
     
   }
 
@@ -141,7 +146,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   repairDS: RepairDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
-  residueDS:ResidueDS;
+  steamDs:SteamDS;
 
   repEstList: RepairItem[] = [];
   jobOrderList: JobOrderItem[] = [];
@@ -185,7 +190,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.repairDS = new RepairDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
-    this.residueDS= new ResidueDS(this.apollo);
+    this.steamDs= new SteamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -250,7 +255,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   onFilterJobOrder() {
     const where: any = {
-      job_type_cv: { eq: "RESIDUE" }
+      job_type_cv: { eq: "STEAM" }
     };
 
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
@@ -278,6 +283,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
+        data=data.filter(data=>data.steaming_part?.length);
         this.jobOrderList = data;
         this.jobOrderList.forEach(jo => {
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
@@ -409,7 +415,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.stopPropagation(event);  // Prevents the form submission
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-      const firstValidRepairPart = jobOrderItem.steam_part?.find(
+      const firstValidRepairPart = jobOrderItem.steaming_part?.find(
         (steamPart) => steamPart.steam_guid !== null
       );
       this.ttDS.startJobTimer(param, firstValidRepairPart?.steam_guid!).subscribe(result => {
@@ -443,8 +449,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.joDS.completeJobOrder(param).subscribe(result => {
       if(result.data.completeJobOrder>0)
       {
-        var item : ResiduePartItem = new ResiduePartItem(jobOrderItem.residue_part![0]!);
-        this.UpdateResidueStatusCompleted(item.residue_guid!);
+        var item : SteamPartItem = new SteamPartItem(jobOrderItem.steaming_part![0]!);
+        this.UpdateSteamStatusCompleted(item.steam_guid!);
       }
       //console.log(result)
     });
@@ -505,42 +511,75 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.jobOrderSubscriptions.push(subscription);
   }
 
-  UpdateResidueStatusCompleted(residue_guid:string ){
+  UpdateSteamStatusCompleted(steam_guid: string) {
     const where: any = {
-      and:[]
+      and: []
     };
-    
+
     where.and.push({
-      residue_part:{all:{job_order: { status_cv: {eq:'COMPLETED' }}}}
+      steaming_part: { all: { job_order: { status_cv: { eq: 'COMPLETED' } } } }
     });
 
     where.and.push({
-      guid:{eq:residue_guid}
+      guid: { eq: steam_guid }
     })
 
-    this.residueDS.search(where).subscribe(result=>{
+    this.steamDs.search(where).subscribe(result => {
 
-      if(result.length>0)
-      {
-        var resItem:ResidueItem=result[0];
-        let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-        residueStatus.action="COMPLETE";
-        residueStatus.guid = resItem?.guid;
-        residueStatus.sot_guid= resItem?.sot_guid;
-         this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+      if (result.length > 0) {
+        var stmItem: SteamItem = result[0];
+        let steamStatus: SteamStatusRequest = new SteamStatusRequest();
+        steamStatus.action = "COMPLETE";
+        steamStatus.guid = stmItem?.guid;
+        steamStatus.sot_guid = stmItem?.sot_guid;
+        this.steamDs.updateSteamStatus(stmItem).subscribe(result => {
 
-            console.log(result);
-         });
-         //.subscribe(result=>{
-        //   if(result.data.updateResidueStatus>0)
-        //   {
-        //     this.had(result.data.updateResidueStatus);
-        //   }
+          console.log(result);
+        });
 
-        //  });
 
       }
+      //this.handleSaveSuccess(1);
+
     });
 
   }
+  // UpdateResidueStatusCompleted(residue_guid:string ){
+  //   const where: any = {
+  //     and:[]
+  //   };
+    
+  //   where.and.push({
+  //     residue_part:{all:{job_order: { status_cv: {eq:'COMPLETED' }}}}
+  //   });
+
+  //   where.and.push({
+  //     guid:{eq:residue_guid}
+  //   })
+
+  //   this.residueDS.search(where).subscribe(result=>{
+
+  //     if(result.length>0)
+  //     {
+  //       var resItem:ResidueItem=result[0];
+  //       let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+  //       residueStatus.action="COMPLETE";
+  //       residueStatus.guid = resItem?.guid;
+  //       residueStatus.sot_guid= resItem?.sot_guid;
+  //        this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+
+  //           console.log(result);
+  //        });
+  //        //.subscribe(result=>{
+  //       //   if(result.data.updateResidueStatus>0)
+  //       //   {
+  //       //     this.had(result.data.updateResidueStatus);
+  //       //   }
+
+  //       //  });
+
+  //     }
+  //   });
+
+  // }
 }

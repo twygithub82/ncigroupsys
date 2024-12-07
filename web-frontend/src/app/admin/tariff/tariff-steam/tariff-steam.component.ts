@@ -149,7 +149,7 @@ implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   lastSearchCriteria: any;
-  lastOrderBy: any = { create_dt: "ASC" };
+  lastOrderBy: any = { temp_max: "DESC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -783,6 +783,11 @@ implements OnInit {
     
     //this.customerCodeControl.reset('');
    
+  }
+
+  roundUpToDecimal(value: number, decimalPlaces: number): number {
+    const factor = Math.pow(10, decimalPlaces);
+    return Math.ceil(value * factor) / factor;
   }
 }
 

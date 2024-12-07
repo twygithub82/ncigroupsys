@@ -126,6 +126,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
+    YET_START:"COMMON-FORM.YET-START",
+    STARTED:"COMMON-FORM.STARTED",
+    YET_COMPLETE:"COMMON-FORM.YET-COMPLETE",
 
   }
 
@@ -169,6 +172,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   startCursorJobOrder: string | undefined = undefined;
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
+  previous_endCursorJobOrder: string | undefined = undefined;
 
   private jobOrderSubscriptions: Subscription[] = [];
 

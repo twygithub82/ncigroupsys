@@ -743,7 +743,11 @@
     "UPDATE-TANK-NOTES": "Update Tank Notes",
     "TRANSFER-DETAILS": "Transfer Details",
     "RESIDUE-COMPLETE-DATE": "Residue Complete Date",
-    "RESIDUE-BEGIN-DATE": "Residue Begin Date"
+    "RESIDUE-BEGIN-DATE": "Residue Begin Date",
+    "YET-START":"Yet Start",
+    "STARTED":"Started",
+    "YET-COMPLETE":"Yet Complete",
+    "RESIDUE-TYPE": "Residue Type"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
