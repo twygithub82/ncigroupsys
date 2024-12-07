@@ -677,7 +677,7 @@
                               <div class="empty-purpose">
                                 <mat-icon class="icon-large">error_outline</mat-icon>
                                 <span class="mb-3">{{translatedLangText.NO_STORAGE_PURPOSE}}</span>
-                                <button mat-flat-button color="primary">
+                                <button mat-flat-button color="primary" (click)="addPurposeDialog($event, 'storage', 'add')">
                                   <mat-icon>
                                     add
                                   </mat-icon>
@@ -732,7 +732,7 @@
                               <div class="empty-purpose">
                                 <mat-icon class="icon-large">error_outline</mat-icon>
                                 <span class="mb-3">{{translatedLangText.NO_STEAM_PURPOSE}}</span>
-                                <button mat-flat-button color="primary">
+                                <button mat-flat-button color="primary" (click)="addPurposeDialog($event, 'steaming', 'add')">
                                   <mat-icon>
                                     add
                                   </mat-icon>
@@ -1124,7 +1124,7 @@
                               <div class="empty-purpose">
                                 <mat-icon class="icon-large">error_outline</mat-icon>
                                 <span class="mb-3">{{translatedLangText.NO_CLEANING_PURPOSE}}</span>
-                                <button mat-flat-button color="primary">
+                                <button mat-flat-button color="primary" (click)="addPurposeDialog($event, 'cleaning', 'add')">
                                   <mat-icon>
                                     add
                                   </mat-icon>
@@ -1265,7 +1265,7 @@
                                         </mat-cell>
                                       </ng-container>
                                       <mat-header-row *matHeaderRowDef="displayedColumnsRepair"></mat-header-row>
-                                      <mat-row *matRowDef="let row; columns: displayedColumnsRepair;"
+                                      <mat-row *matRowDef="let row; columns: displayedColumnsRepair;" (click)="repairDialog($event, row)"
                                         [style.cursor]="'pointer'" matRipple>
                                       </mat-row>
                                     </table>
@@ -1291,7 +1291,7 @@
                               <div class="empty-purpose">
                                 <mat-icon class="icon-large">error_outline</mat-icon>
                                 <span class="mb-3">{{translatedLangText.NO_REPAIR_PURPOSE}}</span>
-                                <button mat-flat-button color="primary">
+                                <button mat-flat-button color="primary" (click)="addPurposeDialog($event, 'repair', 'add')">
                                   <mat-icon>
                                     add
                                   </mat-icon>
