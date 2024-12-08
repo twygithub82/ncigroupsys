@@ -64,6 +64,8 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { SteamDS } from 'app/data-sources/steam';
+import { RepairFormDialogComponent } from './repair-form-dialog/repair-form-dialog.component';
+import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -288,6 +290,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     NO_STEAM_PURPOSE: 'COMMON-FORM.NO-STEAM-PURPOSE',
     ADD_STORAGE_PURPOSE: 'COMMON-FORM.ADD-STORAGE-PURPOSE',
     NO_STORAGE_PURPOSE: 'COMMON-FORM.NO-STORAGE-PURPOSE',
+    ADD_REPAIR_PURPOSE: 'COMMON-FORM.ADD-REPAIR-PURPOSE',
+    NO_REPAIR_PURPOSE: 'COMMON-FORM.NO-REPAIR-PURPOSE',
     REPAIR_BEGIN_DATE: 'COMMON-FORM.REPAIR-BEGIN-DATE',
     REPAIR_COMPLETED_DATE: 'COMMON-FORM.REPAIR-COMPLETED-DATE',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
@@ -321,6 +325,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TRANSFER_DETAILS: 'COMMON-FORM.TRANSFER-DETAILS',
     RESIDUE_COMPLETE_DATE: 'COMMON-FORM.RESIDUE-COMPLETE-DATE',
     RESIDUE_BEGIN_DATE: 'COMMON-FORM.RESIDUE-BEGIN-DATE',
+    ADD: 'COMMON-FORM.ADD',
+    REMOVE: 'COMMON-FORM.REMOVE',
   }
 
   sot_guid: string | null | undefined;
@@ -1093,6 +1099,67 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       });
     }
     input.value = '';
+  }
+
+
+
+  addPurposeDialog(event: Event, type: string, action: string) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(AddPurposeFormDialogComponent, {
+      width: '600px',
+      data: {
+        type: type,
+        action: action,
+        translatedLangText: this.translatedLangText,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        const tankPurposeRequest = {
+          guid: this.sot?.guid,
+          in_gate_dt: this.ig?.create_dt,
+          tank_comp_guid: this.igs?.tank_comp_guid,
+          purpose_changes: [
+            {
+              type: type.toUpperCase(),
+              action: action.toUpperCase()
+            }
+          ],
+          storing_order_tank: new StoringOrderTankItem({
+            guid: this.sot?.guid,
+          })
+        }
+    
+        console.log(tankPurposeRequest)
+      }
+    });
+  }
+
+  repairDialog(event: Event, repair: RepairItem) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(RepairFormDialogComponent, {
+      // width: '600px',
+      data: {
+        tankNote: repair,
+        translatedLangText: this.translatedLangText,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
   }
 
   editTankNotes(event: Event) {

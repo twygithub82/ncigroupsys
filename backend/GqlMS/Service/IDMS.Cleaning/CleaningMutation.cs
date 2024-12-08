@@ -19,7 +19,6 @@ namespace IDMS.Cleaning.GqlTypes
         public async Task<int> AddCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, cleaning cleaning)
         {
-
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);

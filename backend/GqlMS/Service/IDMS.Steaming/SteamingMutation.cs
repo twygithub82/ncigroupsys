@@ -302,7 +302,7 @@ namespace IDMS.Steaming.GqlTypes
         //}
 
         public async Task<int> RecordSteamingTemp(ApplicationServiceDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, steaming_temp steamingTemp, double requiredTemp)
+            [Service] IHttpContextAccessor httpContextAccessor, steaming_temp steamingTemp, string action, double requiredTemp)
         {
 
             try
@@ -310,7 +310,7 @@ namespace IDMS.Steaming.GqlTypes
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                if (string.IsNullOrEmpty(steamingTemp.guid))
+                if (ObjectAction.NEW.EqualsIgnore(action))
                 {
                     if (string.IsNullOrEmpty(steamingTemp.job_order_guid))
                         throw new GraphQLException(new Error($"Job Order guid cannot be null or empty", "ERROR"));
@@ -334,10 +334,10 @@ namespace IDMS.Steaming.GqlTypes
                         steam.update_dt = currentDateTime;
                     }
                 }
-                else
+                else if(ObjectAction.EDIT.EqualsIgnore(action))
                 {
                     if (string.IsNullOrEmpty(steamingTemp.guid))
-                        throw new GraphQLException(new Error($"Steaming object cannot be null for update", "ERROR"));
+                        throw new GraphQLException(new Error($"Steaming_temp guid cannot be null for update", "ERROR"));
 
                     var updateSteamTemp = new steaming_temp() { guid = steamingTemp.guid };
                     context.Attach(updateSteamTemp);
@@ -348,7 +348,18 @@ namespace IDMS.Steaming.GqlTypes
                     updateSteamTemp.meter_temp = steamingTemp.meter_temp;
                     updateSteamTemp.remarks = steamingTemp.remarks;
                 }
+                else if(ObjectAction.CANCEL.EqualsIgnore(action))
+                {
+                    if (string.IsNullOrEmpty(steamingTemp.guid))
+                        throw new GraphQLException(new Error($"Steaming_temp guid cannot be null for cancel", "ERROR"));
 
+                    var updateSteamTemp = new steaming_temp() { guid = steamingTemp.guid };
+                    context.Attach(updateSteamTemp);
+                    updateSteamTemp.update_by = user;
+                    updateSteamTemp.update_dt = currentDateTime;
+                    updateSteamTemp.delete_dt = currentDateTime;
+                    updateSteamTemp.remarks = steamingTemp.remarks;
+                }
 
                 //handling of job_order table
                 var jobOrder = await context.job_order.FindAsync(steamingTemp.job_order_guid);
@@ -414,7 +425,8 @@ namespace IDMS.Steaming.GqlTypes
                             updateSteaming.complete_dt = currentDateTime;
                         }
 
-                        if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
+
+                        if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, new List<string> { steaming.guid }))
                             //if no other steaming estimate or all completed. then we check cross process tank movement
                             await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
                         break;
@@ -422,7 +434,7 @@ namespace IDMS.Steaming.GqlTypes
                         updateSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
                         updateSteaming.na_dt = currentDateTime;
 
-                        if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, steaming.guid))
+                        if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, new List<string> { steaming.guid }))
                             //if no other steaming estimate or all completed. then we check cross process tank movement
                             await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
                         break;
@@ -469,7 +481,7 @@ namespace IDMS.Steaming.GqlTypes
                 else
                     abortSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
 
-                if (!await TankMovementCheckInternal(context, "steaming", steamingJobOrder.sot_guid, steamingJobOrder.guid))
+                if (!await TankMovementCheckInternal(context, "steaming", steamingJobOrder.sot_guid, new List<string> { steamingJobOrder.guid }))
                     //if no other steaming estimate or all completed. then we check cross process tank movement
                     await TankMovementCheckCrossProcess(context, steamingJobOrder.sot_guid, user, currentDateTime);
 
@@ -517,7 +529,7 @@ namespace IDMS.Steaming.GqlTypes
 
                     //Tank handling
                     var sotGuid = steamingJobOrder.Select(r => r.sot_guid).FirstOrDefault();
-                    var processGuid = string.Join(",", steamingJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
+                    //var processGuid = string.Join(",", steamingJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
                     if (string.IsNullOrEmpty(sotGuid))
                         throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
 
@@ -526,7 +538,7 @@ namespace IDMS.Steaming.GqlTypes
 
                     //TODO:
                     //sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
-                    if (!await TankMovementCheckInternal(context, "steaming", sotGuid, processGuid))
+                    if (!await TankMovementCheckInternal(context, "steaming", sotGuid, steamingJobOrder.Select(j => j.guid).ToList()))
                         //if no other residue estimate or all completed. then we check cross process tank movement
                         await TankMovementCheckCrossProcess(context, sotGuid, user, currentDateTime);
 
@@ -551,15 +563,16 @@ namespace IDMS.Steaming.GqlTypes
             }
         }
 
-        private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
+        private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, List<string> processGuidList)
         {
             //First check if still have other steaming estimate havnt completed
             string tableName = processType;
+            var processGuid = string.Join(",", processGuidList.Select(g => $"'{g}'"));
 
             var sqlQuery = $@"SELECT guid FROM {tableName} 
                             WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', 
                             '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
-                            AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+                            AND sot_guid = '{sotGuid}' AND guid NOT IN ({processGuid}) AND delete_dt IS NULL";
             var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
             if (result.Count > 0)

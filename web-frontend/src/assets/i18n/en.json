@@ -724,6 +724,8 @@
     "NO-STEAM-PURPOSE": "No Steam Purpose",
     "ADD-STORAGE-PURPOSE": "Add Storage Purpose",
     "NO-STORAGE-PURPOSE": "No Storage Purpose",
+    "ADD-REPAIR-PURPOSE": "Add Repair Purpose",
+    "NO-REPAIR-PURPOSE": "No Repair Purpose",
     "REPAIR-BEGIN-DATE": "Repair Begin Date",
     "REPAIR-COMPLETED-DATE": "Repair Completed Date",
     "ALLOCATION-DATE": "Allocation Date",

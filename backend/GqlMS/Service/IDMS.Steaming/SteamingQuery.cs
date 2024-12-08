@@ -33,5 +33,22 @@ namespace IDMS.Steaming.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<steaming_temp> QuerySteamingTemp(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                var steamingTemp = context.steaming_temp.Where(d => d.delete_dt == null || d.delete_dt == 0);
+                return steamingTemp;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
     }
 }
