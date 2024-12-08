@@ -82,7 +82,18 @@ export class AddPurposeFormDialogComponent {
   ) {
     // Set the defaults
     this.action = data.action!;
-    this.dialogTitle = 'Update Tank Notes';
+    let type = "";
+    if (data.type === 'steaming') {
+      type = data.translatedLangText.STEAM;
+    } else if (data.type === 'cleaning') {
+      type = data.translatedLangText.CLEANING;
+    } else if (data.type === 'repair') {
+      type = data.translatedLangText.REPAIR;
+    } else if (data.type === 'storage') {
+      type = data.translatedLangText.STORAGE;
+    }
+    const actionText = this.action === 'add' ? data.translatedLangText.ADD : data.translatedLangText.REMOVE;
+    this.dialogTitle = `${actionText} ${type} Purpose`;
     this.tankNoteForm = this.createForm();
   }
 
