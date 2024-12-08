@@ -67,6 +67,7 @@ import { SteamApprovalViewComponent } from './steam/approval-view/approval-view.
 import { SteamEstimateNewComponent } from './steam/estimate-new/estimate-new.component';
 import { SteamEstimateComponent } from './steam/estimate/estimate.component';
 import { SteamApprovalComponent } from './steam/approval/approval.component';
+import { SteamJobOrderTaskMonitorComponent } from './steam/job-order-monitor/job-order-task-monitor.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -370,6 +371,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "steam/job-order/task/:id/:steam_id",
     component: SteamJobOrderTaskDetailsComponent,
+  },
+  {
+    path: "steam/job-order/monitor/:id/:steam_id",
+    component: SteamJobOrderTaskMonitorComponent,
   },
   {
     path: "steam/qc/view/:id",

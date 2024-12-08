@@ -454,17 +454,20 @@
                   {{translatedLangText.EXPORT}}
                 </button>
                 }
-                @if (steamDS.canAmend(this.steamItem!)) {
-                <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)" class="m-r-5">
-                  <mat-icon>
-                    @if (!(steamDS.loading$ | async)) {
-                    save
-                    } @else if ((steamDS.loading$ | async)) {
-                    <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                    }
-                  </mat-icon>
-                  {{translatedLangText.SAVE_AND_SUBMIT}}
-                </button>
+                @if (steamDS.canAmend(this.steamItem!)||this.isDuplicate) {
+                 @if(isAllowToSaveSubmit())
+                 {
+                    <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)" class="m-r-5">
+                      <mat-icon>
+                        @if (!(steamDS.loading$ | async)) {
+                        save
+                        } @else if ((steamDS.loading$ | async)) {
+                        <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                        }
+                      </mat-icon>
+                      {{translatedLangText.SAVE_AND_SUBMIT}}
+                    </button>
+                 }
                 }
                 @if (steamDS.canRollback(this.steamItem!)) {
                   <button mat-flat-button color="accent" [disabled]="(steamDS.loading$ | async)" class="m-r-5"

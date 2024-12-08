@@ -202,7 +202,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
   hasNextPage = false;
   hasPreviousPage = false;
   previous_endCursor:string| undefined = undefined;
-  editRow ={ qty:new FormControl('0'), cost :new FormControl('0'),labour:new FormControl('0'),index:0}; 
+  
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -250,7 +250,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
       part_name: [''],
       change_request_cv: [''],
       eir_no: [''],
-      residue_job_no: [''],
+      steam_job_no: [''],
      // repair_type_cv: [''],
       est_dt_start: [''],
       est_dt_end: [''],
@@ -431,11 +431,12 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
 
   search() {
     const where: any = {
+      storing_order_tank : {tank_status_cv:{in:["STEAM"]}}
     };
 
     if(this.searchForm!.get('tank_no')?.value)
     {
-        where.storing_order_tank={};
+        if(!where.storing_order_tank) where.storing_order_tank={};
         where.storing_order_tank.tank_no={contains:this.searchForm!.get('tank_no')?.value};
   
     }
@@ -479,10 +480,10 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
         where.steaming_part.some = {description:{contains:this.searchForm!.value['part_name']} };
       }
     
-    if ( this.searchForm!.value['residue_job_no'])
+    if ( this.searchForm!.value['steam_job_no'])
       {
         
-        where.job_no = {contains:this.searchForm!.value['residue_job_no'] };
+        where.job_no = {contains:this.searchForm!.value['steam_job_no'] };
       }
 
     if (this.searchForm!.value['est_dt_start'] && this.searchForm!.value['est_dt_end'])
@@ -670,7 +671,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
       eir_dt_end: '',
       part_name: '',
       eir_no: '',
-      residue_job_no: '',
+      steam_job_no: '',
       est_dt_start: '',
       est_dt_end: '',
       approval_dt_start: '',

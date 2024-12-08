@@ -749,7 +749,8 @@
     "YET-START":"Yet Start",
     "STARTED":"Started",
     "YET-COMPLETE":"Yet Complete",
-    "RESIDUE-TYPE": "Residue Type"
+    "RESIDUE-TYPE": "Residue Type",
+    "STEAM-HEAT-TYPE": "Steam / Heat Type"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

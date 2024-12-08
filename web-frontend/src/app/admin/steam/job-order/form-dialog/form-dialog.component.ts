@@ -848,7 +848,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   toggleTeam(team: any) {
-    let selected:boolean =team.isSelected;
+    let selected:boolean =!team.isSelected;
     if(team.isViewOnly) return;
     if(selected)
     {

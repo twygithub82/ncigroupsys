@@ -870,6 +870,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
         residueStatus.action="CANCEL";
         residueStatus.guid = this.residueItem?.guid;
         residueStatus.sot_guid= this.residueItem?.sot_guid;
+        residueStatus.remarks=reList[0].remarks;
          this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
 
           this.handleCancelSuccess(result?.data?.updateResidueStatus);
@@ -1606,6 +1607,12 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
      
      
     }
+  }
+
+  isAllowToSaveSubmit()
+  {
+     var NoDel=this.deList.filter(d=>d.action!='cancel');
+     return (NoDel.length);
   }
   
 }

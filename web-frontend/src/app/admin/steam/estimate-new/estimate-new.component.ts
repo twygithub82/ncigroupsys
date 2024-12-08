@@ -1707,4 +1707,9 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     }
     return false;
   }
+  isAllowToSaveSubmit()
+  {
+     var NoDel=this.deList.filter(d=>d.action!='cancel');
+     return (NoDel.length);
+  }
 }

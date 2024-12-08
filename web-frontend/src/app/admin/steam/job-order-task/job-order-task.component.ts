@@ -26,7 +26,7 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, Subscription, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
-import { RouterLink } from '@angular/router';
+import { RouterLink,Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
@@ -133,7 +133,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     YET_START:"COMMON-FORM.YET-START",
     STARTED:"COMMON-FORM.STARTED",
     YET_COMPLETE:"COMMON-FORM.YET-COMPLETE",
-    
+    STEAM_HEAT_TYPE:"COMMON-FORM.STEAM-HEAT-TYPE"
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -176,7 +176,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private router:Router
   ) {
     super();
     this.translateLangText();
@@ -382,6 +383,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     return (resultList || []).filter((row: any) => !row.delete_dt);
   }
 
+  canToggleJob(jobOrderItem:JobOrderItem | undefined) {
+    var retval
+    retval= (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid===null);
+    return retval;
+  }
   canStartJob(jobOrderItem: JobOrderItem | undefined) {
     return this.joDS.canStartJob(jobOrderItem)
   }
@@ -416,9 +422,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
       const firstValidRepairPart = jobOrderItem.steaming_part?.find(
-        (steamPart) => steamPart.steam_guid !== null
+        (steamPart) => steamPart.steaming_guid !== null
       );
-      this.ttDS.startJobTimer(param, firstValidRepairPart?.steam_guid!).subscribe(result => {
+      this.ttDS.startJobTimer(param, firstValidRepairPart?.steaming_guid!).subscribe(result => {
         console.log(result)
       });
     } else {
@@ -450,7 +456,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       if(result.data.completeJobOrder>0)
       {
         var item : SteamPartItem = new SteamPartItem(jobOrderItem.steaming_part![0]!);
-        this.UpdateSteamStatusCompleted(item.steam_guid!);
+        this.UpdateSteamStatusCompleted(item.steaming_guid!);
       }
       //console.log(result)
     });
@@ -544,42 +550,20 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
 
   }
-  // UpdateResidueStatusCompleted(residue_guid:string ){
-  //   const where: any = {
-  //     and:[]
-  //   };
-    
-  //   where.and.push({
-  //     residue_part:{all:{job_order: { status_cv: {eq:'COMPLETED' }}}}
-  //   });
 
-  //   where.and.push({
-  //     guid:{eq:residue_guid}
-  //   })
+  startJobTask(event: Event, jobOrderItem: JobOrderItem)
+  {
+    this.preventDefault(event);  // Prevents the form submission
+    if(this.canToggleJob(jobOrderItem))
+    {
+      this.router.navigate(['/admin/steam/job-order/task', jobOrderItem.guid, jobOrderItem.steaming_part?.[0]?.steaming_guid]);
+    }
+    else
+    {
 
-  //   this.residueDS.search(where).subscribe(result=>{
+      this.router.navigate(['/admin/steam/job-order/monitor', jobOrderItem.guid, jobOrderItem.steaming_part?.[0]?.steaming_guid]);
+    }
 
-  //     if(result.length>0)
-  //     {
-  //       var resItem:ResidueItem=result[0];
-  //       let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
-  //       residueStatus.action="COMPLETE";
-  //       residueStatus.guid = resItem?.guid;
-  //       residueStatus.sot_guid= resItem?.sot_guid;
-  //        this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+  }
 
-  //           console.log(result);
-  //        });
-  //        //.subscribe(result=>{
-  //       //   if(result.data.updateResidueStatus>0)
-  //       //   {
-  //       //     this.had(result.data.updateResidueStatus);
-  //       //   }
-
-  //       //  });
-
-  //     }
-  //   });
-
-  // }
 }

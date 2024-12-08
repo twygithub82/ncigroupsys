@@ -285,7 +285,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       selectedItem: row,
       action:"edit",
       min_temp:row.temp_min,
-      max_temp:row.temp_max,
+      max_temp:row.temp_max===9999?"":row.temp_max,
       labour:row.labour?.toFixed(2),
      // qty:[''],
       cost:row.cost?.toFixed(2),

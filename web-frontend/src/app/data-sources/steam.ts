@@ -100,17 +100,30 @@ export class SteamItem extends SteamGO {
   }
 }
 
+export class SteamPartRequest{
+  public approve_part?:boolean;
+  public guid?: string;
+  constructor(item: Partial<SteamPartRequest> = {}) {
+
+    this.guid = item.guid;
+    this.approve_part = item.approve_part;
+    
+  }
+}
+
 export class SteamStatusRequest {
   public guid?: string;
   public action?: string;
   public remarks?:string;
   public sot_guid?: string;
+  public steamingPartRequests?:SteamPartRequest[];
   //public aspnetsuser?: UserItem;
 
   constructor(item: Partial<SteamStatusRequest> = {}) {
 
     this.guid = item.guid;
     this.sot_guid = item.sot_guid;
+    this.steamingPartRequests=item.steamingPartRequests;
     // this.aspnetsuser = item.aspnetsuser;
     this.action = item.action;
     this.remarks=item.remarks;
@@ -691,7 +704,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canApprove(re: SteamItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
+    const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED','PARTIAL_ASSIGNED']
     return validStatus.includes(re?.status_cv!);
   }
 

@@ -446,7 +446,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         break;
     }
    
-    if(this.action.toUpperCase()==="NO_ACTION")
+    if(this.action.toUpperCase()==="NO_ACTION" )
     {
       const distinctJobOrders :any[] =[];
       if(this.selectedItems[0].job_order)
@@ -462,10 +462,28 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       });
   
       console.log(repJobOrder)
-      this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
-        console.log(result)
-        this.handleSaveSuccess(result?.data?.abortCleaning);
-      });
+
+      let abortStatus = ['ASSIGNED','PARTIAL_ASSIGNED'];
+      if(abortStatus.includes(this.selectedItems[0]?.status_cv))
+      {
+        this.igCleanDS?.abortInGateCleaning(repJobOrder).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.abortCleaning);
+        });
+      }
+      else
+      {
+        delete rep.job_order;
+        this.igCleanDS.updateInGateCleaning(rep).subscribe(result=>{
+            if(result.data.updateCleaning>0)
+            {
+            
+                      console.log('valid');
+                      this.handleSaveSuccess(result.data.updateCleaning);
+      
+            }
+          });
+      }
     }
     else
     {

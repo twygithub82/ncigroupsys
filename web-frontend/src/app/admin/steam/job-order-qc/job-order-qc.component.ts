@@ -146,11 +146,13 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   steamDs:SteamDS;
 
   availableProcessStatus: string[] = [
-    // 'APPROVED',
+     'APPROVED',
      'JOB_IN_PROGRESS',
+     'QC_COMPLETED',
      'COMPLETED',
-     'CANCELED',
-     'PENDING',
+     'ASSIGNED',
+     'PARTIAL_ASSIGNED',
+     //'PENDING',
    ]
 
    
