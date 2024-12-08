@@ -401,7 +401,9 @@ const GET_STARTED_JOB_ORDER = gql`
           steaming {
             guid
             estimate_no
+            approve_by
           }
+          tariff_steaming_guid
           steaming_guid
         }
         residue_part {

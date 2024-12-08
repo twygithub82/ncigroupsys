@@ -356,6 +356,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
          residueStatus.action="CANCEL";
          residueStatus.guid = row[0]?.guid;
          residueStatus.sot_guid= row[0]?.sot_guid;
+         residueStatus.remarks=reList[0].remarks;
           this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
  
             this.handleCancelSuccess(result?.data?.UpdateResidueStatus)

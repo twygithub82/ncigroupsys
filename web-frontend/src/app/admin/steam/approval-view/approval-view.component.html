@@ -307,7 +307,7 @@
                         </ng-container>
                         <ng-template #displayValue>
                         <span
-                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
+                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.approve_qty}}
                         </ng-template>
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
@@ -322,7 +322,7 @@
                         </ng-container>
                         <ng-template #displayValue>
                           <span class="mobile-label">{{ translatedLangText.HOUR }}:</span>
-                          {{ this.parse2Decimal(row.labour) }}
+                          {{ row.approve_labour }}
                         </ng-template>
                         <!-- <span
                           class="mobile-label">{{translatedLangText.HOUR}}:</span>{{row.labour}} -->
@@ -340,7 +340,7 @@
                         </ng-container>
                         <ng-template #displayValue>
                           <span class="mobile-label">{{ translatedLangText.UNIT_PRICE }}:</span>
-                          {{ this.parse2Decimal(row.cost) }}
+                          {{ this.parse2Decimal(row.approve_cost) }}
                         </ng-template>
                       </mat-cell>
                       <!-- <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell> -->
@@ -470,7 +470,7 @@
                     {{translatedLangText.ROLLBACK}}
                   </button>
                   }
-                  @if (steamDs.canApprove(steamItem!)) {
+                  @if (steamDs.canApprove(steamItem!) && isAllowToApprove()) {
                   <button mat-flat-button color="basic" [disabled]="(steamDs.loading$ | async)" class="m-l-5 bg-green"
                     (click)="onApprove($event)">
                     <mat-icon>
@@ -485,7 +485,7 @@
                   }
                   @if (steamDs.canCancel(steamItem!)) {
                   <button mat-flat-button color="warn" [disabled]="(steamDs.loading$ | async)" class="m-l-5"
-                    (click)="onCancel($event)">
+                    (click)="onNoAction($event)">
                     <mat-icon>
                       @if (!(steamDs.loading$ | async)) {
                       close
@@ -493,7 +493,7 @@
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.CANCEL}}
+                    {{translatedLangText.NO_ACTION}}
                   </button>
                   }
                    <!-- @if (residueDS.canSave(residueItem!)) {

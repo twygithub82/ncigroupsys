@@ -252,7 +252,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     this.loadData();
     var state = history.state;
 
-    if(state.type=="residue-estimate")
+    if(state.type=="steam-estimate")
     {
       let showResult = state.pagination.showResult;
       if(showResult)
@@ -360,6 +360,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
          steamStatus.action="CANCEL";
          steamStatus.guid = row[0]?.guid;
          steamStatus.sot_guid= row[0]?.sot_guid;
+         steamStatus.remarks=reList[0].remarks;
           this.steamDS.updateSteamStatus(steamStatus).subscribe(result=>{
  
             this.handleCancelSuccess(result?.data?.UpdateSteamStatus)

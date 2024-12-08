@@ -80,17 +80,30 @@ export class ResidueItem extends ResidueGO {
   }
 }
 
+export class ResiduePartRequest{
+  public approve_part?:boolean;
+  public guid?: string;
+  constructor(item: Partial<ResiduePartRequest> = {}) {
+
+    this.guid = item.guid;
+    this.approve_part = item.approve_part;
+    
+  }
+}
+
 export class ResidueStatusRequest {
   public guid?: string;
   public action?: string;
-
+  public remarks?:string;
   public sot_guid?: string;
+  public residuePartRequests?: ResiduePartRequest[];
   //public aspnetsuser?: UserItem;
 
   constructor(item: Partial<ResidueStatusRequest> = {}) {
 
     this.guid = item.guid;
     this.sot_guid = item.sot_guid;
+    this.residuePartRequests= item.residuePartRequests;
     // this.aspnetsuser = item.aspnetsuser;
     this.action = item.action;
   }
@@ -680,7 +693,8 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canApprove(re: ResidueItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
+    //const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
+    const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED','PARTIAL_ASSIGNED']
     return validStatus.includes(re?.status_cv!);
   }
 

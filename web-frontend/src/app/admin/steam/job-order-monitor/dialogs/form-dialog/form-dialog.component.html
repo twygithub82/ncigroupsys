@@ -1,0 +1,65 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h3>{{dialogTitle}}</h3>
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    @if (timeTableList.length) {
+    <div class="responsive_table">
+      <table mat-table [dataSource]="timeTableList" matSort
+        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="start_time">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{data.translatedLangText.START_TIME}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{data.translatedLangText.START_TIME}}:</span>{{displayDateTime(row.start_time)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="stop_time">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{data.translatedLangText.STOP_TIME}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{data.translatedLangText.STOP_TIME}}:</span>{{displayDateTime(row.stop_time)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="duration">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{data.translatedLangText.DURATION}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{data.translatedLangText.DURATION}}:</span>{{displayTimeTaken(row.stop_time, row.start_time)}}
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
+        </mat-row>
+      </table>
+    </div>
+    }
+    <!-- No result -->
+    @if (!timeTableList.length) {
+    <mat-divider></mat-divider>
+    <div class="no-results m-l-20 pt-3" [style.display]="timeTableList.length === 0 ? '' : 'none'">
+      <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
+    </div>
+    }
+  </div>
+</div>

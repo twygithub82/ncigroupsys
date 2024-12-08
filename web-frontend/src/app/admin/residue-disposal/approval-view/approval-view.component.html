@@ -439,7 +439,7 @@
                     {{translatedLangText.ROLLBACK}}
                   </button>
                   }
-                  @if (residueDS.canApprove(residueItem!)) {
+                  @if (residueDS.canApprove(residueItem!) && isAllowToApprove()) {
                   <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async)" class="m-l-5 bg-green"
                     (click)="onApprove($event)">
                     <mat-icon>
@@ -454,7 +454,7 @@
                   }
                   @if (residueDS.canCancel(residueItem!)) {
                   <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-l-5"
-                    (click)="onCancel($event)">
+                    (click)="onNoAction($event)">
                     <mat-icon>
                       @if (!(residueDS.loading$ | async)) {
                       close
@@ -462,7 +462,7 @@
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.CANCEL}}
+                    {{translatedLangText.NO_ACTION}}
                   </button>
                   }
                    <!-- @if (residueDS.canSave(residueItem!)) {

@@ -15,7 +15,7 @@ import { TariffSteamingItem } from './tariff-steam';
 export class SteamPartGO {
   
   public guid?: string;
-  public steam_guid?:string;
+  public steaming_guid?:string;
   public tariff_steaming_guid?:string;
   public job_order_guid?:string;
   public description?: string;
@@ -50,7 +50,7 @@ export class SteamPartGO {
   constructor(item: Partial<SteamPartGO> = {}) {
     this.guid = item.guid?item.guid:'';
     
-    this.steam_guid = item.steam_guid;
+    this.steaming_guid = item.steaming_guid;
     this.tariff_steaming_guid = item.tariff_steaming_guid;
     this.job_order_guid = item.job_order_guid;
     this.description = item.description;

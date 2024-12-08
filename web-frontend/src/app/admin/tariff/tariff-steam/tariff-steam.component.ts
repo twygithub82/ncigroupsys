@@ -340,7 +340,10 @@ implements OnInit {
       if (result>0) {
            this.handleSaveSuccess(result);
            //this.search();
-          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+           if(this.tariffSteamDS.totalCount>0)
+            {
+              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+            }
     
       }
    });

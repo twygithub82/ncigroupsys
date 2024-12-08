@@ -84,7 +84,7 @@
       <mat-cell mat-cell *matCellDef="let row"
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span
-          class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.steaming_part?.[0]?.steam?.estimate_no}}
+          class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.steaming_part?.[0]?.steaming?.estimate_no}}
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="allocate_dt">
@@ -114,22 +114,32 @@
       </mat-header-cell>
       <mat-cell *matCellDef="let row; let i=index;"
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-        @if (canStartJob(row)) {
-        <button mat-menu-item (click)="toggleJobState($event, isStarted(row), row)">
-          <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
-        </button>
+        @if(canToggleJob(row))
+        {
+          @if (canStartJob(row)) {
+          <button mat-menu-item (click)="toggleJobState($event, isStarted(row), row)">
+            <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
+          </button>
+          }
+          @if (canCompleteJob(row, isStarted(row))) {
+          <button mat-menu-item (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
+            <mat-icon>check_box</mat-icon>
+          </button>
+          }
         }
-        @if (canCompleteJob(row, isStarted(row))) {
-        <button mat-menu-item (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
-          <mat-icon>check_box</mat-icon>
-        </button>
+        @else
+        {
+          <button mat-menu-item (click)="stopEventTrigger($event)" (click)="startJobTask($event,row)">
+            <i class="material-icons card1-icon fas fa-fire"></i>
+          </button>
         }
       </mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
-      [routerLink]="['/admin/steam/job-order/task', row.guid, row.steaming_part?.[0]?.steaming_guid]"
-      [style.cursor]="'pointer'" matRipple>
+      (click)="startJobTask($event,row)" matRipple>
+      <!-- [routerLink]="['/admin/steam/job-order/task', row.guid, row.steaming_part?.[0]?.steaming_guid]" 
+      [style.cursor]="'pointer'" matRipple>-->
     </mat-row>
   </table>
 </div>
@@ -162,5 +172,9 @@
   <div class="legend-item d-flex align-items-center me-4 mb-2">
     <mat-icon class="me-2">check_box</mat-icon>
     <span>{{translatedLangText.YET_COMPLETE}}</span>
+  </div>
+  <div class="legend-item d-flex align-items-center me-4 mb-2">
+    <mat-icon class="me-2 fas fa-fire"></mat-icon>
+    <span>{{translatedLangText.STEAM_HEAT_TYPE}}</span>
   </div>
 </div>

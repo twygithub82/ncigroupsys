@@ -408,7 +408,9 @@
                   {{translatedLangText.EXPORT}}
                 </button>
                 }
-                @if (residueDS.canAmend(this.residueItem!)) {
+                @if (residueDS.canAmend(this.residueItem!)||this.isDuplicate) {
+                  @if(isAllowToSaveSubmit())
+                  {
                 <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5">
                   <mat-icon>
                     @if (!(residueDS.loading$ | async)) {
@@ -419,6 +421,7 @@
                   </mat-icon>
                   {{translatedLangText.SAVE_AND_SUBMIT}}
                 </button>
+              }
                 }
                 @if (residueDS.canRollback(this.residueItem!)) {
                   <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
