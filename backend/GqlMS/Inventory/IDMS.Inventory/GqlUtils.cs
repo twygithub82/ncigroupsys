@@ -274,8 +274,20 @@ namespace IDMS.Inventory.GqlTypes
                 var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
                                                    .Select(b => b.cost).FirstOrDefaultAsync();
                 ingateCleaning.buffer_cost = bufferPrice;
-
                 await context.AddAsync(ingateCleaning);
+
+                //Tank handling
+                var tank = new storing_order_tank() { guid = sot.guid };
+                context.storing_order_tank.Attach(tank);
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.cleaning_remarks = sot.cleaning_remarks;
+                if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
+                {
+                    tank.tank_status_cv = TankMovementStatus.CLEANING;
+                }
+
+
                 retval = await context.SaveChangesAsync();  
             }
             catch (Exception ex)
@@ -345,6 +357,17 @@ namespace IDMS.Inventory.GqlTypes
                 steamingPart.approve_cost = result.cost;
                 steamingPart.approve_labour = result.labour;
                 await context.AddAsync(steamingPart);
+
+                //Tank handling
+                var tank = new storing_order_tank() { guid = sot.guid };
+                context.storing_order_tank.Attach(tank);
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.steaming_remarks = sot.steaming_remarks;
+                if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
+                {
+                    tank.tank_status_cv = TankMovementStatus.STEAM;
+                }
 
                 retval = await context.SaveChangesAsync();
             }

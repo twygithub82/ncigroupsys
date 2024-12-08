@@ -92,6 +92,8 @@ namespace IDMS.Inventory.GqlTypes
         public const string CLEAN = "CLEANING";
         public const string STEAM = "STEAMING";
         public const string REPAIR = "REPAIR";
+        public const string RESIDUE = "RESIDUE";
+        public const string STORAGE = "STORAGE";
     }
 
     public static class PurposeAction
