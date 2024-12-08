@@ -309,7 +309,7 @@ namespace IDMS.Residue.GqlTypes
                             updateResidue.complete_dt = currentDateTime;
                         }
 
-                        if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
+                        if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, new List<string> { residue.guid }))
                             //if no other residue estimate or all completed. then we check cross process tank movement
                             await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
                         break;
@@ -317,7 +317,7 @@ namespace IDMS.Residue.GqlTypes
                         updateResidue.status_cv = CurrentServiceStatus.NO_ACTION;
                         updateResidue.na_dt = currentDateTime;
 
-                        if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, residue.guid))
+                        if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, new List<string> { residue.guid }))
                             //if no other residue estimate or all completed. then we check cross process tank movement
                             await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
                         break;
@@ -363,7 +363,7 @@ namespace IDMS.Residue.GqlTypes
                 else
                     abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
 
-                if (!await TankMovementCheckInternal(context, "residue", residueJobOrder.sot_guid, residueJobOrder.guid))
+                if (!await TankMovementCheckInternal(context, "residue", residueJobOrder.sot_guid, new List<string> { residueJobOrder.guid }))
                     //if no other residue estimate or all completed. then we check cross process tank movement
                     await TankMovementCheckCrossProcess(context, residueJobOrder.sot_guid, user, currentDateTime);
 
@@ -410,7 +410,7 @@ namespace IDMS.Residue.GqlTypes
 
                     //Tank handling
                     var sotGuid = residueJobOrder.Select(r => r.sot_guid).FirstOrDefault();
-                    var processGuid = string.Join(",", residueJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
+                    //var processGuid = string.Join(",", residueJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
                     if (string.IsNullOrEmpty(sotGuid))
                         throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
 
@@ -419,7 +419,7 @@ namespace IDMS.Residue.GqlTypes
 
                     //TODO:
                     //sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
-                    if (!await TankMovementCheckInternal(context, "residue", sotGuid, processGuid))
+                    if (!await TankMovementCheckInternal(context, "residue", sotGuid, residueJobOrder.Select(j => j.guid).ToList()))
                         //if no other residue estimate or all completed. then we check cross process tank movement
                         await TankMovementCheckCrossProcess(context, sotGuid, user, currentDateTime);
 
@@ -444,9 +444,10 @@ namespace IDMS.Residue.GqlTypes
             }
         }
 
-        private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
+        private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, List<string> processGuidList)
         {
             //First check if still have other steaming estimate havnt completed
+            var processGuid = string.Join(",", processGuidList.Select(g => $"'{g}'"));
             string tableName = processType;
 
             var sqlQuery = $@"SELECT guid FROM {tableName} 
