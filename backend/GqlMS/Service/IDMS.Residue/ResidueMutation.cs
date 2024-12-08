@@ -317,6 +317,15 @@ namespace IDMS.Residue.GqlTypes
                         updateResidue.status_cv = CurrentServiceStatus.NO_ACTION;
                         updateResidue.na_dt = currentDateTime;
 
+                        foreach (var item in residue.residuePartRequests)
+                        {
+                            var resPart = new residue_part() { guid = item.guid };
+                            context.residue_part.Attach(resPart);
+                            resPart.approve_part = false;
+                            resPart.update_dt = currentDateTime;
+                            resPart.update_by = user;
+                        }
+
                         if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, new List<string> { residue.guid }))
                             //if no other residue estimate or all completed. then we check cross process tank movement
                             await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);

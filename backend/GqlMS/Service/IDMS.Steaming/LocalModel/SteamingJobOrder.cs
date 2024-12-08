@@ -31,6 +31,12 @@ namespace IDMS.Steaming.GqlTypes.LocalModel
         public string sot_guid { get; set; }
         public string? remarks { get; set; }
         public string action { get; set; }
+        public List<SteamingPartRequest?>? steamingPartRequest { get; set; }
+    }
 
+    public class SteamingPartRequest
+    {
+        public string guid { get; set; }
+        public bool approve_part { get; set; }
     }
 }
