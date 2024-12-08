@@ -52,6 +52,10 @@ namespace IDMS.Models.Inventory
         public string? tank_status_cv { get; set; }
         public string? tank_note { get; set; }
         public string? release_note { get; set; }
+        public string? cleaning_remarks { get; set; }
+        public string? steaming_remarks { get; set; }
+        public string? repair_remarks { get; set; }
+        public string? storage_remarks { get; set; }
 
         public storing_order? storing_order { get; set; }
         public tariff_cleaning? tariff_cleaning { get; set; }
