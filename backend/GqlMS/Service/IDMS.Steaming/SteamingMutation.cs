@@ -435,7 +435,7 @@ namespace IDMS.Steaming.GqlTypes
                         updateSteaming.na_dt = currentDateTime;
 
 
-                        foreach (var item in steaming.steamingPartRequest)
+                        foreach (var item in steaming.steamingPartRequests)
                         {
                             var steamPart = new steaming_part() { guid = item.guid };
                             context.steaming_part.Attach(steamPart);
