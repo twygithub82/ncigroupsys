@@ -111,6 +111,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
      'qty',
      'unit_price',
      'cost',
+     'approve_part',
      "actions"
    
   ];
@@ -1613,6 +1614,10 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
   {
      var NoDel=this.deList.filter(d=>d.action!='cancel');
      return (NoDel.length);
+  }
+
+  IsApprovePart(rep: ResiduePartItem) {
+    return rep.approve_part;
   }
   
 }

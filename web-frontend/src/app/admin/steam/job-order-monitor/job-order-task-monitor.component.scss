@@ -6,4 +6,26 @@
         max-width: unset;
       }
   }
+      ngx-mat-datepicker-content {
+        background-color: white !important;
+        position: absolute;
+    }
+ 
+  mat-icon {
+      font-family: 'Material Icons' !important;
+  }
 }
+
+.mat-calendar-body-selected {
+  background-color: #3f51b5 !important; /* Material Blue */
+  color: #ffffff !important;
+}
+
+// ngx-mat-datetime-content {
+//   background-color: white !important; /* Ensure a visible background */
+//   color: black !important;           /* Adjust text color for readability */
+// }
+
+// .mat-datepicker-toggle .mat-icon {
+//   color: black; /* Adjust toggle icon color */
+// }.

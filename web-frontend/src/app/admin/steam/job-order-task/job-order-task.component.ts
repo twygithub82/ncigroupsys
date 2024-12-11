@@ -523,8 +523,18 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     };
 
     where.and.push({
-      steaming_part: { all: { job_order: { status_cv: { eq: 'COMPLETED' } } } }
-    });
+      steaming_part: { all:{ or:[
+        { 
+        job_order: { 
+          status_cv: { eq: 'COMPLETED' } }
+         } ,
+         {
+          approve_part:{eq:false}
+         }
+      ]
+        }
+    }
+  });
 
     where.and.push({
       guid: { eq: steam_guid }
@@ -538,7 +548,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         steamStatus.action = "COMPLETE";
         steamStatus.guid = stmItem?.guid;
         steamStatus.sot_guid = stmItem?.sot_guid;
-        this.steamDs.updateSteamStatus(stmItem).subscribe(result => {
+        this.steamDs.updateSteamStatus(steamStatus).subscribe(result => {
 
           console.log(result);
         });

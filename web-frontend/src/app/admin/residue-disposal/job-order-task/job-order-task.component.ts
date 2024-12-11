@@ -514,8 +514,13 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     };
     
     where.and.push({
-      residue_part:{all:{job_order: { status_cv: {eq:'COMPLETED' }}}}
-    });
+      residue_part:{all:{
+        or:[
+          {job_order: { status_cv: {eq:'COMPLETED' }}},
+          {approve_part:{eq:false}}
+        ]
+      }
+    }});
 
     where.and.push({
       guid:{eq:residue_guid}

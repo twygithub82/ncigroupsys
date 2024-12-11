@@ -51,6 +51,7 @@ import { MatCardModule } from '@angular/material/card';
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
 import { ResidueDS,ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
 import { RepairItem } from 'app/data-sources/repair';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
 
 @Component({
   selector: 'app-estimate',
@@ -103,6 +104,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
     'net_cost',
     'status_cv',
     'remarks',
+    //'approve_part',
     'actions'
   ];
 
@@ -369,6 +371,7 @@ export class ResidueDisposalEstimateComponent extends UnsubscribeOnDestroyAdapte
       }
     });
   }
+  
 
   rollbackRow(row: ResidueItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);

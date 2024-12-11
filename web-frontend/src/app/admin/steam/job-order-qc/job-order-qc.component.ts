@@ -301,7 +301,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       });
     }
 
-    if (this.filterJobOrderForm?.get('status_cv')?.value) {
+    if (this.filterJobOrderForm?.get('status_cv')?.value?.length) {
       where.and = where.and || []; // Initialize if not already present
       where.and.push({
         status_cv: { in: this.filterJobOrderForm?.get('status_cv')?.value }

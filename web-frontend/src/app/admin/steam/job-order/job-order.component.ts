@@ -198,6 +198,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     'COMPLETED',
     'ASSIGNED',
     'PARTIAL_ASSIGNED',
+    'QC_COMPLETED'
   ]
 
   rsdEstList: ResidueItem[] = [];
@@ -602,7 +603,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
 
   resetForm() {
     this.filterSteamForm?.patchValue({
-      filterResidue: '',
+      filterSteam: '',
     });
   }
 

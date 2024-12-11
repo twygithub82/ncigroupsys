@@ -270,6 +270,7 @@
                         <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{residueRow.remarks}}
                       </mat-cell>
                     </ng-container>
+                 
                     <ng-container matColumnDef="actions">
                       <mat-header-cell
                         [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
@@ -280,13 +281,6 @@
                           <mat-icon>more_vert</mat-icon>
                         </button>
                         <mat-menu #menu="matMenu">
-                          <!-- @if (repairEstDS.canAmend(repair_estRow)) {
-                          <button mat-menu-item
-                            [routerLink]="['/admin/repair/estimate/edit', row.guid, repair_estRow.guid]">
-                            <mat-icon>edit</mat-icon>
-                            <span>{{translatedLangText.AMEND}}</span>
-                          </button>
-                          } -->
                           @if (residueDS.canCopy(residueRow)) {
                           <button mat-menu-item (click)="copyResidueEst(residueRow)">
                             <mat-icon>content_copy</mat-icon>

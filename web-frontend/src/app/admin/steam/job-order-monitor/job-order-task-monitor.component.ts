@@ -6,7 +6,7 @@ import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatOptionModule, MatRippleModule, ThemePalette } from '@angular/material/core';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
@@ -62,9 +62,14 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { SteamItem, SteamDS, SteamStatusRequest } from 'app/data-sources/steam';
+import { SteamItem, SteamDS, SteamStatusRequest, SteamTemp } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
+import { Thermometer } from 'angular-feather/icons';
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
 
+import { NgxMatMomentModule } from '@angular-material-components/moment-adapter';
+import * as moment from 'moment';
+import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
 @Component({
   selector: 'job-order-task-monitor',
   standalone: true,
@@ -81,7 +86,7 @@ import { SteamPartItem } from 'app/data-sources/steam-part';
     MatCheckboxModule,
     MatSelectModule,
     MatOptionModule,
-    MatDatepickerModule,
+    //MatDatepickerModule,
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
@@ -98,18 +103,26 @@ import { SteamPartItem } from 'app/data-sources/steam-part';
     MatMenuModule,
     MatCardModule,
     MatSlideToggleModule,
+    NgxMatDatetimePickerModule,
+   // MatDatepickerModule,
+    MatNativeDateModule,
+    NgxMatNativeDateModule,
+   // NgxMatTimepickerModule,
+    NgxMatMomentModule
+   
   ]
 })
 export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  @ViewChild('picker') picker: any;
   displayedColumns = [
     'seq',
     // 'group_name_cv',
-    'desc',
-    //  'qty',
-    //  'unit_price',
+    'ther',
+    'top_side',
+    'bottom_side',
     //  'cost',
-    'approve_part',
-    'team',
+    'remarks',
+    'action',
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
@@ -156,6 +169,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    ARE_YOU_SURE_COMPLETE: 'COMMON-FORM.ARE-YOU-SURE-COMPLETE',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
@@ -226,7 +240,20 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     STOP_JOB: 'COMMON-FORM.STOP-JOB',
     COMPLETE: 'COMMON-FORM.COMPLETE',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    DURATION: 'COMMON-FORM.DURATION'
+    DURATION: 'COMMON-FORM.DURATION',
+    CURRENT_STATUS:'COMMON-FORM.CURRENT-STATUS',
+    CLEAN_STATUS:'COMMON-FORM.CLEAN-STATUS',
+    REQUIRED_TEMP:'COMMON-FORM.REQUIRED-TEMP',
+    FLASH_POINT:'COMMON-FORM.FLASH-POINT',
+    APPROVED_DATE:'COMMON-FORM.APPROVED-DATE',
+    STEAM_MONITOR:'COMMON-FORM.STEAM-MONITOR',
+    BOTTOM_SIDE:'COMMON-FORM.BOTTOM-SIDE',
+    TOP_SIDE:'COMMON-FORM.TOP-SIDE',
+    THERMOMETER:'COMMON-FORM.THERMOMETER',
+    TIME:'COMMON-FORM.TIME',
+    SELECTED_RECORD:"COMMON-FORM.SELECTED-RECORD",
+    COMPLETE_STEAM:'COMMON-FORM.COMPLETE-STEAM'
+    
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -240,7 +267,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   sotItem?: StoringOrderTankItem;
   jobOrderItem?: JobOrderItem;
   steamItem?: SteamItem;
-
+ //steamTmpRec?:SteamTemp;
 
   repairItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
@@ -259,12 +286,14 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   unitTypeCvList: CodeValuesItem[] = []
   jobStatusCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
+  cleanStatusCvList: CodeValuesItem[] = [];
 
   teamList?: TeamItem[];
 
   deList: any[] = [];
 
   customerCodeControl = new UntypedFormControl();
+  updateSelectedItem:any;
 
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
@@ -281,7 +310,19 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
   isOwner = false;
+  reqTemp?:number=9999;
 
+  
+  public disabled = false;
+  public showSpinners = true;
+  public showSeconds = true;
+  public touchUi = false;
+  public enableMeridian = true;
+  public stepHour = 1;
+  public stepMinute = 1;
+  public stepSecond = 1;
+  public color: ThemePalette = 'primary';
+  
   private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
@@ -323,40 +364,17 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   initForm() {
     this.steamForm = this.fb.group({
+      time:[''],
+      thermometer:[''],
+      top:[''],
+      bottom:[''],
+      remarks:[''],
       deList: ['']
     });
-
-    this.repairForm = this.fb.group({
-      team_allocation: [''],
-      guid: [''],
-      remarks: [{ value: '', disabled: true }],
-      surveyor_id: [''],
-      labour_cost_discount: [{ value: 0, disabled: true }],
-      material_cost_discount: [{ value: 0, disabled: true }],
-      last_test: [''],
-      next_test: [''],
-      total_owner_hour: [0],
-      total_lessee_hour: [0],
-      total_hour: [0],
-      total_owner_labour_cost: [0],
-      total_lessee_labour_cost: [0],
-      total_labour_cost: [0],
-      total_owner_mat_cost: [0],
-      total_lessee_mat_cost: [0],
-      total_mat_cost: [0],
-      total_owner_cost: [0],
-      total_lessee_cost: [0],
-      total_cost: [0],
-      discount_labour_owner_cost: [0],
-      discount_labour_lessee_cost: [0],
-      discount_labour_cost: [0],
-      discount_mat_owner_cost: [0],
-      discount_mat_lessee_cost: [0],
-      discount_mat_cost: [0],
-      net_owner_cost: [0],
-      net_lessee_cost: [0],
-      net_cost: [0],
-      repList: ['']
+    const date = new Date(); // Local date and time
+    date.setSeconds(0, 0);   // Remove seconds and milliseconds
+    this.steamForm.patchValue({
+      time: date
     });
   }
 
@@ -367,7 +385,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     const queries = [
       { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
-      { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
+      { alias: 'soTankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
       { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
@@ -376,7 +394,8 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
       { alias: 'jobStatusCv', codeValType: 'JOB_STATUS' },
-      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
+      { alias: 'cleanStatusCv', codeValType: 'CLEAN_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -435,6 +454,9 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+    this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
+      this.cleanStatusCvList = data;
+    });
 
     this.job_order_guid = this.route.snapshot.paramMap.get('id');
     this.steam_guid = this.route.snapshot.paramMap.get('steam_id');
@@ -453,7 +475,18 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
                 console.log(steam)
                 this.steamItem = steam[0];
                 this.sotItem = this.steamItem?.storing_order_tank;
-                this.populateSteam(this.steamItem);
+                this.reqTemp=(!this.sotItem?.required_temp)?this.reqTemp:this.sotItem?.required_temp;
+                this.QuerySteamTemp();
+                //this.populateSteam(this.steamItem);
+                // this.steamDS.getSteamTemp(this.job_order_guid!).subscribe(temp=>{
+                //   if(temp?.length)
+                //   {
+                //     console.log(temp);
+                //     this.updateData(temp);
+                //   }
+                // });
+                //this.steamDS.getSteamTemp()
+                
               }
             });
           }
@@ -587,18 +620,19 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-  updateData(newData: SteamItem[] | undefined): void {
+  updateData(newData: SteamTemp[] | undefined): void {
     if (newData?.length) {
 
 
       this.deList = newData.map((row, index) => ({
         ...row,
-        index: index
+        index: index,
+        edited:false
       }));
 
-      this.deList.forEach(item => {
-        this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "STEAM")
-      })
+      // this.deList.forEach(item => {
+      //   this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "STEAM")
+      // })
     }
   }
 
@@ -889,7 +923,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
       if (result.data.completeJobOrder > 0) {
-        this.UpdateResidueStatusCompleted(this.steamItem?.guid!);
+        this.UpdateSteamStatusCompleted(this.steamItem?.guid!);
       }
     });
   }
@@ -986,39 +1020,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
         let jobData: any;
         let eventType: any;
 
-        // if (data?.onJobStopped) {
-        //   jobData = data.onJobStopped;
-        //   eventType = 'jobStopped';
-        // } else if (data?.onJobStarted) {
-        //   jobData = data.onJobStarted;
-        //   eventType = 'jobStarted';
-        // } else if (data?.onJobCompleted) {
-        //   jobData = data.onJobCompleted;
-        //   eventType = 'onJobCompleted';
-        // }
-
-        // if (jobData) {
-        //   if (this.jobOrderItem) {
-        //     this.jobOrderItem.status_cv = jobData.job_status;
-        //     this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
-        //     this.jobOrderItem.time_table ??= [];
-
-        //     const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
-        //     if (eventType === 'jobStarted') {
-        //       if (foundTimeTable?.length) {
-        //         foundTimeTable[0].start_time = jobData.start_time
-        //         console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //       } else {
-        //         const startNew = new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid});
-        //         this.jobOrderItem.time_table?.push(startNew)
-        //         console.log(`Updated JobOrder ${eventType} :`, startNew);
-        //       }
-        //     } else if (eventType === 'jobStopped') {
-        //       foundTimeTable[0].stop_time = jobData.stop_time;
-        //       console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //     }
-        //   }
-        // }
       },
       error: (error) => {
         console.error('Error:', error);
@@ -1048,7 +1049,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     }, 0);
   }
 
-  UpdateResidueStatusCompleted(steam_guid: string) {
+  UpdateSteamStatusCompleted(steam_guid: string) {
     const where: any = {
       and: []
     };
@@ -1065,11 +1066,11 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
       if (result.length > 0) {
         var resItem: SteamItem = result[0];
-        let residueStatus: SteamStatusRequest = new SteamStatusRequest();
-        residueStatus.action = "COMPLETE";
-        residueStatus.guid = resItem?.guid;
-        residueStatus.sot_guid = resItem?.sot_guid;
-        this.steamDS.updateSteamStatus(residueStatus).subscribe(result => {
+        let steamStatus: SteamStatusRequest = new SteamStatusRequest();
+        steamStatus.action = "COMPLETE";
+        steamStatus.guid = resItem?.guid;
+        steamStatus.sot_guid = resItem?.sot_guid;
+        this.steamDS.updateSteamStatus(steamStatus).subscribe(result => {
 
           console.log(result);
         });
@@ -1081,4 +1082,243 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     });
 
   }
+
+  deleteEstDetail(event:Event,row: any)
+  {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'cancel',
+        index: row.index,
+        item: row,
+        langText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        
+        
+         var steamTmp:any= new SteamTemp(this.deList[row.index]);
+         //var guid = steamTmp.guid;
+         this.callRecordSteamingTemp(steamTmp,'CANCEL');
+        // this.resetSelectedItemForUpdating();
+      }
+    });
+   
+  }
+
+  addEstDetails(event: Event) {
+    this.preventDefault(event);
+
+    let guid=null;
+    if(this.updateSelectedItem)
+    {
+       var stmTmp = this.updateSelectedItem.item;
+       guid = stmTmp.guid;
+       var steamTmp:SteamTemp= this.GetRecordSteamingTempValue(guid!);
+       this.callRecordSteamingTemp(steamTmp,'EDIT',event);
+
+    }
+    else
+    {
+      var steamTmp:SteamTemp= this.GetRecordSteamingTempValue(guid!);
+      this.callRecordSteamingTemp(steamTmp,'NEW',event);
+    }
+
+  }
+
+  editEstDetail(event:Event,row: any)
+  {
+     this.preventDefault(event);
+
+     //this.updateSelectedItem=row;
+
+     
+     var IsEditedRow = row.edited;
+   
+ 
+     this.resetSelectedItemForUpdating();
+ 
+     if(IsEditedRow) 
+     { row.edited=false;
+         return;
+     }
+ 
+     
+     this.updateSelectedItem ={
+       item:row,
+       index:row.index,
+       action:"update",
+       
+     }
+     this.updateSelectedItem.item.edited=true;
+      this.patchValue(row);
+   
+  }
+
+  resetSelectedItemForUpdating()
+  {
+    if(this.updateSelectedItem)
+    {
+      this.updateSelectedItem.item.edited=false;
+      this.updateSelectedItem=null;
+     
+    }
+    this.resetValue();
+  }
+
+  GetRecordSteamingTempValue(guid?:string):SteamTemp
+  {
+    var steamTmp:SteamTemp = new SteamTemp();
+    //var action:string = (guid===null || guid==="")?"NEW":"UPDATE";
+    steamTmp.bottom_temp=this.steamForm?.get("bottom")?.value;
+    steamTmp.top_temp=this.steamForm?.get("top")?.value;
+    steamTmp.meter_temp=this.steamForm?.get("thermometer")?.value;
+    steamTmp.remarks=this.steamForm?.get("remarks")?.value;;
+    steamTmp.job_order_guid=this.job_order_guid!;
+    steamTmp.guid=guid;
+    return steamTmp;
+  }
+
+  callRecordSteamingTemp(steamTemp:SteamTemp,action?:string,event?:Event)
+  {
+    var ReqTemp:number= this.reqTemp!;
+   
+    this.steamDS.recordSteamingTemp(steamTemp,action!,ReqTemp).subscribe(result=>{
+
+      if(result.data.recordSteamingTemp)
+      {
+        let checkAction = [
+          'NEW',
+          'EDIT',
+        ];
+        if(!checkAction.includes(action!))
+        {
+          this.QuerySteamTemp();
+          this.resetSelectedItemForUpdating();
+        }
+        else
+        {
+          if(ReqTemp<=steamTemp.meter_temp!)
+          {
+             this.completeSteamJob(event!);
+          }
+          else
+          {
+            this.QuerySteamTemp();
+            this.resetSelectedItemForUpdating();
+          }
+        }
+        //this.resetValue();
+      }
+    });
+  }
+
+  QuerySteamTemp()
+  {
+    this.steamDS.getSteamTemp(this.job_order_guid!).subscribe(temp=>{
+      if(temp?.length)
+      {
+        console.log(temp);
+        this.updateData(temp);
+      }
+    });
+  }
+ 
+  patchValue(steamTmp:SteamTemp)
+  {
+    if(steamTmp)
+    {
+      const date = new Date(steamTmp.create_dt! * 1000); 
+      this.steamForm?.patchValue({
+        time:date,
+        thermometer:steamTmp.meter_temp,
+        top:steamTmp.top_temp,
+        bottom:steamTmp.bottom_temp,
+        remarks:steamTmp.remarks,
+      });
+    }
+  }
+
+  resetValue(){
+
+    const date=new Date();
+    this.steamForm?.patchValue({
+      time:date,
+      thermometer:'',
+      top:'',
+      bottom:'',
+      remarks:'',
+    },{emitEvent:false});
+    this.steamForm?.get('time')?.setErrors(null);
+    this.steamForm?.get('thermometer')?.setErrors(null);
+    this.steamForm?.get('top')?.setErrors(null);
+    this.steamForm?.get('bottom')?.setErrors(null);
+    
+  
+  }
+
+
+  completeSteamJob(event:Event)
+  {
+    this.preventDefault(event);
+    if(this.steamItem?.steaming_part?.length)
+    {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '1000px',
+        data: {
+          action: 'confirm',
+          item: this.steamItem,
+          langText: this.translatedLangText
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'confirmed') {
+          
+          
+          let jobOrder = this.steamItem?.steaming_part?.[0]?.job_order;
+          var updJobOrderReq:UpdateJobOrderRequest = new UpdateJobOrderRequest(jobOrder);
+          updJobOrderReq.complete_dt=Math.floor(Date.now() / 1000);
+          var updJobOrderReqs:UpdateJobOrderRequest[]=[];
+          updJobOrderReqs.push(updJobOrderReq);
+          this.joDS.completeJobOrder(updJobOrderReqs).subscribe(result=>{
+             console.log(result);
+             if(result.data.completeJobOrder>0)
+             {
+              let stmStatus : SteamStatusRequest = new SteamStatusRequest();
+              stmStatus.action="COMPLETE";
+              stmStatus.guid = this.steamItem?.guid;
+              stmStatus.sot_guid= this.steamItem?.sot_guid;
+               this.steamDS.updateSteamStatus(stmStatus).subscribe(result=>{
+                if(result.data.updateSteamingStatus>0)
+                  {
+                  console.log(result);
+                   this.handleSaveSuccess(result.data.updateSteamingStatus);
+                  }
+               });
+             }
+          });
+          // this.resetSelectedItemForUpdating();
+        }
+      });
+     
+    }
+    // this.joDS.completeJobOrder()
+  }
+  
 }

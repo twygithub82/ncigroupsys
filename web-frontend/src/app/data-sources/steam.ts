@@ -10,6 +10,7 @@ import { UserItem } from './user';
 import { CustomerCompanyItem } from './customer-company';
 import { ResiduePartItem } from './residue-part';
 import { SteamPartItem } from './steam-part';
+import { JobOrderItem } from './job-order';
 
 export class SteamGO {
   public estimate_no?: string;
@@ -85,6 +86,7 @@ export class SteamGO {
   }
 }
 
+
 export class SteamItem extends SteamGO {
   public steaming_part?: SteamPartItem[];
   public storing_order_tank?: StoringOrderTankItem;
@@ -100,6 +102,38 @@ export class SteamItem extends SteamGO {
   }
 }
 
+export class SteamTemp {
+
+  public guid?:string;
+  public bottom_temp?:number;
+  public top_temp?:number;
+  public meter_temp?:number;
+  public job_order_guid?:string;
+  public remarks?:string;
+  public create_dt?: number;
+  public create_by?: string;
+  public update_dt?: number;
+  public update_by?: string;
+  public delete_dt?: number;
+
+  public job_order?:JobOrderItem;
+
+  constructor(item: Partial<SteamTemp> = {}) {
+   
+    this.guid = item.guid;
+    this.bottom_temp = item.bottom_temp;
+    this.top_temp = item.top_temp;
+    this.meter_temp = item.meter_temp;
+    this.job_order_guid = item.job_order_guid;
+    this.remarks = item.remarks;
+    this.job_order=item.job_order;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+  }
+}
 export class SteamPartRequest{
   public approve_part?:boolean;
   public guid?: string;
@@ -329,6 +363,7 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
           guid
           open_on_gate_cv
           cargo
+          flash_point
         }
         storing_order {
           customer_company {
@@ -493,6 +528,39 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
   }
 `;
 
+export const RECORD_STEAM_TEMP= gql`
+ mutation recordSteamingTemp($steamingTemp: steaming_tempInput!,$action:String!,$requiredTemp:Float!) {
+    recordSteamingTemp(steamingTemp: $steamingTemp,action:$action,requiredTemp:$requiredTemp)
+  }
+`;
+
+export const GET_STEAM_TEMP = gql`
+  query querySteamingTemp($where: steaming_tempFilterInput ,$order: [steaming_tempSortInput!]) {
+    resultList: querySteamingTemp(where: $where,order:$order) {
+     nodes {
+      bottom_temp
+      create_by
+      create_dt
+      delete_dt
+      guid
+      job_order_guid
+      meter_temp
+      remarks
+      top_temp
+      update_by
+      update_dt
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
+
 export const ADD_STEAM_EST = gql`
   mutation AddSteaming($steam: steamingInput!) {
     addSteaming(steaming: $steam)
@@ -562,6 +630,32 @@ export class SteamDS extends BaseDataSource<SteamItem> {
           return resultList.nodes;
         })
       );
+  }
+
+  getSteamTemp(job_order_guid: string ): Observable<SteamTemp[]>
+  {
+    this.loadingSubject.next(true);
+    const where: any = { job_order_guid: { eq: job_order_guid } }
+    const order:any={create_dt:"ASC"}
+    return this.apollo
+    .query<any>({
+      query: GET_STEAM_TEMP,
+      variables: { where,order},
+      fetchPolicy: 'no-cache' // Ensure fresh data
+    })
+    .pipe(
+      map((result) => result.data),
+      catchError(() => of({ items: [], totalCount: 0 })),
+      finalize(() => this.loadingSubject.next(false)),
+      map((result) => {
+        const resultList = result.resultList || { nodes: [], totalCount: 0 };
+        this.dataSubject.next(resultList.nodes);
+        this.totalCount = resultList.totalCount;
+        this.pageInfo = resultList.pageInfo;
+        return resultList.nodes;
+      })
+    );
+
   }
 
   getSteamIDForJobOrder(id: string, job_order_guid: string | undefined): Observable<SteamItem[]> {
@@ -658,23 +752,17 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     });
   }
 
-  // rollbackResidueApproval(residue: any): Observable<any> {
-  //   return this.apollo.mutate({
-  //     mutation: ROLLBACK_STEAM_APPROVAL_EST,
-  //     variables: {
-  //       residue
-  //     }
-  //   });
-  // }
 
-  // rollbackResidueStatus(residue: any): Observable<any> {
-  //   return this.apollo.mutate({
-  //     mutation: ROLLBACK_STEAM_STATUS_EST,
-  //     variables: {
-  //       residue
-  //     }
-  //   });
-  // }
+  recordSteamingTemp(steamingTemp: any,action:string,requiredTemp:number): Observable<any> {
+    return this.apollo.mutate({
+      mutation: RECORD_STEAM_TEMP,
+      variables: {
+        steamingTemp,
+        action,
+        requiredTemp
+      }
+    });
+  }
 
   approveSteaming(steam: any): Observable<any> {
     return this.apollo.mutate({
@@ -695,6 +783,12 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   canAmend(re: SteamItem): boolean {
     if (!re) return true;
     const validStatus = ['PENDING']
+    return validStatus.includes(re?.status_cv!);
+  }
+
+  canMonitorTemp(re: SteamItem): boolean {
+    if (!re) return true;
+    const validStatus = ['ASSIGNED']
     return validStatus.includes(re?.status_cv!);
   }
 

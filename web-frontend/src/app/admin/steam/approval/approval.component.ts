@@ -442,7 +442,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
 
-    if (this.searchForm?.get("est_status_cv")?.value ) {
+    if (this.searchForm?.get("est_status_cv")?.value?.length ) {
       
          where.status_cv = { in: this.searchForm!.value['est_status_cv'] };
       

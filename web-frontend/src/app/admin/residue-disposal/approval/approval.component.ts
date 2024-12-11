@@ -440,7 +440,7 @@ export class ResidueDisposalApprovalComponent extends UnsubscribeOnDestroyAdapte
     }
 
 
-    if (this.searchForm?.get("est_status_cv")?.value ) {
+    if (this.searchForm?.get("est_status_cv")?.value?.length ) {
       
          where.status_cv = { in: this.searchForm!.value['est_status_cv'] };
       

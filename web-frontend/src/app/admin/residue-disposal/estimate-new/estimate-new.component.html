@@ -324,6 +324,28 @@
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
                     </ng-container>
+                    <ng-container matColumnDef="approve_part">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        mat-sort-header>
+                        <mat-icon>more_vert</mat-icon>
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
+                      
+    
+                        @if (row.approve_part === null || row.approve_part === undefined ||
+                        IsApprovePart(row)){
+                        <mat-icon class="col-green font-bold" >check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold" >close</mat-icon>
+                        }
+                        
+                      </mat-cell>
+                      <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                    </ng-container> 
                     <ng-container matColumnDef="cost">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.COST}}
@@ -335,6 +357,7 @@
                         <span class="mobile-label" > </span>{{this.parse2Decimal( getTotalCost()) }}
                       </mat-footer-cell>
                     </ng-container>
+                 
                     <ng-container matColumnDef="actions">
                       <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                       </mat-header-cell>

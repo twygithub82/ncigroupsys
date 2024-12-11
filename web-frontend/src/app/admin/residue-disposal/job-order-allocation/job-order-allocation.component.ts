@@ -1375,7 +1375,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     return this.deList.every(
       (data) =>
         { 
-           let bRet=!data.approve_part?true:data.approve_part;
+           let bRet=data.approve_part==null?true:data.approve_part;
            if(bRet)
            {
               if(!data.job_order?.team_guid)
@@ -1383,7 +1383,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
                  return false;
               }
            }
-           return bRet;
+           return true;
         }
 
     );

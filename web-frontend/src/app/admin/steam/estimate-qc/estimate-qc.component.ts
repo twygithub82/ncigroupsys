@@ -659,7 +659,7 @@ export class SteamQCViewComponent extends UnsubscribeOnDestroyAdapter implements
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/residue-disposal/job-order']);
+      this.router.navigate(['/admin/steam/job-order']);
     }
   }
 

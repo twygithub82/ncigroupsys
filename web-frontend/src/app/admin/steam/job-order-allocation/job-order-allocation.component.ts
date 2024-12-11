@@ -1377,15 +1377,25 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     return this.deList.every(
       (data) =>
         { 
-           let bRet=!data.approve_part?true:data.approve_part;
-           if(bRet)
-           {
-              if(!data.job_order?.team_guid)
-              {
-                 return false;
-              }
-           }
-           return bRet;
+          //  let bRet=!data.approve_part?true:data.approve_part;
+          //  if(bRet)
+          //  {
+          //     if(!data.job_order?.team_guid)
+          //     {
+          //        return false;
+          //     }
+          //  }
+          //  return bRet;
+
+          let bRet=data.approve_part==null?true:data.approve_part;
+          if(bRet)
+          {
+             if(!data.job_order?.team_guid)
+             {
+                return false;
+             }
+          }
+          return true;
         }
 
     );

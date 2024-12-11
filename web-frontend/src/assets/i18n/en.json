@@ -303,6 +303,7 @@
     "ARE-YOU-SURE-ABORT": "Are you sure to abort?",
     "ARE-YOU-SURE-UNDO": "Are you sure to undo?",
     "ARE-YOU-SURE-ROLLBACK": "Are you sure to rollback?",
+    "ARE-YOU-SURE-COMPLETE": "Do you want to complete?",
     "DELETE": "Delete",
     "OK": "Ok",
     "CLOSE": "Close",
@@ -750,7 +751,13 @@
     "STARTED":"Started",
     "YET-COMPLETE":"Yet Complete",
     "RESIDUE-TYPE": "Residue Type",
-    "STEAM-HEAT-TYPE": "Steam / Heat Type"
+    "STEAM-HEAT-TYPE": "Steam / Heat Type",
+    "STEAM-MONITOR": "Steam Monitor",
+    "TIME":"Time",
+    "SELECTED-RECORD":"Selected Record",
+    "COMPLETE-STEAM":"Complete Steaming"
+    
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
