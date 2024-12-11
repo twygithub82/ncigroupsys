@@ -229,15 +229,16 @@
                   <div class="row">
                     <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1">
                       <mat-form-field class="example-full-width" >
-                        <input matInput [ngxMatDatetimePicker]="pickerCustomIcon" placeholder="Choose a date" formControlName="time">
+                        <!-- <input matInput [ngxMatDatetimePicker]="pickerCustomIcon" placeholder="Choose a date" formControlName="time">
                         <ngx-mat-datepicker-toggle matSuffix [for]="pickerCustomIcon"></ngx-mat-datepicker-toggle>
                         <ngx-mat-datetime-picker #pickerCustomIcon [showSpinners]="showSpinners" [stepHour]="stepHour" [stepMinute]="stepMinute" [touchUi]="touchUi" [color]="color" [enableMeridian]="enableMeridian" >
                         <ngx-mat-datepicker-actions>
                         <button mat-button ngxMatDatepickerCancel>Cancel</button>
                         <button mat-raised-button color="primary" ngxMatDatepickerApply>Apply</button>
                         </ngx-mat-datepicker-actions>
-                        </ngx-mat-datetime-picker>
-                        <!-- <input matInput formControlName="time" type="datetime-local" required="true" > -->
+                        </ngx-mat-datetime-picker> -->
+                        <mat-label>{{translatedLangText.TIME}}</mat-label>
+                        <input matInput formControlName="time" type="datetime-local" required="true" >
                         
                         @if (steamForm?.get('time')?.hasError('required')) {
                           <mat-error>
