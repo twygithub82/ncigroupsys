@@ -211,7 +211,8 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
           {
             or: [
               { storing_order: { so_no: { contains: searchField } } },
-              { tank_no: { contains: searchField } }, { job_no: { contains: searchField } }
+              { tank_no: { contains: searchField } },
+              { job_no: { contains: searchField } }
             ]
           }
         ]

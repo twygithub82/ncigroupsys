@@ -383,48 +383,57 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       ]
     };
 
-    if (this.searchForm!.value['tank_no']) {
-      where.tank_no = { contains: this.searchForm!.value['tank_no'] };
+    if (this.searchForm!.get('tank_no')?.value) {
+      where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
-    if (this.searchForm!.value['last_cargo']) {
-      where.last_cargo_guid = { contains: this.searchForm!.value['last_cargo'].guid };
+    if (this.searchForm!.get('last_cargo')?.value) {
+      where.last_cargo_guid = { contains: this.searchForm!.get('last_cargo')?.value.guid };
     }
 
-    if (this.searchForm!.value['job_no']) {
-      where.job_no = { contains: this.searchForm!.value['job_no'] };
+    if (this.searchForm!.get('job_no')?.value) {
+      where.job_no = { contains: this.searchForm!.get('job_no')?.value };
     }
 
-    if (this.searchForm!.value['customer_code']) {
+    if (this.searchForm!.get('customer_code')?.value) {
       const soSearch: any = {};
-      soSearch.customer_company_guid = { contains: this.searchForm!.value['customer_code'].guid };
+      soSearch.customer_company_guid = { contains: this.searchForm!.get('customer_code')?.value.guid };
       where.storing_order = soSearch;
     }
 
-    if (this.searchForm!.value['capacity'] ||
-      this.searchForm!.value['eir_no'] ||
-      this.searchForm!.value['eir_dt_start'] ||
-      this.searchForm!.value['eir_dt_end'] ||
-      this.searchForm!.value['tare_weight']) {
+    if (this.searchForm!.get('clean_dt_start')?.value || this.searchForm!.get('clean_dt_end')?.value) {
+      const cleaningSearch: any = {};
+      cleaningSearch.complete_dt = {
+        gte: Utility.convertDate(this.searchForm!.get('clean_dt_start')?.value),
+        lte: Utility.convertDate(this.searchForm!.get('clean_dt_end')?.value)
+      };
+      where.cleaningSearch = { some: cleaningSearch };
+    }
+
+    if (this.searchForm!.get('capacity')?.value ||
+      this.searchForm!.get('eir_no')?.value ||
+      this.searchForm!.get('eir_dt_start')?.value ||
+      this.searchForm!.get('eir_dt_end')?.value ||
+      this.searchForm!.get('tare_weight')?.value) {
       // In Gate
       const igSearch: any = {};
-      if (this.searchForm!.value['eir_no']) {
-        igSearch.eir_no = { contains: this.searchForm!.value['eir_no'] }
+      if (this.searchForm!.get('eir_no')?.value) {
+        igSearch.eir_no = { contains: this.searchForm!.get('eir_no')?.value }
       }
-      if (this.searchForm!.value['eir_dt_start'] || this.searchForm!.value['eir_dt_end']) {
+      if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
         igSearch.eir_dt = {
-          gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']),
-          lte: Utility.convertDate(this.searchForm!.value['eir_dt_end'])
+          gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value),
+          lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value)
         };
       }
-      if (this.searchForm!.value['capacity'] || this.searchForm!.value['tare_weight']) {
+      if (this.searchForm!.get('capacity')?.value || this.searchForm!.get('tare_weight')?.value) {
         // In Gate Survey
         const igsSearch: any = {};
-        if (this.searchForm!.value['capacity']) {
-          igsSearch.capacity = { eq: this.searchForm!.value['capacity'] };
+        if (this.searchForm!.get('capacity')?.value) {
+          igsSearch.capacity = { eq: this.searchForm!.get('capacity')?.value };
         }
-        if (this.searchForm!.value['tare_weight']) {
-          igsSearch.tare_weight = { eq: this.searchForm!.value['tare_weight'] };
+        if (this.searchForm!.get('tare_weight')?.value) {
+          igsSearch.tare_weight = { eq: this.searchForm!.get('tare_weight')?.value };
         }
         igSearch.in_gate_survey = igsSearch;
       }

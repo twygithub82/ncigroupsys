@@ -709,7 +709,7 @@
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <div class="contact-detail-info font-bold">
-                                        {{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}
+                                        {{displayDate(steamDS.getSteamBeginDate(steamItem)) || "-"}}
                                       </div>
                                     </div>
                                   </div>
@@ -717,14 +717,134 @@
                                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.STEAM_COMPLETED_DATE}}:</span>
+                                      <span>{{translatedLangText.STEAM_COMPLETE_DATE}}:</span>
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <div class="contact-detail-info font-bold">
-                                        {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                        {{displayDate(steamDS.getSteamCompleteDate(steamItem)) || "-"}}
                                       </div>
                                     </div>
                                   </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="responsive_table">
+                                    <table mat-table [dataSource]="steamItem" matSort
+                                      class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                      <ng-container matColumnDef="id">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                                        <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="estimate_no">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.ESTIMATE_NO}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span
+                                            class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="actions">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <mat-icon>more_horiz</mat-icon>
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span
+                                            class="mobile-tab-label"><mat-icon>more_horiz</mat-icon>:</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="degree_celsius">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span
+                                            class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="estimate_date">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.ESTIMATE_DATE}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_DATE}}:</span>
+                                          <span>{{displayDate(row.create_dt) ?? "-"}}</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="approve_dt">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.APPROVED_NO_ACTION}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span
+                                            class="mobile-tab-label">{{translatedLangText.APPROVED_NO_ACTION}}:</span>
+                                          <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="begin_dt">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.BEGIN_DATE}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span class="mobile-tab-label">{{translatedLangText.BEGIN_DATE}}:</span>
+                                          <span>{{displayDate(row.approve_dt) ?? "-"}}</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="complete_dt">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.COMPLETE_DATE}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span class="mobile-tab-label">{{translatedLangText.COMPLETE_DATE}}:</span>
+                                          <span>{{displayDate(row.complete_dt) ?? "-"}}</span>
+                                        </mat-cell>
+                                      </ng-container>
+                                      <ng-container matColumnDef="status_cv">
+                                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          {{translatedLangText.STATUS}}
+                                        </mat-header-cell>
+                                        <mat-cell mat-cell *matCellDef="let row"
+                                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                          <span
+                                            class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
+                                        </mat-cell>
+                                      </ng-container>
+                                      <mat-header-row *matHeaderRowDef="displayedColumnsSteaming"></mat-header-row>
+                                      <mat-row *matRowDef="let row; columns: displayedColumnsSteaming;"
+                                        [style.cursor]="'pointer'" matRipple>
+                                      </mat-row>
+                                    </table>
+                                  </div>
+                                  <!-- No result -->
+                                  @if (!(residueDS.loading$ | async) && !residueItem.length) {
+                                  <mat-divider></mat-divider>
+                                  <div class="no-results m-l-20 pt-3">
+                                    <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                                  </div>
+                                  }
+                                  <!-- Loading spinner -->
+                                  @if (residueDS.loading$ | async) {
+                                  <div class="tbl-spinner">
+                                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                    </mat-progress-spinner>
+                                  </div>
+                                  }
                                 </div>
                               </div>
                               }
