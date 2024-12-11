@@ -65,9 +65,9 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { SteamItem, SteamDS, SteamStatusRequest, SteamTemp } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
 import { Thermometer } from 'angular-feather/icons';
-import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
+//import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
 
-import { NgxMatMomentModule } from '@angular-material-components/moment-adapter';
+//import { NgxMatMomentModule } from '@angular-material-components/moment-adapter';
 import * as moment from 'moment';
 import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
 @Component({
@@ -103,12 +103,12 @@ import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
     MatMenuModule,
     MatCardModule,
     MatSlideToggleModule,
-    NgxMatDatetimePickerModule,
+  //  NgxMatDatetimePickerModule,
    // MatDatepickerModule,
     MatNativeDateModule,
-    NgxMatNativeDateModule,
+   // NgxMatNativeDateModule,
    // NgxMatTimepickerModule,
-    NgxMatMomentModule
+   // NgxMatMomentModule
     
   ]
 })
@@ -373,8 +373,15 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     });
     const date = new Date(); // Local date and time
     date.setSeconds(0, 0);   // Remove seconds and milliseconds
+    const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+const day = String(date.getDate()).padStart(2, '0');
+const hours = String(date.getHours()).padStart(2, '0');
+const minutes = String(date.getMinutes()).padStart(2, '0');
+
+const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
     this.steamForm.patchValue({
-      time: date
+      time: localDateTime
     });
   }
 
