@@ -56,8 +56,49 @@ namespace GlobalMQ.GqlTypes
                     methodName = nameof(SubscriptionType.JobStopped);
                     topicName = $"{prefix}{methodName}_{jobNotification.item_guid}_{jobNotification.job_type}";
                 }
-                
+
                 await topicEventSender.SendAsync(topicName, jobNotification);
+                return value;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        public async Task<string> SendPurposeChangeNotification(PurposeNotification purposeNotification, [Service] ITopicEventSender topicEventSender)
+        {
+            string value = "ok";
+            try
+            {
+                //string prefix = "On";
+                //string methodName = "";
+                //string topicName = "";
+
+                //if (type == JobNotificationType.START_JOB)
+                //{
+                //methodName = nameof(SubscriptionType.JobStarted);
+                //topicName = $"{prefix}{methodName}_{purposeNotification.job_order_guid}";
+                //}
+                //else if (type == JobNotificationType.STOP_JOB)
+                //{
+                //    methodName = nameof(SubscriptionType.JobStopped);
+                //    topicName = $"{prefix}{methodName}_{purposeNotification.job_order_guid}";
+                //}
+                //else if (type == JobNotificationType.COMPLETE_JOB)
+                //{
+                //    methodName = nameof(SubscriptionType.JobCompleted);
+                //    topicName = $"{prefix}{methodName}_{purposeNotification.job_order_guid}";
+                //}
+                //else if (type == JobNotificationType.COMPLETE_ITEM)
+                //{
+                //    methodName = nameof(SubscriptionType.JobStopped);
+                //    topicName = $"{prefix}{methodName}_{purposeNotification.item_guid}_{purposeNotification.job_type}";
+                //}
+
+                //await topicEventSender.SendAsync(topicName, purposeNotification);
+                await topicEventSender.SendAsync(nameof(SubscriptionType.OnPurposeChanged), purposeNotification);
                 return value;
             }
             catch (Exception ex)
