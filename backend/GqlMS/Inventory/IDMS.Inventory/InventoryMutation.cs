@@ -31,7 +31,7 @@ namespace IDMS.Inventory.GqlTypes
                     {
                         case PurposeType.CLEAN:
                             if (PurposeAction.ADD.EqualsIgnore(item.action))
-                                GqlUtils.AddCleaning1(context, user, currentDateTime, tankPurpose.storing_order_tank, tankPurpose.in_gate_dt, tankPurpose.last_comp_guid);
+                                GqlUtils.AddCleaning1(context, user, currentDateTime, tankPurpose.storing_order_tank, tankPurpose.in_gate_dt, tankPurpose.tank_comp_guid);
                             else if (PurposeAction.REMOVE.EqualsIgnore(item.action))
                             {
                                 RemoveCleaning(context, config, tankPurpose.guid, tankPurpose.storing_order_tank.guid, null);

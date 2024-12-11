@@ -1,4 +1,5 @@
 ﻿using IDMS.Models.Service;
+using IDMS.Repair.GqlTypes.LocalModel;
 
 namespace IDMS.Residue.GqlTypes.LocalModel
 {
@@ -28,6 +29,12 @@ namespace IDMS.Residue.GqlTypes.LocalModel
         public string sot_guid { get; set; }
         public string? remarks { get; set; }
         public string action { get; set; }
+        public List<ResiduePartRequest?>? residuePartRequests { get; set; }
+    }
 
+    public class ResiduePartRequest
+    {
+        public string guid { get; set; }
+        public bool approve_part { get; set; }
     }
 }

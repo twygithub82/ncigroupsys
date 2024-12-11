@@ -434,6 +434,16 @@ namespace IDMS.Steaming.GqlTypes
                         updateSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
                         updateSteaming.na_dt = currentDateTime;
 
+
+                        foreach (var item in steaming.steamingPartRequests)
+                        {
+                            var steamPart = new steaming_part() { guid = item.guid };
+                            context.steaming_part.Attach(steamPart);
+                            steamPart.approve_part = false;
+                            steamPart.update_dt = currentDateTime;
+                            steamPart.update_by = user;
+                        }
+
                         if (!await TankMovementCheckInternal(context, "steaming", steaming.sot_guid, new List<string> { steaming.guid }))
                             //if no other steaming estimate or all completed. then we check cross process tank movement
                             await TankMovementCheckCrossProcess(context, steaming.sot_guid, user, currentDateTime);
