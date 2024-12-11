@@ -15,31 +15,20 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { DatePipe } from '@angular/common';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Apollo } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
-import { startWith, debounceTime, tap } from 'rxjs';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { MatTableModule } from '@angular/material/table';
-import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { MatDividerModule } from '@angular/material/divider';
-import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { MatCardModule } from '@angular/material/card';
-import { SchedulingDS, SchedulingGO, SchedulingItem } from 'app/data-sources/scheduling';
-import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
-import { InGateDS } from 'app/data-sources/in-gate';
-import { SchedulingSotItem } from 'app/data-sources/scheduling-sot';
-import { CodeValuesItem } from 'app/data-sources/code-values';
 
 
 export interface DialogData {
   type?: string;
   action?: string;
   translatedLangText?: any;
-  editInfo?: string;
-  remarks?: string;
-  previousRemarks?: string;
+  sot?: StoringOrderTankItem;
+  populateData?: any;
 }
 
 @Component({
@@ -71,9 +60,11 @@ export interface DialogData {
   ],
 })
 export class AddPurposeFormDialogComponent {
+  type: string = "";
   action: string;
   dialogTitle: string;
-  tankNoteForm: UntypedFormGroup;
+  sot: StoringOrderTankItem;
+  purposeForm: UntypedFormGroup;
   constructor(
     public dialogRef: MatDialogRef<AddPurposeFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -82,34 +73,38 @@ export class AddPurposeFormDialogComponent {
   ) {
     // Set the defaults
     this.action = data.action!;
-    let type = "";
+    this.sot = data.sot!;
+    this.type = data.type!;
+    let typeDesc = "";
     if (data.type === 'steaming') {
-      type = data.translatedLangText.STEAM;
+      typeDesc = data.translatedLangText.STEAM;
     } else if (data.type === 'cleaning') {
-      type = data.translatedLangText.CLEANING;
+      typeDesc = data.translatedLangText.CLEANING;
     } else if (data.type === 'repair') {
-      type = data.translatedLangText.REPAIR;
+      typeDesc = data.translatedLangText.REPAIR;
     } else if (data.type === 'storage') {
-      type = data.translatedLangText.STORAGE;
+      typeDesc = data.translatedLangText.STORAGE;
     }
     const actionText = this.action === 'add' ? data.translatedLangText.ADD : data.translatedLangText.REMOVE;
-    this.dialogTitle = `${actionText} ${type} Purpose`;
-    this.tankNoteForm = this.createForm();
+    this.dialogTitle = `${actionText} ${this.type} Purpose`;
+    this.purposeForm = this.createForm();
   }
 
   createForm(): UntypedFormGroup {
     const formGroup = this.fb.group({
-      edit_info: [this.data?.editInfo],
-      remarks: [this.data?.remarks]
+      job_no: [this.getPreviousJobNo()],
+      purpose_repair_cv: [this.sot.purpose_repair_cv],
+      remarks: [this.getPreviousRemarks()]
     });
     return formGroup;
   }
 
   submit() {
-    if (this.tankNoteForm?.valid) {
+    if (this.purposeForm?.valid) {
       const returnDialog: any = {
-        tank_note: this.tankNoteForm.get('tank_note')?.value,
-        release_note: this.tankNoteForm.get('release_note')?.value
+        job_no: this.purposeForm.get('job_no')?.value,
+        purpose_repair_cv: this.purposeForm.get('purpose_repair_cv')?.value,
+        remarks: this.purposeForm.get('remarks')?.value
       }
       this.dialogRef.close(returnDialog);
     } else {
@@ -123,7 +118,7 @@ export class AddPurposeFormDialogComponent {
   }
 
   findInvalidControls() {
-    const controls = this.tankNoteForm.controls;
+    const controls = this.purposeForm.controls;
     for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);
@@ -133,5 +128,31 @@ export class AddPurposeFormDialogComponent {
 
   canEdit(): boolean {
     return true;
+  }
+
+  getPreviousRemarks() {
+    if (this.type === 'storage') {
+      return this.sot?.storage_remarks;
+    } else if (this.type === 'cleaning') {
+      return this.sot?.cleaning_remarks;
+    } else if (this.type === 'steaming') {
+      return this.sot?.steaming_remarks;
+    } else if (this.type === 'repair') {
+      return this.sot?.repair_remarks;
+    }
+    return "";
+  }
+
+  getPreviousJobNo() {
+    if (this.type === 'storage') {
+      return "";
+    } else if (this.type === 'cleaning') {
+      return this.sot?.job_no;
+    } else if (this.type === 'steaming') {
+      return this.sot?.job_no;
+    } else if (this.type === 'repair') {
+      return this.sot?.job_no;
+    }
+    return "";
   }
 }

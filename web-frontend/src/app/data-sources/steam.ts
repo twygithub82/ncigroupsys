@@ -30,15 +30,15 @@ export class SteamGO {
   public sot_guid?: string;
   public status_cv?: string;
 
-  public begin_by?:string;
-  public begin_dt?:number;
+  public begin_by?: string;
+  public begin_dt?: number;
 
-  public na_dt?:number;
+  public na_dt?: number;
 
-  public invoice_by?:string;
-  public invoice_dt?:number;
+  public invoice_by?: string;
+  public invoice_dt?: number;
 
-  public total_cost?:number;
+  public total_cost?: number;
 
 
   public create_dt?: number;
@@ -70,12 +70,12 @@ export class SteamGO {
     this.complete_dt = item.complete_dt || 0;
     this.status_cv = item.status_cv;
     this.remarks = item.remarks;
-    this.begin_by=item.begin_by;
-    this.begin_dt=item.begin_dt;
-    this.na_dt=item.na_dt;
-    this.total_cost=item.total_cost;
-    this.invoice_by=item.invoice_by;
-    this.invoice_dt=item.invoice_dt;
+    this.begin_by = item.begin_by;
+    this.begin_dt = item.begin_dt;
+    this.na_dt = item.na_dt;
+    this.total_cost = item.total_cost;
+    this.invoice_by = item.invoice_by;
+    this.invoice_dt = item.invoice_dt;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
     this.create_dt = item.create_dt;
@@ -90,7 +90,7 @@ export class SteamGO {
 export class SteamItem extends SteamGO {
   public steaming_part?: SteamPartItem[];
   public storing_order_tank?: StoringOrderTankItem;
-  
+
   //public aspnetsuser?: UserItem;
   public actions?: string[]
   constructor(item: Partial<SteamItem> = {}) {
@@ -148,7 +148,7 @@ export class SteamPartRequest{
 export class SteamStatusRequest {
   public guid?: string;
   public action?: string;
-  public remarks?:string;
+  public remarks?: string;
   public sot_guid?: string;
   public steamingPartRequests?:SteamPartRequest[];
   //public aspnetsuser?: UserItem;
@@ -160,7 +160,7 @@ export class SteamStatusRequest {
     this.steamingPartRequests=item.steamingPartRequests;
     // this.aspnetsuser = item.aspnetsuser;
     this.action = item.action;
-    this.remarks=item.remarks;
+    this.remarks = item.remarks;
   }
 }
 
@@ -451,7 +451,6 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
   query querySteaming($where: steamingFilterInput) {
     resultList: querySteaming(where: $where) {
       nodes {
-        action
         allocate_by
         allocate_dt
         approve_by
@@ -479,7 +478,6 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         update_by
         update_dt
         steaming_part {
-          action
           approve_cost
           approve_labour
           approve_part
@@ -774,8 +772,8 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canAbort(re: SteamItem | undefined, rp: SteamPartItem[]): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS','PARTIAL_ASSIGNED','ASSIGNED']
-    const status:string = String(re?.status_cv);
+    const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED', 'ASSIGNED']
+    const status: string = String(re?.status_cv);
     return (validStatus.includes(status) && rp?.some(part => part.job_order?.status_cv && (part.job_order?.status_cv == 'PENDING')));
   }
 
@@ -793,7 +791,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canSave(re: SteamItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED','PARTIAL_ASSIGNED']
+    const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
     return validStatus.includes(re?.status_cv!);
   }
 
@@ -811,7 +809,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canRollback(re: SteamItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'CANCELED','NO_ACTION']
+    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION']
     return validStatus.includes(re?.status_cv!);
   }
 
@@ -865,5 +863,62 @@ export class SteamDS extends BaseDataSource<SteamItem> {
       }
     });
   }
-  
+
+  getSteamBeginDate(steam: SteamItem[] | undefined) {
+    if (!steam || steam.length === 0) {
+      return undefined;
+    }
+
+    const earliestApproveDt = steam.reduce((earliest, item) => {
+      if (item.approve_dt !== null && item.approve_dt !== undefined) {
+        return earliest === undefined || item.approve_dt < earliest ? item.approve_dt : earliest;
+      }
+      return earliest;
+    }, undefined as number | undefined);
+
+    return earliestApproveDt;
+  }
+
+  getSteamCompleteDate(steam: SteamItem[] | undefined) {
+    if (!steam || steam.length === 0) {
+      return undefined;
+    }
+
+    const allCompleteDatesValid = steam.every(item => item.complete_dt !== null && item.complete_dt !== undefined);
+    if (!allCompleteDatesValid) {
+      return undefined;
+    }
+
+    const earliestApproveDt = steam.reduce((latest, item) => {
+      if (item.complete_dt !== null && item.complete_dt !== undefined) {
+        return latest === undefined || item.complete_dt > latest ? item.complete_dt : latest;
+      }
+      return latest;
+    }, undefined as number | undefined);
+
+    return earliestApproveDt;
+  }
+
+  getSteamProcessingDays(steam: SteamItem[] | undefined) {
+    if (!steam || steam.length === 0) {
+      return undefined;
+    }
+
+    const beginDate = this.getSteamBeginDate(steam);
+    const completeDate = this.getSteamCompleteDate(steam);
+
+    if (!beginDate || !completeDate) {
+      return undefined;
+    }
+
+    const timeTakenMs = completeDate - beginDate;
+
+    if (timeTakenMs === undefined || timeTakenMs < 0) {
+      return "Invalid time data";
+    }
+
+    const days = Math.floor(timeTakenMs / (3600 * 24));
+
+    return `${days}`;
+  }
 }

@@ -10,22 +10,49 @@
     </button>
   </div>
   <div mat-dialog-content>
-    <form class="register-form" [formGroup]="tankNoteForm" #formDirective="ngForm">
+    <form class="register-form" [formGroup]="purposeForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+          @if (type === 'cleaning' || type === 'steaming') {
           <div class="row">
-            <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{data.translatedLangText.SPECIAL_NOTES}}</mat-label>
-                <textarea matInput formControlName="tank_note"></textarea>
-              </mat-form-field>
-            </div> -->
+            <mat-form-field class="example-full-width">
+              <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
+              <input matInput formControlName="job_no" required>
+              @if (purposeForm.get('job_no')?.hasError('required')) {
+              <mat-error>
+                {{data.translatedLangText.JOB_NO}} {{data.translatedLangText.SO_REQUIRED}}
+              </mat-error>
+              }
+            </mat-form-field>
           </div>
+          }
+          @if (type === 'repair') {
+          <div class="row">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
+              <mat-select formControlName="purpose_repair_cv" required>
+                @for (codeValue of data.populateData.repairOptionCvList; track codeValue) {
+                <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                }
+              </mat-select>
+              @if (purposeForm.get('purpose_repair_cv')?.hasError('required')) {
+              <mat-error>
+                {{data.translatedLangText.REPAIR}} {{data.translatedLangText.SO_REQUIRED}}
+              </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          }
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
-                <textarea matInput formControlName="remarks"></textarea>
+                <textarea matInput formControlName="remarks" required></textarea>
+                @if (purposeForm.get('remarks')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.JOB_REMARKSNO}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
               </mat-form-field>
             </div>
           </div>

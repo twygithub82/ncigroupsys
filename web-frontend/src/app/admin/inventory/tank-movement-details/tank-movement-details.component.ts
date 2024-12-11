@@ -63,7 +63,7 @@ import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
-import { SteamDS } from 'app/data-sources/steam';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { RepairFormDialogComponent } from './repair-form-dialog/repair-form-dialog.component';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
 
@@ -104,6 +104,26 @@ import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-pur
   ]
 })
 export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  displayedColumnsSteaming = [
+    'estimate_no',
+    'actions',
+    'degree_celsius',
+    'estimate_date',
+    'approve_dt',
+    'begin_dt',
+    'complete_dt',
+    'status_cv'
+  ];
+
+  displayedColumnsResidue = [
+    'estimate_no',
+    'estimate_date',
+    'approve_dt',
+    'allocation_dt',
+    'qc_dt',
+    'status_cv'
+  ];
+
   displayedColumnsRepair = [
     'estimate_no',
     'estimate_date',
@@ -327,6 +347,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     RESIDUE_BEGIN_DATE: 'COMMON-FORM.RESIDUE-BEGIN-DATE',
     ADD: 'COMMON-FORM.ADD',
     REMOVE: 'COMMON-FORM.REMOVE',
+    STEAM_BEGIN_DATE: 'COMMON-FORM.STEAM-BEGIN-DATE',
+    STEAM_COMPLETE_DATE: 'COMMON-FORM.STEAM-COMPLETE-DATE',
+    DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
+    BEGIN_DATE: 'COMMON-FORM.BEGIN-DATE',
+    COMPLETE_DATE: 'COMMON-FORM.COMPLETE-DATE',
   }
 
   sot_guid: string | null | undefined;
@@ -336,6 +361,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   og?: OutGateItem;
   pdItem?: PackageDepotItem;
   cleaningItem: InGateCleaningItem[] = [];
+  steamItem: SteamItem[] = [];
   residueItem: ResidueItem[] = [];
   repairItem: RepairItem[] = [];
   bookingList: BookingItem[] = [];
@@ -395,6 +421,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tankStatusCvList: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
   bookingTypeCvList: CodeValuesItem[] = [];
+  repairOptionCvList: CodeValuesItem[] = [];
 
   unit_typeList: TankItem[] = []
 
@@ -528,6 +555,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' },
       { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
+      { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -617,6 +645,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS.connectAlias('bookingTypeCv').subscribe(data => {
       this.bookingTypeCvList = data;
     });
+    this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
+      this.repairOptionCvList = data;
+    });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
     });
@@ -658,7 +689,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.subs.sink = this.steamDS.getSteamForMovement(this.sot_guid).subscribe(data => {
         if (this.steamDS.totalCount > 0) {
           console.log(`steam: `, data)
-          // this.residueItem = data;
+          this.steamItem = data;
         }
       });
       this.subs.sink = this.residueDS.getResidueForMovement(this.sot_guid).subscribe(data => {
@@ -1101,8 +1132,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     input.value = '';
   }
 
-
-
   addPurposeDialog(event: Event, type: string, action: string) {
     this.preventDefault(event);
     let tempDirection: Direction;
@@ -1116,14 +1145,20 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         type: type,
         action: action,
+        sot: this.sot,
+        populateData: {
+          repairOptionCvList: this.repairOptionCvList,
+        },
         translatedLangText: this.translatedLangText,
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && this.sot) {
+        this.sot.purpose_repair_cv = result.purpose_repair_cv;
         const tankPurposeRequest = {
           guid: this.sot?.guid,
+          job_no: result.job_no,
           in_gate_dt: this.ig?.create_dt,
           tank_comp_guid: this.igs?.tank_comp_guid,
           purpose_changes: [
@@ -1134,10 +1169,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           ],
           storing_order_tank: new StoringOrderTankItem({
             guid: this.sot?.guid,
+            purpose_repair_cv: type === "repair" ? result.purpose_repair_cv : this.sot?.purpose_repair_cv,
+            cleaning_remarks: type === "cleaning" ? result.remarks : this.sot?.cleaning_remarks,
+            repair_remarks: type === "repair" ? result.remarks : this.sot?.repair_remarks,
+            steaming_remarks: type === "steaming" ? result.remarks : this.sot?.steaming_remarks,
+            storage_remarks: type === "storage" ? result.remarks : this.sot?.storage_remarks,
           })
         }
-    
         console.log(tankPurposeRequest)
+        this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
+          console.log(result)
+          // this.handleSaveSuccess(result?.data?.updateTankPurpose);
+        });
       }
     });
   }

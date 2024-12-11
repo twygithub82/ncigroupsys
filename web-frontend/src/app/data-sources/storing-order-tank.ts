@@ -48,6 +48,10 @@ export class StoringOrderTank {
   public status_cv?: string;
   public tank_status_cv?: string;
   public owner_guid?: string;
+  public cleaning_remarks?: string;
+  public repair_remarks?: string;
+  public steaming_remarks?: string;
+  public storage_remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -81,6 +85,10 @@ export class StoringOrderTank {
     this.status_cv = item.status_cv || '';
     this.tank_status_cv = item.tank_status_cv || '';
     this.owner_guid = item.owner_guid || '';
+    this.cleaning_remarks = item.cleaning_remarks || '';
+    this.repair_remarks = item.repair_remarks || '';
+    this.steaming_remarks = item.steaming_remarks || '';
+    this.storage_remarks = item.storage_remarks || '';
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -1591,6 +1599,12 @@ export const UPDATE_STORING_ORDER_TANK = gql`
   }
 `;
 
+export const UPDATE_TANK_PURPOSE = gql`
+  mutation updateTankPurpose($tankPurpose: TankPurposeRequestInput!) {
+    updateTankPurpose(tankPurpose: $tankPurpose)
+  }
+`;
+
 export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   constructor(private apollo: Apollo) {
@@ -1667,7 +1681,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   searchStoringOrderTanksRepair(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-
+    
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_REPAIR,
@@ -2041,6 +2055,15 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       mutation: UPDATE_STORING_ORDER_TANK,
       variables: {
         soTank
+      }
+    });
+  }
+
+  updateTankPurpose(tankPurpose: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_TANK_PURPOSE,
+      variables: {
+        tankPurpose
       }
     });
   }
