@@ -293,7 +293,7 @@
                             <span>{{translatedLangText.COPY}}</span>
                           </button>
                           }
-                          @if (steamDS.canRollback(steamRow)) {
+                          @if (steamDS.canRollbackEstimate(steamRow)) {
                           <button mat-menu-item (click)="rollbackRow(steamRow)">
                             <mat-icon>undo</mat-icon>
                             <span>{{translatedLangText.ROLLBACK}}</span>

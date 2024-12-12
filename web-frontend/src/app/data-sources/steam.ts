@@ -808,6 +808,10 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     return re?.status_cv === 'PENDING';
   }
 
+  canRollbackEstimate(re: SteamItem): boolean {
+    const validStatus = ['PENDING', 'CANCELED', 'NO_ACTION']
+    return validStatus.includes(re?.status_cv!);
+  }
   canRollback(re: SteamItem): boolean {
     const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION']
     return validStatus.includes(re?.status_cv!);

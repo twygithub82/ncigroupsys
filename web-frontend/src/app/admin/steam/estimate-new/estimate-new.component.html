@@ -469,7 +469,7 @@
                     </button>
                  }
                 }
-                @if (steamDS.canRollback(this.steamItem!)) {
+                @if (steamDS.canRollbackEstimate(this.steamItem!)) {
                   <button mat-flat-button color="accent" [disabled]="(steamDS.loading$ | async)" class="m-r-5"
                     (click)="rollbackRow($event)">
                     <mat-icon>
