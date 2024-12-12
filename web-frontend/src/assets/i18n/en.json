@@ -143,6 +143,9 @@
         "CUSTOMER": "Customer",
         "CUSTOMER-NEW": "New Customer",
         "CUSTOMER-EDIT": "Edit Customer",
+        "USER": "User",
+        "USER-NEW": "New User",
+        "USER-EDIT": "Edit User",
         "BILLING-BRANCH": "Billing Branch",
         "BILLING-BRANCH-NEW": "New Billing Branch",
         "BILLING-BRANCH-EDIT": "Edit Billing Branch"

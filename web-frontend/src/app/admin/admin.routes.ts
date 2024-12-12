@@ -68,6 +68,8 @@ import { SteamEstimateNewComponent } from './steam/estimate-new/estimate-new.com
 import { SteamEstimateComponent } from './steam/estimate/estimate.component';
 import { SteamApprovalComponent } from './steam/approval/approval.component';
 import { SteamJobOrderTaskMonitorComponent } from './steam/job-order-monitor/job-order-task-monitor.component';
+import { UserNewComponent } from './master/user-new/user-new.component';
+import { UserComponent } from './master/user/user.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -291,6 +293,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "master/customer/new/:id",
     component: CustomerNewComponent,
+  },
+  {
+    path: "master/user",
+    component: UserComponent,
+  },
+  {
+    path: "master/user/new/:id",
+    component: UserNewComponent,
   },
   {
     path: "master/billing-branch",

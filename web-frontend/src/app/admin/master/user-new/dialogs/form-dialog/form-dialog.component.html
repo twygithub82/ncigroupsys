@@ -1,0 +1,113 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h3>{{dialogTitle}}</h3>
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    <form class="register-form" [formGroup]="contactPersonForm!" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.SALUTATION}}</mat-label>
+            <mat-select formControlName="title_cv" required>
+              @for (codeValue of data.populateData.satulationCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+              }
+            </mat-select>
+            @if (contactPersonForm?.get('title_cv')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.TITLE}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.NAME}}</mat-label>
+            <input matInput formControlName="name" required>
+            @if (contactPersonForm?.get('name')?.hasError('required')) {
+              <mat-error>
+                {{data.translatedLangText.NAME}} {{data.translatedLangText.SO_REQUIRED}}
+              </mat-error>
+              }
+          </mat-form-field>
+        </div>
+       
+      </div>
+      <div class="row">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.EMAIL}}</mat-label>
+            <input matInput formControlName="email" required>
+          
+              @if (contactPersonForm?.get('email')?.hasError('required')) {
+                <mat-error>
+                {{data.translatedLangText.EMAIL}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+              }
+
+              @if (contactPersonForm?.get('email')?.hasError('email')) {
+                <mat-error>
+                {{data.translatedLangText.EMAIL}} {{data.translatedLangText.INVALID_FORMAT}}
+                </mat-error>
+              }
+          
+            
+          </mat-form-field>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.MOBILE_NO}}</mat-label>
+            <input matInput formControlName="phone" required >
+            @if (contactPersonForm?.get('phone')?.hasError('required')) {
+              <mat-error>
+              {{data.translatedLangText.MOBILE_NO}} {{data.translatedLangText.SO_REQUIRED}}
+              </mat-error>
+            }
+             
+           
+          </mat-form-field>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.DID}}</mat-label>
+            <input matInput formControlName="did" required>
+            <mat-error *ngIf="this.contactPersonForm?.get('did')?.invalid &&this.contactPersonForm?.get('did')?.touched">
+              <span *ngIf="this.contactPersonForm?.get('did')?.errors?.['required']">
+                {{data.translatedLangText.DID}} {{data.translatedLangText.SO_REQUIRED}}
+              </span>
+             
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.DEPARTMENT}}</mat-label>
+            <input matInput formControlName="department" >
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.JOB_TITLE}}</mat-label>
+            <input matInput formControlName="job_title" >
+          </mat-form-field>
+        </div>
+       
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" [disabled]="this.contactPersonForm?.invalid" (click)="submit()">{{data.translatedLangText.ADD}}</button>
+        }
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

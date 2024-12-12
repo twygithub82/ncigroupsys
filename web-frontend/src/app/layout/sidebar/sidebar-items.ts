@@ -306,7 +306,7 @@ export const ROUTES: RouteInfo[] = [
     ].filter(item => item.visible !== false),
   },
   {
-    path: "admin/cleaning-management",
+    path: "admin/master",
     title: "MENUITEMS.MASTER.TEXT",
     iconType: "material",
     icon: "business_center",
@@ -329,6 +329,17 @@ export const ROUTES: RouteInfo[] = [
       {
         path: "admin/master/customer",
         title: "MENUITEMS.MASTER.LIST.CUSTOMER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: []
+      },
+      {
+        path: "admin/master/user",
+        title: "MENUITEMS.MASTER.LIST.USER",
         iconType: "",
         icon: "",
         class: "ml-menu",
