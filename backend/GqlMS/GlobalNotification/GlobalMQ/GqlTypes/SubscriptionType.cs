@@ -16,6 +16,10 @@ namespace GlobalMQ.GqlTypes
         [Subscribe]
         public notification NotificationTriggered([EventMessage] notification notification) => notification;
 
+        [Subscribe]
+        public PurposeNotification OnPurposeChanged([EventMessage] PurposeNotification purposeNotification) => purposeNotification;
+
+
         public ValueTask<ISourceStream<JobNotification>> JobStarted(string job_order_guid, [Service] ITopicEventReceiver receiver)
         {
             

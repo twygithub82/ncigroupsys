@@ -31,7 +31,7 @@ namespace IDMS.Inventory.GqlTypes
                     {
                         case PurposeType.CLEAN:
                             if (PurposeAction.ADD.EqualsIgnore(item.action))
-                                GqlUtils.AddCleaning1(context, user, currentDateTime, tankPurpose.storing_order_tank, tankPurpose.in_gate_dt, tankPurpose.tank_comp_guid);
+                                GqlUtils.AddCleaning1(context, config, user, currentDateTime, tankPurpose.storing_order_tank, tankPurpose.in_gate_dt, tankPurpose.tank_comp_guid, tankPurpose.job_no);
                             else if (PurposeAction.REMOVE.EqualsIgnore(item.action))
                             {
                                 RemoveCleaning(context, config, tankPurpose.guid, tankPurpose.storing_order_tank.guid, null);
@@ -39,12 +39,17 @@ namespace IDMS.Inventory.GqlTypes
                             break;
                         case PurposeType.STEAM:
                             if (PurposeAction.ADD.EqualsIgnore(item.action))
-                                GqlUtils.AddSteaming1(context, user, currentDateTime, tankPurpose.storing_order_tank, tankPurpose.in_gate_dt);
+                                GqlUtils.AddSteaming1(context, config, user, currentDateTime, tankPurpose.storing_order_tank, tankPurpose.in_gate_dt, tankPurpose.job_no);
                             else if (PurposeAction.REMOVE.EqualsIgnore(item.action))
                             {
                             }
                             break;
                         case PurposeType.REPAIR:
+                            if (PurposeAction.ADD.EqualsIgnore(item.action))
+                                GqlUtils.AddRepair(context, config, user, currentDateTime, tankPurpose.storing_order_tank);
+                            else if (PurposeAction.REMOVE.EqualsIgnore(item.action))
+                            {
+                            }
                             break;
                     }
                 }

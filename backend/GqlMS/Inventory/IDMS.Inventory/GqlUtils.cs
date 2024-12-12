@@ -2,6 +2,7 @@
 using HotChocolate;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.Models.Notification;
 using IDMS.Models.Package;
 using IDMS.Models.Service;
 using IDMS.Models.Tariff;
@@ -249,7 +250,46 @@ namespace IDMS.Inventory.GqlTypes
             { }
         }
 
-        public static async Task<int> AddCleaning1(ApplicationInventoryDBContext context, string user, long currentDateTime, storing_order_tank sot, long? ingate_date, string tariffBufferGuid)
+        public static async Task SendPurposeChangeNotification([Service] IConfiguration config, PurposeNotification purposeChangeNotification)
+        {
+            try
+            {
+                string httpURL = $"{config["GlobalNotificationURL"]}";
+                if (!string.IsNullOrEmpty(httpURL))
+                {
+                    var query = @"query sendPurposeChangeNotification($purposeNotification: PurposeNotificationInput!) 
+                                    {sendPurposeChangeNotification(purposeNotification: $purposeNotification)}";
+
+                    //// Define the variables for the query
+                    // Variables for the query
+                    var variables = new
+                    {
+                        purposeNotification = purposeChangeNotification,
+                    };
+
+                    // Create the GraphQL request payload
+                    var requestPayload = new
+                    {
+                        query = query,
+                        variables = variables
+                    };
+
+                    // Serialize the payload to JSON
+                    var jsonPayload = JsonConvert.SerializeObject(requestPayload);
+
+                    HttpClient _httpClient = new();
+                    string queryStatement = JsonConvert.SerializeObject(query);
+                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                    var data = await _httpClient.PostAsync(httpURL, content);
+                    Console.WriteLine(data);
+                }
+            }
+            catch (Exception ex)
+            { }
+        }
+
+        public static async Task<int> AddCleaning1(ApplicationInventoryDBContext context, [Service] IConfiguration config,  
+            string user, long currentDateTime, storing_order_tank sot, long? ingate_date, string tariffBufferGuid, string newJob_no)
         {
             int retval = 0;
             try
@@ -262,7 +302,7 @@ namespace IDMS.Inventory.GqlTypes
                 ingateCleaning.approve_dt = ingate_date;
                 ingateCleaning.approve_by = "system";
                 ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
-                ingateCleaning.job_no = sot?.job_no;
+                ingateCleaning.job_no = newJob_no; //sot?.job_no;
                 var customerGuid = sot?.storing_order?.customer_company_guid;
                 ingateCleaning.bill_to_guid = customerGuid;
 
@@ -287,7 +327,14 @@ namespace IDMS.Inventory.GqlTypes
                     tank.tank_status_cv = TankMovementStatus.CLEANING;
                 }
 
-
+                PurposeNotification purposeNotification = new PurposeNotification()
+                {
+                    purpose = PurposeType.CLEAN,
+                    sot_guid = sot.guid,
+                    tank_status = tank.tank_status_cv
+                };
+                await SendPurposeChangeNotification(config, purposeNotification);
+                
                 retval = await context.SaveChangesAsync();  
             }
             catch (Exception ex)
@@ -297,7 +344,8 @@ namespace IDMS.Inventory.GqlTypes
             return retval;
         }
 
-        public static async Task<int> AddSteaming1(ApplicationInventoryDBContext context, string user, long currentDateTime, storing_order_tank sot, long? ingate_date)
+        public static async Task<int> AddSteaming1(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            string user, long currentDateTime, storing_order_tank sot, long? ingate_date, string newJob_no)
         {
             int retval = 0;
 
@@ -334,7 +382,7 @@ namespace IDMS.Inventory.GqlTypes
                 newSteam.create_dt = currentDateTime;
                 newSteam.sot_guid = sot.guid;
                 newSteam.status_cv = CurrentServiceStatus.APPROVED;
-                newSteam.job_no = sot?.job_no;
+                newSteam.job_no = newJob_no; //sot?.job_no;
                 newSteam.total_cost = totalCost;
                 newSteam.approve_dt = ingate_date;
                 newSteam.approve_by = "system";
@@ -369,6 +417,14 @@ namespace IDMS.Inventory.GqlTypes
                     tank.tank_status_cv = TankMovementStatus.STEAM;
                 }
 
+                PurposeNotification purposeNotification = new PurposeNotification()
+                {
+                    purpose = PurposeType.STEAM,
+                    sot_guid = sot.guid,
+                    tank_status = tank.tank_status_cv
+                };
+                await SendPurposeChangeNotification(config, purposeNotification);
+
                 retval = await context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -377,5 +433,40 @@ namespace IDMS.Inventory.GqlTypes
             }
             return retval;
         }
+
+        public static async Task<int> AddRepair(ApplicationInventoryDBContext context, [Service] IConfiguration config, string user, long currentDateTime, storing_order_tank sot)
+        {
+            int retval = 0;
+            try
+            { 
+                //Tank handling
+                var tank = new storing_order_tank() { guid = sot.guid };
+                context.storing_order_tank.Attach(tank);
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.repair_remarks = sot.repair_remarks;
+                tank.purpose_repair_cv = sot.purpose_repair_cv;
+                if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
+                {
+                    tank.tank_status_cv = TankMovementStatus.REPAIR;
+                }
+
+                PurposeNotification purposeNotification = new PurposeNotification()
+                {
+                    purpose = PurposeType.REPAIR,
+                    sot_guid = sot.guid,
+                    tank_status = tank.tank_status_cv
+                };
+                await SendPurposeChangeNotification(config, purposeNotification);
+
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
     }
 }
