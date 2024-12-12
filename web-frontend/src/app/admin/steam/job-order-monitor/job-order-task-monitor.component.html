@@ -238,7 +238,10 @@
                         </ngx-mat-datepicker-actions>
                         </ngx-mat-datetime-picker> -->
                         <mat-label>{{translatedLangText.TIME}}</mat-label>
-                        <input matInput formControlName="time" type="datetime-local" required="true" >
+                        <!-- <input matInput formControlName="time" type="datetime-local" required="true" > -->
+                          <input matInput [owlDateTimeTrigger]="date2" [owlDateTime]="date2"  formControlName="time" required="true">
+                          <mat-icon matSuffix [owlDateTimeTrigger]="date2" class="date-icon">today</mat-icon>
+                          <owl-date-time #date2></owl-date-time>
                         
                         @if (steamForm?.get('time')?.hasError('required')) {
                           <mat-error>
@@ -321,6 +324,14 @@
                       <ng-container matColumnDef="seq">
                         <mat-header-cell *matHeaderCellDef mat-sort-header  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                         <mat-cell *matCellDef="let row; let i = index"  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="time">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                          {{translatedLangText.TIME}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row" class="">
+                          <span class="mobile-label">{{translatedLangText.TIME}}:</span>{{DisplayEpochToDate(row.create_dt)}}
+                        </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="ther">
                         <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">

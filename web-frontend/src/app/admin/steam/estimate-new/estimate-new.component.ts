@@ -364,18 +364,31 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       debounceTime(300),
       tap(value => {
         var desc_value = this.steamEstForm?.get("desc")?.value;
-
-        this.displayPackSteamList= this.packSteamList.filter(data=> data.tariff_repair?.alias && data.tariff_repair?.alias?.includes(desc_value));
-        if(!desc_value) this.displayPackSteamList= [...this.packSteamList];
-        else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
+        if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
         {
           this.steamEstForm?.patchValue({
 
-             unit_price: desc_value?.material_cost?.toFixed(2),
-             qty: 1,
-             hour: desc_value?.labour_hour?desc_value?.labour_hour:0,
+              unit_price: desc_value?.material_cost?.toFixed(2),
+              qty: 1,
+              hour: desc_value?.labour_hour?desc_value?.labour_hour:0,
           });
         }
+        else if(desc_value)
+        {
+            this.getPackageSteamAlias(desc_value);
+        }
+
+        // this.displayPackSteamList= this.packSteamList.filter(data=> data.tariff_repair?.alias && data.tariff_repair?.alias?.includes(desc_value));
+        // if(!desc_value) this.displayPackSteamList= [...this.packSteamList];
+        // else if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
+        // {
+        //   this.steamEstForm?.patchValue({
+
+        //      unit_price: desc_value?.material_cost?.toFixed(2),
+        //      qty: 1,
+        //      hour: desc_value?.labour_hour?desc_value?.labour_hour:0,
+        //   });
+        // }
 
       })
     ).subscribe();
@@ -395,29 +408,6 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-
-    // this.cvDS.connectAlias('groupNameCv').subscribe(data => {
-    //   this.groupNameCvList = data;
-    //   this.updateData(this.repList);
-    //   const subqueries: any[] = [];
-    //   data.map(d => {
-    //     if (d.child_code) {
-    //       let q = { alias: d.child_code, codeValType: d.child_code };
-    //       const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-    //       if (!hasMatch) {
-    //         subqueries.push(q);
-    //       }
-    //     }
-    //   });
-    //   if (subqueries.length > 0) {
-    //     this.cvDS?.getCodeValuesByType(subqueries);
-    //     subqueries.map(s => {
-    //       this.cvDS?.connectAlias(s.alias).subscribe(data => {
-    //         this.subgroupNameCvList.push(...data);
-    //       });
-    //     });
-    //   }
-    // });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
     });
@@ -1341,76 +1331,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   calculateCost() {
-    // const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
-    // const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
-    // const labourDiscount = this.steamEstForm?.get('labour_cost_discount')?.value;
-    // const matDiscount = this.steamEstForm?.get('material_cost_discount')?.value;
-
-    // let total_hour = 0;
-    // let total_labour_cost = 0;
-    // let total_mat_cost = 0;
-    // let total_cost = 0;
-    // let discount_labour_cost = 0;
-    // let discount_mat_cost = 0;
-    // let net_cost = 0;
-
-    // const totalOwner = this.repairEstDS.getTotal(ownerList);
-    // const total_owner_hour = totalOwner.hour;
-    // //const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-    // const total_owner_mat_cost = totalOwner.total_mat_cost;
-    // const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    // const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    // const discount_mat_owner_cost = this.repairEstDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    // const net_owner_cost = this.repairEstDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
-
-    // this.steamEstForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-    // this.steamEstForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-    // this.steamEstForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-    // this.steamEstForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-    // this.steamEstForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-    // this.steamEstForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-    // this.steamEstForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
-
-    // total_hour += total_owner_hour;
-    // total_labour_cost += total_owner_labour_cost;
-    // total_mat_cost += total_owner_mat_cost;
-    // total_cost += total_owner_cost;
-    // discount_labour_cost += discount_labour_owner_cost;
-    // discount_mat_cost += discount_mat_owner_cost;
-    // net_cost += net_owner_cost;
-
-    // const totalLessee = this.repairEstDS.getTotal(lesseeList);
-    // const total_lessee_hour = totalLessee.hour;
-    // const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-    // const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    // const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    // const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    // const discount_mat_lessee_cost = this.repairEstDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    // const net_lessee_cost = this.repairEstDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
-
-    // this.steamEstForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-    // this.steamEstForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-    // this.steamEstForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-    // this.steamEstForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-    // this.steamEstForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-    // this.steamEstForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-    // this.steamEstForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
-
-    // total_hour += total_lessee_hour;
-    // total_labour_cost += total_lessee_labour_cost;
-    // total_mat_cost += total_lessee_mat_cost;
-    // total_cost += total_lessee_cost;
-    // discount_labour_cost += discount_labour_lessee_cost;
-    // discount_mat_cost += discount_mat_lessee_cost;
-    // net_cost += net_lessee_cost;
-
-    // this.steamEstForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-    // this.steamEstForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-    // this.steamEstForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-    // this.steamEstForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-    // this.steamEstForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-    // this.steamEstForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-    // this.steamEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
+   
   }
 
   filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
@@ -1437,12 +1358,36 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   //   return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
   // }
 
+  getPackageSteamAlias(alias?:string)
+  {
+    let where:any={};
+    let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
+    where.and=[];
+    where.and.push({customer_company_guid:{eq:custCompanyGuid}});
+    //where.customer_company_guid = {eq:custCompanyGuid};
+    if(alias) where.and.push({tariff_repair:{alias:{contains:alias}}});
+
+    this.packRepDS.SearchPackageRepair(where,{}).subscribe(data=>{
+
+      this.displayPackSteamList=data;
+    
+    });
+
+    // this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
+
+    //   this.packResidueList=data;
+    //   this.displayPackResidueList=data;
+    //   this.populateResiduePartList(this.residueItem!);
+    // });
+
+  }
+  
   getPackageSteam()
   {
     let where:any={};
     let custCompanyGuid:string = this.sotItem?.storing_order?.customer_company?.guid!;
     where.customer_company_guid = {eq:custCompanyGuid};
-
+    
     this.packRepDS.SearchPackageRepair(where,{}).subscribe(data=>{
 
       this.packSteamList=data;

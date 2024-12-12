@@ -65,6 +65,10 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { SteamItem, SteamDS, SteamStatusRequest, SteamTemp } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
 import { Thermometer } from 'angular-feather/icons';
+import {
+  OwlDateTimeModule,
+  OwlNativeDateTimeModule,
+} from '@danielmoncada/angular-datetime-picker';
 //import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
 
 //import { NgxMatMomentModule } from '@angular-material-components/moment-adapter';
@@ -106,6 +110,8 @@ import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
   //  NgxMatDatetimePickerModule,
    // MatDatepickerModule,
     MatNativeDateModule,
+    OwlDateTimeModule,
+    OwlNativeDateTimeModule,
    // NgxMatNativeDateModule,
    // NgxMatTimepickerModule,
    // NgxMatMomentModule
@@ -116,6 +122,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   @ViewChild('picker') picker: any;
   displayedColumns = [
     'seq',
+    'time',
     // 'group_name_cv',
     'ther',
     'top_side',
@@ -381,7 +388,7 @@ const minutes = String(date.getMinutes()).padStart(2, '0');
 
 const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
     this.steamForm.patchValue({
-      time: localDateTime
+      time: new Date()
     });
   }
 
@@ -1328,4 +1335,15 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
     // this.joDS.completeJobOrder()
   }
   
+  DisplayEpochToDate(epochTimeInSeconds:number):string
+  {
+    
+     var tm:Date = new Date;
+
+      if(epochTimeInSeconds)
+      {
+        tm = new Date(epochTimeInSeconds * 1000);
+      }
+     return tm.toLocaleString();
+  }
 }
