@@ -322,6 +322,7 @@ namespace IDMS.Inventory.GqlTypes
                 tank.update_by = user;
                 tank.update_dt = currentDateTime;
                 tank.cleaning_remarks = sot.cleaning_remarks;
+                tank.purpose_cleaning = true;
                 if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
                 {
                     tank.tank_status_cv = TankMovementStatus.CLEANING;
@@ -412,6 +413,7 @@ namespace IDMS.Inventory.GqlTypes
                 tank.update_by = user;
                 tank.update_dt = currentDateTime;
                 tank.steaming_remarks = sot.steaming_remarks;
+                tank.purpose_steam = true;
                 if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
                 {
                     tank.tank_status_cv = TankMovementStatus.STEAM;
@@ -446,6 +448,7 @@ namespace IDMS.Inventory.GqlTypes
                 tank.update_dt = currentDateTime;
                 tank.repair_remarks = sot.repair_remarks;
                 tank.purpose_repair_cv = sot.purpose_repair_cv;
+                tank.purpose_storage = true;
                 if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
                 {
                     tank.tank_status_cv = TankMovementStatus.REPAIR;
