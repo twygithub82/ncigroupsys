@@ -24,7 +24,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
+import { Observable, Subscription, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -422,6 +422,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   bookingStatusCvList: CodeValuesItem[] = [];
   bookingTypeCvList: CodeValuesItem[] = [];
   repairOptionCvList: CodeValuesItem[] = [];
+
+  private jobOrderSubscriptions: Subscription[] = [];
 
   unit_typeList: TankItem[] = []
 
@@ -1559,5 +1561,24 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   setSection(section: string) {
     this.section = section;
+  }
+
+  private subscribeToPurposeChangeEvent(
+    subscribeFn: (guid: string) => Observable<any>,
+    job_order_guid: string
+  ) {
+    const subscription = subscribeFn(job_order_guid).subscribe({
+      next: (response) => {
+        console.log('Received data:', response);
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+      complete: () => {
+        console.log('Subscription completed');
+      }
+    });
+
+    this.jobOrderSubscriptions.push(subscription);
   }
 }

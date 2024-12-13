@@ -792,10 +792,32 @@ $breakpoints: (
   }
 }
 
+// Mixin to generate "auto width" classes
+@mixin generate-auto-width($name) {
+  // Responsive widths for breakpoints
+  @each $breakpoint, $size in $breakpoints {
+    @if $size != 0px {
+      @media (min-width: $size) {
+        .#{$name}-#{$breakpoint} {
+          flex: 1 1 auto !important; // Take the remaining space
+          width: auto !important;
+        }
+      }
+    } @else {
+      .#{$name} {
+        flex: 1 1 auto !important; // Take the remaining space
+        width: auto !important;
+      }
+    }
+  }
+}
+
 // Generate classes for each fraction
 @for $i from 12 through 1 {
   @include generate-width("tbl-col-width-per-#{$i}", $i);
 }
+
+@include generate-auto-width("tbl-col-width-auto");
 
 // Additional fractional widths
 @include generate-width("tbl-col-width-per-0_5", 0.5);
