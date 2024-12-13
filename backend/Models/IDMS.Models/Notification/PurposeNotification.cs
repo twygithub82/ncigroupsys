@@ -10,6 +10,7 @@ namespace IDMS.Models.Notification
     {
         public string purpose {  get; set; }
         public string tank_status { get; set; }
+
         public string sot_guid { get; set; }
 
     }
