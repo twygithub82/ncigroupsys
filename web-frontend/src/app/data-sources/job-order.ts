@@ -19,6 +19,7 @@ import { SteamPartItem } from './steam-part';
 
 export class JobOrderGO {
   public guid?: string;
+  public report_dt?:number;
   public sot_guid?: string;
   public team_guid?: string;
   public job_order_no?: string;
@@ -39,6 +40,7 @@ export class JobOrderGO {
 
   constructor(item: Partial<JobOrderGO> = {}) {
     this.guid = item.guid;
+    this.report_dt=item.report_dt;
     this.sot_guid = item.sot_guid;
     this.team_guid = item.team_guid;
     this.job_order_no = item.job_order_no;

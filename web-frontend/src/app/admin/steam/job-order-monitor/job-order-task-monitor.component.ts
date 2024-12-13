@@ -1193,6 +1193,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
   {
     var steamTmp:SteamTemp = new SteamTemp();
     //var action:string = (guid===null || guid==="")?"NEW":"UPDATE";
+    steamTmp.report_dt =Number(Utility.convertDate(this.steamForm?.get("time")?.value)) ;
     steamTmp.bottom_temp=this.steamForm?.get("bottom")?.value;
     steamTmp.top_temp=this.steamForm?.get("top")?.value;
     steamTmp.meter_temp=this.steamForm?.get("thermometer")?.value;
@@ -1251,7 +1252,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
   {
     if(steamTmp)
     {
-      const date = new Date(steamTmp.create_dt! * 1000); 
+      const date = new Date((!steamTmp.report_dt?steamTmp.create_dt!:steamTmp.report_dt!) * 1000); 
       this.steamForm?.patchValue({
         time:date,
         thermometer:steamTmp.meter_temp,
@@ -1338,12 +1339,21 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
   DisplayEpochToDate(epochTimeInSeconds:number):string
   {
     
-     var tm:Date = new Date;
+    let  tm:Date = new Date;
 
       if(epochTimeInSeconds)
       {
-        tm = new Date(epochTimeInSeconds * 1000);
+        const convertedVal = Utility.convertDate(epochTimeInSeconds); 
+        if (convertedVal instanceof Date) {
+          tm = convertedVal; // Assign only if it's a Date
+        }
       }
-     return tm.toLocaleString();
+     return  tm.toLocaleString(undefined, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 }

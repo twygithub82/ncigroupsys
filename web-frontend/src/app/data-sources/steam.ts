@@ -115,11 +115,13 @@ export class SteamTemp {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+  public report_dt?: number;
 
   public job_order?:JobOrderItem;
 
   constructor(item: Partial<SteamTemp> = {}) {
    
+    this.report_dt=item.report_dt;
     this.guid = item.guid;
     this.bottom_temp = item.bottom_temp;
     this.top_temp = item.top_temp;
@@ -536,6 +538,7 @@ export const GET_STEAM_TEMP = gql`
   query querySteamingTemp($where: steaming_tempFilterInput ,$order: [steaming_tempSortInput!]) {
     resultList: querySteamingTemp(where: $where,order:$order) {
      nodes {
+      report_dt
       bottom_temp
       create_by
       create_dt

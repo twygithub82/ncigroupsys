@@ -304,7 +304,14 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <ng-container *ngIf="row.edited; else displayValue">
-                          <input matInput  [formControl]="editRow.qty" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)">
+                          <tlx-form-field>
+                          <mat-form-field>
+                            <input class="text-end" tlxFormInput matInput [formControl]="editRow.cost" (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"
+                              (wheel)="preventDefault($event)" (focus)="selectAllText($event)" type="number" min="0" required="true">
+                          </mat-form-field>
+                        <!-- <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
+                        </tlx-form-field>
+                          <!-- <input matInput  [formControl]="editRow.qty" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
                         </ng-container>
                         <ng-template #displayValue>
                         <span
@@ -319,7 +326,14 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <ng-container *ngIf="row.edited; else displayValue">
-                          <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)">
+                          <tlx-form-field>
+                            <mat-form-field>
+                              <input class="text-end" tlxFormInput matInput [formControl]="editRow.cost" (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"
+                                (wheel)="preventDefault($event)" (focus)="selectAllText($event)" type="number" min="0" required="true">
+                            </mat-form-field>
+                          <!-- <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
+                          </tlx-form-field>
+                          <!-- <input matInput  [formControl]="editRow.cost" type="number" required="true"  (click)="$event.stopPropagation()" (keydown.enter)="editEstDetails($event,row,row.index)" (mouseenter)="selectAllText($event)"> -->
                         </ng-container>
                         <ng-template #displayValue>
                           <span class="mobile-label">{{ translatedLangText.UNIT_PRICE }}:</span>
