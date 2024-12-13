@@ -69,7 +69,7 @@ export class Utility {
 
   static convertEpochToDateStr(date: number | undefined, format: string = 'DD/MM/YYYY'): string | undefined {
     // If the input is a number, handle it as epoch time
-    if (typeof date === 'number' && !isNaN(date)) {
+    if (typeof date === 'number' && !isNaN(date) && date > 0) {
       let dateObj: Date;
 
       // Check if the number is more likely to be in seconds or milliseconds

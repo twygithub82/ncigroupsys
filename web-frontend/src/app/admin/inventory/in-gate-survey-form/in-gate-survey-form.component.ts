@@ -602,7 +602,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           // this.ccDS.getOwnerList().subscribe(data => {
           //   this.ownerList = data;
           // });
-          this.getCustomerLabourPackage(this.in_gate.tank?.storing_order?.customer_company?.guid);
+          this.getCustomerBufferPackage(this.in_gate.tank?.storing_order?.customer_company?.guid);
           
           if (this.in_gate!.in_gate_survey?.guid) {
             this.fileManagerService.getFileUrlByGroupGuid([this.in_gate!.in_gate_survey?.guid]).subscribe({
@@ -623,7 +623,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
-  getCustomerLabourPackage(customer_company_guid: string | undefined) {
+  getCustomerBufferPackage(customer_company_guid: string | undefined) {
     if (!customer_company_guid) return;
     const where = {
       and: [

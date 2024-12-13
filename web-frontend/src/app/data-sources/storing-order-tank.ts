@@ -118,7 +118,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public cleaning?: InGateCleaningItem[];
   public residue?: ResidueItem[];
   public tank?: TankItem;
-  public steaming?:SteamItem[];
+  public steaming?: SteamItem[];
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -1307,6 +1307,7 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
           cargo
           nature_cv
           in_gate_alert
+          cleaning_category_guid
         }
         customer_company {
           code
@@ -1605,6 +1606,16 @@ export const UPDATE_TANK_PURPOSE = gql`
   }
 `;
 
+const ON_SOT_PURPOSE_CHANGE_SUBSCRIPTION = gql`
+  subscription onPurposeChanged($sot_guid: String!) {
+    onPurposeChanged(sot_guid: $sot_guid) {
+      purpose
+      sot_guid
+      tank_status
+    }
+  }
+`;
+
 export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   constructor(private apollo: Apollo) {
@@ -1681,7 +1692,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   searchStoringOrderTanksRepair(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-    
+
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_REPAIR,
@@ -2065,6 +2076,13 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       variables: {
         tankPurpose
       }
+    });
+  }
+
+  subscribeToSotPurposeChange(sot_guid: string): Observable<any> {
+    return this.apollo.subscribe({
+      query: ON_SOT_PURPOSE_CHANGE_SUBSCRIPTION,
+      variables: { sot_guid }
     });
   }
 

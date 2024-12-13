@@ -1038,7 +1038,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     this.stopPropagation(event);
     if (!this.repairDS.canAmend(this.repairItem)) return;
     rep.approve_part = rep.approve_part !== null ? !rep.approve_part : false;
-    this.calculateCost();
+    this.updateData(this.repList);
     // this.getCalculateCost();
   }
 
@@ -1051,18 +1051,14 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   displayApproveQty(rep: RepairPartItem) {
-    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0;
+    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty || rep.quantity) : 0;
   }
 
   displayApproveHour(rep: RepairPartItem) {
-    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
+    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour || rep.hour) : 0;
   }
 
   displayApproveCost(rep: RepairPartItem) {
-    return Utility.convertNumber((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0, 2);
-  }
-
-  displayCost(rep: RepairPartItem) {
-    return this.parse2Decimal((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
+    return Utility.convertNumber((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost || rep.material_cost) : 0, 2);
   }
 }
