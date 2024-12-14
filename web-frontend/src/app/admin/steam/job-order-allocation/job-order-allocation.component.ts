@@ -970,7 +970,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     this.steamEstForm?.patchValue({
 
       customer_code : this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
-      job_no:this.sotItem?.job_no,
+      job_no: steam.job_no?steam.job_no:this.sotItem?.job_no,
        billing_branch:this.getBillingBranch(billingGuid),
        remarks:steam?.remarks
 
