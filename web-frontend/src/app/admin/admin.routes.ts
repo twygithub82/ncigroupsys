@@ -68,6 +68,8 @@ import { SteamEstimateNewComponent } from './steam/estimate-new/estimate-new.com
 import { SteamEstimateComponent } from './steam/estimate/estimate.component';
 import { SteamApprovalComponent } from './steam/approval/approval.component';
 import { SteamJobOrderTaskMonitorComponent } from './steam/job-order-monitor/job-order-task-monitor.component';
+import { SurveyOthersComponent } from './survey/others/survey-others.component';
+import { SurveyOthersDetailsComponent } from './survey/others-details/survey-others-details.component';
 import { UserNewComponent } from './management/user-new/user-new.component';
 import { UserComponent } from './management/user/user.component';
 import { GroupComponent } from './management/group/group.component';
@@ -399,6 +401,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "steam/qc/view/:id",
     component: SteamQCViewComponent,
+  },
+  {
+    path: "survey/others",
+    component: SurveyOthersComponent,
+  },
+  {
+    path: "survey/others/details/:id",
+    component: SurveyOthersDetailsComponent,
   },
 ];
 

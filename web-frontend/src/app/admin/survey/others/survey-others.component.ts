@@ -52,10 +52,10 @@ import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
-  selector: 'app-cleanliness',
+  selector: 'app-survey-others',
   standalone: true,
-  templateUrl: './cleanliness.component.html',
-  styleUrl: './cleanliness.component.scss',
+  templateUrl: './survey-others.component.html',
+  styleUrl: './survey-others.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -81,21 +81,25 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+    RouterLink
   ]
 })
-export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'booking_dt',
-    'book_type_cv',
-    'reference',
-    'surveyor',
+    'tank_no',
+    'customer',
+    'eir_no',
+    'eir_dt',
+    'last_cargo',
+    'purpose',
     'status_cv',
-    'actions',
+    'accept_status',
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.BOOKING'
+  pageTitle = 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY'
   breadcrumsMiddleList = [
-    'MENUITEMS.HOME.TEXT'
+    'MENUITEMS.HOME.TEXT',
+    'MENUITEMS.SURVEY.TEXT'
   ]
 
   translatedLangText: any = {};
@@ -122,14 +126,14 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     EIR_NO: "COMMON-FORM.EIR-NO",
     EIR_DATE: "COMMON-FORM.EIR-DATE",
     BOOKING_DATE: "COMMON-FORM.BOOKING-DATE",
-    YARD: "COMMON-FORM.YARD",
+    CLEAN_CERTIFICATE: "COMMON-FORM.CLEAN-CERTIFICATE",
     BOOKING_REFERENCE: "COMMON-FORM.BOOKING-REFERENCE",
     REFERENCE: "COMMON-FORM.REFERENCE",
     SURVEYOR: "COMMON-FORM.SURVEYOR",
     BOOKING_TYPE: "COMMON-FORM.BOOKING-TYPE",
     CURRENT_STATUS: "COMMON-FORM.CURRENT-STATUS",
     CUSTOMER: "COMMON-FORM.CUSTOMER",
-    CAPACITY: "COMMON-FORM.CAPACITY",
+    TANK_STATUS: "COMMON-FORM.TANK-STATUS",
     TARE_WEIGHT: "COMMON-FORM.TARE-WEIGHT",
     ADD_NEW_BOOKING: "COMMON-FORM.ADD-NEW-BOOKING",
     BOOKINGS: "COMMON-FORM.BOOKINGS",
@@ -140,7 +144,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
-    REPAIR_COMPLETION_DATE: 'COMMON-FORM.REPAIR-COMPLETION-DATE',
+    SURVEY_DATE: 'COMMON-FORM.SURVEY-DATE',
     BOOKED: 'COMMON-FORM.BOOKED',
     SCHEDULED: 'COMMON-FORM.SCHEDULED',
     REMARKS: 'COMMON-FORM.REMARKS',
@@ -222,19 +226,15 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tank_no: [''],
       customer_code: this.customerCodeControl,
       last_cargo: this.lastCargoControl,
-      clean_dt_start: [''],
-      clean_dt_end: [''],
-      capacity: [''],
-      book_type_cv: [''],
-      eir_no: [''],
-      job_no: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
-      repair_dt_start: [''],
-      repair_dt_end: [''],
-      tare_weight: [''],
       tank_status_cv: [''],
-      yard_cv: ['']
+      eir_no: [''],
+      reference: [''],
+      purpose: [''],
+      survey_dt_start: [''],
+      survey_dt_end: [''],
+      clean_certificate_cv: ['']
     });
   }
 
@@ -267,6 +267,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
+
+    this.search();
   }
 
   showNotification(
@@ -447,7 +449,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-    this.sotDS.searchStoringOrderTanksForBooking(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.sotDS.searchStoringOrderTanksForSurvey(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
@@ -670,6 +672,27 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
+  displayTankPurpose(sot: StoringOrderTankItem) {
+    let purposes: any[] = [];
+    if (sot?.purpose_storage) {
+      purposes.push(this.getPurposeOptionDescription('STORAGE'));
+    }
+    if (sot?.purpose_cleaning) {
+      purposes.push(this.getPurposeOptionDescription('CLEANING'));
+    }
+    if (sot?.purpose_steam) {
+      purposes.push(this.getPurposeOptionDescription('STEAM'));
+    }
+    if (sot?.purpose_repair_cv) {
+      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
+    }
+    return purposes.join('; ');
+  }
+
+  getPurposeOptionDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
     untypedFormControl.setValidators([
       AutocompleteSelectionValidator(validOptions)
@@ -753,19 +776,15 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   resetForm() {
     this.searchForm?.patchValue({
       tank_no: '',
-      clean_dt_start: '',
-      clean_dt_end: '',
-      capacity: '',
-      book_type_cv: '',
-      eir_no: '',
-      job_no: '',
       eir_dt_start: '',
       eir_dt_end: '',
-      repair_dt_start: '',
-      repair_dt_end: '',
-      tare_weight: '',
       tank_status_cv: '',
-      yard_cv: ''
+      eir_no: '',
+      reference: '',
+      purpose: '',
+      survey_dt_start: '',
+      survey_dt_end: '',
+      clean_certificate_cv: '',
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

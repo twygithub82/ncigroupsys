@@ -305,13 +305,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     CUSTOMER_REFERENCE: 'COMMON-FORM.CUSTOMER-REFERENCE',
     ADD_CLEANING_PURPOSE: 'COMMON-FORM.ADD-CLEANING-PURPOSE',
     NO_CLEANING_PURPOSE: 'COMMON-FORM.NO-CLEANING-PURPOSE',
+    REMOVE_CLEANING_PURPOSE: 'COMMON-FORM.REMOVE-CLEANING-PURPOSE',
     NO_RESIDUE: 'COMMON-FORM.NO-RESIDUE',
     ADD_STEAM_PURPOSE: 'COMMON-FORM.ADD-STEAM-PURPOSE',
     NO_STEAM_PURPOSE: 'COMMON-FORM.NO-STEAM-PURPOSE',
+    REMOVE_STEAM_PURPOSE: 'COMMON-FORM.REMOVE-STEAM-PURPOSE',
     ADD_STORAGE_PURPOSE: 'COMMON-FORM.ADD-STORAGE-PURPOSE',
     NO_STORAGE_PURPOSE: 'COMMON-FORM.NO-STORAGE-PURPOSE',
+    REMOVE_STORAGE_PURPOSE: 'COMMON-FORM.REMOVE-STORAGE-PURPOSE',
     ADD_REPAIR_PURPOSE: 'COMMON-FORM.ADD-REPAIR-PURPOSE',
     NO_REPAIR_PURPOSE: 'COMMON-FORM.NO-REPAIR-PURPOSE',
+    REMOVE_REPAIR_PURPOSE: 'COMMON-FORM.REMOVE-REPAIR-PURPOSE',
     REPAIR_BEGIN_DATE: 'COMMON-FORM.REPAIR-BEGIN-DATE',
     REPAIR_COMPLETED_DATE: 'COMMON-FORM.REPAIR-COMPLETED-DATE',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
@@ -360,7 +364,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   ig?: InGateItem;
   og?: OutGateItem;
   pdItem?: PackageDepotItem;
-  cleaningItem: InGateCleaningItem[] = [];
+  cleaningItem?: InGateCleaningItem[] = [];
   steamItem: SteamItem[] = [];
   residueItem: ResidueItem[] = [];
   repairItem: RepairItem[] = [];
@@ -1476,6 +1480,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getLastTest(): string | undefined {
+    if (!this.igs?.last_test_cv || !this.igs?.test_class_cv || !this.igs?.test_dt) return "-";
     const test_type = this.igs?.last_test_cv!;
     const test_class = this.igs?.test_class_cv!;
     const testDt = this.igs?.test_dt;
@@ -1483,6 +1488,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getNextTest(): string | undefined {
+    if (!this.igs?.test_dt || !this.igs?.last_test_cv) return "-";
     const test_type = this.igs?.last_test_cv;
     const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
     const yearCount = parseFloat(match?.[0] ?? "0");

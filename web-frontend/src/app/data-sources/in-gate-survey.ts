@@ -559,7 +559,8 @@ export class InGateSurveyDS extends BaseDataSource<InGateSurveyItem> {
     return this.apollo
       .query<any>({
         query: QUERY_IN_GATE_SURVEY_BY_ID_FOR_MOVEMENT,
-        variables: { where }
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),

@@ -6,10 +6,10 @@
         <li class="nav-item logo">
           <a class="navbar-brand" routerLink="/">
             @if (menuIcon === 'radio_button_checked' || isHovered) {
-              <img src="assets/images/logo.png" alt="translatedLangText.SOFTWARE_NAME" />
+            <img src="assets/images/logo.png" alt="translatedLangText.SOFTWARE_NAME" />
             }
             @else {
-              <img src="assets/images/favicon.png" alt="translatedLangText.SOFTWARE_NAME" />
+            <img src="assets/images/favicon.png" alt="translatedLangText.SOFTWARE_NAME" />
             }
             <!-- <span class="logo-name">{{SOFTWARE_NAME | translate}}</span> -->
           </a>
@@ -39,6 +39,9 @@
               }
               @else if(sidebarItem.iconType == 'material') {
               <mat-icon class="sidebarIcon font-20">{{sidebarItem.icon}}</mat-icon>
+              }
+              @else if(sidebarItem.iconType == 'fas') {
+              <i [ngClass]="['sidebarIcon', 'font-20', sidebarItem.icon]"></i>
               }
               <span class="hide-menu">{{sidebarItem.title | translate}}
               </span>

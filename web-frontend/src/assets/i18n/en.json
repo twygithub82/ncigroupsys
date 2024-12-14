@@ -100,7 +100,7 @@
         "TARIFF-RESIDUE": "Residue Disposal",
         "TARIFF-CLEANING-NEW": "New Tariff Cleaning",
         "TARIFF-CLEANING-EDIT": "Edit Tariff Cleaning",
-        "TARIFF-STEAM":"Steaming"
+        "TARIFF-STEAM": "Steaming"
       }
     },
     "PARAMETER": {
@@ -206,28 +206,34 @@
       "TEXT": "Cleaning",
       "LIST": {
         "APPROVAL": "Approval",
-        "JOB-ORDER":"Job Order"
+        "JOB-ORDER": "Job Order"
       }
     },
-    "RESIDUE-DISPOSAL":{
+    "RESIDUE-DISPOSAL": {
       "TEXT": "Residue Disposal",
       "LIST": {
         "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
         "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval",
-        "JOB-ORDER":"Job Order"
+        "JOB-ORDER": "Job Order"
       }
     },
-    "STEAM":{
+    "STEAM": {
       "TEXT": "Steam",
       "LIST": {
         "STEAM-ESTIMATE": "Steam Estimate",
         "STEAM-APPROVAL": "Steam Approval",
-        "JOB-ORDER":"Job Order",
+        "JOB-ORDER": "Job Order",
         "ESTIMATE-NEW": "New Estimate",
         "ESTIMATE-EDIT": "Edit Estimate"
       }
+    },
+    "SURVEY": {
+      "TEXT": "Survey",
+      "LIST": {
+        "PERIODIC-TEST-SURVEY": "Periodic Test Survey",
+        "OTHERS-SURVEY": "Others Survey"
+      }
     }
-
   },
   "LANDING-SIGNIN": {
     "WELCOME": "Welcome to",
@@ -681,32 +687,32 @@
     "SAVE-ANOTHER": "Save Another",
     "TEAM-ALLOCATION": "Team Allocation",
     "BAY-ALLOCATION": "Bay Allocation",
-    "DEPOT-REFERENCE":"Depot Reference",
-    "JOB-REFERENCE":"Job Reference",
-    "RESIDUE-JOB-NO":"Residue Job No.",
-    "JOB-ORDER-NO":"Job Order No.",
-    "JOB-DETAILS":"Job Details",
-    "START-STOP-JOB":"Start/Stop Job",
-    "COMPLETE-JOB":"Complete Job",
-    "START-TIME":"Start Time",
-    "STOP-TIME":"Stop Time",
-    "TIME-TAKEN":"Time Taken",
-    "START-JOB":"Start Job",
-    "STOP-JOB":"Stop Job",
-    "DONE":"Done",
-    "TIME-HISTORY":"Time History",
-    "STARTED-JOB-ORDER":"Started Jobs",
-    "APPROVE-INFO":"Approve Info",
-    "ALLOCATE-DATE":"Allocate Date",
-    "QC":"QC",
+    "DEPOT-REFERENCE": "Depot Reference",
+    "JOB-REFERENCE": "Job Reference",
+    "RESIDUE-JOB-NO": "Residue Job No.",
+    "JOB-ORDER-NO": "Job Order No.",
+    "JOB-DETAILS": "Job Details",
+    "START-STOP-JOB": "Start/Stop Job",
+    "COMPLETE-JOB": "Complete Job",
+    "START-TIME": "Start Time",
+    "STOP-TIME": "Stop Time",
+    "TIME-TAKEN": "Time Taken",
+    "START-JOB": "Start Job",
+    "STOP-JOB": "Stop Job",
+    "DONE": "Done",
+    "TIME-HISTORY": "Time History",
+    "STARTED-JOB-ORDER": "Started Jobs",
+    "APPROVE-INFO": "Approve Info",
+    "ALLOCATE-DATE": "Allocate Date",
+    "QC": "QC",
     "DURATION": "Duration",
     "APPROVE-DATE": "Approve Date",
     "QC-DATE": "QC Date",
     "QC-COMPLETE": "QC Complete",
     "ABORT": "Abort",
-    "RESIDUE-DISPOSAL" :"Residue Disposal",
-    "MIN-TEMP":"Min Temp.",
-    "MAX-TEMP":"Max Temp.",
+    "RESIDUE-DISPOSAL": "Residue Disposal",
+    "MIN-TEMP": "Min Temp.",
+    "MAX-TEMP": "Max Temp.",
     "TANK-SUMMARY-DETAILS": "Tank Summary Details",
     "BOTTOM-DIS-TYPE": "Bottom Discharge Type",
     "CHECK-DIGIT": "Check Digit",
@@ -717,7 +723,7 @@
     "ORDER-DATE": "Order Date",
     "TRANSACTION-ON": "Transaction On",
     "UPDATE-STATUS": "Update Status",
-    "TEMP-RANGE-ERROR":"Maximum temperature must be greater than minimum temperature.",
+    "TEMP-RANGE-ERROR": "Maximum temperature must be greater than minimum temperature.",
     "TEMP-RANGE-OVERLAPS-ERROR": "New steam temperature must not be overlaps the existing steam temperature.",
     "STORAGE-BEGIN-DATE": "Storage Begin Date",
     "STORAGE-DAYS": "Storage Days",
@@ -735,13 +741,17 @@
     "CUSTOMER-REFERENCE": "Customer Reference",
     "ADD-CLEANING-PURPOSE": "Add Cleaning Purpose",
     "NO-CLEANING-PURPOSE": "No Cleaning Purpose",
+    "REMOVE-CLEANING-PURPOSE": "Remove Cleaning Purpose",
     "NO-RESIDUE": "No Residue",
     "ADD-STEAM-PURPOSE": "Add Steam Purpose",
     "NO-STEAM-PURPOSE": "No Steam Purpose",
+    "REMOVE-STEAM-PURPOSE": "Remove Steam Purpose",
     "ADD-STORAGE-PURPOSE": "Add Storage Purpose",
     "NO-STORAGE-PURPOSE": "No Storage Purpose",
+    "REMOVE-STORAGE-PURPOSE": "Remove Storage Purpose",
     "ADD-REPAIR-PURPOSE": "Add Repair Purpose",
     "NO-REPAIR-PURPOSE": "No Repair Purpose",
+    "REMOVE-REPAIR-PURPOSE": "Remove Repair Purpose",
     "REPAIR-BEGIN-DATE": "Repair Begin Date",
     "REPAIR-COMPLETED-DATE": "Repair Completed Date",
     "ALLOCATION-DATE": "Allocation Date",
@@ -762,9 +772,9 @@
     "TRANSFER-DETAILS": "Transfer Details",
     "RESIDUE-COMPLETE-DATE": "Residue Complete Date",
     "RESIDUE-BEGIN-DATE": "Residue Begin Date",
-    "YET-START":"Yet Start",
-    "STARTED":"Started",
-    "YET-COMPLETE":"Yet Complete",
+    "YET-START": "Yet Start",
+    "STARTED": "Started",
+    "YET-COMPLETE": "Yet Complete",
     "RESIDUE-TYPE": "Residue Type",
     "STEAM-BEGIN-DATE": "Steam Begin Date",
     "STEAM-COMPLETE-DATE": "Steam Complete Date",
@@ -775,7 +785,14 @@
     "STEAM-MONITOR": "Steam Monitor",
     "TIME":"Time",
     "SELECTED-RECORD":"Selected Record",
-    "COMPLETE-STEAM":"Complete Steaming"
+    "COMPLETE-STEAM":"Complete Steaming",
+    "TIME": "Time",
+    "SELECTED-RECORD": "Selected Record",
+    "COMPLETE-STEAM": "Complete Steaming",
+    "SURVEY-DATE": "Survey Date",
+    "CLEAN-CERTIFICATE": "Clean Certificate",
+    "EDIT-SURVEY": "Edit Survey",
+    "NEW-SURVEY": "New Survey"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

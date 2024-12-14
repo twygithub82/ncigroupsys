@@ -734,6 +734,40 @@ export const ROUTES: RouteInfo[] = [
       }
     ].filter(item => item.visible !== false),
   },
+  {
+    path: "admin/survey",
+    title: "MENUITEMS.SURVEY.TEXT",
+    iconType: "material",
+    icon: "event_note",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/survey/periodic-test",
+        title: "MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/survey/others",
+        title: "MENUITEMS.SURVEY.LIST.OTHERS-SURVEY",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      }
+    ]
+  },
   // {
   //   path: "advance-table",
   //   title: "MENUITEMS.ADVANCE-TABLE.TEXT",
