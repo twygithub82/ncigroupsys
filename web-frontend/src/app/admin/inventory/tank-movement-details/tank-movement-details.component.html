@@ -778,7 +778,7 @@
                                           <mat-cell mat-cell *matCellDef="let row"
                                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span
-                                              class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>
+                                              class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>{{steamDS.getSteamHighestTemp(row)}}
                                           </mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="estimate_date">
@@ -1179,7 +1179,7 @@
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
-                                          {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                          {{sot?.tariff_cleaning?.cleaning_method?.name || "-"}}
                                         </div>
                                       </div>
                                     </div>

@@ -1445,6 +1445,13 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
           nature_cv
           in_gate_alert
           cleaning_category_guid
+          cleaning_category {
+            name
+          }
+          cleaning_method_guid
+          cleaning_method {
+            name
+          }
         }
         customer_company {
           code
