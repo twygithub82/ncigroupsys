@@ -32,7 +32,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { Utility } from 'app/utilities/utility';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -423,7 +423,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   bookingTypeCvList: CodeValuesItem[] = [];
   repairOptionCvList: CodeValuesItem[] = [];
 
-  private jobOrderSubscriptions: Subscription[] = [];
+  private sotPurposeChangeSubscriptions: Subscription[] = [];
 
   unit_typeList: TankItem[] = []
 
@@ -661,6 +661,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (this.sotDS.totalCount > 0) {
           console.log(`sot: `, data)
           this.sot = data[0];
+          this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
           this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
             console.log(`packageDepot: `, data)
             this.pdItem = data[0];
@@ -1169,19 +1170,27 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
               action: action.toUpperCase()
             }
           ],
-          storing_order_tank: new StoringOrderTankItem({
+          storing_order_tank: {
             guid: this.sot?.guid,
             purpose_repair_cv: type === "repair" ? result.purpose_repair_cv : this.sot?.purpose_repair_cv,
             cleaning_remarks: type === "cleaning" ? result.remarks : this.sot?.cleaning_remarks,
             repair_remarks: type === "repair" ? result.remarks : this.sot?.repair_remarks,
             steaming_remarks: type === "steaming" ? result.remarks : this.sot?.steaming_remarks,
             storage_remarks: type === "storage" ? result.remarks : this.sot?.storage_remarks,
-          })
+            tank_status_cv: this.sot?.tank_status_cv,
+            storing_order: {
+              customer_company_guid: this.sot?.storing_order?.customer_company_guid
+            },
+            tariff_cleaning: {
+              guid: this.sot?.tariff_cleaning?.guid,
+              cleaning_category_guid: this.sot?.tariff_cleaning?.cleaning_category_guid
+            }
+          }
         }
         console.log(tankPurposeRequest)
         this.sotDS.updateTankPurpose(tankPurposeRequest).subscribe(result => {
           console.log(result)
-          // this.handleSaveSuccess(result?.data?.updateTankPurpose);
+          this.handleSaveSuccess(result?.data?.updateTankPurpose);
         });
       }
     });
@@ -1565,11 +1574,51 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   private subscribeToPurposeChangeEvent(
     subscribeFn: (guid: string) => Observable<any>,
-    job_order_guid: string
+    sot_guid: string
   ) {
-    const subscription = subscribeFn(job_order_guid).subscribe({
+    const subscription = subscribeFn(sot_guid).subscribe({
       next: (response) => {
         console.log('Received data:', response);
+        const data = response.data
+        if (this.sot && this.sot_guid) {
+          this.sot.tank_status_cv = data?.onPurposeChanged?.tank_status;
+          const purpose: any = data?.onPurposeChanged?.purpose;
+  
+          if (purpose === 'STEAMING') {
+            this.sot.purpose_steam = true;
+            this.subs.sink = this.steamDS.getSteamForMovement(this.sot_guid).subscribe(data => {
+              if (this.steamDS.totalCount > 0) {
+                console.log(`steam: `, data)
+                this.steamItem = data;
+              }
+            });
+          } else if (purpose === 'CLEANING') {
+            this.sot.purpose_cleaning = true;
+            this.subs.sink = this.residueDS.getResidueForMovement(this.sot_guid).subscribe(data => {
+              if (this.residueDS.totalCount > 0) {
+                console.log(`residue: `, data)
+                this.residueItem = data;
+              }
+            });
+            this.subs.sink = this.cleaningDS.getCleaningForMovement(this.sot_guid).subscribe(data => {
+              if (this.cleaningDS.totalCount > 0) {
+                console.log(`cleaning: `, data)
+                this.cleaningItem = data;
+              }
+            });
+          } else if (purpose === 'REPAIR') {
+            this.sot.purpose_repair_cv = purpose;
+            this.subs.sink = this.repairDS.getRepairForMovement(this.sot_guid).subscribe(data => {
+              if (this.repairDS.totalCount > 0) {
+                console.log(`repair: `, data);
+                this.repairItem = data;
+                this.displayColumnChanged();
+              }
+            });
+          } else if (purpose === 'STORAGE') {
+            this.sot.purpose_cleaning = true;
+          }
+        }
       },
       error: (error) => {
         console.error('Error:', error);
@@ -1579,6 +1628,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       }
     });
 
-    this.jobOrderSubscriptions.push(subscription);
+    this.sotPurposeChangeSubscriptions.push(subscription);
   }
 }
