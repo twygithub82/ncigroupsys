@@ -1,0 +1,135 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h3>{{this.getPageTitle()}} </h3>
+      </div>
+    </div>
+    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button> -->
+  </div>
+  <div mat-dialog-content class="auto-height">
+    <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
+        <div class="card">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.NAME}}</mat-label>
+                        <input matInput formControlName="name" type="text" required>
+                        @if (pcForm.get('name')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.NAME }} {{translatedLangText.CARGO_REQUIRED }}
+                          </mat-error>
+                          }
+                      </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.PHONE}}</mat-label>
+                <input matInput formControlName="contact" type="text" >
+              
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.EMAIL}}</mat-label>
+                <input matInput formControlName="email" type="text" >
+              
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.USERNAME}}</mat-label>
+                        <input matInput formControlName="username" type="text" required>
+                        @if (pcForm.get('username')?.hasError('required')) {
+                          <mat-error>
+                            {{translatedLangText.USERNAME }} {{translatedLangText.CARGO_REQUIRED }}
+                          </mat-error>
+                          }
+                      </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.PASSWORD}}</mat-label>
+                <input matInput formControlName="pwd" type="text" >
+              
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.CONFIRM_PASSWORD}}</mat-label>
+                <input matInput formControlName="confirm_pwd" type="text" >
+              
+              </mat-form-field>
+            </div>
+          </div>
+          <!-- <div class="row">
+            <div class="materialTableHeader">
+            </div>
+            <div class="body overflow-auto">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
+                  
+                  <ng-container matColumnDef="fName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE }}:</span>{{row.customer_company.code}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="lName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="email">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.DESCRIPTION }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.DESCRIPTION }}:</span>{{row.tariff_residue?.description}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="gender">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COST }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.COST }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="bDate">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.STANDARD_COST }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                      <span class="mobile-label">{{translatedLangText.COST }}:</span>{{row.tariff_residue.cost.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" 
+                    [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+            </div>
+          </div> -->
+
+        </div>
+        </div>
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+          <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+        }
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -54,18 +54,13 @@ import {SearchCriteriaService} from 'app/services/search-criteria.service';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { PackageDepotDS,PackageDepotItem,PackageDepotGO } from 'app/data-sources/package-depot';
-import { TariffDepotDS,TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { pack } from 'd3';
-import { TariffResidueDS,TariffResidueItem } from 'app/data-sources/tariff-residue';
-import { PackageResidueItem,PackageResidueDS } from 'app/data-sources/package-residue';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-
 
 @Component({
-  selector: 'app-user',
+  selector: 'app-package-depot',
   standalone: true,
-  templateUrl: './user.component.html',
-  styleUrl: './user.component.scss',
+  templateUrl: './package-depot.component.html',
+  styleUrl: './package-depot.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -98,25 +93,24 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 })
 
 
-export class UserComponent extends UnsubscribeOnDestroyAdapter
+export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
-   // 'select',
-     //'desc',
+    //'select',
+    // 'img',
      'fName',
      'lName',
-     'mobile',
-    // 'gender',
-     'bDate',
-     
      'email',
+     'gender',
+    // 'bDate',
+    // 'mobile',
     // 'actions',
   ];
 
-  pageTitle = 'MENUITEMS.MASTER.LIST.USER'
+  pageTitle = 'MENUITEMS.PACKAGE.LIST.PACKAGE-DEPOT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.MASTER.TEXT'
+    'MENUITEMS.PACKAGE.TEXT'
   ]
 
   PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
@@ -138,21 +132,14 @@ implements OnInit {
 
   customerCodeControl = new UntypedFormControl();
   categoryControl= new UntypedFormControl();
-  descriptionControl = new UntypedFormControl();
-  handledItemControl = new UntypedFormControl();
 
-  storageCalCvList : CodeValuesItem[]=[];
-  handledItemCvList: CodeValuesItem[] = [];
-  CodeValuesDS?:CodeValuesDS;
-  
+  packDepotDS : PackageDepotDS;
   ccDS: CustomerCompanyDS;
-  // tariffResidueDS:TariffResidueDS;
-  // packResidueDS:PackageResidueDS;
  // clnCatDS:CleaningCategoryDS;
   custCompDS :CustomerCompanyDS;
 
-  packResidueItems:PackageResidueItem[]=[];
- 
+  packDepotItems:PackageDepotItem[]=[];
+  
   custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
   customer_companyList: CustomerCompanyItem[]=[];
   cleaning_categoryList?: CleaningCategoryItem[];
@@ -170,7 +157,7 @@ implements OnInit {
   searchField: string = "";
    exampleDatabase?: AdvanceTableService;
    dataSource!: ExampleDataSource;
-  selection = new SelectionModel<PackageResidueItem>(true, []);
+  selection = new SelectionModel<CustomerCompanyCleaningCategoryItem>(true, []);
   
   id?: number;
   advanceTable?: AdvanceTable;
@@ -181,7 +168,6 @@ implements OnInit {
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
-    CUSTOMER:"COMMON-FORM.CUSTOMER",
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -236,40 +222,33 @@ implements OnInit {
     CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
     CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
     CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST :'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    CARGO_ALERT :'COMMON-FORM.CARGO-ALERT',
+    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     EMAIL:'COMMON-FORM.EMAIL',
     PHONE:'COMMON-FORM.PHONE',
-    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
-    VIEW:'COMMON-FORM.VIEW',
-    DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
-    PREINSPECTION_COST:"COMMON-FORM.PREINSPECTION-COST",
-    LOLO_COST:"COMMON-FORM.LOLO-COST",
-    STORAGE_COST:"COMMON-FORM.STORAGE-COST",
-    FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
-    STANDARD_COST:"COMMON-FORM.STANDARD-COST",
-    CUSTOMER_COST:"COMMON-FORM.CUSTOMER-COST",
-    STORAGE_CALCULATE_BY:"COMMON-FORM.STORAGE-CALCULATE-BY",
-    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
-    COST:"COMMON-FORM.COST",
-    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
-    ALIAS_NAME:'COMMON-FORM.ALIAS-NAME',
-    CONTACT_PERSON:"COMMON-FORM.CONTACT-PERSON",
-    MOBILE_NO:"COMMON-FORM.MOBILE-NO",
-    DID:"COMMON-FORM.DID",
-    COUNTRY:"COMMON-FORM.COUNTRY",
-    LAST_UPDATE:"COMMON-FORM.LAST-UPDATED",
-    FAX_NO:"COMMON-FORM.FAX-NO",
-    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
      }
   
   constructor(
-    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
@@ -283,11 +262,9 @@ implements OnInit {
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.tariffResidueDS = new TariffResidueDS(this.apollo);
-    // this.packResidueDS= new PackageResidueDS(this.apollo);
-    this.custCompDS=new CustomerCompanyDS(this.apollo);
     
-    this.CodeValuesDS=new CodeValuesDS(this.apollo);
+    this.custCompDS=new CustomerCompanyDS(this.apollo);
+    this.packDepotDS = new PackageDepotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -298,40 +275,13 @@ implements OnInit {
   ngOnInit() {
     this.loadData();
     this.translateLangText();
-    var state = history.state;
-    if(state.type=="customer-company")
-    {
-      let showResult = state.pagination.showResult;
-      if(showResult)
-      {
-      this.searchCriteriaService=state.pagination.where;
-      this.pageIndex=state.pagination.pageIndex;
-      this.pageSize= state.pagination.pageSize;
-      this.hasPreviousPage=state.pagination.hasPreviousPage;
-      this.startCursor=state.pagination.startCursor;
-      this.endCursor=state.pagination.endCursor;
-      this.previous_endCursor=state.pagination.previous_endCursor;
-      this.paginator.pageSize=this.pageSize;
-      this.paginator.pageIndex=this.pageIndex;
-      this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-      }
-
-    }
   }
 
   initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{value:''}],
-      customer_code: this.customerCodeControl,
-      alias_name:[''],
-      phone:[''],
-      fax_no:[''],
-      email:[''],
-      country:[''],
-      contact_person:[''],
-      mobile_no:[''],
-      description: this.descriptionControl,
-      handled_item_cv : this.handledItemControl
+      customer_code: this.customerCodeControl
+     
     });
   }
 
@@ -342,7 +292,6 @@ implements OnInit {
   refresh() {
     this.loadData();
   }
-
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -363,22 +312,25 @@ implements OnInit {
     event.preventDefault(); // Prevents the form submission
   }
 
-  adjustCost()
-  {
+  
+  editCall(row: CustomerCompanyCleaningCategoryItem) {
+   // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    if(this.selection.isEmpty()) return;
+    var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent,{
-      width: '720px',
+      
+      width: '700px',
       height:'auto',
       data: {
-        action: 'update',
+        action: 'new',
         langText: this.langText,
-        selectedItems:this.selection.selected
+        selectedItem:row
       },
       position: {
         top: '50px'  // Adjust this value to move the dialog down from the top of the screen
@@ -387,95 +339,15 @@ implements OnInit {
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result>0) {
-          //if(result.selectedValue>0)
-         // {
-            this.handleSaveSuccess(result);
-            this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-          //}
-      }
+         //if (result) {
+          if(result>0)
+            {
+              this.handleSaveSuccess(result);
+              //this.search();
+              //this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+            }
+      //}
       });
-  }
-  
-  addCall(event: Event)
-  {
-    event.stopPropagation(); // Stop the click event from propagating
-    // Navigate to the route and pass the JSON object
-       this.router.navigate(['/admin/master/customer/new/ '], {
-         state: { id: '' ,
-           type:'customer-company',
-           pagination:{
-             where :this.lastSearchCriteria,
-             pageSize:this.pageSize,
-             pageIndex:this.pageIndex,
-             hasPreviousPage:this.hasPreviousPage,
-             startCursor:this.startCursor,
-             endCursor:this.endCursor,
-             previous_endCursor:this.previous_endCursor,
-             
-             showResult: this.ccDS.totalCount>0
-             
-           }
-         }
-       });
-  }
-
-  
-
-  editCall(row: CustomerCompanyItem) {
-
-    this.router.navigate([`/admin/master/customer/new/${row.guid} `], {
-      state: { id: row.guid ,
-        type:'customer-company',
-        selectedRow:row,
-        pagination:{
-          where :this.lastSearchCriteria,
-          pageSize:this.pageSize,
-          pageIndex:this.pageIndex,
-          hasPreviousPage:this.hasPreviousPage,
-          startCursor:this.startCursor,
-          endCursor:this.endCursor,
-          previous_endCursor:this.previous_endCursor,
-          
-          showResult: this.ccDS.totalCount>0
-          
-        }
-      }
-    });
-   // this.preventDefault(event);  // Prevents the form submission
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // var rows :PackageResidueItem[] =[] ;
-    // rows.push(row);
-    // const dialogRef = this.dialog.open(FormDialogComponent,{
-      
-    //   width: '720px',
-    //   height:'auto',
-    //   data: {
-    //     action: 'update',
-    //     langText: this.langText,
-    //     selectedItems:rows
-    //   },
-    //   position: {
-    //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-    //   }
-        
-    // });
-
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //      //if (result) {
-    //       if(result>0)
-    //         {
-    //           this.handleSaveSuccess(result);
-    //           //this.search();
-    //           this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-    //         }
-    //   //}
-    //   });
    
   }
 
@@ -490,7 +362,7 @@ implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packResidueItems.length;
+    const numRows = this.custCompClnCatItems.length;
     return numSelected === numRows;
   }
 
@@ -502,7 +374,7 @@ implements OnInit {
   masterToggle() {
      this.isAllSelected()
        ? this.selection.clear()
-       : this.packResidueItems.forEach((row) =>
+       : this.custCompClnCatItems.forEach((row) =>
            this.selection.select(row)
          );
   }
@@ -524,66 +396,38 @@ implements OnInit {
         }
     }
 
-    if (this.pcForm!.value["alias"]) {
-       where.alias  = { contains: this.pcForm!.value["alias"] };
-    }
-
-    // if (this.pcForm!.value["fax_no"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
+    // if (this.categoryControl.value) {
+    //   if(this.categoryControl.value.length>0)
+    //   {
+    //     const guids = this.categoryControl.value;
+    //     where.cleaning_category_guid = { in: guids };
+    //   }
     // }
 
-    // if (this.pcForm!.value["phone"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
+    // if (this.pcForm!.value["min_cost"])
+    // {
+    //   const minCost :number = Number(this.pcForm!.value["min_cost"]);
+    //   where.adjusted_price ={gte:minCost}
     // }
 
-
-    // if (this.pcForm!.value["email"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
-    // }
-
-    if (this.pcForm!.value["country"]) {
-       where.country  = { eq: this.pcForm!.value["country"] };
-    }
-
-    if (this.pcForm!.value["contact_person"]) {
-       where.cc_contact_person  = { some: { name: { eq:  this.pcForm!.value["contact_person"] } } }  ;
-    }
-
-
+    // if (this.pcForm!.value["max_cost"])
+    //   {
+    //     const maxCost :number = Number(this.pcForm!.value["max_cost"]);
+    //     where.adjusted_price ={ngte:maxCost}
+    //   }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.ccDS.search(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+    this.subs.sink = this.custCompDS.search(where,this.lastOrderBy,this.pageSize).subscribe(data => {
        this.customer_companyList=data;
-              // data[0].storage_cal_cv
        this.previous_endCursor=undefined;
-       this.endCursor = this.ccDS.pageInfo?.endCursor;
-       this.startCursor = this.ccDS.pageInfo?.startCursor;
-       this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.custCompDS.pageInfo?.endCursor;
+       this.startCursor = this.custCompDS.pageInfo?.startCursor;
+       this.hasNextPage = this.custCompDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.custCompDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
-       if(!this.hasPreviousPage)
-        this.previous_endCursor=undefined;
     });
   }
-
-  selectStorageCalculateCV_Description(valCode?:string):string
-  {
-    let valCodeObject: CodeValuesItem = new CodeValuesItem();
-    if(this.storageCalCvList.length>0)
-    {
-      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode)|| new CodeValuesItem();
-      
-      // If no match is found, description will be undefined, so you can handle it accordingly
-      
-    }
-    return valCodeObject.description || '-';
-    
-  }
-
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
@@ -642,17 +486,15 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.ccDS.search(where,order,first,after,last,before).subscribe(data => {
+      this.subs.sink = this.custCompDS.search(where,order,first,after,last,before).subscribe(data => {
         this.customer_companyList=data;
-        this.endCursor = this.ccDS.pageInfo?.endCursor;
-        this.startCursor = this.ccDS.pageInfo?.startCursor;
-        this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.custCompDS.pageInfo?.endCursor;
+        this.startCursor = this.custCompDS.pageInfo?.startCursor;
+        this.hasNextPage = this.custCompDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.custCompDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
-        if(!this.hasPreviousPage)
-          this.previous_endCursor=undefined;
      });
     }
   
@@ -676,26 +518,37 @@ implements OnInit {
   }
 
   removeSelectedRows() {
-   
+    // const totalSelect = this.selection.selected.length;
+    // this.selection.selected.forEach((item) => {
+    //   const index: number = this.dataSource.renderedData.findIndex(
+    //     (d) => d === item
+    //   );
+    //   // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
+    //   this.exampleDatabase?.dataChange.value.splice(index, 1);
+    //   this.refreshTable();
+    //   this.selection = new SelectionModel<AdvanceTable>(true, []);
+    // });
+    // this.showNotification(
+    //   'snackbar-danger',
+    //   totalSelect + ' Record Delete Successfully...!!!',
+    //   'bottom',
+    //   'center'
+    // );
   }
   public loadData() {
 
-    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' },100).subscribe(data => {
+    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
      // this.customer_companyList1 = data
     });
 
-    // this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});
+    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
+    //   if(this.clnCatDS.totalCount>0)
+    //   {
+    //     this.cleaning_categoryList=data;
+    //   }
 
-    // const queries = [
-    //   { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
-     
-    // ];
-    // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
-    //   this.handledItemCvList=data;
     // });
 
-   
   
   }
   showNotification(
@@ -749,55 +602,5 @@ implements OnInit {
     }
     return null;
   }
-
-  displayLastUpdated(r: PackageResidueItem) {
-    var updatedt= r.update_dt;
-    if(updatedt===null)
-    {
-      updatedt= r.create_dt;
-    }
-    const date = new Date(updatedt! * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();   
-
-   // Replace the '/' with '-' to get the required format
- 
-
-    return `${day}/${month}/${year}`;
-
-  }
-
-
-  resetDialog(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
-  }
-
-  resetForm() {
-    this.initPcForm();
-    this.customerCodeControl.reset();
-  }
-
- 
-
 }
 

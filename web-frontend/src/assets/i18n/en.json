@@ -151,6 +151,17 @@
         "BILLING-BRANCH-EDIT": "Edit Billing Branch"
       }
     },
+    "MANAGEMENT": {
+      "TEXT": "Management",
+      "LIST": {
+        "USER": "User",
+        "USER-NEW": "New User",
+        "USER-EDIT": "Edit User",
+        "GROUP": "Group",
+        "GROUP-NEW": "New Group",
+        "GROUP-EDIT": "Edit Group"
+      }
+    },
     "NEW": {
       "TEXT": "New"
     },
@@ -226,6 +237,7 @@
     "SIGNIN": "Sign in",
     "USERNAME": "Username",
     "PASSWORD": "Password",
+    "CONFIRM-PASSWORD":"Confirm Password",
     "REMEMBER": "Remember me",
     "FORGOTPASSWORD": "Forgot password?",
     "LOGIN": "Login"
@@ -764,8 +776,6 @@
     "TIME":"Time",
     "SELECTED-RECORD":"Selected Record",
     "COMPLETE-STEAM":"Complete Steaming"
-    
-    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

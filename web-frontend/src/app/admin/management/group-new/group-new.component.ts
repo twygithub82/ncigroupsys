@@ -62,10 +62,10 @@ import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } fr
 import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 
 @Component({
-  selector: 'app-user-new',
+  selector: 'app-group-new',
   standalone: true,
-  templateUrl: './user-new.component.html',
-  styleUrl: './user-new.component.scss',
+  templateUrl: './group-new.component.html',
+  styleUrl: './group-new.component.scss',
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -100,7 +100,7 @@ import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
     TlxFormFieldComponent,
   ]
 })
-export class UserNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class GroupNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'index',
     'group_name_cv',
@@ -114,11 +114,11 @@ export class UserNewComponent extends UnsubscribeOnDestroyAdapter implements OnI
    // 'material',
     'actions'
   ];
-  pageTitleNew = 'MENUITEMS.MASTER.LIST.CUSTOMER-NEW'
-  pageTitleEdit = 'MENUITEMS.MASTER.LIST.CUSTOMER-EDIT'
+  pageTitleNew = 'MENUITEMS.MANAGEMENT.LIST.GROUP-NEW'
+  pageTitleEdit = 'MENUITEMS.MANAGEMENT.LIST.GROUP-EDIT'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
-    'MENUITEMS.REPAIR.LIST.ESTIMATE'
+    'MENUITEMS.MANAGEMENT.TEXT'
   ]
   translatedLangText: any = {}
   langText = {

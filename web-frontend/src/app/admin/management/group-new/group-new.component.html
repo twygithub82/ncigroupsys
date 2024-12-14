@@ -1,0 +1,616 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="this.customer_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
+        [active_item]="this.customer_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
+    </div>
+    <form class="ms-0" [formGroup]="ccForm!" (ngSubmit)="onCustomerFormSubmit()" #formDirective="ngForm">
+      <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.GROUP_DETAILS}}
+              </h2>
+            </div>
+            <div class="body">
+            
+             
+              <div class="row">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
+                    <input matInput formControlName="customer_code" required>
+                    @if (ccForm?.get('customer_code')?.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
+                    @if (ccForm?.get('customer_code')?.hasError('existed')) {
+                        <mat-error>
+                          {{this.translatedLangText.CUSTOMER_CODE}} {{this.translatedLangText.EXISTED}}
+                        </mat-error>
+                        }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CUSTOMER_TYPE }}</mat-label>
+                      <mat-select  formControlName="customer_type" required >
+                          <mat-option *ngFor="let cc of this.customerTypeCvList" [value]="cc">
+                           
+                            <ng-container *ngIf="cc !== null">
+                              {{ cc.description }}
+                            </ng-container>
+                           
+                          </mat-option>
+                        </mat-select>
+                     
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CUSTOMER_NAME }}</mat-label>
+                      <input matInput formControlName="customer_name" required >
+                      @if (ccForm?.get('customer_name')?.hasError('required')) {
+                        <mat-error>
+                          {{this.translatedLangText.CUSTOMER_NAME}} {{this.translatedLangText.SO_REQUIRED}}
+                        </mat-error>
+                        }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
+
+                      <input matInput formControlName="billing_branches" [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                      @for (cc of customer_companyList; track cc) {
+                      <mat-option [value]="cc">
+                        {{ccDS.displayName(cc)}}
+                      </mat-option>
+                      }
+                    </mat-autocomplete>
+                      <!-- <mat-select  formControlName="billing_branches">
+                        <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
+                         
+                          <ng-container *ngIf="cc !== null">
+                            {{ ccDS.displayName(cc) }}
+                          </ng-container>
+                         
+                        </mat-option>
+                      </mat-select> -->
+                     
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addBillingBranch($event)">
+                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.BILLING_BRANCH}}
+                  </button>
+                  
+                </div>
+              </div>
+              <div class="row">
+            
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.PHONE }}</mat-label>
+                      <input matInput formControlName="phone" required>
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.EMAIL }}</mat-label>
+                      <input matInput formControlName="email" required>
+                      @if (ccForm?.get('email')?.hasError('required')) {
+                        <mat-error>
+                          {{this.translatedLangText.EMAIL}} {{this.translatedLangText.SO_REQUIRED}}
+                        </mat-error>
+                        }
+                        
+                      @if (ccForm?.get('email')?.hasError('email')) {
+                        <mat-error>
+                        {{this.translatedLangText.EMAIL}} {{this.translatedLangText.INVALID_FORMAT}}
+                        </mat-error>
+                      }
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.WEB }}</mat-label>
+                      <input matInput formControlName="web" >
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CONVERSION_CURRENCY }}</mat-label>
+                      <mat-select  formControlName="currency" required>
+                          <mat-option *ngFor="let cc of this.currencyList" [value]="cc">
+                           
+                            <ng-container *ngIf="cc !== null">
+                              {{cc.currency_code }}
+                            </ng-container>
+                           
+                          </mat-option>
+                        </mat-select>
+                        @if (ccForm?.get('currency')?.hasError('required')) {
+                          <mat-error>
+                            {{this.translatedLangText.CONVERSION_CURRENCY}} {{this.translatedLangText.SO_REQUIRED}}
+                          </mat-error>
+                          }
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.DEFAULT_PROFILE }}</mat-label>
+                      <mat-select  formControlName="default_profile" required >
+                          <mat-option *ngFor="let t of this.tankItemList" [value]="t">
+                           
+                            <ng-container *ngIf="t !== null">
+                              {{ t.unit_type }}
+                            </ng-container>
+                           
+                          </mat-option>
+                        </mat-select>
+                        @if (ccForm?.get('default_profile')?.hasError('required')) {
+                          <mat-error>
+                            {{this.translatedLangText.DEFAULT_PROFILE}} {{this.translatedLangText.SO_REQUIRED}}
+                          </mat-error>
+                          }
+                  </mat-form-field>
+                  
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.ADDRESS_LINE1}}</mat-label>
+                    <input matInput formControlName="address1" required>
+                    @if (ccForm?.get('address1')?.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.ADDRESS_LINE1}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.ADDRESS_LINE2 }}</mat-label>
+                      <input matInput formControlName="address2">
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.POSTAL_CODE }}</mat-label>
+                      <input matInput formControlName="postal_code" required maxlength="10">
+                      @if (ccForm?.get('postal_code')?.hasError('required')) {
+                        <mat-error>
+                        {{this.translatedLangText.POSTAL_CODE}} {{this.translatedLangText.SO_REQUIRED}}
+                        </mat-error>
+                      }
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CITY_NAME }}</mat-label>
+                      <input matInput formControlName="city_name">
+                  </mat-form-field>
+                  
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
+                      <input matInput formControlName="country" required>
+                  </mat-form-field>
+                  
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                    <input matInput formControlName="remarks" >
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    (click)="addContactPerson($event)">
+                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.CONTACT_PERSON}}
+                  </button>
+                  <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
+                    {{translatedLangText.CLEAR_ALL}}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.CONTACT_PERSON_DETAILS}}
+              </h2>
+            </div>
+            <div class="body">
+              <mat-divider></mat-divider>
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                  <div class="responsive_table">
+                    <table mat-table [dataSource]="repList" matSort
+                      class="mat-cell advance-table striped-rows hover-highlight">
+                       <!-- Index Column -->
+                      <ng-container matColumnDef="index">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          #
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; let i = index"
+                          [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{i + 1}} <!-- Add 1 if you want to display index starting from 1 -->
+                        </mat-cell>
+                      </ng-container>
+                      <!-- ID Column -->
+                      <ng-container matColumnDef="group_name_cv">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{translatedLangText.CONTACT_PERSON}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-label">{{translatedLangText.CONTACT_PERSON}}:</span>
+                          {{row.name}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="subgroup_name_cv">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.JOB_TITLE}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-label">{{translatedLangText.JOB_TITLE}}:</span>
+                          {{row.job_title}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="damage">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.DEPARTMENT}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="truncate-text">
+                            <span class="mobile-label">{{translatedLangText.DEPARTMENT}}:</span>
+                            <span >
+                              {{row.department}}
+                            </span>
+                          </span>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="repair">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.EMAIL}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-label">{{translatedLangText.EMAIL}}:</span>
+                          {{row.email}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="description">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.DID}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-label">{{translatedLangText.DID}}:</span>
+                          {{row.did}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="quantity">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          mat-sort-header>
+                          {{translatedLangText.MOBILE_NO}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span class="mobile-label">{{translatedLangText.MOBILE_NO}}:</span>
+                          {{row.phone}}
+                        </mat-cell>
+                      </ng-container>
+                      <!-- actions -->
+                      <ng-container matColumnDef="actions">
+                        <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
+                        </mat-header-cell>
+                        <!-- <mat-cell *matCellDef="let row; let i=index;" class="pr-0"
+                          [ngClass]="'tbl-col-width-per-10 justify-content-end'">
+                          <button mat-icon-button color="primary" (click)="handleDuplicateRow($event, row)"
+                            [matTooltip]="translatedLangText.DUPLICATE" class="tbl-action-btn">
+                            <mat-icon [class]="''">add_to_photos</mat-icon>
+                          </button>
+                          @if (row.status_cv === "WAITING" || !row.status_cv) {
+                          <button mat-icon-button color="accent" (click)="handleDelete($event, row, i)"
+                            [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                            <mat-icon [class]="'tbl-fav-delete'">delete_forever</mat-icon>
+                          </button>
+                          }
+                        </mat-cell> -->
+                         <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
+                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                            <mat-icon>more_vert</mat-icon>
+                          </button>
+                          <mat-menu #menu="matMenu">
+                            <!-- @if (soDS.canAdd(storingOrderItem)) {
+                            <button mat-menu-item (click)="handleDuplicateRow($event, row)">
+                              <mat-icon>add_to_photos</mat-icon>
+                              <span>{{translatedLangText.DUPLICATE}}</span>
+                            </button>
+                            } -->
+                            <!-- @if (!row.actions.includes('delete')){ -->
+                            <button mat-menu-item (click)="handleDelete($event, row, i)">
+                              <mat-icon>delete_forever</mat-icon>
+                              <span>{{translatedLangText.DELETE}}</span>
+                            </button>
+                          <!-- } -->
+                            <!-- @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
+                            <button mat-menu-item (click)="cancelItem($event, row)">
+                              <mat-icon>cancel</mat-icon>
+                              <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                                ""}}{{translatedLangText.CANCEL}}</span>
+                            </button>
+                            }
+                            @if (!row.actions.includes('rollback') && sotDS.canRollbackStatus(row)) {
+                            <button mat-menu-item (click)="rollbackItem($event, row)">
+                              <mat-icon>undo</mat-icon>
+                              <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
+                                ""}}{{translatedLangText.ROLLBACK_STATUS}}</span>
+                            </button>
+                            } -->
+                            <!-- @if (row.actions.includes('cancel')) {
+                            <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
+                              <mat-icon>undo</mat-icon>
+                              <span>{{translatedLangText.UNDO}} {{translatedLangText.CANCEL}}</span>
+                            </button>
+                            }
+                            @if (row.actions.includes('rollback')) {
+                            <button mat-menu-item (click)="undoAction($event, row, 'rollback')">
+                              <mat-icon>undo</mat-icon>
+                              <span>{{translatedLangText.UNDO}} {{translatedLangText.ROLLBACK_STATUS}}</span>
+                            </button>
+                            }  -->
+                          </mat-menu>
+                        </mat-cell> 
+                      </ng-container>
+                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
+                        [ngClass]="{'deleted-row': row.delete_dt, 'edited-row': row.guid && !row.delete_dt && row.edited}"
+                        (click)="editContactPerson($event, row, i)" [style.cursor]="'pointer'" matRipple>
+                      </mat-row>
+                    </table>
+                  </div>
+                  @if (!repList.data.length) {
+                  <mat-divider></mat-divider>
+                  <div class="no-results m-l-20 pt-3" [style.display]="repList.data.length === 0 ? '' : 'none'">
+                    <h5 class="m-b-15">{{translatedLangText.NO_CONTACT_PERSON}}</h5>
+                  </div>
+                  }
+                  <!-- @if (sotDS.loading$ | async) {
+                  <div class="tbl-spinner">
+                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                    </mat-progress-spinner>
+                  </div>
+                  } -->
+                </div>
+              </div>
+              
+              <mat-divider></mat-divider>
+            
+              <mat-error *ngIf="ccForm?.get('repList')?.hasError('required')">
+                {{ translatedLangText.ADD_ATLEAST_ONE }}
+              </mat-error>
+              <div class="row m-t-5">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                  <button mat-flat-button type="button" aria-label="Back to previous page"  (click)="GoBackPrevious($event)">
+                    <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                  </button>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                  @if (isAnyItemEdited()) {
+                  <button mat-flat-button color="primary" >
+                    <!-- <mat-icon>
+                      @if (!(soDS.loading$ | async)) {
+                      save
+                      } @else if ((soDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon> -->
+                    {{translatedLangText.SAVE_AND_SUBMIT}}
+                  </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{translatedLangText.ESTIMATE_SUMMARY}}
+              </h2>
+            </div>
+            <div class="body">
+              @if (soDS.loadingSubject | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              @if (!(soDS.loadingSubject | async)) {
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                  <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="background-color: lightgray;">
+                      {{translatedLangText.REMARKS}}
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <mat-form-field class="example-full-width">
+                        <textarea matInput formControlName="remarks" style="height:120px ;"></textarea>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                  <div class="row">
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 mb-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="background-color: lightgray;">
+                          {{translatedLangText.DESCRIPTION}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="font-size: 18px;">
+                          {{translatedLangText.LABOUR}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="font-size: 18px;">
+                          {{translatedLangText.MATERIAL_COST}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="font-size: 18px;">
+                          {{translatedLangText.TOTAL_COST}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="font-size: 18px;">
+                          {{translatedLangText.LABOUR_DISCOUNT}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="font-size: 18px;">
+                          {{translatedLangText.MATERIAL_DISCOUNT}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="font-size: 18px;">
+                          {{translatedLangText.NET_COST}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-0" >
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="background-color: lightgray;text-align: center;">
+                          {{translatedLangText.RATE}}
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <input matInput formControlName="labour_rate" type="number"  style="text-align: right;width:100%" readonly>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <input matInput  type="number"  style="visibility: hidden;width:100%" >
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <input matInput  type="number"  style="visibility: hidden;width:100%" >
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <input matInput formControlName="labour_discount" type="number"  style="text-align: right;width:100%" >
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <input matInput  formControlName="material_discount" type="number"  style="text-align: right;width:100%" >
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                          <input matInput  type="number" style="visibility: hidden; width:100%" >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-0" >
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0" style="background-color: lightgray;text-align: center;">
+                          {{translatedLangText.TOTAL}}
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput  formControlName="labour_additional" type="number"  style="text-align: right; width:100%" readonly>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput  formControlName="labour_total" type="number"  style="text-align: right; width:100%" readonly>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput  type="number"  style="visibility: hidden; width:100%">
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput  formControlName="total_material_cost" type="number"  style="text-align: right; width:100%" readonly>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput  type="number"  style="visibility: hidden; width:100%">
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput formControlName="total_cost" type="number"  style="text-align: right; width:100%" readonly>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput formControlName="labour_discount_amount" type="number"  style="visibility: hidden; width:100%" readonly>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput formControlName="labour_discount_amount" type="number"  style="text-align: right; width:100%" readonly>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput  type="number"  style="visibility: hidden; width:100%">
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput formControlName="material_discount_amount" type="number"  style="text-align: right; width:100%" readonly>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput  type="number"  style="visibility: hidden; width:100%">
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                          <input matInput formControlName="net_cost" type="number"  style="text-align: right; width:100%" readonly>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              }
+              <div class="row m-t-5">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                   <button mat-flat-button type="button" aria-label="Back to previous page"
+                    (click)="GoBackPrevious($event)" >
+                    <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                  </button>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                  @if (isAnyItemEdited()) {
+                  <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)">
+                    <mat-icon>
+                      @if (!(soDS.loading$ | async)) {
+                      save
+                      } @else if ((soDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.SAVE_AND_SUBMIT}}
+                  </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </form>
+  </div>
+</section>

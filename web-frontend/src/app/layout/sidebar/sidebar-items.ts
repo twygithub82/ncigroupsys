@@ -338,17 +338,6 @@ export const ROUTES: RouteInfo[] = [
         submenu: []
       },
       {
-        path: "admin/master/user",
-        title: "MENUITEMS.MASTER.LIST.USER",
-        iconType: "",
-        icon: "",
-        class: "ml-menu",
-        groupTitle: false,
-        badge: "",
-        badgeClass: "",
-        submenu: []
-      },
-      {
         path: "admin/master/billing-branch",
         title: "MENUITEMS.MASTER.LIST.BILLING-BRANCH",
         iconType: "",
@@ -698,6 +687,52 @@ export const ROUTES: RouteInfo[] = [
         submenu: [],
       }
     ]
+  },
+  {
+    path: "admin/management",
+    title: "MENUITEMS.MANAGEMENT.TEXT",
+    iconType: "material",
+    icon: "business_center",
+    class: "menu-toggle",
+    groupTitle: false,
+    badge: "",
+    badgeClass: "",
+    submenu: [
+      {
+        path: "admin/management/user",
+        title: "MENUITEMS.MANAGEMENT.LIST.USER",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
+        path: "admin/management/group",
+        title: "MENUITEMS.MANAGEMENT.LIST.GROUP",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: []
+      },
+      {
+        path: "admin/cleaning-groups",
+        title: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-GROUPS",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+        visible: false
+      }
+    ].filter(item => item.visible !== false),
   },
   // {
   //   path: "advance-table",
