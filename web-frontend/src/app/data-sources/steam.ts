@@ -40,7 +40,6 @@ export class SteamGO {
 
   public total_cost?: number;
 
-
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -55,8 +54,6 @@ export class SteamGO {
   // public total_cost?: number;
   // public owner_enable?: boolean;
   // public total_hour?: number;
-
-
 
   constructor(item: Partial<SteamGO> = {}) {
     this.guid = item.guid;
@@ -103,13 +100,12 @@ export class SteamItem extends SteamGO {
 }
 
 export class SteamTemp {
-
-  public guid?:string;
-  public bottom_temp?:number;
-  public top_temp?:number;
-  public meter_temp?:number;
-  public job_order_guid?:string;
-  public remarks?:string;
+  public guid?: string;
+  public bottom_temp?: number;
+  public top_temp?: number;
+  public meter_temp?: number;
+  public job_order_guid?: string;
+  public remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -117,18 +113,18 @@ export class SteamTemp {
   public delete_dt?: number;
   public report_dt?: number;
 
-  public job_order?:JobOrderItem;
+  public job_order?: JobOrderItem;
 
   constructor(item: Partial<SteamTemp> = {}) {
-   
-    this.report_dt=item.report_dt;
+
+    this.report_dt = item.report_dt;
     this.guid = item.guid;
     this.bottom_temp = item.bottom_temp;
     this.top_temp = item.top_temp;
     this.meter_temp = item.meter_temp;
     this.job_order_guid = item.job_order_guid;
     this.remarks = item.remarks;
-    this.job_order=item.job_order;
+    this.job_order = item.job_order;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -136,14 +132,14 @@ export class SteamTemp {
     this.delete_dt = item.delete_dt;
   }
 }
-export class SteamPartRequest{
-  public approve_part?:boolean;
+export class SteamPartRequest {
+  public approve_part?: boolean;
   public guid?: string;
   constructor(item: Partial<SteamPartRequest> = {}) {
 
     this.guid = item.guid;
     this.approve_part = item.approve_part;
-    
+
   }
 }
 
@@ -152,14 +148,14 @@ export class SteamStatusRequest {
   public action?: string;
   public remarks?: string;
   public sot_guid?: string;
-  public steamingPartRequests?:SteamPartRequest[];
+  public steamingPartRequests?: SteamPartRequest[];
   //public aspnetsuser?: UserItem;
 
   constructor(item: Partial<SteamStatusRequest> = {}) {
 
     this.guid = item.guid;
     this.sot_guid = item.sot_guid;
-    this.steamingPartRequests=item.steamingPartRequests;
+    this.steamingPartRequests = item.steamingPartRequests;
     // this.aspnetsuser = item.aspnetsuser;
     this.action = item.action;
     this.remarks = item.remarks;
@@ -514,6 +510,10 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
           job_order {
             guid
             status_cv
+            steaming_temp {
+              meter_temp
+              delete_dt
+            }
           }
         }
       }
@@ -528,7 +528,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
   }
 `;
 
-export const RECORD_STEAM_TEMP= gql`
+export const RECORD_STEAM_TEMP = gql`
  mutation recordSteamingTemp($steamingTemp: steaming_tempInput!,$action:String!,$requiredTemp:Float!) {
     recordSteamingTemp(steamingTemp: $steamingTemp,action:$action,requiredTemp:$requiredTemp)
   }
@@ -633,29 +633,28 @@ export class SteamDS extends BaseDataSource<SteamItem> {
       );
   }
 
-  getSteamTemp(job_order_guid: string ): Observable<SteamTemp[]>
-  {
+  getSteamTemp(job_order_guid: string): Observable<SteamTemp[]> {
     this.loadingSubject.next(true);
     const where: any = { job_order_guid: { eq: job_order_guid } }
-    const order:any={create_dt:"ASC"}
+    const order: any = { create_dt: "ASC" }
     return this.apollo
-    .query<any>({
-      query: GET_STEAM_TEMP,
-      variables: { where,order},
-      fetchPolicy: 'no-cache' // Ensure fresh data
-    })
-    .pipe(
-      map((result) => result.data),
-      catchError(() => of({ items: [], totalCount: 0 })),
-      finalize(() => this.loadingSubject.next(false)),
-      map((result) => {
-        const resultList = result.resultList || { nodes: [], totalCount: 0 };
-        this.dataSubject.next(resultList.nodes);
-        this.totalCount = resultList.totalCount;
-        this.pageInfo = resultList.pageInfo;
-        return resultList.nodes;
+      .query<any>({
+        query: GET_STEAM_TEMP,
+        variables: { where, order },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
-    );
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
 
   }
 
@@ -754,7 +753,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
 
-  recordSteamingTemp(steamingTemp: any,action:string,requiredTemp:number): Observable<any> {
+  recordSteamingTemp(steamingTemp: any, action: string, requiredTemp: number): Observable<any> {
     return this.apollo.mutate({
       mutation: RECORD_STEAM_TEMP,
       variables: {
@@ -799,7 +798,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canApprove(re: SteamItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED','PARTIAL_ASSIGNED']
+    const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
     return validStatus.includes(re?.status_cv!);
   }
 
@@ -927,5 +926,15 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     const days = Math.floor(timeTakenMs / (3600 * 24));
 
     return `${days}`;
+  }
+
+  getSteamHighestTemp(steam: SteamItem | undefined) {
+    if (!steam) return undefined;
+
+    const highestMeterTemp = steam.steaming_part?.flatMap((part) => part.job_order?.steaming_temp || [])
+      .map((temp) => temp.meter_temp!) // Extract meter_temp values
+      .reduce((max, temp) => (temp > max ? temp : max), Number.NEGATIVE_INFINITY);
+    const result = highestMeterTemp === Number.NEGATIVE_INFINITY ? undefined : highestMeterTemp;
+    return result;
   }
 }

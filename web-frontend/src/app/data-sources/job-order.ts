@@ -16,10 +16,11 @@ import { TimeTableItem } from './time-table';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { Utility } from 'app/utilities/utility';
 import { SteamPartItem } from './steam-part';
+import { SteamTemp } from './steam';
 
 export class JobOrderGO {
   public guid?: string;
-  
+
   public sot_guid?: string;
   public team_guid?: string;
   public job_order_no?: string;
@@ -40,7 +41,7 @@ export class JobOrderGO {
 
   constructor(item: Partial<JobOrderGO> = {}) {
     this.guid = item.guid;
-    
+
     this.sot_guid = item.sot_guid;
     this.team_guid = item.team_guid;
     this.job_order_no = item.job_order_no;
@@ -115,7 +116,8 @@ export class JobOrderItem extends JobOrderGO {
   public repair_part?: RepairPartItem[];
   public cleaning?: InGateCleaningItem[];
   public residue_part?: ResiduePartItem[];
-  public steaming_part?:SteamPartItem[];
+  public steaming_part?: SteamPartItem[];
+  public steaming_temp?: SteamTemp[];
 
   public time_table?: TimeTableItem[];
   constructor(item: Partial<JobOrderItem> = {}) {
@@ -127,6 +129,7 @@ export class JobOrderItem extends JobOrderGO {
     this.time_table = item.time_table;
     this.storing_order_tank = item.storing_order_tank;
     this.steaming_part = item.steaming_part;
+    this.steaming_temp = item.steaming_temp;
   }
 }
 
@@ -197,13 +200,13 @@ export class ResJobOrderRequest {
 }
 
 export class SteamJobOrderRequest {
- // public estimate_no?: string;
+  // public estimate_no?: string;
   public guid?: string;
   public job_order?: JobOrderGO[];
   public remarks?: string;
   public sot_guid?: string;
   constructor(item: Partial<SteamJobOrderRequest> = {}) {
-   // this.estimate_no = item.estimate_no;
+    // this.estimate_no = item.estimate_no;
     this.guid = item.guid;
     this.job_order = item.job_order;
     this.remarks = item.remarks;
