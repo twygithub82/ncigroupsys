@@ -452,6 +452,7 @@ const GET_JOB_ORDER_BY_ID = gql`
         create_dt
         delete_dt
         guid
+        sot_guid
         job_order_no
         job_type_cv
         remarks
@@ -485,8 +486,97 @@ const GET_JOB_ORDER_BY_ID = gql`
           }
           residue_guid
         }
+        storing_order_tank {
+          guid
+        }
         repair_part {
+          guid
           repair {
+            guid
+            estimate_no
+          }
+          approve_cost
+          approve_hour
+          approve_part
+          approve_qty
+          comment
+          complete_dt
+          description
+          hour
+          location_cv
+          material_cost
+          quantity
+          remarks
+          owner
+          delete_dt
+          rp_damage_repair {
+            action
+            code_cv
+            code_type
+            create_by
+            create_dt
+            delete_dt
+            guid
+            rp_guid
+            update_by
+            update_dt
+          }
+          update_by
+          update_dt
+          tariff_repair {
+            group_name_cv
+            alias
+            subgroup_name_cv
+          }
+        }
+        time_table {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_order_guid
+          start_time
+          stop_time
+          update_by
+          update_dt
+        }
+      }
+    }
+  }
+`;
+
+const GET_JOB_ORDER_BY_ID_FOR_REPAIR = gql`
+  query queryJobOrder($where: job_orderFilterInput, $order: [job_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryJobOrder(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+        complete_dt
+        create_by
+        create_dt
+        delete_dt
+        guid
+        sot_guid
+        job_order_no
+        job_type_cv
+        remarks
+        sot_guid
+        start_dt
+        status_cv
+        team_guid
+        total_hour
+        update_by
+        update_dt
+        working_hour
+        team {
+          description
+          guid
+        }
+        storing_order_tank {
+          guid
+        }
+        repair_part {
+          guid
+          repair {
+            guid
             estimate_no
           }
           approve_cost
@@ -736,6 +826,29 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     return this.apollo
       .query<any>({
         query: GET_JOB_ORDER_BY_ID,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+  getJobOrderByIDForRepair(id: string): Observable<JobOrderItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { guid: { eq: id } }
+    return this.apollo
+      .query<any>({
+        query: GET_JOB_ORDER_BY_ID_FOR_REPAIR,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

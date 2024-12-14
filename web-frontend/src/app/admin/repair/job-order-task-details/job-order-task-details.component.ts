@@ -422,7 +422,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.job_order_guid = this.route.snapshot.paramMap.get('id');
     this.repair_guid = this.route.snapshot.paramMap.get('repair_id');
     if (this.job_order_guid) {
-      this.subs.sink = this.joDS.getJobOrderByID(this.job_order_guid).subscribe(jo => {
+      this.subs.sink = this.joDS.getJobOrderByIDForRepair(this.job_order_guid).subscribe(jo => {
         if (jo?.length) {
           console.log(jo)
           this.jobOrderItem = jo[0];
@@ -857,21 +857,6 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  completeJobItem(event: Event, repair_part: RepairPartItem) {
-    this.preventDefault(event);  // Prevents the form submission
-    if (this.repairPartDS.isCompleted(repair_part)) return;
-    const newParam = new JobItemRequest({
-      guid: repair_part.guid,
-      job_order_guid: repair_part.job_order_guid,
-      job_type_cv: repair_part.job_order?.job_type_cv
-    });
-    const param = [newParam];
-    console.log(param)
-    this.joDS.completeJobItem(param).subscribe(result => {
-      console.log(result)
-    });
-  }
-
   completeJob(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     const newParam = new UpdateJobOrderRequest({
@@ -884,6 +869,18 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
       console.log(result)
+      if ((result?.data?.completeJobOrder ?? 0) > 0) {
+        const firstJobPart = this.jobOrderItem?.repair_part?.[0];
+        const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+          guid: firstJobPart!.repair?.guid,
+          sot_guid: this.jobOrderItem?.storing_order_tank?.guid,
+          action: "COMPLETE"
+        });
+        console.log(repairStatusReq);
+        this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+          console.log(result);
+        });
+      }
     });
   }
 
