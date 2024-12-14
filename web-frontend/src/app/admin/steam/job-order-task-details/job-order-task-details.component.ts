@@ -846,6 +846,21 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
       console.log(param)
       this.ttDS.startJobTimer(param, this.steam_guid!).subscribe(result => {
         console.log(result)
+        if ((result?.data?.startJobTimer ?? 0) > 0) {
+          const firstJobPart = this.jobOrderItem?.steaming_part?.[0];
+          if (firstJobPart?.steaming?.status_cv === 'ASSIGNED') {
+            const steamStatusReq: SteamStatusRequest = new SteamStatusRequest({
+              guid: firstJobPart!.steaming.guid,
+              sot_guid: this.jobOrderItem?.sot_guid,
+              action: "IN_PROGRESS",
+              
+            });
+            console.log(steamStatusReq);
+            this.steamDS.updateSteamStatus(steamStatusReq).subscribe(result => {
+              console.log(result);
+            });
+          }
+        }
       });
     } else {
       const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
@@ -889,7 +904,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
       if (result.data.completeJobOrder > 0) {
-        this.UpdateResidueStatusCompleted(this.steamItem?.guid!);
+        this.UpdateSteamStatusCompleted(this.steamItem?.guid!);
       }
     });
   }
@@ -986,39 +1001,6 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
         let jobData: any;
         let eventType: any;
 
-        // if (data?.onJobStopped) {
-        //   jobData = data.onJobStopped;
-        //   eventType = 'jobStopped';
-        // } else if (data?.onJobStarted) {
-        //   jobData = data.onJobStarted;
-        //   eventType = 'jobStarted';
-        // } else if (data?.onJobCompleted) {
-        //   jobData = data.onJobCompleted;
-        //   eventType = 'onJobCompleted';
-        // }
-
-        // if (jobData) {
-        //   if (this.jobOrderItem) {
-        //     this.jobOrderItem.status_cv = jobData.job_status;
-        //     this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
-        //     this.jobOrderItem.time_table ??= [];
-
-        //     const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
-        //     if (eventType === 'jobStarted') {
-        //       if (foundTimeTable?.length) {
-        //         foundTimeTable[0].start_time = jobData.start_time
-        //         console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //       } else {
-        //         const startNew = new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid});
-        //         this.jobOrderItem.time_table?.push(startNew)
-        //         console.log(`Updated JobOrder ${eventType} :`, startNew);
-        //       }
-        //     } else if (eventType === 'jobStopped') {
-        //       foundTimeTable[0].stop_time = jobData.stop_time;
-        //       console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //     }
-        //   }
-        // }
       },
       error: (error) => {
         console.error('Error:', error);
@@ -1048,7 +1030,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     }, 0);
   }
 
-  UpdateResidueStatusCompleted(steam_guid: string) {
+  UpdateSteamStatusCompleted(steam_guid: string) {
     const where: any = {
       and: []
     };
@@ -1064,12 +1046,12 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     this.steamDS.search(where).subscribe(result => {
 
       if (result.length > 0) {
-        var resItem: SteamItem = result[0];
-        let residueStatus: SteamStatusRequest = new SteamStatusRequest();
-        residueStatus.action = "COMPLETE";
-        residueStatus.guid = resItem?.guid;
-        residueStatus.sot_guid = resItem?.sot_guid;
-        this.steamDS.updateSteamStatus(residueStatus).subscribe(result => {
+        var stmItem: SteamItem = result[0];
+        let steamStatus: SteamStatusRequest = new SteamStatusRequest();
+        steamStatus.action = "COMPLETE";
+        steamStatus.guid = stmItem?.guid;
+        steamStatus.sot_guid = stmItem?.sot_guid;
+        this.steamDS.updateSteamStatus(stmItem).subscribe(result => {
 
           console.log(result);
         });

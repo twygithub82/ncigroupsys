@@ -417,6 +417,21 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       );
       this.ttDS.startJobTimer(param, firstValidRepairPart?.residue_guid!).subscribe(result => {
         console.log(result)
+         if ((result?.data?.startJobTimer ?? 0) > 0) {
+            const firstJobPart = jobOrderItem.residue_part?.[0];
+            if (firstJobPart?.residue?.status_cv === 'ASSIGNED') {
+              const residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
+                guid: firstJobPart!.residue.guid,
+                sot_guid: jobOrderItem.storing_order_tank?.guid,
+                action: "IN_PROGRESS",
+                
+              });
+              console.log(residueStatusReq);
+              this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
+                console.log(result);
+              });
+            }
+          }
       });
     } else {
       const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);

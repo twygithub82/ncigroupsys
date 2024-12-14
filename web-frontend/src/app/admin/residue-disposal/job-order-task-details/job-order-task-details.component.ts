@@ -846,6 +846,21 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
       console.log(param)
       this.ttDS.startJobTimer(param, this.residue_guid!).subscribe(result => {
         console.log(result)
+        if ((result?.data?.startJobTimer ?? 0) > 0) {
+          const firstJobPart = this.jobOrderItem?.residue_part?.[0];
+          if (firstJobPart?.residue?.status_cv === 'ASSIGNED') {
+            const residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
+              guid: firstJobPart!.residue.guid,
+              sot_guid: this.jobOrderItem?.sot_guid,
+              action: "IN_PROGRESS",
+              
+            });
+            console.log(residueStatusReq);
+            this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
+              console.log(result);
+            });
+          }
+        }
       });
     } else {
       const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
@@ -856,7 +871,8 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
         const param = [newParam];
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {
-          console.log(result)
+           console.log(result)
+           
         });
       }
     }

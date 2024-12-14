@@ -11,6 +11,7 @@ import { RepairItem } from './repair';
 import { TariffResidueItem } from './tariff-residue';
 import { JobOrderItem } from './job-order';
 import { TariffSteamingItem } from './tariff-steam';
+import { SteamItem } from './steam';
 
 export class SteamPartGO {
   
@@ -74,11 +75,13 @@ export class SteamPartGO {
 export class SteamPartItem extends SteamPartGO {
   public tariff_steaming?: TariffSteamingItem;
   public job_order?: JobOrderItem;
+  public steaming?:SteamItem;
   
   constructor(item: Partial<SteamPartItem> = {}) {
     super(item)
     this.tariff_steaming = item.tariff_steaming;
     this.job_order=item.job_order;
+    this.steaming=item.steaming;
     
   }
 }

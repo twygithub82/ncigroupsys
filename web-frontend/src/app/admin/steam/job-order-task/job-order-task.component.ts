@@ -426,6 +426,21 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       );
       this.ttDS.startJobTimer(param, firstValidRepairPart?.steaming_guid!).subscribe(result => {
         console.log(result)
+         if ((result?.data?.startJobTimer ?? 0) > 0) {
+              const firstJobPart = jobOrderItem?.steaming_part?.[0];
+              if (firstJobPart?.steaming?.status_cv === 'ASSIGNED') {
+                const steamStatusReq: SteamStatusRequest = new SteamStatusRequest({
+                  guid: firstJobPart!.steaming.guid,
+                  sot_guid: jobOrderItem?.sot_guid,
+                  action: "IN_PROGRESS",
+                  
+                });
+                console.log(steamStatusReq);
+                this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
+                  console.log(result);
+                });
+              }
+            }
       });
     } else {
       const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);

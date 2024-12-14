@@ -19,7 +19,7 @@ import { SteamPartItem } from './steam-part';
 
 export class JobOrderGO {
   public guid?: string;
-  public report_dt?:number;
+  
   public sot_guid?: string;
   public team_guid?: string;
   public job_order_no?: string;
@@ -40,7 +40,7 @@ export class JobOrderGO {
 
   constructor(item: Partial<JobOrderGO> = {}) {
     this.guid = item.guid;
-    this.report_dt=item.report_dt;
+    
     this.sot_guid = item.sot_guid;
     this.team_guid = item.team_guid;
     this.job_order_no = item.job_order_no;
@@ -392,6 +392,7 @@ const GET_STARTED_JOB_ORDER = gql`
         }
         storing_order_tank {
           tank_no
+          guid
           storing_order {
             customer_company {
               name
@@ -404,6 +405,7 @@ const GET_STARTED_JOB_ORDER = gql`
             guid
             estimate_no
             approve_by
+            status_cv
           }
           tariff_steaming_guid
           steaming_guid
@@ -412,6 +414,7 @@ const GET_STARTED_JOB_ORDER = gql`
           residue {
             guid
             estimate_no
+            status_cv
           }
           residue_guid
         }
@@ -463,6 +466,24 @@ const GET_JOB_ORDER_BY_ID = gql`
         team {
           description
           guid
+        }
+        steaming_part {
+          steaming {
+            guid
+            estimate_no
+            approve_by
+            status_cv
+          }
+          tariff_steaming_guid
+          steaming_guid
+        }
+        residue_part {
+          residue {
+            guid
+            estimate_no
+            status_cv
+          }
+          residue_guid
         }
         repair_part {
           repair {
