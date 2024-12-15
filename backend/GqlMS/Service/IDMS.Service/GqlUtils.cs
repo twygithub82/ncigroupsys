@@ -5,6 +5,7 @@ using IDMS.Models.Service;
 using IDMS.Models.Service.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -258,6 +259,159 @@ namespace IDMS.Service.GqlTypes
             {
                 throw;
             }
+        }
+
+        public static async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid)
+        {
+
+            //first check tank purpose
+            var tank = await context.storing_order_tank.Where(t => t.guid == sotGuid & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+            if (tank != null)
+            {
+                var completedStatuses = new[] { CurrentServiceStatus.COMPLETED, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
+                var qcCompletedStatuses = new[] { CurrentServiceStatus.QC, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
+
+                //check if tank have any steaming purpose
+                if (tank.purpose_steam ?? false)
+                {
+                    //var res = context.steaming.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0) &&
+                    //(
+                    //    (t.approve_by == "system" && !completedStatuses.Contains(t.status_cv)) ||
+                    //    (t.approve_by != "system" && !qcCompletedStatuses.Contains(t.status_cv))
+                    //))
+                    //.Select(t => t.guid)
+                    //.Distinct()
+                    //.ToList();
+
+                    // //if any record not meet above, remain in current tank movement
+                    // //else, change to that status
+                    // if (res.Any())
+                    // {
+                    //     tank.tank_status_cv = TankMovementStatus.STEAM;
+                    //     goto ProceesUpdate;
+                    // }
+
+                    var res = await context.steaming.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    if (res.Any())
+                    {
+                        if (res.Any(t =>
+                                    (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                    (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                    )
+                        {
+                            tank.tank_status_cv = TankMovementStatus.STEAM;
+                            goto ProceesUpdate;
+                        }
+                    }
+                    else
+                    {
+                        tank.tank_status_cv = TankMovementStatus.STEAM;
+                        goto ProceesUpdate;
+                    }
+                }
+
+                //check if tank have any cleaning purpose
+                if (tank.purpose_cleaning ?? false)
+                {
+                    //var res = await context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0) &&
+                    //(
+                    //    (t.approve_by == "system" && !completedStatuses.Contains(t.status_cv)) ||
+                    //    (t.approve_by != "system" && !qcCompletedStatuses.Contains(t.status_cv))
+                    //))
+                    //.Select(t => t.guid)
+                    //.Distinct()
+                    //.ToListAsync();
+
+                    var res = await context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    if (res.Any())
+                    {
+                        if (res.Any(t =>
+                                    (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                    (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                    )
+                        {
+                            tank.tank_status_cv = TankMovementStatus.CLEANING;
+                            goto ProceesUpdate;
+                        }
+                        else
+                        {
+                            //Else, check if tank have any residue estimate already created but pending
+                            //res.Clear();
+                            var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                            if (resd.Any())
+                            {
+                                if (resd.Any(t =>
+                                            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                            )
+                                {
+                                    tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                    goto ProceesUpdate;
+                                }
+                            }
+                            else
+                            {
+                                tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                goto ProceesUpdate;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        tank.tank_status_cv = TankMovementStatus.CLEANING;
+                        goto ProceesUpdate;
+                    }
+                }
+
+                //check if tank have any repair purpose
+                if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
+                {
+                    ////Else, check if tank have any residue estimate already created but pending
+                    //var res = context.repair.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0) &&
+                    // (
+                    //     (!qcCompletedStatuses.Contains(t.status_cv))
+                    // ))
+                    // .Select(t => t.guid)
+                    // .Distinct()
+                    // .ToList();
+
+                    //if (res.Any())
+                    //{
+                    //    tank.tank_status_cv = TankMovementStatus.REPAIR;
+                    //    goto ProceesUpdate;
+                    //}
+                    var res = await context.repair.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    if (res.Any())
+                    {
+                        if (res.Any(t => !qcCompletedStatuses.Contains(t.status_cv)))
+                        {
+                            tank.tank_status_cv = TankMovementStatus.REPAIR;
+                            goto ProceesUpdate;
+                        }
+                        else
+                        {
+                            //can proceed to check next movement
+                        }
+                    }
+                    else
+                    {
+                        tank.tank_status_cv = TankMovementStatus.REPAIR;
+                        goto ProceesUpdate;
+                    }
+                }
+
+                if (tank.purpose_storage ?? false)
+                {
+                    tank.status_cv = TankMovementStatus.STORAGE;
+                }
+
+            ProceesUpdate:
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                var ret = await context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
     }
 }
