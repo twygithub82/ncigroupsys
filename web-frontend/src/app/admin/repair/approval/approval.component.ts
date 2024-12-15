@@ -163,9 +163,9 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   reSelection = new SelectionModel<RepairItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   soStatusCvList: CodeValuesItem[] = [];
-  purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
+  repairOptionCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -223,17 +223,13 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       last_cargo: this.lastCargoControl,
       eir_dt_start: [''],
       eir_dt_end: [''],
-      part_name: [''],
-      change_request_cv: [''],
       eir_no: [''],
-      repair_job_no: [''],
-      purpose: [''],
+      repair_option_cv: [''],
       est_dt_start: [''],
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
-      est_status_cv: [['PENDING']],
-      estimate_no: ['']
+      est_status_cv: [['PENDING']]
     });
   }
 
@@ -342,22 +338,22 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
-      { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' }
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
+      { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
       this.soStatusCvList = addDefaultSelectOption(data, 'All');
-    });
-    this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      this.purposeOptionCvList = data;
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
+    });
+    this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
+      this.repairOptionCvList = data;
     });
   }
 
@@ -409,7 +405,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     const where: any = {
     };
 
-    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('job_no')?.value || (this.searchForm!.get('eta_dt_start')?.value && this.searchForm!.get('eta_dt_end')?.value) || this.searchForm!.get('purpose')?.value || this.searchForm!.get('customer_code')?.value) {
+    if (this.searchForm!.get('tank_no')?.value || (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) || this.searchForm!.get('repair_option_cv')?.value?.length || this.searchForm!.get('customer_code')?.value) {
       const sotSome: any = {};
 
       if (this.searchForm!.get('last_cargo')?.value) {
@@ -420,36 +416,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
         sotSome.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       }
 
-      if (this.searchForm!.get('job_no')?.value) {
-        sotSome.job_no = { contains: this.searchForm!.get('job_no')?.value };
-      }
-
-      if (this.searchForm!.get('eta_dt_start')?.value && this.searchForm!.get('eta_dt_end')?.value) {
-        sotSome.eta_dt = { gte: Utility.convertDate(this.searchForm!.get('eta_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eta_dt_end')?.value) };
-      }
-
-      if (this.searchForm!.get('purpose')?.value) {
-        const purposes = this.searchForm!.get('purpose')?.value;
-        if (purposes.includes('STORAGE')) {
-          sotSome.purpose_storage = { eq: true }
-        }
-        if (purposes.includes('CLEANING')) {
-          sotSome.purpose_cleaning = { eq: true }
-        }
-        if (purposes.includes('STEAM')) {
-          sotSome.purpose_steam = { eq: true }
-        }
-
-        const repairPurposes = [];
-        if (purposes.includes('REPAIR')) {
-          repairPurposes.push('REPAIR');
-        }
-        if (purposes.includes('OFFHIRE')) {
-          repairPurposes.push('OFFHIRE');
-        }
-        if (repairPurposes.length > 0) {
-          sotSome.purpose_repair_cv = { in: repairPurposes };
-        }
+      if (this.searchForm!.get('repair_option_cv')?.value?.length) {
+        sotSome.purpose_repair_cv = { in: this.searchForm!.get('repair_option_cv')?.value };
       }
 
       if (this.searchForm!.get('customer_code')?.value) {
@@ -459,6 +427,19 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
         sotSome.storing_order = soSome;
       }
 
+      if (this.searchForm!.get('eir_no')?.value || (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
+        const igSome: any = {};
+        if (this.searchForm!.get('eir_no')?.value) {
+          igSome.eir_no = { contains: this.searchForm!.get('eir_no')?.value };
+        }
+
+        if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
+          igSome.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value, true) };
+        }
+
+        sotSome.in_gate = { some: igSome };
+      }
+
       where.storing_order_tank = sotSome;
     }
 
@@ -466,8 +447,12 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       where.status_cv = { in: this.searchForm!.get('est_status_cv')?.value }
     }
 
+    if (this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) {
+      where.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value, true) };
+    }
+
     if (this.searchForm!.get('approval_dt_start')?.value && this.searchForm!.get('approval_dt_end')?.value) {
-      where.approve_dt = { gte: Utility.convertDate(this.searchForm!.get('approval_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('approval_dt_end')?.value) };
+      where.approve_dt = { gte: Utility.convertDate(this.searchForm!.get('approval_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('approval_dt_end')?.value, true) };
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
@@ -637,13 +622,16 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
   resetForm() {
     this.searchForm?.patchValue({
-      so_no: '',
-      so_status: '',
       tank_no: '',
-      job_no: '',
-      purpose: '',
-      eta_dt_start: '',
-      eta_dt_end: ''
+      eir_dt_start: '',
+      eir_dt_end: '',
+      eir_no: '',
+      repair_option_cv: '',
+      est_dt_start: '',
+      est_dt_end: '',
+      approval_dt_start: '',
+      approval_dt_end: '',
+      est_status_cv: ['PENDING']
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

@@ -177,6 +177,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   processStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  repairOptionCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -240,17 +241,13 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       last_cargo: this.lastCargoControl,
       eir_dt_start: [''],
       eir_dt_end: [''],
-      part_name: [''],
-      change_request_cv: [''],
-      repair_job_no: [''],
       eir_no: [''],
-      repair_type_cv: [''],
+      repair_option_cv: [''],
       est_dt_start: [''],
       est_dt_end: [''],
       approval_dt_start: [''],
       approval_dt_end: [''],
       est_status_cv: [''],
-      estimate_no: ['']
     });
   }
 
@@ -390,11 +387,11 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     const queries = [
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
-      // this.processStatusCvList = addDefaultSelectOption(data, 'All');
       this.processStatusCvList = data;
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -402,6 +399,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
+    });
+    this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
+      this.repairOptionCvList = data;
     });
   }
 
@@ -455,7 +455,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       tank_status_cv: { in: ['REPAIR', 'STORAGE'] },
       purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
     };
-
+    
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
@@ -464,15 +464,17 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       where.last_cargo = { contains: this.searchForm!.get('last_cargo')?.value?.code };
     }
 
-    if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
+    if (this.searchForm!.get('eir_no')?.value || (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
       const igSome: any = {};
       if (this.searchForm!.get('eir_no')?.value) {
         igSome.eir_no = { contains: this.searchForm!.get('eir_no')?.value };
       }
 
       if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-        igSome.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value) };
+        igSome.eir_dt = { gte: Utility.convertDate(this.searchForm!.get('eir_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('eir_dt_end')?.value, true) };
       }
+
+      where.in_gate = { some: igSome }
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -483,27 +485,11 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    if (this.searchForm!.get('part_name')?.value || this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value || this.searchForm!.get('job_no')?.value || this.searchForm!.get('estimate_no')?.value || this.searchForm!.get('est_status_cv')?.value?.length) {
+    if ((this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) || this.searchForm!.get('est_status_cv')?.value?.length) {
       let reSome: any = {};
-
-      if (this.searchForm!.get('part_name')?.value) {
-        reSome.repair_part = {
-          some: {
-            description: { contains: this.searchForm!.get('part_name')?.value }
-          }
-        };
-      }
 
       if (this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) {
         reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value) };
-      }
-
-      if (this.searchForm!.get('job_no')?.value) {
-        reSome.job_no = { contains: this.searchForm!.get('job_no')?.value };
-      }
-
-      if (this.searchForm!.get('estimate_no')?.value) {
-        reSome.estimate_no = { contains: this.searchForm!.get('estimate_no')?.value };
       }
 
       if (this.searchForm!.get('est_status_cv')?.value?.length) {
@@ -512,30 +498,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       where.repair = { some: reSome };
     }
 
-    // if (this.searchForm!.value['purpose']) {
-    //   const purposes = this.searchForm!.value['purpose'];
-    //   if (purposes.includes('STORAGE')) {
-    //     sotSome.purpose_storage = { eq: true }
-    //   }
-    //   if (purposes.includes('CLEANING')) {
-    //     sotSome.purpose_cleaning = { eq: true }
-    //   }
-    //   if (purposes.includes('STEAM')) {
-    //     sotSome.purpose_steam = { eq: true }
-    //   }
-
-    //   const repairPurposes = [];
-    //   if (purposes.includes('REPAIR')) {
-    //     repairPurposes.push('REPAIR');
-    //   }
-    //   if (purposes.includes('OFFHIRE')) {
-    //     repairPurposes.push('OFFHIRE');
-    //   }
-    //   if (repairPurposes.length > 0) {
-    //     sotSome.purpose_repair_cv = { in: repairPurposes };
-    //   }
-    //   where.storing_order_tank = { some: sotSome };
-    // }
+    if (this.searchForm!.get('repair_option_cv')?.value?.length) {
+      where.purpose_repair_cv = { in: this.searchForm!.get('repair_option_cv')?.value };
+    }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, this.endCursor, undefined, undefined, () => {
