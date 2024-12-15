@@ -272,6 +272,7 @@ namespace IDMS.Residue.GqlTypes
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
+                bool tankMovementCheck = false;
 
                 if (residue == null)
                     throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
@@ -302,18 +303,25 @@ namespace IDMS.Residue.GqlTypes
                         updateResidue.status_cv = CurrentServiceStatus.ASSIGNED;
                         break;
                     case ObjectAction.COMPLETE:
+                        if (string.IsNullOrEmpty(residue.sot_guid))
+                            throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+
                         if (await GqlUtils.StatusChangeConditionCheck(context, "residue", residue.guid, CurrentServiceStatus.COMPLETED))
                         {
                             updateResidue.status_cv = CurrentServiceStatus.COMPLETED;
                             updateResidue.complete_by = user;
                             updateResidue.complete_dt = currentDateTime;
                         }
+                        tankMovementCheck = true;
 
-                        if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, new List<string> { residue.guid }))
-                            //if no other residue estimate or all completed. then we check cross process tank movement
-                            await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
+                        //if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, new List<string> { residue.guid }))
+                        //    //if no other residue estimate or all completed. then we check cross process tank movement
+                        //    await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
                         break;
                     case ObjectAction.NA:
+                        if (string.IsNullOrEmpty(residue.sot_guid))
+                            throw new GraphQLException(new Error($"SOT guid cannot be null or empty", "ERROR"));
+
                         updateResidue.status_cv = CurrentServiceStatus.NO_ACTION;
                         updateResidue.na_dt = currentDateTime;
 
@@ -326,12 +334,16 @@ namespace IDMS.Residue.GqlTypes
                             resPart.update_by = user;
                         }
 
-                        if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, new List<string> { residue.guid }))
-                            //if no other residue estimate or all completed. then we check cross process tank movement
-                            await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
+                        tankMovementCheck = true;
+                        //if (!await TankMovementCheckInternal(context, "residue", residue.sot_guid, new List<string> { residue.guid }))
+                        //    //if no other residue estimate or all completed. then we check cross process tank movement
+                        //    await TankMovementCheckCrossProcess(context, residue.sot_guid, user, currentDateTime);
                         break;
                 }
                 var res = await context.SaveChangesAsync();
+
+                if (tankMovementCheck)
+                    await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, residue.sot_guid);
                 return res;
 
             }
@@ -372,11 +384,12 @@ namespace IDMS.Residue.GqlTypes
                 else
                     abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
 
-                if (!await TankMovementCheckInternal(context, "residue", residueJobOrder.sot_guid, new List<string> { residueJobOrder.guid }))
-                    //if no other residue estimate or all completed. then we check cross process tank movement
-                    await TankMovementCheckCrossProcess(context, residueJobOrder.sot_guid, user, currentDateTime);
+                //if (!await TankMovementCheckInternal(context, "residue", residueJobOrder.sot_guid, new List<string> { residueJobOrder.guid }))
+                //    //if no other residue estimate or all completed. then we check cross process tank movement
+                //    await TankMovementCheckCrossProcess(context, residueJobOrder.sot_guid, user, currentDateTime);
 
                 var res = await context.SaveChangesAsync();
+                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, residueJobOrder.sot_guid);
                 return res;
             }
             catch (Exception ex)
@@ -396,56 +409,43 @@ namespace IDMS.Residue.GqlTypes
                 if (residueJobOrder == null)
                     throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
 
-                using var transaction = context.Database.BeginTransaction();
-                try
+                foreach (var item in residueJobOrder)
                 {
-                    foreach (var item in residueJobOrder)
-                    {
-                        //Repair handling
-                        var completedResidue = new residue() { guid = item.guid };
-                        context.residue.Attach(completedResidue);
-                        completedResidue.update_by = user;
-                        completedResidue.update_dt = currentDateTime;
-                        completedResidue.complete_dt = currentDateTime;
-                        completedResidue.status_cv = CurrentServiceStatus.QC;
-                        completedResidue.remarks = item.remarks;
+                    //Repair handling
+                    var completedResidue = new residue() { guid = item.guid };
+                    context.residue.Attach(completedResidue);
+                    completedResidue.update_by = user;
+                    completedResidue.update_dt = currentDateTime;
+                    completedResidue.complete_dt = currentDateTime;
+                    completedResidue.status_cv = CurrentServiceStatus.QC;
+                    completedResidue.remarks = item.remarks;
 
-                        //job_orders handling
-                        var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                        string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}' WHERE guid IN ({guids})";
-                        context.Database.ExecuteSqlRaw(sql);
-                    }
-
-                    //Tank handling
-                    var sotGuid = residueJobOrder.Select(r => r.sot_guid).FirstOrDefault();
-                    //var processGuid = string.Join(",", residueJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
-                    if (string.IsNullOrEmpty(sotGuid))
-                        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
-
-                    //var sot = new storing_order_tank() { guid = sotGuid };
-                    //context.storing_order_tank.Attach(sot);
-
-                    //TODO:
-                    //sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
-                    if (!await TankMovementCheckInternal(context, "residue", sotGuid, residueJobOrder.Select(j => j.guid).ToList()))
-                        //if no other residue estimate or all completed. then we check cross process tank movement
-                        await TankMovementCheckCrossProcess(context, sotGuid, user, currentDateTime);
-
-
-                    //sot.update_by = user;
-                    //sot.update_dt = currentDateTime;
-
-                    var res = await context.SaveChangesAsync();
-                    await transaction.CommitAsync();
-                    return res;
+                    //job_orders handling
+                    var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}' WHERE guid IN ({guids})";
+                    context.Database.ExecuteSqlRaw(sql);
                 }
-                catch (Exception ex)
-                {
-                    // Rollback in case of an error
-                    transaction.Rollback();
-                    throw;
-                }
+
+                //Tank handling
+                var sotGuid = residueJobOrder.Select(r => r.sot_guid).FirstOrDefault();
+                //var processGuid = string.Join(",", residueJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
+                if (string.IsNullOrEmpty(sotGuid))
+                    throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                //var sot = new storing_order_tank() { guid = sotGuid };
+                //context.storing_order_tank.Attach(sot);
+
+                ////TODO:
+                ////sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
+                //if (!await TankMovementCheckInternal(context, "residue", sotGuid, residueJobOrder.Select(j => j.guid).ToList()))
+                //    //if no other residue estimate or all completed. then we check cross process tank movement
+                //    await TankMovementCheckCrossProcess(context, sotGuid, user, currentDateTime);
+
+                var res = await context.SaveChangesAsync();
+                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, sotGuid);
+                return res;
+
             }
             catch (Exception ex)
             {

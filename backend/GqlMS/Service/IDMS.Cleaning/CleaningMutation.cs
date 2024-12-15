@@ -63,6 +63,7 @@ namespace IDMS.Cleaning.GqlTypes
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
+                bool tankMovementCheck = false;
 
                 if (cleaning == null)
                     throw new GraphQLException(new Error("Cleaning object cannot be null or empty.", "ERROR"));
@@ -105,9 +106,12 @@ namespace IDMS.Cleaning.GqlTypes
                         if (string.IsNullOrEmpty(cleaning.sot_guid))
                             throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
-                        if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-                            //if no other cleaning estimate or all completed. then we check cross process tank movement
-                            await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
+                        tankMovementCheck = true;
+
+                        //if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
+                        //    //if no other cleaning estimate or all completed. then we check cross process tank movement
+                        //    await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
+                        //await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, cleaning.sot_guid);
                         break;
                     case ObjectAction.NA:
                         updateCleaning.na_dt = currentDateTime;
@@ -116,13 +120,19 @@ namespace IDMS.Cleaning.GqlTypes
                         if (string.IsNullOrEmpty(cleaning.sot_guid))
                             throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
-                        if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-                            //if no other cleaning estimate or all completed. then we check cross process tank movement
-                            await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
+                        tankMovementCheck = true;
+
+                        //if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
+                        //    //if no other cleaning estimate or all completed. then we check cross process tank movement
+                        //    await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
+                        //await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, cleaning.sot_guid);
                         break;
                 }
-
                 var res = await context.SaveChangesAsync();
+
+                if (tankMovementCheck)
+                    await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, cleaning.sot_guid);
+
                 return res;
             }
             catch (Exception ex)
@@ -273,11 +283,12 @@ namespace IDMS.Cleaning.GqlTypes
                 if (string.IsNullOrEmpty(cleaningJobOrder.sot_guid))
                     throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
-                if (!await TankMovementCheckInternal(context, "cleaning", cleaningJobOrder.sot_guid, cleaningJobOrder.guid))
-                    //if no other cleaning estimate or all completed. then we check cross process tank movement
-                    await TankMovementCheckCrossProcess(context, cleaningJobOrder.sot_guid, user, currentDateTime);
+                //if (!await TankMovementCheckInternal(context, "cleaning", cleaningJobOrder.sot_guid, cleaningJobOrder.guid))
+                //    //if no other cleaning estimate or all completed. then we check cross process tank movement
+                //    await TankMovementCheckCrossProcess(context, cleaningJobOrder.sot_guid, user, currentDateTime);
 
                 var res = await context.SaveChangesAsync();
+                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, cleaningJobOrder.sot_guid);
                 return res;
             }
             catch (Exception ex)
