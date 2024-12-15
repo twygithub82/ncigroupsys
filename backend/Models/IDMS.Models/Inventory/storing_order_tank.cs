@@ -81,6 +81,9 @@ namespace IDMS.Models.Inventory
         [UseFiltering]
         public IEnumerable<cleaning?>? cleaning { get; set; }
         [UseFiltering]
-        public IEnumerable<steaming?>? steaming { get; set; }   
+        public IEnumerable<steaming?>? steaming { get; set; }
+        [UseFiltering]
+        public IEnumerable<survey_detail?>? survey_detail { get; set; }
+
     }
 }

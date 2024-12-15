@@ -79,11 +79,11 @@ namespace IDMS.Inventory.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<surveyor> QuerySurveyor(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
+        public IQueryable<survey_detail> QuerySurveyDetail(ApplicationInventoryDBContext context, [Service] IHttpContextAccessor httpContextAccessor)
         {
             try
             {
-                return context.surveyor.Where(t => t.delete_dt == null || t.delete_dt == 0);
+                return context.survey_detail.Where(t => t.delete_dt == null || t.delete_dt == 0);
             }
             catch (Exception ex)
             {

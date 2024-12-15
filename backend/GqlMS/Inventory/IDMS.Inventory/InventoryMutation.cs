@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Text;
 using IDMS.Models.Service;
 using Microsoft.EntityFrameworkCore;
+using IDMS.Models.Shared;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -236,5 +237,67 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
+
+
+        public async Task<int> AddSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail)
+        {
+            try
+            {
+                //long epochNow = GqlUtils.GetNowEpochInSec();
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var newSuyDetail = new survey_detail();
+                newSuyDetail.guid = Util.GenerateGUID();
+                newSuyDetail.create_by = user;
+                newSuyDetail.create_dt = currentDateTime;
+
+                newSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
+                newSuyDetail.sot_guid = surveyDetail.sot_guid;
+                newSuyDetail.status_cv = surveyDetail.status_cv;
+                newSuyDetail.remarks = surveyDetail.remarks;
+                newSuyDetail.survey_type = surveyDetail.survey_type;
+                newSuyDetail.survey_dt = surveyDetail.survey_dt;
+
+                await context.AddAsync(newSuyDetail);
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail)
+        {
+            try
+            {
+                //long epochNow = GqlUtils.GetNowEpochInSec();
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var updateSuyDetail = new survey_detail() { guid = surveyDetail.guid };
+                context.Attach(updateSuyDetail);    
+                updateSuyDetail.update_by = user;
+                updateSuyDetail.update_dt = currentDateTime;
+
+                updateSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
+                updateSuyDetail.sot_guid = surveyDetail.sot_guid;
+                updateSuyDetail.status_cv = surveyDetail.status_cv;
+                updateSuyDetail.remarks = surveyDetail.remarks;
+                updateSuyDetail.survey_type = surveyDetail.survey_type;
+                updateSuyDetail.survey_dt = surveyDetail.survey_dt;
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
     }
 }
