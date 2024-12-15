@@ -26,45 +26,61 @@ export class Utility {
     return `${day}/${month}/${year}`;
   }
 
-  static convertDate(date: any): number | Date | undefined {
-    // Check if the input is null or undefined
-    if (!date) {
-      return undefined;
-    }
-
-    // Check if the input is a Moment.js object and convert to epoch time
-    if (moment.isMoment(date)) {
-      return Math.floor(date.valueOf() / 1000); // valueOf() returns milliseconds, convert to seconds
-    }
-
-    // Check if the input is a JavaScript Date object and convert to epoch time in seconds
-    if (date instanceof Date) {
-      return Math.floor(date.getTime() / 1000); // getTime() returns milliseconds, convert to seconds
-    }
-
-    // If the input is a string that can be parsed as a date
-    if (typeof date === 'string' && !isNaN(Date.parse(date))) {
-      return Math.floor(new Date(date).getTime() / 1000);
-    }
-
-    // If the input is a number, handle it as epoch time
-    if (typeof date === 'number' && !isNaN(date)) {
-      // Check if the number is more likely to be in seconds or milliseconds
-      if (date.toString().length === 10) {
-        // If it's in seconds, convert to milliseconds
-        return new Date(date * 1000);
-      } else if (date.toString().length === 13) {
-        // If it's in milliseconds, just return the Date object
-        return new Date(date);
-      } else {
-        console.error('Invalid epoch time format:', date);
+  static convertDate(date: any, endOfDay: boolean = false): number | Date | undefined {
+    try {
+      if (!date) {
         return undefined;
       }
+  
+      // Handle Moment.js objects
+      if (moment.isMoment(date)) {
+        const momentDate = endOfDay
+          ? date.endOf('day') 
+          : date.startOf('day');
+        return Math.floor(momentDate.valueOf() / 1000);
+      }
+  
+      // Handle JavaScript Date objects
+      if (date instanceof Date) {
+        const jsDate = new Date(date);
+        if (endOfDay) {
+          jsDate.setHours(23, 59, 59, 999);
+        } else {
+          jsDate.setHours(0, 0, 0, 0);
+        }
+        return Math.floor(jsDate.getTime() / 1000);
+      }
+  
+      // Handle strings that can be parsed as dates
+      if (typeof date === 'string' && !isNaN(Date.parse(date))) {
+        const parsedDate = new Date(date);
+        if (endOfDay) {
+          parsedDate.setHours(23, 59, 59, 999);
+        } else {
+          parsedDate.setHours(0, 0, 0, 0);
+        }
+        return Math.floor(parsedDate.getTime() / 1000);
+      }
+  
+      // Handle numbers as epoch times
+      if (typeof date === 'number' && !isNaN(date)) {
+        const isSeconds = date.toString().length === 10;
+        const jsDate = new Date(isSeconds ? date * 1000 : date); 
+        if (endOfDay) {
+          jsDate.setHours(23, 59, 59, 999);
+        } else {
+          jsDate.setHours(0, 0, 0, 0);
+        }
+        return Math.floor(jsDate.getTime() / 1000);
+      }
+  
+      // If input type is unrecognized, return undefined
+      console.error('Unrecognized date format:', date);
+      return undefined;
+    } catch (error) {
+      console.error('Error processing date:', date, error);
+      return undefined;
     }
-
-    // If the input is not a recognized date format, return undefined
-    console.error('Invalid date format:', date);
-    return undefined;
   }
 
   static convertEpochToDateStr(date: number | undefined, format: string = 'DD/MM/YYYY'): string | undefined {

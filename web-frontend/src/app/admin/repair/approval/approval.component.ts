@@ -466,6 +466,10 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       where.status_cv = { in: this.searchForm!.get('est_status_cv')?.value }
     }
 
+    if (this.searchForm!.get('approval_dt_start')?.value && this.searchForm!.get('approval_dt_end')?.value) {
+      where.approve_dt = { gte: Utility.convertDate(this.searchForm!.get('approval_dt_start')?.value), lte: Utility.convertDate(this.searchForm!.get('approval_dt_end')?.value) };
+    }
+
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();

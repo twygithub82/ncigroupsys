@@ -202,6 +202,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       filterJobOrder: [''],
       jobStatusCv: [['PENDING', 'JOB_IN_PROGRESS']],
       customer: this.customerCodeControl,
+      allocate_dt_start: [''],
+      allocate_dt_end: ['']
     });
   }
 
@@ -265,6 +267,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       };
     }
 
+    if (this.filterJobOrderForm!.get('allocate_dt_start')?.value && this.filterJobOrderForm!.get('allocate_dt_end')?.value) {
+      where.create_dt = { gte: Utility.convertDate(this.filterJobOrderForm!.get('allocate_dt_start')?.value), lte: Utility.convertDate(this.filterJobOrderForm!.get('allocate_dt_end')?.value, true) };
+    }
+
     // TODO:: Get login user team
     // if (false) {
     //   where.team_guid = { eq: "" }
@@ -295,6 +301,39 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
     this.pageSizeJobOrder = pageSize;
     this.pageIndexJobOrder = pageIndex;
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.filterJobOrderForm?.patchValue({
+      filterJobOrder: '',
+      jobStatusCv: ['PENDING', 'JOB_IN_PROGRESS'],
+      allocate_dt_start: '',
+      allocate_dt_end: ''
+    });
+    this.customerCodeControl.reset();
   }
 
   onPageEventJobOrder(event: PageEvent) {

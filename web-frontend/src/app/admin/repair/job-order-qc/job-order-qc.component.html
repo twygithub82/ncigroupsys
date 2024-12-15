@@ -1,6 +1,6 @@
 <form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilter()" #formDirective="ngForm">
   <div class="row">
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
       <mat-form-field class="example-full-width" appearance="fill">
         <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
         <mat-label>
@@ -22,7 +22,18 @@
         </mat-autocomplete>
       </mat-form-field>
     </div>
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>{{translatedLangText.COMPLETE_DATE}}</mat-label>
+        <mat-date-range-input [rangePicker]="complete_picker">
+          <input matStartDate placeholder="Start date" formControlName="complete_dt_start">
+          <input matEndDate placeholder="End date" formControlName="complete_dt_end">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="complete_picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #complete_picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>{{translatedLangText.STATUS}}</mat-label>
         <mat-select multiple formControlName="jobStatusCv">
@@ -36,16 +47,12 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
-      <!-- <mat-button-toggle-group formControlName="jobStatusCv" class="m-r-10" [hideMultipleSelectionIndicator]="true"
-        color="primary" multiple>
-        @for (codeValue of jobStatusCvList; track codeValue) {
-        <mat-button-toggle [value]="codeValue.code_val"
-          [class.selected-toggle-btn]="isSelectedJobStatus(codeValue.code_val!)">{{codeValue.description}}</mat-button-toggle>
-        }
-      </mat-button-toggle-group> -->
-      <button mat-mini-fab color="primary" class="mt-4" (click)="onFilter()">
+    <div class="col-xl col-lg col-md-12 col-sm-12 mb-2 d-flex align-items-center">
+      <button mat-mini-fab color="primary" class="" (click)="onFilter()">
         <mat-icon>search</mat-icon>
+      </button>
+      <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
+        {{translatedLangText.CLEAR_ALL}}
       </button>
     </div>
   </div>
@@ -69,11 +76,11 @@
     </ng-container>
     <ng-container matColumnDef="customer">
       <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.CUSTOMER}}
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span
           class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
       </mat-cell>
@@ -99,17 +106,6 @@
         <span>{{displayDate(row.create_dt)}}</span>
       </mat-cell>
     </ng-container>
-    <ng-container matColumnDef="approve_dt">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        {{translatedLangText.APPROVE_DATE}}
-      </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span class="mobile-tab-label">{{translatedLangText.APPROVE_DATE}}:</span>
-        <span>{{displayDate(row.approve_dt)}}</span>
-      </mat-cell>
-    </ng-container>
     <ng-container matColumnDef="qc_dt">
       <mat-header-cell mat-header-cell *matHeaderCellDef
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -119,6 +115,17 @@
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span class="mobile-tab-label">{{translatedLangText.QC_DATE}}:</span>
         <span>{{displayDate(row.repair_part?.[0]?.job_order?.qc_dt)}}</span>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="complete_dt">
+      <mat-header-cell mat-header-cell *matHeaderCellDef
+        [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        {{translatedLangText.COMPLETE_DATE}}
+      </mat-header-cell>
+      <mat-cell mat-cell *matCellDef="let row"
+        [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+        <span class="mobile-tab-label">{{translatedLangText.COMPLETE_DATE}}:</span>
+        <span>{{displayDate(row.complete_dt)}}</span>
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="repair_type">

@@ -992,82 +992,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return color;
   }
 
-  startDrawing(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
-    this.isDrawing = true;
-    event.preventDefault(); // Prevent default dragging behavior
-    const target = this.getEventTarget(event) as HTMLElement;
-    const dataIndex = target?.getAttribute('data-index');
-    if (dataIndex !== null) {
-      const cellIndex = +dataIndex;
-      this.toggleState = !highlightedCells[cellIndex]; // Set initial toggle state based on cell's current state
-      this.highlightCell(highlightedCells, event);
-    }
-  }
-
-  startDrawingWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
-    this.isDrawing = true;
-    event.preventDefault(); // Prevent default dragging behavior
-    const target = this.getEventTarget(event) as HTMLElement;
-    const dataIndex = target?.getAttribute('data-index');
-    if (dataIndex !== null) {
-      const cellIndex = +dataIndex;
-      this.toggleState = !highlightedCells[cellIndex]; // Set initial toggle state based on cell's current state
-      this.highlightCellWalkway(highlightedCells, damageCells, event);
-    }
-  }
-
-  draw(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
-    if (this.isDrawing) {
-      this.highlightCell(highlightedCells, event);
-    }
-  }
-
-  drawWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
-    if (this.isDrawing) {
-      this.highlightCellWalkway(highlightedCells, damageCells, event);
-    }
-  }
-
-  stopDrawing(): void {
-    this.isDrawing = false;
-  }
-
-  highlightCell(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
-    const target = this.getEventTarget(event) as HTMLElement;
-    const dataIndex = target?.getAttribute('data-index');
-    if (dataIndex !== null) {
-      const cellIndex = +dataIndex;
-      highlightedCells[cellIndex] = this.toggleState;
-    }
-  }
-
-  highlightCellWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
-    const target = this.getEventTarget(event) as HTMLElement;
-    const dataIndex = target?.getAttribute('data-index');
-    if (dataIndex !== null) {
-      const cellIndex = +dataIndex;
-      highlightedCells[cellIndex] = this.toggleState;
-
-      // Apply damage overlay if checkbox is selected
-      if (this.isMarkDmg && this.toggleState) {
-        damageCells[cellIndex] = true;
-      } else {
-        damageCells[cellIndex] = false;
-      }
-    }
-  }
-
-  resetHighlightedCells(highlightedCells: boolean[]): void {
-    highlightedCells.fill(false);
-  }
-
-  resetTopHighlightedCells(): void {
-    this.resetHighlightedCells(this.highlightedCellsTop);
-    this.resetHighlightedCells(this.highlightedCellsWalkwayTop);
-    this.resetHighlightedCells(this.highlightedCellsWalkwayMiddle);
-    this.resetHighlightedCells(this.highlightedCellsWalkwayBottom);
-  }
-
   getEventTarget(event: MouseEvent | TouchEvent): EventTarget | null {
     if (event instanceof MouseEvent) {
       return event.target;
@@ -1256,30 +1180,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  editRemarks(event: Event, remarksTitle: string, remarksValue: any) {
-    this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(TankNoteFormDialogComponent, {
-      data: {
-        remarksTitle: remarksTitle,
-        previousRemarks: remarksValue.value,
-        action: 'edit',
-        translatedLangText: this.translatedLangText,
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        remarksValue.setValue(result.remarks);
-      }
-    });
-  }
-
   deleteDialog(imgForm: any, event: Event) {
     event.preventDefault(); // Prevents the form submission
 
@@ -1331,27 +1231,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  previewImageDialog(previewImage: any, event: Event, isDmg: any = false) {
-    event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const headerText = this.getTankSideDescription(previewImage.get('side')?.value);
-    const dialogRef = this.dialog.open(PreviewImageDialogComponent, {
-      data: {
-        headerText: isDmg ? `${this.translatedLangText.DAMAGE_PHOTOS} - ${headerText}` : `${this.translatedLangText.TANK_PHOTOS} - ${headerText}`,
-        previewImage: previewImage.get('preview')?.value,
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    });
-  }
-
   previewImagesDialog(event: Event, index: number) {
     event.preventDefault(); // Prevents the form submission
 
@@ -1371,34 +1250,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    });
-  }
-
-  resetDialog(highlightedCells: boolean[], event: Event, isTop: boolean = false) {
-    event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        if (isTop) {
-          this.resetTopHighlightedCells()
-        } else {
-          this.resetHighlightedCells(highlightedCells);
-        }
-        // this.markForCheck();
-      }
     });
   }
 
