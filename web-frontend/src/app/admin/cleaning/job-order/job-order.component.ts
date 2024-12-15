@@ -48,11 +48,12 @@ import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
-import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.component";
 import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
+import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 
 @Component({
   selector: 'app-job-order',
@@ -109,7 +110,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     'eir_dt',
     'last_cargo',
     'method',
-    'status_cv'
+    'status_cv',
+    'actions'
   ];
 
   displayedColumnsJobOrder = [
@@ -186,6 +188,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   igDS: InGateDS;
   cleanDS: InGateCleaningDS;
   joDS: JobOrderDS;
+  ttDS: TimeTableDS;
 
   availableProcessStatus: string[] = [
     'APPROVED',
@@ -211,7 +214,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   pageIndexClean = 0;
   pageSizeClean = 10;
   lastSearchCriteriaClean: any;
-  lastOrderByClean: any = { storing_order_tank:{tank_no: "DESC" }};
+  lastOrderByClean: any = { create_dt: "ASC" };
   endCursorClean: string | undefined = undefined;
   startCursorClean: string | undefined = undefined;
   hasNextPageClean = false;
@@ -246,6 +249,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.cleanDS = new InGateCleaningDS(this.apollo);
+    this.ttDS= new TimeTableDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -798,4 +802,163 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       });
    
    }
+
+    toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
+       this.stopPropagation(event);  // Prevents the form submission
+       if (!isStarted) {
+         const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
+         console.log(param)
+         const firstValidRepairPart = jobOrderItem.cleaning?.find(
+           (cleaning) => cleaning?.guid !== null
+         );
+         this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
+           if (result.data.startJobTimer > 0) {
+             var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+             this.UpdateCleaningStatusInProgress(item.guid!);
+           }
+         });
+       } else {
+         const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+         if (found?.length) {
+           const newParam = new TimeTableItem(found[0]);
+           newParam.stop_time = Utility.convertDate(new Date()) as number;
+           newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+           const param = [newParam];
+           console.log(param)
+           this.ttDS.stopJobTimer(param).subscribe(result => {
+            if(result.data.stopJobTimer)
+            {
+              this.completeJob( jobOrderItem) 
+            }
+
+           });
+         }
+       }
+     }
+   
+     completeJob(jobOrderItem: JobOrderItem) {
+       
+       const newParam = new UpdateJobOrderRequest({
+         guid: jobOrderItem?.guid,
+         remarks: jobOrderItem?.remarks,
+         start_dt: jobOrderItem?.start_dt,
+         complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+       });
+       const param = [newParam];
+       console.log(param)
+       this.joDS.completeJobOrder(param).subscribe(result => {
+         console.log(result)
+         if (result?.data?.completeJobOrder! > 0) {
+           var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+           this.UpdateCleaningStatusCompleted(item.guid!);
+         }
+       });
+     }
+
+     UpdateCleaningStatusInProgress(clean_guid: string) {
+
+
+      const where: any = {
+        and: []
+      };
+  
+  
+      where.and.push({
+        guid: { eq: clean_guid }
+      });
+  
+  
+      this.subs.sink = this.cleanDS.search(where)
+        .subscribe(data => {
+          if (data.length > 0) {
+            var cln = data[0];
+            var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+            rep.action = 'IN_PROGRESS';
+            delete rep.storing_order_tank;
+            delete rep.job_order;
+            delete rep.customer_company;
+            this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+  
+              console.log(result);
+  
+            });
+            //  this.clnDS.
+          }
+        });
+    }
+
+    UpdateCleaningStatusCompleted(clean_guid: string) {
+
+
+      const where: any = {
+        and: []
+      };
+  
+      where.and.push({
+        job_order: { status_cv: { eq: 'COMPLETED' } }
+      });
+  
+      where.and.push({
+        guid: { eq: clean_guid }
+      });
+  
+  
+      this.subs.sink = this.cleanDS.search(where)
+        .subscribe(data => {
+          if (data.length > 0) {
+            var cln = data[0];
+            var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+            rep.action = 'COMPLETE';
+            delete rep.storing_order_tank;
+            delete rep.job_order;
+            delete rep.customer_company;
+            this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+              console.log(result); 
+              if(result.data.updateCleaning>0)
+              {
+                 this.onFilterCleaning();
+              }
+              
+  
+            });
+            //  this.clnDS.
+          }
+        });
+    }
+
+     // isStarted(jobOrderItem: JobOrderItem | undefined) {
+  //   return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+  // }
+
+  isStarted(cleanItem:InGateCleaningItem | undefined) {
+
+    if(cleanItem?.job_order)
+      {
+        let jobOrderItem = cleanItem?.job_order;
+        return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+      }
+      return false;
+
+    
+  }
+
+  canStartJob(cleanItem:InGateCleaningItem | undefined) {
+    if(cleanItem?.job_order)
+    {
+      return this.joDS.canStartJob(cleanItem?.job_order);
+    }
+    return false;
+    
+  }
+
+  canCompleteJob(jobOrderItem: JobOrderItem | undefined, isStarted: boolean | undefined): boolean {
+    return this.joDS.canCompleteJob(jobOrderItem) && !isStarted;
+  }
+
+  canShowAction(cleanItem:InGateCleaningItem)
+  {
+    return cleanItem.status_cv=='JOB_IN_PROGRESS';
+
+
+  }
 }

@@ -41,6 +41,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ClnJobOrderRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest } from 'app/data-sources/job-order';
 import { Direction } from '@angular/cdk/bidi';
 import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component'
+import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 
 export interface DialogData {
   action?: string;
@@ -116,6 +117,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   jobOrderDS?:JobOrderDS;
   CodeValuesDS?:CodeValuesDS;
+  ttDS: TimeTableDS;
 
   teamList?: any[];
 
@@ -274,6 +276,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.teamDS=new TeamDS(this.apollo);
     this.jobOrderDS=new JobOrderDS(this.apollo);
+    this.ttDS=new TimeTableDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
@@ -599,7 +602,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         this.igCleanDS.updateInGateCleaning(cleanItem).subscribe(result=>{
           if(result.data.updateCleaning>0)
           {
-            this.handleSaveSuccess(result.data.updateCleaning);
+            
+           this.startCleaningJobOrder(selItem.guid);
+            
           }
 
          });
@@ -873,4 +878,93 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks?this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks:"-";
   }
+
+
+  startCleaningJobOrder(clean_guid:string)
+  {
+    if(clean_guid)
+    {
+      const where: any = {
+        job_type_cv: { eq: "CLEANING" }
+      };
+
+      where.cleaning = { some: { guid: { eq: clean_guid } } };
+
+      let lastOrderByJobOrder: any = { create_dt: "DESC" };
+      this.jobOrderDS?.searchStartedJobOrder(where, lastOrderByJobOrder)
+      .subscribe(data => {
+          let jobOrderList=data;
+          if(jobOrderList.length)
+          {
+            this.toggleJobState(jobOrderList[0]);
+          }
+      });
+
+    }
+  }
+
+  toggleJobState(jobOrderItem: JobOrderItem) {
+      //this.stopPropagation(event);  // Prevents the form submission
+      // if (!isStarted) {
+        const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
+        console.log(param)
+        const firstValidRepairPart = jobOrderItem.cleaning?.find(
+          (cleaning) => cleaning?.guid !== null
+        );
+        this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
+          if (result.data.startJobTimer > 0) {
+            var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+            this.UpdateCleaningStatusInProgress(item.guid!);
+          }
+        });
+      // } else {
+      //   const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      //   if (found?.length) {
+      //     const newParam = new TimeTableItem(found[0]);
+      //     newParam.stop_time = Utility.convertDate(new Date()) as number;
+      //     newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+      //     const param = [newParam];
+      //     console.log(param)
+      //     this.ttDS.stopJobTimer(param).subscribe(result => {
+      //       console.log(result)
+      //     });
+      //   }
+      // }
+    }
+
+    UpdateCleaningStatusInProgress(clean_guid: string) {
+
+
+      const where: any = {
+        and: []
+      };
+  
+  
+      where.and.push({
+        guid: { eq: clean_guid }
+      });
+  
+  
+      this.subs.sink = this.igCleanDS.search(where)
+        .subscribe(data => {
+          if (data.length > 0) {
+            var cln = data[0];
+            var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+            rep.action = 'IN_PROGRESS';
+            delete rep.storing_order_tank;
+            delete rep.job_order;
+            delete rep.customer_company;
+            this.igCleanDS.updateInGateCleaning(rep).subscribe(result => {
+  
+              console.log(result);
+              if(result.data.updateCleaning>0)
+              {
+                this.handleSaveSuccess(result.data.updateCleaning);
+              }
+  
+            });
+            //  this.clnDS.
+          }
+        });
+    }
 }

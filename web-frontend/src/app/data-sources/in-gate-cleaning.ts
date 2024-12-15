@@ -136,6 +136,22 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
             update_by
             update_dt
           }
+          cleaning{
+            guid
+          }
+          time_table(
+          where: { start_time: { neq: null }, stop_time: { eq: null } }
+          ) {
+            create_by
+            create_dt
+            delete_dt
+            guid
+            job_order_guid
+            start_time
+            stop_time
+            update_by
+            update_dt
+          }
           complete_dt
           create_by
           create_dt

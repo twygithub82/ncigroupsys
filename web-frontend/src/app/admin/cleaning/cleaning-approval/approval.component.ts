@@ -218,7 +218,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       last_cargo: this.lastCargoControl,
       start_quotation_date: [''],
       end_quotation_date: [''],
-      approval_status: [''],
+      approval_status: [['APPROVED']],
       
     });
   }
@@ -527,7 +527,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       end_approved_date: '',
       start_quotation_date: '',
       end_quotation_date: '',
-      approval_status: '',
+      approval_status: 'APPROVED',
       
     });
     this.customerCodeControl.reset('');
