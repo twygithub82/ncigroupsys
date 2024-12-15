@@ -15,6 +15,7 @@ namespace IDMS.Models.Service
         public double? top_temp { get; set; }
         public double? bottom_temp { get; set; }
         public string? remarks {  get; set; }
+        public long? report_dt { get; set; }
         public job_order? job_order { get; set; }
 
      }
