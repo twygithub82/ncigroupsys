@@ -72,14 +72,14 @@ namespace GlobalMQ.GqlTypes
             string value = "ok";
             try
             {
-                //string prefix = "On";
-                //string methodName = "";
-                //string topicName = "";
+                string prefix = "On";
+                string methodName = nameof(SubscriptionType.PurposeChanged);
+                string topicName = "";
 
                 //if (type == JobNotificationType.START_JOB)
                 //{
-                //methodName = nameof(SubscriptionType.JobStarted);
-                //topicName = $"{prefix}{methodName}_{purposeNotification.job_order_guid}";
+                //    methodName = nameof(SubscriptionType.JobStarted);
+                //    topicName = $"{prefix}{methodName}_{purposeNotification.job_order_guid}";
                 //}
                 //else if (type == JobNotificationType.STOP_JOB)
                 //{
@@ -97,8 +97,10 @@ namespace GlobalMQ.GqlTypes
                 //    topicName = $"{prefix}{methodName}_{purposeNotification.item_guid}_{purposeNotification.job_type}";
                 //}
 
-                //await topicEventSender.SendAsync(topicName, purposeNotification);
-                await topicEventSender.SendAsync(nameof(SubscriptionType.OnPurposeChanged), purposeNotification);
+                topicName = $"{prefix}{methodName}_{purposeNotification.sot_guid}";
+                await topicEventSender.SendAsync(topicName, purposeNotification);
+
+                //await topicEventSender.SendAsync(nameof(SubscriptionType.OnPurposeChanged), purposeNotification);
                 return value;
             }
             catch (Exception ex)

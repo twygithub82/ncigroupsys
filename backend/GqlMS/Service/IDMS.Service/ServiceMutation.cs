@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Service.GqlTypes.LocalModel;
 using IDMS.Models.Notification;
 using System.Globalization;
+using System.Linq;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -262,54 +263,6 @@ namespace IDMS.Service.GqlTypes
         //}
 
         /// <summary>
-        ///  Update Process to Status Completed When all Job are done, update complete_dt 
-        /// </summary>
-        //public async Task<int> CompleteEntireJobProcess(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        //    [Service] IConfiguration config, List<JobProcessRequest> jobProcessRequest)
-        //{
-        //    try
-        //    {
-        //        if (jobProcessRequest == null)
-        //            throw new GraphQLException(new Error($"Job process object cannot be null", "ERROR"));
-
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-
-        //        string tableName = "";
-        //        var jobType = jobProcessRequest.Select(j => j.job_type_cv).FirstOrDefault();
-        //        //var jobOrderGuid = jobProcessRequest.Select(j => j.job_order_guid).FirstOrDefault();
-
-        //        switch (jobType.ToUpper())
-        //        {
-        //            case JobType.REPAIR:
-        //                tableName = "repair";
-        //                break;
-        //            case JobType.CLEANING:
-        //                tableName = "cleaning";
-        //                break;
-        //            case JobType.RESIDUE:
-        //                tableName = "residue";
-        //                break;
-        //            case JobType.STEAM:
-        //                tableName = "steaming";
-        //                break;
-        //        }
-
-        //        var guids = string.Join(",", jobProcessRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-        //        string sql = $"UPDATE {tableName} SET status_cv = '{CurrentServiceStatus.COMPLETED}', complete_dt = {currentDateTime}, complete_by = '{user}' update_dt = {currentDateTime}, " +
-        //                     $"update_by = '{user}' WHERE guid IN ({guids})";
-
-        //        var ret = context.Database.ExecuteSqlRaw(sql);
-
-        //        return ret;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //}
-
-        /// <summary>
         /// Start current job, and update current Job Order to JOB-IN-PROGRESS
         /// </summary>
         public async Task<int> StartJobTimer(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
@@ -434,54 +387,6 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        /// <summary>
-        /// Mainly use to update Process status to Job-In-Progress, or other status
-        /// </summary>
-        //public async Task<int> UpdateJobProcessStatus(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        //    [Service] IConfiguration config, JobProcessRequest jobProcessRequest)
-        //{
-        //    try
-        //    {
-        //        if (jobProcessRequest == null)
-        //            throw new GraphQLException(new Error($"Job process object cannot be null", "ERROR"));
-
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-        //        string tableName = "";
-
-        //        switch (jobProcessRequest.job_type_cv.ToUpper())
-        //        {
-        //            case JobType.REPAIR:
-        //                tableName = "repair";
-        //                break;
-        //            case JobType.CLEANING:
-        //                tableName = "cleaning";
-        //                break;
-        //            case JobType.RESIDUE:
-        //                tableName = "residue";
-        //                break;
-        //            case JobType.STEAM:
-        //                tableName = "steaming";
-        //                break;
-        //        }
-
-        //        string sql = "";
-        //        if (CurrentServiceStatus.NO_ACTION.EqualsIgnore(jobProcessRequest.process_status))
-        //            sql = $"UPDATE {tableName} SET status_cv = '{jobProcessRequest.process_status}', update_dt = {currentDateTime}, " +
-        //                    $"update_by = '{user}', na_dt = {currentDateTime} WHERE guid = '{jobProcessRequest.guid}'";
-        //        else
-        //            sql = $"UPDATE {tableName} SET status_cv = '{jobProcessRequest.process_status}', update_dt = {currentDateTime}, " +
-        //                     $"update_by = '{user}' WHERE guid = '{jobProcessRequest.guid}'";
-
-        //        var ret = context.Database.ExecuteSqlRaw(sql);
-        //        return ret;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //}
-
         private async Task<int> AssignPartToJob(ApplicationServiceDBContext context, long currentDateTime, string user,
                                                 string jobType, string jobOrderGuid, List<string?>? partGuid, string processGuid)
         {
@@ -559,37 +464,125 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        //private async Task<int> UpdateProcessStatus(ApplicationServiceDBContext context, string user, long currentDateTime, string processGuid)
-        //{
-        //    try
-        //    {
-        //        var repair = await context.repair.Include(r => r.repair_part).ThenInclude(p => p.job_order)
-        //                                    .Where(r => r.guid == processGuid).FirstOrDefaultAsync();
 
-        //        if (repair != null)
-        //        {
-        //            var jobOrderList = repair?.repair_part?.Select(p => p.job_order).ToList();
-        //            if (jobOrderList != null && !jobOrderList.Any(j => j == null))
-        //            {
-        //                bool allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
-        //                                                    jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
-        //                if (allValid)
-        //                {
-        //                    repair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-        //                    repair.update_by = user;
-        //                    repair.update_dt = currentDateTime;
-        //                }
-        //            }
-        //        }
+        private async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid)
+        {
 
-        //        var ret = await context.SaveChangesAsync();
-        //        return ret;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
+            //first check tank purpose
+            var tank = await context.storing_order_tank.Where(t => t.guid == sotGuid & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+            if (tank != null)
+            {
+                var completedStatuses = new[] { CurrentServiceStatus.COMPLETED, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
+                var qcCompletedStatuses = new[] { CurrentServiceStatus.QC, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
 
+                //check if tank have any steaming purpose
+                if (tank.purpose_steam ?? false)
+                {
+                    var res = context.steaming.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0) &&
+                    (
+                        (t.approve_by == "system" && !completedStatuses.Contains(t.status_cv)) ||
+                        (t.approve_by != "system" && !qcCompletedStatuses.Contains(t.status_cv))
+                    ))
+                    .Select(t => t.guid)
+                    .Distinct()
+                    .ToList();
+
+                    //if any record not meet above, remain in current tank movement
+                    //else, change to that status
+                    if (res.Any())
+                    {
+                        tank.tank_status_cv = TankMovementStatus.STEAM;
+                        goto ProceesUpdate;
+                    }
+                }
+
+                //check if tank have any cleaning purpose
+                if (tank.purpose_cleaning ?? false)
+                {
+                    var res = context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0) &&
+                    (
+                        (t.approve_by == "system" && !completedStatuses.Contains(t.status_cv)) ||
+                        (t.approve_by != "system" && !qcCompletedStatuses.Contains(t.status_cv))
+                    ))
+                    .Select(t => t.guid)
+                    .Distinct()
+                    .ToList();
+
+                    if (res.Any())
+                    {
+                        tank.tank_status_cv = TankMovementStatus.CLEANING;
+                        goto ProceesUpdate;
+                    }
+                    else
+                    {
+                        //Else, check if tank have any residue estimate already created but pending
+                        res.Clear();
+                        res = context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0) &&
+                         (
+                             (t.approve_by == "system" && !completedStatuses.Contains(t.status_cv)) ||
+                             (t.approve_by != "system" && !qcCompletedStatuses.Contains(t.status_cv))
+                         ))
+                         .Select(t => t.guid)
+                         .Distinct()
+                         .ToList();
+
+                        if (res.Any())
+                        {
+                            tank.tank_status_cv = TankMovementStatus.CLEANING;
+                            goto ProceesUpdate;
+                        }
+                    }
+                }
+
+                //check if tank have any repair purpose
+                if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
+                {
+                    //Else, check if tank have any residue estimate already created but pending
+                    //var res = context.repair.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0) &&
+                    // (
+                    //     (!qcCompletedStatuses.Contains(t.status_cv))
+                    // ))
+                    // .Select(t => t.guid)
+                    // .Distinct()
+                    // .ToList();
+
+                    //if (res.Any())
+                    //{
+                    //    tank.tank_status_cv = TankMovementStatus.REPAIR;
+                    //    goto ProceesUpdate;
+                    //}
+                    var res = await context.repair.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    if (res.Any())
+                    {
+                        if (res.Any(t => !qcCompletedStatuses.Contains(t.status_cv)))
+                        {
+                            tank.tank_status_cv = TankMovementStatus.REPAIR;
+                            goto ProceesUpdate;
+                        }
+                        else
+                        {
+                            //can proceed to check next movement
+                        }
+                    }
+                    else
+                    {
+                        tank.tank_status_cv = TankMovementStatus.REPAIR;
+                        goto ProceesUpdate;
+                    }
+                }
+
+                if (tank.purpose_storage ?? false)
+                {
+                    tank.status_cv = TankMovementStatus.STORAGE;
+                }
+
+            ProceesUpdate:
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                var ret = await context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
     }
 }

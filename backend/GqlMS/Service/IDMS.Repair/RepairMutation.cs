@@ -390,7 +390,7 @@ namespace IDMS.Repair.GqlTypes
                 abortRepair.update_dt = currentDateTime;
                 abortRepair.na_dt = currentDateTime;
                 abortRepair.remarks = repJobOrder.remarks;
-  
+
                 //job order handling
                 await GqlUtils.JobOrderHandling(context, "repair", user, currentDateTime, ObjectAction.CANCEL, jobOrders: repJobOrder.job_order);
 
@@ -402,14 +402,16 @@ namespace IDMS.Repair.GqlTypes
                 else
                     abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
 
-                //tank movement status handling
-                var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };
-                context.storing_order_tank.Attach(sot);
-                sot.tank_status_cv = await TankMovementCheck(context, "repair", repJobOrder.sot_guid, repJobOrder.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
-                sot.update_by = user;
-                sot.update_dt = currentDateTime;
+                ////tank movement status handling
+                //var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };
+                //context.storing_order_tank.Attach(sot);
+                //sot.tank_status_cv = await TankMovementCheck(context, "repair", repJobOrder.sot_guid, repJobOrder.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
+                //sot.update_by = user;
+                //sot.update_dt = currentDateTime;
 
                 var res = await context.SaveChangesAsync();
+                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, repJobOrder.sot_guid);
+
                 return res;
             }
             catch (Exception ex)
@@ -425,6 +427,7 @@ namespace IDMS.Repair.GqlTypes
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 long currentDateTime = DateTime.Now.ToEpochTime();
+                bool tankMovementCheck = false;
 
                 if (repair == null)
                     throw new GraphQLException(new Error($"Residue object cannot be null or empty", "ERROR"));
@@ -478,16 +481,22 @@ namespace IDMS.Repair.GqlTypes
                         if (string.IsNullOrEmpty(repair.sot_guid))
                             throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
 
-                        var sot = new storing_order_tank() { guid = repair.sot_guid };
-                        context.storing_order_tank.Attach(sot);
-                        var processGuid = $"'{repair.guid}'";
-                        sot.tank_status_cv = await TankMovementCheck(context, "repair", repair.sot_guid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
-                        sot.update_by = user;
-                        sot.update_dt = currentDateTime;
+                        tankMovementCheck = true;
+
+                        //var sot = new storing_order_tank() { guid = repair.sot_guid };
+                        //context.storing_order_tank.Attach(sot);
+                        //var processGuid = $"'{repair.guid}'";
+                        //sot.tank_status_cv = await TankMovementCheck(context, "repair", repair.sot_guid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
+                        //sot.update_by = user;
+                        //sot.update_dt = currentDateTime;
                         break;
                 }
 
                 var res = await context.SaveChangesAsync();
+
+                if (tankMovementCheck)
+                    await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, repair.sot_guid);
+
                 return res;
 
             }
@@ -508,49 +517,41 @@ namespace IDMS.Repair.GqlTypes
                 if (repJobOrder == null)
                     throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
 
-                using var transaction = context.Database.BeginTransaction();
-                try
+                foreach (var item in repJobOrder)
                 {
-                    foreach (var item in repJobOrder)
-                    {
-                        //Repair handling
-                        var completedRepair = new repair() { guid = item.guid };
-                        context.repair.Attach(completedRepair);
-                        completedRepair.update_by = user;
-                        completedRepair.update_dt = currentDateTime;
-                        completedRepair.complete_dt = currentDateTime;
-                        completedRepair.status_cv = CurrentServiceStatus.QC;
-                        completedRepair.remarks = item.remarks;
+                    //Repair handling
+                    var completedRepair = new repair() { guid = item.guid };
+                    context.repair.Attach(completedRepair);
+                    completedRepair.update_by = user;
+                    completedRepair.update_dt = currentDateTime;
+                    completedRepair.complete_dt = currentDateTime;
+                    completedRepair.status_cv = CurrentServiceStatus.QC;
+                    completedRepair.remarks = item.remarks;
 
-                        //job_orders handling
-                        var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                        string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}' WHERE guid IN ({guids})";
-                        context.Database.ExecuteSqlRaw(sql);
-                    }
-
-                    //Tank handling
-                    var sotGuid = repJobOrder.Select(r => r.sot_guid).FirstOrDefault();
-                    var processGuid = string.Join(",", repJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
-                    if (string.IsNullOrEmpty(sotGuid))
-                        throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
-
-                    var sot = new storing_order_tank() { guid = sotGuid };
-                    context.storing_order_tank.Attach(sot);
-                    sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
-                    sot.update_by = user;
-                    sot.update_dt = currentDateTime;
-
-                    var res = await context.SaveChangesAsync();
-                    await transaction.CommitAsync();
-                    return res;
+                    //job_orders handling
+                    var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    string sql = $"UPDATE job_order SET qc_dt = {currentDateTime}, qc_by = '{user}', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}' WHERE guid IN ({guids})";
+                    context.Database.ExecuteSqlRaw(sql);
                 }
-                catch (Exception ex)
-                {
-                    // Rollback in case of an error
-                    transaction.Rollback();
-                    throw;
-                }
+
+                //Tank handling
+                var sotGuid = repJobOrder.Select(r => r.sot_guid).FirstOrDefault();
+                var processGuid = string.Join(",", repJobOrder.Select(j => j.guid).ToList().Select(g => $"'{g}'")); //repJobOrder.Select(r => r.guid).FirstOrDefault();
+                if (string.IsNullOrEmpty(sotGuid))
+                    throw new GraphQLException(new Error($"Tank guid cannot be null or empty", "ERROR"));
+
+                //var sot = new storing_order_tank() { guid = sotGuid };
+                //context.storing_order_tank.Attach(sot);
+                //sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
+                //sot.update_by = user;
+                //sot.update_dt = currentDateTime;
+
+                var res = await context.SaveChangesAsync();
+                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, sotGuid);
+
+                return res;
+
             }
             catch (Exception ex)
             {

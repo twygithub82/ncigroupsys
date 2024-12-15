@@ -81,10 +81,7 @@ namespace IDMS.Survey.GqlTypes
                 if (tank.purpose_steam ?? false)
                     sot.tank_status_cv = TankMovementStatus.STEAM;
                 else if (tank.purpose_cleaning ?? false)
-                {
                     sot.tank_status_cv = TankMovementStatus.CLEANING;
-                    needAddCleaning = true;
-                }
                 else if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
                     sot.tank_status_cv = TankMovementStatus.REPAIR;
                 else
@@ -99,7 +96,7 @@ namespace IDMS.Survey.GqlTypes
                     await AddSteaming(context, config, httpContextAccessor, sot, ingate.create_dt);
 
                 //Add cleaning by auto
-                if (needAddCleaning)
+                if (tank.purpose_cleaning ?? false)
                     await AddCleaning(context, config, httpContextAccessor, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
 
                 retval = await context.SaveChangesAsync();

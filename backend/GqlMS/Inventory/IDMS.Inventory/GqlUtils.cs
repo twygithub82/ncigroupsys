@@ -95,7 +95,7 @@ namespace IDMS.Inventory.GqlTypes
                 {
                     var resultContent = $"{result}";
                     data = JObject.Parse(resultContent);
-                    
+
                 }
                 else
                 {
@@ -136,7 +136,7 @@ namespace IDMS.Inventory.GqlTypes
             string? uid = "";
             try
             {
-                var isCheckAuthorization =Convert.ToBoolean(config["JWT:CheckAuthorization"]);
+                var isCheckAuthorization = Convert.ToBoolean(config["JWT:CheckAuthorization"]);
                 if (!isCheckAuthorization) return "anonymous user";
 
                 var authUser = httpContextAccessor.HttpContext.User;
@@ -146,7 +146,7 @@ namespace IDMS.Inventory.GqlTypes
                 {
                     throw new GraphQLException(new Error("Unauthorized", "401"));
                 }
-                
+
             }
             catch
             {
@@ -288,7 +288,7 @@ namespace IDMS.Inventory.GqlTypes
             { }
         }
 
-        public static async Task<int> AddCleaning1(ApplicationInventoryDBContext context, [Service] IConfiguration config,  
+        public static async Task<int> AddCleaning1(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             string user, long currentDateTime, storing_order_tank sot, long? ingate_date, string tariffBufferGuid, string newJob_no)
         {
             int retval = 0;
@@ -308,15 +308,16 @@ namespace IDMS.Inventory.GqlTypes
 
                 var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
                 var adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
-                               .Select(c => c.adjusted_price).FirstOrDefaultAsync();
+                               .Select(c => c.adjusted_price).FirstOrDefaultAsync() ?? 0;
                 ingateCleaning.cleaning_cost = adjustedPrice;
 
                 var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
-                                                   .Select(b => b.cost).FirstOrDefaultAsync();
+                                                   .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
                 ingateCleaning.buffer_cost = bufferPrice;
                 await context.AddAsync(ingateCleaning);
 
                 //Tank handling
+                string curTankStatus;
                 var tank = new storing_order_tank() { guid = sot.guid };
                 context.storing_order_tank.Attach(tank);
                 tank.update_by = user;
@@ -326,17 +327,21 @@ namespace IDMS.Inventory.GqlTypes
                 if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
                 {
                     tank.tank_status_cv = TankMovementStatus.CLEANING;
+                    curTankStatus = tank.tank_status_cv;
                 }
+                else
+                    curTankStatus = sot.tank_status_cv;
+
 
                 PurposeNotification purposeNotification = new PurposeNotification()
                 {
                     purpose = PurposeType.CLEAN,
                     sot_guid = sot.guid,
-                    tank_status = tank.tank_status_cv
+                    tank_status = curTankStatus
                 };
                 await SendPurposeChangeNotification(config, purposeNotification);
-                
-                retval = await context.SaveChangesAsync();  
+
+                retval = await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -408,6 +413,7 @@ namespace IDMS.Inventory.GqlTypes
                 await context.AddAsync(steamingPart);
 
                 //Tank handling
+                string curTankStatus;
                 var tank = new storing_order_tank() { guid = sot.guid };
                 context.storing_order_tank.Attach(tank);
                 tank.update_by = user;
@@ -417,13 +423,16 @@ namespace IDMS.Inventory.GqlTypes
                 if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
                 {
                     tank.tank_status_cv = TankMovementStatus.STEAM;
+                    curTankStatus = tank.tank_status_cv;
                 }
+                else
+                    curTankStatus = sot.tank_status_cv;
 
                 PurposeNotification purposeNotification = new PurposeNotification()
                 {
                     purpose = PurposeType.STEAM,
                     sot_guid = sot.guid,
-                    tank_status = tank.tank_status_cv
+                    tank_status = curTankStatus
                 };
                 await SendPurposeChangeNotification(config, purposeNotification);
 
@@ -440,8 +449,9 @@ namespace IDMS.Inventory.GqlTypes
         {
             int retval = 0;
             try
-            { 
+            {
                 //Tank handling
+                string curTankStatus;
                 var tank = new storing_order_tank() { guid = sot.guid };
                 context.storing_order_tank.Attach(tank);
                 tank.update_by = user;
@@ -452,14 +462,17 @@ namespace IDMS.Inventory.GqlTypes
                 if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
                 {
                     tank.tank_status_cv = TankMovementStatus.REPAIR;
+                    curTankStatus = tank.tank_status_cv;
                 }
+                else
+                    curTankStatus = sot.tank_status_cv;
 
                 PurposeNotification purposeNotification = new PurposeNotification()
                 {
-                    purpose = PurposeType.REPAIR,
+                    purpose = sot.purpose_repair_cv, //PurposeType.REPAIR,
                     sot_guid = sot.guid,
-                    tank_status = tank.tank_status_cv
-                };
+                    tank_status = curTankStatus
+                }; 
                 await SendPurposeChangeNotification(config, purposeNotification);
 
                 retval = await context.SaveChangesAsync();

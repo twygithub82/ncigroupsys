@@ -61,6 +61,8 @@ namespace IDMS.Models.Master
         public IEnumerable<package_buffer>? package_buffer { get; set; }
         public IEnumerable<package_repair>? package_repair { get; set; }    
         public IEnumerable<template_est_customer>? template_est_customer { get; set; }
+        [UseFiltering]
+        public IEnumerable<survey_detail?>? survey_detail { get; set; }
     }
 
 
