@@ -792,7 +792,8 @@
     "SURVEY-DATE": "Survey Date",
     "CLEAN-CERTIFICATE": "Clean Certificate",
     "EDIT-SURVEY": "Edit Survey",
-    "NEW-SURVEY": "New Survey"
+    "NEW-SURVEY": "New Survey",
+    "BAY-OVERVIEW":"Bay Overview"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

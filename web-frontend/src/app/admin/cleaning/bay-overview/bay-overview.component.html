@@ -1,0 +1,68 @@
+<form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()" #formDirective="ngForm">
+  <div class="card">
+    <div class="header">
+      <h2>
+        {{translatedLangText.BAY_ALLOCATION}}
+      </h2>
+    </div>
+    <div class="body">
+      <div class="team-container">
+        <div class="team-buttons">
+          
+          @for (team of teamList; track team) {
+        
+            <button 
+              mat-button 
+              (click)="toggleTeam(team)"
+              [ngClass]="{'selected': team.isSelected}"
+              [disabled]="team.isOccupied"
+              class="team-button">
+              <!-- Team description at the top-left -->
+              <span class="team-description">
+                @if(team.isOccupied)
+                {
+                  {{team.tank_no}}
+                }
+                @else{
+                {{team.description}}
+                }
+
+
+              </span>
+
+
+            </button> 
+          
+        } 
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div mat-dialog-actions class="align-right">
+        
+        <!-- @if(canAbort())
+        {
+          
+          <button mat-flat-button color="warn"  (click)="onAbort($event)" class="m-r-5">{{translatedLangText.ABORT}}</button>
+        }
+
+        @if (canEdit() && !buttonViewOnly()) {
+          <button mat-flat-button color="primary"  (click)="save()" [disabled]="!canSave()" class="m-r-5">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+        }
+
+       
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1" class="m-r-5">
+          @if(canEdit()){
+          {{translatedLangText.CANCEL}}
+          }
+          @if(!canEdit()){
+            {{translatedLangText.CLOSE}}
+          } -->
+        
+        <!-- </button> -->
+      </div>
+    </div>
+   
+  </div>
+</form>
+
+

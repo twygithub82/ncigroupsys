@@ -171,8 +171,11 @@
                   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventClean($event)">
                 </mat-paginator>
               </mat-tab>
-              <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
+              <!-- <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
                 <app-job-order-task></app-job-order-task>
+              </mat-tab> -->
+              <mat-tab [label]="translatedLangText.BAY_OVERVIEW">
+                <app-bay-overview></app-bay-overview>
               </mat-tab>
               <!-- <mat-tab>
                 <ng-template mat-tab-label>

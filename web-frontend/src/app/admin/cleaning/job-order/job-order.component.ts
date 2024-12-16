@@ -54,6 +54,7 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.component";
 import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 
 @Component({
   selector: 'app-job-order',
@@ -90,7 +91,8 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
     MatCardModule,
     MatTabsModule,
     JobOrderQCComponent,
-    JobOrderTaskComponent
+    JobOrderTaskComponent,
+    BayOverviewComponent
 ]
 })
 export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -175,6 +177,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     METHOD:"COMMON-FORM.METHOD",
     QC: 'COMMON-FORM.QC',
+    BAY_OVERVIEW:"COMMON-FORM.BAY-OVERVIEW"
   }
 
   filterCleanForm?: UntypedFormGroup;
