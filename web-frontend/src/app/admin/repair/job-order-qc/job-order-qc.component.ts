@@ -91,18 +91,9 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     'tank_no',
     'customer',
     'estimate_no',
-    // 'estimate_dt',
-    // 'approve_dt',
-    'qc_dt',
+    'complete_dt',
     'repair_type',
     'status_cv'
-  ];
-
-  displayedColumns = [
-    'estimate_no',
-    'job_no',
-    'status_cv',
-    'remarks'
   ];
 
   translatedLangText: any = {};
@@ -138,7 +129,8 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     QC_DATE: 'COMMON-FORM.QC-DATE',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
     EIR_NO: 'COMMON-FORM.EIR-NO',
-    EIR_DATE: 'COMMON-FORM.EIR-DATE'
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
+    COMPLETE_DATE: 'COMMON-FORM.COMPLETE-DATE',
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -214,6 +206,8 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       filterRepair: [''],
       jobStatusCv: [['COMPLETED']],
       customer: this.customerCodeControl,
+      complete_dt_start: [''],
+      complete_dt_end: ['']
     });
   }
 
@@ -271,6 +265,10 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       where.status_cv = {
         in: this.filterJobOrderForm!.get('jobStatusCv')?.value
       };
+    }
+
+    if (this.filterJobOrderForm!.get('complete_dt_start')?.value && this.filterJobOrderForm!.get('complete_dt_end')?.value) {
+      where.create_dt = { gte: Utility.convertDate(this.filterJobOrderForm!.get('complete_dt_start')?.value), lte: Utility.convertDate(this.filterJobOrderForm!.get('complete_dt_end')?.value, true) };
     }
 
     // TODO:: Get login user team
@@ -338,6 +336,39 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
 
     this.pageSizeJobOrder = pageSize;
     this.pageIndexJobOrder = pageIndex;
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_RESET,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.resetForm();
+      }
+    });
+  }
+
+  resetForm() {
+    this.filterJobOrderForm?.patchValue({
+      filterJobOrder: '',
+      jobStatusCv: ['COMPLETED'],
+      complete_dt_start: '',
+      complete_dt_end: ''
+    });
+    this.customerCodeControl.reset();
   }
 
   onPageEventJobOrder(event: PageEvent) {

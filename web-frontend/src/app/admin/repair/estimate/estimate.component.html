@@ -89,39 +89,15 @@
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                      <input matInput formControlName="part_name">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.CHANGE_REQUEST}}</mat-label>
-                      <mat-select formControlName="change_request_cv">
-                        @for (codeValue of processStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                       <input matInput formControlName="eir_no">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.REPAIR_JOB_NO}}</mat-label>
-                      <input matInput formControlName="repair_job_no">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.REPAIR_TYPE}}</mat-label>
-                      <mat-select multiple formControlName="repair_type_cv">
-                        @for (codeValue of purposeOptionCvList; track codeValue) {
+                      <mat-select multiple formControlName="repair_option_cv">
+                        @for (codeValue of repairOptionCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
@@ -161,12 +137,6 @@
                         </mat-option>
                         }
                       </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.ESTIMATE_NO}}</mat-label>
-                      <input matInput formControlName="estimate_no">
                     </mat-form-field>
                   </div>
                   <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 d-flex align-items-center">

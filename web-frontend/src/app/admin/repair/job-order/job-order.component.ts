@@ -94,7 +94,6 @@ import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-tas
   ]
 })
 export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-
   displayedColumnsRepair = [
     'tank_no',
     'customer',
@@ -247,6 +246,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       filterRepair: [''],
       status_cv: [['APPROVED', 'PARTIAL_ASSIGNED']],
       customer: this.customerCodeControl,
+      approval_dt_start: [''],
+      approval_dt_end: ['']
     });
   }
 
@@ -375,6 +376,10 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
     if (this.filterRepairForm!.get('status_cv')?.value) {
       where.status_cv = { in: this.filterRepairForm!.get('status_cv')?.value };
+    }
+
+    if (this.filterRepairForm!.get('approval_dt_start')?.value && this.filterRepairForm!.get('approval_dt_end')?.value) {
+      where.approve_dt = { gte: Utility.convertDate(this.filterRepairForm!.get('approval_dt_start')?.value), lte: Utility.convertDate(this.filterRepairForm!.get('approval_dt_end')?.value, true) };
     }
 
     this.lastSearchCriteriaRepair = this.repairDS.addDeleteDtCriteria(where);
@@ -575,7 +580,11 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   resetForm() {
     this.filterRepairForm?.patchValue({
       filterRepair: '',
+      status_cv: ['APPROVED', 'PARTIAL_ASSIGNED'],
+      approval_dt_start: '',
+      approval_dt_end: ''
     });
+    this.customerCodeControl.reset('');
   }
 
   filterDeleted(resultList: any[] | undefined): any {

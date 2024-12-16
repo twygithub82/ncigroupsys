@@ -13,7 +13,7 @@
                 <form class="ms-0" [formGroup]="filterRepairForm!" (ngSubmit)="onFilterRepair()"
                   #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
                         <mat-label>
@@ -36,7 +36,18 @@
                         </mat-autocomplete>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.APPROVAL_DATE}}</mat-label>
+                        <mat-date-range-input [rangePicker]="approval_picker">
+                          <input matStartDate placeholder="Start date" formControlName="approval_dt_start">
+                          <input matEndDate placeholder="End date" formControlName="approval_dt_end">
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="approval_picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #approval_picker></mat-date-range-picker>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.STATUS}}</mat-label>
                         <mat-select multiple formControlName="status_cv">
@@ -50,9 +61,12 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                    <div class="col-xl col-lg col-md-12 col-sm-12 mb-2 d-flex align-items-center">
                       <button mat-mini-fab color="primary" class="mt-4" (click)="onFilterRepair()">
                         <mat-icon>search</mat-icon>
+                      </button>
+                      <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
+                        {{translatedLangText.CLEAR_ALL}}
                       </button>
                     </div>
                   </div>
