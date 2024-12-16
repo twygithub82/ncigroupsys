@@ -19,6 +19,6 @@ export const environment = {
  */
 // import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
 export const testTypeMapping: any = {
-  "5_HYDRO": "2.5_AIR",
-  "2.5_AIR": "5_HYDRO"
+  "5": "2.5",
+  "2.5": "5"
 }

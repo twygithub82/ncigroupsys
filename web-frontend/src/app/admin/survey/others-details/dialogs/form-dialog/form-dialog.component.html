@@ -17,7 +17,7 @@
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.SURVEY_TYPE}}</mat-label>
             <mat-select formControlName="survey_type_cv" required>
-              @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
+              @for (codeValue of data.populateData.surveyTypeCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">
                 {{codeValue.description}}
               </mat-option>
@@ -38,19 +38,19 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.SURVEYOR}}</mat-label>
-            <mat-select formControlName="surveyor_guid">
-              <!-- @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
-              <mat-option [value]="codeValue.code_val">
-                {{codeValue.description}}
+            <mat-select formControlName="surveyor_guid" required>
+              @for (cc of data.populateData.surveyorList; track cc) {
+              <mat-option [value]="cc">
+                {{ccDS.displayName(cc)}}
               </mat-option>
-              } -->
+              }
             </mat-select>
           </mat-form-field>
         </div>
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.SURVEY_DATE}}</mat-label>
-            <input matInput formControlName="survey_dt" [matDatepicker]="survey_dt_picker" [min]="startDateToday"
+            <input matInput formControlName="survey_dt" [matDatepicker]="survey_dt_picker"
               required>
             <mat-datepicker-toggle matSuffix [for]="survey_dt_picker"></mat-datepicker-toggle>
             <mat-datepicker #survey_dt_picker [startAt]="startDateToday"></mat-datepicker>
@@ -65,7 +65,7 @@
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.STATUS}}</mat-label>
             <mat-select formControlName="survey_status_cv" required>
-              @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
+              @for (codeValue of data.populateData.surveyStatusCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">
                 {{codeValue.description}}
               </mat-option>

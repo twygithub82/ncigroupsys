@@ -29,52 +29,47 @@ export class Utility {
   static convertDate(date: any, endOfDay: boolean = false): number | Date | undefined {
     try {
       if (!date) {
-        return undefined;
+        return undefined; // Handle null or undefined input
       }
-  
+
+      // Handle numbers (epoch time)
+      if (typeof date === 'number' && !isNaN(date)) {
+        const isSeconds = date.toString().length === 10; // Check if input is in seconds
+        const jsDate = new Date(isSeconds ? date * 1000 : date); // Convert to milliseconds if needed
+        return jsDate; // Return as Date object
+      }
+
       // Handle Moment.js objects
       if (moment.isMoment(date)) {
         const momentDate = endOfDay
-          ? date.endOf('day') 
-          : date.startOf('day');
-        return Math.floor(momentDate.valueOf() / 1000);
+          ? date.endOf('day') // Set to end of day
+          : date.startOf('day'); // Set to start of day
+        return Math.floor(momentDate.valueOf() / 1000); // Return epoch time in seconds
       }
-  
+
       // Handle JavaScript Date objects
       if (date instanceof Date) {
-        const jsDate = new Date(date);
+        const jsDate = new Date(date); // Create a copy of the date
         if (endOfDay) {
-          jsDate.setHours(23, 59, 59, 999);
+          jsDate.setHours(23, 59, 59, 999); // Set to end of day
         } else {
-          jsDate.setHours(0, 0, 0, 0);
+          jsDate.setHours(0, 0, 0, 0); // Set to start of day
         }
-        return Math.floor(jsDate.getTime() / 1000);
+        return Math.floor(jsDate.getTime() / 1000); // Return epoch time in seconds
       }
-  
+
       // Handle strings that can be parsed as dates
       if (typeof date === 'string' && !isNaN(Date.parse(date))) {
-        const parsedDate = new Date(date);
+        const parsedDate = new Date(date); // Parse the string into a Date object
         if (endOfDay) {
-          parsedDate.setHours(23, 59, 59, 999);
+          parsedDate.setHours(23, 59, 59, 999); // Set to end of day
         } else {
-          parsedDate.setHours(0, 0, 0, 0);
+          parsedDate.setHours(0, 0, 0, 0); // Set to start of day
         }
-        return Math.floor(parsedDate.getTime() / 1000);
+        return Math.floor(parsedDate.getTime() / 1000); // Return epoch time in seconds
       }
-  
-      // Handle numbers as epoch times
-      if (typeof date === 'number' && !isNaN(date)) {
-        const isSeconds = date.toString().length === 10;
-        const jsDate = new Date(isSeconds ? date * 1000 : date); 
-        if (endOfDay) {
-          jsDate.setHours(23, 59, 59, 999);
-        } else {
-          jsDate.setHours(0, 0, 0, 0);
-        }
-        return Math.floor(jsDate.getTime() / 1000);
-      }
-  
-      // If input type is unrecognized, return undefined
+
+      // If input type is unrecognized, log error
       console.error('Unrecognized date format:', date);
       return undefined;
     } catch (error) {
@@ -200,7 +195,7 @@ export class Utility {
 
     // Check for valid format
     if (!containerNumberRegex.test(containerNumber)) {
-        return false; // Invalid format
+      return false; // Invalid format
     }
 
     // Remove any space and hyphen to standardize format to "ABCD1234567"
@@ -208,38 +203,38 @@ export class Utility {
 
     // Verify that the normalized container number length is 11
     if (normalizedContainerNumber.length !== 11) {
-        return false;
+      return false;
     }
 
     // Convert letters to numbers as per ISO 6346
     const lettersToValues = (letter: string): number => {
-        const code = letter.charCodeAt(0);
-        if (code >= 65 && code <= 90) {
-            // ISO 6346: A=10, B=12, ..., Z=38, skipping multiples of 11
-            let value = code - 55;
-            if (value >= 11) value++;
-            if (value >= 22) value++;
-            if (value >= 33) value++;
-            return value;
-        }
-        return -1;
+      const code = letter.charCodeAt(0);
+      if (code >= 65 && code <= 90) {
+        // ISO 6346: A=10, B=12, ..., Z=38, skipping multiples of 11
+        let value = code - 55;
+        if (value >= 11) value++;
+        if (value >= 22) value++;
+        if (value >= 33) value++;
+        return value;
+      }
+      return -1;
     };
 
     // Convert the container number to numeric values
     const numericValues = [];
     for (let i = 0; i < 10; i++) {
-        const char = normalizedContainerNumber.charAt(i);
-        if (i < 4) {
-            numericValues.push(lettersToValues(char));
-        } else {
-            numericValues.push(parseInt(char, 10));
-        }
+      const char = normalizedContainerNumber.charAt(i);
+      if (i < 4) {
+        numericValues.push(lettersToValues(char));
+      } else {
+        numericValues.push(parseInt(char, 10));
+      }
     }
 
     // Calculate weighted sum using 2^position
     let weightedSum = 0;
     for (let i = 0; i < 10; i++) {
-        weightedSum += numericValues[i] * Math.pow(2, i);
+      weightedSum += numericValues[i] * Math.pow(2, i);
     }
 
     // Calculate the check digit
@@ -250,7 +245,7 @@ export class Utility {
 
     // Compare calculated check digit with the last digit of the container number
     return parseInt(normalizedContainerNumber.charAt(10), 10) === finalCheckDigit;
-}
+  }
 
   static getDeleteDtEpoch(): number {
     const today = new Date();

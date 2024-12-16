@@ -333,6 +333,52 @@
                     @if (!(igDS.loading$ | async) && !(ogDS.loading$ | async)) {
                     <mat-card-content>
                       <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>FIRST NAME</th>
+                                <th>LAST NAME</th>
+                                <th>USERNAME</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>&#64;mdo</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">2</th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>&#64;fat</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">3</th>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>&#64;twitter</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">4</th>
+                                <td>Larry</td>
+                                <td>Jellybean</td>
+                                <td>&#64;lajelly</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">5</th>
+                                <td>Larry</td>
+                                <td>Kikat</td>
+                                <td>&#64;lakitkat</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="row">
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-0 d-none d-md-block">
                           <div class="row">
                             <div
@@ -844,14 +890,14 @@
                                       </table>
                                     </div>
                                     <!-- No result -->
-                                    @if (!(residueDS.loading$ | async) && !residueItem.length) {
+                                    @if (!(steamDS.loading$ | async) && !steamItem.length) {
                                     <mat-divider></mat-divider>
                                     <div class="no-results m-l-20 pt-3">
                                       <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                                     </div>
                                     }
                                     <!-- Loading spinner -->
-                                    @if (residueDS.loading$ | async) {
+                                    @if (steamDS.loading$ | async) {
                                     <div class="tbl-spinner">
                                       <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                                       </mat-progress-spinner>

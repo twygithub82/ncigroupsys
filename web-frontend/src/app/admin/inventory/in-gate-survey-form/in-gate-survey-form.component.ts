@@ -527,9 +527,17 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
       this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
+      if (data.length) {
+        this.lastTest = this.getLastTest();
+        this.nextTest = this.getNextTest();
+      }
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = addDefaultSelectOption(data, "--Select--");
+      if (data.length) {
+        this.lastTest = this.getLastTest();
+        this.nextTest = this.getNextTest();
+      }
     });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
       this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");
@@ -603,7 +611,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           //   this.ownerList = data;
           // });
           this.getCustomerBufferPackage(this.in_gate.tank?.storing_order?.customer_company?.guid);
-          
+
           if (this.in_gate!.in_gate_survey?.guid) {
             this.fileManagerService.getFileUrlByGroupGuid([this.in_gate!.in_gate_survey?.guid]).subscribe({
               next: (response) => {
@@ -1417,7 +1425,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   getLastTest(): string | undefined {
-    if (this.surveyForm!.get('last_test_cv')!.value && this.surveyForm!.get('test_class_cv')!.value && this.surveyForm!.get('test_dt')!.value) {
+    if ((this.surveyForm!.get('last_test_cv')!.value) &&
+      (this.surveyForm!.get('test_class_cv')!.value) &&
+      (this.surveyForm!.get('test_dt')!.value)) {
       const test_type = this.surveyForm!.get('last_test_cv')!.value;
       const test_class = this.surveyForm!.get('test_class_cv')!.value;
       const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
@@ -1427,11 +1437,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   getNextTest(): string | undefined {
-    if (this.surveyForm!.get('last_test_cv')!.value && this.surveyForm!.get('test_dt')!.value) {
-      const test_type = this.surveyForm!.get('last_test_cv')!.value;
+    if ((this.surveyForm!.get('last_test_cv')!.value || this.in_gate?.in_gate_survey?.last_test_cv) &&
+      (this.surveyForm!.get('test_dt')!.value || this.in_gate?.in_gate_survey?.test_dt)) {
+      const test_type = this.surveyForm!.get('last_test_cv')!.value || this.in_gate?.in_gate_survey?.last_test_cv;
       const match = test_type.match(/^[0-9]*\.?[0-9]+/);
       const yearCount = parseFloat(match[0]);
-      const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number;
+      const testDt = Utility.convertDate(this.surveyForm!.get('test_dt')!.value) as number || this.in_gate?.in_gate_survey?.test_dt as number;
       const resultDt = Utility.addYearsToEpoch(testDt, yearCount);
       const mappedVal = testTypeMapping[test_type];
       this.surveyForm!.get('next_test_cv')!.setValue(mappedVal);

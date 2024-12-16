@@ -195,6 +195,8 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   }
   loadItems(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
+    where.type_cv = { in: ["BRANCH", "OWNER"] }
+    where = this.addDeleteDtCriteria(where)
     return this.apollo
       .query<any>({
         query: SEARCH_COMPANY_QUERY,
@@ -224,7 +226,7 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     this.loadingSubject.next(true);
     const where = {
       guid: { eq: owner_guid },
-      type_cv: { in: ["OWNER", "LEESSEE"] }
+      type_cv: { in: ["OWNER"] }
     }
     const order = {
 
@@ -321,38 +323,67 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   }
 
   getCustomerBranch(guid: string) {
-      this.loadingSubject.next(true);
-      const where = {
-          or: [
-              { main_customer_guid: { eq: guid } }
-          ]
-      }
-      const order = {
+    this.loadingSubject.next(true);
+    const where = {
+      or: [
+        { main_customer_guid: { eq: guid } }
+      ]
+    }
+    const order = {
 
-      }
-      return this.apollo
-          .query<any>({
-              query: GET_COMPANY_AND_BRANCH,
-              variables: { where, order },
-              fetchPolicy: 'no-cache' // Ensure fresh data
-          })
-          .pipe(
-              map((result) => result.data),
-              catchError((error: ApolloError) => {
-                  console.error('GraphQL Error:', error);
-                  return of([] as CustomerCompanyItem[]); // Return an empty array on error
-              }),
-              finalize(() =>
-                  this.loadingSubject.next(false)
-              ),
-              map((result) => {
-                  const list = result.resultList || { nodes: [], totalCount: 0 };
-                  this.dataSubject.next(list.nodes);
-                  this.pageInfo = list.pageInfo;
-                  this.totalCount = list.totalCount;
-                  return list.nodes;
-              })
-          );
+    }
+    return this.apollo
+      .query<any>({
+        query: GET_COMPANY_AND_BRANCH,
+        variables: { where, order },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CustomerCompanyItem[]); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          const list = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(list.nodes);
+          this.pageInfo = list.pageInfo;
+          this.totalCount = list.totalCount;
+          return list.nodes;
+        })
+      );
+  }
+
+  getSurveyorList(where?: any, order?: any) {
+    this.loadingSubject.next(true);
+    where.type_cv = { in: ["SURVEYOR"] }
+    where = this.addDeleteDtCriteria(where)
+    return this.apollo
+      .query<any>({
+        query: GET_COMPANY_QUERY,
+        variables: { where, order },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CustomerCompanyItem[]); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          const list = result.companyList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(list.nodes);
+          this.pageInfo = list.pageInfo;
+          this.totalCount = list.totalCount;
+          return list.nodes;
+        })
+      );
   }
 
   displayName(cc?: CustomerCompanyItem): string {

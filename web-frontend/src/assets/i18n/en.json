@@ -243,7 +243,7 @@
     "SIGNIN": "Sign in",
     "USERNAME": "Username",
     "PASSWORD": "Password",
-    "CONFIRM-PASSWORD":"Confirm Password",
+    "CONFIRM-PASSWORD": "Confirm Password",
     "REMEMBER": "Remember me",
     "FORGOTPASSWORD": "Forgot password?",
     "LOGIN": "Login"
@@ -783,14 +783,15 @@
     "COMPLETE-DATE": "Complete Date",
     "STEAM-HEAT-TYPE": "Steam / Heat Type",
     "STEAM-MONITOR": "Steam Monitor",
-    "TIME":"Time",
-    "SELECTED-RECORD":"Selected Record",
-    "COMPLETE-STEAM":"Complete Steaming",
+    "TIME": "Time",
+    "SELECTED-RECORD": "Selected Record",
+    "COMPLETE-STEAM": "Complete Steaming",
     "SURVEY-DATE": "Survey Date",
     "CLEAN-CERTIFICATE": "Clean Certificate",
     "EDIT-SURVEY": "Edit Survey",
     "NEW-SURVEY": "New Survey",
-    "BAY-OVERVIEW":"Bay Overview"
+    "BAY-OVERVIEW": "Bay Overview",
+    "SURVEY-TYPE": "Survey Type"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

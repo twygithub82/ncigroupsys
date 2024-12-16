@@ -158,7 +158,8 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
     SURVEY_DETAILS: 'COMMON-FORM.SURVEY-DETAILS',
     EDIT_SURVEY: 'COMMON-FORM.EDIT-SURVEY',
-    NEW_SURVEY: 'COMMON-FORM.NEW-SURVEY'
+    NEW_SURVEY: 'COMMON-FORM.NEW-SURVEY',
+    SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -177,7 +178,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   sotItem?: StoringOrderTankItem;
   sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
-  surveyorList: any[] = [];
+  surveyorList: CustomerCompanyItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   yardCvList: CodeValuesItem[] = [];
@@ -252,22 +253,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  refresh() {
-    this.loadData();
-  }
-
   public loadData() {
-    this.sot_guid = this.route.snapshot.paramMap.get('id');
-    if (this.sot_guid) {
-      // EDIT
-      this.subs.sink = this.sotDS.getStoringOrderTanksForSurveyByID(this.sot_guid).subscribe(data => {
-        if (data.length > 0) {
-          this.sotItem = data[0];
-        }
-      });
-    } else {
-      // NEW
-    }
     const queries = [
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -277,6 +263,8 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'cleanStatusCv', codeValType: 'CLEAN_STATUS' },
       { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
       { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+      { alias: 'surveyTypeCv', codeValType: 'SURVEY_TYPE' },
+      { alias: 'surveyStatusCv', codeValType: 'SURVEY_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -304,6 +292,30 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = data;
     });
+    this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
+      this.surveyTypeCvList = data;
+    });
+    this.cvDS.connectAlias('surveyStatusCv').subscribe(data => {
+      this.surveyStatusCvList = data;
+    });
+
+    this.ccDS.getSurveyorList({}, {}).subscribe(data => {
+      if (data.length > 0) {
+        this.surveyorList = data;
+      }
+    });
+
+    this.sot_guid = this.route.snapshot.paramMap.get('id');
+    if (this.sot_guid) {
+      // EDIT
+      this.subs.sink = this.sotDS.getStoringOrderTanksForSurveyByID(this.sot_guid).subscribe(data => {
+        if (data.length > 0) {
+          this.sotItem = data[0];
+        }
+      });
+    } else {
+      // NEW
+    }
   }
 
   showNotification(
