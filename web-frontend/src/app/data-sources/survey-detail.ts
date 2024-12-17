@@ -79,6 +79,38 @@ const GET_SURVEY_DETAIL = gql`
   }
 `;
 
+const GET_SURVEY_DETAIL_FOR_MOVEMENT = gql`
+  query querySurveyDetail($where: survey_detailFilterInput, $order: [survey_detailSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: querySurveyDetail(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+    totalCount
+    nodes {
+      create_by
+      create_dt
+      customer_company_guid
+      delete_dt
+      guid
+      remarks
+      sot_guid
+      status_cv
+      survey_dt
+      survey_type_cv
+      update_by
+      update_dt
+      customer_company {
+        code
+        name
+      }
+    }
+    }
+  }
+`;
+
 export const ADD_SURVEY = gql`
   mutation addSurveyDetail($surveyDetail: survey_detailInput!) {
     addSurveyDetail(surveyDetail: $surveyDetail)
@@ -102,6 +134,33 @@ export class SurveyDetailDS extends BaseDataSource<SurveyDetailItem> {
       .query<any>({
         query: GET_SURVEY_DETAIL,
         variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const resultList = result.data?.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        }),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+  searchSurveyDetailForMovement(sot_guid: any): Observable<SurveyDetailItem[]> {
+    this.loadingSubject.next(true);
+    const where = {
+      sot_guid: { eq: sot_guid }
+    }
+    const order = {
+      survey_dt: "DESC"
+    }
+
+    return this.apollo
+      .query<any>({
+        query: GET_SURVEY_DETAIL_FOR_MOVEMENT,
+        variables: { where, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

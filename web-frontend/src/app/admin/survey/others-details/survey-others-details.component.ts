@@ -286,6 +286,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.subs.sink = this.sotDS.getStoringOrderTanksForSurveyByID(this.sot_guid).subscribe(data => {
         if (data.length > 0) {
           this.sotItem = data[0];
+          this.surveyDetailItem = this.sotItem?.survey_detail || [];
         }
       });
     } else {
@@ -337,7 +338,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   initializeValueChanges() {
   }
 
-  addSurveyDetails(event: Event) {
+  addSurveyDetail(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -368,7 +369,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  editBookingDetails(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
+  editSurveyDetail(event: Event, row: SurveyDetailItem) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -379,21 +380,23 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
       data: {
-        item: [sot],
-        action: 'edit',
-        booking: booking,
+        action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking,
-          yardCvList: this.yardCvList,
-          tankStatusCvList: this.tankStatusCvList
-        }
+          surveyorList: this.surveyorList,
+          surveyTypeCvList: this.surveyTypeCvList,
+          surveyStatusCvList: this.surveyStatusCvList,
+        },
+        surveyDetail: row,
+        sot: this.sotItem,
+        surveyDS: this.surveyDS
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && result.savedSuccess) {
         ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+        this.refreshSurveyDetail();
       }
     });
   }

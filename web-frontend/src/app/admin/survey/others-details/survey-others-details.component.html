@@ -148,7 +148,7 @@
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                    (click)="addSurveyDetails($event)">
+                    (click)="addSurveyDetail($event)">
                     <mat-icon class="col-white">add</mat-icon>
                     {{translatedLangText.SURVEY_DETAILS}}
                   </button>
@@ -208,7 +208,7 @@
                           </mat-cell>
                         </ng-container>
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                        <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" (click)="editSurveyDetail($event, row)" matRipple>
                         </mat-row>
                       </table>
                     </div>

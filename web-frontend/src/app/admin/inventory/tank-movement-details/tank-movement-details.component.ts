@@ -66,6 +66,7 @@ import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { RepairFormDialogComponent } from './repair-form-dialog/repair-form-dialog.component';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
+import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -146,6 +147,15 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'scheduling_dt',
     'reference',
     'status_cv',
+  ];
+
+  displayedColumnsSurveyDetail = [
+    'surveyor',
+    'survey_dt',
+    'status_cv',
+    'estimate_no',
+    'remarks',
+    'update_by',
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT-DETAILS'
@@ -356,6 +366,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
     BEGIN_DATE: 'COMMON-FORM.BEGIN-DATE',
     COMPLETE_DATE: 'COMMON-FORM.COMPLETE-DATE',
+    SURVEY_DATE: 'COMMON-FORM.SURVEY-DATE',
+    UPDATE_BY: 'COMMON-FORM.UPDATE-BY',
   }
 
   sot_guid: string | null | undefined;
@@ -370,7 +382,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   repairItem: RepairItem[] = [];
   bookingList: BookingItem[] = [];
   schedulingList: SchedulingItem[] = [];
-  surveyList: any[] = [];
+  surveyList: SurveyDetailItem[] = [];
   transferList: any[] = [];
 
   surveyForm?: UntypedFormGroup;
@@ -391,6 +403,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   repairDS: RepairDS;
   bkDS: BookingDS;
   schedulingDS: SchedulingDS;
+  surveyDS: SurveyDetailDS;
 
   customerCodeControl = new UntypedFormControl();
   ownerControl = new UntypedFormControl();
@@ -503,6 +516,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.repairDS = new RepairDS(this.apollo);
     this.bkDS = new BookingDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
+    this.surveyDS = new SurveyDetailDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -662,7 +676,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (this.sot_guid) {
       // EDIT
       this.subs.sink = this.sotDS.getStoringOrderTankForMovementByID(this.sot_guid).subscribe(data => {
-        if (this.sotDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`sot: `, data)
           this.sot = data[0];
           this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
@@ -676,58 +690,64 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         }
       });
       this.subs.sink = this.igsDS.getInGateSurveyByIDForMovement(this.sot_guid).subscribe(data => {
-        if (this.igsDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`igs: `, data)
           this.igs = data[0];
         }
       });
       this.subs.sink = this.igDS.getInGateByIDForMovement(this.sot_guid).subscribe(data => {
-        if (this.igDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`ig: `, data)
           this.ig = data[0];
         }
       });
       this.subs.sink = this.ogDS.getOutGateByIDForMovement(this.sot_guid).subscribe(data => {
-        if (this.ogDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`og: `, data)
           this.og = data[0];
         }
       });
       this.subs.sink = this.steamDS.getSteamForMovement(this.sot_guid).subscribe(data => {
-        if (this.steamDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`steam: `, data)
           this.steamItem = data;
         }
       });
       this.subs.sink = this.residueDS.getResidueForMovement(this.sot_guid).subscribe(data => {
-        if (this.residueDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`residue: `, data)
           this.residueItem = data;
         }
       });
       this.subs.sink = this.cleaningDS.getCleaningForMovement(this.sot_guid).subscribe(data => {
-        if (this.cleaningDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`cleaning: `, data)
           this.cleaningItem = data;
         }
       });
       this.subs.sink = this.repairDS.getRepairForMovement(this.sot_guid).subscribe(data => {
-        if (this.repairDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`repair: `, data);
           this.repairItem = data;
           this.displayColumnChanged();
         }
       });
       this.subs.sink = this.bkDS.getBookingForMovement(this.sot_guid).subscribe(data => {
-        if (this.bkDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`booking: `, data);
           this.bookingList = data;
         }
       });
       this.subs.sink = this.schedulingDS.getSchedulingForMovement(this.sot_guid).subscribe(data => {
-        if (this.schedulingDS.totalCount > 0) {
+        if (data.length > 0) {
           console.log(`scheduling: `, data);
           this.schedulingList = data;
+        }
+      });
+      this.subs.sink = this.surveyDS.searchSurveyDetailForMovement(this.sot_guid).subscribe(data => {
+        if (data.length > 0) {
+          console.log(`survey: `, data);
+          this.surveyList = data;
         }
       });
     }

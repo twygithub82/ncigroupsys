@@ -20,6 +20,7 @@ import { ResidueItem } from './residue';
 import { TankItem } from './tank';
 import { InGateCleaningItem } from './in-gate-cleaning';
 import { SteamItem } from './steam';
+import { SurveyDetailItem } from './survey-detail';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -119,6 +120,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public residue?: ResidueItem[];
   public tank?: TankItem;
   public steaming?: SteamItem[];
+  public survey_detail?: SurveyDetailItem[];
   public actions?: string[] = [];
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -133,6 +135,8 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
     this.repair = item.repair;
     this.residue = item.residue;
     this.tank = item.tank;
+    this.steaming = item.steaming;
+    this.survey_detail = item.survey_detail;
     this.actions = item.actions || [];
   }
 }
@@ -559,6 +563,25 @@ const GET_STORING_ORDER_TANKS_SURVEY_BY_ID = gql`
             last_test_cv
             test_class_cv
             test_dt
+          }
+        }
+        survey_detail {
+          create_by
+          create_dt
+          customer_company_guid
+          delete_dt
+          guid
+          remarks
+          sot_guid
+          status_cv
+          survey_dt
+          survey_type_cv
+          update_by
+          update_dt
+          customer_company {
+            code
+            name
+            guid
           }
         }
       }
