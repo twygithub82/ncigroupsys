@@ -49,6 +49,7 @@ import { BookingDS, BookingGO, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
 
 @Component({
   selector: 'app-survey-others-details',
@@ -84,14 +85,10 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 })
 export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'tank_no',
-    'customer',
-    'eir_no',
-    'eir_dt',
-    'last_cargo',
-    'purpose',
+    'surveyor',
+    'survey_dt',
     'status_cv',
-    'accept_status',
+    'remarks',
   ];
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY'
@@ -162,24 +159,17 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
   }
 
-  customerCodeControl = new UntypedFormControl();
-  lastCargoControl = new UntypedFormControl();
-  searchForm?: UntypedFormGroup;
-  searchField: string = "";
-
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
-  bookingDS: BookingDS;
-  schedulingSotDS: SchedulingSotDS;
+  surveyDS: SurveyDetailDS;
 
   sotItem?: StoringOrderTankItem;
-  sotSelection = new SelectionModel<StoringOrderTankItem>(true, []);
+  surveyDetailItem: SurveyDetailItem[] = [];
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   surveyorList: CustomerCompanyItem[] = [];
-  customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
   yardCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -221,8 +211,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    this.bookingDS = new BookingDS(this.apollo);
-    this.schedulingSotDS = new SchedulingSotDS(this.apollo);
+    this.surveyDS = new SurveyDetailDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -237,20 +226,6 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   initSearchForm() {
-    this.searchForm = this.fb.group({
-      tank_no: [''],
-      customer_code: this.customerCodeControl,
-      last_cargo: this.lastCargoControl,
-      eir_dt_start: [''],
-      eir_dt_end: [''],
-      tank_status_cv: [''],
-      eir_no: [''],
-      reference: [''],
-      purpose: [''],
-      survey_dt_start: [''],
-      survey_dt_end: [''],
-      clean_certificate_cv: ['']
-    });
   }
 
   public loadData() {
@@ -318,6 +293,17 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
+  refreshSurveyDetail() {
+    const where = {
+      sot_guid: { eq: this.sot_guid }
+    }
+    this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "DESC" }).subscribe(data => {
+      if (data.length > 0) {
+        this.surveyDetailItem = data;
+      }
+    });
+  }
+
   showNotification(
     colorName: string,
     text: string,
@@ -349,39 +335,6 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   initializeValueChanges() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.code;
-        }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-          this.updateValidators(this.customerCodeControl, this.customer_companyList);
-        });
-      })
-    ).subscribe();
-
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.cargo;
-        }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-          this.updateValidators(this.lastCargoControl, this.last_cargoList);
-        });
-      })
-    ).subscribe();
   }
 
   addSurveyDetails(event: Event) {
@@ -401,13 +354,16 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
           surveyorList: this.surveyorList,
           surveyTypeCvList: this.surveyTypeCvList,
           surveyStatusCvList: this.surveyStatusCvList,
-        }
+        },
+        sot: this.sotItem,
+        surveyDS: this.surveyDS
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && result.savedSuccess) {
         ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+        this.refreshSurveyDetail();
       }
     });
   }
@@ -470,6 +426,10 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  displayDate(input: number | null | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input as number);
+  }
+
   displayDateTime(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateTimeStr(input);
   }
@@ -511,14 +471,6 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
-  getBookTypeDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.bookingTypeCvList);
-  }
-
-  getBookingStatusDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.bookingStatusCvList);
-  }
-
   getTestTypeDescription(codeVal: string): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
   }
@@ -544,78 +496,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     ]);
   }
 
-  displayDate(input: number | null | undefined): string | undefined {
-    return Utility.convertEpochToDateStr(input as number);
-  }
-
-  checkScheduling(schedulingSot: SchedulingSotItem[] | undefined): boolean {
-    return this.schedulingSotDS.checkScheduling(schedulingSot);
-  }
-
-  checkBooking(bookings: BookingItem[] | undefined): boolean {
-    return this.bookingDS.checkBooking(bookings);
-  }
-
-  checkMatch(schedulings: SchedulingSotItem[] | undefined, bookings: BookingItem[] | undefined): boolean {
-    if (!schedulings?.length || !bookings?.length) {
-      return false;
-    }
-
-    const isMatch = (item1: SchedulingSotItem, item2: BookingItem) => {
-      return item1.scheduling?.book_type_cv === item2.book_type_cv && item1.scheduling_dt === item2.booking_dt;
-    };
-
-    const allSchedulingsMatch = schedulings.every(schedulingItem =>
-      bookings.some(bookingItem => isMatch(schedulingItem, bookingItem))
-    );
-
-    const allBookingsMatch = bookings.every(bookingItem =>
-      schedulings.some(schedulingItem => isMatch(schedulingItem, bookingItem))
-    );
-    return allSchedulingsMatch && allBookingsMatch;
-  }
-
   filterDeleted(resultList: any[] | undefined): any {
     return (resultList || []).filter((row: any) => !row.delete_dt);
-  }
-
-  resetDialog(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
-  }
-
-  resetForm() {
-    this.searchForm?.patchValue({
-      tank_no: '',
-      eir_dt_start: '',
-      eir_dt_end: '',
-      tank_status_cv: '',
-      eir_no: '',
-      reference: '',
-      purpose: '',
-      survey_dt_start: '',
-      survey_dt_end: '',
-      clean_certificate_cv: '',
-    });
-    this.customerCodeControl.reset('');
-    this.lastCargoControl.reset('');
   }
 }

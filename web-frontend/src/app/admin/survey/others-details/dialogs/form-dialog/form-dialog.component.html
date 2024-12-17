@@ -18,9 +18,11 @@
             <mat-label>{{data.translatedLangText.SURVEY_TYPE}}</mat-label>
             <mat-select formControlName="survey_type_cv" required>
               @for (codeValue of data.populateData.surveyTypeCvList; track codeValue) {
+              @if (codeValue.code_val !== "PERIODIC_TEST") {
               <mat-option [value]="codeValue.code_val">
                 {{codeValue.description}}
               </mat-option>
+              }
               }
             </mat-select>
             @if (surveyForm.get('survey_type_cv')?.hasError('required')) {
@@ -38,7 +40,7 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.SURVEYOR}}</mat-label>
-            <mat-select formControlName="surveyor_guid" required>
+            <mat-select formControlName="customer_company_guid" required>
               @for (cc of data.populateData.surveyorList; track cc) {
               <mat-option [value]="cc">
                 {{ccDS.displayName(cc)}}
@@ -50,10 +52,9 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.SURVEY_DATE}}</mat-label>
-            <input matInput formControlName="survey_dt" [matDatepicker]="survey_dt_picker"
-              required>
+            <input matInput formControlName="survey_dt" [matDatepicker]="survey_dt_picker" [max]="maxDate" required>
             <mat-datepicker-toggle matSuffix [for]="survey_dt_picker"></mat-datepicker-toggle>
-            <mat-datepicker #survey_dt_picker [startAt]="startDateToday"></mat-datepicker>
+            <mat-datepicker #survey_dt_picker [startAt]="maxDate"></mat-datepicker>
             @if (surveyForm.get('survey_dt')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.SURVEY_DATE}} {{data.translatedLangText.SO_REQUIRED}}
@@ -64,14 +65,14 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.STATUS}}</mat-label>
-            <mat-select formControlName="survey_status_cv" required>
+            <mat-select formControlName="status_cv" required>
               @for (codeValue of data.populateData.surveyStatusCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">
                 {{codeValue.description}}
               </mat-option>
               }
             </mat-select>
-            @if (surveyForm.get('survey_status_cv')?.hasError('required')) {
+            @if (surveyForm.get('status_cv')?.hasError('required')) {
             <mat-error>
               {{data.translatedLangText.STATUS}} {{data.translatedLangText.SO_REQUIRED}}
             </mat-error>
@@ -80,8 +81,8 @@
         </div>
         <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>{{data.translatedLangText.REFERENCE}}</mat-label>
-            <input matInput formControlName="reference">
+            <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+            <input matInput formControlName="remarks">
           </mat-form-field>
         </div>
       </div>
