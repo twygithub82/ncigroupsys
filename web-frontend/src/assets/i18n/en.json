@@ -721,7 +721,7 @@
     "GATE-DETAILS": "Gate Details",
     "ORDER-NO": "Order No.",
     "ORDER-DATE": "Order Date",
-    "TRANSACTION-ON": "Transaction On",
+    "TRANSACTION-DATE": "Transaction Date",
     "UPDATE-STATUS": "Update Status",
     "TEMP-RANGE-ERROR": "Maximum temperature must be greater than minimum temperature.",
     "TEMP-RANGE-OVERLAPS-ERROR": "New steam temperature must not be overlaps the existing steam temperature.",

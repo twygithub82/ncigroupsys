@@ -157,8 +157,6 @@
                         </h2>
                       </div>
                     </mat-panel-title>
-                    <mat-panel-description>
-                    </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div class="body p-l-0 p-r-0">
                     @if (igDS.loading$ | async) {
@@ -320,8 +318,6 @@
                         </h2>
                       </div>
                     </mat-panel-title>
-                    <mat-panel-description>
-                    </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div class="body p-l-0 p-r-0">
                     @if ((igDS.loading$ | async) || (ogDS.loading$ | async)) {
@@ -334,51 +330,70 @@
                     <mat-card-content>
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                          <table class="table table-striped">
+                          <table class="table table-striped table-hover">
                             <thead>
                               <tr>
-                                <th>#</th>
-                                <th>FIRST NAME</th>
-                                <th>LAST NAME</th>
-                                <th>USERNAME</th>
+                                <th class="d-none d-md-table-cell">{{translatedLangText.DESCRIPTION}}</th>
+                                <th>{{translatedLangText.IN_GATE}}</th>
+                                <th>{{translatedLangText.OUT_GATE}}</th>
                               </tr>
                             </thead>
                             <tbody>
                               <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td>&#64;mdo</td>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.ORDER_NO}}</th>
+                                <td>{{sot?.storing_order?.so_no || "-"}}</td>
+                                <td>{{sot?.release_order_sot?.[0]?.release_order?.ro_no || "-"}}</td>
                               </tr>
                               <tr>
-                                <th scope="row">2</th>
-                                <td>Jacob</td>
-                                <td>Thornton</td>
-                                <td>&#64;fat</td>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.ORDER_DATE}}</th>
+                                <td>{{displayDate(sot?.storing_order?.create_dt) || "-"}}</td>
+                                <td>{{displayDate(sot?.release_order_sot?.[0]?.release_order?.create_dt) || "-"}}</td>
                               </tr>
                               <tr>
-                                <th scope="row">3</th>
-                                <td>Larry</td>
-                                <td>the Bird</td>
-                                <td>&#64;twitter</td>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.JOB_NO}}</th>
+                                <td>{{sot?.job_no || "-"}}</td>
+                                <td>{{sot?.release_job_no || "-"}}</td>
                               </tr>
                               <tr>
-                                <th scope="row">4</th>
-                                <td>Larry</td>
-                                <td>Jellybean</td>
-                                <td>&#64;lajelly</td>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.TRANSACTION_DATE}}</th>
+                                <td>{{displayDateTime(ig?.create_dt) || "-"}}</td>
+                                <td>{{displayDateTime(og?.create_dt) || "-"}}</td>
                               </tr>
                               <tr>
-                                <th scope="row">5</th>
-                                <td>Larry</td>
-                                <td>Kikat</td>
-                                <td>&#64;lakitkat</td>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.HAULIER}}</th>
+                                <td>{{ig?.haulier || "-"}}</td>
+                                <td>{{og?.haulier || "-"}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.VEHICLE_NO}}</th>
+                                <td>{{ig?.vehicle_no || "-"}}</td>
+                                <td>{{og?.vehicle_no || "-"}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.DRIVER_NAME}}</th>
+                                <td>{{ig?.driver_name || "-"}}</td>
+                                <td>{{og?.driver_name || "-"}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.REMARKS}}</th>
+                                <td>{{ig?.remarks || "-"}}</td>
+                                <td>{{og?.remarks || "-"}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.DATE_OF_INSPECTION}}</th>
+                                <td>{{displayDate(igs?.create_dt) || "-"}}</td>
+                                <td>{{"TODO ::"}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row" class="d-none d-md-table-cell">{{translatedLangText.UPDATE_DATE}}</th>
+                                <td>{{displayDateTime(igs?.update_dt) || "-"}}</td>
+                                <td>{{"TODO ::"}}</td>
                               </tr>
                             </tbody>
                           </table>
                         </div>
                       </div>
-                      <div class="row">
+                      <!-- <div class="row">
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-0 d-none d-md-block">
                           <div class="row">
                             <div
@@ -407,7 +422,7 @@
                           <div class="row">
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
-                              <span class="table-label">{{translatedLangText.TRANSACTION_ON}}:</span>
+                              <span class="table-label">{{translatedLangText.TRANSACTION_DATE}}:</span>
                             </div>
                           </div>
                           <div class="row">
@@ -443,7 +458,7 @@
                           <div class="row">
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
-                              <span class="table-label">{{translatedLangText.UPDATE_STATUS}}:</span>
+                              <span class="table-label">{{translatedLangText.UPDATE_DATE}}:</span>
                             </div>
                           </div>
                         </div>
@@ -479,7 +494,7 @@
                           <div class="row">
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
-                              <span class="d-block d-sm-none m-r-10">{{translatedLangText.TRANSACTION_ON}}:</span>
+                              <span class="d-block d-sm-none m-r-10">{{translatedLangText.TRANSACTION_DATE}}:</span>
                               <span class="font-bold table-label">{{displayDateTime(ig?.create_dt) || "-"}}</span>
                             </div>
                           </div>
@@ -560,7 +575,7 @@
                           <div class="row">
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-2 pb-2 m-b-0 border d-flex">
-                              <span class="d-block d-sm-none m-r-10">{{translatedLangText.TRANSACTION_ON}}</span>
+                              <span class="d-block d-sm-none m-r-10">{{translatedLangText.TRANSACTION_DATE}}</span>
                               <span class="font-bold table-label">{{displayDateTime(og?.create_dt) || "-"}}</span>
                             </div>
                           </div>
@@ -607,7 +622,7 @@
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> -->
                     </mat-card-content>
                     }
                   </div>
@@ -622,8 +637,6 @@
                         </h2>
                       </div>
                     </mat-panel-title>
-                    <mat-panel-description>
-                    </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div class="body p-t-0 p-l-0 p-r-0">
                     <mat-card-content>
@@ -1512,8 +1525,6 @@
                         </h2>
                       </div>
                     </mat-panel-title>
-                    <mat-panel-description>
-                    </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div class="body p-l-0 p-r-0">
                     @if ((pdDS.loading$ | async)) {
@@ -1754,8 +1765,6 @@
                         </h2>
                       </div>
                     </mat-panel-title>
-                    <mat-panel-description>
-                    </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div class="body p-l-0 p-r-0">
                     @if ((bkDS.loading$ | async) || (schedulingDS.loading$ | async)) {
@@ -1952,8 +1961,6 @@
                         </h2>
                       </div>
                     </mat-panel-title>
-                    <mat-panel-description>
-                    </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div class="body p-l-0 p-r-0">
                     @if ((bkDS.loading$ | async) || (schedulingDS.loading$ | async)) {
@@ -2085,8 +2092,6 @@
                         </h2>
                       </div>
                     </mat-panel-title>
-                    <mat-panel-description>
-                    </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div class="body p-l-0 p-r-0">
                     @if ((bkDS.loading$ | async) || (schedulingDS.loading$ | async)) {

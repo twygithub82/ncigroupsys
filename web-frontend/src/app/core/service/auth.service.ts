@@ -55,7 +55,7 @@ export class AuthService {
           usr.plainToken = user.token;
           usr.expiration = user.expiration;
           usr.refreshToken = user.refreshToken;
-
+          
           localStorage.setItem('currentUser', JSON.stringify(usr));
           this.currentUserSubject.next(usr);
         }

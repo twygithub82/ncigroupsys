@@ -33,7 +33,7 @@
 .col-0-75 {
   width: 6.25%;
 }
-  
+
 .col-1-75 {
   width: 14.58333333%;
 }
@@ -110,7 +110,7 @@
   .col-xs-1 {
     width: 8.33333333%;
   }
-  
+
   .col-xs-1-75 {
     width: 14.58333333%;
   }
@@ -118,7 +118,7 @@
   .col-xs-1-5 {
     width: 12.5%;
   }
-  
+
   .col-xs-1-25 {
     width: 10.41666667%;
   }
@@ -134,7 +134,7 @@
   .col-xs-2-5 {
     width: 20.83333333%;
   }
-  
+
   .col-xs-2-25 {
     width: 18.75%;
   }
@@ -301,7 +301,7 @@
   .col-sm-2-5 {
     width: 20.83333333%;
   }
-  
+
   .col-sm-2-25 {
     width: 18.75%;
   }
@@ -309,7 +309,7 @@
   .col-sm-2 {
     width: 16.66666667%;
   }
-  
+
   .col-sm-1-75 {
     width: 14.58333333%;
   }
@@ -317,7 +317,7 @@
   .col-sm-1-5 {
     width: 12.5%;
   }
-  
+
   .col-sm-1-25 {
     width: 10.41666667%;
   }
@@ -424,7 +424,7 @@
   .col-md-2-5 {
     width: 20.83333333%;
   }
-  
+
   .col-md-2-25 {
     width: 18.75%;
   }
@@ -432,7 +432,7 @@
   .col-md-2 {
     width: 16.66666667%;
   }
-  
+
   .col-md-1-75 {
     width: 14.58333333%;
   }
@@ -440,7 +440,7 @@
   .col-md-1-5 {
     width: 12.5%;
   }
-  
+
   .col-md-1-25 {
     width: 10.41666667%;
   }
@@ -548,7 +548,7 @@
   .col-lg-2-5 {
     width: 20.83333333%;
   }
-  
+
   .col-lg-2-25 {
     width: 18.75%;
   }
@@ -556,7 +556,7 @@
   .col-lg-2 {
     width: 16.66666667%;
   }
-  
+
   .col-lg-1-75 {
     width: 14.58333333%;
   }
@@ -564,7 +564,7 @@
   .col-lg-1-5 {
     width: 12.5%;
   }
-  
+
   .col-lg-1-25 {
     width: 10.41666667%;
   }
@@ -671,7 +671,7 @@
   .col-xl-2-5 {
     width: 20.83333333%;
   }
-  
+
   .col-xl-2-25 {
     width: 18.75%;
   }
@@ -679,7 +679,7 @@
   .col-xl-2 {
     width: 16.66666667%;
   }
-  
+
   .col-xl-1-75 {
     width: 14.58333333%;
   }
@@ -687,7 +687,7 @@
   .col-xl-1-5 {
     width: 12.5%;
   }
-  
+
   .col-xl-1-25 {
     width: 10.41666667%;
   }
@@ -794,16 +794,19 @@ $breakpoints: (
 
 // Mixin to generate "auto width" classes
 @mixin generate-auto-width($name) {
+
   // Responsive widths for breakpoints
   @each $breakpoint, $size in $breakpoints {
-    @if $size != 0px {
+    @if $size !=0px {
       @media (min-width: $size) {
         .#{$name}-#{$breakpoint} {
           flex: 1 1 auto !important; // Take the remaining space
           width: auto !important;
         }
       }
-    } @else {
+    }
+
+    @else {
       .#{$name} {
         flex: 1 1 auto !important; // Take the remaining space
         width: auto !important;
@@ -1101,4 +1104,9 @@ $breakpoints: (
   .p-r-#{$i} {
     padding-right: #{$i}px !important;
   }
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  color: #06005f !important;
+  background-color: #2196f309 !important;
 }
