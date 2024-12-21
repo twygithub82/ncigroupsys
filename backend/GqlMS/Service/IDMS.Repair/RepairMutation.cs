@@ -522,6 +522,7 @@ namespace IDMS.Repair.GqlTypes
 
                     //job_orders handling
                     var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+                    //var jobRemark = item.job_order.Select(j => j.remarks).First();
                     string sql = $"UPDATE job_order SET qc_dt = NULL, update_dt = {currentDateTime}, " +
                                  $"update_by = '{user}' WHERE guid IN ({guids})";
                     context.Database.ExecuteSqlRaw(sql);
@@ -565,6 +566,13 @@ namespace IDMS.Repair.GqlTypes
 
                 foreach (var item in repJobOrder)
                 {
+                    //Repair handling
+                    var rollbackQCRepair = new repair() { guid = item.guid };
+                    context.repair.Attach(rollbackQCRepair);
+                    rollbackQCRepair.update_by = user;
+                    rollbackQCRepair.update_dt = currentDateTime;
+                    rollbackQCRepair.remarks = item.remarks;
+
                     //we only concern job order, so repair can ignore without doing anything
                     foreach (var job in item.job_order)
                     {
@@ -573,9 +581,78 @@ namespace IDMS.Repair.GqlTypes
                         updatejob.update_dt = currentDateTime;
                         updatejob.update_by = user;
                         updatejob.qc_dt = job.qc_dt;
-                        updatejob.remarks = job.remarks;
                     }
                 }
+                var res = await context.SaveChangesAsync();
+                return res;
+
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> RollbackCompletedRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<RepJobOrderRequest> repJobOrder)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (repJobOrder == null)
+                    throw new GraphQLException(new Error($"Repair object cannot be null or empty", "ERROR"));
+
+                foreach (var item in repJobOrder)
+                {
+                    //Repair handling
+                    var rollbackQCRepair = new repair() { guid = item.guid };
+                    context.repair.Attach(rollbackQCRepair);
+                    rollbackQCRepair.update_by = user;
+                    rollbackQCRepair.update_dt = currentDateTime;
+                    rollbackQCRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS; //From Completed --> JIP
+                    rollbackQCRepair.remarks = item.remarks;
+
+                    //job_orders handling
+                    var jobIdList = item.job_order.Select(j => j.guid).ToList();
+                    var guids = string.Join(",", jobIdList.Select(g => $"'{g}'"));
+                    string sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                                 $"update_by = '{user}' WHERE guid IN ({guids})";
+                    context.Database.ExecuteSqlRaw(sql);
+                    
+                    //string sqlTimeTable = $"UPDATE time_table SET stop_time = NULL, update_dt = {currentDateTime}, " +
+                    //                      $"update_by = '{user}' WHERE guid "
+
+                    var timeTables = await context.time_table.Where(t=> jobIdList.Contains(t.job_order_guid)).ToListAsync();
+                    foreach(var tt in timeTables)
+                    {
+                        tt.stop_time = null;
+                        tt.update_by = user;
+                        tt.update_dt = currentDateTime; 
+                    }
+                }
+
+                //Tank handling
+                var sotGuid = repJobOrder.Select(r => r.sot_guid).FirstOrDefault();
+                var tankStatus = repJobOrder.Select(r => r.sot_status).FirstOrDefault();
+                //var sot = await context.storing_order_tank.FindAsync(sotGuid);
+                //context.storing_order_tank.Attach(sot);
+                //sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
+                var sot = new storing_order_tank() { guid = sotGuid };
+                context.storing_order_tank.Attach(sot);
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+                //sot.tank_status_cv = TankMovementStatus.REPAIR;
+                if (tankStatus.EqualsIgnore(TankMovementStatus.STORAGE))
+                    sot.tank_status_cv = TankMovementStatus.REPAIR;
+                else
+                {
+                    var jobOrders = await context.job_order.Where(j => j.sot_guid == sotGuid & j.job_type_cv == JobType.REPAIR).ToListAsync();
+                    if (!jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
+                        sot.tank_status_cv = TankMovementStatus.REPAIR;
+                }
+                
                 var res = await context.SaveChangesAsync();
                 return res;
 

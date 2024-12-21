@@ -211,57 +211,6 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        //public async Task<int> CompleteJobItem(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        //    [Service] IConfiguration config, List<JobItemRequest> jobItemRequest)
-        //{
-        //    try
-        //    {
-        //        if (jobItemRequest == null)
-        //            throw new GraphQLException(new Error($"Job item object cannot be null", "ERROR"));
-
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-
-        //        string tableName = "";
-        //        var jobType = jobItemRequest.Select(j => j.job_type_cv).FirstOrDefault();
-        //        var jobOrderGuid = jobItemRequest.Select(j => j.job_order_guid).FirstOrDefault();
-
-        //        switch (jobType.ToUpper())
-        //        {
-        //            case JobType.REPAIR:
-        //                tableName = "repair_part";
-        //                break;
-        //            case JobType.CLEANING:
-        //                tableName = "cleaning";
-        //                break;
-        //            case JobType.RESIDUE:
-        //                tableName = "residue_part";
-        //                break;
-        //            case JobType.STEAM:
-        //                tableName = "steaming";
-        //                break;
-        //        }
-
-        //        var guids = string.Join(",", jobItemRequest.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-        //        string sql = $"UPDATE {tableName} SET complete_dt = {currentDateTime}, update_dt = {currentDateTime}, " +
-        //                     $"update_by = '{user}' WHERE guid IN ({guids})";
-        //        var ret = context.Database.ExecuteSqlRaw(sql);
-
-        //        //Handling of sending job notification
-        //        var jobNotification = new JobNotification();
-        //        jobNotification.job_order_guid = jobOrderGuid;
-        //        jobNotification.job_type = jobType;
-        //        jobNotification.complete_dt = currentDateTime;
-        //        await GqlUtils.SendJobNotification(config, jobNotification, JobNotificationType.COMPLETE_ITEM);
-
-        //        return ret;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //}
-
         /// <summary>
         /// Start current job, and update current Job Order to JOB-IN-PROGRESS
         /// </summary>
