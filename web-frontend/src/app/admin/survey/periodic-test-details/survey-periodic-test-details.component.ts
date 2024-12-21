@@ -50,12 +50,13 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
+import { testTypeMapping } from 'environments/environment.development';
 
 @Component({
-  selector: 'app-survey-others-details',
+  selector: 'app-survey-periodic-test-details',
   standalone: true,
-  templateUrl: './survey-others-details.component.html',
-  styleUrl: './survey-others-details.component.scss',
+  templateUrl: './survey-periodic-test-details.component.html',
+  styleUrl: './survey-periodic-test-details.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -84,20 +85,19 @@ import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail
     RouterModule
   ]
 })
-export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'survey_type_cv',
     'surveyor',
     'survey_dt',
     'status_cv',
     'remarks',
   ];
 
-  pageTitle = 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY-DETAILS'
+  pageTitle = 'MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY-DETAILS'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.SURVEY.TEXT',
-    'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY'
+    'MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY'
   ]
 
   translatedLangText: any = {};
@@ -161,7 +161,11 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     NEW_SURVEY: 'COMMON-FORM.NEW-SURVEY',
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
     BACK: 'COMMON-FORM.BACK',
+    NEXT_TEST: 'COMMON-FORM.NEXT-TEST',
+    TEST_TYPE: 'COMMON-FORM.TEST-TYPE',
   }
+
+  ptForm?: UntypedFormGroup;
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
@@ -188,6 +192,8 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   surveyStatusCvList: CodeValuesItem[] = [];
 
   sot_guid?: string | null;
+  last_test_desc? = "";
+  next_test_desc? = "";
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
@@ -224,12 +230,15 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initSearchForm();
+    this.initPTForm();
     this.initializeValueChanges();
     this.loadData();
   }
 
-  initSearchForm() {
+  initPTForm() {
+    this.ptForm = this.fb.group({
+      test_type_cv: [''],
+    });
   }
 
   public loadData() {
@@ -267,9 +276,12 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
       this.testTypeCvList = data;
+      this.last_test_desc = this.getLastTest();
+      this.next_test_desc = this.getNextTest();
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = data;
+      this.last_test_desc = this.getLastTest();
     });
     this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
       this.surveyTypeCvList = data;
@@ -291,6 +303,9 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           this.sotItem = data[0];
           this.surveyDetailItem = this.sotItem?.survey_detail || [];
+          this.last_test_desc = this.getLastTest();
+          this.next_test_desc = this.getNextTest();
+          this.ptForm?.get('test_type_cv')?.setValue(this.getNextTestCv());
         }
       });
     } else {
@@ -384,7 +399,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
       data: {
-        action: 'edit',
+        action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
           surveyorList: this.surveyorList,
@@ -486,11 +501,9 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
   }
 
-  getSurveyTypeDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.surveyTypeCvList);
-  }
-
   getLastTest(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.sotItem?.in_gate) return "-";
+
     const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
     if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
       const test_type = igs.last_test_cv;
@@ -498,6 +511,30 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
     return "";
+  }
+
+  getNextTest(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.sotItem?.in_gate) return "-";
+
+    const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
+    if (!igs?.test_dt || !igs?.last_test_cv) return "-";
+    const test_type = igs?.last_test_cv;
+    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
+    const yearCount = parseFloat(match?.[0] ?? "0");
+    const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
+    const mappedVal = testTypeMapping[test_type!];
+    const output = this.getTestTypeDescription(mappedVal) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    return output;
+  }
+
+  getNextTestCv(): string | undefined {
+    if (!this.sotItem?.in_gate) return "";
+
+    const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
+    if (!igs?.last_test_cv) return "";
+    const test_type = igs?.last_test_cv;
+    const mappedVal = testTypeMapping[test_type!];
+    return mappedVal;
   }
 
   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {

@@ -210,6 +210,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     UPDATE_BY: 'COMMON-FORM.UPDATE-BY',
     UPDATE_DATE: 'COMMON-FORM.UPDATE-DATE',
     QC_COMPLETE: 'COMMON-FORM.QC-COMPLETE',
+    OVERWRITE: 'COMMON-FORM.OVERWRITE',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -525,6 +526,34 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
         this.handleSaveSuccess(result?.data?.completeQCRepair);
       }
     });
+  }
+
+  onRollbackQC(event: Event) {
+    event.preventDefault();
+    const distinctJobOrders = this.repList
+      .filter((item, index, self) =>
+        index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+          (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+            t.job_order?.team?.description === item?.job_order?.team?.description))
+      )
+      .filter(item => item.job_order !== null && item.job_order !== undefined)
+      .map(item => new JobOrderGO(item.job_order!));
+
+    const repJobOrder = new RepJobOrderRequest({
+      guid: this.repairItem?.guid,
+      sot_guid: this.repairItem?.sot_guid,
+      estimate_no: this.repairItem?.estimate_no,
+      remarks: this.repairItem?.remarks,
+      job_order: distinctJobOrders
+    });
+
+    console.log(repJobOrder)
+    // this.joDS.completeQCRepair([repJobOrder]).subscribe(result => {
+    //   console.log(result)
+    //   if ((result?.data?.completeQCRepair ?? 0) > 0) {
+    //     this.handleSaveSuccess(result?.data?.completeQCRepair);
+    //   }
+    // });
   }
 
   onFormSubmit() {

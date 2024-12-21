@@ -1110,3 +1110,16 @@ $breakpoints: (
   color: #06005f !important;
   background-color: #2196f309 !important;
 }
+
+.table-col-1 { width: 8.33%; }  /* 1/12 */
+.table-col-2 { width: 16.67%; } /* 2/12 */
+.table-col-3 { width: 25%; }    /* 3/12 */
+.table-col-4 { width: 33.33%; } /* 4/12 */
+.table-col-5 { width: 41.67%; } /* 5/12 */
+.table-col-6 { width: 50%; }    /* 6/12 */
+.table-col-7 { width: 58.33%; } /* 7/12 */
+.table-col-8 { width: 66.67%; } /* 8/12 */
+.table-col-9 { width: 75%; }    /* 9/12 */
+.table-col-10 { width: 83.33%; }/* 10/12 */
+.table-col-11 { width: 91.67%; }/* 11/12 */
+.table-col-12 { width: 100%; }  /* 12/12 */

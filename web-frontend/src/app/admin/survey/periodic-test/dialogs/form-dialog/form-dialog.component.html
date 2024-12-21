@@ -1,0 +1,173 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h3>{{dialogTitle}}</h3>
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    <div class="row">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+        <div class="responsive_table">
+          <table mat-table [dataSource]="storingOrderTank" matSort class="mat-cell advance-table">
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+              <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="tank_no">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{data.translatedLangText.TANK_NO}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" class="">
+                <span class="mobile-label">{{data.translatedLangText.TANK_NO}}:</span>{{row.tank_no}}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="customer_code">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{data.translatedLangText.CUSTOMER}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" class="">
+                <span class="mobile-label">{{data.translatedLangText.CUSTOMER}}:</span>{{
+                ccDS.displayName(row.storing_order?.customer_company)}}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="eir_no">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                {{data.translatedLangText.EIR_NO}}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span
+                  class="mobile-label">{{data.translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_no}}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="eir_dt">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                {{data.translatedLangText.EIR_DATE}}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span
+                  class="mobile-label">{{data.translatedLangText.EIR_DATE}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_dt}}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="capacity">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{data.translatedLangText.CAPACITY}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" class="">
+                <span
+                  class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.capacity}}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="tare_weight">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{data.translatedLangText.TARE_WEIGHT}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" class="">
+                <span
+                  class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{igDS.getInGateItem(row.in_gate)?.in_gate_survey?.tare_weight}}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="tank_status">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{data.translatedLangText.STATUS}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" class="">
+                <span
+                  class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.tank_status_cv)}}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="yard">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{data.translatedLangText.YARD}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" class="">
+                <span
+                  class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(igDS.getInGateItem(row.in_gate)?.yard_cv)}}
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
+            </mat-row>
+          </table>
+        </div>
+        <!-- No result -->
+        @if (!storingOrderTank.length) {
+        <mat-divider></mat-divider>
+        <div class="no-results m-l-20 pt-3" [style.display]="storingOrderTank.length === 0 ? '' : 'none'">
+          <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
+        </div>
+        }
+      </div>
+    </div>
+    <form class="register-form mt-3" [formGroup]="bookingForm" #formDirective="ngForm">
+      <h5>{{data.translatedLangText.BOOKING_DETAILS}}</h5>
+      <div class="row">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
+            <mat-select formControlName="book_type_cv" required>
+              @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">
+                {{codeValue.description}}
+              </mat-option>
+              }
+            </mat-select>
+            @if (bookingForm.get('book_type_cv')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+            @if (bookingForm.get('book_type_cv')?.hasError('existed')) {
+            <mat-error>
+              {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.BOOKING_DATE}}</mat-label>
+            <input matInput formControlName="booking_dt" [matDatepicker]="booking_dt_picker" [min]="startDateToday"
+              required>
+            <mat-datepicker-toggle matSuffix [for]="booking_dt_picker"></mat-datepicker-toggle>
+            <mat-datepicker #booking_dt_picker [startAt]="startDateToday"></mat-datepicker>
+            @if (bookingForm.get('booking_dt')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.BOOKING_DATE}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{data.translatedLangText.SURVEYOR}}</mat-label>
+            <mat-select formControlName="surveyor_guid">
+              <!-- @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">
+                {{codeValue.description}}
+              </mat-option>
+              } -->
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{data.translatedLangText.REFERENCE}}</mat-label>
+            <input matInput formControlName="reference">
+          </mat-form-field>
+        </div>
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" (click)="submit()">{{data.translatedLangText.SAVE_AND_SUBMIT}}</button>
+        }
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

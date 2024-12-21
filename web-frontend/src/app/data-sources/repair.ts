@@ -1461,6 +1461,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return (re?.status_cv === 'COMPLETED');
   }
 
+  canRollbackQC(re: RepairItem | undefined): boolean {
+    return (re?.status_cv === 'QC_COMPLETED');
+  }
+
   canCopy(re: RepairItem): boolean {
     return true;
   }

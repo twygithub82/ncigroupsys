@@ -74,6 +74,8 @@ import { UserNewComponent } from './management/user-new/user-new.component';
 import { UserComponent } from './management/user/user.component';
 import { GroupComponent } from './management/group/group.component';
 import {GroupNewComponent} from './management/group-new/group-new.component'
+import { SurveyPeriodicTestComponent } from './survey/periodic-test/survey-periodic-test.component';
+import { SurveyPeriodicTestDetailsComponent } from './survey/periodic-test-details/survey-periodic-test-details.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -409,6 +411,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "survey/others/details/:id",
     component: SurveyOthersDetailsComponent,
+  },
+  {
+    path: "survey/periodic-test",
+    component: SurveyPeriodicTestComponent,
+  },
+  {
+    path: "survey/periodic-test/details/:id",
+    component: SurveyPeriodicTestDetailsComponent,
   },
 ];
 
