@@ -18,6 +18,7 @@ namespace IDMS.Residue.GqlTypes.LocalModel
     {
         public string guid { get; set; }
         public string? sot_guid { get; set; }
+        public string? sot_status { get; set; }
         public string? estimate_no { get; set; }
         public string? remarks { get; set; }
         public List<job_order?>? job_order { get; set; }
