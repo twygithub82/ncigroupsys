@@ -26,8 +26,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -211,6 +209,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     UPDATE_DATE: 'COMMON-FORM.UPDATE-DATE',
     QC_COMPLETE: 'COMMON-FORM.QC-COMPLETE',
     OVERWRITE: 'COMMON-FORM.OVERWRITE',
+    OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -240,8 +239,10 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   processStatusCvList: CodeValuesItem[] = []
 
   customer_companyList?: CustomerCompanyItem[];
-
   customerCodeControl = new UntypedFormControl();
+
+  last_test_desc? = "";
+  next_test_desc? = "";
 
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
@@ -381,9 +382,12 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
       this.testTypeCvList = data;
+      this.last_test_desc = this.getLastTest();
+      this.next_test_desc = this.getNextTest();
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = data;
+      this.last_test_desc = this.getLastTest();
     });
     this.cvDS.connectAlias('partLocationCv').subscribe(data => {
       this.partLocationCvList = data;
@@ -411,6 +415,8 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
           this.repairItem = data[0];
           console.log(this.repairItem);
           this.sotItem = this.repairItem?.storing_order_tank;
+          this.last_test_desc = this.getLastTest();
+          this.next_test_desc = this.getNextTest();
           this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
             if (cc?.length) {
               const bill_to = this.repairForm?.get('bill_to');
@@ -529,31 +535,123 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   onRollbackQC(event: Event) {
-    event.preventDefault();
-    const distinctJobOrders = this.repList
-      .filter((item, index, self) =>
-        index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
-          (t.job_order?.team?.guid === item?.job_order?.team_guid ||
-            t.job_order?.team?.description === item?.job_order?.team?.description))
-      )
-      .filter(item => item.job_order !== null && item.job_order !== undefined)
-      .map(item => new JobOrderGO(item.job_order!));
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
 
-    const repJobOrder = new RepJobOrderRequest({
-      guid: this.repairItem?.guid,
-      sot_guid: this.repairItem?.sot_guid,
-      estimate_no: this.repairItem?.estimate_no,
-      remarks: this.repairItem?.remarks,
-      job_order: distinctJobOrders
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'rollback',
+        translatedLangText: this.translatedLangText,
+        last_qc_dt: this.repList?.[0]?.job_order?.qc_dt,
+        last_remarks: this.repairItem?.remarks,
+        populateData: {
+          groupNameCvList: this.groupNameCvList,
+          subgroupNameCvList: this.subgroupNameCvList,
+          yesnoCvList: this.yesnoCvList,
+          partLocationCvList: this.partLocationCvList,
+          damageCodeCvList: this.damageCodeCvList,
+          repairCodeCvList: this.repairCodeCvList,
+          unitTypeCvList: this.unitTypeCvList
+        }
+      },
+      direction: tempDirection
     });
 
-    console.log(repJobOrder)
-    // this.joDS.completeQCRepair([repJobOrder]).subscribe(result => {
-    //   console.log(result)
-    //   if ((result?.data?.completeQCRepair ?? 0) > 0) {
-    //     this.handleSaveSuccess(result?.data?.completeQCRepair);
-    //   }
-    // });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const distinctJobOrders = this.repList
+          .filter((item, index, self) =>
+            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                t.job_order?.team?.description === item?.job_order?.team?.description))
+          )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO(item.job_order!));
+    
+        const repJobOrder = new RepJobOrderRequest({
+          guid: this.repairItem?.guid,
+          sot_guid: this.repairItem?.sot_guid,
+          estimate_no: this.repairItem?.estimate_no,
+          remarks: result.remarks,
+          job_order: distinctJobOrders,
+          sot_status: this.sotItem?.tank_status_cv
+        });
+    
+        console.log(repJobOrder)
+        this.repairDS.rollbackQCRepair([repJobOrder]).subscribe(result => {
+          console.log(result)
+          if ((result?.data?.rollbackQCRepair ?? 0) > 0) {
+            this.handleSaveSuccess(result?.data?.rollbackQCRepair);
+          }
+        });
+      }
+    });
+  }
+
+  onOverwriteQC(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'overwrite',
+        translatedLangText: this.translatedLangText,
+        last_qc_dt: this.repList?.[0]?.job_order?.qc_dt,
+        last_remarks: this.repairItem?.remarks,
+        populateData: {
+          groupNameCvList: this.groupNameCvList,
+          subgroupNameCvList: this.subgroupNameCvList,
+          yesnoCvList: this.yesnoCvList,
+          partLocationCvList: this.partLocationCvList,
+          damageCodeCvList: this.damageCodeCvList,
+          repairCodeCvList: this.repairCodeCvList,
+          unitTypeCvList: this.unitTypeCvList
+        }
+      },
+      direction: tempDirection
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const distinctJobOrders = this.repList
+          .filter((item, index, self) =>
+            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                t.job_order?.team?.description === item?.job_order?.team?.description))
+          )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO({ ...item.job_order!, qc_dt: Utility.convertDate(result.qc_dt) as number }));
+
+        const repJobOrder = new RepJobOrderRequest({
+          guid: this.repairItem?.guid,
+          sot_guid: this.repairItem?.sot_guid,
+          estimate_no: this.repairItem?.estimate_no,
+          remarks: result.remarks,
+          job_order: distinctJobOrders,
+          sot_status: this.sotItem?.tank_status_cv
+        });
+
+        console.log(repJobOrder)
+        this.repairDS.overwriteQCRepair([repJobOrder]).subscribe(result => {
+          console.log(result)
+          if ((result?.data?.overwriteQCRepair ?? 0) > 0) {
+            this.handleSaveSuccess(result?.data?.overwriteQCRepair);
+          }
+        });
+      }
+    });
   }
 
   onFormSubmit() {
@@ -723,25 +821,29 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     return Utility.convertEpochToDateStr(input);
   }
 
-  getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
-    if (igs) {
+  getLastTest(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.sotItem?.in_gate) return "-";
+
+    const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
+    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
       const test_type = igs.last_test_cv;
       const test_class = igs.test_class_cv;
-      const testDt = igs.test_dt as number;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
     return "";
   }
 
-  getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
-    if (igs && igs.next_test_cv && igs.test_dt) {
-      const test_type = igs.last_test_cv;
-      const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-      const yearCount = parseFloat(match ? match[0] : "0");
-      const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
-      return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
-    }
-    return "";
+  getNextTest(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.sotItem?.in_gate) return "-";
+
+    const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
+    if (!igs?.test_dt || !igs?.last_test_cv) return "-";
+    const test_type = igs?.last_test_cv;
+    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
+    const yearCount = parseFloat(match?.[0] ?? "0");
+    const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
+    const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    return output;
   }
 
   selectText(event: FocusEvent) {

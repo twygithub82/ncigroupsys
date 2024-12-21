@@ -493,11 +493,11 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
-  getTestTypeDescription(codeVal: string): string | undefined {
+  getTestTypeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
   }
 
-  getTestClassDescription(codeValType: string): string | undefined {
+  getTestClassDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
   }
 
@@ -522,8 +522,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
     const yearCount = parseFloat(match?.[0] ?? "0");
     const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
-    const mappedVal = testTypeMapping[test_type!];
-    const output = this.getTestTypeDescription(mappedVal) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     return output;
   }
 

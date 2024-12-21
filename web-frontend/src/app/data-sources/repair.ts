@@ -1174,6 +1174,18 @@ const UPDATE_REPAIR_STATUS = gql`
   }
 `
 
+const ROLLBACK_QC_REPAIR = gql`
+  mutation rollbackQCRepair($repJobOrder: [RepJobOrderRequestInput!]!) {
+    rollbackQCRepair(repJobOrder: $repJobOrder)
+  }
+`
+
+const OVERWRITE_QC_REPAIR = gql`
+  mutation overwriteQCRepair($repJobOrder: [RepJobOrderRequestInput!]!) {
+    overwriteQCRepair(repJobOrder: $repJobOrder)
+  }
+`
+
 export class RepairDS extends BaseDataSource<RepairItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -1424,6 +1436,24 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       mutation: UPDATE_REPAIR_STATUS,
       variables: {
         repair
+      }
+    });
+  }
+
+  rollbackQCRepair(repJobOrder: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_QC_REPAIR,
+      variables: {
+        repJobOrder
+      }
+    });
+  }
+
+  overwriteQCRepair(repJobOrder: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: OVERWRITE_QC_REPAIR,
+      variables: {
+        repJobOrder
       }
     });
   }

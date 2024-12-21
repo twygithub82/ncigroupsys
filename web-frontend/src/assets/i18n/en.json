@@ -795,7 +795,8 @@
     "BAY-OVERVIEW": "Bay Overview",
     "SURVEY-TYPE": "Survey Type",
     "REMOVE": "Remove",
-    "OVERWRITE": "Overwrite"
+    "OVERWRITE": "Overwrite",
+    "OVERWRITE-QC": "Overwrite QC"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
