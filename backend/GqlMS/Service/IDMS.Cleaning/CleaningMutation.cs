@@ -271,7 +271,7 @@ namespace IDMS.Cleaning.GqlTypes
                 //job_orders handling
                 var jobIdList = cleaningJobOrder.job_order.Select(j => j.guid).ToList();
                 var guids = string.Join(",", jobIdList.Select(g => $"'{g}'"));
-                string sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                string sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
                              $"update_by = '{user}' WHERE guid IN ({guids})";
                 context.Database.ExecuteSqlRaw(sql);
 
