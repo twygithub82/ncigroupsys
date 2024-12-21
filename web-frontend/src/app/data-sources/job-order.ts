@@ -169,18 +169,21 @@ export class ClnJobOrderRequest {
     this.sot_guid = item.sot_guid;
   }
 }
+
 export class RepJobOrderRequest {
   public estimate_no?: string;
   public guid?: string;
   public job_order?: JobOrderGO[];
   public remarks?: string;
   public sot_guid?: string;
+  public sot_status?: string;
   constructor(item: Partial<RepJobOrderRequest> = {}) {
     this.estimate_no = item.estimate_no;
     this.guid = item.guid;
     this.job_order = item.job_order;
     this.remarks = item.remarks;
     this.sot_guid = item.sot_guid;
+    this.sot_status = item.sot_status;
   }
 }
 

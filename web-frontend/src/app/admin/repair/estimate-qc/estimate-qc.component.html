@@ -101,7 +101,7 @@
                     </div>
                     <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5">
                       <div class="contact-detail-info font-bold">
-                        {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
+                        {{last_test_desc}}
                       </div>
                     </div>
                   </div>
@@ -111,7 +111,7 @@
                     </div>
                     <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5">
                       <div class="contact-detail-info font-bold">
-                        {{getNextTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
+                        {{next_test_desc}}
                       </div>
                     </div>
                   </div>
@@ -419,7 +419,7 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (repairDS.canRollbackQC(repairItem)) {
                   <button mat-flat-button color="accent" [disabled]="(repairDS.loading$ | async)" class="m-l-5"
-                    (click)="onRollbackQC($event)">
+                    (click)="onOverwriteQC($event)">
                     <mat-icon>
                       @if (!(repairDS.loading$ | async)) {
                       cached
@@ -427,7 +427,7 @@
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.OVERWRITE}}
+                    {{translatedLangText.OVERWRITE_QC}}
                   </button>
                   }
                   @if (repairDS.canRollbackQC(repairItem)) {
