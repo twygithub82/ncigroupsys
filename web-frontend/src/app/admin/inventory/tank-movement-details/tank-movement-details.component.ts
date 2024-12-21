@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, UntypedFormArray } from '@angular/forms';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, UntypedFormArray, FormBuilder } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -43,7 +43,7 @@ import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderT
 import { InGateDS, InGateGO, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { TankDS, TankItem } from 'app/data-sources/tank';
-import { MatStepperModule } from '@angular/material/stepper';
+import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { InGateSurveyDS, InGateSurveyGO, InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { MatRadioModule } from '@angular/material/radio';
 import { Moment } from 'moment';
@@ -67,6 +67,7 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { RepairFormDialogComponent } from './repair-form-dialog/repair-form-dialog.component';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -153,7 +154,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'surveyor',
     'survey_dt',
     'status_cv',
-    'estimate_no',
     'remarks',
     'update_by',
   ];
@@ -486,6 +486,19 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   section = "tank_details";
 
+  private _formBuilder = inject(FormBuilder);
+
+  firstFormGroup = this._formBuilder.group({
+    firstCtrl: ['', Validators.required],
+  });
+  secondFormGroup = this._formBuilder.group({
+    secondCtrl: ['', Validators.required],
+  });
+  thirdFormGroup = this._formBuilder.group({
+    thirdCtrl: ['', Validators.required],
+  });
+  stepperOrientation: Observable<StepperOrientation>;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -517,6 +530,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.bkDS = new BookingDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
     this.surveyDS = new SurveyDetailDS(this.apollo);
+
+    const breakpointObserver = inject(BreakpointObserver);
+    this.stepperOrientation = breakpointObserver
+      .observe('(min-width: 800px)')
+      .pipe(map(({matches}) => (matches ? 'vertical' : 'vertical')));
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -1083,7 +1101,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     input.value = '';
   }
 
-  addPurposeDialog(event: Event, type: string, action: string) {
+  updatePurposeDialog(event: Event, type: string, action: string) {
     this.preventDefault(event);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -1460,7 +1478,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (this.sot && this.sot_guid) {
           this.sot.tank_status_cv = data?.onPurposeChanged?.tank_status;
           const purpose: any = data?.onPurposeChanged?.purpose;
-  
+
           if (purpose === 'STEAMING') {
             this.sot.purpose_steam = true;
             this.subs.sink = this.steamDS.getSteamForMovement(this.sot_guid).subscribe(data => {
@@ -1506,5 +1524,27 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
 
     this.sotPurposeChangeSubscriptions.push(subscription);
+  }
+
+  isNoPurpose(sot: StoringOrderTankItem, selectedPurpose: string): boolean {
+    const purposes = {
+      storage: sot.purpose_storage,
+      cleaning: sot.purpose_cleaning,
+      steam: sot.purpose_steam,
+      repair: sot.purpose_repair_cv
+    };
+    
+    // Filter out the selected purpose and check the others
+    for (const [key, value] of Object.entries(purposes)) {
+      if (key !== selectedPurpose) {
+        if ((key === 'repair' && value !== '') || (key !== 'repair' && value)) {
+          // At least one other purpose exists
+          return false;
+        }
+      }
+    }
+
+    // If all other purposes are invalid or absent
+    return true;
   }
 }

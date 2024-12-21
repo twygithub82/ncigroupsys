@@ -231,7 +231,9 @@
       "TEXT": "Survey",
       "LIST": {
         "PERIODIC-TEST-SURVEY": "Periodic Test Survey",
-        "OTHERS-SURVEY": "Others Survey"
+        "PERIODIC-TEST-SURVEY-DETAILS": "Periodic Test Survey Details",
+        "OTHERS-SURVEY": "Others Survey",
+        "OTHERS-SURVEY-DETAILS": "Others Survey Details"
       }
     }
   },
@@ -791,7 +793,9 @@
     "EDIT-SURVEY": "Edit Survey",
     "NEW-SURVEY": "New Survey",
     "BAY-OVERVIEW": "Bay Overview",
-    "SURVEY-TYPE": "Survey Type"
+    "SURVEY-TYPE": "Survey Type",
+    "REMOVE": "Remove",
+    "OVERWRITE": "Overwrite"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

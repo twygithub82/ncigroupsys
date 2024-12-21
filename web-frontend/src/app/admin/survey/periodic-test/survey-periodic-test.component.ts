@@ -52,10 +52,10 @@ import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
-  selector: 'app-survey-others',
+  selector: 'app-survey-periodic-test',
   standalone: true,
-  templateUrl: './survey-others.component.html',
-  styleUrl: './survey-others.component.scss',
+  templateUrl: './survey-periodic-test.component.html',
+  styleUrl: './survey-periodic-test.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -84,7 +84,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
     RouterLink
   ]
 })
-export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'tank_no',
     'customer',
@@ -96,7 +96,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     'accept_status',
   ];
 
-  pageTitle = 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY'
+  pageTitle = 'MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
     'MENUITEMS.SURVEY.TEXT'
