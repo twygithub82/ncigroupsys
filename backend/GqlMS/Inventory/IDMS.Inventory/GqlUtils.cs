@@ -5,6 +5,7 @@ using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Notification;
 using IDMS.Models.Package;
 using IDMS.Models.Service;
+using IDMS.Models.Service.GqlTypes.DB;
 using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -292,29 +293,33 @@ namespace IDMS.Inventory.GqlTypes
             string user, long currentDateTime, storing_order_tank sot, long? ingate_date, string tariffBufferGuid, string newJob_no)
         {
             int retval = 0;
+
             try
             {
-                var ingateCleaning = new cleaning();
-                ingateCleaning.guid = Util.GenerateGUID();
-                ingateCleaning.create_by = "system";
-                ingateCleaning.create_dt = currentDateTime;
-                ingateCleaning.sot_guid = sot.guid;
-                ingateCleaning.approve_dt = ingate_date;
-                ingateCleaning.approve_by = "system";
-                ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
-                ingateCleaning.job_no = newJob_no; //sot?.job_no;
-                var customerGuid = sot?.storing_order?.customer_company_guid;
-                ingateCleaning.bill_to_guid = customerGuid;
+                if (TankMovementStatus.validTankStatus.Contains(sot?.tank_status_cv))
+                {
+                    var ingateCleaning = new cleaning();
+                    ingateCleaning.guid = Util.GenerateGUID();
+                    ingateCleaning.create_by = "system";
+                    ingateCleaning.create_dt = currentDateTime;
+                    ingateCleaning.sot_guid = sot.guid;
+                    ingateCleaning.approve_dt = ingate_date;
+                    ingateCleaning.approve_by = "system";
+                    ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
+                    ingateCleaning.job_no = newJob_no; //sot?.job_no;
+                    var customerGuid = sot?.storing_order?.customer_company_guid;
+                    ingateCleaning.bill_to_guid = customerGuid;
 
-                var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
-                var adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
-                               .Select(c => c.adjusted_price).FirstOrDefaultAsync() ?? 0;
-                ingateCleaning.cleaning_cost = adjustedPrice;
+                    var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
+                    var adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
+                                   .Select(c => c.adjusted_price).FirstOrDefaultAsync() ?? 0;
+                    ingateCleaning.cleaning_cost = adjustedPrice;
 
-                var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
-                                                   .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
-                ingateCleaning.buffer_cost = bufferPrice;
-                await context.AddAsync(ingateCleaning);
+                    var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
+                                                       .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
+                    ingateCleaning.buffer_cost = bufferPrice;
+                    await context.AddAsync(ingateCleaning);
+                }
 
                 //Tank handling
                 string curTankStatus;
@@ -332,14 +337,7 @@ namespace IDMS.Inventory.GqlTypes
                 else
                     curTankStatus = sot.tank_status_cv;
 
-
-                PurposeNotification purposeNotification = new PurposeNotification()
-                {
-                    purpose = PurposeType.CLEAN,
-                    sot_guid = sot.guid,
-                    tank_status = curTankStatus
-                };
-                await SendPurposeChangeNotification(config, purposeNotification);
+                await NotificationHandling(config, PurposeType.CLEAN, sot.guid, curTankStatus);
 
                 retval = await context.SaveChangesAsync();
             }
@@ -355,62 +353,66 @@ namespace IDMS.Inventory.GqlTypes
         {
             int retval = 0;
 
+
             try
             {
-                var customerGuid = sot?.storing_order?.customer_company_guid;
-                var last_cargo_guid = sot?.last_cargo_guid;
-                var last_cargo = await context.Set<tariff_cleaning>().Where(x => x.guid == last_cargo_guid).Select(x => x.cargo).FirstOrDefaultAsync();
-                var description = $"Steaming/Heating cost of ({last_cargo})";
+                if (TankMovementStatus.validTankStatus.Contains(sot?.tank_status_cv))
+                {
+                    var customerGuid = sot?.storing_order?.customer_company_guid;
+                    var last_cargo_guid = sot?.last_cargo_guid;
+                    var last_cargo = await context.Set<tariff_cleaning>().Where(x => x.guid == last_cargo_guid).Select(x => x.cargo).FirstOrDefaultAsync();
+                    var description = $"Steaming/Heating cost of ({last_cargo})";
 
 
-                var repTemp = sot?.required_temp;
-                var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
-                            .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
-                            .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
-                            .Select(joined => new
-                            {
-                                joined.p.cost,  // Selecting cost
-                                joined.p.labour, // Selecting labour
-                                joined.p.tariff_steaming_guid
-                            })
-                            .FirstOrDefaultAsync();
+                    var repTemp = sot?.required_temp;
+                    var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
+                                .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
+                                .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
+                                .Select(joined => new
+                                {
+                                    joined.p.cost,  // Selecting cost
+                                    joined.p.labour, // Selecting labour
+                                    joined.p.tariff_steaming_guid
+                                })
+                                .FirstOrDefaultAsync();
 
-                if (result == null || string.IsNullOrEmpty(result.tariff_steaming_guid))
-                    throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
+                    if (result == null || string.IsNullOrEmpty(result.tariff_steaming_guid))
+                        throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
 
-                var defQty = 1;
-                var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
+                    var defQty = 1;
+                    var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
 
-                //steaming handling
-                var newSteam = new steaming();
-                newSteam.guid = Util.GenerateGUID();
-                newSteam.create_by = "system";
-                newSteam.create_dt = currentDateTime;
-                newSteam.sot_guid = sot.guid;
-                newSteam.status_cv = CurrentServiceStatus.APPROVED;
-                newSteam.job_no = newJob_no; //sot?.job_no;
-                newSteam.total_cost = totalCost;
-                newSteam.approve_dt = ingate_date;
-                newSteam.approve_by = "system";
-                newSteam.estimate_by = "system";
-                newSteam.estimate_dt = ingate_date;
-                await context.AddAsync(newSteam);
+                    //steaming handling
+                    var newSteam = new steaming();
+                    newSteam.guid = Util.GenerateGUID();
+                    newSteam.create_by = "system";
+                    newSteam.create_dt = currentDateTime;
+                    newSteam.sot_guid = sot.guid;
+                    newSteam.status_cv = CurrentServiceStatus.APPROVED;
+                    newSteam.job_no = newJob_no; //sot?.job_no;
+                    newSteam.total_cost = totalCost;
+                    newSteam.approve_dt = ingate_date;
+                    newSteam.approve_by = "system";
+                    newSteam.estimate_by = "system";
+                    newSteam.estimate_dt = ingate_date;
+                    await context.AddAsync(newSteam);
 
-                //steaming_part handling
-                var steamingPart = new steaming_part();
-                steamingPart.guid = Util.GenerateGUID();
-                steamingPart.create_by = "system";
-                steamingPart.create_dt = currentDateTime;
-                steamingPart.steaming_guid = newSteam.guid;
-                steamingPart.tariff_steaming_guid = result.tariff_steaming_guid;
-                steamingPart.description = description;
-                steamingPart.quantity = defQty;
-                steamingPart.labour = result.labour;
-                steamingPart.cost = result.cost;
-                steamingPart.approve_part = true;
-                steamingPart.approve_cost = result.cost;
-                steamingPart.approve_labour = result.labour;
-                await context.AddAsync(steamingPart);
+                    //steaming_part handling
+                    var steamingPart = new steaming_part();
+                    steamingPart.guid = Util.GenerateGUID();
+                    steamingPart.create_by = "system";
+                    steamingPart.create_dt = currentDateTime;
+                    steamingPart.steaming_guid = newSteam.guid;
+                    steamingPart.tariff_steaming_guid = result.tariff_steaming_guid;
+                    steamingPart.description = description;
+                    steamingPart.quantity = defQty;
+                    steamingPart.labour = result.labour;
+                    steamingPart.cost = result.cost;
+                    steamingPart.approve_part = true;
+                    steamingPart.approve_cost = result.cost;
+                    steamingPart.approve_labour = result.labour;
+                    await context.AddAsync(steamingPart);
+                }
 
                 //Tank handling
                 string curTankStatus;
@@ -428,13 +430,7 @@ namespace IDMS.Inventory.GqlTypes
                 else
                     curTankStatus = sot.tank_status_cv;
 
-                PurposeNotification purposeNotification = new PurposeNotification()
-                {
-                    purpose = PurposeType.STEAM,
-                    sot_guid = sot.guid,
-                    tank_status = curTankStatus
-                };
-                await SendPurposeChangeNotification(config, purposeNotification);
+                await NotificationHandling(config, PurposeType.STEAM, sot.guid, curTankStatus);
 
                 retval = await context.SaveChangesAsync();
             }
@@ -458,7 +454,7 @@ namespace IDMS.Inventory.GqlTypes
                 tank.update_dt = currentDateTime;
                 tank.repair_remarks = sot.repair_remarks;
                 tank.purpose_repair_cv = sot.purpose_repair_cv;
-                tank.purpose_storage = true;
+
                 if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
                 {
                     tank.tank_status_cv = TankMovementStatus.REPAIR;
@@ -467,13 +463,7 @@ namespace IDMS.Inventory.GqlTypes
                 else
                     curTankStatus = sot.tank_status_cv;
 
-                PurposeNotification purposeNotification = new PurposeNotification()
-                {
-                    purpose = sot.purpose_repair_cv, //PurposeType.REPAIR,
-                    sot_guid = sot.guid,
-                    tank_status = curTankStatus
-                }; 
-                await SendPurposeChangeNotification(config, purposeNotification);
+                await NotificationHandling(config, sot.purpose_repair_cv, sot.guid, curTankStatus);
 
                 retval = await context.SaveChangesAsync();
             }
@@ -484,5 +474,304 @@ namespace IDMS.Inventory.GqlTypes
             return retval;
         }
 
+        public static async Task<int> AddStorage(ApplicationInventoryDBContext context, [Service] IConfiguration config, string user, long currentDateTime, storing_order_tank sot)
+        {
+            int retval = 0;
+            try
+            {
+                //Tank handling
+                string curTankStatus;
+                var tank = new storing_order_tank() { guid = sot.guid };
+                context.storing_order_tank.Attach(tank);
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+                tank.storage_remarks = sot.storage_remarks;
+                tank.purpose_storage = true;
+
+                await NotificationHandling(config, PurposeType.STORAGE, sot.guid, sot.tank_status_cv);
+
+                retval = await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+            return retval;
+        }
+
+        public static async Task<string> TankMovementConditionCheck(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string sotGuid, string processType, string remark)
+        {
+            try
+            {
+                //first check tank purpose
+                var tank = await context.storing_order_tank.Where(t => t.guid == sotGuid & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
+
+                if (processType.EqualsIgnore(PurposeType.STEAM))
+                {
+                    tank.purpose_steam = false;
+                    tank.steaming_remarks = remark;
+                }
+
+                else if (processType.EqualsIgnore(PurposeType.CLEAN) || (processType.EqualsIgnore(PurposeType.RESIDUE)))
+                    tank.cleaning_remarks = remark;
+                else if (processType.EqualsIgnore(PurposeType.REPAIR))
+                    tank.repair_remarks = remark;
+                else if (processType.EqualsIgnore(PurposeType.STORAGE))
+                    tank.storage_remarks = remark;
+
+
+
+                if (tank != null)
+                {
+                    var completedStatuses = new[] { CurrentServiceStatus.COMPLETED, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
+                    var qcCompletedStatuses = new[] { CurrentServiceStatus.QC, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
+
+                    //check if tank have any steaming purpose
+                    if (tank.purpose_steam ?? false)
+                    {
+                        var res = await context.steaming.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                        if (res.Any())
+                        {
+                            if (res.Any(t =>
+                                        (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                        (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                        )
+                            {
+                                tank.tank_status_cv = TankMovementStatus.STEAM;
+                                goto ProceesUpdate;
+                            }
+                        }
+                        else
+                        {
+                            tank.tank_status_cv = TankMovementStatus.STEAM;
+                            goto ProceesUpdate;
+                        }
+                    }
+
+                    //check if tank have any cleaning purpose
+                    if (tank.purpose_cleaning ?? false)
+                    {
+                        var res = await context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                        if (res.Any())
+                        {
+                            if (res.Any(t =>
+                                        (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                        (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                        )
+                            {
+                                tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                goto ProceesUpdate;
+                            }
+                            else
+                            {
+                                //Else, check if tank have any residue estimate already created but pending
+                                //res.Clear();
+                                var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                                if (resd.Any())
+                                {
+                                    if (resd.Any(t =>
+                                                (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                                (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                                )
+                                    {
+                                        tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                        goto ProceesUpdate;
+                                    }
+                                }
+                                else
+                                {
+                                    tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                    goto ProceesUpdate;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            tank.tank_status_cv = TankMovementStatus.CLEANING;
+                            goto ProceesUpdate;
+                        }
+                    }
+
+                    //check if tank have any repair purpose
+                    if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
+                    {
+                        var res = await context.repair.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                        if (res.Any())
+                        {
+                            if (res.Any(t => !qcCompletedStatuses.Contains(t.status_cv)))
+                            {
+                                tank.tank_status_cv = TankMovementStatus.REPAIR;
+                                goto ProceesUpdate;
+                            }
+                        }
+                        else
+                        {
+                            tank.tank_status_cv = TankMovementStatus.REPAIR;
+                            goto ProceesUpdate;
+                        }
+                    }
+
+                    if (tank.purpose_storage ?? false)
+                    {
+                        tank.status_cv = TankMovementStatus.STORAGE;
+                    }
+
+                ProceesUpdate:
+                    var ret = await context.SaveChangesAsync();
+
+                    await NotificationHandling(config, processType, sotGuid, tank.status_cv);
+
+                    return tank.status_cv;
+                }
+                return "";
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+        public static async Task<string> TankMovementConditionCheck1(ApplicationInventoryDBContext context, storing_order_tank tank)
+        {
+            try
+            {
+                ////first check tank purpose
+                //var tank = await context.storing_order_tank.Where(t => t.guid == sotGuid & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                //tank.update_by = user;
+                //tank.update_dt = currentDateTime;
+
+                //if (processType.EqualsIgnore(PurposeType.STEAM))
+                //{
+                //    tank.purpose_steam = false;
+                //    tank.steaming_remarks = remark;
+                //}
+
+                //else if (processType.EqualsIgnore(PurposeType.CLEAN) || (processType.EqualsIgnore(PurposeType.RESIDUE)))
+                //    tank.cleaning_remarks = remark;
+                //else if (processType.EqualsIgnore(PurposeType.REPAIR))
+                //    tank.repair_remarks = remark;
+                //else if (processType.EqualsIgnore(PurposeType.STORAGE))
+                //    tank.storage_remarks = remark;
+
+                var completedStatuses = new[] { CurrentServiceStatus.COMPLETED, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
+                var qcCompletedStatuses = new[] { CurrentServiceStatus.QC, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
+
+                //check if tank have any steaming purpose
+                if (tank.purpose_steam ?? false)
+                {
+                    var res = await context.steaming.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    if (res.Any())
+                    {
+                        if (res.Any(t =>
+                                    (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                    (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                    )
+                        {
+                            tank.tank_status_cv = TankMovementStatus.STEAM;
+                            goto ProceesUpdate;
+                        }
+                    }
+                    else
+                    {
+                        tank.tank_status_cv = TankMovementStatus.STEAM;
+                        goto ProceesUpdate;
+                    }
+                }
+
+                //check if tank have any cleaning purpose
+                if (tank.purpose_cleaning ?? false)
+                {
+                    var res = await context.cleaning.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    if (res.Any())
+                    {
+                        if (res.Any(t =>
+                                    (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                    (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                    )
+                        {
+                            tank.tank_status_cv = TankMovementStatus.CLEANING;
+                            goto ProceesUpdate;
+                        }
+                        else
+                        {
+                            //Else, check if tank have any residue estimate already created but pending
+                            //res.Clear();
+                            var resd = await context.residue.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                            if (resd.Any())
+                            {
+                                if (resd.Any(t =>
+                                            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                            )
+                                {
+                                    tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                    goto ProceesUpdate;
+                                }
+                            }
+                            else
+                            {
+                                tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                goto ProceesUpdate;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        tank.tank_status_cv = TankMovementStatus.CLEANING;
+                        goto ProceesUpdate;
+                    }
+                }
+
+                //check if tank have any repair purpose
+                if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
+                {
+                    var res = await context.repair.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
+                    if (res.Any())
+                    {
+                        if (res.Any(t => !qcCompletedStatuses.Contains(t.status_cv)))
+                        {
+                            tank.tank_status_cv = TankMovementStatus.REPAIR;
+                            goto ProceesUpdate;
+                        }
+                    }
+                    else
+                    {
+                        tank.tank_status_cv = TankMovementStatus.REPAIR;
+                        goto ProceesUpdate;
+                    }
+                }
+
+                if (tank.purpose_storage ?? false)
+                {
+                    tank.status_cv = TankMovementStatus.STORAGE;
+                }
+
+            ProceesUpdate:
+                //var ret = await context.SaveChangesAsync();
+
+                //await NotificationHandling(config, processType, sotGuid, tank.status_cv);
+                return tank.tank_status_cv;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+        public static async Task NotificationHandling(IConfiguration config, string purpose, string sotGuid, string tankStatus)
+        {
+            PurposeNotification purposeNotification = new PurposeNotification()
+            {
+                purpose = purpose,
+                sot_guid = sotGuid,
+                tank_status = tankStatus
+            };
+            await SendPurposeChangeNotification(config, purposeNotification);
+        }
     }
 }

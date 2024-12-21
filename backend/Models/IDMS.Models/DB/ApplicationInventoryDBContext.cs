@@ -24,6 +24,9 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<in_gate> in_gate { get; set; }
         public DbSet<in_gate_survey> in_gate_survey { get; set; }
         public DbSet<cleaning> cleaning { get; set; }
+        public DbSet<steaming> steaming { get; set; }
+        public DbSet<residue> residue { get; set; }
+        public DbSet<repair> repair { get; set; }
         public DbSet<out_gate> out_gate { get; set; }
         public DbSet<out_gate_survey> out_gate_survey { get; set; }
         public DbSet<tariff_cleaning> tariff_cleaning { get; set; }

@@ -44,6 +44,8 @@ namespace IDMS.Inventory.GqlTypes
         public const string STORAGE = "STORAGE";
         public const string RO = "RO_GENERATED";
         public const string SO = "SO_GENERATED";
+
+        public static List<string> validTankStatus = new List<string>() { STEAM, CLEANING, REPAIR, STORAGE };
     }
 
     public static class SOTankAction
@@ -94,6 +96,7 @@ namespace IDMS.Inventory.GqlTypes
         public const string REPAIR = "REPAIR";
         public const string RESIDUE = "RESIDUE";
         public const string STORAGE = "STORAGE";
+
     }
 
     public static class PurposeAction
