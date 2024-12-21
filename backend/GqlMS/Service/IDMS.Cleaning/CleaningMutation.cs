@@ -9,6 +9,8 @@ using IDMS.Service.GqlTypes;
 using IDMS.Cleaning.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Inventory;
+using IDMS.Repair.GqlTypes.LocalModel;
+using System.Data.SqlTypes;
 
 namespace IDMS.Cleaning.GqlTypes
 {
@@ -107,11 +109,6 @@ namespace IDMS.Cleaning.GqlTypes
                             throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
                         tankMovementCheck = true;
-
-                        //if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-                        //    //if no other cleaning estimate or all completed. then we check cross process tank movement
-                        //    await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
-                        //await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, cleaning.sot_guid);
                         break;
                     case ObjectAction.NA:
                         updateCleaning.na_dt = currentDateTime;
@@ -121,11 +118,6 @@ namespace IDMS.Cleaning.GqlTypes
                             throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
                         tankMovementCheck = true;
-
-                        //if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-                        //    //if no other cleaning estimate or all completed. then we check cross process tank movement
-                        //    await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
-                        //await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, cleaning.sot_guid);
                         break;
                 }
                 var res = await context.SaveChangesAsync();
@@ -141,113 +133,6 @@ namespace IDMS.Cleaning.GqlTypes
             }
 
         }
-
-
-        //public async Task<int> UpdateCleaningStatus(ApplicationServiceDBContext context, [Service] IConfiguration config,
-        //    [Service] IHttpContextAccessor httpContextAccessor, CleaningStatusRequest cleaning)
-        //{
-        //    try
-        //    {
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-
-        //        if (cleaning == null)
-        //            throw new GraphQLException(new Error("Cleaning object cannot be null or empty.", "ERROR"));
-
-        //        var updateCleaning = new cleaning() { guid = cleaning.guid };
-        //        context.cleaning.Attach(updateCleaning);
-
-        //        updateCleaning.remarks = cleaning.remarks;
-        //        updateCleaning.update_by = user;
-        //        updateCleaning.update_dt = currentDateTime;
-
-        //        switch (cleaning.action.ToUpper())
-        //        {
-        //            //case ObjectAction.APPROVE:
-        //            //    updateCleaning.status_cv = CurrentServiceStatus.APPROVED;
-        //            //    updateCleaning.approve_dt = currentDateTime;
-        //            //    updateCleaning.approve_by = user;
-
-        //            //    await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.APPROVE, processGuid: cleaning.guid);
-        //            //    break;
-        //            case ObjectAction.KIV:
-        //                updateCleaning.status_cv = CurrentServiceStatus.KIV;
-        //                break;
-        //            case ObjectAction.IN_PROGRESS:
-        //                //Cleaning no to check JobInProgress as it only have 1 job to 1 cleaning all time
-        //                updateCleaning.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-        //                break;
-        //            case ObjectAction.ASSIGN:
-        //                updateCleaning.status_cv = CurrentServiceStatus.ASSIGNED;
-        //                break;
-        //            case ObjectAction.PARTIAL:
-        //                updateCleaning.status_cv = CurrentServiceStatus.PARTIAL;
-        //                break;
-        //            case ObjectAction.COMPLETE:
-        //                updateCleaning.status_cv = CurrentServiceStatus.COMPLETED;
-        //                updateCleaning.complete_by = user;
-        //                updateCleaning.complete_dt = currentDateTime;
-
-        //                if (string.IsNullOrEmpty(cleaning.sot_guid))
-        //                    throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
-
-        //                if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-        //                    //if no other cleaning estimate or all completed. then we check cross process tank movement
-        //                    await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
-        //                break;
-        //            case ObjectAction.NA:
-        //                updateCleaning.na_dt = currentDateTime;
-        //                updateCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
-
-        //                if (string.IsNullOrEmpty(cleaning.sot_guid))
-        //                    throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
-
-        //                if (!await TankMovementCheckInternal(context, "cleaning", cleaning.sot_guid, cleaning.guid))
-        //                    //if no other cleaning estimate or all completed. then we check cross process tank movement
-        //                    await TankMovementCheckCrossProcess(context, cleaning.sot_guid, user, currentDateTime);
-        //                break;
-        //        }
-
-        //        var res = await context.SaveChangesAsync();
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-        //    }
-
-        //}
-
-        //public async Task<int> ApproveCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
-        //    [Service] IHttpContextAccessor httpContextAccessor, cleaning cleaning)
-        //{
-        //    try
-        //    {
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        long currentDateTime = DateTime.Now.ToEpochTime();
-
-        //        if (cleaning == null)
-        //            throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
-
-        //        var approveCleaning = new cleaning() { guid = cleaning.guid };
-        //        context.cleaning.Attach(approveCleaning);
-
-        //        approveCleaning.update_by = user;
-        //        approveCleaning.update_dt = currentDateTime;
-        //        approveCleaning.status_cv = CurrentServiceStatus.APPROVED;
-        //        approveCleaning.remarks = cleaning.remarks;
-
-        //        //job order handling
-        //        await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.APPROVE, processGuid: cleaning.guid);
-
-        //        var res = await context.SaveChangesAsync();
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //}
 
         public async Task<int> AbortCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, CleaningJobOrder cleaningJobOrder)
@@ -283,12 +168,124 @@ namespace IDMS.Cleaning.GqlTypes
                 if (string.IsNullOrEmpty(cleaningJobOrder.sot_guid))
                     throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
-                //if (!await TankMovementCheckInternal(context, "cleaning", cleaningJobOrder.sot_guid, cleaningJobOrder.guid))
-                //    //if no other cleaning estimate or all completed. then we check cross process tank movement
-                //    await TankMovementCheckCrossProcess(context, cleaningJobOrder.sot_guid, user, currentDateTime);
-
                 var res = await context.SaveChangesAsync();
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, cleaningJobOrder.sot_guid);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> RollbackCompletedCleaning(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, CleaningJobOrder cleaningJobOrder)
+        {
+
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (cleaningJobOrder == null)
+                    throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
+
+                var rollbackCleaning = new cleaning() { guid = cleaningJobOrder.guid };
+                context.cleaning.Attach(rollbackCleaning);
+
+                rollbackCleaning.update_by = user;
+                rollbackCleaning.update_dt = currentDateTime;
+                rollbackCleaning.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                rollbackCleaning.remarks = cleaningJobOrder.remarks;
+
+                //job order handling
+                //await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.ROLLBACK, jobOrders: cleaningJobOrder.job_order);
+
+                //job_orders handling
+                var jobIdList = cleaningJobOrder.job_order.Select(j => j.guid).ToList();
+                var guids = string.Join(",", jobIdList.Select(g => $"'{g}'"));
+                string sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                             $"update_by = '{user}' WHERE guid IN ({guids})";
+                context.Database.ExecuteSqlRaw(sql);
+
+                //Timetable handling
+                //var jobIdList = cleaningJobOrder.job_order.Select(j => j.guid).ToList();
+                var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
+                foreach (var tt in timeTables)
+                {
+                    tt.stop_time = null;
+                    tt.update_by = user;
+                    tt.update_dt = currentDateTime;
+                }
+
+                var tankStatus = cleaningJobOrder.sot_status;
+                //var sot = await context.storing_order_tank.FindAsync(sotGuid);
+                //context.storing_order_tank.Attach(sot);
+                //sot.tank_status_cv = await TankMovementCheck(context, "repair", sotGuid, processGuid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;   //TankMovementStatus.STORAGE;
+                var sot = new storing_order_tank() { guid = cleaningJobOrder.sot_guid };
+                context.storing_order_tank.Attach(sot);
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+
+                if (tankStatus.EqualsIgnore(TankMovementStatus.STORAGE))
+                    sot.tank_status_cv = TankMovementStatus.CLEANING;
+                else
+                {
+                    var jobOrders = await context.job_order.Where(j => j.sot_guid == cleaningJobOrder.sot_guid & j.job_type_cv == JobType.CLEANING).ToListAsync();
+                    if (!jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
+                        sot.tank_status_cv = TankMovementStatus.CLEANING;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> RollbackJobInProgressCleaning(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, CleaningJobOrder cleaningJobOrder)
+        {
+
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (cleaningJobOrder == null)
+                    throw new GraphQLException(new Error($"Cleaning object cannot be null or empty", "ERROR"));
+
+                var rollbackCleaning = new cleaning() { guid = cleaningJobOrder.guid };
+                context.cleaning.Attach(rollbackCleaning);
+
+                rollbackCleaning.update_by = user;
+                rollbackCleaning.update_dt = currentDateTime;
+                rollbackCleaning.status_cv = CurrentServiceStatus.APPROVED;
+                rollbackCleaning.remarks = cleaningJobOrder.remarks;
+
+                //job order handling
+                //await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.ROLLBACK, jobOrders: cleaningJobOrder.job_order);
+
+                //job_orders handling
+                var jobIdList = cleaningJobOrder.job_order.Select(j => j.guid).ToList();
+                var guids = string.Join(",", jobIdList.Select(g => $"'{g}'"));
+                string sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                             $"update_by = '{user}' WHERE guid IN ({guids})";
+                context.Database.ExecuteSqlRaw(sql);
+
+                //Timetable handling
+                //var jobIdList = cleaningJobOrder.job_order.Select(j => j.guid).ToList();
+                var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
+                foreach (var tt in timeTables)
+                {
+                    tt.delete_dt = currentDateTime;
+                    tt.update_by = user;
+                    tt.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
                 return res;
             }
             catch (Exception ex)

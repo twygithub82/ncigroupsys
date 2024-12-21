@@ -167,9 +167,7 @@ namespace IDMS.Service.GqlTypes
                         }
                     }
                 }
-
-
-                if (ObjectAction.CANCEL.EqualsIgnore(action))
+                else if (ObjectAction.CANCEL.EqualsIgnore(action))
                 {
                     foreach (var item in jobOrders)
                     {
@@ -183,6 +181,17 @@ namespace IDMS.Service.GqlTypes
                         }
                     }
                 }
+                else if (ObjectAction.ROLLBACK.EqualsIgnore(action)) 
+                {
+                    foreach (var item in jobOrders)
+                    {
+                        var job_order = new job_order() { guid = item.guid };
+                        context.job_order.Attach(job_order);
+                        job_order.status_cv = JobStatus.PENDING;
+                        job_order.update_by = user;
+                        job_order.update_dt = currentDateTime;
+                    }
+                } 
             }
             catch (Exception ex)
             {
