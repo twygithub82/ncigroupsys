@@ -20,7 +20,6 @@ namespace IDMS.Models.Inventory
 
         [ForeignKey("in_gate")]
         public string in_gate_guid { get; set; }
-        //public string? periodic_test_guid { get; set; }
         public int? capacity { get; set; }
         public int? tare_weight { get; set; }
         public string? take_in_reference { get; set; }
