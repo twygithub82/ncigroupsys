@@ -40,6 +40,7 @@ namespace IDMS.Models.Inventory.InGate.GqlTypes.DB
         public DbSet<release_order_sot> release_order_sot { get; set; }
 
         public DbSet<tank> tank { get; set; }
+        public DbSet<tank_info> tank_info { get; set; }
         public DbSet<code_values> code_values { get; set; }
         public DbSet<survey_detail> survey_detail { get; set; }
         public DbSet<job_order> job_order { get; set; }
