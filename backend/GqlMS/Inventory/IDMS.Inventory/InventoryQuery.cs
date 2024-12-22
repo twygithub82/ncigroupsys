@@ -25,6 +25,22 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<tank_info> QueryTankInfo([Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
+        {
+            try
+            {
+                return context.tank_info.Where(t => t.delete_dt == null || t.delete_dt == 0);
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}", "ERROR"));
+            }
+        }
+
         [UseProjection]
         [UseFiltering]
         [UseSorting]
