@@ -5,34 +5,25 @@
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
     <form class="register-form" [formGroup]="cancelForm" #formDirective="ngForm">
-      <div formArrayName="cancelItemList">
-        @for (re of cancelItemArray().controls; track re; let index = $index) {
-        <div [formGroupName]="index" [class]="'row'">
-          <mat-card [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-grey': false}" matRipple>
-            <mat-card-content>
-              <div class="row">
-                <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12">
-                  <h5>{{data.translatedLangText.ESTIMATE_NO}}: {{re.get('estimate_no')?.value}}</h5>
-                </div>
-                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
-                    <textarea matInput formControlName="remarks"></textarea>
-                    @if (re?.get('remarks')?.hasError('required')) {
-                    <mat-error>
-                      {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
-                    </mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-              </div>
-            </mat-card-content>
-            <mat-card-actions [ngClass]="'empty-card-actions'">
-            </mat-card-actions>
-          </mat-card>
-        </div>
-        }
-      </div>
+      <mat-card [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-grey': false}" matRipple>
+        <mat-card-content>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+                <textarea matInput formControlName="remarks"></textarea>
+                @if (cancelForm.get('remarks')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-card-content>
+        <mat-card-actions [ngClass]="'empty-card-actions'">
+        </mat-card-actions>
+      </mat-card>
     </form>
   </div>
   <div mat-dialog-actions class="mb-3 align-right">

@@ -619,7 +619,7 @@ const GET_JOB_ORDER_BY_ID_FOR_REPAIR = gql`
             subgroup_name_cv
           }
         }
-        time_table {
+        time_table(where: { delete_dt: { eq: null } }) {
           create_by
           create_dt
           delete_dt
@@ -740,6 +740,12 @@ const QC_COMPLETE_STEAMING_JOB_ORDER = gql`
 const DELETE_JOB_ORDER = gql`
   mutation deleteJobOrder($jobOrderGuid: [String!]!) {
     deleteJobOrder(jobOrderGuid: $jobOrderGuid)
+  }
+`
+
+const ROLLBACK_REPAIR_JOB_IN_PROGRESS_JOB_ORDER = gql`
+  mutation rollbackJobInProgressRepair($repJobOrder: [RepJobOrderRequestInput!]!) {
+    rollbackJobInProgressRepair(repJobOrder: $repJobOrder)
   }
 `
 
@@ -981,8 +987,21 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     });
   }
 
+  rollbackJobInProgressRepair(repJobOrder: any[]): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_REPAIR_JOB_IN_PROGRESS_JOB_ORDER,
+      variables: {
+        repJobOrder
+      }
+    });
+  }
+
   canStartJob(jobOrderItem: JobOrderItem | undefined) {
     return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
+  }
+
+  canRollbackJob(jobOrderItem: JobOrderItem | undefined) {
+    return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS';
   }
 
   canCompleteJob(jobOrderItem: JobOrderItem | undefined) {

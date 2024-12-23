@@ -563,6 +563,7 @@ const GET_STORING_ORDER_TANKS_SURVEY_BY_ID = gql`
             last_test_cv
             test_class_cv
             test_dt
+            next_test_cv
           }
         }
         survey_detail {

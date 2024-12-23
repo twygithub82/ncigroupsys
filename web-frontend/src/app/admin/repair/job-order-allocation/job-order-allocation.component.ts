@@ -802,19 +802,6 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     return this.repairItem?.status_cv === 'CANCELED' || this.repairItem?.status_cv === 'APPROVED';
   }
 
-  getBadgeClass(status: string | undefined): string {
-    switch (status) {
-      case 'APPROVED':
-        return 'badge-solid-green';
-      case 'PENDING':
-        return 'badge-solid-cyan';
-      case 'CANCEL':
-        return 'badge-solid-red';
-      default:
-        return '';
-    }
-  }
-
   getYesNoDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yesnoCvList);
   }

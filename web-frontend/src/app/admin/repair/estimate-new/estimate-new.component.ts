@@ -1070,20 +1070,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 
-  getBadgeClass(status: string | undefined): string {
-    switch (status) {
-      case 'APPROVED':
-        return 'badge-solid-green';
-      case 'PENDING':
-        return 'badge-solid-cyan';
-      case 'NO_ACTION':
-      case 'CANCELED':
-        return 'badge-solid-red';
-      default:
-        return '';
-    }
-  }
-
   getYesNoDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yesnoCvList);
   }

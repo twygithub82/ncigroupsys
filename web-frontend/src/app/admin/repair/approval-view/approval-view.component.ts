@@ -799,22 +799,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     event.preventDefault(); // Prevents the form submission
   }
 
-  getBadgeClass(status: string | undefined): string {
-    switch (status) {
-      case 'APPROVED':
-        return 'badge-solid-green';
-      case 'PENDING':
-        return 'badge-solid-cyan';
-      case 'CANCEL':
-      case 'NO_ACTION':
-        return 'badge-solid-red';
-      case 'JOB_IN_PROGRESS':
-        return 'badge-solid-purple';
-      default:
-        return '';
-    }
-  }
-
   getYesNoDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yesnoCvList);
   }

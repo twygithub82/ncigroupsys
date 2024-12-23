@@ -1495,6 +1495,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return (re?.status_cv === 'QC_COMPLETED');
   }
 
+  canRollbackJobInProgress(re: RepairItem | undefined): boolean {
+    return re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS';
+  }
+
   canCopy(re: RepairItem): boolean {
     return true;
   }
@@ -1657,5 +1661,23 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     costResult.net_cost = net_cost.toFixed(2);
 
     return costResult;
+  }
+
+  getStatusBadgeClass(status: string | undefined): string {
+    switch (status) {
+      case 'QC_COMPLETED':
+      case 'COMPLETED':
+      case 'APPROVED':
+        return 'badge-solid-green';
+      case 'PENDING':
+        return 'badge-solid-cyan';
+      case 'CANCEL':
+      case 'NO_ACTION':
+        return 'badge-solid-red';
+      case 'JOB_IN_PROGRESS':
+        return 'badge-solid-purple';
+      default:
+        return '';
+    }
   }
 }

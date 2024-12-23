@@ -27,9 +27,9 @@ import { MatCardModule } from '@angular/material/card';
 export interface DialogData {
   action?: string;
   dialogTitle?: string;
-  item: RepairItem[];
+  last_remarks?: string;
   translatedLangText?: any;
-  index: number;
+  remarks?: string;
 }
 
 @Component({
@@ -44,7 +44,6 @@ export interface DialogData {
     MatDialogContent,
     MatFormFieldModule,
     MatInputModule,
-    MatDialogClose,
     TranslateModule,
     CommonModule,
     MatDividerModule,
@@ -55,9 +54,8 @@ export interface DialogData {
 })
 export class CancelFormDialogComponent {
   action?: string;
-  index: number;
   dialogTitle?: string;
-  repairEstList: RepairItem[];
+  last_remarks?: string;
   cancelForm: UntypedFormGroup;
   startDate = new Date();
 
@@ -68,31 +66,14 @@ export class CancelFormDialogComponent {
     private fb: UntypedFormBuilder
   ) {
     // Set the defaults
-    this.repairEstList = data.item;
+    this.last_remarks = data.last_remarks;
     this.cancelForm = this.createCancelForm();
     this.action = this.data.action;
     this.dialogTitle = this.data.dialogTitle;
-    this.index = data.index;
   }
   createCancelForm(): UntypedFormGroup {
     return this.fb.group({
-      cancelItemList: this.fb.array(this.repairEstList.map(re => this.createOrderGroup(re))),
-      remarks: ['']
-    });
-  }
-  createOrderGroup(re: any): UntypedFormGroup {
-    return this.fb.group({
-      customer_company_guid: [re?.storing_order_tank?.storing_order?.customer_company_guid],
-      guid: [re.guid],
-      estimate_no: [re.estimate_no],
-      sot_guid: [re.sot_guid],
-      remarks: [re.remarks, Validators.required]
-    });
-  }
-  createTankGroup(tank: any): UntypedFormGroup {
-    return this.fb.group({
-      tank_no: [tank.tank_no],
-      status_cv: [tank.status_cv]
+      remarks: [this.last_remarks, Validators.required]
     });
   }
   onNoClick(): void {
@@ -100,11 +81,9 @@ export class CancelFormDialogComponent {
   }
   confirmCancel(): void {
     if (this.cancelForm.valid) {
-      let cancelItemList = this.cancelForm.value['cancelItemList']
       const returnDialog: DialogData = {
-        action: 'confirmed',
-        item: cancelItemList,
-        index: this.index
+        action: 'rollback',
+        remarks: this.cancelForm?.get('remarks')?.value
       }
       this.dialogRef.close(returnDialog);
     }

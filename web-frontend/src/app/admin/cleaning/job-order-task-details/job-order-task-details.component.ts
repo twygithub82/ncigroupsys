@@ -26,7 +26,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { AdvanceTable } from 'app/advance-table/advance-table.model';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
@@ -825,10 +824,6 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
     return this.joDS.canStartJob(this.jobOrderItem)
   }
 
-  // canCompleteJob() {
-  //   return this.repairPartDS.canCompleteJob(this.repairItem?.repair_part) && this.joDS.canStartJob(this.jobOrderItem)
-  // }
-
   canCompleteJob() {
     return this.joDS.canCompleteJob(this.jobOrderItem) && !this.isStarted()
   }
@@ -890,7 +885,6 @@ export class CleaningJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAd
       }
     });
   }
-
 
   // updateCleaningStatusToComplete(clnItem:InGateCleaningItem)
   // {

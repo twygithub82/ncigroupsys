@@ -59,7 +59,7 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, RepJobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 
@@ -633,22 +633,6 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.repairItem?.status_cv === 'CANCELED' || this.repairItem?.status_cv === 'APPROVED';
   }
 
-  getBadgeClass(status: string | undefined): string {
-    switch (status) {
-      case 'APPROVED':
-        return 'badge-solid-green';
-      case 'PENDING':
-        return 'badge-solid-cyan';
-      case 'CANCEL':
-      case 'NO_ACTION':
-        return 'badge-solid-red';
-      case 'JOB_IN_PROGRESS':
-        return 'badge-solid-purple';
-      default:
-        return '';
-    }
-  }
-
   getYesNoDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.yesnoCvList);
   }
@@ -812,12 +796,12 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.joDS.canStartJob(this.jobOrderItem)
   }
 
-  // canCompleteJob() {
-  //   return this.repairPartDS.canCompleteJob(this.repairItem?.repair_part) && this.joDS.canStartJob(this.jobOrderItem)
-  // }
-
   canCompleteJob() {
     return this.joDS.canCompleteJob(this.jobOrderItem) && !this.isStarted()
+  }
+
+  canRollbackJob() {
+    return this.joDS.canRollbackJob(this.jobOrderItem) && this.repairDS.canRollbackJobInProgress(this.repairItem) && !this.isStarted();
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined) {
@@ -879,6 +863,45 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(repairStatusReq);
         this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
           console.log(result);
+        });
+      }
+    });
+  }
+
+  rollbackJob(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        last_remarks: this.jobOrderItem?.remarks,
+        action: 'rollback',
+        translatedLangText: this.translatedLangText,
+        dialogTitle: this.translatedLangText.ROLLBACK
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const repJobOrder = new RepJobOrderRequest({
+          guid: this.repairItem?.guid,
+          sot_guid: this.repairItem?.sot_guid,
+          estimate_no: this.repairItem?.estimate_no,
+          job_order: [new JobOrderGO({...this.jobOrderItem, remarks: result.remarks})],
+          sot_status: this.sotItem?.tank_status_cv
+        });
+
+        console.log(repJobOrder)
+        this.joDS.rollbackJobInProgressRepair([repJobOrder]).subscribe(result => {
+          console.log(result)
+          if ((result?.data?.rollbackJobInProgressRepair ?? 0) > 0) {
+            this.handleSaveSuccess(result?.data?.rollbackJobInProgressRepair);
+          }
         });
       }
     });
