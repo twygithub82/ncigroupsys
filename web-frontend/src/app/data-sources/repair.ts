@@ -1675,6 +1675,8 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       case 'NO_ACTION':
         return 'badge-solid-red';
       case 'JOB_IN_PROGRESS':
+      case 'PARTIAL_ASSIGNED':
+      case 'ASSIGNED':
         return 'badge-solid-purple';
       default:
         return '';
