@@ -33,20 +33,18 @@ namespace IDMS.Survey.GqlTypes
 
             try
             {
-                //long epochNow = GqlUtils.GetNowEpochInSec();
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
+                //ingate_survey handling
                 in_gate_survey ingateSurvey = new();
                 mapper.Map(inGateSurveyRequest, ingateSurvey);
-
                 ingateSurvey.guid = Util.GenerateGUID();
                 ingateSurvey.create_by = user;
                 ingateSurvey.create_dt = currentDateTime;
                 context.in_gate_survey.Add(ingateSurvey);
 
-                //var igWithTank = inGateRequest;
+                //ingate handling
                 var ingate = context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefault();
                 if (ingate != null)
                 {
@@ -64,15 +62,14 @@ namespace IDMS.Survey.GqlTypes
                 if (inGateRequest.tank == null || string.IsNullOrEmpty(inGateRequest.tank.guid))
                     throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
 
+                //Tank handling
                 var tank = inGateRequest.tank;
-                //storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
                 storing_order_tank? sot = await context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
                     .Where(t => t.guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
 
-                if (sot == null)
+                if (sot == null || string.IsNullOrEmpty(sot.tank_no))
                     throw new GraphQLException(new Error("Storing order tank not found.", "NOT FOUND"));
 
-                //context.Attach(sot);
                 sot.unit_type_guid = tank.unit_type_guid;
                 sot.owner_guid = tank.owner_guid;
                 sot.update_by = user;
@@ -86,7 +83,6 @@ namespace IDMS.Survey.GqlTypes
                     sot.tank_status_cv = TankMovementStatus.REPAIR;
                 else
                     sot.tank_status_cv = TankMovementStatus.STORAGE;
-
 
                 //Add the newly created guid into list for return
                 retGuids.Add(ingateSurvey.guid);
@@ -104,6 +100,10 @@ namespace IDMS.Survey.GqlTypes
                 string evtId = EventId.NEW_INGATE;
                 string evtName = EventName.NEW_INGATE;
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+
+
+                //Tank info handling
+                await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey);
 
                 //Bundle the retVal and retGuid return as record object
                 record = new Record() { affected = retval, guid = retGuids };
@@ -372,5 +372,62 @@ namespace IDMS.Survey.GqlTypes
             }
             return retval;
         }
+
+
+        private async Task AddTankInfo(ApplicationInventoryDBContext context, IMapper mapper, string user, long currentDateTime, 
+                                        storing_order_tank sot, in_gate_survey ingateSurvey)
+        {
+            //populate the tank_info details
+            var tankInfo = new tank_info()
+            {
+                tank_no = sot.tank_no,
+                owner_guid = sot.owner_guid,
+                unit_type_guid = sot.unit_type_guid,
+                tank_comp_guid = ingateSurvey.tank_comp_guid,
+                manufacturer_cv = ingateSurvey.manufacturer_cv,
+                dom_dt = ingateSurvey.dom_dt,
+                cladding_cv = ingateSurvey.cladding_cv,
+                max_weight_cv = ingateSurvey.max_weight_cv,
+                height_cv = ingateSurvey.height_cv,
+                walkway_cv = ingateSurvey.walkway_cv,
+                capacity = ingateSurvey.capacity,
+                tare_weight = ingateSurvey.tare_weight,
+                last_test_cv = ingateSurvey.last_test_cv,
+                next_test_cv = ingateSurvey.next_test_cv,
+                test_dt = ingateSurvey.test_dt,
+                test_class_cv = ingateSurvey.test_class_cv,
+            };
+
+            await GqlUtils.UpdateTankInfo(mapper, context, user, currentDateTime, tankInfo);
+        }
+
+        //public async Task<int> UpdateTankInfo([Service] IMapper mapper, ApplicationInventoryDBContext context, string user, long currentDateTime, tank_info tankInfo)
+        //{
+        //    try
+        //    {
+        //        var tf = await context.tank_info.Where(t => t.tank_no == tankInfo.tank_no).FirstOrDefaultAsync();
+        //        if (tf == null)
+        //        {
+        //            tf = tankInfo;
+        //            tf.guid = Util.GenerateGUID();
+        //            tf.create_by = user;
+        //            tf.create_dt = currentDateTime;
+        //            await context.AddAsync(tf);
+        //        }
+        //        else
+        //        {
+        //            mapper.Map(tankInfo, tf);
+        //            tf.update_by = user;
+        //            tf.update_dt = currentDateTime;
+        //        }
+
+        //        var res = await context.SaveChangesAsync();
+        //        return res;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+        //    }
+        //}
     }
 }

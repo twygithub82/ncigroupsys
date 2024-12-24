@@ -16,7 +16,7 @@ namespace IDMS.Models.Shared
     {
         [Key]
         public string? guid { get; set; }
-        public string? tank_no { get; set; }
+        public string tank_no { get; set; }
 
         [ForeignKey("customer_company")]
         public string? owner_guid { get; set; }
