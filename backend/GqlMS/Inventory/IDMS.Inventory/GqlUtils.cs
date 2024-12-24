@@ -1,4 +1,5 @@
-﻿using CommonUtil.Core.Service;
+﻿using AutoMapper;
+using CommonUtil.Core.Service;
 using HotChocolate;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
@@ -6,6 +7,7 @@ using IDMS.Models.Notification;
 using IDMS.Models.Package;
 using IDMS.Models.Service;
 using IDMS.Models.Service.GqlTypes.DB;
+using IDMS.Models.Shared;
 using IDMS.Models.Tariff;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -289,7 +291,7 @@ namespace IDMS.Inventory.GqlTypes
             { }
         }
 
-        public static async Task<int> AddCleaning1(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public static async Task<int> AddCleaning1(ApplicationInventoryDBContext context, IConfiguration config,
             string user, long currentDateTime, storing_order_tank sot, long? ingate_date, string tariffBufferGuid, string newJob_no)
         {
             int retval = 0;
@@ -348,7 +350,7 @@ namespace IDMS.Inventory.GqlTypes
             return retval;
         }
 
-        public static async Task<int> AddSteaming1(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public static async Task<int> AddSteaming1(ApplicationInventoryDBContext context, IConfiguration config,
             string user, long currentDateTime, storing_order_tank sot, long? ingate_date, string newJob_no)
         {
             int retval = 0;
@@ -441,7 +443,7 @@ namespace IDMS.Inventory.GqlTypes
             return retval;
         }
 
-        public static async Task<int> AddRepair(ApplicationInventoryDBContext context, [Service] IConfiguration config, string user, long currentDateTime, storing_order_tank sot)
+        public static async Task<int> AddRepair(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, storing_order_tank sot)
         {
             int retval = 0;
             try
@@ -474,7 +476,7 @@ namespace IDMS.Inventory.GqlTypes
             return retval;
         }
 
-        public static async Task<int> AddStorage(ApplicationInventoryDBContext context, [Service] IConfiguration config, string user, long currentDateTime, storing_order_tank sot)
+        public static async Task<int> AddStorage(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, storing_order_tank sot)
         {
             int retval = 0;
             try
@@ -633,7 +635,6 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
-
         public static async Task<string> TankMovementConditionCheck1(ApplicationInventoryDBContext context, storing_order_tank tank)
         {
             try
@@ -762,7 +763,6 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
-
         public static async Task NotificationHandling(IConfiguration config, string purpose, string sotGuid, string tankStatus)
         {
             PurposeNotification purposeNotification = new PurposeNotification()
@@ -772,6 +772,36 @@ namespace IDMS.Inventory.GqlTypes
                 tank_status = tankStatus
             };
             await SendPurposeChangeNotification(config, purposeNotification);
+        }
+
+        public static async Task<int> UpdateTankInfo(IMapper mapper, ApplicationInventoryDBContext context, string user, long currentDateTime, tank_info tankInfo)
+        {
+            try
+            {
+                var tf = await context.tank_info.Where(t => t.tank_no == tankInfo.tank_no).FirstOrDefaultAsync();
+                if (tf == null)
+                {
+                    tf = tankInfo;
+                    tf.guid = Util.GenerateGUID();
+                    tf.create_by = user;
+                    tf.create_dt = currentDateTime;
+                    await context.AddAsync(tf);
+                }
+                else
+                {
+                    mapper.Map(tankInfo, tf);
+                    //already ignore the guid, created_by, created_dt in program.config
+                    tf.update_by = user;
+                    tf.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
         }
     }
 }

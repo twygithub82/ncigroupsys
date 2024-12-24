@@ -105,4 +105,10 @@ namespace IDMS.Inventory.GqlTypes
         public const string REMOVE = "REMOVE";
 
     }
+
+    public static class SurveyStatus
+    {
+        public const string ACCEPT = "ACCEPTED";
+        public const string REJECT = "REJECTED";
+    }
 }

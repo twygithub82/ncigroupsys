@@ -11,6 +11,7 @@ using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.StoringOrder.GqlTypes;
 using IDMS.StoringOrder.GqlTypes.LocalModel;
 using Microsoft.EntityFrameworkCore;
+using IDMS.Models.Shared;
 
 namespace IDMS.Inventory
 {
@@ -46,6 +47,11 @@ namespace IDMS.Inventory
 
                 cfg.CreateMap<StoringOrderTankRequest, storing_order_tank>();
                 cfg.CreateMap<StoringOrderRequest, storing_order>();
+
+                cfg.CreateMap<tank_info, tank_info>()
+                    .ForMember(dest => dest.guid, opt => opt.Ignore())
+                    .ForMember(dest => dest.create_dt, opt => opt.Ignore())
+                    .ForMember(dest => dest.create_by, opt => opt.Ignore());
             });
 
             IMapper mapper = mappingConfig.CreateMapper();
