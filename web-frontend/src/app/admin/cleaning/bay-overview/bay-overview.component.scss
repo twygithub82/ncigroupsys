@@ -1,0 +1,44 @@
+.team-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .team-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  
+  .team-button {
+    width: 300px;
+    height:200px;
+    padding: 10px;
+    text-align: center;
+  }
+  .action-button {
+    width: 80px;
+    height:80px;
+    padding: 10px;
+    text-align: center;
+    background-color: #deeffa; /* Change to your desired color */
+  }
+  .team-button:disabled{
+    background-color: #8b8b8b; /* Change to your desired color */
+    color: rgb(245, 242, 242);
+  }
+  .team-button{
+    background-color: #deeffa; /* Change to your desired color */
+    color: black;
+  }
+  .team-button.selected {
+    background-color: #c46f00; /* Change to your desired color */
+    color: white;
+  }
+  .spacer {
+    height: 20px; /* Adjust to increase spacing further */
+  }
+  .button-icon-size {
+    font-size: 140%; /* Adjusts icon size to 80% of the parent button */
+  }

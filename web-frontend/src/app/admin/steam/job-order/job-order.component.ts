@@ -404,8 +404,15 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }
     // ]
+
+    // if (this.filterSteamForm!.get('filterSteam')?.value) {
+    //   where.AND.push({
+    //     storing_order_tank: { tank_no: { contains: this.filterSteamForm!.get('filterSteam')?.value } }
+    //   });
+    // }
+
     if (this.filterSteamForm!.get('filterSteam')?.value) {
-      where.AND.push({
+      where.and.push({
         storing_order_tank: { tank_no: { contains: this.filterSteamForm!.get('filterSteam')?.value } }
       });
     }

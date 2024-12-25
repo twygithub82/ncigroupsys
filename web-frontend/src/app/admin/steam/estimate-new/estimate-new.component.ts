@@ -1038,7 +1038,7 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       updSteamItem.total_cost=this.getTotalCost();
       this.deList.forEach(data=>{
          var steamPart : SteamPartItem = new SteamPartItem(data);
-         steamPart.action='';
+         steamPart.action=!data.action?'':data.action;
          updSteamItem.steaming_part?.push(steamPart);
 
       });

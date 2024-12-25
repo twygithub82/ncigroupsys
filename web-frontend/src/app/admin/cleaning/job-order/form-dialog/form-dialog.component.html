@@ -79,41 +79,7 @@
                     </button>
                   </div>
                 </div>
-                <!-- <div class="body">
-                
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.TEAM}}</mat-label>
-                        <mat-select formControlName="team_allocation" required>
-                          @for (team of teamList; track team) {
-                          <mat-option [value]="team">{{team.description}}</mat-option>
-                          }
-                        </mat-select>
-
-                        @if (pcForm.get('team_allocation')?.hasError('required')) {
-                          <mat-error>
-                            {{translatedLangText.TEAM | translate}} {{data.langText.SO_REQUIRED | translate}}
-                          </mat-error>
-                          }
-                      </mat-form-field>
-
-                    </div>
-                  </div>
-                  <div mat-dialog-actions class="mb-1 align-right">
-                    @if (canEdit()) {
-                      <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
-                    }
-                    <button mat-flat-button (click)="onNoClick()" tabindex="-1">
-                      @if(canEdit()){
-                      {{translatedLangText.CANCEL}}
-                      }
-                      @if(!canEdit()){
-                        {{translatedLangText.CLOSE}}
-                      }
-                    </button>
-                  </div>
-                </div> -->
+               
               </div>
             </div>
           </div>

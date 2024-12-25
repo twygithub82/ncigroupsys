@@ -245,7 +245,8 @@ export class GroupNewComponent extends UnsubscribeOnDestroyAdapter implements On
     NAME:"COMMON-FORM.NAME",
     INVALID_FORMAT:"COMMON-FORM.INVALID-FORMAT",
     ADD:"COMMON-FORM.ADD",
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    GROUP_DETAILS:'COMMON-FORM.GROUP-DETAILS'
     
   }
 

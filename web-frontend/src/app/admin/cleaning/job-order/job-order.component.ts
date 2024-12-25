@@ -394,10 +394,12 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
 
     const where: any = {
-      and:[]
+      and:[
+        {storing_order_tank:{tank_status_cv:{in:["STEAM","CLEANING","REPAIR","STORAGE"]}}}
+      ]
     };
 
-
+ 
     // or: [
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }

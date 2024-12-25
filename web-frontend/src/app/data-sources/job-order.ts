@@ -162,11 +162,14 @@ export class ClnJobOrderRequest {
   public job_order?: JobOrderGO[];
   public remarks?: string;
   public sot_guid?: string;
+  public sot_status?:string;
+
   constructor(item: Partial<ClnJobOrderRequest> = {}) {
     this.guid = item.guid;
     this.job_order = item.job_order;
     this.remarks = item.remarks;
     this.sot_guid = item.sot_guid;
+    this.sot_status = item.sot_status;
   }
 }
 
@@ -399,12 +402,24 @@ const GET_STARTED_JOB_ORDER = gql`
         storing_order_tank {
           tank_no
           guid
+          tank_status_cv
           storing_order {
             customer_company {
               name
               code
             }
           }
+          tariff_cleaning{
+            cargo
+            cleaning_category {
+              guid
+              name
+            }
+            cleaning_method {
+              guid
+              description
+            }
+          }  
         }
         steaming_part {
           steaming {
@@ -635,6 +650,21 @@ const GET_JOB_ORDER_BY_ID_FOR_REPAIR = gql`
   }
 `;
 
+const ON_JOB_STARTSTOP_SUBSCRIPTION = gql`
+  subscription onJobStartStop($team_guid: String!) {
+    onJobStartStop(team_guid: $team_guid) {
+      complete_dt
+      item_guid
+      job_order_guid
+      job_status
+      job_type
+      start_time
+      stop_time
+      time_table_guid
+    }
+  }
+`;
+
 const ON_JOB_STARTED_SUBSCRIPTION = gql`
   subscription onJobStarted($job_order_guid: String!) {
     onJobStarted(job_order_guid: $job_order_guid) {
@@ -746,6 +776,12 @@ const DELETE_JOB_ORDER = gql`
 const ROLLBACK_REPAIR_JOB_IN_PROGRESS_JOB_ORDER = gql`
   mutation rollbackJobInProgressRepair($repJobOrder: [RepJobOrderRequestInput!]!) {
     rollbackJobInProgressRepair(repJobOrder: $repJobOrder)
+  }
+`
+
+const ROLLBACK_CLEANING_JOB_IN_PROGRESS_JOB_ORDER = gql`
+  mutation rollbackJobInProgressCleaning($clnJobOrder: CleaningJobOrderInput!) {
+    rollbackJobInProgressCleaning(cleaningJobOrder: $clnJobOrder)
   }
 `
 
@@ -878,6 +914,13 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
       );
   }
 
+  subscribeToJobStartStop(team_guid: string): Observable<any> {
+    return this.apollo.subscribe({
+      query: ON_JOB_STARTSTOP_SUBSCRIPTION,
+      variables: { team_guid }
+    });
+  }
+
   subscribeToJobOrderStarted(job_order_guid: string): Observable<any> {
     return this.apollo.subscribe({
       query: ON_JOB_STARTED_SUBSCRIPTION,
@@ -992,6 +1035,15 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
       mutation: ROLLBACK_REPAIR_JOB_IN_PROGRESS_JOB_ORDER,
       variables: {
         repJobOrder
+      }
+    });
+  }
+
+  rollbackJobInProgressCleaning(clnJobOrder: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_CLEANING_JOB_IN_PROGRESS_JOB_ORDER,
+      variables: {
+        clnJobOrder
       }
     });
   }

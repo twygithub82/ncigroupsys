@@ -1,0 +1,28 @@
+<form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
+<div class="container mb-1">
+  <h3 mat-dialog-title>{{confirmStatement}}</h3>
+  <div mat-dialog-content>
+      <ul class="clearfix">
+          <li>
+              <span class="font-weight-bold">
+                  {{data.langText.TANK_NO}}:
+              </span>{{jobItm.storing_order_tank?.tank_no}}
+          </li>
+      </ul>
+  </div>
+  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1">
+    <mat-form-field class="example-full-width">
+        <mat-label>{{data.langText.REMARKS}}</mat-label>
+        <input matInput formControlName="remarks"  >
+      </mat-form-field>
+  </div>
+  <div mat-dialog-actions class="mb-1">
+      <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmDelete()">
+          {{data.langText.CONFIRM}}
+      </button>
+      <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+          {{data.langText.CLOSE}}
+      </button>
+  </div>
+</div>
+</form>
