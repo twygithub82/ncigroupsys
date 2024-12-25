@@ -9,7 +9,6 @@ namespace IDMS.Inventory.GqlTypes.LocalModel
 {
     public class PeriodicTestRequest
     {
-        public survey_detail survey_detail {  get; set; }
         public string tank_no { get; set; }
         public string last_test_cv { get; set; }
         public string next_test_cv { get; set; }
