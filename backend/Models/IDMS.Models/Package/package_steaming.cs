@@ -34,6 +34,7 @@ namespace IDMS.Models.Package
         [UseFiltering]
         public customer_company? customer_company { get; set; }
 
-    
+        [UseFiltering]
+        public steaming_exclusive? steaming_exclusive { get; set; }
     }
 }

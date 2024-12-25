@@ -1,4 +1,6 @@
-﻿using System;
+﻿using IDMS.Models.Package;
+using IDMS.Models.Service;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,6 +21,13 @@ namespace IDMS.Models.Tariff
         public float? temp_max { get; set; }
         public string? remarks { get; set; }
         public double? labour { get; set; }
-        public tariff_cleaning? tariff_cleaning {  get; set; } 
+
+        [UseFiltering]
+        public tariff_cleaning? tariff_cleaning {  get; set; }
+
+        [UseFiltering]
+        public IEnumerable<steaming_part?>? steaming_part {  get; set; }
+        [UseFiltering]
+        public IEnumerable<package_steaming?>? package_steaming { get; set; }
     }
 }
