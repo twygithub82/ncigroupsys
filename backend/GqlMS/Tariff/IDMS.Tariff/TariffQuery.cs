@@ -207,7 +207,6 @@ namespace IDMS.Models.Tariff.GqlTypes
         public IQueryable<steaming_exclusive?> QuerySteamingExclusive(ApplicationTariffDBContext context,
            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
-
             IQueryable<steaming_exclusive> query = null;
             try
             {
@@ -220,7 +219,6 @@ namespace IDMS.Models.Tariff.GqlTypes
             }
 
             return query;
-
         }
 
 
