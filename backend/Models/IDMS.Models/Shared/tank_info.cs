@@ -39,6 +39,7 @@ namespace IDMS.Models.Shared
         public long? test_dt { get; set; }
         public string? test_class_cv { get; set; }
         public long? last_notify_dt { get; set; }
+        public string? yard_cv { get; set; }
         
         [UseFiltering]
         public tank? tank { get; set; }
