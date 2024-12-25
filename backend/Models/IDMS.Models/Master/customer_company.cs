@@ -63,6 +63,8 @@ namespace IDMS.Models.Master
         public IEnumerable<template_est_customer>? template_est_customer { get; set; }
         [UseFiltering]
         public IEnumerable<survey_detail?>? survey_detail { get; set; }
+        [UseFiltering]
+        public IEnumerable<tank_info?>? tank_info { get; set; }
     }
 
 

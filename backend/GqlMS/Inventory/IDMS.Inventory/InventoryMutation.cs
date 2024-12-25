@@ -421,7 +421,7 @@ namespace IDMS.Inventory.GqlTypes
         }
 
         public async Task<int> AddSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail)
+            [Service] IHttpContextAccessor httpContextAccessor, survey_detail surveyDetail, PeriodicTestRequest? periodicTest)
         {
             try
             {
@@ -438,8 +438,30 @@ namespace IDMS.Inventory.GqlTypes
                 newSuyDetail.sot_guid = surveyDetail.sot_guid;
                 newSuyDetail.status_cv = surveyDetail.status_cv;
                 newSuyDetail.remarks = surveyDetail.remarks;
-                newSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
                 newSuyDetail.survey_dt = surveyDetail.survey_dt;
+                newSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
+
+                if (surveyDetail.survey_type_cv.EqualsIgnore("PERIODIC_TEST"))
+                {
+                    if (periodicTest == null)
+                        throw new GraphQLException(new Error($"Periodic test object cannot be null", "ERROR"));
+
+                    newSuyDetail.test_class_cv = surveyDetail.test_class_cv;
+                    newSuyDetail.test_type_cv = surveyDetail.test_type_cv;
+                    if (surveyDetail.status_cv.EqualsIgnore(SurveyStatus.ACCEPT))
+                    {
+                        //Update Tank Info
+                        var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+                        if (tankInfo == null)
+                            throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+
+                        tankInfo.last_test_cv = periodicTest.last_test_cv;
+                        tankInfo.next_test_cv = periodicTest.next_test_cv;
+                        tankInfo.test_dt = newSuyDetail.survey_dt;
+                        tankInfo.update_by = user;
+                        tankInfo.update_dt = currentDateTime;
+                    }
+                }
 
                 await context.AddAsync(newSuyDetail);
                 var res = await context.SaveChangesAsync();
@@ -480,54 +502,52 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
+        //public async Task<int> UpdatePeriodicTest(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        //    [Service] IHttpContextAccessor httpContextAccessor, PeriodicTestRequest periodicTest)
+        //{
+        //    try
+        //    {
+        //        //long epochNow = GqlUtils.GetNowEpochInSec();
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
 
-        public async Task<int> UpdatePeriodicTest(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, PeriodicTestRequest periodicTest)
-        {
-            try
-            {
-                //long epochNow = GqlUtils.GetNowEpochInSec();
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
+        //        if(periodicTest.survey_detail == null)
+        //            throw new GraphQLException(new Error($"survey_detail object cannot be null or empty.", "ERROR"));
 
-                if(periodicTest.survey_detail == null)
-                    throw new GraphQLException(new Error($"survey_detail object cannot be null or empty.", "ERROR"));
+        //        var newSuyDetail = new survey_detail();
+        //        newSuyDetail.guid = Util.GenerateGUID();
+        //        newSuyDetail.create_by = user;
+        //        newSuyDetail.create_dt = currentDateTime;
 
-                var newSuyDetail = new survey_detail();
-                newSuyDetail.guid = Util.GenerateGUID();
-                newSuyDetail.create_by = user;
-                newSuyDetail.create_dt = currentDateTime;
-
-                newSuyDetail.customer_company_guid = periodicTest.survey_detail.customer_company_guid;
-                newSuyDetail.sot_guid = periodicTest.survey_detail.sot_guid;
-                newSuyDetail.status_cv = periodicTest.survey_detail.status_cv;
-                newSuyDetail.remarks = periodicTest.survey_detail.remarks;
-                newSuyDetail.survey_type_cv = periodicTest.survey_detail.survey_type_cv;
-                newSuyDetail.survey_dt = currentDateTime;
-                await context.survey_detail.AddAsync(newSuyDetail);
+        //        newSuyDetail.customer_company_guid = periodicTest.survey_detail.customer_company_guid;
+        //        newSuyDetail.sot_guid = periodicTest.survey_detail.sot_guid;
+        //        newSuyDetail.status_cv = periodicTest.survey_detail.status_cv;
+        //        newSuyDetail.remarks = periodicTest.survey_detail.remarks;
+        //        newSuyDetail.survey_type_cv = periodicTest.survey_detail.survey_type_cv;
+        //        newSuyDetail.survey_dt = currentDateTime;
+        //        await context.survey_detail.AddAsync(newSuyDetail);
 
 
-                if (SurveyStatus.ACCEPT.EqualsIgnore(periodicTest.survey_detail.status_cv))
-                {
-                    var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
-                    if (tankInfo == null)
-                        throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
+        //        if (SurveyStatus.ACCEPT.EqualsIgnore(periodicTest.survey_detail.status_cv))
+        //        {
+        //            var tankInfo = await context.tank_info.Where(t => t.tank_no == periodicTest.tank_no & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+        //            if (tankInfo == null)
+        //                throw new GraphQLException(new Error($"tank info not found.", "ERROR"));
 
-                    tankInfo.last_test_cv = periodicTest.last_test_cv;
-                    tankInfo.next_test_cv = periodicTest.next_test_cv;
-                    tankInfo.test_dt = newSuyDetail.survey_dt;
-                    tankInfo.update_by = user;
-                    tankInfo.update_dt = currentDateTime;
-                }
+        //            tankInfo.last_test_cv = periodicTest.last_test_cv;
+        //            tankInfo.next_test_cv = periodicTest.next_test_cv;
+        //            tankInfo.test_dt = newSuyDetail.survey_dt;
+        //            tankInfo.update_by = user;
+        //            tankInfo.update_dt = currentDateTime;
+        //        }
 
-                var res = await context.SaveChangesAsync();
-                return res;
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-            }
-        }
-
+        //        var res = await context.SaveChangesAsync();
+        //        return res;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+        //    }
+        //}
     }
 }

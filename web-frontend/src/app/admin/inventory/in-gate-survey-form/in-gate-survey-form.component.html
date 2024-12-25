@@ -487,7 +487,7 @@
                           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
-                              <input matInput formControlName="vehicle_no" required>
+                              <input matInput formControlName="vehicle_no" class="text-uppercase" required>
                               @if (surveyForm?.get('vehicle_no')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}

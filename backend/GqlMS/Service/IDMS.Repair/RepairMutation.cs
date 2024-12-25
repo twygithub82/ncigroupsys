@@ -351,7 +351,7 @@ namespace IDMS.Repair.GqlTypes
                 {
                     abortRepair.status_cv = CurrentServiceStatus.COMPLETED;
                     abortRepair.complete_dt = currentDateTime;
-                }
+                }   
                 else
                     abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
 
@@ -569,7 +569,8 @@ namespace IDMS.Repair.GqlTypes
                     context.repair.Attach(rollbackQCRepair);
                     rollbackQCRepair.update_by = user;
                     rollbackQCRepair.update_dt = currentDateTime;
-                    rollbackQCRepair.remarks = item.remarks;
+                    if (!string.IsNullOrEmpty(item.remarks))
+                        rollbackQCRepair.remarks = item.remarks;
 
                     //Job order handling
                     foreach (var job in item.job_order)
@@ -579,6 +580,8 @@ namespace IDMS.Repair.GqlTypes
                         updatejob.update_dt = currentDateTime;
                         updatejob.update_by = user;
                         updatejob.qc_dt = job.qc_dt;
+                        if (!string.IsNullOrEmpty(job.remarks))
+                            updatejob.remarks = job.remarks;
                     }
                 }
                 var res = await context.SaveChangesAsync();
@@ -610,17 +613,28 @@ namespace IDMS.Repair.GqlTypes
                     rollbackQCRepair.update_by = user;
                     rollbackQCRepair.update_dt = currentDateTime;
                     rollbackQCRepair.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS; //From Completed --> JIP
-                    rollbackQCRepair.remarks = item.remarks;
+                    if (!string.IsNullOrEmpty(item.remarks))
+                        rollbackQCRepair.remarks = item.remarks;
 
                     //job_orders handling
                     var jobIdList = item.job_order.Select(j => j.guid).ToList();
-                    var guids = string.Join(",", jobIdList.Select(g => $"'{g}'"));
-                    string sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                                 $"update_by = '{user}' WHERE guid IN ({guids})";
+                    var jobGuidString = string.Join(",", jobIdList.Select(g => $"'{g}'"));
+                    var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
+
+                    string sql = "";
+                    if (!string.IsNullOrEmpty(jobRemark))
+                    {
+                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                                     $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                    }
+                    else
+                    {
+                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                                     $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    }
+
                     context.Database.ExecuteSqlRaw(sql);
 
-                    //string sqlTimeTable = $"UPDATE time_table SET stop_time = NULL, update_dt = {currentDateTime}, " +
-                    //                      $"update_by = '{user}' WHERE guid "
 
                     var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
                     foreach (var tt in timeTables)
@@ -681,15 +695,28 @@ namespace IDMS.Repair.GqlTypes
 
                     rollbackRepair.update_by = user;
                     rollbackRepair.update_dt = currentDateTime;
-                    rollbackRepair.remarks = item.remarks;
+                    if (!string.IsNullOrEmpty(item.remarks))
+                        rollbackRepair.remarks = item.remarks;
                     if (rollbackRepair.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
                         rollbackRepair.status_cv = CurrentServiceStatus.ASSIGNED;
 
                     //job_orders handling
                     var jobIdList = item.job_order.Select(j => j.guid).ToList();
-                    var guids = string.Join(",", jobIdList.Select(g => $"'{g}'"));
-                    string sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                 $"update_by = '{user}' WHERE guid IN ({guids})";
+                    var jobGuidString = string.Join(",", jobIdList.Select(g => $"'{g}'"));
+                    var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
+
+                    string sql = "";
+                    if (!string.IsNullOrEmpty(jobRemark))
+                    {
+                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                              $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                    }
+                    else
+                    {
+                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                              $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    }
+
                     context.Database.ExecuteSqlRaw(sql);
 
                     //Timetable handling
@@ -704,21 +731,6 @@ namespace IDMS.Repair.GqlTypes
 
                 var res = await context.SaveChangesAsync();
                 return res;
-
-                ////Tank handling
-                //var sotGuid = repJobOrder.Select(r => r.sot_guid).FirstOrDefault();
-                //var tankStatus = repJobOrder.Select(r => r.sot_status).FirstOrDefault();
-
-                //if (tankStatus.EqualsIgnore(TankMovementStatus.STORAGE))
-                //{
-                //    var sot = new storing_order_tank() { guid = sotGuid };
-                //    context.storing_order_tank.Attach(sot);
-                //    sot.update_by = user;
-                //    sot.update_dt = currentDateTime;
-                //    sot.tank_status_cv = TankMovementStatus.REPAIR;
-                //}
-
-
             }
             catch (Exception ex)
             {

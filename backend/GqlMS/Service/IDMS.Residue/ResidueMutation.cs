@@ -452,12 +452,24 @@ namespace IDMS.Residue.GqlTypes
                     completedResidue.update_by = user;
                     completedResidue.update_dt = currentDateTime;
                     completedResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                    completedResidue.remarks = item.remarks;
+                    if (!string.IsNullOrEmpty(item.remarks))
+                        completedResidue.remarks = item.remarks;
 
                     //job_orders handling
-                    var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                    string sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                                 $"update_by = '{user}' WHERE guid IN ({guids})";
+                    var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
+                    var jobGuidString = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+
+                    string sql = "";
+                    if (!string.IsNullOrEmpty(jobRemark))
+                    {
+                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                                $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                    }
+                    else
+                    {
+                        sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                                $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    }
                     context.Database.ExecuteSqlRaw(sql);
 
                     //Timetable handling
@@ -518,12 +530,24 @@ namespace IDMS.Residue.GqlTypes
                     completedResidue.update_by = user;
                     completedResidue.update_dt = currentDateTime;
                     completedResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                    completedResidue.remarks = item.remarks;
+                    if (!string.IsNullOrEmpty(item.remarks))
+                        completedResidue.remarks = item.remarks;
 
                     //job_orders handling
-                    var guids = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
-                    string sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                 $"update_by = '{user}' WHERE guid IN ({guids})";
+                    var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
+                    var jobGuidString = string.Join(",", item.job_order.Select(j => j.guid).ToList().Select(g => $"'{g}'"));
+
+                    string sql = "";
+                    if (!string.IsNullOrEmpty(jobRemark))
+                    {
+                        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                                $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                    }
+                    else
+                    {
+                        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                                $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                    }
                     context.Database.ExecuteSqlRaw(sql);
 
                     //Timetable handling

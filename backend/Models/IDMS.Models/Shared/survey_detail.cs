@@ -22,10 +22,15 @@ namespace IDMS.Models.Shared
         public string sot_guid {  get; set; }
         public string status_cv { get; set; }
         public string survey_type_cv { get; set; }
+        public string? test_type_cv { get; set; }
+        public string? test_class_cv { get; set; }   
         public string? remarks { get; set; }
         public long survey_dt { get; set; }
 
+        [UseFiltering]
         public customer_company? customer_company { get; set; }
+
+        [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; }
     }
 }

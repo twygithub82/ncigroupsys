@@ -435,7 +435,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
         eir_dt: Utility.convertDate(this.inGateForm.get('eir_dt')?.value) as number,
         so_tank_guid: this.storingOrderTankItem?.guid,
         driver_name: this.inGateForm.get('driver_name')?.value,
-        vehicle_no: this.inGateForm.get('vehicle_no')?.value,
+        vehicle_no: this.inGateForm.get('vehicle_no')?.value?.toUpperCase(),
         remarks: this.inGateForm.get('remarks')?.value,
         tank: sot,
         yard_cv: this.inGateForm.get('yard_cv')?.value,

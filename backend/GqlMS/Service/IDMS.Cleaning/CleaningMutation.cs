@@ -196,20 +196,31 @@ namespace IDMS.Cleaning.GqlTypes
                 rollbackCleaning.update_by = user;
                 rollbackCleaning.update_dt = currentDateTime;
                 rollbackCleaning.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
-                rollbackCleaning.remarks = cleaningJobOrder.remarks;
+                if (!string.IsNullOrEmpty(cleaningJobOrder.remarks))
+                    rollbackCleaning.remarks = cleaningJobOrder.remarks;
 
                 //job order handling
                 //await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.ROLLBACK, jobOrders: cleaningJobOrder.job_order);
 
                 //job_orders handling
+                var jobRemark = cleaningJobOrder.job_order.Select(j => j.remarks).FirstOrDefault();
                 var jobIdList = cleaningJobOrder.job_order.Select(j => j.guid).ToList();
-                var guids = string.Join(",", jobIdList.Select(g => $"'{g}'"));
-                string sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
-                             $"update_by = '{user}' WHERE guid IN ({guids})";
+                var jobGuidString = string.Join(",", jobIdList.Select(g => $"'{g}'"));
+
+                string sql = "";
+                if (!string.IsNullOrEmpty(jobRemark))
+                {
+                    sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                }
+                else
+                {
+                    sql = $"UPDATE job_order SET complete_dt = NULL, status_cv = '{JobStatus.IN_PROGRESS}', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                }
                 context.Database.ExecuteSqlRaw(sql);
 
                 //Timetable handling
-                //var jobIdList = cleaningJobOrder.job_order.Select(j => j.guid).ToList();
                 var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
                 foreach (var tt in timeTables)
                 {
@@ -263,16 +274,28 @@ namespace IDMS.Cleaning.GqlTypes
                 rollbackCleaning.update_by = user;
                 rollbackCleaning.update_dt = currentDateTime;
                 rollbackCleaning.status_cv = CurrentServiceStatus.APPROVED;
-                rollbackCleaning.remarks = cleaningJobOrder.remarks;
+                if (!string.IsNullOrEmpty(cleaningJobOrder.remarks))
+                    rollbackCleaning.remarks = cleaningJobOrder.remarks;
 
                 //job order handling
                 //await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.ROLLBACK, jobOrders: cleaningJobOrder.job_order);
 
                 //job_orders handling
+                var jobRemark = cleaningJobOrder.job_order.Select(j => j.remarks).FirstOrDefault();
                 var jobIdList = cleaningJobOrder.job_order.Select(j => j.guid).ToList();
-                var guids = string.Join(",", jobIdList.Select(g => $"'{g}'"));
-                string sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                             $"update_by = '{user}' WHERE guid IN ({guids})";
+                var jobGuidString = string.Join(",", jobIdList.Select(g => $"'{g}'"));
+
+                string sql = "";
+                if (!string.IsNullOrEmpty(jobRemark))
+                {
+                    sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                }
+                else 
+                {
+                    sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                            $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                }
                 context.Database.ExecuteSqlRaw(sql);
 
                 //Timetable handling

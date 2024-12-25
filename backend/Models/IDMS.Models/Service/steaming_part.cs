@@ -17,6 +17,9 @@ namespace IDMS.Models.Service
         [ForeignKey("tariff_steaming")]
         public string? tariff_steaming_guid { get; set; }
 
+        [ForeignKey("steaming_exclusive")]
+        public string? steaming_exclusive_guid { get; set; }
+
         [ForeignKey("job_order")]
         public string? job_order_guid { get; set; }
         public string? description { get; set; }
@@ -31,13 +34,12 @@ namespace IDMS.Models.Service
 
         [NotMapped]
         public string action { get; set; }
-
         [UseFiltering]
         public steaming? steaming { get; set; } = null;
-
         [UseFiltering]
         public tariff_steaming? tariff_steaming { get; set; } = null;
-
+        [UseFiltering]
+        public steaming_exclusive? steaming_exclusive { get; set; } = null;
         [UseFiltering]
         public job_order? job_order { get; set; }
     }

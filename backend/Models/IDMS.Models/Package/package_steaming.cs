@@ -21,11 +21,20 @@ namespace IDMS.Models.Package
         [ForeignKey("customer_company")]
         public string? customer_company_guid { get; set; }
 
+        [ForeignKey("steaming_exclusive")]
+        public string? steaming_exclusive_guid { get; set; }
+
         public double? cost { get; set; }
         public double? labour {  get; set; }
         public string? remarks { get; set; }
 
+        [UseFiltering]
         public tariff_steaming? tariff_steaming { get; set; }
+
+        [UseFiltering]
         public customer_company? customer_company { get; set; }
+
+        [UseFiltering]
+        public steaming_exclusive? steaming_exclusive { get; set; }
     }
 }
