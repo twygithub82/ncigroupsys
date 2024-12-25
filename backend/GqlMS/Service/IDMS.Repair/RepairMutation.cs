@@ -351,7 +351,7 @@ namespace IDMS.Repair.GqlTypes
                 {
                     abortRepair.status_cv = CurrentServiceStatus.COMPLETED;
                     abortRepair.complete_dt = currentDateTime;
-                }
+                }   
                 else
                     abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
 

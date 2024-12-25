@@ -226,7 +226,7 @@ namespace IDMS.Service.GqlTypes
                         break;
                 }
 
-                if (partTableName != "")
+                if (!string.IsNullOrEmpty(partTableName))
                 {
                     string sqlQuery = "";
                     if (partTableName == "cleaning")
@@ -255,8 +255,13 @@ namespace IDMS.Service.GqlTypes
                         {
                             allValid = jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
                                 jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED));
-                        }
 
+                            // If all are canceled, set allValid to false
+                            if (allValid && jobOrderList.All(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED)))
+                            {
+                                allValid = false;
+                            }
+                        }
                         return allValid;
                     }
                 }
