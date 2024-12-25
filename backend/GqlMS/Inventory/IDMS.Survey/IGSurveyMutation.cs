@@ -104,7 +104,7 @@ namespace IDMS.Survey.GqlTypes
 
 
                 //Tank info handling
-                await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey);
+                await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "");
 
                 //Bundle the retVal and retGuid return as record object
                 record = new Record() { affected = retval, guid = retGuids };
@@ -187,6 +187,10 @@ namespace IDMS.Survey.GqlTypes
                 string evtId = EventId.NEW_INGATE;
                 string evtName = EventName.NEW_INGATE;
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+
+
+                //Tank info handling
+                await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "");
             }
             catch (Exception ex)
             {
@@ -398,7 +402,7 @@ namespace IDMS.Survey.GqlTypes
 
 
         private async Task AddTankInfo(ApplicationInventoryDBContext context, IMapper mapper, string user, long currentDateTime,
-                                        storing_order_tank sot, in_gate_survey ingateSurvey)
+                                        storing_order_tank sot, in_gate_survey ingateSurvey, string yard)
         {
             //populate the tank_info details
             var tankInfo = new tank_info()
@@ -419,6 +423,7 @@ namespace IDMS.Survey.GqlTypes
                 next_test_cv = ingateSurvey.next_test_cv,
                 test_dt = ingateSurvey.test_dt,
                 test_class_cv = ingateSurvey.test_class_cv,
+                yard_cv = yard
             };
 
             await GqlUtils.UpdateTankInfo(mapper, context, user, currentDateTime, tankInfo);
