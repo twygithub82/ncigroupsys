@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using IDMS.Models.Shared;
+using System.Diagnostics.Eventing.Reader;
 
 
 namespace IDMS.Survey.GqlTypes
@@ -313,21 +314,40 @@ namespace IDMS.Survey.GqlTypes
                 var last_cargo_guid = sot?.last_cargo_guid;
                 var last_cargo = await context.Set<tariff_cleaning>().Where(x => x.guid == last_cargo_guid).Select(x => x.cargo).FirstOrDefaultAsync();
                 var description = $"Steaming/Heating cost of ({last_cargo})";
-
-
                 var repTemp = sot?.required_temp;
+
+                bool isExclusive = false;
+                //First check whether have exclusive package cost
                 var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
-                            .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
+                            .Join(context.Set<steaming_exclusive>(), p => p.steaming_exclusive_guid, t => t.guid, (p, t) => new { p, t })
                             .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
-                            .Select(joined => new
+                            .Select(joined => new SteamingPackageResult
                             {
-                                joined.p.cost,  // Selecting cost
-                                joined.p.labour, // Selecting labour
-                                joined.p.tariff_steaming_guid
+                                cost = joined.p.cost,  // Selecting cost
+                                labour = joined.p.labour, // Selecting labour
+                                steaming_guid = joined.p.steaming_exclusive_guid
                             })
                             .FirstOrDefaultAsync();
 
-                if (result == null || string.IsNullOrEmpty(result.tariff_steaming_guid))
+                //If no exclusive found
+                if (result == null || string.IsNullOrEmpty(result.steaming_guid))
+                {
+                    //we check the general package cost
+                    result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
+                                .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
+                                .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
+                                .Select(joined => new SteamingPackageResult
+                                {
+                                    cost = joined.p.cost,  // Selecting cost
+                                    labour = joined.p.labour, // Selecting labour
+                                    steaming_guid = joined.p.tariff_steaming_guid
+                                })
+                                .FirstOrDefaultAsync();
+                }
+                else //the customer have exclusive package cost
+                    isExclusive = true;
+
+                if (result == null || string.IsNullOrEmpty(result.steaming_guid))
                     throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
 
                 var defQty = 1;
@@ -344,7 +364,7 @@ namespace IDMS.Survey.GqlTypes
                 newSteam.total_cost = totalCost;
                 newSteam.approve_dt = ingate_date;
                 newSteam.approve_by = "system";
-                newSteam.estimate_by = "system";    
+                newSteam.estimate_by = "system";
                 newSteam.estimate_dt = ingate_date;
                 await context.AddAsync(newSteam);
 
@@ -354,14 +374,17 @@ namespace IDMS.Survey.GqlTypes
                 steamingPart.create_by = "system";
                 steamingPart.create_dt = currentDateTime;
                 steamingPart.steaming_guid = newSteam.guid;
-                steamingPart.tariff_steaming_guid = result.tariff_steaming_guid;
+                if (isExclusive)
+                    steamingPart.steaming_exclusive_guid = result?.steaming_guid;
+                else
+                    steamingPart.tariff_steaming_guid = result?.steaming_guid;
                 steamingPart.description = description;
                 steamingPart.quantity = defQty;
-                steamingPart.labour = result.labour;
-                steamingPart.cost = result.cost;
+                steamingPart.labour = result?.labour;
+                steamingPart.cost = result?.cost;
                 steamingPart.approve_part = true;
-                steamingPart.approve_cost = result.cost;
-                steamingPart.approve_labour = result.labour;
+                steamingPart.approve_cost = result?.cost;
+                steamingPart.approve_labour = result?.labour;
                 await context.AddAsync(steamingPart);
 
                 retval = 1;
@@ -374,7 +397,7 @@ namespace IDMS.Survey.GqlTypes
         }
 
 
-        private async Task AddTankInfo(ApplicationInventoryDBContext context, IMapper mapper, string user, long currentDateTime, 
+        private async Task AddTankInfo(ApplicationInventoryDBContext context, IMapper mapper, string user, long currentDateTime,
                                         storing_order_tank sot, in_gate_survey ingateSurvey)
         {
             //populate the tank_info details
