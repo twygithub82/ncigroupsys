@@ -200,6 +200,28 @@ namespace IDMS.Models.Tariff.GqlTypes
 
         }
 
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
+        public IQueryable<steaming_exclusive?> QuerySteamingExclusive(ApplicationTariffDBContext context,
+           [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+
+            IQueryable<steaming_exclusive> query = null;
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                query = context.steaming_exclusive.Where(i => i.delete_dt == null || i.delete_dt == 0);
+            }
+            catch
+            {
+                throw;
+            }
+
+            return query;
+
+        }
 
 
         //[UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
@@ -229,13 +251,6 @@ namespace IDMS.Models.Tariff.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
                 var query = context.un_number.AsQueryable();
-
-                //// Apply filters conditionally
-                //if (!string.IsNullOrEmpty(partName))
-                //{
-                //    query = query.Where(tr => tr.part_name == partName);
-                //}
-
                 var distinctClassNo = await context.un_number
                       .Select(un => un.class_cv)
                       .Distinct()
