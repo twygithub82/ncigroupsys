@@ -55,6 +55,7 @@ import { JobOrderQCComponent } from "../../cleaning/job-order-qc/job-order-qc.co
 import { JobOrderTaskComponent } from "../../cleaning/job-order-task/job-order-task.component";
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
+import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 
 @Component({
   selector: 'app-job-order',
@@ -192,6 +193,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   cleanDS: InGateCleaningDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
+  cmDS:CleaningMethodDS;
 
   availableProcessStatus: string[] = [
     'APPROVED',
@@ -202,6 +204,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     'CANCELED'
   ]
 
+  cleanMethodList:CleaningMethodItem[]=[];
   clnEstList: InGateCleaningItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
@@ -254,6 +257,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.cleanDS = new InGateCleaningDS(this.apollo);
     this.ttDS= new TimeTableDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
+    this.cmDS=new CleaningMethodDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -273,6 +277,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   initSearchForm() {
     this.filterCleanForm = this.fb.group({
       filterClean: [''],
+      cleanMethod:[''],
       status_cv: [['APPROVED','ASSIGNED']],
       customer: [''],
     });
@@ -404,6 +409,11 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     //   { storing_order_tank: { tank_no: { contains: "" } } },
     //   { estimate_no: { contains: "" } }
     // ]
+    if (this.filterCleanForm!.get('cleanMethod')?.value) {
+      where.and.push({
+        storing_order_tank: { tariff_cleaning:{cleaning_method:{ name: { eq: (this.filterCleanForm!.get('cleanMethod')?.value).name } }}}
+      });
+    }
     if (this.filterCleanForm!.get('filterClean')?.value) {
       where.and.push({
         storing_order_tank: { tank_no: { contains: this.filterCleanForm!.get('filterClean')?.value } }
@@ -648,6 +658,9 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
+  displayCleanMethodFn(cm: CleaningMethodItem): string {
+    return cm  ? `${cm.description} `: '';
+  }
   initializeFilterCustomerCompany() {
     this.filterCleanForm!.get('customer')!.valueChanges.pipe(
       startWith(''),
@@ -666,6 +679,22 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     ).subscribe();
   
   
+    this.filterCleanForm!.get('cleanMethod')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.description;
+        }
+        this.subs.sink = this.cmDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { description: { contains: searchCriteria } }] }, { name: 'ASC' }).subscribe(data => {
+          this.cleanMethodList = data;
+          this.sortList(this.cleanMethodList);
+        });
+      })
+    ).subscribe();
   }
 
 
@@ -737,6 +766,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   resetForm() {
     this.filterCleanForm?.patchValue({
       filterRepair: '',
+      cleanMethod:''
     });
   }
 
@@ -966,4 +996,13 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
 
   }
+
+  sortList( itemList:any[]) {
+    itemList.sort((a:any, b:any) => {
+      const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
+      const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
+      return numA - numB;
+    });
+  }
+  
 }

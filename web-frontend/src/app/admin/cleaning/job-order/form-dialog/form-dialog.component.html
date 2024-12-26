@@ -57,6 +57,15 @@
                   <div class="spacer"></div>
                   <div mat-dialog-actions class="align-right">
                     
+                    @if(canRollBack())
+                    {
+                      
+                      <button mat-flat-button color="accent"   (click)="onRollback($event)" class="m-r-5">  
+                        <mat-icon>undo</mat-icon>
+                        <span>{{translatedLangText.ROLLBACK}}</span>
+                      </button>
+                    }
+
                     @if(canAbort())
                     {
                       

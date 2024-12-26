@@ -42,6 +42,7 @@ import { ClnJobOrderRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderReque
 import { Direction } from '@angular/cdk/bidi';
 import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component'
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import {ConfirmationDialogComponent}from '../dialogs/confirm-form-dialog/confirm-form-dialog.component'
 
 export interface DialogData {
   action?: string;
@@ -244,6 +245,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     TEAM: 'COMMON-FORM.TEAM',
     BAY_ALLOCATION: 'COMMON-FORM.BAY-ALLOCATION',
     ABORT: 'COMMON-FORM.ABORT',
+    ROLLBACK:'COMMON-FORM.ROLLBACK',
+    ARE_SURE_ROLLBACK:'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
   };
 
   
@@ -517,6 +520,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
+  canRollBack():boolean
+  {
+    let retval:boolean=true;
+    var selItem =this.selectedItems[0];
+    return selItem.status_cv==="COMPLETED";
+  }
+
   canAbort():boolean
   {
     let retval:boolean=true;
@@ -643,24 +653,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        // const distinctJobOrders = this.repList
-        //   .filter((item, index, self) =>
-        //     index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
-        //       (t.job_order?.team?.guid === item?.job_order?.team_guid ||
-        //         t.job_order?.team?.description === item?.job_order?.team?.description))
-        //   )
-        //   .filter(item => item.job_order !== null && item.job_order !== undefined)
-        //   .map(item => new JobOrderGO(item.job_order!));
-
-        // const repJobOrder = new ResJobOrderRequest({
-        //   guid: this.residueItem?.guid,
-        //   sot_guid: this.residueItem?.sot_guid,
-        //   estimate_no: this.residueItem?.estimate_no,
-        //   remarks: this.residueItem?.remarks,
-        //   job_order: distinctJobOrders
-        // });
-
-        
         const distinctJobOrders :any[] =[];
         const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
         distinctJobOrders.push(jobOrder);
@@ -967,4 +959,93 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           }
         });
     }
+
+    onRollback1(event: Event) {
+      this.preventDefault(event);
+      console.log(this.selectedItem)
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+        width: '1000px',
+        data: {
+          action: 'rollback',
+          dialogTitle: this.translatedLangText.ARE_YOU_ROLLBACK,
+          item: [this.selectedItem],
+          translatedLangText: this.translatedLangText
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'confirmed') {
+          const distinctJobOrders :any[] =[];
+          const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
+          distinctJobOrders.push(jobOrder);
+          const clnJobOrder = new ClnJobOrderRequest({
+            guid: this.selectedItems[0]?.guid,
+            sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
+            remarks: this.selectedItems[0]?.remarks,
+            job_order: distinctJobOrders
+          });
+      
+          console.log(clnJobOrder)
+          this.igCleanDS?.rollbackCompletedCleaning(clnJobOrder).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result?.data?.abortCleaning);
+          });
+        }
+      });
+    }
+
+    
+    onRollback(event: Event)
+      {
+        this.preventDefault(event);  // Prevents the form submission
+            let tempDirection: Direction;
+            if (localStorage.getItem('isRtl') === 'true') {
+              tempDirection = 'rtl';
+            } else {
+              tempDirection = 'ltr';
+            }
+            const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+              width: '800px',
+              height: '250px',
+              data: {
+                action: "EDIT",
+                item: this.selectedItems[0].storing_order_tank,
+                langText: this.translatedLangText,
+                confirmStatement:this.translatedLangText.ARE_SURE_ROLLBACK,
+                index:-1
+              
+              },
+              direction: tempDirection
+            });
+            this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
+              if (result?.action=="confirmed") {
+                const distinctJobOrders :any[] =[];
+                const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
+                distinctJobOrders.push(jobOrder);
+                const clnJobOrder = new ClnJobOrderRequest({
+                  guid: this.selectedItems[0]?.guid,
+                  sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
+                  remarks: result?.remarks,
+                  job_order: distinctJobOrders,
+                  sot_status:this.selectedItems[0]?.storing_order_tank?.tank_status_cv
+                });
+            
+                console.log(clnJobOrder)
+                this.igCleanDS?.rollbackCompletedCleaning(clnJobOrder).subscribe(result => {
+                  console.log(result)
+                  this.handleSaveSuccess(result?.data?.rollbackCompletedCleaning);
+                });
+    
+            }
+          });
+    }
+
+   
 }

@@ -308,11 +308,11 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         this.jobOrderList = data;
-        this.jobOrderList.forEach(jo => {
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
-        })
+        // this.jobOrderList.forEach(jo => {
+        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
+        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
+        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
+        // })
       });
 
     this.pageSizeJobOrder = pageSize;
@@ -507,25 +507,28 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         } else if (data?.onJobCompleted) {
           jobData = data.onJobCompleted;
           eventType = 'onJobCompleted';
+        }else if (data?.onJobStartStop) {
+          jobData = data.onJobStartStop;
+          eventType = 'onJobStartStop';
         }
 
         if (jobData) {
           const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
           if (foundJob?.length) {
-            foundJob[0].status_cv = jobData.job_status;
-            foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
-            foundJob[0].time_table ??= [];
+            // foundJob[0].status_cv = jobData.job_status;
+            // foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
+            // foundJob[0].time_table ??= [];
 
-            if (eventType === 'jobStarted') {
-              const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
-              if (foundTimeTable?.length) {
-                foundTimeTable[0].start_time = jobData.start_time
-              } else {
-                foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
-              }
-            } else if (eventType === 'jobStopped') {
-              foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
-            }
+            // if (eventType === 'jobStarted') {
+            //   const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
+            //   if (foundTimeTable?.length) {
+            //     foundTimeTable[0].start_time = jobData.start_time
+            //   } else {
+            //     foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
+            //   }
+            // } else if (eventType === 'jobStopped') {
+            //   foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
+            // }
             console.log(`Updated JobOrder ${eventType} :`, foundJob[0]);
           }
         }
@@ -655,6 +658,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         isViewOnly:true
       }));
       this.sortBayList(this.teamList);
+      this.subscribeTeamEvent();
       this.queryOccupiedTeam();
     }
   });
@@ -666,6 +670,14 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
     return numA - numB;
   });
+}
+
+
+subscribeTeamEvent()
+{
+    this.teamList.forEach(t => {
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobStartStop.bind(this.joDS), t.guid!);
+        })
 }
 
 queryOccupiedTeam()
@@ -688,11 +700,12 @@ queryOccupiedTeam()
               // If the team GUID matches, update isOccupied to true
               team.jobOrderItem=d;
               team.isOccupied = true;
+              team.isEditable=false;
               //team.storing_order_tank=d.storing_order_tank!;
               // team.tank_no=d.storing_order_tank?.tank_no;
               // team.cleaning_method= d.storing_order_tank?.tariff_cleaning?.cleaning_method?.description;
               // team.cleaning_category=d.storing_order_tank?.tariff_cleaning?.cleaning_category?.name;
-              team.isEditable=false;
+              
               // if(team.isEditable)
               // {
               //   this.toggleTeam(team);
@@ -824,7 +837,7 @@ queryOccupiedTeam()
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
 
 
-      if (result) {
+      if (result?.action=="confirmed") {
        
         this.toggleJobState(event,true,team.jobOrderItem)
       }

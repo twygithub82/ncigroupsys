@@ -12,7 +12,7 @@
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
                 <form class="ms-0" [formGroup]="filterCleanForm!" (ngSubmit)="onFilterCleaning()" #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
                         <mat-label>
@@ -21,7 +21,21 @@
                         <input matInput formControlName="filterClean">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 pt-3">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.METHOD}}</mat-label>
+                        <input matInput formControlName="cleanMethod" 
+                          [matAutocomplete]="cleanMethod">
+                        <mat-autocomplete #cleanMethod="matAutocomplete" [displayWith]="displayCleanMethodFn">
+                          @for (cm of cleanMethodList; track cm) {
+                          <mat-option [value]="cm">
+                            {{cm.description}}
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                         <input matInput formControlName="customer" 
@@ -35,7 +49,7 @@
                         </mat-autocomplete>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2 pt-3">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.STATUS}}</mat-label>
                         <mat-select multiple formControlName="status_cv">
@@ -50,7 +64,7 @@
                       </mat-form-field>
                     </div>
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-2 pt-3">
-                      <button mat-mini-fab color="primary" (click)="onFilterCleaning()">
+                      <button mat-mini-fab color="primary" >
                         <mat-icon>search</mat-icon>
                       </button>
                     </div>

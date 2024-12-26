@@ -368,6 +368,12 @@ const ABORT_IN_GATE_CLEANING = gql`
   }
 `
 
+const ROLLBACK_COMPLETED_CLEANING = gql`
+  mutation rollbackCompletedCleaning($clnJobOrder: CleaningJobOrderInput!) {
+    rollbackCompletedCleaning(cleaningJobOrder: $clnJobOrder)
+  }
+`
+
 export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -435,6 +441,15 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
   abortInGateCleaning(clnJobOrder: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ABORT_IN_GATE_CLEANING,
+      variables: {
+        clnJobOrder
+      }
+    });
+  }
+
+  rollbackCompletedCleaning(clnJobOrder: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_COMPLETED_CLEANING,
       variables: {
         clnJobOrder
       }
