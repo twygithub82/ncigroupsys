@@ -107,7 +107,8 @@ export class FormDialogComponent {
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
       survey_type_cv: this.surveyDetail?.survey_type_cv,
-      customer_company_guid: this.getSelectedCustomerCompany(this.surveyDetail?.customer_company_guid),
+      test_class_cv: this.surveyDetail?.test_class_cv,
+      // customer_company_guid: this.getSelectedCustomerCompany(this.surveyDetail?.customer_company_guid),
       survey_dt: Utility.convertDate(this.surveyDetail?.survey_dt),
       status_cv: this.surveyDetail?.status_cv,
       remarks: this.surveyDetail?.remarks,
@@ -210,10 +211,10 @@ export class FormDialogComponent {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData.tankStatusCvList);
   }
 
-  getSelectedCustomerCompany(guid: string | undefined) {
-    if (this.data.populateData.surveyorList) {
-      return this.data.populateData.surveyorList.find((x: any) => x.guid === guid)
-    }
-    return undefined;
-  }
+  // getSelectedCustomerCompany(guid: string | undefined) {
+  //   if (this.data.populateData.surveyorList) {
+  //     return this.data.populateData.surveyorList.find((x: any) => x.guid === guid)
+  //   }
+  //   return undefined;
+  // }
 }

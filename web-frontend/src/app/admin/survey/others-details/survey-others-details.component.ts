@@ -173,7 +173,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   sotItem?: StoringOrderTankItem;
   surveyDetailItem: SurveyDetailItem[] = [];
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
-  surveyorList: CustomerCompanyItem[] = [];
+  // surveyorList: CustomerCompanyItem[] = [];
   last_cargoList?: TariffCleaningItem[];
   yardCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -263,7 +263,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.tankStatusCvList = data;
     });
     this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
-      this.cleanStatusCvList = data;
+      this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
       this.testTypeCvList = data;
@@ -278,11 +278,11 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.surveyStatusCvList = data;
     });
 
-    this.ccDS.getSurveyorList({}, {}).subscribe(data => {
-      if (data.length > 0) {
-        this.surveyorList = data;
-      }
-    });
+    // this.ccDS.getSurveyorList({}, {}).subscribe(data => {
+    //   if (data.length > 0) {
+    //     this.surveyorList = data;
+    //   }
+    // });
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
@@ -356,7 +356,8 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          surveyorList: this.surveyorList,
+          // surveyorList: this.surveyorList,
+          testClassCvList: this.testClassCvList,
           surveyTypeCvList: this.surveyTypeCvList,
           surveyStatusCvList: this.surveyStatusCvList,
         },
@@ -387,7 +388,8 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
         action: 'edit',
         translatedLangText: this.translatedLangText,
         populateData: {
-          surveyorList: this.surveyorList,
+          // surveyorList: this.surveyorList,
+          testClassCvList: this.testClassCvList,
           surveyTypeCvList: this.surveyTypeCvList,
           surveyStatusCvList: this.surveyStatusCvList,
         },

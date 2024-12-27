@@ -176,6 +176,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   bookingTypeCvListNewBooking: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  testClassCvList: CodeValuesItem[] = [];
+  testClassCvListNewBooking: CodeValuesItem[] = [];
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
@@ -248,7 +250,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'bookingTypeCv', codeValType: 'BOOKING_TYPE' },
       { alias: 'bookingStatusCv', codeValType: 'BOOKING_STATUS' },
-      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' }
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'testClassCv', codeValType: 'TEST_CLASS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -266,6 +269,10 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+    });
+    this.cvDS.connectAlias('testClassCv').subscribe(data => {
+      this.testClassCvList = addDefaultSelectOption(data, 'All');
+      this.testClassCvListNewBooking = addDefaultSelectOption(data);
     });
   }
 
@@ -557,7 +564,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         populateData: {
           bookingTypeCvList: this.bookingTypeCvListNewBooking,
           yardCvList: this.yardCvList,
-          tankStatusCvList: this.tankStatusCvList
+          tankStatusCvList: this.tankStatusCvList,
+          testClassCvList: this.testClassCvListNewBooking
         }
       },
       direction: tempDirection

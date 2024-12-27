@@ -12,8 +12,8 @@ export class BookingGO {
   public reference?: string;
   public sot_guid?: string;
   public status_cv?: string;
-  public surveyor_guid?: string;
   public remarks?: string;
+  public test_class_cv?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -27,8 +27,8 @@ export class BookingGO {
     this.reference = item.reference;
     this.sot_guid = item.sot_guid;
     this.status_cv = item.status_cv;
-    this.surveyor_guid = item.surveyor_guid;
     this.remarks = item.remarks;
+    this.test_class_cv = item.test_class_cv;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -66,7 +66,7 @@ const GET_BOOKING = gql`
         reference
         sot_guid
         status_cv
-        surveyor_guid
+        test_class_cv
         remarks
         update_by
         update_dt
@@ -117,7 +117,7 @@ const GET_BOOKING_FOR_MOVEMENT = gql`
         reference
         sot_guid
         status_cv
-        surveyor_guid
+        test_class_cv
         remarks
         update_by
         update_dt
