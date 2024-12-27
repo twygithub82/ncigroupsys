@@ -27,6 +27,7 @@ namespace IDMS.Models.Service
         public long? complete_dt { get; set; }
         public long? na_dt { get; set; }
         public string? estimate_no { get; set; }
+        public string? qty_unit_type_cv { get; set; }
 
         [UseFiltering]
         public customer_company? customer_company { get; set; }
