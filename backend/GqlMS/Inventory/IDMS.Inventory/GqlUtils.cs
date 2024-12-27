@@ -338,9 +338,8 @@ namespace IDMS.Inventory.GqlTypes
                 else
                     curTankStatus = sot.tank_status_cv;
 
-                await NotificationHandling(config, PurposeType.CLEAN, sot.guid, curTankStatus);
-
                 retval = await context.SaveChangesAsync();
+                                await NotificationHandling(config, PurposeType.CLEAN, sot.guid, curTankStatus);
             }
             catch (Exception ex)
             {
@@ -454,9 +453,8 @@ namespace IDMS.Inventory.GqlTypes
                 else
                     curTankStatus = sot.tank_status_cv;
 
-                await NotificationHandling(config, PurposeType.STEAM, sot.guid, curTankStatus);
-
                 retval = await context.SaveChangesAsync();
+                await NotificationHandling(config, PurposeType.STEAM, sot.guid, curTankStatus);
             }
             catch (Exception ex)
             {
@@ -487,9 +485,8 @@ namespace IDMS.Inventory.GqlTypes
                 else
                     curTankStatus = sot.tank_status_cv;
 
-                await NotificationHandling(config, sot.purpose_repair_cv, sot.guid, curTankStatus);
-
                 retval = await context.SaveChangesAsync();
+                await NotificationHandling(config, sot.purpose_repair_cv, sot.guid, curTankStatus);
             }
             catch (Exception ex)
             {
@@ -512,9 +509,8 @@ namespace IDMS.Inventory.GqlTypes
                 tank.storage_remarks = sot.storage_remarks;
                 tank.purpose_storage = true;
 
-                await NotificationHandling(config, PurposeType.STORAGE, sot.guid, sot.tank_status_cv);
-
                 retval = await context.SaveChangesAsync();
+                await NotificationHandling(config, PurposeType.STORAGE, sot.guid, sot.tank_status_cv);
             }
             catch (Exception ex)
             {
