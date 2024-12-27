@@ -432,11 +432,11 @@ namespace IDMS.Inventory.GqlTypes
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
                     if (sot != null)
                     {
-                        tank.storage_remarks = sot.storage_remarks;
-                        tank.purpose_storage = false;
+                        sot.storage_remarks = tank.storage_remarks;
+                        sot.purpose_storage = false;
                         sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
-                        tank.update_by = user;
-                        tank.update_dt = currentDateTime;
+                        sot.update_by = user;
+                        sot.update_dt = currentDateTime;
                         currentTankStatus = sot.tank_status_cv;
 
                     }
@@ -450,7 +450,7 @@ namespace IDMS.Inventory.GqlTypes
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
                     sot.storage_remarks = tank.storage_remarks;
-                    tank.purpose_storage = false;
+                    sot.purpose_storage = false;
                 }
 
                 var res = await context.SaveChangesAsync();
