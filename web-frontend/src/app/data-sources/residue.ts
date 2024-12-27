@@ -707,12 +707,23 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canRollback(re: ResidueItem): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION']
+    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION','COMPLETED','QC_COMPLETED']
     return validStatus.includes(re?.status_cv!);
   }
 
   canCopy(re: ResidueItem): boolean {
-    return true;
+    return false;
+  }
+
+  getApproveTotal(residuePartList: any[] | undefined): any {
+    const totalSums = residuePartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part == null))?.reduce((totals: any, owner) => {
+      return {
+        //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+
+        total_mat_cost: totals.total_mat_cost + (((owner.approve_qty ?? 0) * (owner.approve_cost ?? 0)))
+      };
+    }, { total_mat_cost: 0 }) || 0;
+    return totalSums;
   }
 
   getTotal(residuePartList: any[] | undefined): any {

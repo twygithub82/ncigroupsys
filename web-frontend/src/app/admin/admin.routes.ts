@@ -76,6 +76,8 @@ import { GroupComponent } from './management/group/group.component';
 import {GroupNewComponent} from './management/group-new/group-new.component'
 import { SurveyPeriodicTestComponent } from './survey/periodic-test/survey-periodic-test.component';
 import { SurveyPeriodicTestDetailsComponent } from './survey/periodic-test-details/survey-periodic-test-details.component';
+import { ResidueDisposalEstimateApprovalComponent } from './residue-disposal/estimate-approval/estimate-approval.component';
+import {ResidueDisposalEstimateApprovalNewComponent} from './residue-disposal/estimate-approval-new/estimate-approval-new.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -329,6 +331,10 @@ export const ADMIN_ROUTE: Routes = [
     component: CleaningApprovalComponent,
   },
   {
+    path: "residue-disposal/estimate-approval",
+    component: ResidueDisposalEstimateApprovalComponent,
+  },
+  {
     path: "residue-disposal/approval",
     component: ResidueDisposalApprovalComponent,
   },
@@ -339,6 +345,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "residue-disposal/estimate/new/:id",
     component: ResidueDisposalEstimateNewComponent,
+  },
+  {
+    path: "residue-disposal/estimate-approval/new/:id",
+    component: ResidueDisposalEstimateApprovalNewComponent,
   },
   {
     path: "residue-disposal/approval/view/:id",

@@ -609,6 +609,17 @@ export const ROUTES: RouteInfo[] = [
     badgeClass: "",
     submenu: [
       {
+        path: "admin/residue-disposal/estimate-approval",
+        title: "MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE-APPROVAL",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
+      {
         path: "admin/residue-disposal/estimate",
         title: "MENUITEMS.RESIDUE-DISPOSAL.LIST.RESIDUE-DISPOSAL-ESTIMATE",
         iconType: "",
@@ -618,6 +629,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/residue-disposal/approval",
@@ -629,6 +641,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/residue-disposal/job-order",
@@ -641,7 +654,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       }
-    ]
+    ].filter(item => item.visible !== false),
   },
   {
     path: "admin/steam",

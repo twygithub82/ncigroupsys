@@ -927,6 +927,9 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
           residue_part {
             action
             approve_part
+            approve_cost
+            approve_qty
+            qty_unit_type_cv
             cost
             delete_dt
             description

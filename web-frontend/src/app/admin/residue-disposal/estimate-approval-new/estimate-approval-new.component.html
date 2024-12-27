@@ -121,7 +121,7 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="residueEstForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
+   
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
@@ -138,6 +138,7 @@
             </div>
             }
             @if (!(sotDS.loading$ | async)) {
+              <form class="ms-0" [formGroup]="residueEstForm!"  #formDirective="ngForm">
             <mat-card-content>
               <div class="row">
                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
@@ -191,12 +192,13 @@
                 </div>
               </div>
             </mat-card-content>
+            </form>
             }
           </div>
         </div>
       </div>
     </div>
-   
+ 
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
@@ -214,11 +216,12 @@
               }
               @if (!(sotDS.loadingSubject | async)) {
                 @if (residueDS.canAmend(this.residueItem!)) {
+                  <!-- <form class="ms-0" [formGroup]="residueEstForm!"  #formDirective="ngForm"> -->
               <div class="row">
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                    <input matInput formControlName="desc" [matAutocomplete]="description" required="true">
+                    <input matInput [formControl]="newDesc" [matAutocomplete]="description" required="true">
                     <mat-autocomplete #description="matAutocomplete" [displayWith]="displayResiduePart">
                       @for (cc of displayPackResidueList; track cc) {
                       <mat-option [value]="cc">
@@ -226,41 +229,55 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
-                    @if (residueEstForm?.get('desc')?.hasError('required')) {
+                    @if (newDesc.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
                       }
-                      @if (residueEstForm?.get('desc')?.hasError('duplicated')) {
+                      @if (newDesc.hasError('duplicated')) {
                         <mat-error>
                           {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.EXISTED}}
                         </mat-error>
                         }
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
-                    <input matInput formControlName="qty" type="number" required="true">
-                    @if (residueEstForm?.get('qty')?.hasError('required')) {
-                      <mat-error>
+                    <input matInput [formControl]="newQty" type="number" required="true">
+                    <mat-error *ngIf="newQty.hasError('required')">
                         {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
-                      </mat-error>
-                      }
+                    </mat-error>
+                    
                   </mat-form-field>
                  
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
+                    <input matInput [formControl]="newQtyType"
+                      [matAutocomplete]="unitCode">
+                    <mat-autocomplete #unitCode="matAutocomplete" [displayWith]="displayUnitTypeFn">
+                      @for (cc of unitTypeCvList; track cc) {
+                      <mat-option [value]="cc">
+                        {{cc.description}}
+                      </mat-option>
+                      }
+                    </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.UNIT_PRICE}}</mat-label>
-                    <input matInput formControlName="unit_price" type="number" required="true">
-                    @if (residueEstForm?.get('unit_price')?.hasError('required')) {
+                    <input matInput [formControl]="newUnitPrice" type="number" required="true">
+                    @if (newUnitPrice.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
                       }
                   </mat-form-field>
                 </div>
+
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                     (click)="addEstDetails($event)" >
@@ -285,6 +302,7 @@
                   }
                 </div>
               </div>
+            <!-- </form> -->
             }
               <div class="body overflow-auto">
                 <div class="responsive_table">
@@ -309,20 +327,85 @@
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.QUANTITY}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-5-lg tbl-col-width-per-5-md tbl-col-width-per-5-sm'">
+                        <span class="mobile-label">{{translatedLangText.QTY}}:</span>
+                        <tlx-form-field customClass="mat-table-form-txt-40px">
+                          <mat-form-field>
+                            @if(IsApproved())
+                            {
+                              <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty" (change)="updateAction(row);" [disabled]="isDisabled()"
+                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                            }
+                            @else
+                            {
+                              <input class="text-end" tlxFormInput matInput [(ngModel)]="row.quantity" (change)="updateAction(row);" [disabled]="isDisabled()"
+                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                            }
+                           
+                          </mat-form-field>
+                        </tlx-form-field>
+                       </mat-cell> 
+                      
+                      <!-- <mat-cell mat-cell *matCellDef="let row" class="">
                         <span
                           class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}}
-                      </mat-cell>
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                      </mat-cell> -->
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm '"></mat-footer-cell>
                     </ng-container>
+                    <ng-container matColumnDef="qty_unit">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        {{translatedLangText.UNIT_TYPE}}
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-5-lg tbl-col-width-per-5-md tbl-col-width-per-5-sm'">
+                        <span class="mobile-label">{{translatedLangText.UNIT_TYPE}}:</span>
+                        <tlx-form-field customClass="mat-table-form-txt-40px">
+                          <mat-form-field>
+                           
+                              <input class="text-end" tlxFormInput matInput [(ngModel)]="row.qty_unit_type_cv" [disabled]="isDisabled()"
+                              (wheel)="preventDefault($event)" (focus)="selectText($event)" [matAutocomplete]="unitCode1" >
+                              <mat-autocomplete #unitCode1="matAutocomplete" [displayWith]="displayUnitTypeFn"  (optionSelected)="updateAction(row);">
+                                @for (cc of unitTypeCvList; track cc) {
+                                <mat-option [value]="cc">
+                                  {{cc.description}}
+                                </mat-option>
+                                }
+                              </mat-autocomplete> 
+                           
+                          </mat-form-field>
+                        </tlx-form-field>
+                       </mat-cell> 
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}" [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm '"></mat-footer-cell>
+                    </ng-container> 
                     <ng-container matColumnDef="unit_price">
                       <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.UNIT_PRICE}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-10-lg tbl-col-width-per-10-md tbl-col-width-per-10-sm'">
+                      <span class="mobile-label">{{translatedLangText.QTY}}:</span>
+                      <tlx-form-field customClass="mat-table-form-txt-40px">
+                        <mat-form-field>
+                      @if(IsApproved())
+                      {
+                        <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost" (change)="updateAction(row);"  [disabled]="isDisabled()"
+                        (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                      }
+                      @else
+                      {
+                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.cost" (change)="updateAction(row);" [disabled]="isDisabled()"
+                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                      }
+                        </mat-form-field>
+                        
+                      </tlx-form-field>
+                     </mat-cell> 
+                      <!-- <mat-cell mat-cell *matCellDef="let row" class="">
                         <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}}
-                      </mat-cell>
-                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
+                      </mat-cell> -->
+                      <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" 
+                      >{{translatedLangText.TOTAL_COST}}:</mat-footer-cell>
                     </ng-container>
                     <ng-container matColumnDef="approve_part">
                       <mat-header-cell *matHeaderCellDef
@@ -351,7 +434,7 @@
                         {{translatedLangText.COST}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity*row.cost)}}
+                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateResidueItemCost(row))}}
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"  >
                         <span class="mobile-label" > </span>{{this.parse2Decimal( getTotalCost()) }}
@@ -381,7 +464,7 @@
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
                     [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': (row.guid || row.action=='NEW') && !row.delete_dt&&row.edited}"
-                    (click)="editEstDetails($event, row, row.index)" [style.cursor]="'pointer'"  
+                     [style.cursor]="'pointer'"  
                       matRipple>
                     </mat-row>
                     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
@@ -434,7 +517,7 @@
                 @if (residueDS.canAmend(this.residueItem!)||this.isDuplicate) {
                   @if(isAllowToSaveSubmit())
                   {
-                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5">
+                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5" (click)="onFormSubmit()">
                   <mat-icon>
                     @if (!(residueDS.loading$ | async)) {
                     save
@@ -447,7 +530,7 @@
               }
                 }
                 @if (residueDS.canApprove(this.residueItem!)) {
-                  <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                  <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async) ||(!IsAbleToApprove())" class="m-r-5 bg-green"
                     (click)="approveRow($event)">
                     <mat-icon>
                       @if (!(residueDS.loading$ | async)) {
@@ -491,6 +574,6 @@
         </div>
       </div>
      
-    </form>
+    
   </div>
 </section>

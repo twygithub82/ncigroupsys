@@ -212,6 +212,7 @@
     "RESIDUE-DISPOSAL": {
       "TEXT": "Residue Disposal",
       "LIST": {
+        "RESIDUE-DISPOSAL-ESTIMATE-APPROVAL": "Estimate/Approval",
         "RESIDUE-DISPOSAL-ESTIMATE": "Residue Disposal Estimate",
         "RESIDUE-DISPOSAL-APPROVAL": "Residue Disposal Approval",
         "JOB-ORDER": "Job Order"

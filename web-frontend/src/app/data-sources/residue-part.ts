@@ -50,6 +50,7 @@ export class ResidueEstPartGO {
   public tariff_residue_guid?: string;
   public team_guid?: string;
   public description?: string;
+  public qty_unit_type_cv?: string;
 
 
   constructor(item: Partial<ResidueEstPartGO> = {}) {
@@ -66,6 +67,7 @@ export class ResidueEstPartGO {
     // this.owner = item.owner || false;
     this.cost = item.cost;
     this.approve_qty = item.approve_qty;
+    this.qty_unit_type_cv=item.qty_unit_type_cv;
 
     this.approve_cost = item.approve_cost;
     this.approve_part = item.approve_part;
