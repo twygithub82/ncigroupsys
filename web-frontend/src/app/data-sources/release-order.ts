@@ -120,7 +120,7 @@ export const GET_RELEASE_ORDERS = gql`
               reference
               sot_guid
               status_cv
-              surveyor_guid
+              test_class_cv
             }
             scheduling_sot {
               guid
@@ -221,7 +221,7 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
               reference
               sot_guid
               status_cv
-              surveyor_guid
+              test_class_cv
             }
             scheduling_sot {
               guid

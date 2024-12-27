@@ -41,13 +41,11 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { MatCardModule } from '@angular/material/card';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { SchedulingItem } from 'app/data-sources/scheduling';
 import { BookingDS, BookingGO, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
@@ -381,7 +379,22 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       and: [
         { status_cv: { eq: "ACCEPTED" } },
         { tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
-        { in_gate: { some: { delete_dt: { eq: null } } } }
+        { in_gate: { some: { delete_dt: { eq: null } } } },
+        {
+          repair: {
+            some: {
+              repair_part: {
+                some: {
+                  tariff_repair: {
+                    group_name_cv: {
+                      eq: "PERIODIC_TEST"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       ]
     };
 
@@ -539,105 +552,6 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
         });
       })
     ).subscribe();
-  }
-
-  addBookingDetails(event: Event) {
-    this.preventDefault(event);  // Prevents the form submission
-    const selectedItems = this.sotSelection.selected;
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
-      data: {
-        item: selectedItems,
-        action: 'new',
-        translatedLangText: this.translatedLangText,
-        populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking,
-          yardCvList: this.yardCvList,
-          tankStatusCvList: this.tankStatusCvList
-        }
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result && result.savedSuccess) {
-        ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
-        this.performSearch(this.pageSize, 0, this.pageSize);
-      }
-    });
-  }
-
-  editBookingDetails(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
-    this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
-      data: {
-        item: [sot],
-        action: 'edit',
-        booking: booking,
-        translatedLangText: this.translatedLangText,
-        populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking,
-          yardCvList: this.yardCvList,
-          tankStatusCvList: this.tankStatusCvList
-        }
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result && result.savedSuccess) {
-        ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
-        this.performSearch(this.pageSize, 0, this.pageSize);
-      }
-    });
-  }
-
-  cancelItem(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
-    this.stopPropagation(event);
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        action: "cancel",
-        sot: sot,
-        booking: booking,
-        translatedLangText: this.translatedLangText,
-        populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking,
-          yardCvList: this.yardCvList,
-          tankStatusCvList: this.tankStatusCvList
-        }
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const cancelBookingReq = new BookingGO(result.booking);
-        // this.bookingDS.cancelBooking([cancelBookingReq]).subscribe(cancelResult => {
-        //   this.handleSaveSuccess(cancelResult?.data?.cancelBooking);
-        //   this.performSearch(this.pageSize, 0, this.pageSize);
-        // });
-        this.bookingDS.deleteBooking([cancelBookingReq.guid]).subscribe(cancelResult => {
-          this.handleDeleteSuccess(cancelResult?.data?.deleteBooking);
-          this.performSearch(this.pageSize, 0, this.pageSize);
-        });
-      }
-    });
   }
 
   handleSaveSuccess(count: any) {

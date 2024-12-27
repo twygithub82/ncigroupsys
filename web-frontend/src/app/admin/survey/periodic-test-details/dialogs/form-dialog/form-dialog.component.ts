@@ -29,7 +29,6 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
 
-
 export interface DialogData {
   action?: string;
   sot: StoringOrderTankItem;
@@ -37,7 +36,8 @@ export interface DialogData {
   surveyDS: SurveyDetailDS;
   translatedLangText?: any;
   populateData?: any;
-  index?: number;
+  next_test_desc?: string;
+  next_test_cv?: string;
 }
 
 @Component({
@@ -73,6 +73,8 @@ export class FormDialogComponent {
   surveyForm: UntypedFormGroup;
   surveyDetail?: SurveyDetailItem;
   sot: StoringOrderTankItem;
+  next_test_desc?: string;
+  next_test_cv?: string;
   maxDate = new Date();
 
   cvDS: CodeValuesDS;
@@ -93,6 +95,8 @@ export class FormDialogComponent {
     this.sot = data.sot;
     this.surveyDetail = data.surveyDetail;
     this.action = data.action!;
+    this.next_test_desc = data.next_test_desc;
+    this.next_test_cv = data.next_test_cv;
     if (this.action === 'edit') {
       this.dialogTitle = data.translatedLangText.EDIT_SURVEY;
       // this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.booking.booking_dt) as Date, this.startDateToday);
@@ -106,8 +110,9 @@ export class FormDialogComponent {
 
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
+      test_type_cv: '',
       survey_type_cv: 'PERIODIC_TEST',
-      customer_company_guid: this.getSelectedCustomerCompany(this.surveyDetail?.customer_company_guid),
+      test_class_cv: this.surveyDetail?.test_class_cv,
       survey_dt: Utility.convertDate(this.surveyDetail?.survey_dt),
       status_cv: this.surveyDetail?.status_cv,
       remarks: this.surveyDetail?.remarks,

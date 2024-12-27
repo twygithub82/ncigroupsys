@@ -38,7 +38,7 @@
           </mat-form-field>
         </div>
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width" appearance="fill">
+          <!-- <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.SURVEYOR}}</mat-label>
             <mat-select formControlName="customer_company_guid" required>
               @for (cc of data.populateData.surveyorList; track cc) {
@@ -47,6 +47,19 @@
               </mat-option>
               }
             </mat-select>
+          </mat-form-field> -->
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.SURVEYOR}}</mat-label>
+            <mat-select formControlName="test_class_cv" required>
+              @for (codeValue of data.populateData.testClassCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+              }
+            </mat-select>
+            @if (surveyForm.get('test_class_cv')?.hasError('required')) {
+            <mat-error>
+              {{data.translatedLangText.SURVEYOR}} {{data.translatedLangText.SO_REQUIRED}}
+            </mat-error>
+            }
           </mat-form-field>
         </div>
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">

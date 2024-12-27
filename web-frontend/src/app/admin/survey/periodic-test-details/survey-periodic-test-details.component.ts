@@ -177,7 +177,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
   sotItem?: StoringOrderTankItem;
   surveyDetailItem: SurveyDetailItem[] = [];
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
-  surveyorList: CustomerCompanyItem[] = [];
+  // surveyorList: CustomerCompanyItem[] = [];
   last_cargoList?: TariffCleaningItem[];
   yardCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -230,15 +230,12 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initPTForm();
+    this.initForm();
     this.initializeValueChanges();
     this.loadData();
   }
 
-  initPTForm() {
-    this.ptForm = this.fb.group({
-      test_type_cv: [''],
-    });
+  initForm() {
   }
 
   public loadData() {
@@ -290,11 +287,11 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
       this.surveyStatusCvList = data;
     });
 
-    this.ccDS.getSurveyorList({}, {}).subscribe(data => {
-      if (data.length > 0) {
-        this.surveyorList = data;
-      }
-    });
+    // this.ccDS.getSurveyorList({}, {}).subscribe(data => {
+    //   if (data.length > 0) {
+    //     this.surveyorList = data;
+    //   }
+    // });
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
@@ -305,7 +302,6 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
           this.surveyDetailItem = this.sotItem?.survey_detail || [];
           this.last_test_desc = this.getLastTest();
           this.next_test_desc = this.getNextTest();
-          this.ptForm?.get('test_type_cv')?.setValue(this.getNextTestCv());
         }
       });
     } else {
@@ -371,12 +367,15 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          surveyorList: this.surveyorList,
+          testTypeCvList: this.testTypeCvList,
+          // surveyorList: this.surveyorList,
           surveyTypeCvList: this.surveyTypeCvList,
           surveyStatusCvList: this.surveyStatusCvList,
         },
         sot: this.sotItem,
-        surveyDS: this.surveyDS
+        surveyDS: this.surveyDS,
+        next_test_desc: this.getNextTest(),
+        next_test_cv: this.getNextTestCv()
       },
       direction: tempDirection
     });
@@ -402,7 +401,8 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
-          surveyorList: this.surveyorList,
+          testTypeCvList: this.testTypeCvList,
+          // surveyorList: this.surveyorList,
           surveyTypeCvList: this.surveyTypeCvList,
           surveyStatusCvList: this.surveyStatusCvList,
         },

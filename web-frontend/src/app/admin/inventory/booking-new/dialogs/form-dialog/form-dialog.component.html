@@ -13,7 +13,7 @@
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
         <div class="responsive_table">
-          <table mat-table [dataSource]="storingOrderTank" matSort class="mat-cell advance-table">
+          <table mat-table [dataSource]="storingOrderTank" matSort class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <!-- ID Column -->
             <ng-container matColumnDef="id">
               <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -146,12 +146,12 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.SURVEYOR}}</mat-label>
-            <mat-select formControlName="surveyor_guid">
-              <!-- @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
+            <mat-select formControlName="test_class_cv">
+              @for (codeValue of data.populateData.testClassCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val">
                 {{codeValue.description}}
               </mat-option>
-              } -->
+              }
             </mat-select>
           </mat-form-field>
         </div>

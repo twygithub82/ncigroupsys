@@ -258,8 +258,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   maxManuDOMDt: Date = new Date();
   defaultImg: string = '/assets/images/no_image.svg';
 
-  lastTest?: string = "";
-  nextTest?: string = "";
+  last_test_desc?: string = "";
+  next_test_desc?: string = "";
 
   // Stepper
   isLinear = false;
@@ -472,8 +472,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onTestValuesChanged(): void {
-    this.lastTest = this.getLastTest();
-    this.nextTest = this.getNextTest();
+    this.last_test_desc = this.getLastTest();
+    this.next_test_desc = this.getNextTest();
   }
 
   getBottomFormGroup(): UntypedFormGroup {
@@ -528,15 +528,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
       this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
       if (data.length) {
-        this.lastTest = this.getLastTest();
-        this.nextTest = this.getNextTest();
+        this.last_test_desc = this.getLastTest();
+        this.next_test_desc = this.getNextTest();
       }
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = addDefaultSelectOption(data, "--Select--");
       if (data.length) {
-        this.lastTest = this.getLastTest();
-        this.nextTest = this.getNextTest();
+        this.last_test_desc = this.getLastTest();
+        this.next_test_desc = this.getNextTest();
       }
     });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {

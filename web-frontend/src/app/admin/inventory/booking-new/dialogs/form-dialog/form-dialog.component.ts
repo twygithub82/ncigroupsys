@@ -126,7 +126,7 @@ export class FormDialogComponent {
       reference: this.booking?.reference,
       book_type_cv: this.booking?.book_type_cv,
       booking_dt: Utility.convertDate(this.booking?.booking_dt),
-      surveyor_guid: this.booking?.surveyor_guid
+      test_class_cv: this.booking?.test_class_cv
     });
   }
 
@@ -136,10 +136,10 @@ export class FormDialogComponent {
       var booking: any = {
         guid: this.booking?.guid,
         sot_guid: selectedIds,
-        book_type_cv: this.bookingForm.value['book_type_cv'],
-        booking_dt: Utility.convertDate(this.bookingForm.value['booking_dt']),
-        reference: this.bookingForm.value['reference'],
-        surveyor_guid: this.bookingForm.value['surveyor_guid'] || "surveyor_guid_222",
+        book_type_cv: this.bookingForm.get('book_type_cv')?.value,
+        booking_dt: Utility.convertDate(this.bookingForm.get('booking_dt')?.value),
+        reference: this.bookingForm.get('reference')?.value,
+        test_class_cv: this.bookingForm.get('test_class_cv')?.value,
         status_cv: this.booking?.status_cv
       }
       console.log('valid');
