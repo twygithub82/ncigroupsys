@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using IDMS.Models.Shared;
-using System.Diagnostics.Eventing.Reader;
+using IDMS.Inventory.GqlTypes.LocalModel;
 
 
 namespace IDMS.Survey.GqlTypes
@@ -43,10 +43,10 @@ namespace IDMS.Survey.GqlTypes
                 ingateSurvey.guid = Util.GenerateGUID();
                 ingateSurvey.create_by = user;
                 ingateSurvey.create_dt = currentDateTime;
-                context.in_gate_survey.Add(ingateSurvey);
+                await context.in_gate_survey.AddAsync(ingateSurvey);
 
                 //ingate handling
-                var ingate = context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefault();
+                var ingate = await context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefaultAsync();
                 if (ingate != null)
                 {
                     ingate.remarks = inGateRequest.remarks;
