@@ -142,6 +142,7 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
                     //var abortCleaning = new cleaning() { guid = processGuid };
@@ -201,6 +202,7 @@ namespace IDMS.Inventory.GqlTypes
                         sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
+                        currentTankStatus = sot.tank_status_cv;
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
@@ -218,7 +220,7 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
-                await GqlUtils.NotificationHandling(config, PurposeType.CLEAN, tank.guid, tank.status_cv);
+                await GqlUtils.NotificationHandling(config, PurposeType.CLEAN, tank.guid, currentTankStatus);
                 return res;
             }
             catch (Exception ex)
@@ -284,6 +286,7 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
                     //var abortSteaming = new steaming() { guid = processGuid };
@@ -320,6 +323,7 @@ namespace IDMS.Inventory.GqlTypes
                         sot.required_temp = null;
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
+                        currentTankStatus = sot.tank_status_cv;
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
@@ -340,7 +344,7 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
-                await GqlUtils.NotificationHandling(config, PurposeType.STEAM, tank.guid, tank.status_cv);
+                await GqlUtils.NotificationHandling(config, PurposeType.STEAM, tank.guid, currentTankStatus);
                 return res;
             }
             catch (Exception ex)
@@ -353,6 +357,7 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
                     var repairs = await context.repair.Where(r => r.sot_guid == tank.guid & r.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
@@ -390,6 +395,7 @@ namespace IDMS.Inventory.GqlTypes
                         sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
+                        currentTankStatus = sot.tank_status_cv;
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
@@ -406,7 +412,7 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
-                await GqlUtils.NotificationHandling(config, PurposeType.REPAIR, tank.guid, tank.status_cv);
+                await GqlUtils.NotificationHandling(config, PurposeType.REPAIR, tank.guid, currentTankStatus);
                 return res;
 
             }
@@ -420,6 +426,7 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
@@ -427,9 +434,11 @@ namespace IDMS.Inventory.GqlTypes
                     {
                         tank.storage_remarks = sot.storage_remarks;
                         tank.purpose_storage = false;
-                        var curTankStatus = await GqlUtils.TankMovementConditionCheck1(context, sot);
+                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
                         tank.update_by = user;
                         tank.update_dt = currentDateTime;
+                        currentTankStatus = sot.tank_status_cv;
+
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
@@ -445,7 +454,7 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
-                await GqlUtils.NotificationHandling(config, PurposeType.STORAGE, tank.guid, tank.status_cv);
+                await GqlUtils.NotificationHandling(config, PurposeType.STORAGE, tank.guid, currentTankStatus);
                 return res;
             }
             catch (Exception ex)
@@ -468,7 +477,7 @@ namespace IDMS.Inventory.GqlTypes
                 newSuyDetail.create_by = user;
                 newSuyDetail.create_dt = currentDateTime;
 
-                newSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
+                //newSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
                 newSuyDetail.sot_guid = surveyDetail.sot_guid;
                 newSuyDetail.status_cv = surveyDetail.status_cv;
                 newSuyDetail.remarks = surveyDetail.remarks;
@@ -520,7 +529,7 @@ namespace IDMS.Inventory.GqlTypes
                 updateSuyDetail.update_by = user;
                 updateSuyDetail.update_dt = currentDateTime;
 
-                updateSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
+                //updateSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
                 updateSuyDetail.sot_guid = surveyDetail.sot_guid;
                 updateSuyDetail.status_cv = surveyDetail.status_cv;
                 updateSuyDetail.remarks = surveyDetail.remarks;
