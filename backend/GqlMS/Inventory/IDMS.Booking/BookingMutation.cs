@@ -34,7 +34,7 @@ namespace IDMS.Booking.GqlTypes
                     newBooking.create_dt = currentDateTime;
 
                     newBooking.sot_guid = guid;
-                    newBooking.surveyor_guid = booking.surveyor_guid;
+                    newBooking.test_class_cv = booking.test_class_cv;
                     newBooking.reference = booking.reference;
                     newBooking.book_type_cv = booking.book_type_cv;
                     newBooking.status_cv = BookingStatus.NEW;
@@ -80,7 +80,7 @@ namespace IDMS.Booking.GqlTypes
                             bk.update_by = user;
                             bk.update_dt = currentDateTime;
 
-                            bk.surveyor_guid = booking.surveyor_guid;
+                            bk.test_class_cv = booking.test_class_cv;
                             bk.reference = booking.reference;
                             bk.book_type_cv = booking.book_type_cv;
                             bk.status_cv = booking.status_cv;
