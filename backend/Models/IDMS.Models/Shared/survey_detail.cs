@@ -15,8 +15,8 @@ namespace IDMS.Models.Shared
         [Key]
         public string? guid {  get; set; }
 
-        [ForeignKey("customer_company")]
-        public string customer_company_guid { get; set; }
+        //[ForeignKey("customer_company")]
+        //public string customer_company_guid { get; set; }
 
         [ForeignKey("storing_order_tank")]
         public string sot_guid {  get; set; }
@@ -27,8 +27,8 @@ namespace IDMS.Models.Shared
         public string? remarks { get; set; }
         public long survey_dt { get; set; }
 
-        [UseFiltering]
-        public customer_company? customer_company { get; set; }
+        //[UseFiltering]
+        //public customer_company? customer_company { get; set; }
 
         [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; }

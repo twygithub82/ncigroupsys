@@ -1499,6 +1499,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     return re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS';
   }
 
+  canRemovePurpose(re: RepairItem[] | undefined): boolean {
+    return !re || re.length === 0 || re.every(item => item.status_cv === 'PENDING' || item.status_cv === 'CANCELED');
+  }
+
   canCopy(re: RepairItem): boolean {
     return true;
   }

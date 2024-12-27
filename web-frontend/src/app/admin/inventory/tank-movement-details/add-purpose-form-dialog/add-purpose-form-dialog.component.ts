@@ -86,7 +86,7 @@ export class AddPurposeFormDialogComponent {
       typeDesc = data.translatedLangText.STORAGE;
     }
     const actionText = this.action === 'add' ? data.translatedLangText.ADD : data.translatedLangText.REMOVE;
-    this.dialogTitle = `${actionText} ${this.type} Purpose`;
+    this.dialogTitle = `${actionText} ${typeDesc} Purpose`;
     this.purposeForm = this.createForm();
   }
 
@@ -94,9 +94,13 @@ export class AddPurposeFormDialogComponent {
     const formGroup = this.fb.group({
       job_no: [this.getPreviousJobNo()],
       purpose_repair_cv: [this.sot.purpose_repair_cv],
+      required_temp: [this.sot.required_temp, [Validators.max((this.sot.tariff_cleaning?.flash_point ?? 0) - 1), Validators.min(0)]],
       remarks: [this.getPreviousRemarks()]
     });
     return formGroup;
+  }
+
+  initializeValueChange() {
   }
 
   submit() {
@@ -104,6 +108,7 @@ export class AddPurposeFormDialogComponent {
       const returnDialog: any = {
         job_no: this.purposeForm.get('job_no')?.value,
         purpose_repair_cv: this.purposeForm.get('purpose_repair_cv')?.value,
+        required_temp: this.action === 'add' ? this.purposeForm.get('required_temp')?.value : null,
         remarks: this.purposeForm.get('remarks')?.value
       }
       this.dialogRef.close(returnDialog);

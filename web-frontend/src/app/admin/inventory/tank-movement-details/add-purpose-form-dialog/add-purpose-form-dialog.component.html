@@ -13,34 +13,69 @@
     <form class="register-form" [formGroup]="purposeForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-          @if (type === 'cleaning' || type === 'steaming') {
+          @if (action === 'add' && (type === 'cleaning' || type === 'steaming')) {
           <div class="row">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
-              <input matInput formControlName="job_no" required>
-              @if (purposeForm.get('job_no')?.hasError('required')) {
-              <mat-error>
-                {{data.translatedLangText.JOB_NO}} {{data.translatedLangText.SO_REQUIRED}}
-              </mat-error>
-              }
-            </mat-form-field>
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
+                <input matInput formControlName="job_no" required>
+                @if (purposeForm.get('job_no')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.JOB_NO}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
           </div>
           }
-          @if (type === 'repair') {
+          @if (action === 'add' && type === 'repair') {
           <div class="row">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
-              <mat-select formControlName="purpose_repair_cv" required>
-                @for (codeValue of data.populateData.repairOptionCvList; track codeValue) {
-                <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
+                <mat-select formControlName="purpose_repair_cv" required>
+                  @for (codeValue of data.populateData.repairOptionCvList; track codeValue) {
+                  <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                  }
+                </mat-select>
+                @if (purposeForm.get('purpose_repair_cv')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.REPAIR}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
                 }
-              </mat-select>
-              @if (purposeForm.get('purpose_repair_cv')?.hasError('required')) {
-              <mat-error>
-                {{data.translatedLangText.REPAIR}} {{data.translatedLangText.SO_REQUIRED}}
-              </mat-error>
-              }
-            </mat-form-field>
+              </mat-form-field>
+            </div>
+          </div>
+          }
+          @if (action === 'add' && type === 'steaming') {
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              {{data.translatedLangText.FLASH_POINT}}: {{sot.tariff_cleaning?.flash_point}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.REQUIRED_TEMP}}</mat-label>
+                <input matInput formControlName="required_temp" type="number" required>
+                <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
+                @if (purposeForm.get('required_temp')?.hasError('required')) {
+                <mat-error>
+                  {{data.translatedLangText.REQUIRED_TEMP}} {{data.translatedLangText.SO_REQUIRED}}
+                </mat-error>
+                }
+                @if (purposeForm.get('required_temp')?.hasError('max')) {
+                <mat-error>
+                  {{data.translatedLangText.EXCEEDED}} {{data.translatedLangText.FLASH_POINT}}
+                </mat-error>
+                }
+                @if (purposeForm.get('required_temp')?.hasError('min')) {
+                <mat-error>
+                  {{data.translatedLangText.MUST_MORE_THAN_ZERO}}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
           </div>
           }
           <div class="row">
@@ -50,7 +85,7 @@
                 <textarea matInput formControlName="remarks" required></textarea>
                 @if (purposeForm.get('remarks')?.hasError('required')) {
                 <mat-error>
-                  {{data.translatedLangText.JOB_REMARKSNO}} {{data.translatedLangText.SO_REQUIRED}}
+                  {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
                 </mat-error>
                 }
               </mat-form-field>

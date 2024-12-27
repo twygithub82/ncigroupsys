@@ -15,14 +15,12 @@ import { TariffResidueComponent } from './tariff/tariff-residue/tariff-residue.c
 import { TariffCleaningNewComponent } from './tariff/tariff-cleaning-new/tariff-cleaning-new.component';
 import { InGateSurveyComponent } from './inventory/in-gate-survey/in-gate-survey.component';
 import { InGateSurveyFormComponent } from './inventory/in-gate-survey-form/in-gate-survey-form.component';
-import { BookingComponent } from './inventory/booking/booking.component';
 import { PackageCleaningComponent } from "./package/package-cleaning/package-cleaning.component"
 import { PackageDepotComponent } from './package/package-depot/package-depot.component';
 import { BookingNewComponent } from './inventory/booking-new/booking-new.component';
 import { SchedulingNewComponent } from './inventory/scheduling-new/scheduling-new.component';
 import { ReleaseOrderComponent } from './inventory/release-order/release-order.component';
 import { ReleaseOrderDetailsComponent } from './inventory/release-order-details/release-order-details.component';
-import { SchedulingComponent } from './inventory/scheduling/scheduling.component';
 import { OutGateComponent } from './inventory/out-gate/out-gate.component';
 import { OutGateDetailsComponent } from './inventory/out-gate-details/out-gate-details.component';
 import { PackageLabourComponent } from './package/package-labour/package-labour.component';
@@ -136,30 +134,14 @@ export const ADMIN_ROUTE: Routes = [
     path: "inventory/out-gate/details/:id",
     component: OutGateDetailsComponent,
   },
-  // {
-  //   path: "inventory/booking",
-  //   component: BookingComponent,
-  // },
   {
     path: "inventory/booking",
     component: BookingNewComponent,
   },
-  // {
-  //   path: "inventory/booking-new",
-  //   component: BookingNewComponent,
-  // },
-  // {
-  //   path: "inventory/scheduling",
-  //   component: SchedulingComponent,
-  // },
   {
     path: "inventory/scheduling",
     component: SchedulingNewComponent,
   },
-  // {
-  //   path: "inventory/scheduling-new",
-  //   component: SchedulingNewComponent,
-  // },
   {
     path: "inventory/release-order",
     component: ReleaseOrderComponent,

@@ -21,6 +21,7 @@ import { TankItem } from './tank';
 import { InGateCleaningItem } from './in-gate-cleaning';
 import { SteamItem } from './steam';
 import { SurveyDetailItem } from './survey-detail';
+import { ApolloError } from '@apollo/client/errors';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -401,7 +402,7 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
           reference
           sot_guid
           status_cv
-          surveyor_guid
+          test_class_cv
           update_by
           update_dt
         }
@@ -569,7 +570,6 @@ const GET_STORING_ORDER_TANKS_SURVEY_BY_ID = gql`
         survey_detail {
           create_by
           create_dt
-          customer_company_guid
           delete_dt
           guid
           remarks
@@ -579,11 +579,6 @@ const GET_STORING_ORDER_TANKS_SURVEY_BY_ID = gql`
           survey_type_cv
           update_by
           update_dt
-          customer_company {
-            code
-            name
-            guid
-          }
         }
       }
       pageInfo {
@@ -1441,6 +1436,392 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_REPAIR = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        purpose_repair_cv
+        repair {
+          aspnetusers_guid
+          create_by
+          create_dt
+          delete_dt
+          estimate_no
+          guid
+          labour_cost
+          labour_cost_discount
+          material_cost_discount
+          owner_enable
+          remarks
+          sot_guid
+          status_cv
+          total_cost
+          update_by
+          update_dt
+          bill_to_guid
+          approve_dt
+          approve_by
+          complete_dt
+          repair_part {
+            action
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            hour
+            location_cv
+            comment
+            material_cost
+            owner
+            quantity
+            remarks
+            repair_guid
+            tariff_repair_guid
+            update_by
+            update_dt
+            approve_cost
+            approve_hour
+            approve_part
+            approve_qty
+            complete_dt
+            rp_damage_repair {
+              action
+              code_cv
+              code_type
+              create_by
+              create_dt
+              delete_dt
+              guid
+              rp_guid
+              update_by
+              update_dt
+            }
+            tariff_repair {
+              alias
+              create_by
+              create_dt
+              delete_dt
+              dimension
+              group_name_cv
+              guid
+              height_diameter
+              height_diameter_unit_cv
+              labour_hour
+              length
+              length_unit_cv
+              material_cost
+              part_name
+              remarks
+              subgroup_name_cv
+              thickness
+              thickness_unit_cv
+              update_by
+              update_dt
+              width_diameter
+              width_diameter_unit_cv
+            }
+            job_order {
+              guid
+              status_cv
+            }
+          }
+          aspnetsuser {
+            id
+            userName
+          }
+          storing_order_tank {
+            certificate_cv
+            clean_status_cv
+            create_by
+            create_dt
+            delete_dt
+            estimate_cv
+            etr_dt
+            guid
+            job_no
+            owner_guid
+            preinspect_job_no
+            liftoff_job_no
+            lifton_job_no
+            takein_job_no
+            release_job_no
+            last_cargo_guid
+            purpose_cleaning
+            purpose_repair_cv
+            purpose_steam
+            purpose_storage
+            so_guid
+            status_cv
+            tank_no
+            tank_status_cv
+            update_by
+            update_dt
+            storing_order {
+              customer_company {
+                code
+                name
+                guid
+              }
+            }
+            tariff_cleaning {
+              alias
+              cargo
+              class_cv
+              create_by
+              create_dt
+              delete_dt
+              guid
+              update_by
+              update_dt
+            }
+            customer_company {
+              code
+              guid
+              name
+              delete_dt
+            }
+            in_gate {
+              eir_no
+              eir_dt
+              delete_dt
+              in_gate_survey {
+                last_test_cv
+                next_test_cv
+                test_dt
+                test_class_cv
+              }
+            }
+          }
+        }
+      }
+      totalCount
+    }
+  }
+`;
+
+const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_STORAGE = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        purpose_storage
+      }
+      totalCount
+    }
+  }
+`;
+
+const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_CLEANING = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        purpose_cleaning
+        cleaning {
+          allocate_by
+          allocate_dt
+          approve_by
+          approve_dt
+          bill_to_guid
+          buffer_cost
+          cleaning_cost
+          complete_by
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          guid
+          job_no
+          na_dt
+          remarks
+          sot_guid
+          status_cv
+          update_by
+          update_dt
+          job_order {
+            team {
+              create_by
+              create_dt
+              delete_dt
+              department_cv
+              description
+              guid
+              update_by
+              update_dt
+            }
+            complete_dt
+            create_by
+            create_dt
+            delete_dt
+            guid
+            job_order_no
+            job_type_cv
+            qc_dt
+            qc_by
+            remarks
+            sot_guid
+            start_dt
+            status_cv
+            team_guid
+            total_hour
+            update_by
+            update_dt
+            working_hour
+          }
+        }
+        residue {
+          allocate_by
+          allocate_dt
+          approve_by
+          approve_dt
+          bill_to_guid
+          complete_by
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          estimate_no
+          guid
+          job_no
+          remarks
+          sot_guid
+          status_cv
+          update_by
+          update_dt
+          residue_part {
+            action
+            approve_part
+            cost
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            job_order_guid
+            approve_qty
+            approve_cost
+            quantity
+            residue_guid
+            tariff_residue_guid
+            update_by
+            update_dt
+            job_order {
+              team {
+                create_by
+                create_dt
+                delete_dt
+                department_cv
+                description
+                guid
+                update_by
+                update_dt
+              }
+              complete_dt
+              create_by
+              create_dt
+              delete_dt
+              qc_dt
+              qc_by
+              guid
+              job_order_no
+              job_type_cv
+              remarks
+              sot_guid
+              start_dt
+              status_cv
+              team_guid
+              total_hour
+              update_by
+              update_dt
+              working_hour
+            }
+          }
+        }
+      }
+      totalCount
+    }
+  }
+`;
+
+const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_STEAMING = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        purpose_steam
+        steaming {
+          allocate_by
+          allocate_dt
+          approve_by
+          approve_dt
+          begin_by
+          begin_dt
+          bill_to_guid
+          complete_by
+          complete_dt
+          create_by
+          create_dt
+          delete_dt
+          estimate_by
+          estimate_dt
+          estimate_no
+          guid
+          invoice_by
+          invoice_dt
+          job_no
+          na_dt
+          remarks
+          sot_guid
+          status_cv
+          total_cost
+          update_by
+          update_dt
+          steaming_part {
+            approve_cost
+            approve_labour
+            approve_part
+            approve_qty
+            complete_dt
+            cost
+            create_by
+            create_dt
+            delete_dt
+            description
+            guid
+            job_order_guid
+            labour
+            quantity
+            steaming_guid
+            tariff_steaming_guid
+            update_by
+            update_dt
+            tariff_steaming {
+              cost
+              create_by
+              create_dt
+              delete_dt
+              guid
+              labour
+              remarks
+              temp_max
+              temp_min
+              update_by
+              update_dt
+            }
+            job_order {
+              guid
+              status_cv
+              steaming_temp {
+                meter_temp
+                delete_dt
+              }
+            }
+          }
+        }
+      }
+      totalCount
+    }
+  }
+`;
+
 const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
@@ -1465,6 +1846,8 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
         unit_type_guid
         tank_note
         release_note
+        last_cargo_guid
+        required_temp
         tariff_cleaning {
           guid
           open_on_gate_cv
@@ -1472,6 +1855,7 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
           nature_cv
           in_gate_alert
           cleaning_category_guid
+          flash_point
           cleaning_category {
             name
           }
@@ -1803,7 +2187,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -1826,7 +2213,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -1849,7 +2239,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -1872,7 +2265,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -1895,7 +2291,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -1918,7 +2317,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -1942,7 +2344,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -1964,7 +2369,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -2069,7 +2477,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -2113,7 +2524,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -2138,7 +2552,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -2195,7 +2612,122 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTankForMovementRepair(sot_guid: any): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    const where = {
+      guid: { eq: sot_guid }
+    }
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_MOVEMENT_REPAIR,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTankForMovementStorage(sot_guid: any): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    const where = {
+      guid: { eq: sot_guid }
+    }
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_MOVEMENT_STORAGE,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTankForMovementCleaning(sot_guid: any): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    const where = {
+      guid: { eq: sot_guid }
+    }
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_MOVEMENT_CLEANING,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTankForMovementSteaming(sot_guid: any): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    const where = {
+      guid: { eq: sot_guid }
+    }
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_MOVEMENT_STEAMING,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -2222,7 +2754,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };
@@ -2249,7 +2784,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
       .pipe(
         map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
           const sotList = result.sotList || { nodes: [], totalCount: 0 };

@@ -6,7 +6,7 @@ namespace IDMS.Booking.GqlTypes.LocaModel
     {
         public string? guid { get; set; }
         public List<string> sot_guid { get; set; } = new List<string>();    
-        public string? surveyor_guid { get; set; }
+        public string? test_class_cv { get; set; }
         public string? reference { get; set; }
         public string book_type_cv { get; set; }
         public string? status_cv { get; set; }

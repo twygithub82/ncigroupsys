@@ -36,6 +36,7 @@ namespace IDMS.Residue.GqlTypes
                 newResidue.estimate_no = residue.estimate_no;
                 newResidue.remarks = residue.remarks;
                 newResidue.job_no = residue.job_no;
+                newResidue.qty_unit_type_cv = residue.qty_unit_type_cv;
                 newResidue.status_cv = CurrentServiceStatus.PENDING;
                 newResidue.allocate_by = residue.allocate_by;
                 newResidue.allocate_dt = residue.allocate_dt;
@@ -96,6 +97,7 @@ namespace IDMS.Residue.GqlTypes
                 updatedResidue.job_no = residue.job_no;
                 updatedResidue.bill_to_guid = residue.bill_to_guid;
                 updatedResidue.remarks = residue.remarks;
+                updatedResidue.qty_unit_type_cv = residue.qty_unit_type_cv;
 
                 //Handling For Template_est_part
                 foreach (var item in residue.residue_part)
@@ -163,6 +165,7 @@ namespace IDMS.Residue.GqlTypes
                     approveResidue.bill_to_guid = residue.bill_to_guid;
                     approveResidue.job_no = residue.job_no;
                     approveResidue.remarks = residue.remarks;
+                    approveResidue.qty_unit_type_cv = residue.qty_unit_type_cv;
 
                     //Only change when first time approve
                     if (CurrentServiceStatus.PENDING.EqualsIgnore(residue.status_cv))

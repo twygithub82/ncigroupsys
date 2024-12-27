@@ -985,6 +985,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       }));
 
       this.calculateCost();
+    } else {
+      this.repList = [];
+      this.calculateCost();
     }
   }
 

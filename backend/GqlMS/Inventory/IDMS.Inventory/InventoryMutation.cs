@@ -142,29 +142,57 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
-                    var jobOrders = await context.job_order.Where(j => j.cleaning.Any(c => c.guid == processGuid)).ToListAsync();
-
-                    var abortCleaning = new cleaning() { guid = processGuid };
-                    context.cleaning.Attach(abortCleaning);
-
-                    abortCleaning.update_by = user;
-                    abortCleaning.update_dt = currentDateTime;
-                    abortCleaning.status_cv = CurrentServiceStatus.NO_ACTION;
-                    //abortCleaning.remarks = remarks;
-
-                    foreach (var item in jobOrders)
+                    //var abortCleaning = new cleaning() { guid = processGuid };
+                    //context.cleaning.Attach(abortCleaning);
+                    var cleaning = await context.cleaning.Where(c => c.sot_guid == tank.guid & c.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
+                    foreach(var clean in cleaning)
                     {
-                        var job_order = new job_order() { guid = item.guid };
-                        context.job_order.Attach(job_order);
-                        if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                        clean.update_by = user;
+                        clean.update_dt = currentDateTime;
+                        clean.na_dt = currentDateTime;
+                        clean.status_cv = CurrentServiceStatus.NO_ACTION;
+                        //abortCleaning.remarks = remarks;
+
+                        var jobOrders = await context.job_order.Where(j => j.cleaning.Any(c => c.guid == clean.guid)).ToListAsync();
+                        foreach (var item in jobOrders)
                         {
-                            job_order.status_cv = CurrentServiceStatus.CANCELED;
-                            job_order.update_by = user;
-                            job_order.update_dt = currentDateTime;
+                            //var job_order = new job_order() { guid = item.guid };
+                            //context.job_order.Attach(job_order);
+                            if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                            {
+                                item.status_cv = CurrentServiceStatus.CANCELED;
+                                item.update_by = user;
+                                item.update_dt = currentDateTime;
+                            }
                         }
                     }
+
+                    var residues = await context.residue.Where(c => c.sot_guid == tank.guid & c.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
+                    foreach (var resd in residues)
+                    {
+                        resd.update_by = user;
+                        resd.update_dt = currentDateTime;
+                        resd.na_dt = currentDateTime;
+                        resd.status_cv = CurrentServiceStatus.NO_ACTION;
+                        //abortCleaning.remarks = remarks;
+
+                        var jobOrders = await context.job_order.Where(j => j.residue_part.Any(c => c.guid == resd.guid)).ToListAsync();
+                        foreach (var item in jobOrders)
+                        {
+                            //var job_order = new job_order() { guid = item.guid };
+                            //context.job_order.Attach(job_order);
+                            if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                            {
+                                item.status_cv = CurrentServiceStatus.CANCELED;
+                                item.update_by = user;
+                                item.update_dt = currentDateTime;
+                            }
+                        }
+                    }
+
 
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
                     if (sot != null)
@@ -174,6 +202,7 @@ namespace IDMS.Inventory.GqlTypes
                         sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
+                        currentTankStatus = sot.tank_status_cv;
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
@@ -191,7 +220,7 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
-                await GqlUtils.NotificationHandling(config, PurposeType.CLEAN, tank.guid, tank.status_cv);
+                await GqlUtils.NotificationHandling(config, PurposeType.CLEAN, tank.guid, currentTankStatus);
                 return res;
             }
             catch (Exception ex)
@@ -257,28 +286,33 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
-                    var jobOrders = await context.job_order.Where(j => j.steaming_part.Any(c => c.guid == processGuid)).ToListAsync();
-
-                    var abortSteaming = new steaming() { guid = processGuid };
-                    context.steaming.Attach(abortSteaming);
-
-                    abortSteaming.update_by = user;
-                    abortSteaming.update_dt = currentDateTime;
-                    abortSteaming.status_cv = CurrentServiceStatus.NO_ACTION;
-
-                    foreach (var item in jobOrders)
+                    //var abortSteaming = new steaming() { guid = processGuid };
+                    //context.steaming.Attach(abortSteaming);
+                    var steams = await context.steaming.Where(s => s.sot_guid == tank.guid & s.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
+                    foreach(var steam in steams)
                     {
-                        var job_order = new job_order() { guid = item.guid };
-                        context.job_order.Attach(job_order);
-                        if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                        steam.update_by = user;
+                        steam.update_dt = currentDateTime;
+                        steam.na_dt = currentDateTime;  
+                        steam.status_cv = CurrentServiceStatus.NO_ACTION;
+
+                        var jobOrders = await context.job_order.Where(j => j.steaming_part.Any(c => c.guid == steam.guid)).ToListAsync();
+                        foreach (var item in jobOrders)
                         {
-                            job_order.status_cv = CurrentServiceStatus.CANCELED;
-                            job_order.update_by = user;
-                            job_order.update_dt = currentDateTime;
+                            //var job_order = new job_order() { guid = item.guid };
+                            //context.job_order.Attach(job_order);
+                            if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                            {
+                                item.status_cv = CurrentServiceStatus.CANCELED;
+                                item.update_by = user;
+                                item.update_dt = currentDateTime;
+                            }
                         }
                     }
+
 
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
                     if (sot != null)
@@ -286,8 +320,10 @@ namespace IDMS.Inventory.GqlTypes
                         sot.purpose_steam = false;
                         sot.steaming_remarks = tank.steaming_remarks;
                         sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
+                        sot.required_temp = null;
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
+                        currentTankStatus = sot.tank_status_cv;
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
@@ -303,11 +339,12 @@ namespace IDMS.Inventory.GqlTypes
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
                     sot.steaming_remarks = tank.steaming_remarks;
+                    sot.required_temp = null;
                     sot.purpose_steam = false;
                 }
 
                 var res = await context.SaveChangesAsync();
-                await GqlUtils.NotificationHandling(config, PurposeType.STEAM, tank.guid, tank.status_cv);
+                await GqlUtils.NotificationHandling(config, PurposeType.STEAM, tank.guid, currentTankStatus);
                 return res;
             }
             catch (Exception ex)
@@ -320,46 +357,49 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
-                    var jobOrders = await context.job_order.Where(j => j.repair_part.Any(c => c.guid == processGuid)).ToListAsync();
-
-                    //Process handling
-                    var abortRepair = new repair() { guid = processGuid };
-                    context.repair.Attach(abortRepair);
-                    abortRepair.update_by = user;
-                    abortRepair.update_dt = currentDateTime;
-                    abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
-
-                    //Job order handling
-                    foreach (var item in jobOrders)
+                    var repairs = await context.repair.Where(r => r.sot_guid == tank.guid & r.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
+                    foreach(var rep in repairs)
                     {
-                        var job_order = new job_order() { guid = item.guid };
-                        context.job_order.Attach(job_order);
-                        if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                        //Process handling
+                        //var abortRepair = new repair() { guid = processGuid };
+                        //context.repair.Attach(abortRepair);
+                        rep.update_by = user;
+                        rep.update_dt = currentDateTime;
+                        rep.na_dt = currentDateTime;
+                        rep.status_cv = CurrentServiceStatus.NO_ACTION;
+
+                        //Job order handling
+                        var jobOrders = await context.job_order.Where(j => j.repair_part.Any(c => c.guid == rep.guid)).ToListAsync();
+                        foreach (var item in jobOrders)
                         {
-                            job_order.status_cv = CurrentServiceStatus.CANCELED;
-                            job_order.update_by = user;
-                            job_order.update_dt = currentDateTime;
+                            //var job_order = new job_order() { guid = item.guid };
+                            //context.job_order.Attach(job_order);
+                            if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+                            {
+                                item.status_cv = CurrentServiceStatus.CANCELED;
+                                item.update_by = user;
+                                item.update_dt = currentDateTime;
+                            }
                         }
                     }
+
 
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
                     if (sot != null)
                     {
-                        sot.purpose_repair_cv = tank.purpose_repair_cv;
+                        sot.purpose_repair_cv = null;
                         sot.repair_remarks = tank.repair_remarks;
                         sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
+                        currentTankStatus = sot.tank_status_cv;
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
 
-                    //var res = await context.SaveChangesAsync();
-                    //TankMovement Check
-                    //var curTankStatus = await GqlUtils.TankMovementConditionCheck(context, config, user, currentDateTime, tank.guid, PurposeType.REPAIR, tank.repair_remarks);
-                    //return res;
                 }
                 else
                 {
@@ -372,7 +412,7 @@ namespace IDMS.Inventory.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
-                await GqlUtils.NotificationHandling(config, PurposeType.REPAIR, tank.guid, tank.status_cv);
+                await GqlUtils.NotificationHandling(config, PurposeType.REPAIR, tank.guid, currentTankStatus);
                 return res;
 
             }
@@ -386,16 +426,19 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
+                string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
                     if (sot != null)
                     {
-                        tank.storage_remarks = sot.storage_remarks;
-                        tank.purpose_storage = false;
-                        var curTankStatus = await GqlUtils.TankMovementConditionCheck1(context, sot);
-                        tank.update_by = user;
-                        tank.update_dt = currentDateTime;
+                        sot.storage_remarks = tank.storage_remarks;
+                        sot.purpose_storage = false;
+                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
+                        sot.update_by = user;
+                        sot.update_dt = currentDateTime;
+                        currentTankStatus = sot.tank_status_cv;
+
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
@@ -407,11 +450,11 @@ namespace IDMS.Inventory.GqlTypes
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
                     sot.storage_remarks = tank.storage_remarks;
-                    tank.purpose_storage = false;
+                    sot.purpose_storage = false;
                 }
 
                 var res = await context.SaveChangesAsync();
-                await GqlUtils.NotificationHandling(config, PurposeType.STORAGE, tank.guid, tank.status_cv);
+                await GqlUtils.NotificationHandling(config, PurposeType.STORAGE, tank.guid, currentTankStatus);
                 return res;
             }
             catch (Exception ex)
@@ -434,7 +477,7 @@ namespace IDMS.Inventory.GqlTypes
                 newSuyDetail.create_by = user;
                 newSuyDetail.create_dt = currentDateTime;
 
-                newSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
+                //newSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
                 newSuyDetail.sot_guid = surveyDetail.sot_guid;
                 newSuyDetail.status_cv = surveyDetail.status_cv;
                 newSuyDetail.remarks = surveyDetail.remarks;
@@ -486,7 +529,7 @@ namespace IDMS.Inventory.GqlTypes
                 updateSuyDetail.update_by = user;
                 updateSuyDetail.update_dt = currentDateTime;
 
-                updateSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
+                //updateSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
                 updateSuyDetail.sot_guid = surveyDetail.sot_guid;
                 updateSuyDetail.status_cv = surveyDetail.status_cv;
                 updateSuyDetail.remarks = surveyDetail.remarks;

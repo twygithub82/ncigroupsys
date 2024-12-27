@@ -278,7 +278,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.repairCv = addDefaultSelectOption(data, "No Repair");
     });
     this.cvDS.connectAlias('clean_statusCv').subscribe(data => {
-      this.clean_statusCv = addDefaultSelectOption(data, "Unknown");;
+      this.clean_statusCv = addDefaultSelectOption(data, "Unknown");
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCv = data;

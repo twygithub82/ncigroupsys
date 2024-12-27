@@ -338,9 +338,8 @@ namespace IDMS.Inventory.GqlTypes
                 else
                     curTankStatus = sot.tank_status_cv;
 
-                await NotificationHandling(config, PurposeType.CLEAN, sot.guid, curTankStatus);
-
                 retval = await context.SaveChangesAsync();
+                                await NotificationHandling(config, PurposeType.CLEAN, sot.guid, curTankStatus);
             }
             catch (Exception ex)
             {
@@ -454,9 +453,8 @@ namespace IDMS.Inventory.GqlTypes
                 else
                     curTankStatus = sot.tank_status_cv;
 
-                await NotificationHandling(config, PurposeType.STEAM, sot.guid, curTankStatus);
-
                 retval = await context.SaveChangesAsync();
+                await NotificationHandling(config, PurposeType.STEAM, sot.guid, curTankStatus);
             }
             catch (Exception ex)
             {
@@ -487,9 +485,8 @@ namespace IDMS.Inventory.GqlTypes
                 else
                     curTankStatus = sot.tank_status_cv;
 
-                await NotificationHandling(config, sot.purpose_repair_cv, sot.guid, curTankStatus);
-
                 retval = await context.SaveChangesAsync();
+                await NotificationHandling(config, sot.purpose_repair_cv, sot.guid, curTankStatus);
             }
             catch (Exception ex)
             {
@@ -512,9 +509,8 @@ namespace IDMS.Inventory.GqlTypes
                 tank.storage_remarks = sot.storage_remarks;
                 tank.purpose_storage = true;
 
-                await NotificationHandling(config, PurposeType.STORAGE, sot.guid, sot.tank_status_cv);
-
                 retval = await context.SaveChangesAsync();
+                await NotificationHandling(config, PurposeType.STORAGE, sot.guid, sot.tank_status_cv);
             }
             catch (Exception ex)
             {
@@ -679,6 +675,8 @@ namespace IDMS.Inventory.GqlTypes
                 //else if (processType.EqualsIgnore(PurposeType.STORAGE))
                 //    tank.storage_remarks = remark;
 
+                var currentTankStatus = tank.tank_status_cv;
+
                 var completedStatuses = new[] { CurrentServiceStatus.COMPLETED, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
                 var qcCompletedStatuses = new[] { CurrentServiceStatus.QC, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
 
@@ -693,13 +691,15 @@ namespace IDMS.Inventory.GqlTypes
                                     (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
                                     )
                         {
-                            tank.tank_status_cv = TankMovementStatus.STEAM;
+                            //tank.tank_status_cv = TankMovementStatus.STEAM;
+                            currentTankStatus = TankMovementStatus.STEAM;
                             goto ProceesUpdate;
                         }
                     }
                     else
                     {
-                        tank.tank_status_cv = TankMovementStatus.STEAM;
+                        //tank.tank_status_cv = TankMovementStatus.STEAM;
+                        currentTankStatus = TankMovementStatus.STEAM;
                         goto ProceesUpdate;
                     }
                 }
@@ -715,7 +715,8 @@ namespace IDMS.Inventory.GqlTypes
                                     (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
                                     )
                         {
-                            tank.tank_status_cv = TankMovementStatus.CLEANING;
+                            //tank.tank_status_cv = TankMovementStatus.CLEANING;
+                            currentTankStatus = TankMovementStatus.CLEANING;
                             goto ProceesUpdate;
                         }
                         else
@@ -730,20 +731,23 @@ namespace IDMS.Inventory.GqlTypes
                                             (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
                                             )
                                 {
-                                    tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                    //tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                    currentTankStatus = TankMovementStatus.CLEANING;
                                     goto ProceesUpdate;
                                 }
                             }
                             else
                             {
-                                tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                //tank.tank_status_cv = TankMovementStatus.CLEANING;
+                                currentTankStatus = TankMovementStatus.CLEANING;
                                 goto ProceesUpdate;
                             }
                         }
                     }
                     else
                     {
-                        tank.tank_status_cv = TankMovementStatus.CLEANING;
+                        //tank.tank_status_cv = TankMovementStatus.CLEANING;
+                        currentTankStatus = TankMovementStatus.CLEANING;
                         goto ProceesUpdate;
                     }
                 }
@@ -756,27 +760,30 @@ namespace IDMS.Inventory.GqlTypes
                     {
                         if (res.Any(t => !qcCompletedStatuses.Contains(t.status_cv)))
                         {
-                            tank.tank_status_cv = TankMovementStatus.REPAIR;
+                            //tank.tank_status_cv = TankMovementStatus.REPAIR;
+                            currentTankStatus = TankMovementStatus.REPAIR;
                             goto ProceesUpdate;
                         }
                     }
                     else
                     {
-                        tank.tank_status_cv = TankMovementStatus.REPAIR;
+                        //tank.tank_status_cv = TankMovementStatus.REPAIR;
+                        currentTankStatus = TankMovementStatus.REPAIR;
                         goto ProceesUpdate;
                     }
                 }
 
                 if (tank.purpose_storage ?? false)
                 {
-                    tank.status_cv = TankMovementStatus.STORAGE;
+                    //tank.status_cv = TankMovementStatus.STORAGE;
+                    currentTankStatus = TankMovementStatus.STORAGE;
                 }
 
             ProceesUpdate:
                 //var ret = await context.SaveChangesAsync();
 
                 //await NotificationHandling(config, processType, sotGuid, tank.status_cv);
-                return tank.tank_status_cv;
+                return currentTankStatus;
 
             }
             catch (Exception ex)
