@@ -375,11 +375,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
               team.isOccupied = true;
               team.tank_no=d.storing_order_tank?.tank_no;
               team.isEditable=team.tank_no===this.selectedItems[0].storing_order_tank?.tank_no;
-              if(team.isEditable)
-              {
-                this.toggleTeam(team);
-                team.isOccupied=false;
-              }
+              // if(team.isEditable)
+              // {
+              //   this.toggleTeam(team);
+              //   team.isOccupied=false;
+              // }
             }
           });
         });
@@ -522,9 +522,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   canRollBack():boolean
   {
-    let retval:boolean=true;
+    var validActions :string[]= ["COMPLETED",'JOB_IN_PROGRESS'];
     var selItem =this.selectedItems[0];
-    return selItem.status_cv==="COMPLETED";
+    if(validActions.includes(selItem.status_cv))
+    {
+        return (selItem.job_order);
+    }
+    else
+    {
+      return false;
+    }
+    
+    
   }
 
   canAbort():boolean
@@ -960,47 +969,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         });
     }
 
-    onRollback1(event: Event) {
-      this.preventDefault(event);
-      console.log(this.selectedItem)
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-      const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-        width: '1000px',
-        data: {
-          action: 'rollback',
-          dialogTitle: this.translatedLangText.ARE_YOU_ROLLBACK,
-          item: [this.selectedItem],
-          translatedLangText: this.translatedLangText
-        },
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        if (result?.action === 'confirmed') {
-          const distinctJobOrders :any[] =[];
-          const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
-          distinctJobOrders.push(jobOrder);
-          const clnJobOrder = new ClnJobOrderRequest({
-            guid: this.selectedItems[0]?.guid,
-            sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
-            remarks: this.selectedItems[0]?.remarks,
-            job_order: distinctJobOrders
-          });
-      
-          console.log(clnJobOrder)
-          this.igCleanDS?.rollbackCompletedCleaning(clnJobOrder).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.abortCleaning);
-          });
-        }
-      });
-    }
-
+   
     
     onRollback(event: Event)
       {
@@ -1036,12 +1005,23 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
                   job_order: distinctJobOrders,
                   sot_status:this.selectedItems[0]?.storing_order_tank?.tank_status_cv
                 });
-            
-                console.log(clnJobOrder)
-                this.igCleanDS?.rollbackCompletedCleaning(clnJobOrder).subscribe(result => {
+                
+                console.log(clnJobOrder);
+                if(this.selectedItems[0]?.status_cv==="COMPLETED")
+                {
+                  
+                  this.igCleanDS?.rollbackCompletedCleaning(clnJobOrder).subscribe(result => {
+                    console.log(result)
+                    this.handleSaveSuccess(result?.data?.rollbackCompletedCleaning);
+                  });
+               }
+               else if (this.selectedItems[0]?.status_cv==="JOB_IN_PROGRESS")
+               {
+                this.jobOrderDS?.rollbackJobInProgressCleaning(clnJobOrder).subscribe(result => {
                   console.log(result)
-                  this.handleSaveSuccess(result?.data?.rollbackCompletedCleaning);
+                  this.handleSaveSuccess(result?.data?.rollbackJobInProgressCleaning);
                 });
+               }
     
             }
           });

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators, } from '@angular/forms';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -328,7 +328,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
   search() {
     const where: any = {
-      storing_order_tank: { tank_status_cv: { in: ['CLEANING', 'STORAGE'] } }
+      storing_order_tank: { tank_status_cv: { in: ["STEAM","CLEANING","REPAIR","STORAGE"] } }
     };
 
     //where.storing_order_tank={};

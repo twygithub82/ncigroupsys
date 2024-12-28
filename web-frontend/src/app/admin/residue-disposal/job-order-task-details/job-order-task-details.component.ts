@@ -59,7 +59,7 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, ResJobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { ResidueDS, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
@@ -569,7 +569,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
 
         const joRequest = new JobOrderRequest();
         joRequest.guid = jo.guid;
-        joRequest.job_type_cv = jo.job_type_cv ?? 'REPAIR';
+        joRequest.job_type_cv = jo.job_type_cv ?? 'RESIDUE';
         joRequest.remarks = jo.remarks;
         joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
         joRequest.status_cv = jo.status_cv;
@@ -650,6 +650,10 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
 
   canRollback(): boolean {
     return this.repairItem?.status_cv === 'CANCELED' || this.repairItem?.status_cv === 'APPROVED';
+  }
+
+  canRollbackJob() {
+    return this.joDS.canRollbackJob(this.jobOrderItem) && this.residueDS.canRollbackJobInProgress(this.residueItem) && !this.isStarted();
   }
 
   getBadgeClass(status: string | undefined): string {
@@ -1097,4 +1101,43 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     });
 
   }
+
+   rollbackJob(event: Event) {
+      this.preventDefault(event);  // Prevents the form submission
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+        width: '1000px',
+        data: {
+          action: 'rollback',
+          dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+          item: [this.residueItem],
+          translatedLangText: this.translatedLangText
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          const repJobOrder = new ResJobOrderRequest({
+            guid: this.residueItem?.guid,
+            sot_guid: this.residueItem?.sot_guid,
+            estimate_no: this.residueItem?.estimate_no,
+            job_order: [new JobOrderGO({...this.jobOrderItem, remarks: result.remarks})],
+            sot_status: this.sotItem?.tank_status_cv
+          });
+  
+          console.log(repJobOrder)
+          this.joDS.rollbackJobInProgressResidue([repJobOrder]).subscribe(result => {
+            console.log(result)
+            if ((result?.data?.rollbackJobInProgressResidue ?? 0) > 0) {
+              this.handleSaveSuccess(result?.data?.rollbackJobInProgressResidue);
+            }
+          });
+        }
+      });
+    }
 }

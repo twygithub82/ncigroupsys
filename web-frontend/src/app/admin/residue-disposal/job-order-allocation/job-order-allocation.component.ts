@@ -1146,6 +1146,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
       }
     });
   }
+
   handleCancelSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
@@ -1162,7 +1163,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/residue-disposal/approval'], {
+      this.router.navigate(['/admin/residue-disposal/job-order'], {
         state: this.historyState
 
       }
@@ -1418,6 +1419,86 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
   }
 
+  canSave(): boolean {
+    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION']
+    return validStatus.includes(this.residueItem?.status_cv!);
+  }
+  
+  canRollBack():boolean
+  {
+    var validActions :string[]= ["COMPLETED"];
+    var selItem =this.residueItem!;
+    if(validActions.includes(selItem.status_cv!))
+    {
+        return (selItem.residue_part?.length!>0);
+    }
+    else
+    {
+      return false;
+    }
+    
+    
+  }
+
+  rollbackJobs(event: Event) {
+    this.preventDefault(event);
+    console.log(this.residueItem);
+
+     const distinctJobOrders = this.deList
+              .filter((item, index, self) =>
+                index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+                  (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                    t.job_order?.team?.description === item?.job_order?.team?.description))
+              )
+              .filter(item => item.job_order !== null && item.job_order !== undefined)
+              .map(item => new JobOrderGO(item.job_order!));
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'rollback',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        item: [this.residueItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const reList = result.item.map((item: any) => {
+          const residueJobOrder = {
+            estimate_no: item?.estimate_no,
+            guid: item?.guid,
+            remarks: item.remarks,
+            sot_guid: item.sot_guid,
+            sot_status:this.residueItem?.storing_order_tank?.tank_status_cv,
+            job_order:distinctJobOrders
+          }
+          return residueJobOrder
+        });
+        console.log(reList);
+        if(this.residueItem?.status_cv=="COMPLETED")
+        {
+        this.residueDS.rollbackCompletedResidue(reList).subscribe(result => {
+          this.handleRollbackSuccess(result?.data?.rollbackCompletedResidue)
+        });
+       }
+       else if(this.residueItem?.status_cv=="JOB_IN_PROGRESS")
+        {
+          this.jobOrderDS.rollbackJobInProgressResidue(reList).subscribe(result => {
+            this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
+          });
+        }
+       
+      }
+    });
+  }
   onAbort(event: Event) {
     this.preventDefault(event);
     console.log(this.residueItem)

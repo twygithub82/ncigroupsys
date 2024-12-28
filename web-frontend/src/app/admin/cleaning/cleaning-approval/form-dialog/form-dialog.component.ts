@@ -1,4 +1,4 @@
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose,MatDialog } from '@angular/material/dialog';
 import { Component, Inject, OnInit,ViewChild } from '@angular/core';
 import { UntypedFormControl, Validators, UntypedFormGroup, UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
@@ -36,7 +36,9 @@ import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-s
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { MatDividerModule } from '@angular/material/divider';
-import { ClnJobOrderRequest, JobOrderGO } from 'app/data-sources/job-order';
+import { ClnJobOrderRequest, JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order';
+import { Direction } from '@angular/cdk/bidi';
+import { ConfirmationDialogComponent } from '../dialogs/confirm-form-dialog/confirm-form-dialog.component';
 
 export interface DialogData {
   action?: string;
@@ -121,6 +123,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl= new UntypedFormControl();
   custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
+  jobOrderDS : JobOrderDS;
+  selectedItems: any;
+  selectedItem:any;
+  igCleanDS:InGateCleaningDS;
+  igCleanItems:any=[];
+  totalCost_depot: number = 0;
+  totalCost_customer: number = 0;
+
 
   translatedLangText: any = {};
   langText = {
@@ -225,20 +235,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     INOUT_GATE:"COMMON-FORM.INTOUT-GATE",
     CLEANING_COST_FOR:"COMMON-FORM.CLEANING-COST-FOR",
     LAST_CARGO_CLEANING_QUOTATION :"COMMON-FORM.LAST-CARGO-CLEANING-QUOTATION",
-    TOTAL_COST:"COMMON-FORM.TOTAL-COST"
+    TOTAL_COST:"COMMON-FORM.TOTAL-COST",
+    ROLLBACK:'COMMON-FORM.ROLLBACK',
+    ARE_SURE_ROLLBACK:'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
   };
 
   
-  selectedItems: any;
-  selectedItem:any;
-  igCleanDS:InGateCleaningDS;
-  igCleanItems:any=[];
-  totalCost_depot: number = 0;
-  totalCost_customer: number = 0;
+
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
   
   constructor(
+  
+    public dialog: MatDialog,
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
@@ -254,6 +263,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.packageDepotDS = new PackageDepotDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.jobOrderDS= new JobOrderDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
@@ -641,6 +651,81 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks?this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks:"-";
   }
 
+  preventDefault(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+  }
+
+  canRollBack():boolean
+  {
+    var validActions :string[]= ["COMPLETED",'JOB_IN_PROGRESS'];
+    var selItem =this.selectedItems[0];
+    if(validActions.includes(selItem.status_cv))
+    {
+        return (selItem.job_order);
+    }
+    else
+    {
+      return false;
+    }
+    
+    
+  }
+
+   onRollback(event: Event)
+        {
+          this.preventDefault(event);  // Prevents the form submission
+              let tempDirection: Direction;
+              if (localStorage.getItem('isRtl') === 'true') {
+                tempDirection = 'rtl';
+              } else {
+                tempDirection = 'ltr';
+              }
+              const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+                width: '800px',
+                height: '250px',
+                data: {
+                  action: "EDIT",
+                  item: this.selectedItems[0].storing_order_tank,
+                  langText: this.translatedLangText,
+                  confirmStatement:this.translatedLangText.ARE_SURE_ROLLBACK,
+                  index:-1
+                
+                },
+                direction: tempDirection
+              });
+              this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
+                if (result?.action=="confirmed") {
+                  const distinctJobOrders :any[] =[];
+                  const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
+                  distinctJobOrders.push(jobOrder);
+                  const clnJobOrder = new ClnJobOrderRequest({
+                    guid: this.selectedItems[0]?.guid,
+                    sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
+                    remarks: result?.remarks,
+                    job_order: distinctJobOrders,
+                    sot_status:this.selectedItems[0]?.storing_order_tank?.tank_status_cv
+                  });
+              
+                  console.log(clnJobOrder)
+                  if(this.selectedItems[0]?.status_cv==="COMPLETED")
+                    {
+                      
+                      this.igCleanDS?.rollbackCompletedCleaning(clnJobOrder).subscribe(result => {
+                        console.log(result)
+                        this.handleSaveSuccess(result?.data?.rollbackCompletedCleaning);
+                      });
+                   }
+                   else if (this.selectedItems[0]?.status_cv==="JOB_IN_PROGRESS")
+                   {
+                    this.jobOrderDS?.rollbackJobInProgressCleaning(clnJobOrder).subscribe(result => {
+                      console.log(result)
+                      this.handleSaveSuccess(result?.data?.rollbackJobInProgressCleaning);
+                    });
+                   }
+      
+              }
+            });
+      }
 
   
 }

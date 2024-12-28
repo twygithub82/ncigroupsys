@@ -196,12 +196,14 @@ export class ResJobOrderRequest {
   public job_order?: JobOrderGO[];
   public remarks?: string;
   public sot_guid?: string;
+  public sot_status?: string;
   constructor(item: Partial<ResJobOrderRequest> = {}) {
     this.estimate_no = item.estimate_no;
     this.guid = item.guid;
     this.job_order = item.job_order;
     this.remarks = item.remarks;
     this.sot_guid = item.sot_guid;
+    this.sot_status=item.sot_status;
   }
 }
 
@@ -785,6 +787,12 @@ const ROLLBACK_CLEANING_JOB_IN_PROGRESS_JOB_ORDER = gql`
   }
 `
 
+const ROLLBACK_RESIDUE_JOB_IN_PROGRESS_JOB_ORDER = gql`
+  mutation rollbackJobInProgressResidue($residueJobOrder: [ResJobOrderRequestInput!]!) {
+    rollbackJobInProgressResidue(residueJobOrder: $residueJobOrder)
+  }
+`
+
 export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -1044,6 +1052,15 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
       mutation: ROLLBACK_CLEANING_JOB_IN_PROGRESS_JOB_ORDER,
       variables: {
         clnJobOrder
+      }
+    });
+  }
+
+  rollbackJobInProgressResidue(residueJobOrder: any[]): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_RESIDUE_JOB_IN_PROGRESS_JOB_ORDER,
+      variables: {
+        residueJobOrder
       }
     });
   }

@@ -402,7 +402,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     //   { estimate_no: { contains: "" } }
     // ]
     if (this.filterResidueForm!.get('filterResidue')?.value) {
-      where.AND.push({
+      where.and.push({
         storing_order_tank: { tank_no: { contains: this.filterResidueForm!.get('filterResidue')?.value } }
       });
     }

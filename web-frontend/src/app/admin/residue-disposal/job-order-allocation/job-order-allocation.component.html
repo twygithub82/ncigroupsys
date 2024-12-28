@@ -410,10 +410,26 @@
                   </button>
                   }
                 <!-- <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right"> -->
-
+                  @if(canSave())
+                  {
                   <button mat-flat-button color="primary"  (click)="save()"
                   >{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
-                
+                  }
+
+                  @if(canRollBack())
+                  {
+                    <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                    (click)="rollbackJobs($event)">
+                    <mat-icon>
+                      @if (!(residueDS.loading$ | async)) {
+                      undo
+                      } @else if ((residueDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.ROLLBACK}}
+                  </button>
+                  }
                 <!-- </div> -->
               </div>
             </div>

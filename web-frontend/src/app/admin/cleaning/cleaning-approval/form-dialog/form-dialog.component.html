@@ -393,6 +393,14 @@
         @if (canEdit()) {
           <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.UPDATE}}</button>
         }
+        @if(canRollBack())
+        {
+          
+          <button mat-flat-button color="accent"   (click)="onRollback($event)" class="m-r-5">  
+            <mat-icon>undo</mat-icon>
+            <span>{{translatedLangText.ROLLBACK}}</span>
+          </button>
+        }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">
           @if(canEdit()){
           {{translatedLangText.CANCEL}}

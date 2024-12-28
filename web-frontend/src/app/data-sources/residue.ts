@@ -512,6 +512,12 @@ export const ROLLBACK_RESIDUE_APPROVAL_EST = gql`
   }
 `
 
+export const ROLLBACK_COMPLETED_RESIDUE = gql`
+  mutation rollbackCompletedResidue($residueJobOrder: [ResJobOrderRequestInput!]!) {
+    rollbackCompletedResidue(residueJobOrder: $residueJobOrder)
+  }
+`
+
 export const APPROVE_RESIDUE_EST = gql`
   mutation ApproveResidue($residue: residueInput!) {
     approveResidue(residue: $residue)
@@ -664,6 +670,16 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
+  
+  rollbackCompletedResidue(residueJobOrder: any[]): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_COMPLETED_RESIDUE,
+      variables: {
+        residueJobOrder
+      }
+    });
+  }
+
   approveResidue(residue: any): Observable<any> {
     return this.apollo.mutate({
       mutation: APPROVE_RESIDUE_EST,
@@ -709,6 +725,10 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   canRollback(re: ResidueItem): boolean {
     const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION','COMPLETED','QC_COMPLETED']
     return validStatus.includes(re?.status_cv!);
+  }
+
+  canRollbackJobInProgress(re: ResidueItem | undefined): boolean {
+    return re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS';
   }
 
   canCopy(re: ResidueItem): boolean {
