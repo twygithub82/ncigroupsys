@@ -50,6 +50,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
+import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 
 @Component({
   selector: 'app-survey-others-details',
@@ -169,8 +170,10 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tcDS: TariffCleaningDS;
   igDS: InGateDS;
   surveyDS: SurveyDetailDS;
+  tiDS: TankInfoDS;
 
   sotItem?: StoringOrderTankItem;
+  tiItem?: TankInfoItem;
   surveyDetailItem: SurveyDetailItem[] = [];
   selectedItemsPerPage: { [key: number]: Set<string> } = {};
   // surveyorList: CustomerCompanyItem[] = [];
@@ -217,6 +220,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
     this.surveyDS = new SurveyDetailDS(this.apollo);
+    this.tiDS = new TankInfoDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -295,6 +299,13 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
           this.sotItem = data[0];
           this.surveyDetailItem = this.sotItem?.survey_detail || [];
           this.last_test_desc = this.getLastTest();
+
+          this.tiDS.getTankInfoForLastTest(this.sotItem.tank_no!).subscribe(data => {
+            if (data.length > 0) {
+              this.tiItem = data[0];
+              this.last_test_desc = this.getLastTest();
+            }
+          });
         }
       });
     } else {
@@ -501,11 +512,28 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getLastTest(): string | undefined {
+    return this.getLastTestTI() || this.getLastTestIGS();
+  }
+
+  getLastTestIGS(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey) return "";
+
     const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
     if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
       const test_type = igs.last_test_cv;
       const test_class = igs.test_class_cv;
       return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+    }
+    return "";
+  }
+
+  getLastTestTI(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.tiItem) return "";
+
+    if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
+      const test_type = this.tiItem.last_test_cv;
+      const test_class = this.tiItem.test_class_cv;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
     return "";
   }

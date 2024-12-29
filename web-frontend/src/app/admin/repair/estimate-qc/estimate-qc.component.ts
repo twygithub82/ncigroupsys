@@ -56,6 +56,7 @@ import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { JobOrderDS, JobOrderGO, JobProcessRequest, RepJobOrderRequest } from 'app/data-sources/job-order';
+import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 
 @Component({
   selector: 'app-estimate-qc',
@@ -220,6 +221,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   repairForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
+  tiItem?: TankInfoItem;
   repairItem?: RepairItem;
   repairItemList?: RepairItem[] = [];
   // packageLabourItem?: PackageLabourItem;
@@ -255,6 +257,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   prDS: PackageRepairDS;
   userDS: UserDS;
   joDS: JobOrderDS;
+  tiDS: TankInfoDS;
   isOwner = false;
 
   constructor(
@@ -281,6 +284,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
+    this.tiDS = new TankInfoDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -417,6 +421,13 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
           this.sotItem = this.repairItem?.storing_order_tank;
           this.last_test_desc = this.getLastTest();
           this.next_test_desc = this.getNextTest();
+
+          this.tiDS.getTankInfoForLastTest(this.sotItem!.tank_no!).subscribe(data => {
+            if (data.length > 0) {
+              this.tiItem = data[0];
+              this.last_test_desc = this.getLastTest();
+            }
+          });
           this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
             if (cc?.length) {
               const bill_to = this.repairForm?.get('bill_to');
@@ -573,7 +584,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
           )
           .filter(item => item.job_order !== null && item.job_order !== undefined)
           .map(item => new JobOrderGO(item.job_order!));
-    
+
         const repJobOrder = new RepJobOrderRequest({
           guid: this.repairItem?.guid,
           sot_guid: this.repairItem?.sot_guid,
@@ -582,7 +593,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
           job_order: distinctJobOrders,
           sot_status: this.sotItem?.tank_status_cv
         });
-    
+
         console.log(repJobOrder)
         this.repairDS.rollbackQCRepair([repJobOrder]).subscribe(result => {
           console.log(result)
@@ -804,7 +815,15 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   getLastTest(): string | undefined {
-    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.sotItem?.in_gate) return "-";
+    return this.getLastTestTI() || this.getLastTestIGS();
+  }
+
+  getNextTest(): string | undefined {
+    return this.getNextTestTI() || this.getNextTestIGS();
+  }
+
+  getLastTestIGS(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey) return "";
 
     const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
     if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
@@ -815,8 +834,19 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     return "";
   }
 
-  getNextTest(): string | undefined {
-    if (!this.testTypeCvList?.length || !this.sotItem?.in_gate) return "-";
+  getLastTestTI(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.tiItem) return "";
+
+    if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
+      const test_type = this.tiItem.last_test_cv;
+      const test_class = this.tiItem.test_class_cv;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+    }
+    return "";
+  }
+
+  getNextTestIGS(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey) return "";
 
     const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
     if (!igs?.test_dt || !igs?.last_test_cv) return "-";
@@ -825,6 +855,18 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     const yearCount = parseFloat(match?.[0] ?? "0");
     const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
     const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    return output;
+  }
+
+  getNextTestTI(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.tiItem) return "";
+
+    if (!this.tiItem?.test_dt || !this.tiItem?.last_test_cv) return "-";
+    const test_type = this.tiItem?.last_test_cv;
+    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
+    const yearCount = parseFloat(match?.[0] ?? "0");
+    const resultDt = Utility.addYearsToEpoch(this.tiItem?.test_dt as number, yearCount) as number;
+    const output = this.getTestTypeDescription(this.tiItem?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     return output;
   }
 
