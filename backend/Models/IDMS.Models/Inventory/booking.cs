@@ -17,8 +17,8 @@ namespace IDMS.Models.Inventory
 
         [ForeignKey("storing_order_tank")]
         public string? sot_guid { get; set; }
-        public string? surveyor_guid { get; set; }
-        //public string? report_guid { get; set; }
+        //public string? surveyor_guid { get; set; }
+        public string? test_class_cv { get; set; }
         public string? reference { get; set; }
         //public string? mime_cv { get; set; }
         public string? book_type_cv { get; set; }
