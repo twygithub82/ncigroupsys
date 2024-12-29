@@ -1,0 +1,16 @@
+--this is the tlx first vm
+--Ubuntu 22.04- lts
+--public IP : 207.46.137.171
+--password  : tlx.P@ssw0rd
+
+
+-- Actual Endpoint
+-- SO_MS:     https://tlx-idms-app.azurewebsites.net/graphql/
+
+-- UserAuth:  https://tlx-idms-userlogin.azurewebsites.net
+
+
+--Use Reverse Proxy
+-- 207.46.137.171/graphql  --> https://tlx-idms-app.azurewebsites.net/graphql
+
+-- 207.46.137.171/{endpoint} --> https://tlx-idms-userlogin.azurewebsites.net/{endpoint}
