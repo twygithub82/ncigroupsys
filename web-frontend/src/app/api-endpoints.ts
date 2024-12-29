@@ -2,7 +2,6 @@ export const api_endpoints = {
   staff_auth: '/api/StaffAuthentication/StaffLogin',
   user_auth: '/api/UserAuthentication/UserLogin',
   file_management:'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
-  graphQL_link: 'YOUR_GRAPHQL_ENDPOINT'
 }
 
 export const uploadEndpoints = {

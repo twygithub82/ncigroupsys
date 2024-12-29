@@ -4,7 +4,7 @@
     <div class="navbar-header">
       <ul class="nav navbar-nav flex-row">
         <li class="nav-item logo">
-          <a class="navbar-brand" routerLink="/">
+          <a class="navbar-brand" routerLink="/" [matTooltip]="envTest">
             @if (menuIcon === 'radio_button_checked' || isHovered) {
             <img src="assets/images/logo.png" alt="translatedLangText.SOFTWARE_NAME" />
             }

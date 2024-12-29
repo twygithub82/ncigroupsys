@@ -19,6 +19,9 @@ import { NgScrollbar } from 'ngx-scrollbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Utility } from 'app/utilities/utility';
+import { environment } from 'environments/environment';
+import { MatTooltip } from '@angular/material/tooltip';
+
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
@@ -33,7 +36,8 @@ import { Utility } from 'app/utilities/utility';
     RouterLinkActive,
     NgClass,
     TranslateModule,
-    FeatherModule
+    FeatherModule,
+    MatTooltip
   ],
 })
 export class SidebarComponent implements OnInit, OnDestroy {
@@ -56,6 +60,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   routerObj;
   menuIcon = 'radio_button_checked';
   isHovered = false;
+
+  envTest = environment.title;
+
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2,
@@ -181,7 +188,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   logout() {
     this.authService.logout().subscribe((res: { success: any; }) => {
       if (!res.success) {
-        this.router.navigate(['/authentication/signin']);
+        this.router.navigate(['/authentication/signin-staff']);
       }
     });
   }
