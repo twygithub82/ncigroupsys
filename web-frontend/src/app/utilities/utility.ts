@@ -26,7 +26,7 @@ export class Utility {
     return `${day}/${month}/${year}`;
   }
 
-  static convertDate(date: any, endOfDay: boolean = false): number | Date | undefined {
+  static convertDate(date: any, endOfDay: boolean = false,includeTime:boolean=false): number | Date | undefined {
     try {
       if (!date) {
         return undefined; // Handle null or undefined input
@@ -50,10 +50,13 @@ export class Utility {
       // Handle JavaScript Date objects
       if (date instanceof Date) {
         const jsDate = new Date(date); // Create a copy of the date
-        if (endOfDay) {
-          jsDate.setHours(23, 59, 59, 999); // Set to end of day
-        } else {
-          jsDate.setHours(0, 0, 0, 0); // Set to start of day
+        if(!includeTime)
+        {
+          if (endOfDay) {
+            jsDate.setHours(23, 59, 59, 999); // Set to end of day
+          } else {
+            jsDate.setHours(0, 0, 0, 0); // Set to start of day
+          }
         }
         return Math.floor(jsDate.getTime() / 1000); // Return epoch time in seconds
       }

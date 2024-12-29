@@ -256,7 +256,7 @@
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
                     <input matInput [formControl]="newQtyType"
-                      [matAutocomplete]="unitCode">
+                      [matAutocomplete]="unitCode" required="true">
                     <mat-autocomplete #unitCode="matAutocomplete" [displayWith]="displayUnitTypeFn">
                       @for (cc of unitTypeCvList; track cc) {
                       <mat-option [value]="cc">
@@ -264,6 +264,11 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
+                    @if (newQtyType.hasError('required')) {
+                      <mat-error>
+                        {{this.translatedLangText.UNIT_TYPE}} {{this.translatedLangText.SO_REQUIRED}}
+                      </mat-error>
+                      }
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">

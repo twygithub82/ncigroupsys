@@ -76,6 +76,8 @@ import { SurveyPeriodicTestComponent } from './survey/periodic-test/survey-perio
 import { SurveyPeriodicTestDetailsComponent } from './survey/periodic-test-details/survey-periodic-test-details.component';
 import { ResidueDisposalEstimateApprovalComponent } from './residue-disposal/estimate-approval/estimate-approval.component';
 import {ResidueDisposalEstimateApprovalNewComponent} from './residue-disposal/estimate-approval-new/estimate-approval-new.component';
+import { SteamEstimateApprovalNewComponent } from './steam/estimate-approval-new/estimate-approval-new.component';
+import { SteamEstimateApprovalComponent } from './steam/estimate-approval/estimate-approval.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -375,6 +377,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "steam/approval/view/:id",
     component: SteamApprovalViewComponent,
+  },
+  {
+    path: "steam/estimate-approval",
+    component: SteamEstimateApprovalComponent,
+  },
+  {
+    path: "steam/estimate-approval/new/:id",
+    component: SteamEstimateApprovalNewComponent,
   },
   {
     path: "steam/job-order",

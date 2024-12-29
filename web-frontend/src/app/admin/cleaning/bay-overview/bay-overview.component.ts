@@ -218,12 +218,18 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
   @ViewChild(MatMenuTrigger)
+  @Output() refreshMainTab = new EventEmitter<void>();
+
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeValueChanges();
     this.QueryBays();
     //this.loadData();
+  }
+
+  triggerRefresh() {
+    this.refreshMainTab.emit();
   }
 
   initSearchForm() {
@@ -514,23 +520,25 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
 
         if (jobData) {
           const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
-          if (foundJob?.length) {
-            // foundJob[0].status_cv = jobData.job_status;
-            // foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
-            // foundJob[0].time_table ??= [];
+          this.clearAllTeamButton();
+          this.queryOccupiedTeam();
+          // if (foundJob?.length) {
+          //   // foundJob[0].status_cv = jobData.job_status;
+          //   // foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
+          //   // foundJob[0].time_table ??= [];
 
-            // if (eventType === 'jobStarted') {
-            //   const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
-            //   if (foundTimeTable?.length) {
-            //     foundTimeTable[0].start_time = jobData.start_time
-            //   } else {
-            //     foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
-            //   }
-            // } else if (eventType === 'jobStopped') {
-            //   foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
-            // }
-            console.log(`Updated JobOrder ${eventType} :`, foundJob[0]);
-          }
+          //   // if (eventType === 'jobStarted') {
+          //   //   const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
+          //   //   if (foundTimeTable?.length) {
+          //   //     foundTimeTable[0].start_time = jobData.start_time
+          //   //   } else {
+          //   //     foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
+          //   //   }
+          //   // } else if (eventType === 'jobStopped') {
+          //   //   foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
+          //   // }
+          //   console.log(`Updated JobOrder ${eventType} :`, foundJob[0]);
+          // }
         }
       },
       error: (error) => {
@@ -628,6 +636,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
+  
+
   clearTeamButton(cleanGuid:string)
   {
     this.teamList?.forEach(team => {
@@ -676,7 +686,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
 subscribeTeamEvent()
 {
     this.teamList.forEach(t => {
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobStartStop.bind(this.joDS), t.guid!);
+          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), t.guid!);
         })
 }
 
@@ -781,6 +791,7 @@ queryOccupiedTeam()
                       team.isEditable= false;
                       team.isViewOnly= false;
                     }
+                    this.triggerRefresh();
                     //this.handleSaveSuccess(result?.data?.rollbackJobInProgressRepair);
                   }
                 });
@@ -801,7 +812,7 @@ queryOccupiedTeam()
         const dialogRef = this.dialog.open(TankInfoFormDialogComponent, {
           width: '1000px',
           data: {
-            selectedItem: team.storing_order_tank!,
+            selectedItem: team.jobOrderItem?.storing_order_tank!,
             action: 'new',
             translatedLangText: this.translatedLangText,
             dialogTitle: team.description,
@@ -840,6 +851,7 @@ queryOccupiedTeam()
       if (result?.action=="confirmed") {
        
         this.toggleJobState(event,true,team.jobOrderItem)
+        
       }
 
     });

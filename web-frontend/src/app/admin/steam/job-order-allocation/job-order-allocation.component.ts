@@ -116,7 +116,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     //  'cost',
      'approve_part',
      'team',
-     //"actions"
+    //"actions"
    
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
@@ -1476,6 +1476,12 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
          });
       }
     });
+  }
+
+  canToggleJob(jobOrderItem:JobOrderItem | undefined) {
+    var retval
+    retval= (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid===null);
+    return retval;
   }
   
 }

@@ -305,6 +305,12 @@
                             <span>{{translatedLangText.CANCEL}}</span>
                           </button>
                           }
+                          @if (residueDS.canNoAction(residueRow)) {
+                            <button mat-menu-item (click)="onNoAction($event,residueRow)">
+                              <mat-icon>close</mat-icon>
+                              <span>{{translatedLangText.NO_ACTION}}</span>
+                            </button>
+                            }
                         </mat-menu>
                       </mat-cell>
                     </ng-container>

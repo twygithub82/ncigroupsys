@@ -482,6 +482,10 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
+          if(this.jobOrderItem.status_cv==='PENDING')
+          {
+            this.toggleJobState(false);
+          }
           if (this.steam_guid) {
 
             this.steamDS.getSteamIDForJobOrder(this.steam_guid, this.job_order_guid!).subscribe(steam => {
@@ -887,13 +891,28 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
     return this.joDS.canCompleteJob(this.jobOrderItem) && !this.isStarted()
   }
 
-  toggleJobState(event: Event, isStarted: boolean | undefined) {
-    this.preventDefault(event);  // Prevents the form submission
+  toggleJobState(isStarted: boolean | undefined) {
+    //this.preventDefault(event);  // Prevents the form submission
     if (!isStarted) {
       const param = [new TimeTableItem({ job_order_guid: this.jobOrderItem?.guid, job_order: new JobOrderGO({ ...this.jobOrderItem }) })];
       console.log(param)
       this.ttDS.startJobTimer(param, this.steam_guid!).subscribe(result => {
         console.log(result)
+        if ((result?.data?.startJobTimer ?? 0) > 0) {
+          const firstJobPart = this.jobOrderItem?.steaming_part?.[0];
+          if (firstJobPart?.steaming?.status_cv === 'ASSIGNED') {
+            const steamStatusReq: SteamStatusRequest = new SteamStatusRequest({
+              guid: firstJobPart!.steaming.guid,
+              sot_guid: this.jobOrderItem?.sot_guid,
+              action: "IN_PROGRESS",
+              
+            });
+            console.log(steamStatusReq);
+            this.steamDS.updateSteamStatus(steamStatusReq).subscribe(result => {
+              console.log(result);
+            });
+          }
+        }
       });
     } else {
       const found = this.jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
@@ -1193,7 +1212,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
   {
     var steamTmp:SteamTemp = new SteamTemp();
     //var action:string = (guid===null || guid==="")?"NEW":"UPDATE";
-    steamTmp.report_dt =Number(Utility.convertDate(this.steamForm?.get("time")?.value)) ;
+    steamTmp.report_dt =Number(Utility.convertDate(this.steamForm?.get("time")?.value,false,true)) ;
     steamTmp.bottom_temp=this.steamForm?.get("bottom")?.value;
     steamTmp.top_temp=this.steamForm?.get("top")?.value;
     steamTmp.meter_temp=this.steamForm?.get("thermometer")?.value;
@@ -1329,6 +1348,11 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
              }
           });
           // this.resetSelectedItemForUpdating();
+        }
+        else
+        {
+          this.QuerySteamTemp();
+            this.resetSelectedItemForUpdating();
         }
       });
      

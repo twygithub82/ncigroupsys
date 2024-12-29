@@ -221,6 +221,7 @@
     "STEAM": {
       "TEXT": "Steam",
       "LIST": {
+        "STEAM-ESTIMATE-APPROVAL": "Estimate/Approval",
         "STEAM-ESTIMATE": "Steam Estimate",
         "STEAM-APPROVAL": "Steam Approval",
         "JOB-ORDER": "Job Order",

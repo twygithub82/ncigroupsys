@@ -160,7 +160,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   customer_companyList?: CustomerCompanyItem[];
 
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 100;
+  pageSizeJobOrder = 10;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { create_dt: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
@@ -257,12 +257,15 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   onFilterJobOrder() {
     const where: any = {
       job_type_cv: { eq: "STEAM" }
+      
     };
 
+    where.steaming_part={all:{ tariff_steaming_guid: { eq: null } }};
+    
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
       where.or = [
         { storing_order_tank: { tank_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } },
-        { residue_part: { some: { residue: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
+        { steaming_part: { some: { steaming: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
       ];
     }
 
@@ -291,6 +294,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
         })
+        this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
+        this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
+        this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSizeJobOrder = pageSize;
@@ -590,5 +597,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
   }
+
+  
 
 }

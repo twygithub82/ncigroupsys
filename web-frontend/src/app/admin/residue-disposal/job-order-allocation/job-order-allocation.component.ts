@@ -1151,7 +1151,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.CANCELED_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/residue-disposal/approval'], {
+      this.router.navigate(['/admin/residue-disposal/job-order'], {
         state: this.historyState
 
       }
@@ -1335,37 +1335,31 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
         this.jobOrderDS.deleteJobOrder(jobOrderGuidToDelete).subscribe(result => {
           console.log(`deleteJobOrder: ${jobOrderGuidToDelete}, result: ${result}`);
         });
+      
       }
 
-      var act="PARTIAL_ASSIGN";
-      if(this.isAllAssignedToTeam()) {
-        console.log("all parts are assigned");
-        act="ASSIGN";
-        // var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
-        //   guid: this.residueItem!.guid,
-        //   sot_guid: this.sotItem!.guid,
-        //   action: "ASSIGN"
-        // });
-        // console.log(residueStatusReq);
-        // this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
-        //   console.log(result)
-        //   if (result.data.updateResidueStatus > 0) {
-        //     this.handleSaveSuccess(result.data.updateResidueStatus);
-        //   }
-        // });
-      } 
-      var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
-          guid: this.residueItem!.guid,
-          sot_guid: this.sotItem!.guid,
-          action:act
-        });
-        console.log(residueStatusReq);
-        this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
-          console.log(result)
-          if (result.data.updateResidueStatus > 0) {
-            this.handleSaveSuccess(result.data.updateResidueStatus);
-          }
-        });
+      if ((result?.data?.assignJobOrder ?? 0) > 0)
+      {
+        var act="PARTIAL_ASSIGN";
+        if(this.isAllAssignedToTeam()) {
+          console.log("all parts are assigned");
+          act="ASSIGN";
+        } 
+        var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
+            guid: this.residueItem!.guid,
+            sot_guid: this.sotItem!.guid,
+            action:act
+          });
+          console.log(residueStatusReq);
+          this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
+            console.log(result)
+            if (result.data.updateResidueStatus > 0) {
+              this.handleSaveSuccess(result.data.updateResidueStatus);
+            }
+          });
+
+      }
+      
     });
   }
 
@@ -1420,7 +1414,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   }
 
   canSave(): boolean {
-    const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION']
+    const validStatus = ['PENDING', 'APPROVED','PARTIAL_ASSIGNED', 'CANCELED', 'NO_ACTION']
     return validStatus.includes(this.residueItem?.status_cv!);
   }
   

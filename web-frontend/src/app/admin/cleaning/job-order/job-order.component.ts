@@ -236,6 +236,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
   previous_endCursorJobOrder: string | undefined = undefined;
+  showBayOverview = true;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -1003,6 +1004,19 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       return numA - numB;
     });
+  }
+
+  refreshBayOverview(): void {
+    this.showBayOverview = false;
+    setTimeout(() => {
+      this.showBayOverview = true;
+    }, 0);
+  }
+
+  onRefreshMainTab() {
+    // Logic to refresh the content of the main tab
+    console.log('Refreshing main tab content...');
+    this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
   }
   
 }

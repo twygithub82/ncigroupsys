@@ -158,7 +158,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   customer_companyList?: CustomerCompanyItem[];
 
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 100;
+  pageSizeJobOrder = 10;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { create_dt: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
@@ -287,6 +287,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
         })
+        this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
+        this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
+        this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPageJobOrder = this.joDS.pageInfo?.hasPreviousPage ?? false;
       });
 
     this.pageSizeJobOrder = pageSize;
@@ -301,6 +305,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     let before: string | undefined = undefined;
 
     if (this.pageSizeJobOrder !== pageSize) {
+       // Reset pagination if page size has changed
       this.pageIndexJobOrder = 0;
       first = pageSize;
       after = undefined;

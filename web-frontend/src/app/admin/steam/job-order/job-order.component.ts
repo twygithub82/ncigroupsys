@@ -55,7 +55,7 @@ import { JobOrderQCComponent } from "../job-order-qc/job-order-qc.component";
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
 import {SteamDS,SteamItem} from "app/data-sources/steam";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-
+import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 //import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
@@ -93,7 +93,8 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     MatCardModule,
     MatTabsModule,
     JobOrderQCComponent,
-    JobOrderTaskComponent
+    JobOrderTaskComponent,
+    BayOverviewComponent
 ]
 })
 export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -112,7 +113,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     'estimate_no',
     'approved_dt',
     // 'approve_part',
-    'status_cv'
+    'status_cv',
+    'actions'
   ];
 
   displayedColumnsJobOrder = [
@@ -177,7 +179,10 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     METHOD:"COMMON-FORM.METHOD",
     RESIDUE_DISPOSAL:'COMMON-FORM.RESIDUE-DISPOSAL',
-    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE'
+    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
+    BAY_OVERVIEW:"COMMON-FORM.BAY-OVERVIEW",
+    STEAM_HEAT_TYPE:"COMMON-FORM.STEAM-HEAT-TYPE",
+    REPAIR: 'COMMON-FORM.REPAIR',
   }
 
   filterSteamForm?: UntypedFormGroup;
@@ -710,12 +715,51 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
          if (result) {
           if(result>0)
             {
+
+              var where:any={
+                 guid:{eq:row.guid}
+              };
+
+              this.steamDs.search(where).subscribe(data => {
              
-              this.onPageEventSteam({pageIndex:this.pageIndexSteam,pageSize:this.pageSizeSteam,length:this.pageSizeSteam});
+                if(data.length>0)
+                {
+                  var steamParts:any=data[0].steaming_part;
+                  var joborder_guid:string=steamParts[0].job_order_guid;
+                  this.router.navigate(['/admin/steam/job-order/monitor', joborder_guid, row.guid]);
+                }
+              }
+            );
+
+              // this.router.navigate(['/admin/steam/job-order/allocation/',row.guid], {
+              //   state: { id: '' ,
+              //     action:"UPDATE",
+              //     selectedRow:row,
+              //     type:'steam',
+              //     pagination:{
+              //       where :this.lastSearchCriteriaSteam,
+              //       pageSize:this.pageSizeSteam,
+              //       pageIndex:this.pageIndexSteam,
+              //       hasPreviousPage:this.hasPreviousPageSteam,
+              //       startCursor:this.startCursorSteam,
+              //       endCursor:this.endCursorSteam,
+              //       previous_endCursor:this.previous_endCursorSteam,
+                    
+              //       showResult: this.steamDs.totalCount>0
+                    
+              //     }
+              //   }
+              // });
+              //this.onPageEventSteam({pageIndex:this.pageIndexSteam,pageSize:this.pageSizeSteam,length:this.pageSizeSteam});
             }
       }
       });
    
    }
- 
+   
+   canToggleJob(jobOrderItem:JobOrderItem | undefined) {
+    var retval
+    retval= (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid===null);
+    return retval;
+  }
 }

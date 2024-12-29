@@ -157,7 +157,7 @@
   </mat-progress-spinner>
 </div>
 }
-<mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="0" [pageSize]="10"
+<mat-paginator #paginator [length]="jobOrderList.length" [pageIndex]="0" [pageSize]="10"
   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
 </mat-paginator>
 <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
@@ -174,7 +174,7 @@
     <span>{{translatedLangText.YET_COMPLETE}}</span>
   </div>
   <div class="legend-item d-flex align-items-center me-4 mb-2">
-    <mat-icon class="me-2 fas fa-fire"></mat-icon>
+    <mat-icon class="me-2">whatshot</mat-icon>
     <span>{{translatedLangText.STEAM_HEAT_TYPE}}</span>
   </div>
 </div>

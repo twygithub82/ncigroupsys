@@ -618,13 +618,40 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
   checkCompulsoryEst(fields:string[])
   {
-    fields.forEach(name=>{
-    if( !this.residueEstForm?.get(name)?.value)
+    if(!this.newDesc.value)
       {
-        this.residueEstForm?.get(name)?.setErrors({ required: true });
-        this.residueEstForm?.get(name)?.markAsTouched(); // Trigger validation display
+        this.newDesc.setErrors({required:true});
+        this.newDesc.markAsTouched();
       }
-    });
+    if(!this.newQty.value)
+      {
+        this.newQty?.setErrors({required:true});
+        this.newQty?.markAsTouched();
+      }
+    if(!this.newUnitPrice.value)
+      {
+        this.newUnitPrice.setErrors({required:true});
+        this.newUnitPrice.markAsTouched();
+      }
+    if(!this.newQtyType.value) 
+    {
+      
+      this.newQtyType.setErrors({required:true});
+      this.newQtyType.markAsTouched();
+    }
+    else if( typeof this.newQtyType.value!='object')
+    {
+      this.newQtyType.setErrors({required:true});
+      this.newQtyType.markAsTouched();
+
+    }
+    // fields.forEach(name=>{
+    // if( !this.residueEstForm?.get(name)?.value)
+    //   {
+    //     this.residueEstForm?.get(name)?.setErrors({ required: true });
+    //     this.residueEstForm?.get(name)?.markAsTouched(); // Trigger validation display
+    //   }
+    // });
   }
 
   checkDuplicationEst(item:PackageResidueItem ,index:number=-1)
@@ -678,7 +705,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       index = this.updateSelectedItem.index;
     }
     this.checkDuplicationEst(descObject,index);
-    if(!this.newDesc?.valid || !this.newQty?.valid ||!this.newUnitPrice?.valid)return;
+    if(!this.newDesc?.valid || !this.newQty?.valid ||!this.newUnitPrice?.valid || !this.newQtyType?.valid)return;
     
     
     let tempDirection: Direction;
@@ -1577,16 +1604,38 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   
 
   resetValue(){
-
-    this.newDesc.setValue(null);
-    this.newQty.setValue(null);
-    this.newUnitPrice.setValue(null);
-    this.newQtyType.setValue(null);
-    this.newDesc.setErrors(null);
-    this.newQty.setErrors(null);
-    this.newUnitPrice.setErrors(null);
-    this.newQtyType.setErrors(null);
     
+//     this.newDesc.setValidators( null);
+// this.newDesc.patchValue(null, { emitEvent: false });
+//this.newDesc.updateValueAndValidity({ emitEvent: false });
+    // this.newDesc.disable({ emitEvent: false });
+    // this.newDesc.patchValue(null, { emitEvent: false });
+    // this.newDesc.enable({ emitEvent: false });
+    this.newDesc=new FormControl(null, [Validators.required]);
+        this.newQty=new FormControl(null, [Validators.required]);
+        this.newUnitPrice=new FormControl(null, [Validators.required]);
+        this.newQtyType=new FormControl(null, [Validators.required]);
+        this.initializeValueChanges();
+   // this.newDesc.patchValue(null,{emitEvent:false});
+    // this.newQty.patchValue(null,{emitEvent:false});
+    // this.newUnitPrice.patchValue(null,{emitEvent:false});
+    // this.newQtyType.patchValue(null,{emitEvent:false});
+     //this.newDesc.setErrors(null);
+     //this.newDesc.setValidators([Validators.required]);
+    // this.newDesc.updateValueAndValidity({ emitEvent: true });
+//     this.newQty.setErrors(null);
+//     this.newUnitPrice.setErrors(null);
+//     this.newQtyType.setErrors(null);
+//     this.newDesc.setValidators([Validators.required]);
+// this.newQty.setValidators([Validators.required]);
+// this.newUnitPrice.setValidators([Validators.required]);
+// this.newQtyType.setValidators([Validators.required]);
+
+// this.newDesc.updateValueAndValidity({ emitEvent: false });
+// this.newQty.updateValueAndValidity({ emitEvent: false });
+// this.newUnitPrice.updateValueAndValidity({ emitEvent: false });
+// this.newQtyType.updateValueAndValidity({ emitEvent: false });
+
     this.residueEstForm?.patchValue({
       desc:'',
       qty:'',
@@ -1731,7 +1780,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
           return new ResiduePartItem({
             ...rep,
             tariff_residue: undefined,
-            approve_part: rep.approve_part,
+            tariff_residue_guid:(rep.tariff_residue_guid?rep.tariff_residue_guid:''),
+            approve_part: (rep.approve_part==null?true:rep.approve_part),
              approve_qty:rep.approve_qty,
              approve_cost:rep.approve_cost
           })

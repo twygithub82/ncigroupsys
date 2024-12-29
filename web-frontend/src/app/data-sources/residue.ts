@@ -704,13 +704,19 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   canSave(re: ResidueItem): boolean {
-    const validStatus = ['APPROVED', 'JOB_IN_PROGRESS']
+    const validStatus = ['APPROVED', 'JOB_IN_PROGRESS','PARTIAL_ASSIGNED']
     return false;
   }
 
   canApprove(re: ResidueItem): boolean {
     //const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
     const validStatus = ['PENDING', 'APPROVED']
+    return validStatus.includes(re?.status_cv!);
+  }
+
+  canNoAction(re: ResidueItem): boolean {
+    //const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
+    const validStatus = ['APPROVED']
     return validStatus.includes(re?.status_cv!);
   }
 

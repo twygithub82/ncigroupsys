@@ -21,7 +21,7 @@ import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/p
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
 import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
+import { MatRowDef, MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { Observable, fromEvent } from 'rxjs';
@@ -49,7 +49,7 @@ import { MatCardModule } from '@angular/material/card';
 
 // import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
-import { ResidueDS,ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
+import { ResidueDS,ResidueItem, ResiduePartRequest, ResidueStatusRequest } from 'app/data-sources/residue';
 import { RepairItem } from 'app/data-sources/repair';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
 
@@ -167,6 +167,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
     RESIDUE_JOB_NO: 'COMMON-FORM.RESIDUE-JOB-NO',
     APPROVE: 'COMMON-FORM.APPROVE',
+    NO_ACTION: 'COMMON-FORM.NO-ACTION',
   }
 
   
@@ -506,7 +507,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['CLEANING','STORAGE'] }
+      tank_status_cv: { in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
     };
 
     if (this.searchForm!.value['tank_no']) {
@@ -891,6 +892,33 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     this.onApprove(event,row);
   }
 
+   onNoAction(event: Event,row: ResidueItem) {
+      this.preventDefault(event);
+          
+     
+          let residueStatus : ResidueStatusRequest = new ResidueStatusRequest();
+          residueStatus.action="NA";
+          residueStatus.guid = row?.guid;
+          residueStatus.sot_guid= row?.sot_guid;
+          residueStatus.remarks='';
+          residueStatus.residuePartRequests=[];
+          row.residue_part?.forEach(d=>{
+            var resPart :ResiduePartRequest = new ResiduePartRequest();
+            resPart.guid=d.guid;
+            resPart.approve_part=false;
+            residueStatus.residuePartRequests?.push(resPart);
+          });
+           this.residueDS.updateResidueStatus(residueStatus).subscribe(result=>{
+  
+            console.log(result)
+            this.search();
+           });
+          // this.residueDS.cancelResidue(reList).subscribe(result => {
+          //   this.handleCancelSuccess(result?.data?.cancelResidue)
+          // });
+        }
+      
+    
  
    onApprove(event:Event,row: ResidueItem) {
        event.preventDefault();

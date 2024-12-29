@@ -667,6 +667,17 @@ export const ROUTES: RouteInfo[] = [
     badgeClass: "",
     submenu: [
       {
+        path: "admin/steam/estimate-approval",
+        title: "MENUITEMS.STEAM.LIST.STEAM-ESTIMATE-APPROVAL",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: []
+      },
+      {
         path: "admin/steam/estimate",
         title: "MENUITEMS.STEAM.LIST.STEAM-ESTIMATE",
         iconType: "",
@@ -676,6 +687,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/steam/approval",
@@ -687,6 +699,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
+        visible: false
       },
       {
         path: "admin/steam/job-order",
@@ -699,7 +712,7 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       }
-    ]
+    ].filter(item => item.visible !== false),
   },
   {
     path: "admin/management",

@@ -788,7 +788,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
 
   canMonitorTemp(re: SteamItem): boolean {
     if (!re) return true;
-    const validStatus = ['ASSIGNED']
+    const validStatus = ['ASSIGNED','JOB_IN_PROGRESS']
     return validStatus.includes(re?.status_cv!);
   }
 
