@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
+import { testTypeMapping } from 'environments/environment.development';
 
 export class TankInfoItem {
   public guid?: string;
@@ -95,6 +96,39 @@ export const GET_TANK_INFO_FOR_MOVEMENT = gql`
   }
 `;
 
+export const GET_TANK_INFO_FOR_LAST_TEST = gql`
+  query queryTankInfo($where: tank_infoFilterInput) {
+    resultList: queryTankInfo(where: $where) {
+      nodes {
+        capacity
+        cladding_cv
+        create_by
+        create_dt
+        delete_dt
+        dom_dt
+        guid
+        height_cv
+        last_notify_dt
+        last_test_cv
+        manufacturer_cv
+        max_weight_cv
+        next_test_cv
+        owner_guid
+        tank_comp_guid
+        tank_no
+        tare_weight
+        test_class_cv
+        test_dt
+        unit_type_guid
+        update_by
+        update_dt
+        walkway_cv
+        yard_cv
+      }
+    }
+  }
+`;
+
 export class TankInfoDS extends BaseDataSource<TankInfoItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -123,4 +157,35 @@ export class TankInfoDS extends BaseDataSource<TankInfoItem> {
         finalize(() => this.loadingSubject.next(false))
       );
   }
+
+  getTankInfoForLastTest(tank_no: string): Observable<TankInfoItem[]> {
+    this.loadingSubject.next(true);
+    const where = {
+      tank_no: { eq: tank_no },
+    }
+    return this.apollo
+      .query<any>({
+        query: GET_TANK_INFO_FOR_LAST_TEST,
+        variables: { where },
+        fetchPolicy: 'no-cache', // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const resultList = result.data?.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        }),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+
+  getNextTestCv(last_test_cv: string): string | undefined {
+      if (!last_test_cv) return "";
+      const test_type = last_test_cv;
+      const mappedVal = testTypeMapping[test_type!];
+      return mappedVal;
+    }
 }

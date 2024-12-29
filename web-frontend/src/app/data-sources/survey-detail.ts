@@ -106,8 +106,8 @@ const GET_SURVEY_DETAIL_FOR_MOVEMENT = gql`
 `;
 
 export const ADD_SURVEY = gql`
-  mutation addSurveyDetail($surveyDetail: survey_detailInput!) {
-    addSurveyDetail(surveyDetail: $surveyDetail)
+  mutation addSurveyDetail($surveyDetail: survey_detailInput!, $periodicTest: PeriodicTestRequestInput) {
+    addSurveyDetail(surveyDetail: $surveyDetail, periodicTest: $periodicTest)
   }
 `;
 
@@ -170,11 +170,11 @@ export class SurveyDetailDS extends BaseDataSource<SurveyDetailItem> {
       );
   }
 
-  addSurveyDetail(surveyDetail: any): Observable<any> {
+  addSurveyDetail(surveyDetail: any, periodicTest: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_SURVEY,
       variables: {
-        surveyDetail
+        surveyDetail, periodicTest
       }
     });
   }

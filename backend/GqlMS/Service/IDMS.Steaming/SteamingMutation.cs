@@ -91,15 +91,38 @@ namespace IDMS.Steaming.GqlTypes
                 {
                     foreach (var item in steaming.steaming_part)
                     {
-                        var part = new steaming_part() { guid = item.guid };
-                        context.steaming_part.Attach(part);
+                        if(item?.action == null || string.IsNullOrEmpty(item.action))
+                        {
+                            var part = new steaming_part() { guid = item.guid };
+                            context.steaming_part.Attach(part);
 
-                        part.approve_qty = item.approve_qty;
-                        part.approve_labour = item.approve_labour;
-                        part.approve_part = item.approve_part;
-                        part.approve_cost = item.approve_cost;
-                        part.update_by = user;
-                        part.update_dt = currentDateTime;
+                            part.approve_qty = item.approve_qty;
+                            part.approve_labour = item.approve_labour;
+                            part.approve_part = item.approve_part;
+                            part.approve_cost = item.approve_cost;
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                        }
+                        else if (item.action.EqualsIgnore(ObjectAction.NEW))
+                        {
+                            var newPart = new steaming_part();
+                            newPart.guid = Util.GenerateGUID();
+                            newPart.create_by = user;
+                            newPart.create_dt = currentDateTime;
+                            newPart.steaming_guid = item.steaming_guid ?? steaming.guid;
+                            newPart.steaming_exclusive_guid = item.steaming_exclusive_guid;
+                            newPart.tariff_steaming_guid = item.tariff_steaming_guid;
+                            newPart.job_order_guid = "";
+                            newPart.description = item.description;
+                            newPart.quantity = item.quantity;
+                            newPart.cost = item.cost;
+                            newPart.labour = item.labour;
+                            newPart.approve_cost = item.approve_cost;
+                            newPart.approve_qty = item.approve_qty;
+                            newPart.approve_labour = item.approve_labour;
+                            newPart.approve_part = true;
+                            await context.steaming_part.AddAsync(newPart);
+                        }
                     }
                 }
 

@@ -482,6 +482,7 @@ namespace IDMS.Inventory.GqlTypes
                 newSuyDetail.status_cv = surveyDetail.status_cv;
                 newSuyDetail.remarks = surveyDetail.remarks;
                 newSuyDetail.survey_dt = surveyDetail.survey_dt;
+                newSuyDetail.test_class_cv = surveyDetail.test_class_cv;
                 newSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
 
                 if (surveyDetail.survey_type_cv.EqualsIgnore("PERIODIC_TEST"))
@@ -534,6 +535,7 @@ namespace IDMS.Inventory.GqlTypes
                 updateSuyDetail.status_cv = surveyDetail.status_cv;
                 updateSuyDetail.remarks = surveyDetail.remarks;
                 updateSuyDetail.survey_type_cv = surveyDetail.survey_type_cv;
+                updateSuyDetail.test_class_cv = surveyDetail.test_class_cv;
                 updateSuyDetail.survey_dt = surveyDetail.survey_dt;
 
                 var res = await context.SaveChangesAsync();

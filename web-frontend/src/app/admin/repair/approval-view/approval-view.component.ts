@@ -1031,7 +1031,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   canApprove() {
-    return this.canApproveFlag && this.repairDS.canApprove(this.repairItem) 
+    return this.canApproveFlag && this.repairDS.canApprove(this.repairItem)
   }
 
   displayApproveQty(rep: RepairPartItem) {

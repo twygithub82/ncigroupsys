@@ -108,8 +108,7 @@ export class FormDialogComponent {
     return this.fb.group({
       survey_type_cv: this.surveyDetail?.survey_type_cv,
       test_class_cv: this.surveyDetail?.test_class_cv,
-      // customer_company_guid: this.getSelectedCustomerCompany(this.surveyDetail?.customer_company_guid),
-      survey_dt: Utility.convertDate(this.surveyDetail?.survey_dt),
+      survey_dt: Utility.convertDate(this.surveyDetail?.survey_dt) || new Date(),
       status_cv: this.surveyDetail?.status_cv,
       remarks: this.surveyDetail?.remarks,
     });
@@ -137,7 +136,7 @@ export class FormDialogComponent {
           this.dialogRef.close(returnDialog);
         });
       } else {
-        this.surveyDS.addSurveyDetail(surveyDetail).subscribe(result => {
+        this.surveyDS.addSurveyDetail(surveyDetail, undefined).subscribe(result => {
           const returnDialog: any = {
             savedSuccess: (result?.data?.addSurveyDetail ?? 0) > 0,
             action: this.action

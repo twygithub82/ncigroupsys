@@ -1398,27 +1398,58 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getLastTest(): string | undefined {
-    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.tiItem) return "-";
+    return this.getLastTestTI() || this.getLastTestIGS();
+  }
 
-    const ti = this.tiItem
-    if (ti && ti.last_test_cv && ti.test_class_cv && ti.test_dt) {
-      const test_type = ti.last_test_cv;
-      const test_class = ti.test_class_cv;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(ti.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+  getNextTest(): string | undefined {
+    return this.getNextTestTI() || this.getNextTestIGS();
+  }
+
+  getLastTestIGS(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.igs) return "";
+
+    const igs = this.igs
+    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
+      const test_type = igs.last_test_cv;
+      const test_class = igs.test_class_cv;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
     return "";
   }
 
-  getNextTest(): string | undefined {
-    if (!this.testTypeCvList?.length || !this.tiItem) return "-";
+  getLastTestTI(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !this.tiItem) return "";
 
-    const ti = this.tiItem
-    if (!ti?.test_dt || !ti?.last_test_cv) return "-";
-    const test_type = ti?.last_test_cv;
+    if (this.tiItem.last_test_cv && this.tiItem.test_class_cv && this.tiItem.test_dt) {
+      const test_type = this.tiItem.last_test_cv;
+      const test_class = this.tiItem.test_class_cv;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+    }
+    return "";
+  }
+
+  getNextTestIGS(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.igs) return "";
+
+    const igs = this.igs
+    if (!igs?.test_dt || !igs?.last_test_cv) return "-";
+    const test_type = igs?.last_test_cv;
     const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
     const yearCount = parseFloat(match?.[0] ?? "0");
-    const resultDt = Utility.addYearsToEpoch(ti?.test_dt as number, yearCount) as number;
-    const output = this.getTestTypeDescription(ti?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
+    const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    return output;
+  }
+
+  getNextTestTI(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.tiItem) return "";
+
+    if (!this.tiItem?.test_dt || !this.tiItem?.last_test_cv) return "-";
+    const test_type = this.tiItem?.last_test_cv;
+    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
+    const yearCount = parseFloat(match?.[0] ?? "0");
+    const resultDt = Utility.addYearsToEpoch(this.tiItem?.test_dt as number, yearCount) as number;
+    const output = this.getTestTypeDescription(this.tiItem?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     return output;
   }
 

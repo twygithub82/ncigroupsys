@@ -36,7 +36,6 @@ namespace IDMS.Residue.GqlTypes
                 newResidue.estimate_no = residue.estimate_no;
                 newResidue.remarks = residue.remarks;
                 newResidue.job_no = residue.job_no;
-                newResidue.qty_unit_type_cv = residue.qty_unit_type_cv;
                 newResidue.status_cv = CurrentServiceStatus.PENDING;
                 newResidue.allocate_by = residue.allocate_by;
                 newResidue.allocate_dt = residue.allocate_dt;
@@ -97,7 +96,6 @@ namespace IDMS.Residue.GqlTypes
                 updatedResidue.job_no = residue.job_no;
                 updatedResidue.bill_to_guid = residue.bill_to_guid;
                 updatedResidue.remarks = residue.remarks;
-                updatedResidue.qty_unit_type_cv = residue.qty_unit_type_cv;
 
                 //Handling For Template_est_part
                 foreach (var item in residue.residue_part)
@@ -121,6 +119,7 @@ namespace IDMS.Residue.GqlTypes
                         part.update_by = user;
                         part.update_dt = currentDateTime;
                         part.quantity = item.quantity;
+                        part.qty_unit_type_cv = item.qty_unit_type_cv;
                         part.cost = item.cost;
                         part.description = item.description;
                         part.tariff_residue_guid = item.tariff_residue_guid;
@@ -165,7 +164,6 @@ namespace IDMS.Residue.GqlTypes
                     approveResidue.bill_to_guid = residue.bill_to_guid;
                     approveResidue.job_no = residue.job_no;
                     approveResidue.remarks = residue.remarks;
-                    approveResidue.qty_unit_type_cv = residue.qty_unit_type_cv;
 
                     //Only change when first time approve
                     if (CurrentServiceStatus.PENDING.EqualsIgnore(residue.status_cv))
@@ -178,15 +176,37 @@ namespace IDMS.Residue.GqlTypes
                     if (residue.residue_part != null)
                     {
                         foreach (var item in residue.residue_part)
-                        {
-                            var part = new residue_part() { guid = item.guid };
-                            context.residue_part.Attach(part);
+                        {                            
+                            if(item?.action == null || string.IsNullOrEmpty(item.action))
+                            {
+                                var part = new residue_part() { guid = item.guid };
+                                context.residue_part.Attach(part);
 
-                            part.approve_part = item.approve_part;
-                            part.approve_cost = item.approve_cost;
-                            part.approve_qty = item.approve_qty;
-                            part.update_by = user;
-                            part.update_dt = currentDateTime;
+                                part.approve_part = item.approve_part;
+                                part.approve_cost = item.approve_cost;
+                                part.approve_qty = item.approve_qty;
+                                part.qty_unit_type_cv = item.qty_unit_type_cv;
+                                part.update_by = user;
+                                part.update_dt = currentDateTime;
+                            }
+                            else if (item.action.EqualsIgnore(ObjectAction.NEW))
+                            {
+                                var newPart = new residue_part();
+                                newPart.guid = Util.GenerateGUID();
+                                newPart.create_by = user;
+                                newPart.create_dt = currentDateTime;
+                                newPart.residue_guid = item.residue_guid ?? residue.guid;
+                                newPart.tariff_residue_guid = item.tariff_residue_guid;
+                                newPart.job_order_guid = "";
+                                newPart.description = item.description;
+                                newPart.quantity = item.quantity;
+                                newPart.cost = item.cost;
+                                newPart.approve_cost = item.approve_cost;
+                                newPart.approve_qty = item.approve_qty;
+                                newPart.approve_part = true;
+                                newPart.qty_unit_type_cv = item.qty_unit_type_cv;
+                                await context.residue_part.AddAsync(newPart);
+                            }
                         }
                     }
 
@@ -527,14 +547,17 @@ namespace IDMS.Residue.GqlTypes
 
                 foreach (var item in residueJobOrder)
                 {
-                    //Repair handling
-                    var completedResidue = new residue() { guid = item.guid };
-                    context.residue.Attach(completedResidue);
-                    completedResidue.update_by = user;
-                    completedResidue.update_dt = currentDateTime;
-                    completedResidue.status_cv = CurrentServiceStatus.JOB_IN_PROGRESS;
+                    //Residue handling
+                    var rollbackResidue = await context.residue.FindAsync(item.guid);
+                    if (rollbackResidue == null)
+                        throw new GraphQLException(new Error($"Residue estimate not found", "ERROR"));
+
+                    rollbackResidue.update_by = user;
+                    rollbackResidue.update_dt = currentDateTime;
                     if (!string.IsNullOrEmpty(item.remarks))
-                        completedResidue.remarks = item.remarks;
+                        rollbackResidue.remarks = item.remarks;
+                    if (rollbackResidue.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
+                        rollbackResidue.status_cv = CurrentServiceStatus.ASSIGNED;
 
                     //job_orders handling
                     var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
@@ -543,12 +566,12 @@ namespace IDMS.Residue.GqlTypes
                     string sql = "";
                     if (!string.IsNullOrEmpty(jobRemark))
                     {
-                        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
                                 $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
                     }
                     else
                     {
-                        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
                                 $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
                     }
                     context.Database.ExecuteSqlRaw(sql);
