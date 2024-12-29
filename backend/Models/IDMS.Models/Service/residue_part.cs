@@ -19,6 +19,7 @@ namespace IDMS.Models.Service
         public string? job_order_guid { get; set; }
         public string? description { get; set; }
         public int? quantity { get; set; }
+        public string? qty_unit_type_cv { get; set; }
         public double? cost { get; set; }
         public bool? approve_part { get; set; }
         public int? approve_qty { get; set; }
