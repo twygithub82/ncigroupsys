@@ -505,7 +505,7 @@ const GET_STORING_ORDER_TANKS_SURVEY = gql`
   }
 `;
 
-const GET_STORING_ORDER_TANKS_SURVEY_BY_ID = gql`
+const GET_STORING_ORDER_TANKS_OTH_SURVEY_BY_ID = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTank(where: $where) {
       totalCount
@@ -553,7 +553,7 @@ const GET_STORING_ORDER_TANKS_SURVEY_BY_ID = gql`
             name
           }
         }
-        in_gate {
+        in_gate(where: { delete_dt: { eq: null } }) {
           eir_no
           eir_dt
           delete_dt
@@ -567,7 +567,7 @@ const GET_STORING_ORDER_TANKS_SURVEY_BY_ID = gql`
             next_test_cv
           }
         }
-        survey_detail {
+        survey_detail(where: { test_class_cv: { neq: "PERIODIC_TEST" } }) {
           create_by
           create_dt
           delete_dt
@@ -577,6 +577,96 @@ const GET_STORING_ORDER_TANKS_SURVEY_BY_ID = gql`
           status_cv
           survey_dt
           survey_type_cv
+          test_class_cv
+          test_type_cv
+          update_by
+          update_dt
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+    }
+  }
+`;
+
+const GET_STORING_ORDER_TANKS_PT_SURVEY_BY_ID = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      totalCount
+      nodes {
+        certificate_cv
+        clean_status_cv
+        create_by
+        create_dt
+        delete_dt
+        estimate_cv
+        eta_dt
+        etr_dt
+        guid
+        job_no
+        preinspect_job_no
+        liftoff_job_no
+        lifton_job_no
+        takein_job_no
+        release_job_no
+        last_cargo_guid
+        purpose_cleaning
+        purpose_repair_cv
+        purpose_steam
+        purpose_storage
+        remarks
+        required_temp
+        so_guid
+        status_cv
+        tank_no
+        tank_status_cv
+        unit_type_guid
+        update_by
+        update_dt
+        customer_company {
+          code
+          name
+        }
+        tariff_cleaning {
+          cargo
+        }
+        storing_order {
+          customer_company_guid
+          customer_company {
+            code
+            name
+          }
+        }
+        in_gate(where: { delete_dt: { eq: null } }) {
+          eir_no
+          eir_dt
+          delete_dt
+          yard_cv
+          in_gate_survey {
+            tare_weight
+            capacity
+            last_test_cv
+            test_class_cv
+            test_dt
+            next_test_cv
+          }
+        }
+        survey_detail(where: { test_class_cv: { eq: "PERIODIC_TEST" } }) {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          remarks
+          sot_guid
+          status_cv
+          survey_dt
+          survey_type_cv
+          test_class_cv
+          test_type_cv
           update_by
           update_dt
         }
@@ -2539,14 +2629,42 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  getStoringOrderTanksForSurveyByID(sot_guid: any): Observable<StoringOrderTankItem[]> {
+  getStoringOrderTanksForOtherSurveyByID(sot_guid: any): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-    const where = {
+    const where = this.addDeleteDtCriteria({
       guid: { eq: sot_guid }
-    }
+    });
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANKS_SURVEY_BY_ID,
+        query: GET_STORING_ORDER_TANKS_OTH_SURVEY_BY_ID,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of({ items: [], totalCount: 0 }); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          this.pageInfo = sotList.pageInfo;
+          return sotList.nodes;
+        })
+      );
+  }
+
+  getStoringOrderTanksForPTSurveyByID(sot_guid: any): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    const where = this.addDeleteDtCriteria({
+      guid: { eq: sot_guid }
+    });
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_OTH_SURVEY_BY_ID,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

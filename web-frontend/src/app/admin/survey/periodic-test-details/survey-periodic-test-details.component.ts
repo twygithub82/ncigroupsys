@@ -296,7 +296,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
-      this.subs.sink = this.sotDS.getStoringOrderTanksForSurveyByID(this.sot_guid).subscribe(data => {
+      this.subs.sink = this.sotDS.getStoringOrderTanksForPTSurveyByID(this.sot_guid).subscribe(data => {
         if (data.length > 0) {
           this.sotItem = data[0];
           this.surveyDetailItem = this.sotItem?.survey_detail || [];

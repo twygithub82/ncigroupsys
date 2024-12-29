@@ -188,7 +188,7 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
     {
       //  var where:any={};
       //  where.guid={eq:this.sotItem.guid};
-        this.sotDS.getStoringOrderTanksForSurveyByID(this.sotItem.guid).subscribe(result=>{
+        this.sotDS.getStoringOrderTanksForOtherSurveyByID(this.sotItem.guid).subscribe(result=>{
 
           if(result.length>0)
           {

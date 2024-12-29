@@ -188,6 +188,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   surveyStatusCvList: CodeValuesItem[] = [];
 
   sot_guid?: string | null;
+  last_test_desc? = "";
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
@@ -267,9 +268,11 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
       this.testTypeCvList = data;
+      this.last_test_desc = this.getLastTest();
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = data;
+      this.last_test_desc = this.getLastTest();
     });
     this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
       this.surveyTypeCvList = data;
@@ -287,10 +290,11 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
-      this.subs.sink = this.sotDS.getStoringOrderTanksForSurveyByID(this.sot_guid).subscribe(data => {
+      this.subs.sink = this.sotDS.getStoringOrderTanksForOtherSurveyByID(this.sot_guid).subscribe(data => {
         if (data.length > 0) {
           this.sotItem = data[0];
           this.surveyDetailItem = this.sotItem?.survey_detail || [];
+          this.last_test_desc = this.getLastTest();
         }
       });
     } else {

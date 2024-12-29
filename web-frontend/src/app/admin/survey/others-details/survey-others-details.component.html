@@ -107,7 +107,7 @@
                       <span>{{translatedLangText.LAST_TEST}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{getLastTest()}}
+                      <div class="contact-detail-info font-bold">{{last_test_desc}}
                       </div>
                     </div>
                   </div>
@@ -183,7 +183,7 @@
                           <mat-cell mat-cell *matCellDef="let row"
                             [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
-                              class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{ccDS.displayName(row?.customer_company)}}
+                              class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{getTestClassDescription(row?.test_class_cv)}}
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="survey_dt">
