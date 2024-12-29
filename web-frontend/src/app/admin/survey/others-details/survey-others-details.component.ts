@@ -306,7 +306,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const where = {
       sot_guid: { eq: this.sot_guid }
     }
-    this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "DESC" }).subscribe(data => {
+    this.subs.sink = this.surveyDS.searchSurveyDetail(where, { survey_dt: "ASC" }).subscribe(data => {
       if (data.length > 0) {
         this.surveyDetailItem = data;
       }
@@ -494,6 +494,10 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getSurveyTypeDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.surveyTypeCvList);
+  }
+
+  getSurveyStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.surveyStatusCvList);
   }
 
   getLastTest(): string | undefined {

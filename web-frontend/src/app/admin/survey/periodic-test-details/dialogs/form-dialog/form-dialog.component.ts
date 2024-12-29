@@ -28,16 +28,20 @@ import { BookingDS, BookingItem } from 'app/data-sources/booking';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
+import { TankInfoDS } from 'app/data-sources/tank-info';
 
 export interface DialogData {
   action?: string;
   sot: StoringOrderTankItem;
   surveyDetail: SurveyDetailItem;
-  surveyDS: SurveyDetailDS;
   translatedLangText?: any;
   populateData?: any;
   next_test_desc?: string;
   next_test_cv?: string;
+  cvDS: CodeValuesDS;
+  ccDS: CustomerCompanyDS;
+  surveyDS: SurveyDetailDS;
+  tiDS: TankInfoDS;
 }
 
 @Component({
@@ -80,6 +84,7 @@ export class FormDialogComponent {
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
   surveyDS: SurveyDetailDS;
+  tiDS: TankInfoDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -89,20 +94,21 @@ export class FormDialogComponent {
 
   ) {
     // Set the defaults
-    this.cvDS = new CodeValuesDS(this.apollo);
-    this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.cvDS = data.cvDS;
+    this.ccDS = data.ccDS;
     this.surveyDS = data.surveyDS;
+    this.tiDS = data.tiDS;
     this.sot = data.sot;
     this.surveyDetail = data.surveyDetail;
     this.action = data.action!;
     this.next_test_desc = data.next_test_desc;
     this.next_test_cv = data.next_test_cv;
     if (this.action === 'edit') {
-      this.dialogTitle = data.translatedLangText.EDIT_SURVEY;
+      this.dialogTitle = data.translatedLangText.EDIT + " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
       // this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.booking.booking_dt) as Date, this.startDateToday);
       this.maxDate = Utility.getLaterDate(Utility.convertDate(this.surveyDetail.survey_dt) as Date, this.maxDate);
     } else {
-      this.dialogTitle = data.translatedLangText.NEW_SURVEY;
+      this.dialogTitle = data.translatedLangText.NEW + " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
     }
     this.surveyForm = this.createStorigOrderTankForm();
     this.initializeValueChange();
@@ -110,12 +116,12 @@ export class FormDialogComponent {
 
   createStorigOrderTankForm(): UntypedFormGroup {
     return this.fb.group({
-      test_type_cv: '',
       survey_type_cv: 'PERIODIC_TEST',
       test_class_cv: this.surveyDetail?.test_class_cv,
-      survey_dt: Utility.convertDate(this.surveyDetail?.survey_dt),
-      status_cv: this.surveyDetail?.status_cv,
+      survey_dt: Utility.convertDate(this.surveyDetail?.survey_dt) || new Date(),
+      status_cv: [{ value: this.surveyDetail?.status_cv, disabled: this.action === 'edit' }],
       remarks: this.surveyDetail?.remarks,
+      test_type_cv: [{ value: this.surveyDetail?.test_type_cv || this.data.next_test_cv, disabled: this.action === 'edit' }],
     });
   }
 
@@ -124,14 +130,20 @@ export class FormDialogComponent {
       var surveyDetail: any = {
         guid: this.surveyDetail?.guid,
         sot_guid: this.sot?.guid,
-        survey_type_cv: this.surveyForm.get('survey_type_cv')?.value,
-        customer_company_guid: this.surveyForm.get('customer_company_guid')?.value?.guid,
-        customer_company: new CustomerCompanyGO(this.surveyForm.get('customer_company_guid')?.value),
+        survey_type_cv: 'PERIODIC_TEST',
+        test_class_cv: this.surveyForm.get('test_class_cv')?.value,
         survey_dt: Utility.convertDate(this.surveyForm.get('survey_dt')?.value),
         status_cv: this.surveyForm.get('status_cv')?.value,
         remarks: this.surveyForm.get('remarks')?.value,
+        test_type_cv: this.surveyForm.get('test_type_cv')?.value,
       }
-      console.log(surveyDetail);
+      var periodicTest: any = {
+        last_test_cv: surveyDetail.test_type_cv,
+        next_test_cv: this.tiDS.getNextTestCv(surveyDetail.test_type_cv),
+        tank_no: this.sot?.tank_no
+      }
+      console.log('submit surveyDetail: ', surveyDetail);
+      console.log('submit periodicTest: ', periodicTest);
       if (surveyDetail.guid) {
         this.surveyDS.updateSurveyDetail(surveyDetail).subscribe(result => {
           const returnDialog: any = {
@@ -142,7 +154,7 @@ export class FormDialogComponent {
           this.dialogRef.close(returnDialog);
         });
       } else {
-        this.surveyDS.addSurveyDetail(surveyDetail).subscribe(result => {
+        this.surveyDS.addSurveyDetail(surveyDetail, periodicTest).subscribe(result => {
           const returnDialog: any = {
             savedSuccess: (result?.data?.addSurveyDetail ?? 0) > 0,
             action: this.action

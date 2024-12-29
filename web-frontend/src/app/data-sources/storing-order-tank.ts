@@ -567,7 +567,7 @@ const GET_STORING_ORDER_TANKS_OTH_SURVEY_BY_ID = gql`
             next_test_cv
           }
         }
-        survey_detail(where: { test_class_cv: { neq: "PERIODIC_TEST" } }) {
+        survey_detail(where: { survey_type_cv: { neq: "PERIODIC_TEST" } }) {
           create_by
           create_dt
           delete_dt
@@ -655,7 +655,7 @@ const GET_STORING_ORDER_TANKS_PT_SURVEY_BY_ID = gql`
             next_test_cv
           }
         }
-        survey_detail(where: { test_class_cv: { eq: "PERIODIC_TEST" } }) {
+        survey_detail(where: { survey_type_cv: { eq: "PERIODIC_TEST" } }) {
           create_by
           create_dt
           delete_dt
@@ -2664,7 +2664,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     });
     return this.apollo
       .query<any>({
-        query: GET_STORING_ORDER_TANKS_OTH_SURVEY_BY_ID,
+        query: GET_STORING_ORDER_TANKS_PT_SURVEY_BY_ID,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

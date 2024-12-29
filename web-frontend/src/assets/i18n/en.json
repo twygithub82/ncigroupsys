@@ -797,7 +797,8 @@
     "SURVEY-TYPE": "Survey Type",
     "REMOVE": "Remove",
     "OVERWRITE": "Overwrite",
-    "OVERWRITE-QC": "Overwrite QC"
+    "OVERWRITE-QC": "Overwrite QC",
+    "PERIODIC-TEST-SURVEY": "Periodic Test Survey"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
