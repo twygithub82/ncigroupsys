@@ -176,8 +176,20 @@ namespace IDMS.Residue.GqlTypes
                     if (residue.residue_part != null)
                     {
                         foreach (var item in residue.residue_part)
-                        {
-                            if (item.action.EqualsIgnore(ObjectAction.NEW))
+                        {                            
+                            if(item?.action == null || string.IsNullOrEmpty(item.action))
+                            {
+                                var part = new residue_part() { guid = item.guid };
+                                context.residue_part.Attach(part);
+
+                                part.approve_part = item.approve_part;
+                                part.approve_cost = item.approve_cost;
+                                part.approve_qty = item.approve_qty;
+                                part.qty_unit_type_cv = item.qty_unit_type_cv;
+                                part.update_by = user;
+                                part.update_dt = currentDateTime;
+                            }
+                            else if (item.action.EqualsIgnore(ObjectAction.NEW))
                             {
                                 var newPart = new residue_part();
                                 newPart.guid = Util.GenerateGUID();
@@ -192,18 +204,8 @@ namespace IDMS.Residue.GqlTypes
                                 newPart.approve_cost = item.approve_cost;
                                 newPart.approve_qty = item.approve_qty;
                                 newPart.approve_part = true;
-                            }
-                            else
-                            {
-                                var part = new residue_part() { guid = item.guid };
-                                context.residue_part.Attach(part);
-
-                                part.approve_part = item.approve_part;
-                                part.approve_cost = item.approve_cost;
-                                part.approve_qty = item.approve_qty;
-                                part.qty_unit_type_cv = item.qty_unit_type_cv;
-                                part.update_by = user;
-                                part.update_dt = currentDateTime;
+                                newPart.qty_unit_type_cv = item.qty_unit_type_cv;
+                                await context.residue_part.AddAsync(newPart);
                             }
                         }
                     }
@@ -545,14 +547,17 @@ namespace IDMS.Residue.GqlTypes
 
                 foreach (var item in residueJobOrder)
                 {
-                    //Repair handling
-                    var completedResidue = new residue() { guid = item.guid };
-                    context.residue.Attach(completedResidue);
-                    completedResidue.update_by = user;
-                    completedResidue.update_dt = currentDateTime;
-                    completedResidue.status_cv = CurrentServiceStatus.APPROVED;
+                    //Residue handling
+                    var rollbackResidue = await context.residue.FindAsync(item.guid);
+                    if (rollbackResidue == null)
+                        throw new GraphQLException(new Error($"Residue estimate not found", "ERROR"));
+
+                    rollbackResidue.update_by = user;
+                    rollbackResidue.update_dt = currentDateTime;
                     if (!string.IsNullOrEmpty(item.remarks))
-                        completedResidue.remarks = item.remarks;
+                        rollbackResidue.remarks = item.remarks;
+                    if (rollbackResidue.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
+                        rollbackResidue.status_cv = CurrentServiceStatus.ASSIGNED;
 
                     //job_orders handling
                     var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
@@ -561,12 +566,12 @@ namespace IDMS.Residue.GqlTypes
                     string sql = "";
                     if (!string.IsNullOrEmpty(jobRemark))
                     {
-                        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
                                 $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
                     }
                     else
                     {
-                        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                        sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
                                 $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
                     }
                     context.Database.ExecuteSqlRaw(sql);

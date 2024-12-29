@@ -91,7 +91,19 @@ namespace IDMS.Steaming.GqlTypes
                 {
                     foreach (var item in steaming.steaming_part)
                     {
-                        if (item.action.EqualsIgnore(ObjectAction.NEW))
+                        if(item?.action == null || string.IsNullOrEmpty(item.action))
+                        {
+                            var part = new steaming_part() { guid = item.guid };
+                            context.steaming_part.Attach(part);
+
+                            part.approve_qty = item.approve_qty;
+                            part.approve_labour = item.approve_labour;
+                            part.approve_part = item.approve_part;
+                            part.approve_cost = item.approve_cost;
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                        }
+                        else if (item.action.EqualsIgnore(ObjectAction.NEW))
                         {
                             var newPart = new steaming_part();
                             newPart.guid = Util.GenerateGUID();
@@ -109,18 +121,7 @@ namespace IDMS.Steaming.GqlTypes
                             newPart.approve_qty = item.approve_qty;
                             newPart.approve_labour = item.approve_labour;
                             newPart.approve_part = true;
-                        }
-                        else
-                        {
-                            var part = new steaming_part() { guid = item.guid };
-                            context.steaming_part.Attach(part);
-
-                            part.approve_qty = item.approve_qty;
-                            part.approve_labour = item.approve_labour;
-                            part.approve_part = item.approve_part;
-                            part.approve_cost = item.approve_cost;
-                            part.update_by = user;
-                            part.update_dt = currentDateTime;
+                            await context.steaming_part.AddAsync(newPart);
                         }
                     }
                 }
