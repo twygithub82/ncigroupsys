@@ -59,7 +59,7 @@ import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { JobItemRequest, JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, SteamJobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { SteamItem, SteamDS, SteamStatusRequest } from 'app/data-sources/steam';
@@ -1051,7 +1051,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
         steamStatus.action = "COMPLETE";
         steamStatus.guid = stmItem?.guid;
         steamStatus.sot_guid = stmItem?.sot_guid;
-        this.steamDS.updateSteamStatus(stmItem).subscribe(result => {
+        this.steamDS.updateSteamStatus(steamStatus).subscribe(result => {
 
           console.log(result);
         });
@@ -1063,4 +1063,47 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     });
 
   }
+
+  canRollbackJob() {
+    return this.joDS.canRollbackJob(this.jobOrderItem) && this.steamDS.canRollbackJobInProgress(this.steamItem) && !this.isStarted();
+  }
+
+   rollbackJob(event: Event) {
+        this.preventDefault(event);  // Prevents the form submission
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+          width: '1000px',
+          data: {
+            action: 'rollback',
+            dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+            item: [this.steamItem],
+            translatedLangText: this.translatedLangText
+          },
+          direction: tempDirection
+        });
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+            const stmJobOrder = new SteamJobOrderRequest({
+              guid: this.steamItem?.guid,
+              sot_guid: this.steamItem?.sot_guid,
+              job_order: [new JobOrderGO({...this.jobOrderItem, remarks: result.remarks})],
+              sot_status: this.sotItem?.tank_status_cv,
+              remarks:result.item[0].remarks
+            });
+    
+            console.log(stmJobOrder)
+            this.joDS.rollbackJobInProgressSteaming([stmJobOrder]).subscribe(result => {
+              console.log(result)
+              if ((result?.data?.rollbackJobInProgressSteaming ?? 0) > 0) {
+                this.handleSaveSuccess(result?.data?.rollbackJobInProgressSteaming);
+              }
+            });
+          }
+        });
+      }
 }

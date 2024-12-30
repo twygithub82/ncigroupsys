@@ -1127,7 +1127,8 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
             sot_guid: this.residueItem?.sot_guid,
             estimate_no: this.residueItem?.estimate_no,
             job_order: [new JobOrderGO({...this.jobOrderItem, remarks: result.remarks})],
-            sot_status: this.sotItem?.tank_status_cv
+            sot_status: this.sotItem?.tank_status_cv,
+            remarks:result.item[0].remarks
           });
   
           console.log(repJobOrder)

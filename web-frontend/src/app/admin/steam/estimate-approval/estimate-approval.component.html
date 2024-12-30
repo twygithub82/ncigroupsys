@@ -186,7 +186,7 @@
                   </button>
                   }
                   @else {
-                  <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW" (click)="addResidueEstimate($event,row)">
+                  <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW" (click)="addSteamEstimate($event,row)">
                     <!-- [routerLink]="['/admin/repair/estimate/new', row.guid]"> -->
                     <mat-icon class="col-white">add</mat-icon>
                   </button>
@@ -287,12 +287,18 @@
                             <span>{{translatedLangText.AMEND}}</span>
                           </button>
                           } -->
-                          @if (steamDS.canCopy(steamRow)) {
+                          <!-- @if (steamDS.canCopy(steamRow)) {
                           <button mat-menu-item (click)="copyResidueEst(steamRow)">
                             <mat-icon>content_copy</mat-icon>
                             <span>{{translatedLangText.COPY}}</span>
                           </button>
-                          }
+                          } -->
+                          @if (steamDS.canApprove(steamRow)) {
+                            <button mat-menu-item (click)="approveRow($event,steamRow)" >
+                              <mat-icon>check</mat-icon>
+                              <span>{{translatedLangText.APPROVE}}</span>
+                            </button>
+                            }
                           @if (steamDS.canRollbackEstimate(steamRow)) {
                           <button mat-menu-item (click)="rollbackRow(steamRow)">
                             <mat-icon>undo</mat-icon>

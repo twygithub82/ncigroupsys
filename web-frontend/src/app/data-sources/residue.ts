@@ -742,7 +742,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   }
 
   getApproveTotal(residuePartList: any[] | undefined): any {
-    const totalSums = residuePartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part == null))?.reduce((totals: any, owner) => {
+    const totalSums = residuePartList?.filter(data => !data.delete_dt && (data.approve_part == 1||data.approve_part || data.approve_part == null))?.reduce((totals: any, owner) => {
       return {
         //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
 

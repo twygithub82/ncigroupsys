@@ -53,6 +53,7 @@ import { ResidueDS,ResidueItem, ResidueStatusRequest } from 'app/data-sources/re
 import { RepairItem } from 'app/data-sources/repair';
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
+import { SteamPartItem } from 'app/data-sources/steam-part';
 
 @Component({
   selector: 'app-estimate',
@@ -165,6 +166,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     COPY: 'COMMON-FORM.COPY',
     NO_OF_PARTS: 'COMMON-FORM.NO-OF-PARTS',
     REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
+    APPROVE:'COMMON-FORM.APPROVE'
     
   }
 
@@ -691,12 +693,17 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   calculateNetCost(steam: SteamItem): any {
     
-
-    const total = this.steamDS.getTotal(steam?.steaming_part)
+    const total = this.IsApproved(steam)?this.steamDS.getApprovalTotal(steam?.steaming_part):this.steamDS.getTotal(steam?.steaming_part)
+    //const total = this.steamDS.getTotal(steam?.steaming_part)
      
      return total.total_mat_cost.toFixed(2);
   }
-
+  IsApproved(steam:SteamItem)
+  {
+    const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
+    return validStatus.includes(steam!.status_cv!);
+    
+  }
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
@@ -775,11 +782,11 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     event.preventDefault(); // Prevents the form submission
   }
 
-  addResidueEstimate(event: Event, row:StoringOrderItem)
+  addSteamEstimate(event: Event, row:StoringOrderItem)
   {
     event.stopPropagation(); // Stop the click event from propagating
  // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/steam/estimate/new/',row.guid], {
+    this.router.navigate(['/admin/steam/estimate-approval/new/',row.guid], {
       state: { id: '' ,
         action:"NEW",
         selectedSteam:undefined,
@@ -805,7 +812,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   {
     event.stopPropagation(); // Stop the click event from propagating
  // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/steam/estimate/new/',row.guid], {
+    this.router.navigate(['/admin/steam/estimate-approval/new/',row.guid], {
       state: { id: '' ,
         action:"DUPLICATE",
         selectedSteam:row,
@@ -830,7 +837,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   {
     event.stopPropagation(); // Stop the click event from propagating
  // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/steam/estimate/new/',row.guid], {
+    this.router.navigate(['/admin/steam/estimate-approval/new/',row.guid], {
       state: { id: '' ,
         action:"UPDATE",
         selectedSteam:row,
@@ -851,4 +858,35 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       }
     });
   }
+
+  approveRow(event: Event,row:SteamItem) {
+        event.preventDefault();
+      
+          let re: any = new SteamItem();
+          re.guid = row?.guid;
+          re.sot_guid = row?.sot_guid;
+          re.bill_to_guid =  row?.storing_order_tank?.storing_order?.customer_company_guid;;
+          re.status_cv=row?.status_cv;
+        
+          re.action="APPROVE";
+          re.steaming_part = row.steaming_part?.map((rep: SteamPartItem) => {
+            return new SteamPartItem({
+              ...rep,
+             // tariff_residue: undefined,
+              action:'',
+              tariff_steaming_guid:(rep.tariff_steaming_guid?rep.tariff_steaming_guid:''),
+              approve_part: (rep.approve_part==null?true:rep.approve_part),
+              approve_qty:rep.quantity,
+              approve_cost:rep.cost,
+              approve_labour:rep.labour,
+              job_order:undefined
+            })
+          });
+          console.log(re)
+          this.steamDS.approveSteaming(re).subscribe(result => {
+            console.log(result)
+            this.search();
+          });
+        } 
+      
 }

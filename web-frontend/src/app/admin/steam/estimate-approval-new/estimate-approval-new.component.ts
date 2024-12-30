@@ -237,6 +237,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     COST:'COMMON-FORM.COST',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    APPROVE: 'COMMON-FORM.APPROVE',
     
 
   }
@@ -274,6 +275,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   reSelection = new SelectionModel<ResidueItem>(true, []);
 
   customerCodeControl = new UntypedFormControl();
+  newDesc= new FormControl(null, [Validators.required]);
+  newQty= new FormControl<number | null>(null, [Validators.required]);
+  newUnitPrice= new FormControl<number | null>(null, [Validators.required]);
+  newHour= new FormControl<number | null>(null);
 
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
@@ -359,19 +364,23 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
    
 
 
-    this.steamEstForm?.get('desc')?.valueChanges.pipe(
+    this.newDesc?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-        var desc_value = this.steamEstForm?.get("desc")?.value;
-        if(typeof desc_value==='object' && this.updateSelectedItem===undefined)
+        var desc_value:any =  this.newDesc?.value;
+        if(typeof desc_value==='object' && this.updateSelectedItem===undefined &&desc_value)
         {
-          this.steamEstForm?.patchValue({
+          this.newUnitPrice.setValue( desc_value?.material_cost?.toFixed(2));
+          this.newQty.setValue(1);
+          this.newHour.setValue(desc_value?.labour_hour?desc_value?.labour_hour:0)
 
-              unit_price: desc_value?.material_cost?.toFixed(2),
-              qty: 1,
-              hour: desc_value?.labour_hour?desc_value?.labour_hour:0,
-          });
+          // this.steamEstForm?.patchValue({
+
+          //     unit_price: desc_value?.material_cost?.toFixed(2),
+          //     qty: 1,
+          //     hour: desc_value?.labour_hour?desc_value?.labour_hour:0,
+          // });
         }
         else if(desc_value)
         {
@@ -602,14 +611,39 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   checkCompulsoryEst(fields:string[])
   {
-    fields.forEach(name=>{
-    //if( !this.steamEstForm?.get(name)?.value)
-    if(this.steamEstForm?.get(name)?.value == null || this.steamEstForm?.get(name)?.value === "")
+
+    if(!this.newDesc.value)
       {
-        this.steamEstForm?.get(name)?.setErrors({ required: true });
-        this.steamEstForm?.get(name)?.markAsTouched(); // Trigger validation display
+        this.newDesc.setErrors({required:true});
+        this.newDesc.markAsTouched();
       }
-    });
+    if(!this.newQty.value)
+      {
+        this.newQty?.setErrors({required:true});
+        this.newQty?.markAsTouched();
+      }
+    if(!this.newUnitPrice.value)
+      {
+        this.newUnitPrice.setErrors({required:true});
+        this.newUnitPrice.markAsTouched();
+      }
+    if(!this.newHour.value) 
+    {
+      if(this.newHour.value!=0)
+      {
+      this.newHour.setErrors({required:true});
+      this.newHour.markAsTouched();
+      }
+    }
+    
+    // fields.forEach(name=>{
+    // //if( !this.steamEstForm?.get(name)?.value)
+    // if(this.steamEstForm?.get(name)?.value == null || this.steamEstForm?.get(name)?.value === "")
+    //   {
+    //     this.steamEstForm?.get(name)?.setErrors({ required: true });
+    //     this.steamEstForm?.get(name)?.markAsTouched(); // Trigger validation display
+    //   }
+    // });
   }
 
   checkDuplicationEst(item:PackageResidueItem ,index:number=-1)
@@ -630,9 +664,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     
     var descObject :SteamPartItem;
 
-    if(typeof this.steamEstForm?.get("desc")?.value==="object")
+    if(typeof this.newDesc?.value==="object")
     {
-      var repItm:RepairPartItem = this.steamEstForm?.get("desc")?.value;
+      var repItm:RepairPartItem = this.newDesc?.value!;
 
       descObject = new SteamPartItem();
       descObject.description=repItm.tariff_repair?.alias;
@@ -640,12 +674,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     else
     {
       descObject = new SteamPartItem();
-      descObject.description=this.steamEstForm?.get("desc")?.value;
+      descObject.description=this.newDesc?.value;
     
     }
-    descObject.cost=this.steamEstForm?.get("unit_price")?.value;
-    descObject.labour=this.steamEstForm?.get("hour")?.value;
-    descObject.quantity=this.steamEstForm?.get("qty")?.value;
+    descObject.cost=this.newUnitPrice?.value!;
+    descObject.labour=this.newHour?.value!;
+    descObject.quantity=this.newQty?.value!;
 
 
     this.checkCompulsoryEst(["desc","qty","hour","unit_price"]);
@@ -977,11 +1011,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   onFormSubmit() {
 
-    this.steamEstForm!.get('desc')?.setErrors(null);
-    this.steamEstForm!.get('qty')?.setErrors(null);
-    this.steamEstForm!.get('unit_price')?.setErrors(null);
+    this.newDesc?.setErrors(null);
+    this.newQty?.setErrors(null);
+    this.newQty?.setErrors(null);
     this.steamEstForm!.get('deList')?.setErrors(null);
-    this.steamEstForm!.get('hour')?.setErrors(null);
+    this.newHour?.setErrors(null);
 
     if(!this.isPartValid()){
       this.steamEstForm?.get('deList')?.setErrors({ required: true });
@@ -1114,7 +1148,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         //this.router.navigate(['/admin/master/estimate-template']);
 
         // Navigate to the route and pass the JSON object
-        this.router.navigate(['/admin/steam/estimate'], {
+        this.router.navigate(['/admin/steam/estimate-approval'], {
           state: this.historyState
 
         }
@@ -1488,6 +1522,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   resetValue(){
 
+    this.newDesc=new FormControl(null, [Validators.required]);
+    this.newQty=new FormControl(null, [Validators.required]);
+    this.newUnitPrice=new FormControl(null, [Validators.required]);
+    this.newHour=new FormControl(null, [Validators.required]);
+    this.initializeValueChanges();
+
     this.steamEstForm?.patchValue({
       desc:'',
       qty:'',
@@ -1505,7 +1545,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   GoBackPrevious(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/steam/estimate'], {
+    this.router.navigate(['/admin/steam/estimate-approval'], {
       state: this.historyState
 
     }
@@ -1599,18 +1639,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   undeleteItem(event: Event, row: SteamItem, index: number)
   {
-    //  if(row.guid){
-
-    //   const data: any[] = [...this.deList];
-    //   const updatedItem = {
-    //     ...row,
-    //     delete_dt: null,
-    //     action: ''
-    //   };
-      
-    //   data[index] = updatedItem;
-    //   this.updateData(data); // Refresh the data source
-    //  }
+    
 
      let tempDirection: Direction;
      if (localStorage.getItem('isRtl') === 'true') {
@@ -1657,4 +1686,83 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
      var NoDel=this.deList.filter(d=>d.action!='cancel');
      return (NoDel.length);
   }
+  isDisabled(): boolean {
+    const validStatus = [ 'COMPLETED','QC_COMPLETED','JOB_IN_PROGRESS']
+    return validStatus.includes(this.steamItem?.status_cv!);
+  }
+  IsApproved()
+  {
+    const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
+    return validStatus.includes(this.steamItem?.status_cv!);
+    
+  }
+
+  updateAction(steamPart:any)
+  {
+    if(steamPart?.action==='' || steamPart?.action===null || steamPart?.action===undefined)
+    {
+      steamPart.action='EDIT';
+
+    }
+  }
+
+  approveRow(event: Event) {
+      event.preventDefault();
+      const bill_to =(this.steamEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.steamEstForm?.get("billing_branch")?.value?.guid);
+     
+      if (bill_to) {
+        let re: any = new SteamItem();
+        re.guid = this.steamItem?.guid;
+        re.sot_guid = this.steamItem?.sot_guid;
+        re.bill_to_guid = bill_to;
+        re.status_cv=this.steamItem?.status_cv;
+      
+        re.action="APPROVE";
+        re.steaming_part = this.deList?.map((rep: SteamPartItem) => {
+          return new SteamPartItem({
+            ...rep,
+            action:'',
+           // tariff_residue: undefined,
+            tariff_steaming_guid:(rep.tariff_steaming_guid?rep.tariff_steaming_guid:''),
+            approve_part: (rep.approve_part==null?true:rep.approve_part),
+            approve_qty:rep.approve_qty,
+            approve_cost:rep.approve_cost,
+            approve_labour:rep.approve_labour,
+            job_order:undefined
+          })
+        });
+        console.log(re)
+        this.steamDS.approveSteaming(re).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.approveSteaming);
+        });
+      } else {
+        bill_to?.setErrors({ required: true })
+        bill_to?.markAsTouched();
+        bill_to?.updateValueAndValidity();
+      }
+    }
+
+    calculateSteamItemCost(steamPart: SteamPartItem):number
+    {
+       let calResCost:number=0;
+
+       if(this.IsApproved())
+       {
+        calResCost=steamPart.approve_cost!*steamPart.approve_qty!;
+       }
+       else
+       {
+         calResCost=steamPart.cost!*steamPart.quantity!;
+       }
+
+       return calResCost;
+
+    }
+
+     IsAbleToApprove()
+    {
+      var NoDel=this.deList.filter(d=>((d.delete_dt===null||d.delete_dt===undefined) && (d.approve_part==null || d.approve_part==true)));
+      return (NoDel.length);
+    }
 }

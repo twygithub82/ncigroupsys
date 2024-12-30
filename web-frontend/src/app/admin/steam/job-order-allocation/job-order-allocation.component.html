@@ -415,6 +415,19 @@
                   <button mat-flat-button color="primary"  (click)="save()"
                   >{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
                   }
+                  @if (canRollBack()) {
+                    <button mat-flat-button color="accent" [disabled]="(steamDs.loading$ | async)" class="m-r-5"
+                    (click)="rollbackJobs($event)">
+                    <mat-icon>
+                      @if (!(steamDs.loading$ | async)) {
+                      undo
+                      } @else if ((steamDs.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.ROLLBACK}}
+                  </button>
+                    }
                 <!-- </div> -->
               </div>
             </div>

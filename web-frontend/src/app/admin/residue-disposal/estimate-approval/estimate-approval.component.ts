@@ -168,6 +168,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     RESIDUE_JOB_NO: 'COMMON-FORM.RESIDUE-JOB-NO',
     APPROVE: 'COMMON-FORM.APPROVE',
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
+    
   }
 
   

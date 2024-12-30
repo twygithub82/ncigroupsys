@@ -606,6 +606,12 @@ const ABORT_STEAM = gql`
   }
 `
 
+export const ROLLBACK_COMPLETED_STEAMING = gql`
+  mutation rollbackCompletedSteaming($steamingJobOrder: [SteamJobOrderRequestInput!]!) {
+    rollbackCompletedSteaming(steamingJobOrder: $steamingJobOrder)
+  }
+`
+
 export class SteamDS extends BaseDataSource<SteamItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -811,7 +817,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canRollbackEstimate(re: SteamItem): boolean {
-    const validStatus = ['PENDING', 'CANCELED', 'NO_ACTION']
+    const validStatus = ['PENDING', 'CANCELED', 'NO_ACTION','COMPLETED','APPROVED']
     return validStatus.includes(re?.status_cv!);
   }
   canRollback(re: SteamItem): boolean {
@@ -822,6 +828,22 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   canCopy(re: SteamItem): boolean {
     return true;
   }
+
+  canRollbackJobInProgress(re: SteamItem | undefined): boolean {
+      return re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS';
+    }
+  
+
+   getApprovalTotal(steamPartList: any[] | undefined): any {
+      const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 ||data.approve_part|| data.approve_part == null))?.reduce((totals: any, owner) => {
+        return {
+          //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+  
+          total_mat_cost: totals.total_mat_cost + (((owner.approve_qty ?? 0) * (owner.approve_cost ?? 0)))
+        };
+      }, { total_mat_cost: 0 }) || 0;
+      return totalSums;
+    }
 
   getTotal(steamPartList: any[] | undefined): any {
     const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part == null))?.reduce((totals: any, owner) => {
@@ -937,4 +959,14 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     const result = highestMeterTemp === Number.NEGATIVE_INFINITY ? undefined : highestMeterTemp;
     return result;
   }
+
+  rollbackCompletedSteaming(steamingJobOrder: any[]): Observable<any> {
+      return this.apollo.mutate({
+        mutation: ROLLBACK_COMPLETED_STEAMING,
+        variables: {
+          steamingJobOrder
+        }
+      });
+    }
+
 }

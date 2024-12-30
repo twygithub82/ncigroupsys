@@ -1164,7 +1164,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
       ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/steam/approval'], {
+      this.router.navigate(['/admin/steam/job-order'], {
         state: this.historyState
 
       }
@@ -1483,5 +1483,81 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     retval= (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid===null);
     return retval;
   }
+
+  canRollBack():boolean
+  {
+    var validActions :string[]= ["COMPLETED"];
+    var selItem =this.steamItem!;
+    if(validActions.includes(selItem.status_cv!))
+    {
+        return (selItem.steaming_part?.length!>0);
+    }
+    else
+    {
+      return false;
+    }
+    
+    
+  }
+
+
+   rollbackJobs(event: Event) {
+      this.preventDefault(event);
+      console.log(this.steamItem);
+  
+       const distinctJobOrders = this.deList
+                .filter((item, index, self) =>
+                  index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+                    (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                      t.job_order?.team?.description === item?.job_order?.team?.description))
+                )
+                .filter(item => item.job_order !== null && item.job_order !== undefined)
+                .map(item => new JobOrderGO(item.job_order!));
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+        width: '1000px',
+        data: {
+          action: 'rollback',
+          dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+          item: [this.steamItem],
+          translatedLangText: this.translatedLangText
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'confirmed') {
+          const steamingJobOrder = result.item.map((item: any) => {
+            const residueJobOrder = {
+              guid: item?.guid,
+              remarks: item.remarks,
+              sot_guid: item.sot_guid,
+              sot_status:this.steamItem?.storing_order_tank?.tank_status_cv,
+              job_order:distinctJobOrders
+            }
+            return residueJobOrder
+          });
+          console.log(steamingJobOrder);
+          if(this.steamItem?.status_cv=="COMPLETED")
+          {
+          this.steamDs.rollbackCompletedSteaming(steamingJobOrder).subscribe(result => {
+            this.handleRollbackSuccess(result?.data?.rollbackCompletedSteaming)
+          });
+         }
+         else if(this.steamItem?.status_cv=="JOB_IN_PROGRESS")
+          {
+            this.jobOrderDS.rollbackJobInProgressResidue(steamingJobOrder).subscribe(result => {
+              this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
+            });
+          }
+         
+        }
+      });
+    }
   
 }

@@ -157,10 +157,16 @@
                     <mat-icon>timer</mat-icon>
                     {{ isStarted() ? translatedLangText.STOP_JOB : translatedLangText.START_JOB }}
                   </button>
-                  <button mat-flat-button color="accent" [disabled]="!canCompleteJob()" (click)="completeJob($event)">
+                  <button mat-flat-button color="accent" [disabled]="!canCompleteJob()" (click)="completeJob($event)" [ngClass]="'m-r-10'">
                     <mat-icon>check_box</mat-icon>
                     {{translatedLangText.COMPLETE_JOB}}
                   </button>
+                  @if (canRollbackJob()) {
+                    <button mat-flat-button color="accent" (click)="rollbackJob($event)">
+                      <mat-icon>undo</mat-icon>
+                      {{translatedLangText.ROLLBACK}}
+                    </button>
+                    }
                 </div>
               </div>
               }
