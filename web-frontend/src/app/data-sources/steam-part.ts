@@ -18,6 +18,7 @@ export class SteamPartGO {
   public guid?: string;
   public steaming_guid?:string;
   public tariff_steaming_guid?:string;
+  public steaming_exclusive_guid?:string;
   public job_order_guid?:string;
   public description?: string;
   public quantity?: number;
@@ -53,6 +54,7 @@ export class SteamPartGO {
     
     this.steaming_guid = item.steaming_guid;
     this.tariff_steaming_guid = item.tariff_steaming_guid;
+    this.steaming_exclusive_guid=item.steaming_exclusive_guid;
     this.job_order_guid = item.job_order_guid;
     this.description = item.description;
     this.quantity = Number(item.quantity);
@@ -74,12 +76,14 @@ export class SteamPartGO {
 
 export class SteamPartItem extends SteamPartGO {
   public tariff_steaming?: TariffSteamingItem;
+  public steaming_exclusive?:TariffSteamingItem;
   public job_order?: JobOrderItem;
   public steaming?:SteamItem;
   
   constructor(item: Partial<SteamPartItem> = {}) {
     super(item)
     this.tariff_steaming = item.tariff_steaming;
+    this.steaming_exclusive=item.steaming_exclusive;
     this.job_order=item.job_order;
     this.steaming=item.steaming;
     

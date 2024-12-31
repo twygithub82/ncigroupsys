@@ -1855,4 +1855,12 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
        return calResCost;
 
     }
+
+    checkApprovePart() {
+      return this.deList.some(de => de.approve_part || (de.approve_part === null));
+    }
+  
+    canApprove() {
+      return this.checkApprovePart() && this.residueDS.canApprove(this.residueItem!)
+    }
 }

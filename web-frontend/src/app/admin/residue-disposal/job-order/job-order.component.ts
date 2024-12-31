@@ -392,6 +392,10 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
      and:[]
     };
 
+    where.and.push({status_cv : {
+      neq: 'PENDING'
+    }});
+
     if (this.filterResidueForm!.get('status_cv')?.value?.length) {
       where.and.push({status_cv : {
         in: this.filterResidueForm!.get('status_cv')?.value

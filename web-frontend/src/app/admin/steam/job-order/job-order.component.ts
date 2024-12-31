@@ -400,6 +400,9 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
      and:[]
     };
 
+    where.and.push({status_cv : {
+      neq: 'PENDING'
+    }});
     if (this.filterSteamForm!.get('status_cv')?.value?.length) {
       where.and.push({status_cv : {
         in: this.filterSteamForm!.get('status_cv')?.value
@@ -651,7 +654,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
-      if(row.approve_by?.toUpperCase()!=="SYSTEM")
+     // if(row.approve_by?.toUpperCase()!=="SYSTEM")
+      if(this.canToggleJob(row))
       {
        this.router.navigate(['/admin/steam/job-order/allocation/',row.guid], {
          state: { id: '' ,
@@ -724,9 +728,16 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
              
                 if(data.length>0)
                 {
-                  var steamParts:any=data[0].steaming_part;
-                  var joborder_guid:string=steamParts[0].job_order_guid;
-                  this.router.navigate(['/admin/steam/job-order/monitor', joborder_guid, row.guid]);
+                  if(row.status_cv==='APPROVED')
+                  {
+                    var steamParts:any=data[0].steaming_part;
+                    var joborder_guid:string=steamParts[0].job_order_guid;
+                    this.router.navigate(['/admin/steam/job-order/monitor', joborder_guid, row.guid]);
+                  }
+                  else
+                  {
+                    this.onFilterJobOrder();
+                  }
                 }
               }
             );
@@ -757,9 +768,9 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
    
    }
    
-   canToggleJob(jobOrderItem:JobOrderItem | undefined) {
+   canToggleJob(steam:SteamItem | undefined) {
     var retval
-    retval= (jobOrderItem?.steaming_part?.[0]?.tariff_steaming_guid===null);
+    retval= (steam?.steaming_part?.[0]?.tariff_steaming_guid===null);
     return retval;
   }
 }

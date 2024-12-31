@@ -534,7 +534,7 @@
                 </button>
               }
                 }
-                @if (residueDS.canApprove(this.residueItem!)) {
+                @if (canApprove()) {
                   <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async) ||(!IsAbleToApprove())" class="m-r-5 bg-green"
                     (click)="approveRow($event)">
                     <mat-icon>

@@ -397,6 +397,28 @@
                       
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" style="padding-left: 40px;" >{{translatedLangText.LABOUR}} (${{this.packageLabourItem?.cost?.toFixed(2)}}) :</mat-footer-cell>
                     </ng-container>
+                    <ng-container matColumnDef="approve_part">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        mat-sort-header>
+                        <mat-icon>more_vert</mat-icon>
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
+                      
+    
+                        @if (row.approve_part === null || row.approve_part === undefined ||
+                        IsApprovePart(row)){
+                        <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold"  (click)="toggleApprovePart($event,row)">close</mat-icon>
+                        }
+                        
+                      </mat-cell>
+                      <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+                    </ng-container> 
                     <!-- <ng-container matcolumnDef="unit_price">
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold" >{{translatedLangText.LABOUR}}:</mat-footer-cell>
                     </ng-container> -->
@@ -513,7 +535,7 @@
                     </button>
                  }
                 }
-                @if (steamDS.canApprove(this.steamItem!)) {
+                @if (canApprove()) {
                   <button mat-flat-button color="basic" [disabled]="(steamDS.loading$ | async) ||(!IsAbleToApprove())" class="m-r-5 bg-green"
                     (click)="approveRow($event)">
                     <mat-icon>

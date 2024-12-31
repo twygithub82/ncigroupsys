@@ -47,7 +47,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { MatTabsModule } from '@angular/material/tabs';
-import { ClnJobOrderRequest, JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
+import { ClnJobOrderRequest, JobOrderDS, JobOrderGO, JobOrderItem, SteamJobOrderRequest, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RepairPartItem } from 'app/data-sources/repair-part';
@@ -747,7 +747,7 @@ queryOccupiedTeam()
     team.isSelected = !team.isSelected;
   }
 
-  rollBackCleaningJob(event: Event,team:any)
+  rollBackSteamingJob(event: Event,team:any)
   {
     this.preventDefault(event);  // Prevents the form submission
         let tempDirection: Direction;
@@ -770,31 +770,31 @@ queryOccupiedTeam()
           direction: tempDirection
         });
         this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
-          if (result) {
-                const clnJobOrder = new ClnJobOrderRequest({
-                  guid: team.jobOrderItem?.cleaning[0]?.guid,
+          if (result.action==='confirmed') {
+                const stmJobOrder = new SteamJobOrderRequest({
+                  guid: team.jobOrderItem?.steaming_part[0]?.steaming_guid,
                   sot_guid: team.jobOrderItem?.sot_guid,
                   job_order: [new JobOrderGO({...team.jobOrderItem, remarks: result.remarks})],
                   sot_status: team.jobOrderItem.storing_order_tank?.tank_status_cv,
                   remarks:result.remarks
                 });
         
-                console.log(clnJobOrder)
-                // this.joDS.rollbackJobInProgressCleaning(clnJobOrder).subscribe(result => {
-                //   console.log(result)
-                //   if ((result?.data?.rollbackJobInProgressCleaning ?? 0) > 0) {
-                //     if(team.jobOrderItem)
-                //     {
-                //       team.jobOrderItem=undefined;
-                //       team.isSelected= false;
-                //       team.isOccupied= false;
-                //       team.isEditable= false;
-                //       team.isViewOnly= false;
-                //     }
-                //     this.triggerRefresh();
-                //     //this.handleSaveSuccess(result?.data?.rollbackJobInProgressRepair);
-                //   }
-                // });
+                console.log(stmJobOrder)
+                this.joDS.rollbackJobInProgressSteaming([stmJobOrder]).subscribe(result => {
+                  console.log(result)
+                  if ((result?.data?.rollbackJobInProgressSteaming ?? 0) > 0) {
+                    if(team.jobOrderItem)
+                    {
+                      team.jobOrderItem=undefined;
+                      team.isSelected= false;
+                      team.isOccupied= false;
+                      team.isEditable= false;
+                      team.isViewOnly= false;
+                    }
+                    this.triggerRefresh();
+                    //this.handleSaveSuccess(result?.data?.rollbackJobInProgressRepair);
+                  }
+                });
               }
 
         });

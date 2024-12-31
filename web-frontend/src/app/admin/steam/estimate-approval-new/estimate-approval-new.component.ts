@@ -115,6 +115,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
      'unit_price',
      'hour',
      'cost',
+     'approve_part',
      "actions"
    
   ];
@@ -1721,13 +1722,13 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         re.steaming_part = this.deList?.map((rep: SteamPartItem) => {
           return new SteamPartItem({
             ...rep,
-            action:'',
+            action: (this.steamItem?.status_cv==='PENDING'?'EDIT':(rep.action===undefined?'':rep.action)),
            // tariff_residue: undefined,
             tariff_steaming_guid:(rep.tariff_steaming_guid?rep.tariff_steaming_guid:''),
             approve_part: (rep.approve_part==null?true:rep.approve_part),
-            approve_qty:rep.approve_qty,
-            approve_cost:rep.approve_cost,
-            approve_labour:rep.approve_labour,
+            approve_qty:(this.IsApproved()?rep.approve_qty : rep.quantity) ,
+            approve_cost:(this.IsApproved()?rep.approve_cost : rep.cost) ,
+            approve_labour:(this.IsApproved()?rep.approve_labour : rep.labour),
             job_order:undefined
           })
         });
@@ -1764,5 +1765,28 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     {
       var NoDel=this.deList.filter(d=>((d.delete_dt===null||d.delete_dt===undefined) && (d.approve_part==null || d.approve_part==true)));
       return (NoDel.length);
+    }
+
+    toggleApprovePart(event:Event,stm: SteamPartItem) {
+      event.stopPropagation(); // Prevents click event from bubbling up
+      if (this.isDisabled()) return;
+      stm.approve_part = stm.approve_part != null ? !stm.approve_part : false;
+      // if(stm?.action==='' || stm?.action===null)
+      //   {
+          stm.action='EDIT';
+  
+        // }
+    }
+
+    IsApprovePart(stm: SteamPartItem) {
+      return stm.approve_part;
+    }
+
+    checkApprovePart() {
+      return this.deList.some(de => de.approve_part || (de.approve_part === null));
+    }
+  
+    canApprove() {
+      return this.checkApprovePart() && this.steamDS.canApprove(this.steamItem!)
     }
 }

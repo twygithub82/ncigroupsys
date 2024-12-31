@@ -214,6 +214,7 @@ export class SteamJobOrderRequest {
   public remarks?: string;
   public sot_guid?: string;
   public sot_status?:string;
+  
   constructor(item: Partial<SteamJobOrderRequest> = {}) {
     // this.estimate_no = item.estimate_no;
     this.guid = item.guid;
@@ -395,6 +396,7 @@ const GET_STARTED_JOB_ORDER = gql`
         update_by
         update_dt
         working_hour
+
         cleaning {
           guid
           job_no
@@ -433,6 +435,7 @@ const GET_STARTED_JOB_ORDER = gql`
             status_cv
           }
           tariff_steaming_guid
+          steaming_exclusive_guid
           steaming_guid
         }
         residue_part {

@@ -43,6 +43,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component'
 import {SteamDS, SteamItem, SteamStatusRequest} from 'app/data-sources/steam'
 import { SteamPartItem } from 'app/data-sources/steam-part';
+import { ConfirmationDialogComponent } from '../../bay-overview/dialogs/confirm-form-dialog/confirm-form-dialog.component';
 
 export interface DialogData {
   action?: string;
@@ -245,6 +246,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     BAY_ALLOCATION: 'COMMON-FORM.BAY-ALLOCATION',
     ABORT: 'COMMON-FORM.ABORT',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
+    ROLLBACK: 'COMMON-FORM.ROLLBACK',
+     ARE_SURE_ROLLBACK:'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    ARE_SURE_COMPLETE:'COMMON-FORM.ARE-YOU-SURE-COMPLETE'
   };
 
   
@@ -372,11 +376,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
               team.isOccupied = true;
               team.tank_no=d.storing_order_tank?.tank_no;
               team.isEditable=team.tank_no===this.selectedItems[0].storing_order_tank?.tank_no;
-              if(team.isEditable)
-              {
-                this.toggleTeam(team);
-                team.isOccupied=false;
-              }
+              // if(team.isEditable)
+              // {
+              //   this.toggleTeam(team);
+              //   team.isOccupied=false;
+              // }
             }
           });
         });
@@ -440,26 +444,26 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if(this.selectedItems.length==1)
     {
       this.selectedItem= this.selectedItems[0]
-      var inGateClnItem =this.selectedItem;
+      var steamItem =this.selectedItem;
       this.pcForm.patchValue({
 
         
-        tank_no:inGateClnItem.storing_order_tank?.tank_no,
-        customer:this.displayCustomerName(inGateClnItem.storing_order_tank?.storing_order?.customer_company),
-         eir_no:inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
-         eir_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
-         quotation_dt:this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
-         cargo:inGateClnItem.storing_order_tank?.tariff_cleaning.cargo,
-         job_no:inGateClnItem.job_no,
-         depot_estimate_cost:Number(inGateClnItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
-         customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
-         update_by:inGateClnItem.approve_by,
-         update_on:this.displayDateFromEpoch(inGateClnItem.approve_dt),
-         job_no_input:inGateClnItem.job_no,
-         status_cv:inGateClnItem.status_cv,
-         approve_dt:this.displayDateFromEpoch(inGateClnItem.approve_dt),
-         na_dt:this.displayDateFromEpoch(inGateClnItem.na_dt),
-         remarks:inGateClnItem.remarks,
+        tank_no:steamItem.storing_order_tank?.tank_no,
+        customer:this.displayCustomerName(steamItem.storing_order_tank?.storing_order?.customer_company),
+         eir_no:steamItem.storing_order_tank?.in_gate[0]?.eir_no,
+         eir_dt:this.displayDateFromEpoch(steamItem.storing_order_tank?.in_gate[0]?.eir_dt),
+         quotation_dt:this.displayDateFromEpoch(steamItem.storing_order_tank?.in_gate[0]?.eir_dt),
+         cargo:steamItem.storing_order_tank?.tariff_cleaning.cargo,
+         job_no:steamItem.job_no,
+         depot_estimate_cost:Number(steamItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
+         customer_approval_cost: Number(steamItem.cleaning_cost!)!.toFixed(2),
+         update_by:steamItem.approve_by,
+         update_on:this.displayDateFromEpoch(steamItem.approve_dt),
+         job_no_input:steamItem.job_no,
+         status_cv:steamItem.status_cv,
+         approve_dt:this.displayDateFromEpoch(steamItem.approve_dt),
+         na_dt:this.displayDateFromEpoch(steamItem.na_dt),
+         remarks:steamItem.remarks,
       });
 
       this.createCleaningChargesItem();
@@ -888,4 +892,80 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   {
     return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks?this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks:"-";
   }
+
+  canRollBack():boolean
+  {
+    var validActions :string[]= ["COMPLETED",'JOB_IN_PROGRESS'];
+    var selItem =this.selectedItems[0];
+    if(validActions.includes(selItem.status_cv))
+    {
+        return (selItem.steaming_part[0].job_order);
+    }
+    else
+    {
+      return false;
+    }
+    
+    
+  }
+
+  onRollback(event: Event)
+        {
+          this.preventDefault(event);  // Prevents the form submission
+              let tempDirection: Direction;
+              if (localStorage.getItem('isRtl') === 'true') {
+                tempDirection = 'rtl';
+              } else {
+                tempDirection = 'ltr';
+              }
+              const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+                width: '800px',
+                height: '250px',
+                data: {
+                  action: "EDIT",
+                  item: this.selectedItems[0].steaming_part[0].job_order,
+                  langText: this.translatedLangText,
+                  confirmStatement:this.translatedLangText.ARE_SURE_ROLLBACK,
+                  index:-1
+                
+                },
+                direction: tempDirection
+              });
+              this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
+                if (result?.action=="confirmed") {
+                  const distinctJobOrders :any[] =[];
+                  const jobOrder:JobOrderGO = new JobOrderGO(this.selectedItems[0].steaming_part[0].job_order);
+                  distinctJobOrders.push(jobOrder);
+
+                  const stmJobOrder = new SteamJobOrderRequest({
+                    guid: this.selectedItems[0]?.guid,
+                    sot_guid: this.selectedItems[0]?.storing_order_tank?.guid,
+                    job_order: distinctJobOrders,
+                    sot_status: this.selectedItems[0]?.storing_order_tank?.tank_status_cv,
+                    remarks:result.remarks
+                  });
+
+                 
+                  
+                  console.log(stmJobOrder);
+                  if(this.selectedItems[0]?.status_cv==="COMPLETED")
+                  {
+                    
+                    this.steamDs?.rollbackCompletedSteaming([stmJobOrder]).subscribe(result => {
+                      console.log(result)
+                      this.handleSaveSuccess(result?.data?.rollbackCompletedSteaming);
+                    });
+                 }
+                 else if (this.selectedItems[0]?.status_cv==="JOB_IN_PROGRESS")
+                 {
+                  this.jobOrderDS?.rollbackJobInProgressSteaming([stmJobOrder]).subscribe(result => {
+                    console.log(result)
+                    this.handleSaveSuccess(result?.data?.rollbackJobInProgressSteaming);
+                  });
+                 }
+      
+              }
+            });
+      }
+  
 }

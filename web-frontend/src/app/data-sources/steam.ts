@@ -288,6 +288,9 @@ export const GET_STEAM_EST = gql`
               update_by
               update_dt
               working_hour
+              storing_order_tank  {
+                guid
+                tank_no}
             }
           }
         }

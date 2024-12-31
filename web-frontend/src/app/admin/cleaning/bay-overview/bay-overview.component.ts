@@ -770,7 +770,7 @@ queryOccupiedTeam()
           direction: tempDirection
         });
         this.subs.sink = dialogRef.afterClosed().subscribe((result) => { 
-          if (result) {
+          if (result.action==='confirmed') {
                 const clnJobOrder = new ClnJobOrderRequest({
                   guid: team.jobOrderItem?.cleaning[0]?.guid,
                   sot_guid: team.jobOrderItem?.sot_guid,
