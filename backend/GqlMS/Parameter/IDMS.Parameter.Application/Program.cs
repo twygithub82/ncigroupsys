@@ -7,14 +7,15 @@ using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 
 var builder = WebApplication.CreateBuilder(args);
+string connectionString = builder.Configuration.GetConnectionString("default");
 
 var JWT_validAudience = builder.Configuration["JWT_VALIDAUDIENCE"];
 var JWT_validIssuer = builder.Configuration["JWT_VALIDISSUER"];
 //var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration["DBService:queryUrl"]);
-var JWT_secretKey = await dbWrapper.GetJWTKey(builder.Configuration.GetConnectionString("DefaultConnection"));
+var JWT_secretKey = await dbWrapper.GetJWTKey(connectionString);
 
 
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 //builder.Services.AddDbContext<ApplicationParameterDBContext>(options =>
 //    options.UseMySql(connectionString,
 //  ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine)
