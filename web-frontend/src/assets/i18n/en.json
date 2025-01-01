@@ -799,7 +799,8 @@
     "REMOVE": "Remove",
     "OVERWRITE": "Overwrite",
     "OVERWRITE-QC": "Overwrite QC",
-    "PERIODIC-TEST-SURVEY": "Periodic Test Survey"
+    "PERIODIC-TEST-SURVEY": "Periodic Test Survey",
+    "OVER-REQUIRED-TEMP": "The current temperature is higher than the required temperate"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

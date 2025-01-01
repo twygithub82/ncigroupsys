@@ -192,7 +192,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   availableProcessStatus: string[] = [
     'APPROVED',
      'JOB_IN_PROGRESS',
-     'QC_COMPLETED',
+    // 'QC_COMPLETED',
      'COMPLETED',
      'ASSIGNED',
      'PARTIAL_ASSIGNED',

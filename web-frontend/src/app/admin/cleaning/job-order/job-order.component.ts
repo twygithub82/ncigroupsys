@@ -329,7 +329,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
   public loadData() {
     this.onFilterCleaning();
-    this.onFilterJobOrder();
+  //  this.onFilterJobOrder();
 
     const queries = [
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },

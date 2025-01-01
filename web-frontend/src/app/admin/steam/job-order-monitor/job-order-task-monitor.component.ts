@@ -259,7 +259,8 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     THERMOMETER:'COMMON-FORM.THERMOMETER',
     TIME:'COMMON-FORM.TIME',
     SELECTED_RECORD:"COMMON-FORM.SELECTED-RECORD",
-    COMPLETE_STEAM:'COMMON-FORM.COMPLETE-STEAM'
+    COMPLETE_STEAM:'COMMON-FORM.COMPLETE-STEAM',
+    OVER_REQUIRED_TEMP:'COMMON-FORM.OVER-REQUIRED-TEMP'
     
   }
 
@@ -1243,7 +1244,8 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
         {
           if(ReqTemp<=steamTemp.meter_temp!)
           {
-             this.completeSteamJob(event!);
+             let overTemp:boolean = ReqTemp<steamTemp.meter_temp!
+             this.completeSteamJob(event!,overTemp);
           }
           else
           {
@@ -1301,7 +1303,7 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
   }
 
 
-  completeSteamJob(event:Event)
+  completeSteamJob(event:Event, overTemp:boolean)
   {
     this.preventDefault(event);
     if(this.steamItem?.steaming_part?.length)
@@ -1317,7 +1319,8 @@ const localDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
         data: {
           action: 'confirm',
           item: this.steamItem,
-          langText: this.translatedLangText
+          langText: this.translatedLangText,
+          overTemp:overTemp,
         },
         direction: tempDirection
       });

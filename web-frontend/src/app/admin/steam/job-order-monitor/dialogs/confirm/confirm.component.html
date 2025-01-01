@@ -7,10 +7,18 @@
                     {{rep.steaming_part?.[0]?.description}} 
                 </span>
             </li>
+            @if(data.overTemp!)
+            {
+            <li>&nbsp;</li>
+            <li class="font-bold  col-red ">
+               <span> {{data.langText.OVER_REQUIRED_TEMP}}</span>
+            </li>
+            }
         </ul>
     </div>
+  
     <div mat-dialog-actions class="mb-1">
-        <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmComplete()">
+        <button mat-flat-button color="primary" [mat-dialog-close]="1" (click)="confirmComplete()">
             {{data.langText.CONFIRM | translate}}
         </button>
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">

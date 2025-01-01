@@ -9,6 +9,7 @@ export interface DialogData {
   action: string;
   item: SteamTemp;
   langText?: any;
+  overTemp?:boolean;
   //index: number;
 }
 

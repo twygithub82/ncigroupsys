@@ -202,8 +202,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     'JOB_IN_PROGRESS',
     'COMPLETED',
     'ASSIGNED',
-    'PARTIAL_ASSIGNED',
-    'QC_COMPLETED'
+    'PARTIAL_ASSIGNED'
+    
   ]
 
   rsdEstList: ResidueItem[] = [];
