@@ -443,6 +443,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
         if (jo?.length) {
           console.log(jo)
           this.jobOrderItem = jo[0];
+          this.jobOrderItem.time_table=this.jobOrderItem.time_table?.filter(d=>d.delete_dt==null || d.delete_dt==0);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
