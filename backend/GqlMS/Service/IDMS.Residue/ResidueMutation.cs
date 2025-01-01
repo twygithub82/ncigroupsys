@@ -176,15 +176,20 @@ namespace IDMS.Residue.GqlTypes
                     if (residue.residue_part != null)
                     {
                         foreach (var item in residue.residue_part)
-                        {                            
-                            if(item?.action == null || string.IsNullOrEmpty(item.action))
+                        {
+                            if (item?.action == null || string.IsNullOrEmpty(item.action))
+                                continue;
+
+                            if (item.action.EqualsIgnore(ObjectAction.EDIT))
                             {
                                 var part = new residue_part() { guid = item.guid };
                                 context.residue_part.Attach(part);
 
+                                part.description = item.description;
                                 part.approve_part = item.approve_part;
                                 part.approve_cost = item.approve_cost;
                                 part.approve_qty = item.approve_qty;
+                                part.approve_part = item.approve_part;
                                 part.qty_unit_type_cv = item.qty_unit_type_cv;
                                 part.update_by = user;
                                 part.update_dt = currentDateTime;
