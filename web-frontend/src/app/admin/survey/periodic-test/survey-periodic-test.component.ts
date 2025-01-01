@@ -91,7 +91,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
     'last_cargo',
     'purpose',
     'status_cv',
-    'accept_status',
+    // 'accept_status',
   ];
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.PERIODIC-TEST-SURVEY'
