@@ -74,6 +74,9 @@ namespace IDMS.Service.GqlTypes
                     await transaction.CommitAsync();
                     //TODO
                     //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
+
+
+
                     return res;
                 }
                 catch
@@ -257,7 +260,11 @@ namespace IDMS.Service.GqlTypes
                     //handling of job_notification
                     var jobNotification = new JobNotification();
                     jobNotification.time_table_guid = startTimeTable.guid;
-                    jobNotification.job_order_guid = item.job_order_guid;
+                    if (item.job_order.job_order_no.StartsWith("CJ"))
+                        //if cleaning job, need to use the team_guid
+                        jobNotification.job_order_guid = item.job_order.team_guid;
+                    else
+                        jobNotification.job_order_guid = item.job_order_guid;
                     jobNotification.job_status = job_order.status_cv;
                     jobNotification.start_time = startTimeTable.start_time;
                     jobNotification.stop_time = startTimeTable.stop_time;
@@ -311,7 +318,11 @@ namespace IDMS.Service.GqlTypes
                     //handling of job_notification
                     var jobNotification = new JobNotification();
                     jobNotification.time_table_guid = item.guid;
-                    jobNotification.job_order_guid = item.job_order_guid;
+                    if (item.job_order.job_order_no.StartsWith("CJ"))
+                        //if cleaning job, need to use the team_guid
+                        jobNotification.job_order_guid = item.job_order.team_guid;
+                    else
+                        jobNotification.job_order_guid = item.job_order_guid;
                     jobNotification.job_status = item.job_order.status_cv;
                     jobNotification.start_time = item.start_time;
                     jobNotification.stop_time = stopTimeTable.stop_time;

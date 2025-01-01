@@ -9,6 +9,7 @@ using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Steaming.GqlTypes.LocalModel;
 using IDMS.Models.Inventory;
+using System.ComponentModel.Design;
 
 namespace IDMS.Steaming.GqlTypes
 {
@@ -91,14 +92,18 @@ namespace IDMS.Steaming.GqlTypes
                 {
                     foreach (var item in steaming.steaming_part)
                     {
-                        if(item?.action == null || string.IsNullOrEmpty(item.action))
+                        if (item?.action == null || string.IsNullOrEmpty(item.action))
+                            continue;
+
+                        if (item.action.EqualsIgnore(ObjectAction.EDIT))
                         {
                             var part = new steaming_part() { guid = item.guid };
                             context.steaming_part.Attach(part);
 
+                            part.description = item.description;
+                            part.approve_part = item.approve_part;
                             part.approve_qty = item.approve_qty;
                             part.approve_labour = item.approve_labour;
-                            part.approve_part = item.approve_part;
                             part.approve_cost = item.approve_cost;
                             part.update_by = user;
                             part.update_dt = currentDateTime;
@@ -537,14 +542,27 @@ namespace IDMS.Steaming.GqlTypes
 
                 foreach (var item in steamingJobOrder)
                 {
+                    steaming? rollbackSteaming = await context.steaming.FindAsync(item.guid);
+                    if (rollbackSteaming == null)
+                        throw new GraphQLException(new Error($"Steaming object not found", "ERROR"));
+
                     //Steaming handling
-                    var rollbabkSteaming = new steaming() { guid = item.guid };
-                    context.steaming.Attach(rollbabkSteaming);
-                    rollbabkSteaming.update_by = user;
-                    rollbabkSteaming.update_dt = currentDateTime;
-                    rollbabkSteaming.status_cv = CurrentServiceStatus.APPROVED;
+                    //var rollbabkSteaming = new steaming() { guid = item.guid };
+                    //context.steaming.Attach(rollbabkSteaming);
+                    rollbackSteaming.update_by = user;
+                    rollbackSteaming.update_dt = currentDateTime;
+
+                    if (rollbackSteaming.create_by.EqualsIgnore("system"))
+                        rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
+                    else
+                    {
+                        if (rollbackSteaming.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
+                            rollbackSteaming.status_cv = CurrentServiceStatus.ASSIGNED;
+                    }
+
+
                     if (!string.IsNullOrEmpty(item.remarks))
-                        rollbabkSteaming.remarks = item.remarks;
+                        rollbackSteaming.remarks = item.remarks;
 
                     //job_orders handling
                     var jobRemark = item.job_order.Select(j => j.remarks).FirstOrDefault();
@@ -553,15 +571,30 @@ namespace IDMS.Steaming.GqlTypes
                     string sql = "";
                     if (!string.IsNullOrEmpty(jobRemark))
                     {
-                        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                        if (rollbackSteaming.create_by.EqualsIgnore("system"))
+                        {
+                            sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                                    $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                        }
+                        else
+                        {
+                            sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                                    $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
+                        }
                     }
                     else
                     {
-                        sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
-                                $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                        if (rollbackSteaming.create_by.EqualsIgnore("system"))
+                        {
+                            sql = $"UPDATE job_order SET team_guid = NULL, status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                                    $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                        }
+                        else
+                        {
+                            sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
+                                    $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+                        }
                     }
-
                     context.Database.ExecuteSqlRaw(sql);
 
                     //Timetable handling

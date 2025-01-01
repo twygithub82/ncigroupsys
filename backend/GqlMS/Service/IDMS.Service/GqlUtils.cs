@@ -243,7 +243,8 @@ namespace IDMS.Service.GqlTypes
                     }
 
                     var jobOrderList = await context.job_order.FromSqlRaw(sqlQuery).ToListAsync();
-                    if (jobOrderList != null && !jobOrderList.Any(j => j == null))
+                    //if (jobOrderList != null & jobOrderList?.Count > 0 & !jobOrderList.Any(j => j == null))
+                    if(jobOrderList?.Any() == true & !jobOrderList.Any(j => j == null))
                     {
                         bool allValid = false;
                         if (newStatus.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))

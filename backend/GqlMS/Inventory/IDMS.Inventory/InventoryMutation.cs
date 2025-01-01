@@ -476,8 +476,6 @@ namespace IDMS.Inventory.GqlTypes
                 newSuyDetail.guid = Util.GenerateGUID();
                 newSuyDetail.create_by = user;
                 newSuyDetail.create_dt = currentDateTime;
-
-                //newSuyDetail.customer_company_guid = surveyDetail.customer_company_guid;
                 newSuyDetail.sot_guid = surveyDetail.sot_guid;
                 newSuyDetail.status_cv = surveyDetail.status_cv;
                 newSuyDetail.remarks = surveyDetail.remarks;
@@ -501,6 +499,7 @@ namespace IDMS.Inventory.GqlTypes
 
                         tankInfo.last_test_cv = periodicTest.last_test_cv;
                         tankInfo.next_test_cv = periodicTest.next_test_cv;
+                        tankInfo.test_class_cv = surveyDetail.test_class_cv;
                         tankInfo.test_dt = newSuyDetail.survey_dt;
                         tankInfo.update_by = user;
                         tankInfo.update_dt = currentDateTime;
