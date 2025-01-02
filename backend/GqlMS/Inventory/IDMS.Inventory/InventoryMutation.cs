@@ -13,6 +13,7 @@ using IDMS.Models.Shared;
 using IDMS.Models.Inventory;
 using IDMS.Models.Notification;
 using System.Data.SqlTypes;
+using System.IO;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -145,22 +146,17 @@ namespace IDMS.Inventory.GqlTypes
                 string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
-                    //var abortCleaning = new cleaning() { guid = processGuid };
-                    //context.cleaning.Attach(abortCleaning);
-                    var cleaning = await context.cleaning.Where(c => c.sot_guid == tank.guid & c.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
-                    foreach(var clean in cleaning)
+                    var cleaning = await context.cleaning.Where(c => c.sot_guid == tank.guid && (c.delete_dt == null || c.delete_dt == 0)).ToListAsync();
+                    foreach (var clean in cleaning)
                     {
                         clean.update_by = user;
                         clean.update_dt = currentDateTime;
                         clean.na_dt = currentDateTime;
                         clean.status_cv = CurrentServiceStatus.NO_ACTION;
-                        //abortCleaning.remarks = remarks;
 
                         var jobOrders = await context.job_order.Where(j => j.cleaning.Any(c => c.guid == clean.guid)).ToListAsync();
                         foreach (var item in jobOrders)
                         {
-                            //var job_order = new job_order() { guid = item.guid };
-                            //context.job_order.Attach(job_order);
                             if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
                             {
                                 item.status_cv = CurrentServiceStatus.CANCELED;
@@ -168,22 +164,27 @@ namespace IDMS.Inventory.GqlTypes
                                 item.update_dt = currentDateTime;
                             }
                         }
+
+                        if (await StatusChangeConditionCheck(jobOrders))
+                        {
+                            clean.status_cv = CurrentServiceStatus.COMPLETED;
+                            clean.complete_dt = currentDateTime;
+                        }
+                        else
+                            clean.status_cv = CurrentServiceStatus.NO_ACTION;
                     }
 
-                    var residues = await context.residue.Where(c => c.sot_guid == tank.guid & c.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
+                    var residues = await context.residue.Where(c => c.sot_guid == tank.guid && (c.delete_dt == null || c.delete_dt == 0)).ToListAsync();
                     foreach (var resd in residues)
                     {
                         resd.update_by = user;
                         resd.update_dt = currentDateTime;
                         resd.na_dt = currentDateTime;
                         resd.status_cv = CurrentServiceStatus.NO_ACTION;
-                        //abortCleaning.remarks = remarks;
 
                         var jobOrders = await context.job_order.Where(j => j.residue_part.Any(c => c.guid == resd.guid)).ToListAsync();
                         foreach (var item in jobOrders)
                         {
-                            //var job_order = new job_order() { guid = item.guid };
-                            //context.job_order.Attach(job_order);
                             if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
                             {
                                 item.status_cv = CurrentServiceStatus.CANCELED;
@@ -191,8 +192,18 @@ namespace IDMS.Inventory.GqlTypes
                                 item.update_dt = currentDateTime;
                             }
                         }
+
+                        if (await StatusChangeConditionCheck(jobOrders))
+                        {
+                            resd.status_cv = CurrentServiceStatus.COMPLETED;
+                            resd.complete_dt = currentDateTime;
+                        }
+                        else
+                            resd.status_cv = CurrentServiceStatus.NO_ACTION;
                     }
 
+                    //Save the changes before do tank movement check
+                    await context.SaveChangesAsync();
 
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
                     if (sot != null)
@@ -289,21 +300,17 @@ namespace IDMS.Inventory.GqlTypes
                 string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
-                    //var abortSteaming = new steaming() { guid = processGuid };
-                    //context.steaming.Attach(abortSteaming);
-                    var steams = await context.steaming.Where(s => s.sot_guid == tank.guid & s.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
-                    foreach(var steam in steams)
+                    var steams = await context.steaming.Where(s => s.sot_guid == tank.guid && (s.delete_dt == null || s.delete_dt == 0)).ToListAsync();
+                    foreach (var steam in steams)
                     {
                         steam.update_by = user;
                         steam.update_dt = currentDateTime;
-                        steam.na_dt = currentDateTime;  
+                        steam.na_dt = currentDateTime;
                         steam.status_cv = CurrentServiceStatus.NO_ACTION;
 
                         var jobOrders = await context.job_order.Where(j => j.steaming_part.Any(c => c.guid == steam.guid)).ToListAsync();
                         foreach (var item in jobOrders)
                         {
-                            //var job_order = new job_order() { guid = item.guid };
-                            //context.job_order.Attach(job_order);
                             if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
                             {
                                 item.status_cv = CurrentServiceStatus.CANCELED;
@@ -311,8 +318,18 @@ namespace IDMS.Inventory.GqlTypes
                                 item.update_dt = currentDateTime;
                             }
                         }
+
+                        if (await StatusChangeConditionCheck(jobOrders))
+                        {
+                            steam.status_cv = CurrentServiceStatus.COMPLETED;
+                            steam.complete_dt = currentDateTime;
+                        }
+                        else
+                            steam.status_cv = CurrentServiceStatus.NO_ACTION;
                     }
 
+                    //Save the changes before do tank movement check
+                    await context.SaveChangesAsync();
 
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
                     if (sot != null)
@@ -360,12 +377,11 @@ namespace IDMS.Inventory.GqlTypes
                 string currentTankStatus = tank.tank_status_cv;
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
-                    var repairs = await context.repair.Where(r => r.sot_guid == tank.guid & r.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
-                    foreach(var rep in repairs)
+                    //var repairs = await context.repair.Where(r => r.sot_guid == tank.guid & r.status_cv == CurrentServiceStatus.PENDING).ToListAsync();
+                    var repairs = await context.repair.Where(r => r.sot_guid == tank.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+                    foreach (var rep in repairs)
                     {
                         //Process handling
-                        //var abortRepair = new repair() { guid = processGuid };
-                        //context.repair.Attach(abortRepair);
                         rep.update_by = user;
                         rep.update_dt = currentDateTime;
                         rep.na_dt = currentDateTime;
@@ -375,8 +391,6 @@ namespace IDMS.Inventory.GqlTypes
                         var jobOrders = await context.job_order.Where(j => j.repair_part.Any(c => c.guid == rep.guid)).ToListAsync();
                         foreach (var item in jobOrders)
                         {
-                            //var job_order = new job_order() { guid = item.guid };
-                            //context.job_order.Attach(job_order);
                             if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
                             {
                                 item.status_cv = CurrentServiceStatus.CANCELED;
@@ -384,8 +398,18 @@ namespace IDMS.Inventory.GqlTypes
                                 item.update_dt = currentDateTime;
                             }
                         }
+                        
+                        if (await StatusChangeConditionCheck(jobOrders))
+                        {
+                            rep.status_cv = CurrentServiceStatus.COMPLETED;
+                            rep.complete_dt = currentDateTime;
+                        }
+                        else
+                            rep.status_cv = CurrentServiceStatus.NO_ACTION;
                     }
 
+                    //Save the changes before do tank movement check
+                    await context.SaveChangesAsync();
 
                     var sot = await context.storing_order_tank.FindAsync(tank.guid);
                     if (sot != null)
@@ -399,7 +423,6 @@ namespace IDMS.Inventory.GqlTypes
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
-
                 }
                 else
                 {
@@ -461,6 +484,20 @@ namespace IDMS.Inventory.GqlTypes
             {
                 throw;
             }
+        }
+
+
+        private async Task<bool> StatusChangeConditionCheck(List<job_order> jobOrders)
+        {
+            bool allValid = false;
+            allValid = jobOrders.All(jO => jO.status_cv.EqualsIgnore(CurrentServiceStatus.COMPLETED) ||
+                    jO.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED));
+
+            // If all are canceled, set allValid to false
+            if (allValid && jobOrders.All(jO => jO.status_cv.EqualsIgnore(CurrentServiceStatus.CANCELED)))
+                allValid = false;
+
+            return allValid;
         }
 
         public async Task<int> AddSurveyDetail(ApplicationInventoryDBContext context, [Service] IConfiguration config,

@@ -657,24 +657,6 @@ namespace IDMS.Inventory.GqlTypes
         {
             try
             {
-                ////first check tank purpose
-                //var tank = await context.storing_order_tank.Where(t => t.guid == sotGuid & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
-                //tank.update_by = user;
-                //tank.update_dt = currentDateTime;
-
-                //if (processType.EqualsIgnore(PurposeType.STEAM))
-                //{
-                //    tank.purpose_steam = false;
-                //    tank.steaming_remarks = remark;
-                //}
-
-                //else if (processType.EqualsIgnore(PurposeType.CLEAN) || (processType.EqualsIgnore(PurposeType.RESIDUE)))
-                //    tank.cleaning_remarks = remark;
-                //else if (processType.EqualsIgnore(PurposeType.REPAIR))
-                //    tank.repair_remarks = remark;
-                //else if (processType.EqualsIgnore(PurposeType.STORAGE))
-                //    tank.storage_remarks = remark;
-
                 var currentTankStatus = tank.tank_status_cv;
 
                 var completedStatuses = new[] { CurrentServiceStatus.COMPLETED, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
