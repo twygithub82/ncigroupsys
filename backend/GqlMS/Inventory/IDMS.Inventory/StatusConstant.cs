@@ -44,6 +44,7 @@ namespace IDMS.Inventory.GqlTypes
         public const string STORAGE = "STORAGE";
         public const string RO = "RO_GENERATED";
         public const string SO = "SO_GENERATED";
+        public const string RELEASED = "RELEASED";
 
         public static List<string> validTankStatus = new List<string>() { STEAM, CLEANING, REPAIR, STORAGE };
     }

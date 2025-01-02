@@ -34,7 +34,8 @@ namespace IDMS.Models.Inventory
         public string? max_weight_cv { get; set; }
         public string? height_cv { get; set; }
         public string? walkway_cv { get; set; }
-        public string? tank_comp_cv { get; set; }
+        //tank_comp_guid
+        public string? tank_comp_guid { get; set; }
         public string? btm_dis_comp_cv { get; set; }
         public string? btm_dis_valve_cv { get; set; }
         public string? btm_dis_valve_spec_cv { get; set; }

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using IDMS.Models.Shared;
 
 namespace IDMS.Survey.GqlTypes
 {
@@ -27,9 +28,7 @@ namespace IDMS.Survey.GqlTypes
 
             try
             {
-                //long epochNow = GqlUtils.GetNowEpochInSec();
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //string user = "admin";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
                 out_gate_survey outgateSurvey = new();
@@ -41,7 +40,7 @@ namespace IDMS.Survey.GqlTypes
                 context.out_gate_survey.Add(outgateSurvey);
 
                 //var igWithTank = inGateWithTankRequest;
-                var outgate = context.out_gate.Where(i => i.guid == outGateRequest.guid).FirstOrDefault();
+                var outgate = await context.out_gate.Where(i => i.guid == outGateRequest.guid).FirstOrDefaultAsync();
                 if (outgate != null)
                 {
                     outgate.remarks = outGateRequest.remarks;
@@ -54,21 +53,18 @@ namespace IDMS.Survey.GqlTypes
                     outgate.update_dt = currentDateTime;
                 }
 
-                var tnk = outGateRequest.tank;
-                //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
-                //if (sot != null)
-                //{
-                //    sot.unit_type_guid = tnk.unit_type_guid;
-                //    sot.update_by = user;
-                //    sot.update_dt = currentDateTime;
-                //}
 
-                //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
+                if (outGateRequest.tank == null || string.IsNullOrEmpty(outGateRequest.tank.guid))
+                    throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
+
+                var tnk = outGateRequest.tank;
                 storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
                 context.Attach(sot);
                 sot.unit_type_guid = tnk.unit_type_guid;
+                sot.owner_guid = tnk.owner_guid;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
+                sot.tank_status_cv = TankMovementStatus.RELEASED;
 
                 //Add the newly created guid into list for return
                 retGuids.Add(outgateSurvey.guid);
@@ -78,6 +74,9 @@ namespace IDMS.Survey.GqlTypes
                 string evtId = EventId.NEW_OUTGATE;
                 string evtName = EventName.NEW_OUTGATE;
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+
+                //Tank info handling
+                await AddTankInfo(context, mapper, user, currentDateTime, sot, outgateSurvey, null);
 
                 //Bundle the retVal and retGuid return as record object
                 record = new Record() { affected = retval, guid = retGuids }; 
@@ -125,7 +124,7 @@ namespace IDMS.Survey.GqlTypes
                 }
 
                 //var igWithTank = inGateWithTankRequest;
-                var outgate = context.out_gate.Where(i => i.guid == outGateRequest.guid).FirstOrDefault();
+                var outgate = await context.out_gate.Where(i => i.guid == outGateRequest.guid).FirstOrDefaultAsync();
                 if (outgate != null)
                 {
                     outgate.remarks = outGateRequest.remarks;
@@ -139,17 +138,10 @@ namespace IDMS.Survey.GqlTypes
                 }
 
                 var tnk = outGateRequest.tank;
-                //var sot = context.storing_order_tank.Where(s => s.guid == tnk.guid).FirstOrDefault();
-                //if (sot != null)
-                //{
-                //    sot.unit_type_guid = tnk.unit_type_guid;
-                //    sot.update_by = user;
-                //    sot.update_dt = currentDateTime;
-                //}
-
                 storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
                 context.Attach(sot);
                 sot.unit_type_guid = tnk.unit_type_guid;
+                sot.tank_no = string.IsNullOrEmpty(tnk.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tnk.tank_no;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
 
@@ -158,6 +150,9 @@ namespace IDMS.Survey.GqlTypes
                 string evtId = EventId.NEW_OUTGATE;
                 string evtName = EventName.NEW_OUTGATE;
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+
+                //Tank info handling
+                await AddTankInfo(context, mapper, user, currentDateTime, sot, outgateSurvey, null);
             }
             catch (Exception ex)
             {
@@ -224,6 +219,34 @@ namespace IDMS.Survey.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
             return retval;
+        }
+
+        private async Task AddTankInfo(ApplicationInventoryDBContext context, IMapper mapper, string user, long currentDateTime,
+                                  storing_order_tank sot, out_gate_survey outgateSurvey, string? yard)
+        {
+            //populate the tank_info details
+            var tankInfo = new tank_info()
+            {
+                tank_no = sot.tank_no,
+                owner_guid = sot.owner_guid,
+                unit_type_guid = sot.unit_type_guid,
+                tank_comp_guid = outgateSurvey.tank_comp_guid,
+                manufacturer_cv = outgateSurvey.manufacturer_cv,
+                dom_dt = outgateSurvey.dom_dt,
+                cladding_cv = outgateSurvey.cladding_cv,
+                max_weight_cv = outgateSurvey.max_weight_cv,
+                height_cv = outgateSurvey.height_cv,
+                walkway_cv = outgateSurvey.walkway_cv,
+                capacity = outgateSurvey.capacity,
+                tare_weight = outgateSurvey.tare_weight,
+                last_test_cv = outgateSurvey.last_test_cv,
+                next_test_cv = outgateSurvey.next_test_cv,
+                test_dt = outgateSurvey.test_dt,
+                test_class_cv = outgateSurvey.test_class_cv,
+                yard_cv = yard
+            };
+
+            await GqlUtils.UpdateTankInfo(mapper, context, user, currentDateTime, tankInfo);
         }
     }
 }
