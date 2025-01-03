@@ -341,12 +341,24 @@ export class Utility {
   }
 
   static addYearsToEpoch(epochTime: number, yearCount: number): number {
-    // Convert yearCount to milliseconds
-    const millisecondsPerYear = 365.25 * 24 * 60 * 60; // Approximate, accounting for leap years
-    const millisecondsToAdd = yearCount * millisecondsPerYear;
-
-    // Add the milliseconds to the epoch time
-    return epochTime + millisecondsToAdd;
+    // Convert epoch time from seconds to milliseconds (JavaScript uses milliseconds)
+    const epochMilliseconds = epochTime * 1000;
+  
+    const date = new Date(epochMilliseconds);
+  
+    // Separate the whole years and fractional years
+    const wholeYears = Math.floor(yearCount); // Integer years (e.g., 2 from 2.5)
+    const fractionalYears = yearCount - wholeYears; // Fractional part (e.g., 0.5 from 2.5)
+  
+    // Add whole years
+    date.setFullYear(date.getFullYear() + wholeYears);
+  
+    // Convert fractional years to months and add them
+    const monthsToAdd = Math.round(fractionalYears * 12); // Convert fractional years to months
+    date.setMonth(date.getMonth() + monthsToAdd);
+  
+    // Convert back to seconds and return
+    return Math.floor(date.getTime() / 1000);
   }
 
   static isUrl(url: string) {

@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.Models.Inventory
 {
-
     public class in_gate : Dates
     {
         [Key]

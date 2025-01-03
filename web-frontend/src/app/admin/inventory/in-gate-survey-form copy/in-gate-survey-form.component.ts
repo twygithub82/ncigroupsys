@@ -298,7 +298,17 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   toggleState = true; // State to track whether to highlight or unhighlight
   currentImageIndex: number | null = null;
   isImageLoading$: Observable<boolean> = this.fileManagerService.loading$;
-  
+
+  private _formBuilder = inject(FormBuilder);
+  firstFormGroup = this._formBuilder.group({
+    firstCtrl: ['', Validators.required],
+  });
+  secondFormGroup = this._formBuilder.group({
+    secondCtrl: ['', Validators.required],
+  });
+  thirdFormGroup = this._formBuilder.group({
+    thirdCtrl: ['', Validators.required],
+  });
   stepperOrientation: Observable<StepperOrientation>;
   compTypeStepperOrientation: Observable<StepperOrientation>;
 
@@ -757,6 +767,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
     this.subs.sink = this.pbDS.getCustomerPackageCost(where).subscribe(data => {
       if (data?.length > 0) {
+        console.log(data)
         this.packageBufferList = data;
       }
     });
@@ -975,12 +986,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.dmgImages().push(this.createImageForm(dmgFile.description.replace('_DMG', ''), dmgFile.url, undefined));
     });
     this.surveyForm!.patchValue({
-      leftImage: this.patchOrCreateImageForm('LEFT_SIDE', leftImg, this.surveyForm?.get('photos.leftImage')),
-      rearImage: this.patchOrCreateImageForm('REAR_SIDE', rearImg, this.surveyForm?.get('photos.rearImage')),
-      rightImage: this.patchOrCreateImageForm('RIGHT_SIDE', rightImg, this.surveyForm?.get('photos.rightImage')),
-      topImage: this.patchOrCreateImageForm('TOP_SIDE', topImg, this.surveyForm?.get('photos.topImage')),
-      frontImage: this.patchOrCreateImageForm('FRONT_SIDE', frontImg, this.surveyForm?.get('photos.frontImage')),
-      bottomImage: this.patchOrCreateImageForm('BOTTOM_SIDE', bottomImg, this.surveyForm?.get('photos.bottomImage'))
+      leftImage: this.patchOrCreateImageForm('LEFT_SIDE', leftImg, this.surveyForm?.get('leftImage')),
+      rearImage: this.patchOrCreateImageForm('REAR_SIDE', rearImg, this.surveyForm?.get('rearImage')),
+      rightImage: this.patchOrCreateImageForm('RIGHT_SIDE', rightImg, this.surveyForm?.get('rightImage')),
+      topImage: this.patchOrCreateImageForm('TOP_SIDE', topImg, this.surveyForm?.get('topImage')),
+      frontImage: this.patchOrCreateImageForm('FRONT_SIDE', frontImg, this.surveyForm?.get('frontImage')),
+      bottomImage: this.patchOrCreateImageForm('BOTTOM_SIDE', bottomImg, this.surveyForm?.get('bottomImage'))
     });
     // this.markForCheck();
   }
@@ -1016,7 +1027,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       ig.remarks = this.surveyForm.get('in_gate_details.in_gate_remarks')?.value;
       ig.tank = sot;
 
-      const periodicTestFormGroup = this.getBottomFormGroup();
       let igs: InGateSurveyGO = new InGateSurveyGO();
       igs.guid = this.in_gate?.in_gate_survey?.guid;
       igs.in_gate_guid = this.in_gate?.guid;
@@ -1086,22 +1096,22 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.bottom_remarks = this.surveyForm.get('frame_type.bottomRemarks')?.value;
       console.log('igs Value', igs);
       console.log('ig Value', ig);
-      if (igs.guid) {
-        this.igsDS.updateInGateSurvey(igs, ig).subscribe(result => {
-          console.log(result)
-          if (result?.data?.updateInGateSurvey) {
-            this.uploadImages(igs.guid!);
-          }
-        });
-      } else {
-        this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
-          console.log(result)
-          const record = result.data.record
-          if (record?.affected) {
-            this.uploadImages(record.guid[0]);
-          }
-        });
-      }
+      // if (igs.guid) {
+      //   this.igsDS.updateInGateSurvey(igs, ig).subscribe(result => {
+      //     console.log(result)
+      //     if (result?.data?.updateInGateSurvey) {
+      //       this.uploadImages(igs.guid!);
+      //     }
+      //   });
+      // } else {
+      //   this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
+      //     console.log(result)
+      //     const record = result.data.record
+      //     if (record?.affected) {
+      //       this.uploadImages(record.guid[0]);
+      //     }
+      //   });
+      // }
     } else {
       console.log('Invalid soForm', this.surveyForm?.value);
       this.markFormGroupTouched(this.surveyForm);
@@ -1537,12 +1547,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   uploadImages(guid: string) {
-    const leftImg = this.surveyForm?.get('photos.leftImage')?.value;
-    const rearImg = this.surveyForm?.get('photos.rearImage')?.value;
-    const rightImg = this.surveyForm?.get('photos.rightImage')?.value;
-    const topImg = this.surveyForm?.get('photos.topImage')?.value;
-    const frontImg = this.surveyForm?.get('photos.frontImage')?.value;
-    const bottomImg = this.surveyForm?.get('photos.bottomImage')?.value;
+    const leftImg = this.surveyForm?.get('leftImage')?.value;
+    const rearImg = this.surveyForm?.get('rearImage')?.value;
+    const rightImg = this.surveyForm?.get('rightImage')?.value;
+    const topImg = this.surveyForm?.get('topImage')?.value;
+    const frontImg = this.surveyForm?.get('frontImage')?.value;
+    const bottomImg = this.surveyForm?.get('bottomImage')?.value;
 
     const additionalImages = [leftImg, rearImg, rightImg, topImg, frontImg, bottomImg].filter(image => image.file);
 
@@ -1596,15 +1606,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   chosenYearHandler(normalizedYear: Moment) {
-    const ctrlValue = this.surveyForm!.get('periodic_test.test_dt')!.value ? moment(this.surveyForm!.get('periodic_test.test_dt')!.value) : moment();
+    const ctrlValue = this.surveyForm!.get('test_dt')!.value ? moment(this.surveyForm!.get('test_dt')!.value) : moment();
     ctrlValue.year(normalizedYear.year()).date(1);
-    this.surveyForm!.get('periodic_test.test_dt')!.setValue(ctrlValue);
+    this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
   }
 
   chosenMonthHandler(normalizedMonth: Moment, datepicker: any) {
-    const ctrlValue = this.surveyForm!.get('periodic_test.test_dt')!.value ? moment(this.surveyForm!.get('periodic_test.test_dt')!.value) : moment();
+    const ctrlValue = this.surveyForm!.get('test_dt')!.value ? moment(this.surveyForm!.get('test_dt')!.value) : moment();
     ctrlValue.month(normalizedMonth.month()).year(normalizedMonth.year()).date(1);
-    this.surveyForm!.get('periodic_test.test_dt')!.setValue(ctrlValue);
+    this.surveyForm!.get('test_dt')!.setValue(ctrlValue);
     this.getNextTest();
     datepicker.close();
   }

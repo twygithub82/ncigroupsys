@@ -48,7 +48,7 @@ export interface DialogData {
 
 
 @Component({
-  selector: 'app-customer-form-dialog',
+  selector: 'app-management-user-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],

@@ -91,7 +91,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     'last_cargo',
     'purpose',
     'status_cv',
-    'accept_status',
+    // 'accept_status',
   ];
 
   pageTitle = 'MENUITEMS.SURVEY.LIST.OTHERS-SURVEY'

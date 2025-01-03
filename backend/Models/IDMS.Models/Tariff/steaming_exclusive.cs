@@ -27,7 +27,8 @@ namespace IDMS.Models.Tariff
 
         [UseFiltering]
         public IEnumerable<steaming_part?>? steaming_part {  get; set; }
+
         [UseFiltering]
-        public IEnumerable<package_steaming?>? package_steaming { get; set; }
+        public virtual package_steaming? package_steaming { get; set; }
     }
 }

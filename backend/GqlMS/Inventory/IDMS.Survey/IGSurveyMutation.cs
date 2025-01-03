@@ -40,6 +40,7 @@ namespace IDMS.Survey.GqlTypes
                 //ingate_survey handling
                 in_gate_survey ingateSurvey = new();
                 mapper.Map(inGateSurveyRequest, ingateSurvey);
+
                 ingateSurvey.guid = Util.GenerateGUID();
                 ingateSurvey.create_by = user;
                 ingateSurvey.create_dt = currentDateTime;
@@ -152,7 +153,7 @@ namespace IDMS.Survey.GqlTypes
                 }
 
                 //var igWithTank = inGateRequest;
-                var ingate = context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefault();
+                var ingate = await context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefaultAsync();
                 if (ingate != null)
                 {
                     ingate.remarks = inGateRequest.remarks;
@@ -165,22 +166,24 @@ namespace IDMS.Survey.GqlTypes
                     ingate.update_dt = currentDateTime;
                 }
 
-                var tnk = inGateRequest.tank;
-                storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
+                var tank = inGateRequest.tank;
+                storing_order_tank sot = new storing_order_tank() { guid = tank.guid };
                 context.Attach(sot);
-                sot.unit_type_guid = tnk.unit_type_guid;
-                sot.owner_guid = tnk.owner_guid;
+                sot.unit_type_guid = tank.unit_type_guid;
+                sot.owner_guid = tank.owner_guid;
+                sot.tank_no = string.IsNullOrEmpty(tank.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tank.tank_no;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
 
-                sot.tank_status_cv = TankMovementStatus.STORAGE;
-                if ((tnk.purpose_cleaning ?? false) || (tnk.purpose_steam ?? false))
-                    sot.tank_status_cv = TankMovementStatus.CLEANING;
-                else if (!string.IsNullOrEmpty(tnk.purpose_repair_cv))
-                    sot.tank_status_cv = TankMovementStatus.REPAIR;
-                else
-                    sot.tank_status_cv = TankMovementStatus.STORAGE;
-
+                //will not happend tank movement status changes
+                //if (tank.purpose_steam ?? false)
+                //    sot.tank_status_cv = TankMovementStatus.STEAM;
+                //else if (tank.purpose_cleaning ?? false)
+                //    sot.tank_status_cv = TankMovementStatus.CLEANING;
+                //else if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
+                //    sot.tank_status_cv = TankMovementStatus.REPAIR;
+                //else
+                //    sot.tank_status_cv = TankMovementStatus.STORAGE;
 
                 retval = await context.SaveChangesAsync();
                 //TODO

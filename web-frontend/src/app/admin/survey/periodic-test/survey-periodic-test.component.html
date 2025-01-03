@@ -232,7 +232,7 @@
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-auto-lg tbl-col-width-per-auto-md tbl-col-width-per-auto-sm'">
-                    <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{row?.tank_status_cv}}
+                    <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row?.tank_status_cv)}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="accept_status">
