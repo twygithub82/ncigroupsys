@@ -233,6 +233,17 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       },
+      {
+        path: "admin/package/exclusive-steam",
+        title: "MENUITEMS.PACKAGE.LIST.EXCLUSIVE-STEAMING",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
     ]
   },
   {

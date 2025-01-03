@@ -115,6 +115,7 @@
       "LIST": {
         "PACKAGE-CLEANING": "Cleaning",
         "PACKAGE-STEAMING": "Streaming",
+        "EXCLUSIVE-STEAMING": "Exclusive Streaming",
         "PACKAGE-LABOUR": "Labour Cost",
         "PACKAGE-DEPOT": "Depot Cost",
         "PACKAGE-REPAIR": "Repair",

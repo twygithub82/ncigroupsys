@@ -78,6 +78,7 @@ import { ResidueDisposalEstimateApprovalComponent } from './residue-disposal/est
 import {ResidueDisposalEstimateApprovalNewComponent} from './residue-disposal/estimate-approval-new/estimate-approval-new.component';
 import { SteamEstimateApprovalNewComponent } from './steam/estimate-approval-new/estimate-approval-new.component';
 import { SteamEstimateApprovalComponent } from './steam/estimate-approval/estimate-approval.component';
+import { ExclusiveSteamComponent } from './package/exclusive-steam/exclusive-steam.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -223,6 +224,10 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "package/package-steam",
     component: PackageSteamComponent,
+  },
+  {
+    path: "package/exclusive-steam",
+    component: ExclusiveSteamComponent,
   },
   {
     path: "package/package-buffer",
