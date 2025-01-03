@@ -1066,7 +1066,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
   }
 
   canRollbackJob() {
-    return this.joDS.canRollbackJob(this.jobOrderItem) && this.steamDS.canRollbackJobInProgress(this.steamItem) && !this.isStarted();
+    return (this.jobOrderItem?.status_cv=='COMPLETED'|| this.joDS.canRollbackJob(this.jobOrderItem)) && this.steamDS.canRollbackJobInProgress(this.steamItem) && !this.isStarted();
   }
 
    rollbackJob(event: Event) {
@@ -1098,12 +1098,24 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
             });
     
             console.log(stmJobOrder)
+            if(this.jobOrderItem?.status_cv==='JOB_IN_PROGRESS')
+            {
             this.joDS.rollbackJobInProgressSteaming([stmJobOrder]).subscribe(result => {
               console.log(result)
               if ((result?.data?.rollbackJobInProgressSteaming ?? 0) > 0) {
                 this.handleSaveSuccess(result?.data?.rollbackJobInProgressSteaming);
               }
             });
+           }
+           else if(this.jobOrderItem?.status_cv==='COMPLETED')
+            {
+              this.steamDS.rollbackCompletedSteaming([stmJobOrder]).subscribe(result => {
+                console.log(result)
+                if ((result?.data?.rollbackCompletedSteaming ?? 0) > 0) {
+                  this.handleSaveSuccess(result?.data?.rollbackCompletedSteaming);
+                }
+              });
+            }
           }
         });
       }

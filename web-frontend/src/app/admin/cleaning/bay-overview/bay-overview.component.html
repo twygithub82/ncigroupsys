@@ -46,6 +46,20 @@
                   }
                 </div>
               </div>
+              <div class="row" style="margin-left: 20px;">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0  d-flex align-items-center">
+                  <mat-label style="display: flex; justify-content: left;"> {{translatedLangText.STARTED}} : &nbsp;</mat-label>
+                
+                @if(team.isOccupied)
+                {
+                  <mat-label style="display: flex; justify-content: left;"> {{displayDateTime(team.jobOrderItem)}}</mat-label>
+                
+                }
+                @else{
+                  <mat-label style="display: flex; justify-content: left;"> - </mat-label>
+                  }
+                </div>
+              </div>
               <div class="row" style="margin-top: 20px;">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0  d-flex align-items-center">
                   <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-0">

@@ -605,12 +605,31 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.subs.sink = this.sotDS.searchStoringOrderTanksResidueEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
+        var residueStatusFilter=this.searchForm!.value['est_status_cv'];
         this.sotList = data.map(sot => {
           sot.residue = sot.residue?.map(res => {
-             var res_part=[...res.residue_part!];
-             res.residue_part=res_part?.filter(data => !data.delete_dt);
-            return { ...res, net_cost: this.calculateNetCost(res) }
+            if(residueStatusFilter)
+              {
+                if(residueStatusFilter.includes(res.status_cv))
+                {
+                  var res_part=[...res.residue_part!];
+                  res.residue_part=res_part?.filter(data => !data.delete_dt);
+                  return { ...res, net_cost: this.calculateNetCost(res) }
+                }
+                return {};
+              }
+              else
+              { 
+                var res_part=[...res.residue_part!];
+                res.residue_part=res_part?.filter(data => !data.delete_dt);
+                return { ...res, net_cost: this.calculateNetCost(res) }
+              }
           })
+
+          this.sotList=this.sotList.map(sot=>{
+            sot.residue = sot.residue?.filter(stm => Object.keys(stm).length > 0);
+            return sot;
+          });
           
           return sot;
         });

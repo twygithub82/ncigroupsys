@@ -473,6 +473,11 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     }
   }
 
+  displayDateTime(jobOrderItem: JobOrderItem):any
+  {
+    //var dtValue?:Date = Utility.convertDate(jobOrderItem.start_dt,false,true);
+    return new Date(Number(jobOrderItem.start_dt)*1000).toLocaleString();
+  }
   completeJob(event: Event, jobOrderItem: JobOrderItem) {
     this.preventDefault(event);  // Prevents the form submission
     const newParam = new UpdateJobOrderRequest({

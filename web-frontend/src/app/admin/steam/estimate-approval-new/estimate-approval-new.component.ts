@@ -1074,6 +1074,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       this.deList.forEach(data=>{
          var steamPart : SteamPartItem = new SteamPartItem(data);
          steamPart.action=!data.action?'':data.action;
+         
          updSteamItem.steaming_part?.push(steamPart);
 
       });
@@ -1613,7 +1614,22 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     let ret=0;
     if(this.deList.length>0)
     {
-        this.deList.map(d=>ret+=d.labour);
+        this.deList.map(d=>{
+        
+          if ((d.delete_dt===undefined ||d.delete_dt===null) && (d.steaming_part||d.steaming_part==null)  ) {
+            if(this.IsApproved())
+            {
+              ret+= d.approve_labour ;
+            }
+            else
+            {
+               ret+= d.labour;
+            }
+          }
+
+         // ret+=d.labour
+        }
+        );
     }
     return String(ret);
   }
@@ -1622,8 +1638,19 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     let ret=0;
     if(this.deList.length>0)
     {
-        this.deList.map(d=>
-          ret+= d.labour * this.packageLabourItem?.cost!);
+        this.deList.map(d=>{
+          if ((d.delete_dt===undefined ||d.delete_dt===null) && (d.steaming_part||d.steaming_part==null)  ) {
+            if(this.IsApproved())
+            {
+              ret+= (d.approve_labour * this.packageLabourItem?.cost!);
+            }
+            else
+            {
+               ret+= (d.labour * this.packageLabourItem?.cost!);
+            }
+          }
+        }
+        );
     }
     return ret.toFixed(2);
   }
@@ -1632,7 +1659,14 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   getTotalCost(): number {
     return this.deList.reduce((acc, row) => {
       if (row.delete_dt===undefined ||row.delete_dt===null ) {
+        // if(this.IsApproved())
+        // {
+        //   return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)+((row.approve_labour||0)*(this.packageLabourItem?.cost||0)));
+        // }
+        // else
+        // {
         return acc + ((row.quantity || 0) * (row.cost || 0)+((row.labour||0)*(this.packageLabourItem?.cost||0)));
+        // }
       }
       return acc; // If row is approved, keep the current accumulator value
     }, 0);
@@ -1726,9 +1760,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
            // tariff_residue: undefined,
             tariff_steaming_guid:(rep.tariff_steaming_guid?rep.tariff_steaming_guid:''),
             approve_part: (rep.approve_part==null?true:rep.approve_part),
-            approve_qty:(this.IsApproved()?rep.approve_qty : rep.quantity) ,
-            approve_cost:(this.IsApproved()?rep.approve_cost : rep.cost) ,
-            approve_labour:(this.IsApproved()?rep.approve_labour : rep.labour),
+            approve_qty:Number(this.IsApproved()?rep.approve_qty : rep.quantity) ,
+            approve_cost:Number(this.IsApproved()?rep.approve_cost : rep.cost) ,
+            approve_labour:Number(this.IsApproved()?rep.approve_labour : rep.labour),
             job_order:undefined
           })
         });

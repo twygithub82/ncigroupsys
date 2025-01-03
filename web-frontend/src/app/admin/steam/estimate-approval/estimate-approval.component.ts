@@ -508,7 +508,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   search() {
     const where: any = {
-      tank_status_cv: { in: ['STEAM','STORAGE'] }
+      tank_status_cv: { in: ['CLEANING','STORAGE','REPAIR','STEAM'] }
     };
 
     if (this.searchForm!.value['tank_no']) {
@@ -569,9 +569,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
       if (this.searchForm!.value['est_status_cv']!==undefined&&this.searchForm!.value['est_status_cv'].length>0 )
       {
-        if(!where.residue) where.residue={};
-        if(!where.residue.some) where.residue.some={};
-        where.residue.some.status_cv={in:this.searchForm!.value['est_status_cv']} ;
+        if(!where.steaming) where.steaming={};
+        if(!where.steaming.some) where.steaming.some={};
+        where.steaming.some.status_cv={in:this.searchForm!.value['est_status_cv']} ;
       }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
@@ -583,15 +583,37 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
     this.subs.sink = this.sotDS.searchStoringOrderTanksSteamEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.sotList = data.map(sot => {
-          sot.steaming = sot.steaming?.map(stm => {
-             var stm_part=[...stm.steaming_part!];
-             stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
-            return { ...stm, net_cost: this.calculateNetCost(stm) }
-          })
-          
+        if(data)
+        {
+          var steamingStatusFilter=this.searchForm!.value['est_status_cv'];
+         
+          this.sotList = data.map(sot => {
+            sot.steaming = sot.steaming?.map(stm => {
+              if(steamingStatusFilter)
+              {
+                if(steamingStatusFilter.includes(stm.status_cv))
+                {
+                  var stm_part=[...stm.steaming_part!];
+                  stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
+                  return { ...stm, net_cost: this.calculateNetCost(stm) };
+                }
+                return {};
+              }
+              else
+              { var stm_part=[...stm.steaming_part!];
+                stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
+                return { ...stm, net_cost: this.calculateNetCost(stm) };
+              }
+            });
+            
+            return sot;
+          });
+        }
+        this.sotList=this.sotList.map(sot=>{
+          sot.steaming = sot.steaming?.filter(stm => Object.keys(stm).length > 0);
           return sot;
         });
+
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
