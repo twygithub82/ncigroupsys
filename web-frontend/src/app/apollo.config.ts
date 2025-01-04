@@ -6,6 +6,7 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { Kind, OperationTypeNode } from 'graphql';
+import { environment } from 'environments/environment';
 
 @NgModule({
   exports: [ApolloModule],
@@ -13,12 +14,12 @@ import { Kind, OperationTypeNode } from 'graphql';
     {
       provide: APOLLO_OPTIONS,
       useFactory: (httpLink: HttpLink) => {
-        const http = httpLink.create({ uri: 'https://tlx-idms-gateway.azurewebsites.net/graphql' });
+        const http = httpLink.create({ uri: environment.graphQLUrl });
         // const http = httpLink.create({ uri: 'http://localhost:5225/graphql/'});
         // Create a WebSocket link:
         const ws = new GraphQLWsLink(
           createClient({
-            url: 'wss://tlx-idms-global-notification.azurewebsites.net/graphql',
+            url: environment.graphqlWsUrl,
           }),
         );
         return {

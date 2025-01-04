@@ -528,6 +528,17 @@ export const ROUTES: RouteInfo[] = [
         badgeClass: "",
         submenu: [],
       },
+      {
+        path: "admin/inventory/out-gate-survey",
+        title: "MENUITEMS.INVENTORY.LIST.OUT-GATE-SURVEY",
+        iconType: "",
+        icon: "",
+        class: "ml-menu",
+        groupTitle: false,
+        badge: "",
+        badgeClass: "",
+        submenu: [],
+      },
     ]
   },
   {

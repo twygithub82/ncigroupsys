@@ -58,12 +58,10 @@ import { OutGateDS } from 'app/data-sources/out-gate';
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
     RouterLink,
     TranslateModule,
     MatExpansionModule,
@@ -86,6 +84,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
     'last_cargo',
     'eir_no',
     'eir_dt',
+    'ro_no'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE'
@@ -226,7 +225,8 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
           },
           {
             or: [
-              { storing_order: { so_no: { contains: searchField } } },
+              { release_order_sot: { some: { release_order: { ro_no: { contains: searchField } } } } },
+              // { storing_order: { so_no: { contains: searchField } } },
               { tank_no: { contains: searchField } }, { job_no: { contains: searchField } }
             ]
           }

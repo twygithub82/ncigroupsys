@@ -394,6 +394,10 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
+    if (this.searchForm!.get('tank_status_cv')?.value) {
+      where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
+    }
+
     if (this.searchForm!.get('last_cargo')?.value) {
       where.last_cargo_guid = { contains: this.searchForm!.get('last_cargo')?.value.guid };
     }

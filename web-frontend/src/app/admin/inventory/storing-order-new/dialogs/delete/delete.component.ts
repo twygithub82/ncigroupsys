@@ -12,7 +12,7 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-delete',
+    selector: 'app-storing-order-new-delete',
     templateUrl: './delete.component.html',
     styleUrls: ['./delete.component.scss'],
     standalone: true,

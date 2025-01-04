@@ -1,7 +1,7 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, tap } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -1150,7 +1150,7 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
 
 const GET_STORING_ORDER_TANKS_REPAIR = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+    resultList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         job_no
         preinspect_job_no
@@ -2346,7 +2346,6 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   searchStoringOrderTanksRepair(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
-
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_REPAIR,
@@ -2354,6 +2353,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
+        tap((result) => console.log('GraphQL Response:', result)), // Log the raw response
         map((result) => result.data),
         catchError((error: ApolloError) => {
           console.error('GraphQL Error:', error);
@@ -2361,11 +2361,11 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(sotList.nodes);
-          this.totalCount = sotList.totalCount;
-          this.pageInfo = sotList.pageInfo;
-          return sotList.nodes;
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
         })
       );
   }

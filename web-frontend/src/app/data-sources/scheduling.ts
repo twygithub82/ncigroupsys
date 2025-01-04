@@ -125,6 +125,92 @@ export const GET_SCHEDULING = gql`
 `;
 
 export const GET_SCHEDULING_FOR_RO = gql`
+  query QueryScheduling($where: schedulingFilterInput, $order: [schedulingSortInput!]) {
+    resultList: queryScheduling(where: $where, order: $order) {
+      totalCount
+      nodes {
+        book_type_cv
+        remarks
+        create_by
+        create_dt
+        delete_dt
+        guid
+        status_cv
+        update_by
+        update_dt
+        scheduling_sot {
+          guid
+          scheduling_guid
+          sot_guid
+          status_cv
+          reference
+          scheduling_dt
+          delete_dt
+          scheduling {
+            book_type_cv
+            remarks
+            status_cv
+          }
+          storing_order_tank {
+            certificate_cv
+            clean_status_cv
+            create_by
+            create_dt
+            delete_dt
+            estimate_cv
+            eta_dt
+            etr_dt
+            guid
+            job_no
+            last_cargo_guid
+            last_test_guid
+            liftoff_job_no
+            lifton_job_no
+            preinspect_job_no
+            purpose_cleaning
+            purpose_repair_cv
+            purpose_steam
+            purpose_storage
+            release_job_no
+            remarks
+            required_temp
+            so_guid
+            status_cv
+            takein_job_no
+            tank_no
+            tank_status_cv
+            unit_type_guid
+            update_by
+            update_dt
+            storing_order {
+              customer_company {
+                code
+                name
+              }
+            }
+            in_gate {
+              eir_no
+              eir_dt
+              yard_cv
+              delete_dt
+            }
+            tariff_cleaning {
+              cargo
+            }
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+    }
+  }
+`;
+
+export const GET_SCHEDULING_FOR_MOVEMENT = gql`
   query QueryScheduling($where: schedulingFilterInput, $order: [schedulingSortInput!], $sot_guid: String) {
     resultList: queryScheduling(where: $where, order: $order) {
       totalCount
@@ -284,7 +370,7 @@ export class SchedulingDS extends BaseDataSource<SchedulingItem> {
 
     return this.apollo
       .query<any>({
-        query: GET_SCHEDULING_FOR_RO,
+        query: GET_SCHEDULING_FOR_MOVEMENT,
         variables: { where, order, sot_guid },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

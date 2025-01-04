@@ -1957,7 +1957,7 @@
                                     <mat-cell mat-cell *matCellDef="let row"
                                       [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                       <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
-                                      <span>{{displayDate(row.remarks) ?? "-"}}</span>
+                                      <span>{{row.reference ?? "-"}}</span>
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="surveyor">
@@ -2046,7 +2046,7 @@
                                     <mat-cell mat-cell *matCellDef="let row"
                                       [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                       <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
-                                      <span>{{displayDate(row.remarks) ?? "-"}}</span>
+                                      <span>{{row?.scheduling_sot?.[0]?.reference ?? "-"}}</span>
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="status_cv">

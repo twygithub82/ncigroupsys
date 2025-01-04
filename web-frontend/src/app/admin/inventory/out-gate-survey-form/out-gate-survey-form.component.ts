@@ -58,10 +58,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
-  selector: 'app-in-gate',
+  selector: 'app-out-gate-survey-form',
   standalone: true,
-  templateUrl: './in-gate-survey-form.component.html',
-  styleUrl: './in-gate-survey-form.component.scss',
+  templateUrl: './out-gate-survey-form.component.html',
+  styleUrl: './out-gate-survey-form.component.scss',
   // changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
@@ -92,7 +92,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
     MatRadioModule,
   ]
 })
-export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY-FORM'
   breadcrumsMiddleList = [
     'MENUITEMS.HOME.TEXT',
@@ -385,6 +385,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         topRemarks: [''],
         frontRemarks: [''],
         bottomRemarks: [''],
+      }),
+      photos: this.fb.group({
         leftImage: this.createImageForm('LEFT_SIDE', '', undefined),
         rearImage: this.createImageForm('REAR_SIDE', '', undefined),
         rightImage: this.createImageForm('RIGHT_SIDE', '', undefined),
@@ -393,15 +395,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         bottomImage: this.createImageForm('BOTTOM_SIDE', '', undefined),
         dmgImages: this.fb.array([]),
       }),
-      // photos: this.fb.group({
-      //   leftImage: this.createImageForm('LEFT_SIDE', '', undefined),
-      //   rearImage: this.createImageForm('REAR_SIDE', '', undefined),
-      //   rightImage: this.createImageForm('RIGHT_SIDE', '', undefined),
-      //   topImage: this.createImageForm('TOP_SIDE', '', undefined),
-      //   frontImage: this.createImageForm('FRONT_SIDE', '', undefined),
-      //   bottomImage: this.createImageForm('BOTTOM_SIDE', '', undefined),
-      //   dmgImages: this.fb.array([]),
-      // }),
       compartment_type: this.fb.group({
         bottomFormGroup: this.fb.group({
           btm_dis_comp_cv: [''],
@@ -550,7 +543,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   dmgImages(): UntypedFormArray {
-    return this.surveyForm?.get('frame_type.dmgImages') as UntypedFormArray;
+    return this.surveyForm?.get('photos.dmgImages') as UntypedFormArray;
   }
 
   createImageForm(side: string, preview: string | ArrayBuffer, file: File | undefined): UntypedFormGroup {
@@ -608,9 +601,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return this.surveyForm!.get('periodic_test') as UntypedFormGroup;
   }
 
-  // getPhotosFormGroup(): UntypedFormGroup {
-  //   return this.surveyForm!.get('photos') as UntypedFormGroup;
-  // }
+  getPhotosFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('photos') as UntypedFormGroup;
+  }
 
   getFrameTypeFormGroup(): UntypedFormGroup {
     return this.surveyForm!.get('frame_type') as UntypedFormGroup;
@@ -919,12 +912,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   getImages() {
     const images: any[] = [];
-    images.push(this.surveyForm?.get('frame_type.leftImage')?.get('preview')?.value);
-    images.push(this.surveyForm?.get('frame_type.rearImage')?.get('preview')?.value);
-    images.push(this.surveyForm?.get('frame_type.rightImage')?.get('preview')?.value);
-    images.push(this.surveyForm?.get('frame_type.topImage')?.get('preview')?.value);
-    images.push(this.surveyForm?.get('frame_type.frontImage')?.get('preview')?.value);
-    images.push(this.surveyForm?.get('frame_type.bottomImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('photos.leftImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('photos.rearImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('photos.rightImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('photos.topImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('photos.frontImage')?.get('preview')?.value);
+    images.push(this.surveyForm?.get('photos.bottomImage')?.get('preview')?.value);
 
     this.dmgImages().controls.forEach(x => {
       images.push(x?.get('preview')?.value)
@@ -982,12 +975,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.dmgImages().push(this.createImageForm(dmgFile.description.replace('_DMG', ''), dmgFile.url, undefined));
     });
     this.surveyForm!.patchValue({
-      leftImage: this.patchOrCreateImageForm('LEFT_SIDE', leftImg, this.surveyForm?.get('frame_type.leftImage')),
-      rearImage: this.patchOrCreateImageForm('REAR_SIDE', rearImg, this.surveyForm?.get('frame_type.rearImage')),
-      rightImage: this.patchOrCreateImageForm('RIGHT_SIDE', rightImg, this.surveyForm?.get('frame_type.rightImage')),
-      topImage: this.patchOrCreateImageForm('TOP_SIDE', topImg, this.surveyForm?.get('frame_type.topImage')),
-      frontImage: this.patchOrCreateImageForm('FRONT_SIDE', frontImg, this.surveyForm?.get('frame_type.frontImage')),
-      bottomImage: this.patchOrCreateImageForm('BOTTOM_SIDE', bottomImg, this.surveyForm?.get('frame_type.bottomImage'))
+      leftImage: this.patchOrCreateImageForm('LEFT_SIDE', leftImg, this.surveyForm?.get('photos.leftImage')),
+      rearImage: this.patchOrCreateImageForm('REAR_SIDE', rearImg, this.surveyForm?.get('photos.rearImage')),
+      rightImage: this.patchOrCreateImageForm('RIGHT_SIDE', rightImg, this.surveyForm?.get('photos.rightImage')),
+      topImage: this.patchOrCreateImageForm('TOP_SIDE', topImg, this.surveyForm?.get('photos.topImage')),
+      frontImage: this.patchOrCreateImageForm('FRONT_SIDE', frontImg, this.surveyForm?.get('photos.frontImage')),
+      bottomImage: this.patchOrCreateImageForm('BOTTOM_SIDE', bottomImg, this.surveyForm?.get('photos.bottomImage'))
     });
     // this.markForCheck();
   }
@@ -1544,12 +1537,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   uploadImages(guid: string) {
-    const leftImg = this.surveyForm?.get('frame_type.leftImage')?.value;
-    const rearImg = this.surveyForm?.get('frame_type.rearImage')?.value;
-    const rightImg = this.surveyForm?.get('frame_type.rightImage')?.value;
-    const topImg = this.surveyForm?.get('frame_type.topImage')?.value;
-    const frontImg = this.surveyForm?.get('frame_type.frontImage')?.value;
-    const bottomImg = this.surveyForm?.get('frame_type.bottomImage')?.value;
+    const leftImg = this.surveyForm?.get('photos.leftImage')?.value;
+    const rearImg = this.surveyForm?.get('photos.rearImage')?.value;
+    const rightImg = this.surveyForm?.get('photos.rightImage')?.value;
+    const topImg = this.surveyForm?.get('photos.topImage')?.value;
+    const frontImg = this.surveyForm?.get('photos.frontImage')?.value;
+    const bottomImg = this.surveyForm?.get('photos.bottomImage')?.value;
 
     const additionalImages = [leftImg, rearImg, rightImg, topImg, frontImg, bottomImg].filter(image => image.file);
 

@@ -24,11 +24,11 @@
       @for (s of schedulingFilteredList; track s) {
       <mat-card [ngClass]="{'card-content p-2 m-b-10 bg-light-grey-opacity-30': true}"
         matRipple>
-        @for(row of s.scheduling_sot; track row){
-        <mat-card [ngClass]="{'bg-light-grey': checkDisable(row!), 'card-content p-0 m-b-10': true}"
+        @for(row of s.scheduling_sot; track row) {
+        <mat-card [ngClass]="{'bg-light-grey': checkDisable(row!), 'card-content p-0 m-b-10 cursor-pointer': true}" (click)="toggleRow(row!)"
           matRipple>
           <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center"
-            (click)="toggleRow(row!)">
+            >
             <mat-card-title [ngClass]="{'pt-1': true}">
               <mat-checkbox (change)="$event ? toggleRow(row!) : null"
                 [checked]="schedulingSotSelection.isSelected(row!)" class="card-checkbox"

@@ -57,7 +57,7 @@ export interface OutGateResult {
   totalCount: number;
 }
 
-export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
+export const SEARCH_OUT_GATE_FOR_SURVEY_QUERY = gql`
   query queryOutGates($where: out_gateFilterInput, $order: [out_gateSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryOutGates(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
@@ -77,15 +77,12 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
         eir_status_cv
         guid
         haulier
-        lolo_cv
-        preinspection_cv
         remarks
         so_tank_guid
         update_by
         update_dt
         vehicle_no
-        yard_cv
-        in_gate_survey {
+        out_gate_survey {
           guid
         }
         tank {
@@ -189,24 +186,23 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
-        query: SEARCH_IN_GATE_FOR_SURVEY_QUERY,
+        query: SEARCH_OUT_GATE_FOR_SURVEY_QUERY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
-        map((result) => result.data),
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of([] as OutGateItem[]); // Return an empty array on error
-        }),
-        finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const retResult = result.outGates || { nodes: [], totalCount: 0 };
+          const retResult = result.data.resultList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
           this.pageInfo = retResult.pageInfo;
           return retResult.nodes;
-        })
+        }),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as OutGateItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false))
       );
   }
 

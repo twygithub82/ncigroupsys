@@ -78,6 +78,7 @@ import { ResidueDisposalEstimateApprovalComponent } from './residue-disposal/est
 import {ResidueDisposalEstimateApprovalNewComponent} from './residue-disposal/estimate-approval-new/estimate-approval-new.component';
 import { SteamEstimateApprovalNewComponent } from './steam/estimate-approval-new/estimate-approval-new.component';
 import { SteamEstimateApprovalComponent } from './steam/estimate-approval/estimate-approval.component';
+import { OutGateSurveyComponent } from './inventory/out-gate-survey/out-gate-survey.component';
 import { ExclusiveSteamComponent } from './package/exclusive-steam/exclusive-steam.component';
 export const ADMIN_ROUTE: Routes = [
   {
@@ -136,6 +137,14 @@ export const ADMIN_ROUTE: Routes = [
   {
     path: "inventory/out-gate/details/:id",
     component: OutGateDetailsComponent,
+  },
+  {
+    path: "inventory/out-gate-survey",
+    component: OutGateSurveyComponent,
+  },
+  {
+    path: "inventory/out-gate-survey/survey-form/:id",
+    component: OutGateSurveyComponent, // TODO :: 
   },
   {
     path: "inventory/booking",

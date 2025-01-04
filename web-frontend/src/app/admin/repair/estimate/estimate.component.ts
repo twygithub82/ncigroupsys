@@ -382,8 +382,6 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   public loadData() {
-    this.search();
-
     const queries = [
       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -403,6 +401,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
       this.repairOptionCvList = data;
     });
+
+    this.search();
   }
 
   handleCancelSuccess(count: any) {
@@ -455,7 +455,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       tank_status_cv: { in: ['REPAIR', 'STORAGE'] },
       purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
     };
-    
+
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
@@ -485,11 +485,28 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     }
 
-    if ((this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) || this.searchForm!.get('est_status_cv')?.value?.length) {
+    if ((this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value) || this.searchForm!.get('est_status_cv')?.value?.length) {
       let reSome: any = {};
 
-      if (this.searchForm!.get('est_dt_start')?.value && this.searchForm!.get('est_dt_end')?.value) {
-        reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value) };
+      if (this.searchForm!.get('est_dt_start')?.value || this.searchForm!.get('est_dt_end')?.value) {
+        // reSome.create_dt = { gte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value), lte: Utility.convertDate(this.searchForm!.get('est_dt_end')?.value) };
+        const estDtStart = this.searchForm?.get('est_dt_start')?.value;
+        const estDtEnd = this.searchForm?.get('est_dt_end')?.value;
+        const today = new Date();
+
+        // Check if `est_dt_start` is before today and `est_dt_end` is empty
+        if (estDtStart && new Date(estDtStart) < today && !estDtEnd) {
+          reSome.create_dt = {
+            gte: Utility.convertDate(estDtStart),
+            lte: Utility.convertDate(today), // Set end date to today
+          };
+        } else if (estDtStart || estDtEnd) {
+          // Handle general case where either or both dates are provided
+          reSome.create_dt = {
+            gte: Utility.convertDate(estDtStart || today),
+            lte: Utility.convertDate(estDtEnd || today),
+          };
+        }
       }
 
       if (this.searchForm!.get('est_status_cv')?.value?.length) {
@@ -503,7 +520,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, this.endCursor, undefined, undefined, () => {
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
       this.updatePageSelection();
     });
   }
@@ -569,7 +586,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-  
+
     if (this.pageIndex === 0) {
       first = this.pageSize;
     } else if (this.lastCursorDirection === 'forward') {
@@ -579,7 +596,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       last = this.pageSize;
       before = this.currentStartCursor;
     }
-  
+
     // Perform the search
     this.performSearch(
       this.pageSize,
@@ -593,7 +610,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     );
   }
-  
+
 
   getProcessStatusDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);

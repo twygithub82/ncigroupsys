@@ -60,7 +60,6 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
   standalone: true,
   templateUrl: './release-order-details.component.html',
   styleUrl: './release-order-details.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
