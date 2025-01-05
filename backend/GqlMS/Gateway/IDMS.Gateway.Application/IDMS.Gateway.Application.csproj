@@ -21,4 +21,10 @@
     <Folder Include="resolver\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="graphql\schema.graphql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
