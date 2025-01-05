@@ -862,7 +862,14 @@ queryOccupiedTeam()
     });
 
   }
+  
 
+  RefreshContent(): void {
+  
+    this.clearAllTeamButton();
+    this.queryOccupiedTeam();
+  }
+ 
 // buttonViewOnly():boolean
 // {
 //   let bView:boolean=false;

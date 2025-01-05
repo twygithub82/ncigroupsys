@@ -1659,14 +1659,14 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   getTotalCost(): number {
     return this.deList.reduce((acc, row) => {
       if (row.delete_dt===undefined ||row.delete_dt===null ) {
-        // if(this.IsApproved())
-        // {
-        //   return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)+((row.approve_labour||0)*(this.packageLabourItem?.cost||0)));
-        // }
-        // else
-        // {
-        return acc + ((row.quantity || 0) * (row.cost || 0)+((row.labour||0)*(this.packageLabourItem?.cost||0)));
-        // }
+         if(this.IsApproved())
+         {
+             return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)+((row.approve_labour||0)*(this.packageLabourItem?.cost||0)));
+         }
+         else
+         {
+            return acc + ((row.quantity || 0) * (row.cost || 0)+((row.labour||0)*(this.packageLabourItem?.cost||0)));
+         }
       }
       return acc; // If row is approved, keep the current accumulator value
     }, 0);
@@ -1756,7 +1756,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         re.steaming_part = this.deList?.map((rep: SteamPartItem) => {
           return new SteamPartItem({
             ...rep,
-            action: (this.steamItem?.status_cv==='PENDING'?'EDIT':(rep.action===undefined?'':rep.action)),
+            action: (this.steamItem?.status_cv==='PENDING'?((rep.action===undefined||rep.action===null)?'EDIT':rep.action):(rep.action===undefined?'':rep.action)),
            // tariff_residue: undefined,
             tariff_steaming_guid:(rep.tariff_steaming_guid?rep.tariff_steaming_guid:''),
             approve_part: (rep.approve_part==null?true:rep.approve_part),

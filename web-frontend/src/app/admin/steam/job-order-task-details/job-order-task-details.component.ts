@@ -468,6 +468,17 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     }
   }
 
+  refreshTime_table(job_order_guid:string)
+  {
+    this.subs.sink = this.joDS.getJobOrderByID(job_order_guid).subscribe(jo => {
+      if (jo?.length) {
+        console.log(jo)
+        this.jobOrderItem = jo[0];
+        this.jobOrderItem.time_table=this.jobOrderItem.time_table?.filter(d=>d.delete_dt==null || d.delete_dt==0);
+      }
+    });
+
+  }
   populateSteam(steam: SteamItem) {
 
     steam.steaming_part = this.filterDeleted(steam.steaming_part)
@@ -861,6 +872,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
               console.log(result);
             });
           }
+
         }
       });
     } else {
@@ -876,6 +888,8 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
         });
       }
     }
+
+    this.refreshTime_table(this.job_order_guid!);
   }
 
   completeJobItem(event: Event, repair_part: RepairPartItem) {

@@ -47,7 +47,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { MatCardModule } from '@angular/material/card';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -97,6 +97,7 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
 ]
 })
 export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
   // displayedColumns = [
   //   'tank_no',
   //   'customer',
@@ -1019,4 +1020,11 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
   }
   
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    if(event.index===1)
+    {
+      this.bayOverviewComponent.RefreshContent();
+    }
+  }
 }

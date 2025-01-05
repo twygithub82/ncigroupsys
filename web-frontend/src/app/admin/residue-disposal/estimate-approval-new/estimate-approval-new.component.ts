@@ -1779,7 +1779,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         re.residue_part = this.deList?.map((rep: ResiduePartItem) => {
           return new ResiduePartItem({
             ...rep,
-            action : (this.residueItem?.status_cv==='PENDING'?'EDIT':(rep.action===undefined?'':rep.action)),
+            action : (this.residueItem?.status_cv==='PENDING'?((rep.action===undefined||rep.action===null)?'EDIT':rep.action):(rep.action===undefined?'':rep.action)),
             tariff_residue: undefined,
             tariff_residue_guid:(rep.tariff_residue_guid?rep.tariff_residue_guid:''),
             approve_part: (rep.approve_part==null?true:rep.approve_part),

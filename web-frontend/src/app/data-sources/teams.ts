@@ -60,8 +60,8 @@ export const GET_TEAM_QUERY = gql`
 `;
 
 export const GET_TEAM_BY_DEPARTMENT_QUERY = gql`
-  query queryTeams($where: teamFilterInput, $order: [teamSortInput!]) {
-    resultList: queryTeams(where: $where, order: $order) {
+  query queryTeams($where: teamFilterInput, $order: [teamSortInput!],$first:Int) {
+    resultList: queryTeams(where: $where, order: $order,first:$first) {
       nodes {
         create_by
         create_dt
@@ -113,10 +113,11 @@ export class TeamDS extends BaseDataSource<TeamItem> {
       department_cv: { in: department_cv }
     }
     const order = { description: "ASC" }
+    const first=100;
     return this.apollo
       .query<any>({
         query: GET_TEAM_BY_DEPARTMENT_QUERY,
-        variables: { where, order },
+        variables: { where, order,first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

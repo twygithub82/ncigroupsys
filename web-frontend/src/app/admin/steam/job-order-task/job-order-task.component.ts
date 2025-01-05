@@ -450,7 +450,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
             }
       });
     } else {
-      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time && !x?.delete_dt);
       if (found?.length) {
         const newParam = new TimeTableItem(found[0]);
         newParam.stop_time = Utility.convertDate(new Date()) as number;

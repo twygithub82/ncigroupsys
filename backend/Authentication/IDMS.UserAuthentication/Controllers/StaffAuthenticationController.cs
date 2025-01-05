@@ -75,7 +75,7 @@ namespace IDMS.User.Authentication.API.Controllers
             //checking the staff
             var staff = await _userManager.FindByNameAsync(staffModel.Username);
 
-
+            
 
             //validate the user password
 
