@@ -378,8 +378,25 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       where.status_cv = { in: this.filterRepairForm!.get('status_cv')?.value };
     }
 
-    if (this.filterRepairForm!.get('approval_dt_start')?.value && this.filterRepairForm!.get('approval_dt_end')?.value) {
-      where.approve_dt = { gte: Utility.convertDate(this.filterRepairForm!.get('approval_dt_start')?.value), lte: Utility.convertDate(this.filterRepairForm!.get('approval_dt_end')?.value, true) };
+    if (this.filterRepairForm!.get('approval_dt_start')?.value || this.filterRepairForm!.get('approval_dt_end')?.value) {
+      const estDtStart = this.filterRepairForm?.get('approval_dt_start')?.value;
+      const estDtEnd = this.filterRepairForm?.get('approval_dt_end')?.value;
+      const today = new Date();
+
+      // Check if `est_dt_start` is before today and `est_dt_end` is empty
+      if (estDtStart && new Date(estDtStart) < today && !estDtEnd) {
+        where.approve_dt = {
+          gte: Utility.convertDate(estDtStart),
+          lte: Utility.convertDate(today), // Set end date to today
+        };
+      } else if (estDtStart || estDtEnd) {
+        // Handle general case where either or both dates are provided
+        where.approve_dt = {
+          gte: Utility.convertDate(estDtStart || today),
+          lte: Utility.convertDate(estDtEnd || today),
+        };
+      }
+      // where.approve_dt = { gte: Utility.convertDate(this.filterRepairForm!.get('approval_dt_start')?.value), lte: Utility.convertDate(this.filterRepairForm!.get('approval_dt_end')?.value, true) };
     }
 
     this.lastSearchCriteriaRepair = this.repairDS.addDeleteDtCriteria(where);

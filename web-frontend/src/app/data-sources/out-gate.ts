@@ -132,6 +132,170 @@ export const SEARCH_OUT_GATE_FOR_SURVEY_QUERY = gql`
   }
 `;
 
+export const GET_OUT_GATE_BY_ID = gql`
+  query queryOutGates($where: out_gateFilterInput) {
+    resultList: queryOutGates(where: $where) {
+      totalCount
+      nodes {
+        create_by
+        create_dt
+        delete_dt
+        driver_name
+        eir_dt
+        eir_no
+        eir_status_cv
+        guid
+        haulier
+        remarks
+        so_tank_guid
+        update_by
+        update_dt
+        vehicle_no
+        tank {
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
+          delete_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          last_test_guid
+          liftoff_job_no
+          lifton_job_no
+          owner_guid
+          preinspect_job_no
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          release_job_no
+          remarks
+          required_temp
+          so_guid
+          status_cv
+          takein_job_no
+          tank_no
+          tank_status_cv
+          unit_type_guid
+          update_by
+          update_dt
+          customer_company {
+            code
+            guid
+            name
+          }
+          tariff_cleaning {
+            alias
+            ban_type_cv
+            cargo
+            class_cv
+            cleaning_category_guid
+            cleaning_method_guid
+            create_by
+            create_dt
+            delete_dt
+            depot_note
+            description
+            flash_point
+            guid
+            hazard_level_cv
+            in_gate_alert
+            msds_guid
+            nature_cv
+            open_on_gate_cv
+            remarks
+            un_no
+            update_by
+            update_dt
+          }
+          storing_order {
+            so_no
+            haulier
+            customer_company {
+              code
+              name
+              guid
+            }
+          }
+        }
+        out_gate_survey {
+          airline_valve_conn_cv
+          airline_valve_conn_spec_cv
+          airline_valve_cv
+          airline_valve_dim
+          airline_valve_pcs
+          btm_dis_comp_cv
+          btm_dis_valve_cv
+          btm_dis_valve_spec_cv
+          btm_valve_brand_cv
+          buffer_plate
+          capacity
+          cladding_cv
+          comments
+          create_by
+          create_dt
+          data_csc_transportplate
+          delete_dt
+          dipstick
+          dom_dt
+          foot_valve_cv
+          guid
+          height_cv
+          out_gate_guid
+          inspection_dt
+          ladder
+          last_release_dt
+          last_test_cv
+          manlid_comp_cv
+          manlid_cover_cv
+          manlid_cover_pcs
+          manlid_cover_pts
+          manlid_seal_cv
+          manufacturer_cv
+          max_weight_cv
+          next_test_cv
+          pv_spec_cv
+          pv_spec_pcs
+          pv_type_cv
+          pv_type_pcs
+          residue
+          safety_handrail
+          take_in_reference
+          tank_comp_guid
+          tare_weight
+          test_class_cv
+          test_dt
+          thermometer
+          thermometer_cv
+          top_dis_comp_cv
+          top_dis_valve_cv
+          top_dis_valve_spec_cv
+          top_valve_brand_cv
+          update_by
+          update_dt
+          walkway_cv
+          top_coord
+          bottom_coord
+          front_coord
+          rear_coord
+          left_coord
+          right_coord
+          top_remarks
+          bottom_remarks
+          front_remarks
+          rear_remarks
+          left_remarks
+          right_remarks
+        }
+      }
+    }
+  }
+`;
+
 export const GET_OUT_GATE_BY_ID_FOR_MOVEMENT = gql`
   query queryOutGates($where: out_gateFilterInput) {
     resultList: queryOutGates(where: $where) {
@@ -205,6 +369,41 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
         finalize(() => this.loadingSubject.next(false))
       );
   }
+  
+    getOutGateByID(id: string): Observable<OutGateItem[]> {
+      this.loadingSubject.next(true);
+      let where = this.addDeleteDtCriteria({ guid: { eq: id } });
+      return this.apollo
+        .query<any>({
+          query: GET_OUT_GATE_BY_ID,
+          variables: { where },
+          fetchPolicy: 'no-cache' // Disable caching for this query
+        })
+        .pipe(
+          // Handle the response and errors
+          map((result) => {
+            const data = result.data;
+            if (!data) {
+              throw new Error('No data returned from query');
+            }
+    
+            // Extract the nodes and totalCount
+            const retResult = data.resultList || { nodes: [], totalCount: 0 };
+    
+            // Update internal state
+            this.dataSubject.next(retResult.nodes);
+            this.totalCount = retResult.totalCount;
+    
+            // Return the nodes
+            return retResult.nodes;
+          }),
+          catchError((error: ApolloError) => {
+            console.error('GraphQL Error:', error);
+            return of([] as OutGateItem[]); // Return an empty array on error
+          }),
+          finalize(() => this.loadingSubject.next(false))
+        );
+    }
 
   getOutGateByIDForMovement(sot_guid: string): Observable<OutGateItem[]> {
     this.loadingSubject.next(true);

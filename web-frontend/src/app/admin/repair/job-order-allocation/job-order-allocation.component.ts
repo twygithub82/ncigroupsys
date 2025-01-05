@@ -693,7 +693,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     // const finalJobOrder = Array.from(jobOrderMap.values());
     console.log(finalJobOrder);
     const without4x = this.repList.filter(part =>
-      !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair)
+      !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair) && this.repairPartDS.isApproved(part)
     );
     this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
       console.log(result)
@@ -945,7 +945,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   toggleRep(row: RepairPartItem) {
-    if (this.repairPartDS.is4X(row.rp_damage_repair) || !this.joDS.canJobAllocate(row?.job_order)) return;
+    if (this.repairPartDS.is4X(row.rp_damage_repair) || !this.joDS.canJobAllocate(row?.job_order) || !this.repairPartDS.isApproved(row)) return;
     this.repSelection.toggle(row);
   }
 

@@ -80,6 +80,7 @@ import { SteamEstimateApprovalNewComponent } from './steam/estimate-approval-new
 import { SteamEstimateApprovalComponent } from './steam/estimate-approval/estimate-approval.component';
 import { OutGateSurveyComponent } from './inventory/out-gate-survey/out-gate-survey.component';
 import { ExclusiveSteamComponent } from './package/exclusive-steam/exclusive-steam.component';
+import { OutGateSurveyFormComponent } from './inventory/out-gate-survey-form/out-gate-survey-form.component';
 export const ADMIN_ROUTE: Routes = [
   {
     path: "parameter/cleaning-category",
@@ -144,7 +145,7 @@ export const ADMIN_ROUTE: Routes = [
   },
   {
     path: "inventory/out-gate-survey/survey-form/:id",
-    component: OutGateSurveyComponent, // TODO :: 
+    component: OutGateSurveyFormComponent,
   },
   {
     path: "inventory/booking",
