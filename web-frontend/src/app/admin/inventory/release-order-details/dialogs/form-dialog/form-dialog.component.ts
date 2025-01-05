@@ -146,7 +146,6 @@ export class FormDialogComponent {
       startWith(''),
       debounceTime(300),
       tap(value => {
-        console.log(value)
         if (value) {
           this.schedulingFilteredList = this.schedulingList
             .map(x => ({
@@ -316,7 +315,6 @@ export class FormDialogComponent {
   sort(schedulingSot: any[]): any[] {
     // Update each item in the list using the updateAvailability method
     schedulingSot = schedulingSot.map(ss => this.updateAvailability(ss));
-    console.log(schedulingSot)
 
     // Sort the list by the required criteria
     schedulingSot.sort((a, b) => {
