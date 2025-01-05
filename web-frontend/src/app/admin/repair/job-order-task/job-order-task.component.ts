@@ -150,7 +150,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   customer_companyList?: CustomerCompanyItem[];
 
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 100;
+  pageSizeJobOrder = 10;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { create_dt: "DESC" };
   endCursorJobOrder: string | undefined = undefined;

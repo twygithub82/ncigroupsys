@@ -802,7 +802,8 @@
     "OVERWRITE-QC": "Overwrite QC",
     "PERIODIC-TEST-SURVEY": "Periodic Test Survey",
     "PHOTOS": "Photos",
-    "OVER-REQUIRED-TEMP": "The current temperature is higher than the required temperate"
+    "OVER-REQUIRED-TEMP": "The current temperature is higher than the required temperate",
+    "PUBLISH": "Publish"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -162,7 +162,7 @@ export class ClnJobOrderRequest {
   public job_order?: JobOrderGO[];
   public remarks?: string;
   public sot_guid?: string;
-  public sot_status?:string;
+  public sot_status?: string;
 
   constructor(item: Partial<ClnJobOrderRequest> = {}) {
     this.guid = item.guid;
@@ -203,7 +203,7 @@ export class ResJobOrderRequest {
     this.job_order = item.job_order;
     this.remarks = item.remarks;
     this.sot_guid = item.sot_guid;
-    this.sot_status=item.sot_status;
+    this.sot_status = item.sot_status;
   }
 }
 
@@ -213,15 +213,15 @@ export class SteamJobOrderRequest {
   public job_order?: JobOrderGO[];
   public remarks?: string;
   public sot_guid?: string;
-  public sot_status?:string;
-  
+  public sot_status?: string;
+
   constructor(item: Partial<SteamJobOrderRequest> = {}) {
     // this.estimate_no = item.estimate_no;
     this.guid = item.guid;
     this.job_order = item.job_order;
     this.remarks = item.remarks;
     this.sot_guid = item.sot_guid;
-    this.sot_status=item.sot_status;
+    this.sot_status = item.sot_status;
   }
 }
 
@@ -371,6 +371,13 @@ const GET_JOB_ORDER_FOR_REPAIR = gql`
           update_by
           update_dt
         }
+      }
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
       }
     }
   }

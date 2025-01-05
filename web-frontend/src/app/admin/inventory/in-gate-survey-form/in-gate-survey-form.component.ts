@@ -209,7 +209,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
     PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS',
-    PHOTOS: 'COMMON-FORM.PHOTOS'
+    PHOTOS: 'COMMON-FORM.PHOTOS',
+    PUBLISH: 'COMMON-FORM.PUBLISH'
   }
 
   in_gate_guid: string | null | undefined;
@@ -252,6 +253,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   tankCompTypeCvList: CodeValuesItem[] = [];
   valveBrandCvList: CodeValuesItem[] = [];
   tankSideCvList: CodeValuesItem[] = [];
+  tankStatusCvList: CodeValuesItem[] = [];
   packageBufferList?: PackageBufferItem[];
 
   unit_typeList: TankItem[] = []
@@ -641,6 +643,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       { alias: 'thermometerCv', codeValType: 'THERMOMETER' },
       { alias: 'valveBrandCv', codeValType: 'VALVE_BRAND' },
       { alias: 'tankSideCv', codeValType: 'TANK_SIDE' },
+      { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -719,6 +722,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.cvDS.connectAlias('tankSideCv').subscribe(data => {
       this.tankSideCvList = data;
+    });
+    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvList = data;
     });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
@@ -1010,6 +1016,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     // TableExportUtil.exportToExcel(exportData, 'excel');
   }
 
+  onPublish() {
+
+  }
+
   onFormSubmit() {
     if (this.surveyForm?.valid) {
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
@@ -1186,6 +1196,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   getCleanStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.cleanStatusCvList);
+  }
+
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
   translateLangText() {
