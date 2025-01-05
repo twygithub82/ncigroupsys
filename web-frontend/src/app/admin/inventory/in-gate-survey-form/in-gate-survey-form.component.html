@@ -1821,16 +1821,6 @@
                             <form [formGroup]="getManlidFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.MANLID}}</ng-template>
                               <div class="row">
-                                <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
-                                <mat-form-field class="example-full-width">
-                                  <mat-label>{{translatedLangText.MANLID_COMPARTMENT}}</mat-label>
-                                  <mat-select formControlName="manlid_comp_cv">
-                                    @for (codeValue of disCompCvList; track codeValue) {
-                                    <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                    }
-                                  </mat-select>
-                                </mat-form-field>
-                              </div> -->
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-label>{{translatedLangText.MANLID_COMPARTMENT}}:</mat-label>
                                   <mat-radio-group formControlName="manlid_comp_cv" required>
@@ -1878,6 +1868,23 @@
                                     @if (getManlidFormGroup().get('manlid_cover_pts')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.VOLUME}} {{translatedLangText.SO_REQUIRED}}
+                                    </mat-error>
+                                    }
+                                  </mat-form-field>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                  <mat-form-field class="example-full-width">
+                                    <mat-label>{{translatedLangText.MANLID_SEAL}}</mat-label>
+                                    <mat-select formControlName="manlid_seal_cv" required>
+                                      @for (codeValue of manlidSealCvList; track codeValue) {
+                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+                                      }
+                                    </mat-select>
+                                    @if (getManlidFormGroup().get('manlid_seal_cv')?.hasError('required')) {
+                                    <mat-error>
+                                      {{translatedLangText.MANLID_SEAL}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
                                     }
                                   </mat-form-field>

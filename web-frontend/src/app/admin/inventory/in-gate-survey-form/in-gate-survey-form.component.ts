@@ -840,6 +840,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           manlid_cover_cv: ig.in_gate_survey?.manlid_cover_cv,
           manlid_cover_pcs: ig.in_gate_survey?.manlid_cover_pcs,
           manlid_cover_pts: ig.in_gate_survey?.manlid_cover_pts,
+          manlid_seal_cv: ig.in_gate_survey?.manlid_seal_cv,
           pv_type_cv: ig.in_gate_survey?.pv_type_cv,
           pv_type_pcs: ig.in_gate_survey?.pv_type_pcs,
           pv_spec_cv: ig.in_gate_survey?.pv_spec_cv,

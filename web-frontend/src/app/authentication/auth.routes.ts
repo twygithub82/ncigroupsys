@@ -9,7 +9,7 @@ import { Page500Component } from "./page500/page500.component";
 export const AUTH_ROUTE: Route[] = [
   {
     path: "",
-    redirectTo: "signin",
+    redirectTo: "signin-staff",
     pathMatch: "full",
   },
   {
