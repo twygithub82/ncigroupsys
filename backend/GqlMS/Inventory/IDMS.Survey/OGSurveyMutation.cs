@@ -62,6 +62,7 @@ namespace IDMS.Survey.GqlTypes
                 context.Attach(sot);
                 sot.unit_type_guid = tnk.unit_type_guid;
                 sot.owner_guid = tnk.owner_guid;
+                sot.tank_no = string.IsNullOrEmpty(tnk.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tnk.tank_no;
                 sot.update_by = user;
                 sot.update_dt = currentDateTime;
                 sot.tank_status_cv = TankMovementStatus.RELEASED;
