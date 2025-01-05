@@ -6,7 +6,7 @@ namespace IDMS.Survey.GqlTypes.LocalModel
     public class OutGateSurveyRequest: Dates
     {
         public string? guid { get; set; }
-        public string in_gate_guid { get; set; }
+        public string out_gate_guid { get; set; }
         public int? capacity { get; set; }
         public int? tare_weight { get; set; }
         public string? take_in_reference { get; set; }
