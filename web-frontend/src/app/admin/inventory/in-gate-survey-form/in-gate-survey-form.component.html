@@ -110,7 +110,7 @@
                       <span>{{translatedLangText.CURRENT_STATUS}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{in_gate?.tank?.tank_status_cv}}
+                      <div class="contact-detail-info font-bold">{{getTankStatusDescription(in_gate?.tank?.tank_status_cv)}}
                       </div>
                     </div>
                   </div>
@@ -2002,6 +2002,18 @@
                           </button>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                          <button mat-raised-button matStepperNext color="primary" class="msr-2"
+                            [disabled]="(igsDS.loading$| async)"
+                            (click)="onPublish()">
+                            <mat-icon>
+                              @if (!(igsDS.loading$ | async)) {
+                              publish
+                              } @else {
+                              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                              }
+                            </mat-icon>
+                            {{translatedLangText.PUBLISH}}
+                          </button>
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
                             [disabled]="(igsDS.loading$| async)"
                             (click)="onFormSubmit()">

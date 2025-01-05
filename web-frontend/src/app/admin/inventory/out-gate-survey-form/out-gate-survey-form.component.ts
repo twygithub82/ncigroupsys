@@ -56,7 +56,7 @@ import { PreviewImageDialogComponent } from '@shared/components/preview-image-di
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { MatTabsModule } from '@angular/material/tabs';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { OutGateDS } from 'app/data-sources/out-gate';
+import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
 import { OutGateSurveyDS } from 'app/data-sources/out-gate-survey';
 
 @Component({
@@ -138,8 +138,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     TEST_TYPE: "COMMON-FORM.TEST-TYPE",
     DATE: "COMMON-FORM.DATE",
     CLASS: "COMMON-FORM.CLASS",
-    IN_GATE_DETAILS: "COMMON-FORM.IN-GATE-DETAILS",
-    IN_GATE_REMARKS: "COMMON-FORM.IN-GATE-REMARKS",
+    OUT_GATE_DETAILS: "COMMON-FORM.OUT-GATE-DETAILS",
+    OUT_GATE_REMARKS: "COMMON-FORM.OUT-GATE-REMARKS",
     HAULIER: 'COMMON-FORM.HAULIER',
     VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
     DRIVER_NAME: 'COMMON-FORM.DRIVER-NAME',
@@ -215,7 +215,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   out_gate_guid: string | null | undefined;
-  in_gate: InGateItem | null | undefined;
+  out_gate: OutGateItem | null | undefined;
 
   surveyForm?: UntypedFormGroup;
 
@@ -256,6 +256,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   tankCompTypeCvList: CodeValuesItem[] = [];
   valveBrandCvList: CodeValuesItem[] = [];
   tankSideCvList: CodeValuesItem[] = [];
+  tankStatusCvList: CodeValuesItem[] = [];
   packageBufferList?: PackageBufferItem[];
 
   unit_typeList: TankItem[] = []
@@ -378,7 +379,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         test_class_cv: [''],
         test_dt: [''],
       }),
-      in_gate_details: this.fb.group({
+      out_gate_details: this.fb.group({
         vehicle_no: [''],
         driver_name: [''],
         haulier: [''],
@@ -464,23 +465,23 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       // walkway_cv: [''], // tank_details
       // tank_comp_guid: [''], // tank_details
       // comments: [''], // tank_details
-      // vehicle_no: [''], // in_gate_details
-      // driver_name: [''], // in_gate_details
-      // haulier: [''], // in_gate_details
-      // in_gate_remarks: [''], // in_gate_details
+      // vehicle_no: [''], // out_gate_details
+      // driver_name: [''], // out_gate_details
+      // haulier: [''], // out_gate_details
+      // in_gate_remarks: [''], // out_gate_details
       // leftRemarks: [''], // frame_type
       // rearRemarks: [''], // frame_type
       // rightRemarks: [''], // frame_type
       // topRemarks: [''], // frame_type
       // frontRemarks: [''], // frame_type
       // bottomRemarks: [''], // frame_type
-      // leftImage: this.createImageForm('LEFT_SIDE', '', undefined), // photos
-      // rearImage: this.createImageForm('REAR_SIDE', '', undefined), // photos
-      // rightImage: this.createImageForm('RIGHT_SIDE', '', undefined), // photos
-      // topImage: this.createImageForm('TOP_SIDE', '', undefined), // photos
-      // frontImage: this.createImageForm('FRONT_SIDE', '', undefined), // photos
-      // bottomImage: this.createImageForm('BOTTOM_SIDE', '', undefined), // photos
-      // dmgImages: this.fb.array([]), // photos
+      // leftImage: this.createImageForm('LEFT_SIDE', '', undefined), // frame_type
+      // rearImage: this.createImageForm('REAR_SIDE', '', undefined), // frame_type
+      // rightImage: this.createImageForm('RIGHT_SIDE', '', undefined), // frame_type
+      // topImage: this.createImageForm('TOP_SIDE', '', undefined), // frame_type
+      // frontImage: this.createImageForm('FRONT_SIDE', '', undefined), // frame_type
+      // bottomImage: this.createImageForm('BOTTOM_SIDE', '', undefined), // frame_type
+      // dmgImages: this.fb.array([]), // frame_type
       // bottomFormGroup: this.fb.group({ // compartment_type
       //   btm_dis_comp_cv: [''],
       //   btm_dis_valve_cv: [''],
@@ -606,8 +607,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     return this.surveyForm!.get('tank_details') as UntypedFormGroup;
   }
 
-  getInGateDetailsFormGroup(): UntypedFormGroup {
-    return this.surveyForm!.get('in_gate_details') as UntypedFormGroup;
+  getOutGateDetailsFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('out_gate_details') as UntypedFormGroup;
   }
 
   getPeriodicTestFormGroup(): UntypedFormGroup {
@@ -726,6 +727,9 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS.connectAlias('tankSideCv').subscribe(data => {
       this.tankSideCvList = data;
     });
+    this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      this.tankStatusCvList = data;
+    });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
       this.unit_typeList = data
     });
@@ -734,16 +738,16 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     if (this.out_gate_guid) {
       // EDIT
       this.subs.sink = this.ogDS.getOutGateByID(this.out_gate_guid).subscribe(data => {
-        if (this.igDS.totalCount > 0) {
-          this.in_gate = data[0];
-          this.populateInGateForm(this.in_gate);
+        if (data?.length > 0) {
+          this.out_gate = data[0];
+          this.populateInGateForm(this.out_gate);
           // this.ccDS.getOwnerList().subscribe(data => {
           //   this.ownerList = data;
           // });
-          this.getCustomerBufferPackage(this.in_gate.tank?.storing_order?.customer_company?.guid);
+          this.getCustomerBufferPackage(this.out_gate.tank?.storing_order?.customer_company?.guid);
 
-          if (this.in_gate!.in_gate_survey?.guid) {
-            this.fileManagerService.getFileUrlByGroupGuid([this.in_gate!.in_gate_survey?.guid]).subscribe({
+          if (this.out_gate!.out_gate_survey?.guid) {
+            this.fileManagerService.getFileUrlByGroupGuid([this.out_gate!.out_gate_survey?.guid]).subscribe({
               next: (response) => {
                 console.log('Files retrieved successfully:', response);
                 this.populateImages(response)
@@ -775,79 +779,79 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
-  populateInGateForm(ig: InGateItem): void {
+  populateInGateForm(og: OutGateItem): void {
     this.surveyForm?.patchValue({
       tank_details: {
-        unit_type_guid: ig.tank?.unit_type_guid,
-        owner: ig.tank?.customer_company,
-        owner_guid: ig.tank?.owner_guid,
-        manufacturer_cv: ig.in_gate_survey?.manufacturer_cv,
-        dom_dt: Utility.convertDate(ig.in_gate_survey?.dom_dt),
-        cladding_cv: ig.in_gate_survey?.cladding_cv,
-        capacity: ig.in_gate_survey?.capacity,
-        tare_weight: ig.in_gate_survey?.tare_weight,
-        max_weight_cv: ig.in_gate_survey?.max_weight_cv,
-        height_cv: ig.in_gate_survey?.height_cv,
-        walkway_cv: ig.in_gate_survey?.walkway_cv,
-        tank_comp_guid: ig.in_gate_survey?.tank_comp_guid,
-        comments: ig.in_gate_survey?.comments,
+        unit_type_guid: og.tank?.unit_type_guid,
+        owner: og.tank?.customer_company,
+        owner_guid: og.tank?.owner_guid,
+        manufacturer_cv: og.out_gate_survey?.manufacturer_cv,
+        dom_dt: Utility.convertDate(og.out_gate_survey?.dom_dt),
+        cladding_cv: og.out_gate_survey?.cladding_cv,
+        capacity: og.out_gate_survey?.capacity,
+        tare_weight: og.out_gate_survey?.tare_weight,
+        max_weight_cv: og.out_gate_survey?.max_weight_cv,
+        height_cv: og.out_gate_survey?.height_cv,
+        walkway_cv: og.out_gate_survey?.walkway_cv,
+        tank_comp_guid: og.out_gate_survey?.tank_comp_guid,
+        comments: og.out_gate_survey?.comments,
       },
       periodic_test: {
-        last_test_cv: ig.in_gate_survey?.last_test_cv,
-        next_test_cv: ig.in_gate_survey?.next_test_cv,
-        test_class_cv: ig.in_gate_survey?.test_class_cv,
-        test_dt: Utility.convertDate(ig.in_gate_survey?.test_dt),
+        last_test_cv: og.out_gate_survey?.last_test_cv,
+        next_test_cv: og.out_gate_survey?.next_test_cv,
+        test_class_cv: og.out_gate_survey?.test_class_cv,
+        test_dt: Utility.convertDate(og.out_gate_survey?.test_dt),
       },
-      in_gate_details: {
-        vehicle_no: ig.vehicle_no,
-        driver_name: ig.driver_name,
-        haulier: ig.haulier,
-        in_gate_remarks: ig.remarks,
+      out_gate_details: {
+        vehicle_no: og.vehicle_no,
+        driver_name: og.driver_name,
+        haulier: og.haulier,
+        in_gate_remarks: og.remarks,
       },
       frame_type: {
-        leftRemarks: ig.in_gate_survey?.left_remarks,
-        rearRemarks: ig.in_gate_survey?.rear_remarks,
-        rightRemarks: ig.in_gate_survey?.right_remarks,
-        topRemarks: ig.in_gate_survey?.top_remarks,
-        frontRemarks: ig.in_gate_survey?.front_remarks,
-        bottomRemarks: ig.in_gate_survey?.bottom_remarks,
+        leftRemarks: og.out_gate_survey?.left_remarks,
+        rearRemarks: og.out_gate_survey?.rear_remarks,
+        rightRemarks: og.out_gate_survey?.right_remarks,
+        topRemarks: og.out_gate_survey?.top_remarks,
+        frontRemarks: og.out_gate_survey?.front_remarks,
+        bottomRemarks: og.out_gate_survey?.bottom_remarks,
       },
       compartment_type: {
         bottomFormGroup: {
-          btm_dis_comp_cv: ig.in_gate_survey?.btm_dis_comp_cv,
-          btm_dis_valve_cv: ig.in_gate_survey?.btm_dis_valve_cv,
-          btm_dis_valve_spec_cv: ig.in_gate_survey?.btm_dis_valve_spec_cv,
-          foot_valve_cv: ig.in_gate_survey?.foot_valve_cv,
-          btm_valve_brand_cv: ig.in_gate_survey?.btm_valve_brand_cv,
-          thermometer: ig.in_gate_survey?.thermometer,
-          thermometer_cv: ig.in_gate_survey?.thermometer_cv,
-          ladder: ig.in_gate_survey?.ladder,
-          data_csc_transportplate: ig.in_gate_survey?.data_csc_transportplate
+          btm_dis_comp_cv: og.out_gate_survey?.btm_dis_comp_cv,
+          btm_dis_valve_cv: og.out_gate_survey?.btm_dis_valve_cv,
+          btm_dis_valve_spec_cv: og.out_gate_survey?.btm_dis_valve_spec_cv,
+          foot_valve_cv: og.out_gate_survey?.foot_valve_cv,
+          btm_valve_brand_cv: og.out_gate_survey?.btm_valve_brand_cv,
+          thermometer: og.out_gate_survey?.thermometer,
+          thermometer_cv: og.out_gate_survey?.thermometer_cv,
+          ladder: og.out_gate_survey?.ladder,
+          data_csc_transportplate: og.out_gate_survey?.data_csc_transportplate
         },
         topFormGroup: {
-          top_dis_comp_cv: ig.in_gate_survey?.top_dis_comp_cv,
-          top_dis_valve_cv: ig.in_gate_survey?.top_dis_valve_cv,
-          top_dis_valve_spec_cv: ig.in_gate_survey?.top_dis_valve_spec_cv,
-          top_valve_brand_cv: ig.in_gate_survey?.top_valve_brand_cv,
-          airline_valve_cv: ig.in_gate_survey?.airline_valve_cv,
-          airline_valve_pcs: ig.in_gate_survey?.airline_valve_pcs,
-          airline_valve_dim: ig.in_gate_survey?.airline_valve_dim,
-          airline_valve_conn_cv: ig.in_gate_survey?.airline_valve_conn_cv,
-          airline_valve_conn_spec_cv: ig.in_gate_survey?.airline_valve_conn_spec_cv,
+          top_dis_comp_cv: og.out_gate_survey?.top_dis_comp_cv,
+          top_dis_valve_cv: og.out_gate_survey?.top_dis_valve_cv,
+          top_dis_valve_spec_cv: og.out_gate_survey?.top_dis_valve_spec_cv,
+          top_valve_brand_cv: og.out_gate_survey?.top_valve_brand_cv,
+          airline_valve_cv: og.out_gate_survey?.airline_valve_cv,
+          airline_valve_pcs: og.out_gate_survey?.airline_valve_pcs,
+          airline_valve_dim: og.out_gate_survey?.airline_valve_dim,
+          airline_valve_conn_cv: og.out_gate_survey?.airline_valve_conn_cv,
+          airline_valve_conn_spec_cv: og.out_gate_survey?.airline_valve_conn_spec_cv,
         },
         manlidFormGroup: {
-          manlid_comp_cv: ig.in_gate_survey?.manlid_comp_cv,
-          manlid_cover_cv: ig.in_gate_survey?.manlid_cover_cv,
-          manlid_cover_pcs: ig.in_gate_survey?.manlid_cover_pcs,
-          manlid_cover_pts: ig.in_gate_survey?.manlid_cover_pts,
-          pv_type_cv: ig.in_gate_survey?.pv_type_cv,
-          pv_type_pcs: ig.in_gate_survey?.pv_type_pcs,
-          pv_spec_cv: ig.in_gate_survey?.pv_spec_cv,
-          pv_spec_pcs: ig.in_gate_survey?.pv_spec_pcs,
-          safety_handrail: ig.in_gate_survey?.safety_handrail,
-          buffer_plate: ig.in_gate_survey?.buffer_plate,
-          residue: ig.in_gate_survey?.residue,
-          dipstick: ig.in_gate_survey?.dipstick,
+          manlid_comp_cv: og.out_gate_survey?.manlid_comp_cv,
+          manlid_cover_cv: og.out_gate_survey?.manlid_cover_cv,
+          manlid_cover_pcs: og.out_gate_survey?.manlid_cover_pcs,
+          manlid_cover_pts: og.out_gate_survey?.manlid_cover_pts,
+          pv_type_cv: og.out_gate_survey?.pv_type_cv,
+          pv_type_pcs: og.out_gate_survey?.pv_type_pcs,
+          pv_spec_cv: og.out_gate_survey?.pv_spec_cv,
+          pv_spec_pcs: og.out_gate_survey?.pv_spec_pcs,
+          safety_handrail: og.out_gate_survey?.safety_handrail,
+          buffer_plate: og.out_gate_survey?.buffer_plate,
+          residue: og.out_gate_survey?.residue,
+          dipstick: og.out_gate_survey?.dipstick,
         }
       },
       // owner: ig.tank?.customer_company,
@@ -914,12 +918,12 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       //   dipstick: ig.in_gate_survey?.dipstick,
       // }
     });
-    this.highlightedCellsLeft = this.populateHighlightedCells(this.highlightedCellsLeft, JSON.parse(ig.in_gate_survey?.left_coord || '[]'));
-    this.highlightedCellsRear = this.populateHighlightedCells(this.highlightedCellsRear, JSON.parse(ig.in_gate_survey?.rear_coord || '[]'));
-    this.highlightedCellsRight = this.populateHighlightedCells(this.highlightedCellsRight, JSON.parse(ig.in_gate_survey?.right_coord || '[]'));
-    this.populateTopSideCells(JSON.parse(ig.in_gate_survey?.top_coord || '{}'));
-    this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(ig.in_gate_survey?.front_coord || '[]'));
-    this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(ig.in_gate_survey?.bottom_coord || '[]'));
+    this.highlightedCellsLeft = this.populateHighlightedCells(this.highlightedCellsLeft, JSON.parse(og.out_gate_survey?.left_coord || '[]'));
+    this.highlightedCellsRear = this.populateHighlightedCells(this.highlightedCellsRear, JSON.parse(og.out_gate_survey?.rear_coord || '[]'));
+    this.highlightedCellsRight = this.populateHighlightedCells(this.highlightedCellsRight, JSON.parse(og.out_gate_survey?.right_coord || '[]'));
+    this.populateTopSideCells(JSON.parse(og.out_gate_survey?.top_coord || '{}'));
+    this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(og.out_gate_survey?.front_coord || '[]'));
+    this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(og.out_gate_survey?.bottom_coord || '[]'));
     // this.markForCheck();
   }
 
@@ -1018,21 +1022,21 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   onFormSubmit() {
     if (this.surveyForm?.valid) {
-      let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
+      let sot: StoringOrderTank = new StoringOrderTank(this.out_gate?.tank);
       sot.unit_type_guid = this.surveyForm.get('tank_details.unit_type_guid')?.value;
       sot.owner_guid = this.surveyForm.get('tank_details.owner_guid')?.value;
 
-      let ig: InGateGO = new InGateGO(this.in_gate!);
-      ig.vehicle_no = this.surveyForm.get('in_gate_details.vehicle_no')?.value?.toUpperCase();
-      ig.driver_name = this.surveyForm.get('in_gate_details.driver_name')?.value;
-      ig.haulier = this.surveyForm.get('in_gate_details.haulier')?.value;
-      ig.remarks = this.surveyForm.get('in_gate_details.in_gate_remarks')?.value;
+      let ig: InGateGO = new InGateGO(this.out_gate!);
+      ig.vehicle_no = this.surveyForm.get('out_gate_details.vehicle_no')?.value?.toUpperCase();
+      ig.driver_name = this.surveyForm.get('out_gate_details.driver_name')?.value;
+      ig.haulier = this.surveyForm.get('out_gate_details.haulier')?.value;
+      ig.remarks = this.surveyForm.get('out_gate_details.in_gate_remarks')?.value;
       ig.tank = sot;
 
       const periodicTestFormGroup = this.getBottomFormGroup();
       let igs: InGateSurveyGO = new InGateSurveyGO();
-      igs.guid = this.in_gate?.in_gate_survey?.guid;
-      igs.in_gate_guid = this.in_gate?.guid;
+      igs.guid = this.out_gate?.out_gate_survey?.guid;
+      igs.in_gate_guid = this.out_gate?.guid;
       igs.last_test_cv = this.surveyForm.get('periodic_test.last_test_cv')?.value;
       igs.next_test_cv = this.surveyForm.get('periodic_test.next_test_cv')?.value;
       igs.test_dt = Utility.convertDate(this.surveyForm.get('periodic_test.test_dt')?.value);
@@ -1639,12 +1643,12 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   getNextTest(): string | undefined {
-    if ((this.surveyForm!.get('periodic_test.last_test_cv')!.value || this.in_gate?.in_gate_survey?.last_test_cv) &&
-      (this.surveyForm!.get('periodic_test.test_dt')!.value || this.in_gate?.in_gate_survey?.test_dt)) {
-      const test_type = this.surveyForm!.get('periodic_test.last_test_cv')!.value || this.in_gate?.in_gate_survey?.last_test_cv;
+    if ((this.surveyForm!.get('periodic_test.last_test_cv')!.value || this.out_gate?.out_gate_survey?.last_test_cv) &&
+      (this.surveyForm!.get('periodic_test.test_dt')!.value || this.out_gate?.out_gate_survey?.test_dt)) {
+      const test_type = this.surveyForm!.get('periodic_test.last_test_cv')!.value || this.out_gate?.out_gate_survey?.last_test_cv;
       const match = test_type.match(/^[0-9]*\.?[0-9]+/);
       const yearCount = parseFloat(match[0]);
-      const testDt = Utility.convertDate(this.surveyForm!.get('periodic_test.test_dt')!.value) as number || this.in_gate?.in_gate_survey?.test_dt as number;
+      const testDt = Utility.convertDate(this.surveyForm!.get('periodic_test.test_dt')!.value) as number || this.out_gate?.out_gate_survey?.test_dt as number;
       const resultDt = Utility.addYearsToEpoch(testDt, yearCount);
       const mappedVal = testTypeMapping[test_type];
       this.surveyForm!.get('periodic_test.next_test_cv')!.setValue(mappedVal);
@@ -1663,6 +1667,10 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   getTankSideDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.tankSideCvList);
+  }
+
+  getTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
   preventDefault(event: Event) {

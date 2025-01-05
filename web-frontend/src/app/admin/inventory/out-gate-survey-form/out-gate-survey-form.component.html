@@ -29,7 +29,7 @@
                       <span>{{translatedLangText.TANK_NO}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{in_gate?.tank?.tank_no}}</div>
+                      <div class="contact-detail-info font-bold">{{out_gate?.tank?.tank_no}}</div>
                     </div>
                   </div>
                   <div class="row">
@@ -38,7 +38,7 @@
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
-                        {{ccDS.displayName(in_gate?.tank?.storing_order?.customer_company)}}
+                        {{ccDS.displayName(out_gate?.tank?.storing_order?.customer_company)}}
                       </div>
                     </div>
                   </div>
@@ -48,7 +48,7 @@
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
-                        {{ccDS.displayName(in_gate?.tank?.customer_company)}}
+                        {{ccDS.displayName(out_gate?.tank?.customer_company)}}
                       </div>
                     </div>
                   </div>
@@ -60,7 +60,7 @@
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
-                        {{in_gate?.eir_no}}
+                        {{out_gate?.eir_no}}
                       </div>
                     </div>
                   </div>
@@ -70,7 +70,7 @@
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
-                        {{displayDateTime(in_gate?.eir_dt)}}
+                        {{displayDateTime(out_gate?.eir_dt)}}
                       </div>
                     </div>
                   </div>
@@ -79,7 +79,7 @@
                       <span>{{translatedLangText.LAST_CARGO}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{in_gate?.tank?.tariff_cleaning?.cargo}}
+                      <div class="contact-detail-info font-bold">{{out_gate?.tank?.tariff_cleaning?.cargo}}
                       </div>
                     </div>
                   </div>
@@ -91,7 +91,7 @@
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
-                        {{displayTankPurpose(in_gate?.tank!)}}
+                        {{displayTankPurpose(out_gate?.tank!)}}
                       </div>
                     </div>
                   </div>
@@ -101,7 +101,7 @@
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                       <div class="contact-detail-info font-bold">
-                        {{getCleanStatusDescription(in_gate?.tank?.clean_status_cv)}}
+                        {{getCleanStatusDescription(out_gate?.tank?.clean_status_cv)}}
                       </div>
                     </div>
                   </div>
@@ -110,7 +110,7 @@
                       <span>{{translatedLangText.CURRENT_STATUS}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{in_gate?.tank?.tank_status_cv}}
+                      <div class="contact-detail-info font-bold">{{getTankStatusDescription(out_gate?.tank?.tank_status_cv)}}
                       </div>
                     </div>
                   </div>
@@ -168,7 +168,7 @@
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <mat-stepper class="example-stepper" [orientation]="(stepperOrientation | async)!">
-                  <mat-step [stepControl]="getTankDetailsFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                  <mat-step [stepControl]="getTankDetailsFormGroup()" [completed]="this.out_gate?.out_gate_survey?.guid">
                     <form [formGroup]="getTankDetailsFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -378,7 +378,7 @@
                       </div>
                     </form>
                   </mat-step>
-                  <mat-step [stepControl]="getPeriodicTestFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                  <mat-step [stepControl]="getPeriodicTestFormGroup()" [completed]="this.out_gate?.out_gate_survey?.guid">
                     <form [formGroup]="getPeriodicTestFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -485,11 +485,11 @@
                       </div>
                     </form>
                   </mat-step>
-                  <mat-step [stepControl]="getInGateDetailsFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
-                    <form [formGroup]="getInGateDetailsFormGroup()">
+                  <mat-step [stepControl]="getOutGateDetailsFormGroup()" [completed]="this.out_gate?.out_gate_survey?.guid">
+                    <form [formGroup]="getOutGateDetailsFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
-                          {{translatedLangText.IN_GATE_DETAILS}}
+                          {{translatedLangText.OUT_GATE_DETAILS}}
                         </div>
                       </ng-template>
                       <div class="body">
@@ -551,7 +551,7 @@
                                   <span>{{translatedLangText.LAST_UPDATE_BY}}:</span>
                                 </div>
                                 <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                  <div class="contact-detail-info font-bold">{{in_gate?.update_by}}</div>
+                                  <div class="contact-detail-info font-bold">{{out_gate?.update_by}}</div>
                                 </div>
                               </div>
                             </div>
@@ -561,7 +561,7 @@
                                   <span>{{translatedLangText.LAST_UPDATE_ON}}:</span>
                                 </div>
                                 <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                  <div class="contact-detail-info font-bold">{{displayDateTime(in_gate?.update_dt)}}
+                                  <div class="contact-detail-info font-bold">{{displayDateTime(out_gate?.update_dt)}}
                                   </div>
                                 </div>
                               </div>
@@ -584,7 +584,7 @@
                       </div>
                     </form>
                   </mat-step>
-                  <mat-step [stepControl]="getFrameTypeFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                  <mat-step [stepControl]="getFrameTypeFormGroup()" [completed]="this.out_gate?.out_gate_survey?.guid">
                     <form [formGroup]="getFrameTypeFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -1520,7 +1520,7 @@
                       </div>
                     </form>
                   </mat-step> -->
-                  <mat-step [stepControl]="getCompartmentTypeFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                  <mat-step [stepControl]="getCompartmentTypeFormGroup()" [completed]="this.out_gate?.out_gate_survey?.guid">
                     <form [formGroup]="getCompartmentTypeFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -1536,7 +1536,7 @@
                         }
                         @if (!(igDS.loading$ | async)) {
                         <mat-stepper class="example-stepper" [orientation]="(compTypeStepperOrientation | async)!">
-                          <mat-step [stepControl]="getBottomFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                          <mat-step [stepControl]="getBottomFormGroup()" [completed]="this.out_gate?.out_gate_survey?.guid">
                             <form [formGroup]="getBottomFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.BOTTOM}}</ng-template>
                               <div class="row">
@@ -1666,7 +1666,7 @@
                               </div>
                             </form>
                           </mat-step>
-                          <mat-step [stepControl]="getTopFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                          <mat-step [stepControl]="getTopFormGroup()" [completed]="this.out_gate?.out_gate_survey?.guid">
                             <form [formGroup]="getTopFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.TOP}}</ng-template>
                               <div class="row">
@@ -1817,7 +1817,7 @@
                               </div>
                             </form>
                           </mat-step>
-                          <mat-step [stepControl]="getManlidFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                          <mat-step [stepControl]="getManlidFormGroup()" [completed]="this.out_gate?.out_gate_survey?.guid">
                             <form [formGroup]="getManlidFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.MANLID}}</ng-template>
                               <div class="row">

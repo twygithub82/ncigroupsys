@@ -8,8 +8,9 @@ import { ApolloError } from '@apollo/client/core';
 import { BaseDataSource } from './base-ds';
 import { StoringOrderTankGO, StoringOrderTankItem } from './storing-order-tank';
 import { AnyObject } from 'chart.js/dist/types/basic';
+import { OutGateSurveyItem } from './out-gate-survey';
 
-export class OutGateGO {
+export class OutGate {
   public guid?: string = '';
   public driver_name?: string;
   public eir_dt?: number;
@@ -25,7 +26,7 @@ export class OutGateGO {
   public update_by?: string;
   public delete_dt?: number;
 
-  constructor(item: Partial<OutGateGO> = {}) {
+  constructor(item: Partial<OutGate> = {}) {
     this.guid = item.guid || '';
     this.driver_name = item.driver_name;
     this.eir_dt = item.eir_dt;
@@ -43,8 +44,19 @@ export class OutGateGO {
   }
 }
 
+export class OutGateGO extends OutGate {
+  public tank?: StoringOrderTankGO;
+  public out_gate_survey?: OutGateSurveyItem;
+
+  constructor(item: Partial<OutGateGO> = {}) {
+    super(item);
+    this.tank = item.tank;
+    this.out_gate_survey = item.out_gate_survey;
+  }
+}
+
 export class OutGateItem extends OutGateGO {
-  public tank?: StoringOrderTankItem;
+  public override tank?: StoringOrderTankItem;
 
   constructor(item: Partial<OutGateItem> = {}) {
     super(item);

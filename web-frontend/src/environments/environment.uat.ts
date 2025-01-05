@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   title: 'UAT Home',
   apiUrl: 'https://tlx-idms-userlogin-uat.azurewebsites.net',
-  fileManagerURL: 'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
+  fileManagerURL: 'https://tlx-filemanagement-app-uat.azurewebsites.net',
   graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
   graphqlWsUrl: 'wss://tlx-idms-global-notification-uat.azurewebsites.net/graphql',
 };
