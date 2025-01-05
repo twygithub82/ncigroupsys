@@ -171,10 +171,10 @@ namespace IDMS.Service.GqlTypes
                 {
                     foreach (var item in jobOrders)
                     {
-                        var job_order = new job_order() { guid = item.guid };
-                        context.job_order.Attach(job_order);
                         if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
                         {
+                            var job_order = new job_order() { guid = item.guid };
+                            context.job_order.Attach(job_order);
                             job_order.status_cv = JobStatus.CANCELED;
                             job_order.update_by = user;
                             job_order.update_dt = currentDateTime;
@@ -232,17 +232,17 @@ namespace IDMS.Service.GqlTypes
                     if (partTableName == "cleaning")
                     {
                         sqlQuery = $@"SELECT * FROM job_order WHERE delete_dt IS NULL AND guid IN (
-                                            SELECT job_order_guid FROM {partTableName} 
-                                            WHERE {processGuidName} = '{processGuid}' AND delete_dt IS NULL)";
+                                            SELECT distinct job_order_guid FROM {partTableName} 
+                                            WHERE {processGuidName} = '{processGuid}' AND delete_dt IS NULL);";
                     }
                     else
                     {
                         sqlQuery = $@"SELECT * FROM job_order WHERE delete_dt IS NULL AND guid IN (
-                                        SELECT job_order_guid FROM {partTableName} 
-                                        WHERE {processGuidName} = '{processGuid}' AND approve_part = 1 AND delete_dt IS NULL)";
+                                        SELECT distinct job_order_guid FROM {partTableName} 
+                                        WHERE {processGuidName} = '{processGuid}' AND approve_part = 1 AND delete_dt IS NULL);";
                     }
 
-                    var jobOrderList = await context.job_order.FromSqlRaw(sqlQuery).ToListAsync();
+                    var jobOrderList = await context.job_order.FromSqlRaw(sqlQuery).AsNoTracking().ToListAsync();
                     //if (jobOrderList != null & jobOrderList?.Count > 0 & !jobOrderList.Any(j => j == null))
                     if(jobOrderList?.Any() == true & !jobOrderList.Any(j => j == null))
                     {
@@ -266,7 +266,6 @@ namespace IDMS.Service.GqlTypes
                         return allValid;
                     }
                 }
-
 
                 return true;
             }

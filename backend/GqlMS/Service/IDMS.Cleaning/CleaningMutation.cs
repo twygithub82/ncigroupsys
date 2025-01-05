@@ -155,6 +155,7 @@ namespace IDMS.Cleaning.GqlTypes
 
                 //job order handling
                 await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.CANCEL, jobOrders: cleaningJobOrder.job_order);
+                _ = await context.SaveChangesAsync();
 
                 //Status condition chehck handling
                 if (await GqlUtils.StatusChangeConditionCheck(context, "cleaning", cleaningJobOrder.guid, CurrentServiceStatus.COMPLETED))

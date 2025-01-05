@@ -391,6 +391,8 @@ namespace IDMS.Residue.GqlTypes
 
                 //Job order handling
                 await GqlUtils.JobOrderHandling(context, "residue", user, currentDateTime, ObjectAction.CANCEL, jobOrders: residueJobOrder.job_order);
+                //Save the changes ... make sure it take effect
+                _ = await context.SaveChangesAsync();
 
                 //Status condition chehck handling
                 if (await GqlUtils.StatusChangeConditionCheck(context, "residue", residueJobOrder.guid, CurrentServiceStatus.COMPLETED))
@@ -400,10 +402,6 @@ namespace IDMS.Residue.GqlTypes
                 }
                 else
                     abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
-
-                //if (!await TankMovementCheckInternal(context, "residue", residueJobOrder.sot_guid, new List<string> { residueJobOrder.guid }))
-                //    //if no other residue estimate or all completed. then we check cross process tank movement
-                //    await TankMovementCheckCrossProcess(context, residueJobOrder.sot_guid, user, currentDateTime);
 
                 var res = await context.SaveChangesAsync();
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, residueJobOrder.sot_guid);

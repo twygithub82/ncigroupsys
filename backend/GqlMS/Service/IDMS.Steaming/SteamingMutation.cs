@@ -462,6 +462,8 @@ namespace IDMS.Steaming.GqlTypes
 
                 //job order handling
                 await GqlUtils.JobOrderHandling(context, "steaming", user, currentDateTime, ObjectAction.CANCEL, jobOrders: steamingJobOrder.job_order);
+                //Save the changes ... make sure it take effect
+                _ = await context.SaveChangesAsync();
 
                 //Status condition chehck handling
                 if (await GqlUtils.StatusChangeConditionCheck(context, "steaming", steamingJobOrder.guid, CurrentServiceStatus.COMPLETED))

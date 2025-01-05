@@ -346,23 +346,18 @@ namespace IDMS.Repair.GqlTypes
 
                 //job order handling
                 await GqlUtils.JobOrderHandling(context, "repair", user, currentDateTime, ObjectAction.CANCEL, jobOrders: repJobOrder.job_order);
+                //Save the changes ... make sure it take effect
+                _ = await context.SaveChangesAsync();
 
                 if (await GqlUtils.StatusChangeConditionCheck(context, "repair", repJobOrder.guid, CurrentServiceStatus.COMPLETED))
                 {
                     abortRepair.status_cv = CurrentServiceStatus.COMPLETED;
                     abortRepair.complete_dt = currentDateTime;
-                }   
+                }
                 else
                     abortRepair.status_cv = CurrentServiceStatus.NO_ACTION;
-
-                ////tank movement status handling
-                //var sot = new storing_order_tank() { guid = repJobOrder.sot_guid };
-                //context.storing_order_tank.Attach(sot);
-                //sot.tank_status_cv = await TankMovementCheck(context, "repair", repJobOrder.sot_guid, repJobOrder.guid) ? TankMovementStatus.REPAIR : TankMovementStatus.STORAGE;
-                //sot.update_by = user;
-                //sot.update_dt = currentDateTime;
-
                 var res = await context.SaveChangesAsync();
+
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, repJobOrder.sot_guid);
 
                 return res;
