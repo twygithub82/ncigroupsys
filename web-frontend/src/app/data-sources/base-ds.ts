@@ -5,10 +5,12 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 export abstract class BaseDataSource<T> extends DataSource<T> {
     public dataSubject = new BehaviorSubject<T[]>([]);
     public loadingSubject = new BehaviorSubject<boolean>(false);
+    public actionLoadingSubject = new BehaviorSubject<boolean>(false);
     public pageInfo?: PageInfo;
     public totalCount = 0;
 
     public loading$ = this.loadingSubject.asObservable();
+    public actionLoading$ = this.actionLoadingSubject.asObservable();
 
     connect(): Observable<T[]> {
         return this.dataSubject.asObservable();
@@ -17,6 +19,7 @@ export abstract class BaseDataSource<T> extends DataSource<T> {
     disconnect(): void {
         this.dataSubject.complete();
         this.loadingSubject.complete();
+        this.actionLoadingSubject.complete();
     }
 
     public addDeleteDtCriteria(criteria: any) {

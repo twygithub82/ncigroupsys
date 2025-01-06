@@ -611,7 +611,6 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     );
   }
 
-
   getProcessStatusDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
   }

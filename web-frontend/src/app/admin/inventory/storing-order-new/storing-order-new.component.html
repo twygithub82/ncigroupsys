@@ -365,11 +365,11 @@
                   </button>
                   }
                   @if (isAnyItemEdited()) {
-                  <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)">
+                  <button mat-flat-button color="primary" [disabled]="(soDS.actionLoading$ | async)">
                     <mat-icon>
-                      @if (!(soDS.loading$ | async)) {
+                      @if (!(soDS.actionLoading$ | async)) {
                       save
-                      } @else if ((soDS.loading$ | async)) {
+                      } @else if ((soDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>

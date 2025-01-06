@@ -4,17 +4,17 @@
   </div>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
-    <form class="register-form" [formGroup]="storingOrderForm" #formDirective="ngForm">
-      <div formArrayName="storingOrder">
-        @for (so of storingOrderArray().controls; track so; let index = $index) {
+    <form class="register-form" [formGroup]="releaseOrderForm" #formDirective="ngForm">
+      <div formArrayName="releaseOrder">
+        @for (so of releaseOrderArray().controls; track so; let index = $index) {
         <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-light-grey')">
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
             <div [class]="'row pt-2'">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
-                <h5>{{data.langText.SO_NO | translate}}: {{so.get('so_no')?.value}}</h5>
+                <h5>{{data.langText.RO_NO | translate}}: {{so.get('ro_no')?.value}}</h5>
               </div>
             </div>
-            @for (sot of getStoringOrderTanksArray(so).controls; track sot) {
+            @for (sot of getReleaseOrderTanksArray(so).controls; track sot) {
             <div [class]="'row'">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
                 <mat-label>

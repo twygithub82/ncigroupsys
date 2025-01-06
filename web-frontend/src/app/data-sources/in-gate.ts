@@ -459,24 +459,6 @@ export class InGateDS extends BaseDataSource<InGateItem> {
       );
   }
 
-  addInGate(inGate: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: ADD_IN_GATE,
-      variables: {
-        inGate
-      }
-    });
-  }
-
-  updateInGate(inGate: any): Observable<any> {
-    return this.apollo.mutate({
-      mutation: UPDATE_IN_GATE,
-      variables: {
-        inGate
-      }
-    });
-  }
-
   getInGateCountForYetToSurvey(): Observable<number> {
     this.loadingSubject.next(true);
     let where: any = { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
@@ -499,6 +481,34 @@ export class InGateDS extends BaseDataSource<InGateItem> {
           return retResult.totalCount;
         })
       );
+  }
+
+  addInGate(inGate: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: ADD_IN_GATE,
+      variables: {
+        inGate
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
+
+  updateInGate(inGate: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: UPDATE_IN_GATE,
+      variables: {
+        inGate
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   getInGateItem(in_gates: InGateItem[] | undefined): InGateItem | undefined {

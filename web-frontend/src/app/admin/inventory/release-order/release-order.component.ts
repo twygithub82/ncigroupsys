@@ -42,7 +42,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ReleaseOrderDS, ReleaseOrderItem } from 'app/data-sources/release-order';
+import { ReleaseOrderDS, ReleaseOrderGO, ReleaseOrderItem } from 'app/data-sources/release-order';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
@@ -59,12 +59,10 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
     MatSortModule,
     NgClass,
     MatCheckboxModule,
-    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    DatePipe,
     RouterLink,
     TranslateModule,
     MatExpansionModule,
@@ -167,6 +165,10 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+
+  currentStartCursor: string | undefined = undefined;
+  currentEndCursor: string | undefined = undefined;
+  lastCursorDirection: string | undefined = undefined;
 
   constructor(
     public httpClient: HttpClient,
@@ -287,6 +289,70 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        this.lastCursorDirection = 'forward';
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        this.lastCursorDirection = 'backward';
+        last = pageSize;
+        before = this.startCursor;
+      }
+    }
+
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+      this.updatePageSelection();
+    });
+  }
+
+  triggerCurrentSearch() {
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    if (this.pageIndex === 0) {
+      first = this.pageSize;
+    } else if (this.lastCursorDirection === 'forward') {
+      first = this.pageSize;
+      after = this.currentEndCursor;
+    } else if (this.lastCursorDirection === 'backward') {
+      last = this.pageSize;
+      before = this.currentStartCursor;
+    }
+
+    // Perform the search
+    this.performSearch(
+      this.pageSize,
+      this.pageIndex,
+      first,
+      after,
+      last,
+      before,
+      () => {
+        this.updatePageSelection(); // Callback for UI updates
+      }
+    );
+  }
+
   canCancelSelectedRows(): boolean {
     return !this.roSelection.hasValue() || !this.roSelection.selected.every((item) => {
       const index: number = this.roList.findIndex((d) => d === item);
@@ -294,7 +360,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
-  cancelSelectedRows(row: StoringOrderItem[]) {
+  cancelSelectedRows(row: ReleaseOrderItem[]) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -310,9 +376,10 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-        this.soDS.cancelStoringOrder(so).subscribe(result => {
-          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
+        const ro = result.item.map((item: ReleaseOrderItem) => new ReleaseOrderGO(item));
+        console.log(ro);
+        this.roDS.cancelReleaseOrder(ro).subscribe(result => {
+          if ((result?.data?.cancelReleaseOrder ?? 0) > 0) {
             let successMsg = this.langText.CANCELED_SUCCESS;
             this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
               successMsg = res;
@@ -354,6 +421,9 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
         this.startCursor = this.roDS.pageInfo?.startCursor;
         this.hasNextPage = this.roDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.roDS.pageInfo?.hasPreviousPage ?? false;
+
+        this.currentEndCursor = after;
+        this.currentStartCursor = before;
 
         // Execute the callback if provided
         if (callback) {
@@ -450,38 +520,6 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.lastSearchCriteria = this.soDS.addDeleteDtCriteria(where);
     // TODO :: search criteria
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, () => {
-      this.updatePageSelection();
-    });
-  }
-
-  onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-
-    // Check if the page size has changed
-    if (this.pageSize !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndex = 0;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      if (pageIndex > this.pageIndex && this.hasNextPage) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursor;
-      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursor;
-      }
-    }
-
-    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
       this.updatePageSelection();
     });
   }

@@ -317,6 +317,14 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
+    if (this.searchForm!.get('customer_code')?.value) {
+      const soSearch: any = {};
+      if (this.searchForm!.get('customer_code')?.value) {
+        soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
+      }
+      where.storing_order = soSearch;
+    }
+
     // if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
     //   const sotSearch: any = {};
 

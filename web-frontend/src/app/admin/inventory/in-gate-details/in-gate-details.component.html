@@ -363,11 +363,11 @@
                               {{translatedLangText.CLEAR_ALL}}
                             </button>
                             <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
-                              [disabled]="(igDS.loading$| async)">
+                              [disabled]="(igDS.actionLoading$| async)">
                               <mat-icon>
-                                @if (!(igDS.loading$ | async)) {
+                                @if (!(igDS.actionLoading$ | async)) {
                                 move_to_inbox
-                                } @else if ((igDS.loading$ | async)) {
+                                } @else if ((igDS.actionLoading$ | async)) {
                                 <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                                 }
                               </mat-icon>

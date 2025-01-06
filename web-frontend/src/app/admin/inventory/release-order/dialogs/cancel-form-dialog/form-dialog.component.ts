@@ -9,7 +9,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Utility } from 'app/utilities/utility';
@@ -20,12 +19,12 @@ import { Apollo } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
 import { startWith, debounceTime, tap } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { MatDividerModule } from '@angular/material/divider';
+import { ReleaseOrderItem } from 'app/data-sources/release-order';
 
 export interface DialogData {
   action?: string;
-  item: StoringOrderItem[];
+  item: ReleaseOrderItem[];
   langText?: any;
   index: number;
 }
@@ -42,7 +41,6 @@ export interface DialogData {
     MatDialogContent,
     MatFormFieldModule,
     MatInputModule,
-    MatDialogClose,
     TranslateModule,
     CommonModule,
     MatDividerModule,
@@ -53,8 +51,8 @@ export interface DialogData {
 export class CancelFormDialogComponent {
   index: number;
   dialogTitle?: string;
-  storingOrder: StoringOrderItem[];
-  storingOrderForm: UntypedFormGroup;
+  releaseOrder: ReleaseOrderItem[];
+  releaseOrderForm: UntypedFormGroup;
   startDate = new Date();
 
   lastCargoControl = new UntypedFormControl();
@@ -65,8 +63,8 @@ export class CancelFormDialogComponent {
     private translate: TranslateService
   ) {
     // Set the defaults
-    this.storingOrder = data.item;
-    this.storingOrderForm = this.createStorigOrderForm();
+    this.releaseOrder = data.item;
+    this.releaseOrderForm = this.createStorigOrderForm();
     this.translate.get(data.langText.ARE_YOU_SURE_CANCEL).subscribe((res: string) => {
       this.dialogTitle = res;
     });
@@ -74,16 +72,16 @@ export class CancelFormDialogComponent {
   }
   createStorigOrderForm(): UntypedFormGroup {
     return this.fb.group({
-      storingOrder: this.fb.array(this.storingOrder.map(so => this.createOrderGroup(so)))
+      releaseOrder: this.fb.array(this.releaseOrder.map(ro => this.createOrderGroup(ro)))
     });
   }
-  createOrderGroup(so: any): UntypedFormGroup {
+  createOrderGroup(ro: any): UntypedFormGroup {
     return this.fb.group({
-      guid: [so.guid],
-      so_no: [so.so_no],
-      customer_company_guid: [so.customer_company_guid],
-      storing_order_tank: this.fb.array(so.storing_order_tank.map((tank: any) => this.createTankGroup(tank))),
-      remarks: [so.remarks, Validators.required]
+      guid: [ro.guid],
+      ro_no: [ro.ro_no],
+      customer_company_guid: [ro.customer_company_guid],
+      storing_order_tank: this.fb.array(ro.release_order_sot.map((rosot: any) => this.createTankGroup(rosot.storing_order_tank))),
+      remarks: [ro.remarks, Validators.required]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {
@@ -96,20 +94,20 @@ export class CancelFormDialogComponent {
     this.dialogRef.close();
   }
   confirmCancel(): void {
-    if (this.storingOrderForm.valid) {
-      let so = this.storingOrderForm.value['storingOrder']
+    if (this.releaseOrderForm.valid) {
+      let ro = this.releaseOrderForm.get('releaseOrder')?.value
       const returnDialog: DialogData = {
         action: 'confirmed',
-        item: so,
+        item: ro,
         index: this.index
       }
       this.dialogRef.close(returnDialog);
     }
   }
-  storingOrderArray(): UntypedFormArray {
-    return this.storingOrderForm.get('storingOrder') as UntypedFormArray;
+  releaseOrderArray(): UntypedFormArray {
+    return this.releaseOrderForm.get('releaseOrder') as UntypedFormArray;
   }
-  getStoringOrderTanksArray(so: AbstractControl<any, any>): UntypedFormArray {
+  getReleaseOrderTanksArray(so: AbstractControl<any, any>): UntypedFormArray {
     return so.get('storing_order_tank') as UntypedFormArray;
   }
 }

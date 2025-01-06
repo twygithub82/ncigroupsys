@@ -237,11 +237,11 @@
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ADD_TANK}}
                   </button>
                   @if (isAnyItemEdited()) {
-                  <button mat-flat-button color="primary" [disabled]="(roDS.loading$ | async)">
+                  <button mat-flat-button color="primary" [disabled]="(roDS.actionLoading$ | async)">
                     <mat-icon>
-                      @if (!(roDS.loading$ | async)) {
+                      @if (!(roDS.actionLoading$ | async)) {
                       save
-                      } @else if ((roDS.loading$ | async)) {
+                      } @else if ((roDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>

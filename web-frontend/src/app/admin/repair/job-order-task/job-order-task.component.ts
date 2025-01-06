@@ -360,7 +360,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
 
+    // Check if the page size has changed
     if (this.pageSizeJobOrder !== pageSize) {
+      // Reset pagination if page size has changed
       this.pageIndexJobOrder = 0;
       first = pageSize;
       after = undefined;
@@ -368,9 +370,13 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       before = undefined;
     } else {
       if (pageIndex > this.pageIndexJobOrder && this.hasNextPageJobOrder) {
+        // Navigate forward
+        this.lastCursorDirection = 'forward';
         first = pageSize;
         after = this.endCursorJobOrder;
       } else if (pageIndex < this.pageIndexJobOrder && this.hasPreviousPageJobOrder) {
+        // Navigate backward
+        this.lastCursorDirection = 'backward';
         last = pageSize;
         before = this.startCursorJobOrder;
       }

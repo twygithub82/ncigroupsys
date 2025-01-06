@@ -268,9 +268,9 @@ export const UPDATE_RELEASE_ORDER = gql`
   }
 `;
 
-export const CANCEL_STORING_ORDER = gql`
-  mutation CancelStoringOrder($so: [StoringOrderRequestInput!]!) {
-    cancelStoringOrder(so: $so)
+export const CANCEL_RELEASE_ORDER = gql`
+  mutation cancelReleaseOrder($ro: [ReleaseOrderRequestInput!]!) {
+    cancelReleaseOrder(releaseOrderList: $ro)
   }
 `;
 
@@ -324,32 +324,47 @@ export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
   }
 
   addReleaseOrder(ro: any, ro_SotList: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_RELEASE_ORDER,
       variables: {
         ro,
         ro_SotList
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateReleaseOrder(ro: any, ro_SotList: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_RELEASE_ORDER,
       variables: {
         ro,
         ro_SotList
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
-  cancelStoringOrder(so: any): Observable<any> {
+  cancelReleaseOrder(ro: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
-      mutation: CANCEL_STORING_ORDER,
+      mutation: CANCEL_RELEASE_ORDER,
       variables: {
-        so
+        ro
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   canCancel(ro: any): boolean {

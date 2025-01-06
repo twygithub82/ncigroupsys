@@ -224,7 +224,7 @@ export const CANCEL_STORING_ORDER = gql`
   }
 `;
 
-export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
+export class StoringOrderDS extends BaseDataSource<StoringOrderItem> {
   constructor(private apollo: Apollo) {
     super();
   }
@@ -275,26 +275,37 @@ export class  StoringOrderDS extends BaseDataSource<StoringOrderItem> {
   }
 
   addStoringOrder(so: any, soTanks: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_STORING_ORDER,
       variables: {
         so,
         soTanks
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false); // Reset loading to false
+      })
+    );
   }
 
   updateStoringOrder(so: any, soTanks: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_STORING_ORDER,
       variables: {
         so,
         soTanks
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false); // Reset loading to false
+      })
+    );
   }
 
   cancelStoringOrder(so: any): Observable<any> {
+    this.loadingSubject.next(true);
     return this.apollo.mutate({
       mutation: CANCEL_STORING_ORDER,
       variables: {
