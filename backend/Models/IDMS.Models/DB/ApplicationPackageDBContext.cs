@@ -33,6 +33,7 @@ namespace IDMS.Models.DB
         public DbSet<package_residue> package_residue { get; set; }
         public DbSet<package_buffer> package_buffer { get; set; }
         public DbSet<package_steaming> package_steaming { get; set; }
+        public DbSet<steaming_exclusive> steaming_exclusive { get; set; }
         public DbSet<tariff_repair> tariff_repair { get; set; } 
     }
 
