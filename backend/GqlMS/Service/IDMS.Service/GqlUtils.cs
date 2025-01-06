@@ -181,7 +181,7 @@ namespace IDMS.Service.GqlTypes
                         }
                     }
                 }
-                else if (ObjectAction.ROLLBACK.EqualsIgnore(action)) 
+                else if (ObjectAction.ROLLBACK.EqualsIgnore(action))
                 {
                     foreach (var item in jobOrders)
                     {
@@ -191,7 +191,7 @@ namespace IDMS.Service.GqlTypes
                         job_order.update_by = user;
                         job_order.update_dt = currentDateTime;
                     }
-                } 
+                }
             }
             catch (Exception ex)
             {
@@ -244,7 +244,7 @@ namespace IDMS.Service.GqlTypes
 
                     var jobOrderList = await context.job_order.FromSqlRaw(sqlQuery).AsNoTracking().ToListAsync();
                     //if (jobOrderList != null & jobOrderList?.Count > 0 & !jobOrderList.Any(j => j == null))
-                    if(jobOrderList?.Any() == true & !jobOrderList.Any(j => j == null))
+                    if (jobOrderList?.Any() == true & !jobOrderList.Any(j => j == null))
                     {
                         bool allValid = false;
                         if (newStatus.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS))
@@ -292,10 +292,11 @@ namespace IDMS.Service.GqlTypes
                     var res = await context.steaming.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     if (res.Any())
                     {
-                        if (res.Any(t =>
-                                    (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                    (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                    )
+                        //if (res.Any(t =>
+                        //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                        //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                        //            )
+                        if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                         {
                             tank.tank_status_cv = TankMovementStatus.STEAM;
                             goto ProceesUpdate;
@@ -315,10 +316,11 @@ namespace IDMS.Service.GqlTypes
                     var res = await context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     if (res.Any())
                     {
-                        if (res.Any(t =>
-                                    (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                    (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                    )
+                        //if (res.Any(t =>
+                        //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                        //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                        //            )
+                        if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                         {
                             tank.tank_status_cv = TankMovementStatus.CLEANING;
                             goto ProceesUpdate;
@@ -330,10 +332,11 @@ namespace IDMS.Service.GqlTypes
                             var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                             if (resd.Any())
                             {
-                                if (resd.Any(t =>
-                                            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                            )
+                                //if (resd.Any(t =>
+                                //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                //            )
+                                if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                                 {
                                     tank.tank_status_cv = TankMovementStatus.CLEANING;
                                     goto ProceesUpdate;

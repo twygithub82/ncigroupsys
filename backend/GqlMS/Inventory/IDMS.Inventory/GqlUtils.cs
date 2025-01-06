@@ -519,6 +519,7 @@ namespace IDMS.Inventory.GqlTypes
             return retval;
         }
 
+        [Obsolete]
         public static async Task<string> TankMovementConditionCheck(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string sotGuid, string processType, string remark)
         {
             try
@@ -668,10 +669,11 @@ namespace IDMS.Inventory.GqlTypes
                     var res = await context.steaming.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     if (res.Any())
                     {
-                        if (res.Any(t =>
-                                    (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                    (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                    )
+                        //if (res.Any(t =>
+                        //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                        //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                        //            )
+                        if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                         {
                             //tank.tank_status_cv = TankMovementStatus.STEAM;
                             currentTankStatus = TankMovementStatus.STEAM;
@@ -692,10 +694,11 @@ namespace IDMS.Inventory.GqlTypes
                     var res = await context.cleaning.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                     if (res.Any())
                     {
-                        if (res.Any(t =>
-                                    (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                    (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                    )
+                        //if (res.Any(t =>
+                        //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                        //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                        //            )
+                        if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                         {
                             //tank.tank_status_cv = TankMovementStatus.CLEANING;
                             currentTankStatus = TankMovementStatus.CLEANING;
@@ -708,10 +711,11 @@ namespace IDMS.Inventory.GqlTypes
                             var resd = await context.residue.Where(t => t.sot_guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
                             if (resd.Any())
                             {
-                                if (resd.Any(t =>
-                                            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                            )
+                                //if (resd.Any(t =>
+                                //            (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
+                                //            (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
+                                //            )
+                                if (res.Any(t => !completedStatuses.Contains(t.status_cv)))
                                 {
                                     //tank.tank_status_cv = TankMovementStatus.CLEANING;
                                     currentTankStatus = TankMovementStatus.CLEANING;
