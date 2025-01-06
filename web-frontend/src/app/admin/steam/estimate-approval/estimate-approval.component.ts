@@ -24,7 +24,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, fromEvent } from 'rxjs';
+import { Observable, firstValueFrom, fromEvent } from 'rxjs';
 import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -54,6 +54,7 @@ import { RepairItem } from 'app/data-sources/repair';
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { SteamPartItem } from 'app/data-sources/steam-part';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 
 @Component({
   selector: 'app-estimate',
@@ -217,6 +218,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   hasNextPage = false;
   hasPreviousPage = false;
   previous_endCursor:any;
+  plDS: PackageLabourDS;
   
 
   constructor(
@@ -241,6 +243,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.igDS = new InGateDS(this.apollo);
     this.steamDS= new SteamDS(this.apollo);
     this.pckRepDS=new PackageRepairDS(this.apollo);
+    this.plDS= new PackageLabourDS(this.apollo);
     //this.repairEstDS = new RepairDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -589,6 +592,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
          
           this.sotList = data.map(sot => {
             sot.steaming = sot.steaming?.map(stm => {
+              
               if(steamingStatusFilter)
               {
                 if(steamingStatusFilter.includes(stm.status_cv))
@@ -613,7 +617,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
           sot.steaming = sot.steaming?.filter(stm => Object.keys(stm).length > 0);
           return sot;
         });
-
+        this.RefreshSotNetCost();
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
         this.hasNextPage = this.sotDS.pageInfo?.hasNextPage ?? false;
@@ -713,13 +717,43 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   }
 
+  calculateNetCostWithLabourCost(steam: SteamItem,LabourCost:number): any {
+    
+    const total = this.IsApproved(steam)?this.steamDS.getApprovalTotalWithLabourCost(steam?.steaming_part,LabourCost):this.steamDS.getTotalWithLabourCost(steam?.steaming_part,LabourCost)
+      return total.total_mat_cost.toFixed(2);
+
+    // const custGuid = steam.storing_order_tank?.storing_order?.customer_company_guid;
+
+    // this.getCustomerLabourPackage(custGuid!)
+    // .then(packLabourItem=>{
+    //   const total = this.IsApproved(steam)?this.steamDS.getApprovalTotal(steam?.steaming_part):this.steamDS.getTotal(steam?.steaming_part)
+    //   return total.total_mat_cost.toFixed(2);
+    // //const total = this.steamDS.getTotal(steam?.steaming_part)
+    // })
+    // .catch(error=>{
+    //   return 0;
+    // });
+  }
+
   calculateNetCost(steam: SteamItem): any {
     
     const total = this.IsApproved(steam)?this.steamDS.getApprovalTotal(steam?.steaming_part):this.steamDS.getTotal(steam?.steaming_part)
-    //const total = this.steamDS.getTotal(steam?.steaming_part)
-     
-     return total.total_mat_cost.toFixed(2);
+      return total.total_mat_cost.toFixed(2);
+
+    // const custGuid = steam.storing_order_tank?.storing_order?.customer_company_guid;
+
+    // this.getCustomerLabourPackage(custGuid!)
+    // .then(packLabourItem=>{
+    //   const total = this.IsApproved(steam)?this.steamDS.getApprovalTotal(steam?.steaming_part):this.steamDS.getTotal(steam?.steaming_part)
+    //   return total.total_mat_cost.toFixed(2);
+    // //const total = this.steamDS.getTotal(steam?.steaming_part)
+    // })
+    // .catch(error=>{
+    //   return 0;
+    // });
   }
+
+ 
   IsApproved(steam:SteamItem)
   {
     const validStatus = [ 'APPROVED','COMPLETED','QC_COMPLETED']
@@ -910,5 +944,38 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
             this.search();
           });
         } 
+  
+        getCustomerLabourPackage(sot: StoringOrderTankItem){
+
+          const customer_company_guid= sot.storing_order?.customer_company?.guid;
+          const where = {
+            and: [
+              { customer_company_guid: { eq: customer_company_guid } }
+            ]
+          };
+          this.plDS.getCustomerPackageCost(where).subscribe(data=>{
+            if(data.length>0)
+            {
+              const cost =data[0].cost;
+              sot.steaming = sot.steaming?.map(stm => {
+                    var stm_part=[...stm.steaming_part!];
+                    stm.steaming_part=stm_part?.filter(data => !data.delete_dt);
+                    return { ...stm, net_cost: this.calculateNetCostWithLabourCost(stm,cost) };
+              });
+            }
+          });
+         
+        }
+
+        RefreshSotNetCost(){
+          this.sotList.map(sot=>{
+            this.getCustomerLabourPackage(sot);
+          });
+        }
+
+        canApprove(steamItem:SteamItem) {
+      
+          return this.steamDS.canApprove(steamItem!) && !steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
+        }
       
 }

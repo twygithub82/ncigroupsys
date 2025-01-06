@@ -837,12 +837,35 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     }
   
 
+    getApprovalTotalWithLabourCost(steamPartList: any[] | undefined , LabourCost:number): any {
+      const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 ||data.approve_part|| data.approve_part == null))?.reduce((totals: any, owner) => {
+        return {
+          //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+  
+          total_mat_cost: totals.total_mat_cost + (((owner.approve_qty ?? 0) * (owner.approve_cost ?? 0)))+(((owner.approve_labour ?? 0) * (LabourCost ?? 0)))
+        };
+      }, { total_mat_cost: 0 }) || 0;
+      return totalSums;
+    }
+
+
    getApprovalTotal(steamPartList: any[] | undefined): any {
       const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 ||data.approve_part|| data.approve_part == null))?.reduce((totals: any, owner) => {
         return {
           //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
   
           total_mat_cost: totals.total_mat_cost + (((owner.approve_qty ?? 0) * (owner.approve_cost ?? 0)))
+        };
+      }, { total_mat_cost: 0 }) || 0;
+      return totalSums;
+    }
+
+    getTotalWithLabourCost(steamPartList: any[] | undefined, LabourCost:number): any {
+      const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part == null))?.reduce((totals: any, owner) => {
+        return {
+          //hour: (totals.hour ?? 0) + (owner.hour ?? 0),
+  
+          total_mat_cost: totals.total_mat_cost + (((owner.quantity ?? 0) * (owner.cost ?? 0)))+(((owner.labour ?? 0) * (LabourCost ?? 0)))
         };
       }, { total_mat_cost: 0 }) || 0;
       return totalSums;

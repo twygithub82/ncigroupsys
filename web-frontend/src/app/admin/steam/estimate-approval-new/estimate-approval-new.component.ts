@@ -654,7 +654,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     {
       if(index==-1 || index!=existItems[0].index)
       {
-        this.steamEstForm?.get("desc")?.setErrors({ duplicated: true });
+        this.newDesc?.setErrors({ duplicated: true });
+        //this.steamEstForm?.get("desc")?.setErrors({ duplicated: true });
       }
     }
   }
@@ -690,7 +691,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       index = this.updateSelectedItem.index;
     }
     this.checkDuplicationEst(descObject,index);
-    if(!this.steamEstForm?.valid)return;
+    if(!this.newDesc?.valid || !this.newQty?.valid ||!this.newUnitPrice?.valid || !this.newHour?.valid)return;
+    //if(!this.steamEstForm?.valid)return;
     
 
     let tempDirection: Direction;
@@ -1658,7 +1660,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
    
   getTotalCost(): number {
     return this.deList.reduce((acc, row) => {
-      if (row.delete_dt===undefined ||row.delete_dt===null ) {
+      if (row.delete_dt===undefined ||row.delete_dt===null && (row.approve_part==null || row.approve_part==true)) {
          if(this.IsApproved())
          {
              return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)+((row.approve_labour||0)*(this.packageLabourItem?.cost||0)));
@@ -1821,6 +1823,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }
   
     canApprove() {
-      return this.checkApprovePart() && this.steamDS.canApprove(this.steamItem!)
+      
+      return this.checkApprovePart() && this.steamDS.canApprove(this.steamItem!) && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
     }
 }
