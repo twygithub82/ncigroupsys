@@ -155,7 +155,7 @@ namespace IDMS.Cleaning.GqlTypes
 
                 //job order handling
                 await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.CANCEL, jobOrders: cleaningJobOrder.job_order);
-                _ = await context.SaveChangesAsync();
+                var res = await context.SaveChangesAsync();
 
                 //Status condition chehck handling
                 if (await GqlUtils.StatusChangeConditionCheck(context, "cleaning", cleaningJobOrder.guid, CurrentServiceStatus.COMPLETED))
@@ -169,7 +169,7 @@ namespace IDMS.Cleaning.GqlTypes
                 if (string.IsNullOrEmpty(cleaningJobOrder.sot_guid))
                     throw new GraphQLException(new Error("SOT guid cannot be null or empty when update in_gate_cleaning.", "ERROR"));
 
-                var res = await context.SaveChangesAsync();
+                res = res + await context.SaveChangesAsync();
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, cleaningJobOrder.sot_guid);
                 return res;
             }

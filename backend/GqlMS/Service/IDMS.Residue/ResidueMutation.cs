@@ -392,7 +392,7 @@ namespace IDMS.Residue.GqlTypes
                 //Job order handling
                 await GqlUtils.JobOrderHandling(context, "residue", user, currentDateTime, ObjectAction.CANCEL, jobOrders: residueJobOrder.job_order);
                 //Save the changes ... make sure it take effect
-                _ = await context.SaveChangesAsync();
+                var res = await context.SaveChangesAsync();
 
                 //Status condition chehck handling
                 if (await GqlUtils.StatusChangeConditionCheck(context, "residue", residueJobOrder.guid, CurrentServiceStatus.COMPLETED))
@@ -403,7 +403,7 @@ namespace IDMS.Residue.GqlTypes
                 else
                     abortResidue.status_cv = CurrentServiceStatus.NO_ACTION;
 
-                var res = await context.SaveChangesAsync();
+                res = res + await context.SaveChangesAsync();
                 await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, residueJobOrder.sot_guid);
                 return res;
             }
