@@ -1112,96 +1112,96 @@ namespace IDMS.Models.Tariff.GqlTypes
 
 
         #region SteamingExclusive methods
-        public async Task<int> AddSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, steaming_exclusive NewSteamingExclusive)
-        {
-            int retval = 0;
-            try
-            {
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                NewSteamingExclusive.guid = (string.IsNullOrEmpty(NewSteamingExclusive.guid) ? Util.GenerateGUID() : NewSteamingExclusive.guid);
-                var newSE = new steaming_exclusive();
-                newSE.guid = NewSteamingExclusive.guid;
-                newSE.tariff_cleaning_guid = NewSteamingExclusive.tariff_cleaning_guid;
-                newSE.temp_max = NewSteamingExclusive.temp_max;
-                newSE.temp_min = NewSteamingExclusive.temp_min;
-                newSE.labour = NewSteamingExclusive.labour;
-                //newSE.cost = NewSteamingExclusive.cost;
-                newSE.remarks = NewSteamingExclusive.remarks;
-                newSE.create_by = uid;
-                newSE.create_dt = DateTime.Now.ToEpochTime();
-                await context.steaming_exclusive.AddAsync(newSE);
+        //public async Task<int> AddSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config,
+        //    [Service] IHttpContextAccessor httpContextAccessor, steaming_exclusive NewSteamingExclusive)
+        //{
+        //    int retval = 0;
+        //    try
+        //    {
+        //        var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        NewSteamingExclusive.guid = (string.IsNullOrEmpty(NewSteamingExclusive.guid) ? Util.GenerateGUID() : NewSteamingExclusive.guid);
+        //        var newSE = new steaming_exclusive();
+        //        newSE.guid = NewSteamingExclusive.guid;
+        //        newSE.tariff_cleaning_guid = NewSteamingExclusive.tariff_cleaning_guid;
+        //        newSE.temp_max = NewSteamingExclusive.temp_max;
+        //        newSE.temp_min = NewSteamingExclusive.temp_min;
+        //        newSE.labour = NewSteamingExclusive.labour;
+        //        //newSE.cost = NewSteamingExclusive.cost;
+        //        newSE.remarks = NewSteamingExclusive.remarks;
+        //        newSE.create_by = uid;
+        //        newSE.create_dt = DateTime.Now.ToEpochTime();
+        //        await context.steaming_exclusive.AddAsync(newSE);
 
-                retval = await context.SaveChangesAsync();
-            }
-            catch { throw; }
+        //        retval = await context.SaveChangesAsync();
+        //    }
+        //    catch { throw; }
 
 
-            return retval;
-        }
+        //    return retval;
+        //}
 
-        public async Task<int> UpdateSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, steaming_exclusive UpdateSteamingExclusive)
-        {
-            int retval = 0;
-            try
-            {
+        //public async Task<int> UpdateSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config,
+        //    [Service] IHttpContextAccessor httpContextAccessor, steaming_exclusive UpdateSteamingExclusive)
+        //{
+        //    int retval = 0;
+        //    try
+        //    {
 
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var guid = UpdateSteamingExclusive.guid;
-                var dbTSteamingExclusive = await context.steaming_exclusive.Where(t => t.guid == guid).FirstOrDefaultAsync();
+        //        var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        var guid = UpdateSteamingExclusive.guid;
+        //        var dbTSteamingExclusive = await context.steaming_exclusive.Where(t => t.guid == guid).FirstOrDefaultAsync();
 
-                if (dbTSteamingExclusive == null)
-                {
-                    throw new GraphQLException(new Error("The record not found", "500"));
-                }
+        //        if (dbTSteamingExclusive == null)
+        //        {
+        //            throw new GraphQLException(new Error("The record not found", "500"));
+        //        }
 
-                dbTSteamingExclusive.tariff_cleaning_guid = UpdateSteamingExclusive.tariff_cleaning_guid;
-                dbTSteamingExclusive.temp_max = UpdateSteamingExclusive.temp_max;
-                dbTSteamingExclusive.temp_min = UpdateSteamingExclusive.temp_min;
-                dbTSteamingExclusive.labour = UpdateSteamingExclusive.labour;
-                //dbTariffSteaming.cost = UpdateSteamingExclusive.cost;
-                dbTSteamingExclusive.remarks = UpdateSteamingExclusive.remarks;
-                dbTSteamingExclusive.update_by = uid;
-                dbTSteamingExclusive.update_dt = GqlUtils.GetNowEpochInSec();
+        //        dbTSteamingExclusive.tariff_cleaning_guid = UpdateSteamingExclusive.tariff_cleaning_guid;
+        //        dbTSteamingExclusive.temp_max = UpdateSteamingExclusive.temp_max;
+        //        dbTSteamingExclusive.temp_min = UpdateSteamingExclusive.temp_min;
+        //        dbTSteamingExclusive.labour = UpdateSteamingExclusive.labour;
+        //        //dbTariffSteaming.cost = UpdateSteamingExclusive.cost;
+        //        dbTSteamingExclusive.remarks = UpdateSteamingExclusive.remarks;
+        //        dbTSteamingExclusive.update_by = uid;
+        //        dbTSteamingExclusive.update_dt = GqlUtils.GetNowEpochInSec();
 
-                retval = await context.SaveChangesAsync();
+        //        retval = await context.SaveChangesAsync();
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
-            }
-            return retval;
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.StackTrace);
+        //        throw ex;
+        //    }
+        //    return retval;
+        //}
 
-        public async Task<int> DeleteSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteSteamExclusive_guids)
-        {
-            int retval = 0;
-            try
-            {
-                var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var delTariffSteaming = context.steaming_exclusive.Where(s => DeleteSteamExclusive_guids.Contains(s.guid) && s.delete_dt == null).ToList();
-                var currentDateTime = GqlUtils.GetNowEpochInSec();
+        //public async Task<int> DeleteSteamingExclusive(ApplicationTariffDBContext context, [Service] IConfiguration config,
+        //    [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteSteamExclusive_guids)
+        //{
+        //    int retval = 0;
+        //    try
+        //    {
+        //        var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        var delTariffSteaming = context.steaming_exclusive.Where(s => DeleteSteamExclusive_guids.Contains(s.guid) && s.delete_dt == null).ToList();
+        //        var currentDateTime = GqlUtils.GetNowEpochInSec();
 
-                foreach (var delTariffClean in delTariffSteaming)
-                {
-                    delTariffClean.delete_dt = currentDateTime;
-                    delTariffClean.update_by = uid;
-                    delTariffClean.update_dt = currentDateTime;
-                }
-                retval = await context.SaveChangesAsync();
+        //        foreach (var delTariffClean in delTariffSteaming)
+        //        {
+        //            delTariffClean.delete_dt = currentDateTime;
+        //            delTariffClean.update_by = uid;
+        //            delTariffClean.update_dt = currentDateTime;
+        //        }
+        //        retval = await context.SaveChangesAsync();
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
-            }
-            return retval;
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.StackTrace);
+        //        throw ex;
+        //    }
+        //    return retval;
+        //}
         #endregion
 
         #region AddUnNO&Class
