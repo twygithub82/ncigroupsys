@@ -35,6 +35,7 @@ namespace IDMS.Gate.GqlTypes
                     .Include(s => s.tank.tariff_cleaning)
                     .Include(s => s.tank.tariff_cleaning.cleaning_method)
                     .Include(s => s.tank.tariff_cleaning.cleaning_category)
+                    .Include(s => s.out_gate_survey)
                     .Include(s => s.tank.release_order_sot)
                         .ThenInclude(r => r.release_order);
                 //.Include(s => s.in_gate_survey);

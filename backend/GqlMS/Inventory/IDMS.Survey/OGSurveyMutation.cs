@@ -141,6 +141,7 @@ namespace IDMS.Survey.GqlTypes
                 var tnk = outGateRequest.tank;
                 storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
                 context.Attach(sot);
+                sot.owner_guid = tnk.owner_guid;
                 sot.unit_type_guid = tnk.unit_type_guid;
                 sot.tank_no = string.IsNullOrEmpty(tnk.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tnk.tank_no;
                 sot.update_by = user;
