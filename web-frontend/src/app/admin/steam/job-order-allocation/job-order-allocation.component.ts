@@ -66,6 +66,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, JobProcessRequest, ResJobOrderRequest, SteamJobOrderRequest } from 'app/data-sources/job-order';
 import { SteamDS,SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import {SteamPartItem} from 'app/data-sources/steam-part';
+import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 
 @Component({
   selector: 'app-estimate-new',
@@ -276,6 +277,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
+  ttDS: TimeTableDS;
    igDS: InGateDS;
    jobOrderDS:JobOrderDS;
   // plDS: PackageLabourDS;
@@ -327,6 +329,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     this.steamDs=new SteamDS(this.apollo);
     this.teamDS=new TeamDS(this.apollo);
     this.jobOrderDS=new JobOrderDS(this.apollo);
+    this.ttDS=new TimeTableDS(apollo);
 
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -1311,11 +1314,11 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         const totalApproveHours =3;
 
         const joRequest = new JobOrderRequest();
-        joRequest.guid = jo.guid;
+        joRequest.guid = (jo.status_cv==="CANCELED")?'':jo.guid;
         joRequest.job_type_cv = jo.job_type_cv ?? 'STEAM';
         joRequest.remarks = jo.remarks;
         joRequest.sot_guid = jo.sot_guid ?? this.sotItem?.guid;
-        joRequest.status_cv = jo.status_cv;
+        joRequest.status_cv = (jo.status_cv==="CANCELED")?'':jo.status_cv;
         joRequest.team_guid = jo.team_guid;
         joRequest.total_hour = jo.total_hour ?? totalApproveHours;
         joRequest.working_hour = jo.working_hour ?? 0;
@@ -1364,6 +1367,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
           console.log(result)
           if (result.data.updateSteamingStatus > 0) {
+            this.startJobOrders(this.steamItem?.guid!);
             this.handleSaveSuccess(result.data.updateSteamingStatus);
           }
         });
@@ -1466,7 +1470,8 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
           sot_guid: this.steamItem?.sot_guid,
          // estimate_no: this.steamItem?.estimate_no,
           remarks: result.item[0]?.remarks,
-          job_order: distinctJobOrders
+          job_order: distinctJobOrders,
+          sot_status:this.steamItem?.storing_order_tank?.status_cv,
         });
 
         console.log(steamJobOrder)
@@ -1560,4 +1565,60 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       });
     }
   
+
+    startJobOrders(steamGuid:string)
+    {
+
+      var where :any={steaming_part:{some:{steaming_guid:{eq:steamGuid}}}};
+      
+      this.jobOrderDS.searchJobOrder(where).subscribe(data=>{
+        if(data.length>0)
+        {
+            data.map(jobOrderItem=>{
+              this.toggleJobState(false,jobOrderItem);
+            });
+        }
+      });
+
+    }
+
+     toggleJobState( isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
+        //this.stopPropagation(event);  // Prevents the form submission
+        if (!isStarted) {
+          const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
+          const firstValidRepairPart = jobOrderItem.steaming_part?.find(
+            (steamPart) => steamPart.steaming_guid !== null
+          );
+          this.ttDS.startJobTimer(param, firstValidRepairPart?.steaming_guid!).subscribe(result => {
+            console.log(result)
+             if ((result?.data?.startJobTimer ?? 0) > 0) {
+                  const firstJobPart = jobOrderItem?.steaming_part?.[0];
+                  if (firstJobPart?.steaming?.status_cv === 'ASSIGNED') {
+                    const steamStatusReq: SteamStatusRequest = new SteamStatusRequest({
+                      guid: firstJobPart!.steaming.guid,
+                      sot_guid: jobOrderItem?.sot_guid,
+                      action: "IN_PROGRESS",
+                      
+                    });
+                    console.log(steamStatusReq);
+                    this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
+                      console.log(result);
+                    });
+                  }
+                }
+          });
+        } else {
+          const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time && !x?.delete_dt);
+          if (found?.length) {
+            const newParam = new TimeTableItem(found[0]);
+            newParam.stop_time = Utility.convertDate(new Date()) as number;
+            newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+            const param = [newParam];
+            console.log(param)
+            this.ttDS.stopJobTimer(param).subscribe(result => {
+              console.log(result)
+            });
+          }
+        }
+      }
 }

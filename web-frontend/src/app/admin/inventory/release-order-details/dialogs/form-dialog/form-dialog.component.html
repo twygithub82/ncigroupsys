@@ -38,7 +38,7 @@
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <div class="row" (click)="toggleRow(row.storing_order_tank!)">
+            <div class="row">
               <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{data.translatedLangText.EIR_NO}}:</span>
                 {{igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_no}}

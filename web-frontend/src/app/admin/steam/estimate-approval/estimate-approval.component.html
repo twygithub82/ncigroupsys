@@ -293,7 +293,7 @@
                             <span>{{translatedLangText.COPY}}</span>
                           </button>
                           } -->
-                          @if (steamDS.canApprove(steamRow)) {
+                          @if (canApprove(steamRow)) {
                             <button mat-menu-item (click)="approveRow($event,steamRow)" >
                               <mat-icon>check</mat-icon>
                               <span>{{translatedLangText.APPROVE}}</span>

@@ -260,7 +260,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       
     };
 
-    where.steaming_part={all:{ tariff_steaming_guid: { eq: null } }};
+   // where.steaming_part={all:{ tariff_steaming_guid: { eq: null } }};
+   where.steaming_part = {
+    all: { tariff_steaming_guid: { eq: null } },
+    some: { guid: { neq: null } } // Ensure there's at least one steaming_part
+  };
     
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
       where.or = [
@@ -288,8 +292,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         data=data.filter(data=>data.steaming_part?.length);
-        this.jobOrderList = data;
+        this.jobOrderList = data.filter(data=>data.delete_dt===null||data.delete_dt===0);
         this.jobOrderList.forEach(jo => {
+          jo.time_table=jo.time_table?.filter(data=>data.delete_dt===null||data.delete_dt===0);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
@@ -458,7 +463,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         const param = [newParam];
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {
-          console.log(result)
+          console.log(result);
+          this.completeJob(event,jobOrderItem);
         });
       }
     }

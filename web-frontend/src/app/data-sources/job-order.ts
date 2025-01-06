@@ -252,6 +252,16 @@ const GET_JOB_ORDER = gql`
         update_by
         update_dt
         working_hour
+        steaming_part {
+          steaming {
+            guid
+            estimate_no
+            approve_by
+            status_cv
+          }
+          tariff_steaming_guid
+          steaming_guid
+        }
         team {
           description
           guid

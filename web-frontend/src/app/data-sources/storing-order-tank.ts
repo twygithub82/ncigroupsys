@@ -2353,7 +2353,6 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
-        tap((result) => console.log('GraphQL Response:', result)), // Log the raw response
         map((result) => result.data),
         catchError((error: ApolloError) => {
           console.error('GraphQL Error:', error);

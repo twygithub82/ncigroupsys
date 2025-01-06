@@ -279,6 +279,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
 
   teamDS: TeamDS;
   joDS: JobOrderDS;
+  joTimeTblDS:JobOrderDS;
   ttDS: TimeTableDS;
   isOwner = false;
 
@@ -307,6 +308,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     this.rpDmgRepairDS = new RPDamageRepairDS(this.apollo);
     this.teamDS = new TeamDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
+    this.joTimeTblDS= new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
     this.steamDS = new SteamDS(this.apollo);
   }
@@ -470,7 +472,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
 
   refreshTime_table(job_order_guid:string)
   {
-    this.subs.sink = this.joDS.getJobOrderByID(job_order_guid).subscribe(jo => {
+    this.subs.sink = this.joTimeTblDS.getJobOrderByID(job_order_guid).subscribe(jo => {
       if (jo?.length) {
         console.log(jo)
         this.jobOrderItem = jo[0];
@@ -885,6 +887,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
         console.log(param)
         this.ttDS.stopJobTimer(param).subscribe(result => {
           console.log(result)
+          this.completeJob(event);
         });
       }
     }
@@ -892,20 +895,20 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     this.refreshTime_table(this.job_order_guid!);
   }
 
-  completeJobItem(event: Event, repair_part: RepairPartItem) {
-    this.preventDefault(event);  // Prevents the form submission
-    if (this.repairPartDS.isCompleted(repair_part)) return;
-    const newParam = new JobItemRequest({
-      guid: repair_part.guid,
-      job_order_guid: repair_part.job_order_guid,
-      job_type_cv: repair_part.job_order?.job_type_cv
-    });
-    const param = [newParam];
-    console.log(param)
-    this.joDS.completeJobItem(param).subscribe(result => {
-      console.log(result)
-    });
-  }
+  // completeJobItem(event: Event, repair_part: RepairPartItem) {
+  //   this.preventDefault(event);  // Prevents the form submission
+  //   if (this.repairPartDS.isCompleted(repair_part)) return;
+  //   const newParam = new JobItemRequest({
+  //     guid: repair_part.guid,
+  //     job_order_guid: repair_part.job_order_guid,
+  //     job_type_cv: repair_part.job_order?.job_type_cv
+  //   });
+  //   const param = [newParam];
+  //   console.log(param)
+  //   this.joDS.completeJobItem(param).subscribe(result => {
+  //     console.log(result)
+  //   });
+  // }
 
   completeJob(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
