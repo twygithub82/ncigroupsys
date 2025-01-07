@@ -34,7 +34,7 @@
                 [checked]="schedulingSotSelection.isSelected(row!)" class="card-checkbox"
                 (click)="$event.stopPropagation()" [disabled]="checkDisable(row!)">
               </mat-checkbox>
-              {{row.storing_order_tank!.tank_no}}
+              <span [class]="{'text-danger': addedSot(row)}">{{row.storing_order_tank!.tank_no}}</span>
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
@@ -49,15 +49,15 @@
               </div>
               <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>
-                {{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
+                <span [class]="{'text-danger': notStorage(row)}">{{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}</span>
               </div>
               <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
                 <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
                 {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
               </div>
               <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-1">
-                <span class="font-bold">{{data.translatedLangText.SCHEDULING_DATE}}:</span>
-                {{displayDate(row.scheduling_dt)}}
+                <span [class]="{'font-bold': true}">{{data.translatedLangText.SCHEDULING_DATE}}:</span>
+                <span [class]="{'text-danger': over3Days(row)}">{{displayDate(row.scheduling_dt)}}</span>
               </div>
             </div>
           </mat-card-content>

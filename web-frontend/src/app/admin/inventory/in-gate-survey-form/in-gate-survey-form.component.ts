@@ -349,6 +349,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.cellsInnerMiddle = Array(this.innerMiddleColSize).fill(0);
     this.initForm();
     this.loadData();
+
+    // this.stepper.selectedIndex = this.calculateInitialStepIndex();
   }
 
   initForm() {
@@ -582,6 +584,26 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.next_test_desc = this.getNextTest();
   }
 
+  getTankDetailsFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('tank_details') as UntypedFormGroup;
+  }
+
+  getInGateDetailsFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('in_gate_details') as UntypedFormGroup;
+  }
+
+  getPeriodicTestFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('periodic_test') as UntypedFormGroup;
+  }
+
+  getFrameTypeFormGroup(): UntypedFormGroup {
+    return this.surveyForm!.get('frame_type') as UntypedFormGroup;
+  }
+
+  // getPhotosFormGroup(): UntypedFormGroup {
+  //   return this.surveyForm!.get('photos') as UntypedFormGroup;
+  // }
+
   getCompartmentTypeFormGroup(): UntypedFormGroup {
     return this.surveyForm!.get('compartment_type') as UntypedFormGroup;
   }
@@ -598,24 +620,14 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return this.surveyForm!.get('compartment_type.manlidFormGroup') as UntypedFormGroup;
   }
 
-  getTankDetailsFormGroup(): UntypedFormGroup {
-    return this.surveyForm!.get('tank_details') as UntypedFormGroup;
-  }
-
-  getInGateDetailsFormGroup(): UntypedFormGroup {
-    return this.surveyForm!.get('in_gate_details') as UntypedFormGroup;
-  }
-
-  getPeriodicTestFormGroup(): UntypedFormGroup {
-    return this.surveyForm!.get('periodic_test') as UntypedFormGroup;
-  }
-
-  // getPhotosFormGroup(): UntypedFormGroup {
-  //   return this.surveyForm!.get('photos') as UntypedFormGroup;
-  // }
-
-  getFrameTypeFormGroup(): UntypedFormGroup {
-    return this.surveyForm!.get('frame_type') as UntypedFormGroup;
+  isStepInErrorState(index: number): boolean {
+    // Logic to determine if the step is in error
+    if (index === 0) {
+      return this.getTankDetailsFormGroup().invalid;
+    } else if (index === 1) {
+      return this.getInGateDetailsFormGroup().invalid;
+    }
+    return false;
   }
 
   public loadData() {

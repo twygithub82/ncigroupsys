@@ -386,7 +386,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       and: [
         { status_cv: { eq: "ACCEPTED" } },
         { tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
-        { in_gate: { some: { delete_dt: { eq: null } } } }
       ]
     };
 

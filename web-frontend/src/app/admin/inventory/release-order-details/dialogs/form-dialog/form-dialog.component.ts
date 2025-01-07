@@ -240,7 +240,19 @@ export class FormDialogComponent {
   }
 
   checkDisable(sot: any | undefined): boolean {
-    return sot?.storing_order_tank?.isOver3Days || sot?.storing_order_tank?.notStorage || this.sotIdList.some(sot_guid => sot_guid === sot?.sot_guid);
+    return this.over3Days(sot) || this.notStorage(sot) || this.addedSot(sot);
+  }
+
+  over3Days(sot: any | undefined): boolean {
+    return sot?.storing_order_tank?.isOver3Days;
+  }
+
+  notStorage(sot: any | undefined): boolean {
+    return sot?.storing_order_tank?.notStorage;
+  }
+
+  addedSot(sot: any | undefined): boolean {
+    return this.sotIdList.some(sot_guid => sot_guid === sot?.sot_guid);
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {

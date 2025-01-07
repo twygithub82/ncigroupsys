@@ -1414,48 +1414,73 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   approveRepair(repair: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: APPROVE_REPAIR,
       variables: {
         repair
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   abortRepair(repJobOrder: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ABORT_REPAIR,
       variables: {
         repJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateRepairStatus(repair: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_REPAIR_STATUS,
       variables: {
         repair
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   rollbackQCRepair(repJobOrder: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ROLLBACK_QC_REPAIR,
       variables: {
         repJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   overwriteQCRepair(repJobOrder: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: OVERWRITE_QC_REPAIR,
       variables: {
         repJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   canAmend(re: RepairItem | undefined): boolean {
