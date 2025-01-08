@@ -599,7 +599,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         populateData: {
           bookingTypeCvList: this.bookingTypeCvListNewBooking,
           yardCvList: this.yardCvList,
-          tankStatusCvList: this.tankStatusCvList
+          tankStatusCvList: this.tankStatusCvList,
+          testClassCvList: this.testClassCvListNewBooking
         }
       },
       direction: tempDirection
