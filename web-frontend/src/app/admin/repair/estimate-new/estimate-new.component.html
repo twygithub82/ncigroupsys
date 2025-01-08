@@ -807,11 +807,11 @@
                   </button>
                   }
                   @if (repairDS.canAmend(repairItem)) {
-                  <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)">
+                  <button mat-flat-button color="primary" [disabled]="(repairDS.actionLoading$ | async)">
                     <mat-icon>
-                      @if (!(repairDS.loading$ | async)) {
+                      @if (!(repairDS.actionLoading$ | async)) {
                       save
-                      } @else if ((repairDS.loading$ | async)) {
+                      } @else if ((repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
