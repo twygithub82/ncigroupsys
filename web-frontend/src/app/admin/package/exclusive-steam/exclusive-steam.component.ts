@@ -61,6 +61,7 @@ import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-st
 import { DeleteDialogComponent } from 'app/advance-table/dialogs/delete/delete.component';
 import { PackageSteamingDS, PackageSteamingItem } from 'app/data-sources/package-steam';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
+import { ExclusiveSteamingItem, PackageSteamingExclusiveDS } from 'app/data-sources/exclusive-steam';
 @Component({
   selector: 'app-exclusive-residue',
   standalone: true,
@@ -98,7 +99,7 @@ import { PackageResidueItem } from 'app/data-sources/package-residue';
 export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
 implements OnInit {
   displayedColumns = [
-    'select',
+   // 'select',
     // // 'img',
        'customerCode',
        'companyName',
@@ -110,7 +111,7 @@ implements OnInit {
       'lastUpdate',
       
     // 'mobile',
-   //  'actions',
+     'actions',
   ];
 
   pageTitle = 'MENUITEMS.PACKAGE.LIST.EXCLUSIVE-STEAMING'
@@ -140,9 +141,11 @@ implements OnInit {
   categoryControl= new UntypedFormControl();
   
    ccDS: CustomerCompanyDS;
+   packSteamExclDS:PackageSteamingExclusiveDS;
+
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  packSteamDS : PackageSteamingDS;
+  //packSteamDS : PackageSteamingDS;
 
   //tariffSteamItems : TariffSteamingItem[]=[];
   customer_companyList?: CustomerCompanyItem[];
@@ -261,7 +264,8 @@ implements OnInit {
     MAX_TEMP:'COMMON-FORM.MAX-TEMP',
     MIN_TEMP:'COMMON-FORM.MIN-TEMP',
     QTY:'COMMON-FORM.QTY',
-    LABOUR:'COMMON-FORM.LABOUR$'
+    LABOUR:'COMMON-FORM.LABOUR',
+    CONFIRM_DELETE:'COMMON-FORM.CONFIRM-DELETE'
      }
   
   constructor(
@@ -280,7 +284,7 @@ implements OnInit {
      this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.clnCatDS= new CleaningCategoryDS(this.apollo);
     // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    this.packSteamDS= new PackageSteamingDS(this.apollo);
+    this.packSteamExclDS= new PackageSteamingExclusiveDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -409,7 +413,7 @@ implements OnInit {
           {
             this.handleSaveSuccess(result);
             //this.search();
-            if(this.packSteamDS.totalCount>0)
+            if(this.packSteamExclDS.totalCount>0)
             {
               this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
             }
@@ -419,45 +423,64 @@ implements OnInit {
       });
   }
 
-  editCall(row: PackageResidueItem) {
-   // this.preventDefault(event);  // Prevents the form submission
+  editCall(row: ExclusiveSteamingItem) {
+     // this.preventDefault(event);  // Prevents the form submission
+     let tempDirection: Direction;
+     if (localStorage.getItem('isRtl') === 'true') {
+       tempDirection = 'rtl';
+     } else {
+       tempDirection = 'ltr';
+     }
+    //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
+    //  rows.push(row);
+     const dialogRef = this.dialog.open(FormDialogComponent_New,{
+       width: '600px',
+       height:'auto',
+       data: {
+         action: 'edit',
+         langText: this.langText,
+         selectedItem:row
+       }
+         
+     });
+
+     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result>0) {
+           this.handleSaveSuccess(result);
+           //this.search();
+          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+    
+      }
+   });
+   
+  }
+
+  
+  deleteItem(event:Event,row: ExclusiveSteamingItem) {
+    
+    event.preventDefault(); // Prevents the form submission
+
+    let msgText= `${this.ccDS.displayName(row.package_steaming?.customer_company)} - ${row.tariff_cleaning?.cargo}`;
+    let msgText1=`Temp- min :${row.temp_min} , max:${row.temp_max}`;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    var selectedItems :PackageResidueItem[]=[];
-    selectedItems.push(row);
-    const dialogRef = this.dialog.open(FormDialogComponent_New,{
-      width: '1000px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        action: 'edit',
-        langText: this.langText,
-        selectedItems:selectedItems
-      }
-        
+        headerText: this.translatedLangText.CONFIRM_DELETE,
+        messageText:[msgText,msgText1],
+        action: 'new',
+      },
+      direction: tempDirection
     });
-
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         if (result) {
-          //if(result.selectedValue>0)
-            //{
-              this.handleSaveSuccess(result);
-              //this.search();
-              if(this.packSteamDS.totalCount>0)
-              {
-                this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-              }
-            //}
+      if (result.action === 'confirmed') {
+        this.deleteExclusiveSteam(row);
       }
-      });
-   
-  }
-
-  
-  deleteItem(row: TariffSteamingItem) {
-    
+    });
     
   }
   private refreshTable() {
@@ -495,7 +518,7 @@ implements OnInit {
       const soSome: any = {};
 
       
-      where.and.push({customer_company : { code: { contains: this.pcForm!.value['customer_code'].code } }});
+      where.and.push({package_steaming:{customer_company : { code: { contains: this.pcForm!.value['customer_code'].code } }}});
       
     }
 
@@ -503,14 +526,14 @@ implements OnInit {
       {
         
         const minLabour :number = Number(this.pcForm!.value["min_labour"]);
-        where.and.push({labour :{gte:minLabour}})
+        where.and.push({package_steaming:{labour :{gte:minLabour}}})
       }
   
       if (this.pcForm!.value["max_labour"])
         {
          
           const maxLabour :number = Number(this.pcForm!.value["max_labour"]);
-          where.and.push({labour :{ngte:maxLabour}})
+          where.and.push({package_steaming:{labour :{ngte:maxLabour}}})
           
         }
 
@@ -518,24 +541,24 @@ implements OnInit {
     {
       
       const minCost :number = Number(this.pcForm!.value["min_cost"]);
-      where.and.push({cost :{gte:minCost}})
+      where.and.push({package_steaming:{cost :{gte:minCost}}})
     }
 
     if (this.pcForm!.value["max_cost"])
       {
        
         const maxCost :number = Number(this.pcForm!.value["max_cost"]);
-        where.and.push({cost :{ngte:maxCost}})
+        where.and.push({package_steaming:{cost :{ngte:maxCost}}})
         
       }
       this.lastSearchCriteria=where;
-    this.subs.sink = this.packSteamDS.SearchPackageSteam(where,this.lastOrderBy,this.pageSize).subscribe(data => {
+    this.subs.sink = this.packSteamExclDS.SearchExclusiveSteam(where,this.lastOrderBy,this.pageSize).subscribe(data => {
        this.packageSteamItems=data;
        this.previous_endCursor=undefined;
-       this.endCursor = this.packSteamDS.pageInfo?.endCursor;
-       this.startCursor = this.packSteamDS.pageInfo?.startCursor;
-       this.hasNextPage = this.packSteamDS.pageInfo?.hasNextPage ?? false;
-       this.hasPreviousPage = this.packSteamDS.pageInfo?.hasPreviousPage ?? false;
+       this.endCursor = this.packSteamExclDS.pageInfo?.endCursor;
+       this.startCursor = this.packSteamExclDS.pageInfo?.startCursor;
+       this.hasNextPage = this.packSteamExclDS.pageInfo?.hasNextPage ?? false;
+       this.hasPreviousPage = this.packSteamExclDS.pageInfo?.hasPreviousPage ?? false;
        this.pageIndex=0;
        this.paginator.pageIndex=0;
        this.selection.clear();
@@ -600,12 +623,12 @@ implements OnInit {
     previousPageIndex?:number)
     {
       this.previous_endCursor=this.endCursor;
-      this.subs.sink = this.packSteamDS.SearchPackageSteam(where,order,first,after,last,before).subscribe(data => {
+      this.subs.sink = this.packSteamExclDS.SearchExclusiveSteam(where,order,first,after,last,before).subscribe(data => {
         this.packageSteamItems=data;
-        this.endCursor = this.packSteamDS.pageInfo?.endCursor;
-        this.startCursor = this.packSteamDS.pageInfo?.startCursor;
-        this.hasNextPage = this.packSteamDS.pageInfo?.hasNextPage ?? false;
-        this.hasPreviousPage = this.packSteamDS.pageInfo?.hasPreviousPage ?? false;
+        this.endCursor = this.packSteamExclDS.pageInfo?.endCursor;
+        this.startCursor = this.packSteamExclDS.pageInfo?.startCursor;
+        this.hasNextPage = this.packSteamExclDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.packSteamExclDS.pageInfo?.hasPreviousPage ?? false;
         this.pageIndex=pageIndex;
         this.paginator.pageIndex=this.pageIndex;
         this.selection.clear();
@@ -757,6 +780,18 @@ implements OnInit {
     
     //this.customerCodeControl.reset('');
    
+  }
+
+  deleteExclusiveSteam(exclusiveSteam:ExclusiveSteamingItem)
+  {
+    let exclusiveSteamGuid :String = exclusiveSteam.guid!;
+    this.packSteamExclDS.deleteExclusiveSteam([exclusiveSteamGuid]).subscribe(result=>{
+      if(result.data.deleteSteamingExclusive>0)
+      {
+        this.handleSaveSuccess(result.data.deleteSteamingExclusive);
+        this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+      }
+    })
   }
 }
 

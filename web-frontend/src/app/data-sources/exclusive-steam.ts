@@ -13,6 +13,9 @@ import { PageInfo } from '@core/models/pageInfo';
 import { BaseDataSource } from './base-ds';
 import { CustomerCompanyItem } from './customer-company';
 import { TariffSteamingItem } from './tariff-steam';
+import { PackageSteamingItem } from './package-steam';
+import { SteamPartItem } from './steam-part';
+import { TariffCleaningItem } from './tariff-cleaning';
 export class ExclusiveSteamingGo {
   public guid?: string;
   public tariff_cleaning_guid?:string;
@@ -48,17 +51,19 @@ export class ExclusiveSteamingGo {
   }
 }
 
-export class PackageSteamingItem extends PackageSteamingGo {
-  public customer_company?: CustomerCompanyItem;
-  public tariff_steaming?:TariffSteamingItem;
+export class ExclusiveSteamingItem extends ExclusiveSteamingGo {
+  public package_steaming?: PackageSteamingItem;
+  public steaming_part?:SteamPartItem[];
+  public tariff_cleaning?:TariffCleaningItem;
 
  
   
-  constructor(item: Partial<PackageSteamingItem> = {}) {
+  constructor(item: Partial<ExclusiveSteamingItem> = {}) {
     
     super(item);
-    this.customer_company=item.customer_company;
-    this.tariff_steaming=item.tariff_steaming;
+    this.package_steaming=item.package_steaming;
+    this.steaming_part=item.steaming_part;
+    this.tariff_cleaning=item.tariff_cleaning;
   }
 }
 
@@ -70,40 +75,62 @@ export interface PackageSteamResult {
 
 
 
-export const GET_PACKAGE_STEAM_QUERY = gql`
-  query queryPackageSteaming($where: package_steamingFilterInput, $order:[package_steamingSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
-    packageSteamResult : queryPackageSteaming(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
+export const GET_EXCLUSIVE_STEAM_QUERY = gql`
+  query querySteamingExclusive($where: steaming_exclusiveFilterInput, $order:[steaming_exclusiveSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    packageSteamExclusiveResult : querySteamingExclusive(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
-      cost
       create_by
       create_dt
       delete_dt
       guid
       labour
       remarks
+      tariff_cleaning_guid
+       tariff_cleaning {
+          guid
+          cargo
+          class_cv
+          cleaning_category_guid
+          cleaning_method_guid
+          description
+      }
+      temp_max
+      temp_min
       update_by
       update_dt
-      customer_company_guid
-      tariff_steaming_guid
-      customer_company {
-        code
-        guid
-        name
-        delete_dt
-       }
-      tariff_steaming {
+      package_steaming{
         cost
         create_by
         create_dt
+        customer_company_guid
         delete_dt
         guid
         labour
         remarks
-        temp_max
-        temp_min
+        steaming_exclusive_guid
+        tariff_steaming_guid
         update_by
         update_dt
+        customer_company {
+          code
+          guid
+          name
+          delete_dt
         }
+        tariff_steaming {
+          cost
+          create_by
+          create_dt
+          delete_dt
+          guid
+          labour
+          remarks
+          temp_max
+          temp_min
+          update_by
+          update_dt
+          }
+      }
       }
       pageInfo {
         endCursor
@@ -116,34 +143,38 @@ export const GET_PACKAGE_STEAM_QUERY = gql`
   }
 `;
 
-
-
-export const UPDATE_PACKAGE_STEAMING = gql`
-  mutation updatePackageSteaming($ps: package_steamingInput!) {
-    updatePackageSteaming(updatePackageSteaming: $ps)
+export const ADD_EXCLUSIVE_STEAMING = gql`
+  mutation addSteamingExclusive($newSteamingExclusive: steaming_exclusiveInput!) {
+    addSteamingExclusive(newSteamingExclusive: $newSteamingExclusive)
   }
 `;
 
-export const UPDATE_PACKAGE_STEAMINGS = gql`
-  mutation updatePackageSteamings($guids: [String!]!,$cost:Float!,$labour:Float!,$remarks:String!) {
-    updatePackageSteamings(updatePackageSteaming_guids: $guids,cost:$cost,labour:$labour,remarks:$remarks)
+export const UPDATE_EXCLUSIVE_STEAMING = gql`
+  mutation updateSteamingExclusive($updateSteamingExclusive: steaming_exclusiveInput!) {
+    updateSteamingExclusive(updateSteamingExclusive: $updateSteamingExclusive)
+  }
+`;
+
+export const DELETE_EXCLUSIVE_STEAMING = gql`
+  mutation deleteSteamingExclusive($deleteSteamExclusive_guids: [String!]!) {
+    deleteSteamingExclusive(deleteSteamExclusive_guids: $deleteSteamExclusive_guids)
   }
 `;
 
 
-export class PackageSteamingDS extends BaseDataSource<PackageSteamingItem> {
+export class PackageSteamingExclusiveDS extends BaseDataSource<PackageSteamingItem> {
   constructor(private apollo: Apollo) {
     super();
   }
   
-  SearchPackageSteam(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<PackageSteamingItem[]> {
+  SearchExclusiveSteam(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<ExclusiveSteamingItem[]> {
     this.loadingSubject.next(true);
     if (!last)
       if (!first)
         first = 10;
     return this.apollo
       .query<any>({
-        query: GET_PACKAGE_STEAM_QUERY,
+        query: GET_EXCLUSIVE_STEAM_QUERY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -155,23 +186,36 @@ export class PackageSteamingDS extends BaseDataSource<PackageSteamingItem> {
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const packageSteamResult = result.packageSteamResult || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(packageSteamResult.nodes);
-          this.pageInfo = packageSteamResult.pageInfo;
-          this.totalCount = packageSteamResult.totalCount;
-          return packageSteamResult.nodes;
+          const packageSteamExclusiveResult = result.packageSteamExclusiveResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(packageSteamExclusiveResult.nodes);
+          this.pageInfo = packageSteamExclusiveResult.pageInfo;
+          this.totalCount = packageSteamExclusiveResult.totalCount;
+          return packageSteamExclusiveResult.nodes;
         })
       );
   }
 
 
  
+  AddExclusiveSteam(newSteamingExclusive: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ADD_EXCLUSIVE_STEAMING,
+      variables: {
+        newSteamingExclusive
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
-    updatePackageSteam(ps: any): Observable<any> {
+    updateExclusiveSteam(updateSteamingExclusive: any): Observable<any> {
       return this.apollo.mutate({
-        mutation: UPDATE_PACKAGE_STEAMING,
+        mutation: UPDATE_EXCLUSIVE_STEAMING,
         variables: {
-          ps
+          updateSteamingExclusive
         }
       }).pipe(
         catchError((error: ApolloError) => {
@@ -181,14 +225,11 @@ export class PackageSteamingDS extends BaseDataSource<PackageSteamingItem> {
       );
     }
 
-    updatePackageSteams(guids: string[],cost:number,labour:number,remarks:string): Observable<any> {
+    deleteExclusiveSteam(deleteSteamExclusive_guids: String[]): Observable<any> {
       return this.apollo.mutate({
-        mutation: UPDATE_PACKAGE_STEAMINGS,
+        mutation: DELETE_EXCLUSIVE_STEAMING,
         variables: {
-          guids,
-          cost,
-          labour,
-          remarks
+          deleteSteamExclusive_guids
         }
       }).pipe(
         catchError((error: ApolloError) => {

@@ -13,6 +13,54 @@
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.CUSTOMER }}</mat-label>
+                <input matInput formControlName="customer_code" 
+                [matAutocomplete]="customerCode" [readonly]="!canEdit()">
+              <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                @for (cc of customer_companyList; track cc) {
+                <mat-option [value]="cc">
+                  {{ccDS.displayName(cc)}}
+                </mat-option>
+                }
+              </mat-autocomplete>
+              </mat-form-field> 
+          </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{translatedLangText.LAST_CARGO }}</mat-label>
+              <input matInput formControlName="last_cargo" 
+              [matAutocomplete]="lastCargo">
+            <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
+              @for (lc of last_cargoList; track lc) {
+              <mat-option [value]="lc">
+                {{lc.cargo}}
+              </mat-option>
+              }
+            </mat-autocomplete>
+            </mat-form-field> 
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+                 <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.MIN_TEMP }}</mat-label>
+                    <input matInput formControlName="min_temp" type="number" step="1" inputmode="numeric" required  >
+                  </mat-form-field> 
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+                  <mat-form-field class="example-full-width">
+                     <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
+                     <input matInput formControlName="max_temp" type="number" step="1" inputmode="numeric"  >
+                   </mat-form-field> 
+                </div>
+          </div>
           @if (pcForm.hasError('tempRangeInvalid')) {
             <mat-error>
                {{translatedLangText.TEMP_RANGE_ERROR}}
@@ -35,14 +83,24 @@
                       }
                   </mat-form-field> 
                 </div>
-      
+                <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <mat-form-field class="example-full-width">
+                     <mat-label>{{translatedLangText.QTY }}</mat-label>
+                     <input matInput formControlName="qty" type="number" required >
+                     @if (pcForm.get('qty')?.hasError('required')) {
+                       <mat-error>
+                         {{langText.COST }} {{langText.CARGO_REQUIRED | translate}}
+                       </mat-error>
+                       }
+                   </mat-form-field> 
+                 </div> -->
                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                      <mat-label>{{translatedLangText.LABOUR }}</mat-label>
                      <input matInput formControlName="labour" type="number" required >
                      @if (pcForm.get('labour')?.hasError('required')) {
                        <mat-error>
-                         {{translatedLangText.LABOUR }} {{langText.CARGO_REQUIRED | translate}}
+                         {{translatedLangText.LABOUR }} {{translatedLangText.CARGO_REQUIRED | translate}}
                        </mat-error>
                        }
                    </mat-form-field> 
@@ -55,51 +113,6 @@
                     <input matInput formControlName="remarks" type="text"  >
                   </mat-form-field> 
                 </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="materialTableHeader">
-        </div>
-        <div class="body overflow-auto">
-          <div class="responsive_table">
-            <table mat-table [dataSource]="selectedItems" matSort class="mat-cell advance-table">
-              
-              <ng-container matColumnDef="fName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" >
-                  <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE }}:</span>{{row.customer_company.code}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="lName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" >
-                  <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company.name}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="email">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.MIN_TEMP }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" >
-                  <span class="mobile-label">{{translatedLangText.MIN_TEMP }}:</span>{{row.tariff_steaming?.temp_min}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="gender">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.MAX_TEMP }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" >
-                  <span class="mobile-label">{{translatedLangText.MAX_TEMP }}:</span>{{row.tariff_steaming?.temp_max}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="cost">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.COST }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" >
-                  <span class="mobile-label">{{translatedLangText.COST }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="labour">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.LABOUR }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" >
-                  <span class="mobile-label">{{translatedLangText.LABOUR }}:</span>{{row.labour.toFixed(2)}}</mat-cell>
-              </ng-container>
-              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-              <mat-row *matRowDef="let row; columns: displayedColumns;" 
-                [style.cursor]="'pointer'" matRipple>
-              </mat-row>
-            </table>
           </div>
         </div>
       </div>

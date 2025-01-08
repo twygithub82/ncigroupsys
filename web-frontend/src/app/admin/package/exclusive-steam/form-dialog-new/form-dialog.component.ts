@@ -37,14 +37,16 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { tempRangeValidator } from '../validators/temp-range.validator';
 import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-steam';
-import { PackageSteamingDS, PackageSteamingItem } from 'app/data-sources/package-steam';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { ExclusiveSteamingItem, PackageSteamingExclusiveDS } from 'app/data-sources/exclusive-steam';
+import { PackageSteamingItem } from 'app/data-sources/package-steam';
 
 export interface DialogData {
   action?: string;
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItems:PackageSteamingItem[];
+   selectedItem:ExclusiveSteamingItem;
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -100,9 +102,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
        'fName',
        'lName',
        'email',
-       'gender',
-      'cost',
-      'labour',
+      // 'gender',
+      // 'bDate',
+      // 'mobile',
       // 'actions',
     ];
 
@@ -111,10 +113,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   dialogTitle?: string;
  
   
-  pckSteamDS: PackageSteamingDS;
-  
+  pckSteamExclusiveDS:PackageSteamingExclusiveDS;
+  trfCleanDS:TariffCleaningDS;
+  ccDS : CustomerCompanyDS;
   tnkItems?:TankItem[];
 
+  customer_companyList?: CustomerCompanyItem[];
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -179,6 +183,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     CARGO_NAME:'COMMON-FORM.CARGO-NAME',
     CARGO_ALIAS:'COMMON-FORM.CARGO-ALIAS',
     CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
@@ -225,17 +230,18 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     MAX_TEMP:'COMMON-FORM.MAX-TEMP',
     MIN_TEMP:'COMMON-FORM.MIN-TEMP',
     QTY:'COMMON-FORM.QTY',
-    LABOUR:'COMMON-FORM.LABOUR$',
+    LABOUR:'COMMON-FORM.LABOUR',
     TEMP_RANGE_ERROR:'COMMON-FORM.TEMP-RANGE-ERROR',
     TEMP_RANGE_OVERLAPS_ERROR:'COMMON-FORM.TEMP-RANGE-OVERLAPS-ERROR',
     TARIFF_STEAM:'MENUITEMS.TARIFF.LIST.TARIFF-STEAM',
+    EXCLUSIVE_STEAM:'MENUITEMS.PACKAGE.LIST.EXCLUSIVE-STEAMING'
   };
   unit_type_control = new UntypedFormControl();
   
- // selectedItem: TariffSteamingItem;
+  selectedItem: ExclusiveSteamingItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
-  selectedItems:PackageSteamingItem[];
+  
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -246,20 +252,25 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
-    this.selectedItems = data.selectedItems;
-    //this.selectedItem = data.selectedItem;
+    this.selectedItem = data.selectedItem;
     
-    this.pckSteamDS=new PackageSteamingDS(this.apollo);
+    this.pckSteamExclusiveDS=new PackageSteamingExclusiveDS(this.apollo);
+    this.trfCleanDS=new TariffCleaningDS(this.apollo);
+     this.ccDS = new CustomerCompanyDS(this.apollo);
 
-    this.pcForm = this.createPackageSteam();
-    
+    this.pcForm = this.createExclusiveSteam();
+    // this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
+    //this.tcDS = new TariffCleaningDS(this.apollo);
+    //this.sotDS = new StoringOrderTankDS(this.apollo);
+    //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
+   // this.catDS= new CleaningCategoryDS(this.apollo);
 
   
    this.tnkItems=[];
     this.action = data.action!;
     this.translateLangText();
     this.InitValueChanges()
-    if(this.action==="edit")  this.patchPackageSteam(data.selectedItems);
+    if(this.action==="edit")  this.patchExclusiveSteam(data.selectedItem);
     // this.sotExistedList = data.sotExistedList;
     // if (this.action === 'edit') {
     //   this.dialogTitle = 'Edit ' + data.item.tank_no;
@@ -277,31 +288,34 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     // }
   }
 
-  patchPackageSteam(rows:PackageSteamingItem[])
+  patchExclusiveSteam(row:ExclusiveSteamingItem)
   {
-    
-    if(rows.length==1)
-    {
-      let row:PackageSteamingItem=rows[0]!;
     this.pcForm.patchValue({
       selectedItem: row,
       action:"edit",
-      labour:row.labour?.toFixed(2),
-      cost:row.cost?.toFixed(2),
+      min_temp:row.temp_min,
+      max_temp:row.temp_max===9999?"":row.temp_max,
+      labour:row.package_steaming?.labour,
+      last_cargo:row.tariff_cleaning,
+      customer_code:row.package_steaming?.customer_company,
+     // qty:[''],
+      cost:row.package_steaming?.cost?.toFixed(2),
       remarks:row.remarks
     });
-   }
   }
 
-
-  createPackageSteam(): UntypedFormGroup {
+  createExclusiveSteam(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: null,
-      action:"edit",
+      action:"new",
+      min_temp:['',[Validators.required]],
+      max_temp:[''],
       labour:[''],
      // qty:[''],
       cost:[''],
-      remarks:['']
+      remarks:[''],
+      customer_code:[''],
+      last_cargo:['']
       
     },
     { validators: tempRangeValidator });
@@ -309,6 +323,37 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
  
   public InitValueChanges() {
 
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+
+    this.pcForm!.get('last_cargo')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.cargo;
+        }
+        this.subs.sink = this.trfCleanDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.last_cargoList = data
+        });
+      })
+    ).subscribe();
     // this.pcForm.get("cost")?.valueChanges.subscribe(data=>{
     //   this.pcForm.patchValue({
     //     cost: this.pcForm.get("cost")?.value.toFixed(2)
@@ -322,6 +367,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     // });
   
   }
+  displayLastCargoFn(lc:TariffCleaningItem):string{
+    return lc?`${lc.cargo}`:'';
+  }
+    displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
+      return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    }
   
   GetButtonCaption()
   {
@@ -338,9 +389,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   {
    
     if (this.action === "new") {
-      return `${this.translatedLangText.NEW} ${this.translatedLangText.TARIFF_STEAM}`;
+      return `${this.translatedLangText.NEW} ${this.translatedLangText.EXCLUSIVE_STEAM}`;
     }
-    return `${this.translatedLangText.EDIT} ${this.translatedLangText.TARIFF_STEAM}`;
+    return `${this.translatedLangText.EDIT} ${this.translatedLangText.EXCLUSIVE_STEAM}`;
     //  return this.action==="new"?this.translatedLangText.NEW:this.translatedLangText.EDIT + " " + this.translatedLangText.TARIFF_STEAM;      
     
   }
@@ -377,34 +428,52 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
     
-    if(this.selectedItems.length===1)
-    {
-      let updateSteam = new PackageSteamingItem(this.selectedItems[0]);
-      updateSteam.cost= Number(this.pcForm!.value['cost']);
-      updateSteam.remarks= String(this.pcForm.value['remarks']);
-      updateSteam.labour= Number(this.pcForm.value['labour']);
-      this.pckSteamDS.updatePackageSteam(updateSteam).subscribe(result=>{
+    let where: any = { and:[]};
 
-        this.handleSaveSuccess(result?.data?.updatePackageSteam);
-      });
-    }
-    else
-    {
-      let guids = this.selectedItems.map(d => {
-          return d.guid;
-      });
-      let cost = Number(this.pcForm!.value['cost']);
-      let remarks= String(this.pcForm.value['remarks']);
-      let labour= Number(this.pcForm.value['labour']);
-      if(!guids)
-      {
-        this.pckSteamDS.updatePackageSteams(guids,cost,labour,remarks).subscribe(result=>{
+    let maxTemp =this.pcForm?.value['max_temp'];
+    let minTemp=this.pcForm?.value['min_temp']
+    let custGuid= this.pcForm?.value['customer_code'].guid;
+    let lastCargoGuid= this.pcForm?.value['last_cargo'].guid;
+    if(!maxTemp)maxTemp=9999;
 
-          this.handleSaveSuccess(result?.data?.updatePackageSteam);
-        });
-      }
-    }
-       
+     where.and.push({package_steaming:{customer_company_guid:{eq:custGuid}}});
+     where.and.push({or:[{package_steaming:{delete_dt:{eq:null}}},{package_steaming:{delete_dt:{eq:0}}}]});
+     where.and.push({tariff_cleaning_guid:{eq:lastCargoGuid}});
+
+     let tempCond:any={or:[]};
+     tempCond.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
+     tempCond.or.push ({and:[{temp_min:{lte:maxTemp}},{temp_max:{gte:maxTemp}}]})
+     tempCond.or.push ({and:[{temp_min:{gte:minTemp}},{temp_min:{lte:maxTemp}}]})
+     tempCond.or.push ({and:[{temp_max:{gte:minTemp}},{temp_max:{lte:maxTemp}}]})
+     where.and.push(tempCond);
+    this.subs.sink= this.pckSteamExclusiveDS.SearchExclusiveSteam(where).subscribe(data=>{
+        if(data.length==0)
+        {
+            let newSteam = new ExclusiveSteamingItem();
+
+           // newSteam.cost= Number(this.pcForm!.value['cost']);
+            newSteam.remarks= String(this.pcForm.value['remarks']);
+            newSteam.temp_max= Number(maxTemp);
+            newSteam.temp_min= Number(minTemp);
+            newSteam.labour= Number(this.pcForm.value['labour']);
+            newSteam.package_steaming= new PackageSteamingItem();
+            newSteam.package_steaming.cost=Number(this.pcForm!.value['cost']);
+            newSteam.package_steaming.labour=newSteam.labour;
+            newSteam.package_steaming.remarks=newSteam.remarks;
+            newSteam.package_steaming.customer_company_guid=custGuid;
+            newSteam.tariff_cleaning_guid=lastCargoGuid;
+            this.pckSteamExclusiveDS.AddExclusiveSteam(newSteam).subscribe(result=>{
+
+              this.handleSaveSuccess(result?.data?.addSteamingExclusive);
+            });
+        }
+        else
+        {
+            this.pcForm?.setErrors({ overlaps: true });
+        }
+
+
+    });
 
    
 
@@ -415,34 +484,112 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   update() {
 
     if (!this.pcForm?.valid) return;
+
     
-    if(this.selectedItems.length===1)
-    {
-      let updateSteam = new PackageSteamingItem(this.selectedItems[0]);
-      updateSteam.cost= Number(this.pcForm!.value['cost']);
-      updateSteam.remarks= String(this.pcForm.value['remarks']);
-      updateSteam.labour= Number(this.pcForm.value['labour']);
-      delete updateSteam.tariff_steaming;
-      delete updateSteam.customer_company;
-      this.pckSteamDS.updatePackageSteam(updateSteam).subscribe(result=>{
+    
+    let where: any = { and:[]};
 
-        this.handleSaveSuccess(result?.data?.updatePackageSteaming);
-      });
-    }
-    else
-    {
-      let guids = this.selectedItems?.map(d => d.guid).filter(guid => guid !== undefined) as string[];
-      let cost = Number(this.pcForm!.value['cost']);
-      let remarks= String(this.pcForm.value['remarks']);
-      let labour= Number(this.pcForm.value['labour']);
-      if(guids.length > 0)
-      {
-        this.pckSteamDS.updatePackageSteams(guids,cost,labour,remarks).subscribe(result=>{
+    let maxTemp =this.pcForm?.value['max_temp'];
+    let minTemp=this.pcForm?.value['min_temp']
+    let custGuid= this.pcForm?.value['customer_code'].guid;
+    let lastCargoGuid= this.pcForm?.value['last_cargo'].guid;
+    if(!maxTemp)maxTemp=9999;
 
-          this.handleSaveSuccess(result?.data?.updatePackageSteamings);
-        });
-      }
-    }
+     where.and.push({package_steaming:{customer_company_guid:{eq:custGuid}}});
+     where.and.push({or:[{package_steaming:{delete_dt:{eq:null}}},{package_steaming:{delete_dt:{eq:0}}}]});
+     where.and.push({tariff_cleaning_guid:{eq:lastCargoGuid}});
+
+     let tempCond:any={or:[]};
+     tempCond.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
+     tempCond.or.push ({and:[{temp_min:{lte:maxTemp}},{temp_max:{gte:maxTemp}}]})
+     tempCond.or.push ({and:[{temp_min:{gte:minTemp}},{temp_min:{lte:maxTemp}}]})
+     tempCond.or.push ({and:[{temp_max:{gte:minTemp}},{temp_max:{lte:maxTemp}}]})
+     where.and.push(tempCond);
+    this.subs.sink= this.pckSteamExclusiveDS.SearchExclusiveSteam(where).subscribe(data=>{
+        if(data.length<=1)
+        {
+          let bUpd:boolean=true;
+
+          if(data.length==1)
+          {
+            bUpd=this.selectedItem.guid===data[0].guid;
+           
+          }
+            let updsteam = new ExclusiveSteamingItem();
+            updsteam.guid=this.selectedItem.guid;
+           // newSteam.cost= Number(this.pcForm!.value['cost']);
+           updsteam.remarks= String(this.pcForm.value['remarks']);
+
+           updsteam.temp_max= Number(maxTemp);
+           updsteam.temp_min= Number(minTemp);
+           updsteam.labour= Number(this.pcForm.value['labour']);
+           updsteam.package_steaming= new PackageSteamingItem(this.selectedItem.package_steaming);
+           delete updsteam.package_steaming.customer_company;
+           updsteam.package_steaming.cost=Number(this.pcForm!.value['cost']);
+           updsteam.package_steaming.labour=updsteam.labour;
+           updsteam.package_steaming.remarks=updsteam.remarks;
+           updsteam.package_steaming.customer_company_guid=custGuid;
+           updsteam.tariff_cleaning_guid=lastCargoGuid;
+            this.pckSteamExclusiveDS.updateExclusiveSteam(updsteam).subscribe(result=>{
+
+              this.handleSaveSuccess(result?.data?.updateSteamingExclusive);
+            });
+        }
+        else
+        {
+            this.pcForm?.setErrors({ overlaps: true });
+        }
+
+
+    });
+    
+    // let where: any = { or:[]};
+
+    // let maxTemp =this.pcForm?.value['max_temp'];
+    // let minTemp=this.pcForm?.value['min_temp']
+    // if(!maxTemp)maxTemp=9999;
+    // where.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
+    // where.or.push ({and:[{temp_min:{lte:maxTemp}},{temp_max:{gte:maxTemp}}]})
+    // where.or.push ({and:[{temp_min:{gte:minTemp}},{temp_min:{lte:maxTemp}}]})
+    // where.or.push ({and:[{temp_max:{gte:minTemp}},{temp_max:{lte:maxTemp}}]})
+  
+    // this.subs.sink= this.trfSteamDS.SearchTariffSteam(where).subscribe(data=>{
+    //     if(data.length<=1)
+    //     {
+    //       let bUpd:boolean=true;
+
+    //       if(data.length==1)
+    //       {
+    //         bUpd=this.selectedItem.guid===data[0].guid;
+           
+    //       }
+          
+    //       if(bUpd)
+    //       {
+    //         let updSteam = new TariffSteamingItem();
+    //         updSteam.guid = this.selectedItem.guid;
+    //         updSteam.cost= Number(this.pcForm!.value['cost']);
+    //         updSteam.remarks= String(this.pcForm.value['remarks']);
+    //         updSteam.temp_max= Number(maxTemp);
+    //         updSteam.temp_min= Number(this.pcForm.value['min_temp']);
+    //         updSteam.labour= Number(this.pcForm.value['labour']);
+    //         this.trfSteamDS.updateTariffSteam(updSteam).subscribe(result=>{
+    //           this.handleSaveSuccess(result?.data?.updateTariffSteaming);
+    //         });
+    //       }
+    //       else
+    //       {
+    //         this.pcForm?.setErrors({ overlaps: true });
+    //       }
+
+    //     }
+    //     else
+    //     {
+    //         this.pcForm?.setErrors({ overlaps: true });
+    //     }
+
+
+    // });
 
    
 
@@ -482,4 +629,17 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
   
+  onMaxTempInput(event: Event)
+  {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = inputElement.value.split('.')[0];
+    this.pcForm.get('max_temp')?.setValue(Number(inputElement.value));
+  }
+
+  onMinTempInput(event: Event)
+  {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = inputElement.value.split('.')[0];
+    this.pcForm.get('min_temp')?.setValue(Number(inputElement.value));
+  }
 }

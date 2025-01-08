@@ -37,13 +37,14 @@ import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@sha
 import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { tempRangeValidator } from '../validators/temp-range.validator';
 import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-steam';
+import { PackageSteamingDS, PackageSteamingItem } from 'app/data-sources/package-steam';
 
 export interface DialogData {
   action?: string;
   selectedValue?:number;
   // item: StoringOrderTankItem;
    langText?: any;
-   selectedItem:TariffResidueItem;
+   selectedItems:PackageSteamingItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -99,9 +100,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
        'fName',
        'lName',
        'email',
-      // 'gender',
-      // 'bDate',
-      // 'mobile',
+       'gender',
+      'cost',
+      'labour',
       // 'actions',
     ];
 
@@ -110,7 +111,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   dialogTitle?: string;
  
   
-  trfSteamDS: TariffSteamingDS;
+  pckSteamDS: PackageSteamingDS;
   
   tnkItems?:TankItem[];
 
@@ -224,17 +225,17 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     MAX_TEMP:'COMMON-FORM.MAX-TEMP',
     MIN_TEMP:'COMMON-FORM.MIN-TEMP',
     QTY:'COMMON-FORM.QTY',
-    LABOUR:'COMMON-FORM.LABOUR',
+    LABOUR:'COMMON-FORM.LABOUR$',
     TEMP_RANGE_ERROR:'COMMON-FORM.TEMP-RANGE-ERROR',
     TEMP_RANGE_OVERLAPS_ERROR:'COMMON-FORM.TEMP-RANGE-OVERLAPS-ERROR',
     TARIFF_STEAM:'MENUITEMS.TARIFF.LIST.TARIFF-STEAM',
   };
   unit_type_control = new UntypedFormControl();
   
-  selectedItem: TariffSteamingItem;
+ // selectedItem: TariffSteamingItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
-  
+  selectedItems:PackageSteamingItem[];
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -245,23 +246,20 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
-    this.selectedItem = data.selectedItem;
+    this.selectedItems = data.selectedItems;
+    //this.selectedItem = data.selectedItem;
     
-    this.trfSteamDS=new TariffSteamingDS(this.apollo);
+    this.pckSteamDS=new PackageSteamingDS(this.apollo);
 
-    this.pcForm = this.createTariffSteam();
-    // this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
-    //this.tcDS = new TariffCleaningDS(this.apollo);
-    //this.sotDS = new StoringOrderTankDS(this.apollo);
-    //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-   // this.catDS= new CleaningCategoryDS(this.apollo);
+    this.pcForm = this.createPackageSteam();
+    
 
   
    this.tnkItems=[];
     this.action = data.action!;
     this.translateLangText();
     this.InitValueChanges()
-    if(this.action==="edit")  this.patchTariffSteam(data.selectedItem);
+    if(this.action==="edit")  this.patchPackageSteam(data.selectedItems);
     // this.sotExistedList = data.sotExistedList;
     // if (this.action === 'edit') {
     //   this.dialogTitle = 'Edit ' + data.item.tank_no;
@@ -279,26 +277,27 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     // }
   }
 
-  patchTariffSteam(row:TariffSteamingItem)
+  patchPackageSteam(rows:PackageSteamingItem[])
   {
+    
+    if(rows.length==1)
+    {
+      let row:PackageSteamingItem=rows[0]!;
     this.pcForm.patchValue({
       selectedItem: row,
       action:"edit",
-      min_temp:row.temp_min,
-      max_temp:row.temp_max===9999?"":row.temp_max,
       labour:row.labour?.toFixed(2),
-     // qty:[''],
       cost:row.cost?.toFixed(2),
       remarks:row.remarks
     });
+   }
   }
 
-  createTariffSteam(): UntypedFormGroup {
+
+  createPackageSteam(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: null,
-      action:"new",
-      min_temp:['',[Validators.required]],
-      max_temp:[''],
+      action:"edit",
       labour:[''],
      // qty:[''],
       cost:[''],
@@ -378,37 +377,34 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
     
-    let where: any = { or:[]};
+    if(this.selectedItems.length===1)
+    {
+      let updateSteam = new PackageSteamingItem(this.selectedItems[0]);
+      updateSteam.cost= Number(this.pcForm!.value['cost']);
+      updateSteam.remarks= String(this.pcForm.value['remarks']);
+      updateSteam.labour= Number(this.pcForm.value['labour']);
+      this.pckSteamDS.updatePackageSteam(updateSteam).subscribe(result=>{
 
-    let maxTemp =this.pcForm?.value['max_temp'];
-    let minTemp=this.pcForm?.value['min_temp']
-    if(!maxTemp)maxTemp=9999;
-    where.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
-    where.or.push ({and:[{temp_min:{lte:maxTemp}},{temp_max:{gte:maxTemp}}]})
-    where.or.push ({and:[{temp_min:{gte:minTemp}},{temp_min:{lte:maxTemp}}]})
-    where.or.push ({and:[{temp_max:{gte:minTemp}},{temp_max:{lte:maxTemp}}]})
-  
-    this.subs.sink= this.trfSteamDS.SearchTariffSteam(where).subscribe(data=>{
-        if(data.length==0)
-        {
-            let newSteam = new TariffSteamingItem();
-            newSteam.cost= Number(this.pcForm!.value['cost']);
-            newSteam.remarks= String(this.pcForm.value['remarks']);
-            newSteam.temp_max= Number(maxTemp);
-            newSteam.temp_min= Number(this.pcForm.value['min_temp']);
-            newSteam.labour= Number(this.pcForm.value['labour']);
-            this.trfSteamDS.addNewTariffSteam(newSteam).subscribe(result=>{
+        this.handleSaveSuccess(result?.data?.updatePackageSteam);
+      });
+    }
+    else
+    {
+      let guids = this.selectedItems.map(d => {
+          return d.guid;
+      });
+      let cost = Number(this.pcForm!.value['cost']);
+      let remarks= String(this.pcForm.value['remarks']);
+      let labour= Number(this.pcForm.value['labour']);
+      if(!guids)
+      {
+        this.pckSteamDS.updatePackageSteams(guids,cost,labour,remarks).subscribe(result=>{
 
-              this.handleSaveSuccess(result?.data?.addTariffSteaming);
-            });
-        }
-        else
-        {
-            this.pcForm?.setErrors({ overlaps: true });
-        }
-
-
-    });
+          this.handleSaveSuccess(result?.data?.updatePackageSteam);
+        });
+      }
+    }
+       
 
    
 
@@ -420,53 +416,33 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
     
-    let where: any = { or:[]};
+    if(this.selectedItems.length===1)
+    {
+      let updateSteam = new PackageSteamingItem(this.selectedItems[0]);
+      updateSteam.cost= Number(this.pcForm!.value['cost']);
+      updateSteam.remarks= String(this.pcForm.value['remarks']);
+      updateSteam.labour= Number(this.pcForm.value['labour']);
+      delete updateSteam.tariff_steaming;
+      delete updateSteam.customer_company;
+      this.pckSteamDS.updatePackageSteam(updateSteam).subscribe(result=>{
 
-    let maxTemp =this.pcForm?.value['max_temp'];
-    let minTemp=this.pcForm?.value['min_temp']
-    if(!maxTemp)maxTemp=9999;
-    where.or.push ({and:[{temp_min:{lte:minTemp}},{temp_max:{gte:minTemp}}]})
-    where.or.push ({and:[{temp_min:{lte:maxTemp}},{temp_max:{gte:maxTemp}}]})
-    where.or.push ({and:[{temp_min:{gte:minTemp}},{temp_min:{lte:maxTemp}}]})
-    where.or.push ({and:[{temp_max:{gte:minTemp}},{temp_max:{lte:maxTemp}}]})
-  
-    this.subs.sink= this.trfSteamDS.SearchTariffSteam(where).subscribe(data=>{
-        if(data.length<=1)
-        {
-          let bUpd:boolean=true;
+        this.handleSaveSuccess(result?.data?.updatePackageSteaming);
+      });
+    }
+    else
+    {
+      let guids = this.selectedItems?.map(d => d.guid).filter(guid => guid !== undefined) as string[];
+      let cost = Number(this.pcForm!.value['cost']);
+      let remarks= String(this.pcForm.value['remarks']);
+      let labour= Number(this.pcForm.value['labour']);
+      if(guids.length > 0)
+      {
+        this.pckSteamDS.updatePackageSteams(guids,cost,labour,remarks).subscribe(result=>{
 
-          if(data.length==1)
-          {
-            bUpd=this.selectedItem.guid===data[0].guid;
-           
-          }
-          
-          if(bUpd)
-          {
-            let updSteam = new TariffSteamingItem();
-            updSteam.guid = this.selectedItem.guid;
-            updSteam.cost= Number(this.pcForm!.value['cost']);
-            updSteam.remarks= String(this.pcForm.value['remarks']);
-            updSteam.temp_max= Number(maxTemp);
-            updSteam.temp_min= Number(this.pcForm.value['min_temp']);
-            updSteam.labour= Number(this.pcForm.value['labour']);
-            this.trfSteamDS.updateTariffSteam(updSteam).subscribe(result=>{
-              this.handleSaveSuccess(result?.data?.updateTariffSteaming);
-            });
-          }
-          else
-          {
-            this.pcForm?.setErrors({ overlaps: true });
-          }
-
-        }
-        else
-        {
-            this.pcForm?.setErrors({ overlaps: true });
-        }
-
-
-    });
+          this.handleSaveSuccess(result?.data?.updatePackageSteamings);
+        });
+      }
+    }
 
    
 
@@ -506,17 +482,4 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
   
-  onMaxTempInput(event: Event)
-  {
-    const inputElement = event.target as HTMLInputElement;
-    inputElement.value = inputElement.value.split('.')[0];
-    this.pcForm.get('max_temp')?.setValue(Number(inputElement.value));
-  }
-
-  onMinTempInput(event: Event)
-  {
-    const inputElement = event.target as HTMLInputElement;
-    inputElement.value = inputElement.value.split('.')[0];
-    this.pcForm.get('min_temp')?.setValue(Number(inputElement.value));
-  }
 }

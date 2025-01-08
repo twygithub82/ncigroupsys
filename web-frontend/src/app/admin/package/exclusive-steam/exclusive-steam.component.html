@@ -15,11 +15,16 @@
                   </mat-panel-title>
                   <mat-panel-description>
                     <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                      <button mat-mini-fab color="primary" (click)="addCall()"  (click)="$event.stopPropagation()">
+                        <mat-icon class="col-white">add</mat-icon>
+                      </button>
+                    </div>
+                   <!-- <div class="m-l-" [matTooltip]="translatedLangText.ADD">
                       <button mat-mini-fab color="primary" (click)="adjustCost()"  (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">edit</mat-icon>
                       </button>
                     </div>
-                    <!-- <div class="m-l-10" [matTooltip]="translatedLangText.EDIT" >
+                     <div class="m-l-10" [matTooltip]="translatedLangText.EDIT" >
                       <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">edit</mat-icon>
                       </button>
@@ -39,7 +44,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <form class="ms-0" [formGroup]="pcForm!"  #formDirective="ngForm">
                   <div class="row">
-                      <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-2">
+                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                           <input matInput formControlName="customer_code" 
@@ -53,28 +58,28 @@
                           </mat-autocomplete>
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-1 col-lg-1 col-md-1 col-sm2 mb-1">
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                           <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.PACKAGE_MIN_LABOUR}}</mat-label>
                               <input matInput formControlName="min_labour" type="number">
                              
                             </mat-form-field>
                       </div>
-                      <div class="col-xl-1 col-lg-1 col-md-1 col-sm2 mb-1">
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                           <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.PACKAGE_MAX_LABOUR }}</mat-label>
                               <input matInput formControlName="max_labour" type="number">
                              
                             </mat-form-field>
                       </div>
-                      <div class="col-xl-1 col-lg-1 col-md-1 col-sm2 mb-1">
+                      <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.PACKAGE_MIN_COST}}</mat-label>
                             <input matInput formControlName="min_cost" type="number">
                            
                           </mat-form-field>
                     </div>
-                    <div class="col-xl-1 col-lg-1 col-md-1 col-sm2 mb-1">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm2 mb-1">
                         <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.PACKAGE_MAX_COST }}</mat-label>
                             <input matInput formControlName="max_cost" type="number">
@@ -98,7 +103,7 @@
               <div class="responsive_table">
                 <table mat-table [dataSource]="packageSteamItems" matSort class="mat-cell advance-table">
                   <!-- Checkbox Column -->
-                  <ng-container matColumnDef="select">
+                  <!-- <ng-container matColumnDef="select">
                     <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
                       <mat-checkbox (change)="$event ? masterToggle() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
@@ -110,43 +115,43 @@
                         [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                       </mat-checkbox>
                     </mat-cell>
-                  </ng-container>
+                  </ng-container> -->
                   <ng-container matColumnDef="customerCode">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE }}:</span>{{row.customer_company?.code}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE }}:</span>{{row.package_steaming?.customer_company?.code}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="companyName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.customer_company?.name}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME }}:</span>{{row.package_steaming?.customer_company?.name}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="minTemp">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.MIN_TEMP }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.MIN_TEMP }}:</span>{{row.tariff_steaming?.temp_min}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.MIN_TEMP }}:</span>{{row.temp_min}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="maxTemp">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.MAX_TEMP }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.MAX_TEMP }}:</span>{{row.tariff_steaming?.temp_max}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.MAX_TEMP }}:</span>{{row.temp_max}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="cost">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.COST}}:</span> {{row.cost?.toFixed(2)}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.COST}}:</span> {{row.package_steaming?.cost?.toFixed(2)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="labour">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LABOUR }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                      <span class="mobile-label">{{this.translatedLangText.LABOUR }}:</span> {{row.labour?.toFixed(2)}}</mat-cell>
+                      <span class="mobile-label">{{this.translatedLangText.LABOUR }}:</span> {{row.package_steaming?.labour}}</mat-cell>
                   </ng-container>
-                  <ng-container matColumnDef="qty">
+                  <!-- <ng-container matColumnDef="qty">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.QTY}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <span class="mobile-label">{{this.translatedLangText.QTY}}:</span> {{row.qty }}
                     </mat-cell>
-                  </ng-container>
+                  </ng-container> -->
                   <ng-container matColumnDef="lastUpdate">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -160,9 +165,10 @@
                         class="tbl-action-btn">
                         <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
                       </button> -->
-                      <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
+                      <button mat-icon-button (click)="$event.stopPropagation()" (click)="deleteItem($event,row)"
                         class="tbl-action-btn">
-                        <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+                        <mat-icon>delete_forever</mat-icon>
+                        <!-- <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons> -->
                       </button>
                      </mat-cell> 
                   </ng-container>
@@ -173,14 +179,14 @@
                 </table>
               </div>
               <!-- Loading spinner -->
-              @if (!(packSteamDS.loading$ | async) && !packageSteamItems.length) {
+              @if (!(packSteamExclDS.loading$ | async) && !packageSteamItems.length) {
                 <mat-divider></mat-divider>
                 <div class="no-results m-l-20 pt-3" [style.display]="packageSteamItems.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
                 </div>
                 }
                 <!-- Loading spinner -->
-                @if (packSteamDS.loading$ | async) {
+                @if (packSteamExclDS.loading$ | async) {
                 <div class="tbl-spinner">
                   <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                   </mat-progress-spinner>
@@ -235,7 +241,7 @@
               </mat-menu> -->
               <!-- context menu end -->
              
-              <mat-paginator #paginator [length]="packSteamDS.totalCount" [pageIndex]="0" [pageSize]="10"
+              <mat-paginator #paginator [length]="packSteamExclDS.totalCount" [pageIndex]="0" [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageEvent($event)">
               </mat-paginator>
             </div>
