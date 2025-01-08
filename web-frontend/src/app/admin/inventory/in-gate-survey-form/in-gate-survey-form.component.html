@@ -110,7 +110,8 @@
                       <span>{{translatedLangText.CURRENT_STATUS}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{getTankStatusDescription(in_gate?.tank?.tank_status_cv)}}
+                      <div class="contact-detail-info font-bold">
+                        {{getTankStatusDescription(in_gate?.tank?.tank_status_cv)}}
                       </div>
                     </div>
                   </div>
@@ -167,7 +168,7 @@
             </div>
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <mat-stepper class="example-stepper" [orientation]="(stepperOrientation | async)!">
+                <mat-stepper class="example-stepper" [orientation]="(stepperOrientation | async)!" #stepper>
                   <mat-step [stepControl]="getTankDetailsFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
                     <form [formGroup]="getTankDetailsFormGroup()">
                       <ng-template matStepLabel>
@@ -485,7 +486,8 @@
                       </div>
                     </form>
                   </mat-step>
-                  <mat-step [stepControl]="getInGateDetailsFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                  <mat-step [stepControl]="getInGateDetailsFormGroup()"
+                    [completed]="this.in_gate?.in_gate_survey?.guid">
                     <form [formGroup]="getInGateDetailsFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -604,7 +606,8 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.LEFT_REMARKS, surveyForm?.get('frame_type.leftRemarks'))"
-                                class="link-button font-bold" [matTooltip]="surveyForm?.get('frame_type.leftRemarks')?.value">
+                                class="link-button font-bold"
+                                [matTooltip]="surveyForm?.get('frame_type.leftRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.leftRemarks')?.value) {
                                 *
                                 }
@@ -635,7 +638,8 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.REAR_REMARKS, surveyForm?.get('frame_type.rearRemarks'))"
-                                class="link-button font-bold" [matTooltip]="surveyForm?.get('frame_type.rearRemarks')?.value">
+                                class="link-button font-bold"
+                                [matTooltip]="surveyForm?.get('frame_type.rearRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.rearRemarks')?.value) {
                                 *
                                 }
@@ -666,7 +670,8 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.RIGHT_REMARKS, surveyForm?.get('frame_type.rightRemarks'))"
-                                class="link-button font-bold" [matTooltip]="surveyForm?.get('frame_type.rightRemarks')?.value">
+                                class="link-button font-bold"
+                                [matTooltip]="surveyForm?.get('frame_type.rightRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.rightRemarks')?.value) {
                                 *
                                 }
@@ -697,7 +702,8 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.TOP_REMARKS, surveyForm?.get('frame_type.topRemarks'))"
-                                class="link-button font-bold" [matTooltip]="surveyForm?.get('frame_type.topRemarks')?.value">
+                                class="link-button font-bold"
+                                [matTooltip]="surveyForm?.get('frame_type.topRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.topRemarks')?.value) {
                                 *
                                 }
@@ -797,7 +803,8 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.FRONT_REMARKS, surveyForm?.get('frame_type.frontRemarks'))"
-                                class="link-button font-bold" [matTooltip]="surveyForm?.get('frame_type.frontRemarks')?.value">
+                                class="link-button font-bold"
+                                [matTooltip]="surveyForm?.get('frame_type.frontRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.frontRemarks')?.value) {
                                 *
                                 }
@@ -828,7 +835,8 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.BOTTOM_REMARKS, surveyForm?.get('frame_type.bottomRemarks'))"
-                                class="link-button font-bold" [matTooltip]="surveyForm?.get('frame_type.bottomRemarks')?.value">
+                                class="link-button font-bold"
+                                [matTooltip]="surveyForm?.get('frame_type.bottomRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.bottomRemarks')?.value) {
                                 *
                                 }
@@ -889,7 +897,8 @@
                                         <input type="file" #fileInputLeft class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.leftImage'))">
                                         @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('frame_type.leftImage')?.get('preview')?.value || defaultImg"
+                                        <img
+                                          [src]="surveyForm?.get('frame_type.leftImage')?.get('preview')?.value || defaultImg"
                                           alt="Image Preview" class="preview-img border-0">
                                         }
                                         @else {
@@ -927,7 +936,8 @@
                                         <input type="file" #fileInputRear class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.rearImage'))">
                                         @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('frame_type.rearImage')?.get('preview')?.value || defaultImg"
+                                        <img
+                                          [src]="surveyForm?.get('frame_type.rearImage')?.get('preview')?.value || defaultImg"
                                           alt="Image Preview" class="preview-img border-0">
                                         }
                                         @else {
@@ -965,7 +975,8 @@
                                         <input type="file" #fileInputRight class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.rightImage'))">
                                         @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('frame_type.rightImage')?.get('preview')?.value || defaultImg"
+                                        <img
+                                          [src]="surveyForm?.get('frame_type.rightImage')?.get('preview')?.value || defaultImg"
                                           alt="Image Preview" class="preview-img border-0">
                                         }
                                         @else {
@@ -1003,7 +1014,8 @@
                                         <input type="file" #fileInputTop class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.topImage'))">
                                         @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('frame_type.topImage')?.get('preview')?.value || defaultImg"
+                                        <img
+                                          [src]="surveyForm?.get('frame_type.topImage')?.get('preview')?.value || defaultImg"
                                           alt="Image Preview" class="preview-img border-0">
                                         }
                                         @else {
@@ -1041,7 +1053,8 @@
                                         <input type="file" #fileInputFront class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.frontImage'))">
                                         @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('frame_type.frontImage')?.get('preview')?.value || defaultImg"
+                                        <img
+                                          [src]="surveyForm?.get('frame_type.frontImage')?.get('preview')?.value || defaultImg"
                                           alt="Image Preview" class="preview-img border-0">
                                         }
                                         @else {
@@ -1079,7 +1092,8 @@
                                         <input type="file" #fileInputBottom class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.bottomImage'))">
                                         @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('frame_type.bottomImage')?.get('preview')?.value || defaultImg"
+                                        <img
+                                          [src]="surveyForm?.get('frame_type.bottomImage')?.get('preview')?.value || defaultImg"
                                           alt="Image Preview" class="preview-img border-0">
                                         }
                                         @else {
@@ -1520,7 +1534,8 @@
                       </div>
                     </form>
                   </mat-step> -->
-                  <mat-step [stepControl]="getCompartmentTypeFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                  <mat-step [stepControl]="getCompartmentTypeFormGroup()"
+                    [completed]="this.in_gate?.in_gate_survey?.guid">
                     <form [formGroup]="getCompartmentTypeFormGroup()">
                       <ng-template matStepLabel>
                         <div class="mat-step-text-label">
@@ -1536,7 +1551,8 @@
                         }
                         @if (!(igDS.loading$ | async)) {
                         <mat-stepper class="example-stepper" [orientation]="(compTypeStepperOrientation | async)!">
-                          <mat-step [stepControl]="getBottomFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                          <mat-step [stepControl]="getBottomFormGroup()"
+                            [completed]="this.in_gate?.in_gate_survey?.guid">
                             <form [formGroup]="getBottomFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.BOTTOM}}</ng-template>
                               <div class="row">
@@ -1817,7 +1833,8 @@
                               </div>
                             </form>
                           </mat-step>
-                          <mat-step [stepControl]="getManlidFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
+                          <mat-step [stepControl]="getManlidFormGroup()"
+                            [completed]="this.in_gate?.in_gate_survey?.guid">
                             <form [formGroup]="getManlidFormGroup()">
                               <ng-template matStepLabel>{{translatedLangText.MANLID}}</ng-template>
                               <div class="row">
@@ -2010,8 +2027,7 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
-                            [disabled]="(igsDS.actionLoading$| async)"
-                            (click)="onPublish()">
+                            [disabled]="(igsDS.actionLoading$| async)" (click)="onPublish()">
                             <mat-icon>
                               @if (!(igsDS.actionLoading$ | async)) {
                               publish
@@ -2022,8 +2038,7 @@
                             {{translatedLangText.PUBLISH}}
                           </button>
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
-                            [disabled]="(igsDS.actionLoading$| async)"
-                            (click)="onFormSubmit()">
+                            [disabled]="(igsDS.actionLoading$| async)" (click)="onFormSubmit()">
                             <mat-icon>
                               @if (!(igsDS.actionLoading$ | async)) {
                               save

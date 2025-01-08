@@ -986,120 +986,185 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   }
 
   assignJobOrder(jobOrderRequest: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ASSIGN_JOB_ORDER,
       variables: {
         jobOrderRequest
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateJobProcessStatus(jobProcessRequest: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_JOB_PROCESS_STATUS,
       variables: {
         jobProcessRequest
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   completeJobItem(jobItemRequest: JobItemRequest[]): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: COMPLETE_JOB_ITEM,
       variables: {
         jobItemRequest
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   completeJobOrder(jobOrderRequest: UpdateJobOrderRequest[]): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: COMPLETE_JOB_ORDER,
       variables: {
         jobOrderRequest
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   completeQCRepair(repJobOrder: RepJobOrderRequest[]): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: QC_COMPLETE_REPAIR_JOB_ORDER,
       variables: {
         repJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   completeQCResidue(resJobOrder: ResJobOrderRequest): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: QC_COMPLETE_RESIDUE_JOB_ORDER,
       variables: {
         resJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   completeQCCleaning(clnJobOrder: ClnJobOrderRequest): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: QC_COMPLETE_CLEANING_JOB_ORDER,
       variables: {
         clnJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   completeQCSteaming(steamingJobOrder: SteamJobOrderRequest): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: QC_COMPLETE_STEAMING_JOB_ORDER,
       variables: {
         steamingJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   deleteJobOrder(jobOrderGuid: string[]): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: DELETE_JOB_ORDER,
       variables: {
         jobOrderGuid
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   rollbackJobInProgressRepair(repJobOrder: any[]): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ROLLBACK_REPAIR_JOB_IN_PROGRESS_JOB_ORDER,
       variables: {
         repJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   rollbackJobInProgressCleaning(clnJobOrder: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ROLLBACK_CLEANING_JOB_IN_PROGRESS_JOB_ORDER,
       variables: {
         clnJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   rollbackJobInProgressResidue(residueJobOrder: any[]): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ROLLBACK_RESIDUE_JOB_IN_PROGRESS_JOB_ORDER,
       variables: {
         residueJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   rollbackJobInProgressSteaming(steamingJobOrder: any[]): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ROLLBACK_STEAMING_JOB_IN_PROGRESS_JOB_ORDER,
       variables: {
         steamingJobOrder
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   canStartJob(jobOrderItem: JobOrderItem | undefined) {

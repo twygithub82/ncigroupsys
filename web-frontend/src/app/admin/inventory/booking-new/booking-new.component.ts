@@ -386,7 +386,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       and: [
         { status_cv: { eq: "ACCEPTED" } },
         { tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
-        { in_gate: { some: { delete_dt: { eq: null } } } }
       ]
     };
 
@@ -600,7 +599,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         populateData: {
           bookingTypeCvList: this.bookingTypeCvListNewBooking,
           yardCvList: this.yardCvList,
-          tankStatusCvList: this.tankStatusCvList
+          tankStatusCvList: this.tankStatusCvList,
+          testClassCvList: this.testClassCvListNewBooking
         }
       },
       direction: tempDirection

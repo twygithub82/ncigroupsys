@@ -879,12 +879,12 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (repairDS.canRollbackStatus(repairItem, repList)) {
-                  <button mat-flat-button color="accent" [disabled]="(repairDS.loading$ | async)"
+                  <button mat-flat-button color="accent" [disabled]="(repairDS.actionLoading$ | async)"
                     (click)="onRollback($event)">
                     <mat-icon>
-                      @if (!(repairDS.loading$ | async)) {
+                      @if (!(repairDS.actionLoading$ | async)) {
                       undo
-                      } @else if ((repairDS.loading$ | async)) {
+                      } @else if ((repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
@@ -892,12 +892,12 @@
                   </button>
                   }
                   @if (canApprove()) {
-                  <button mat-flat-button color="basic" [disabled]="(repairDS.loading$ | async)" class="m-l-5 bg-green"
+                  <button mat-flat-button color="basic" [disabled]="(repairDS.actionLoading$ | async)" class="m-l-5 bg-green"
                     (click)="onApprove($event)">
                     <mat-icon>
-                      @if (!(repairDS.loading$ | async)) {
+                      @if (!(repairDS.actionLoading$ | async)) {
                       done
-                      } @else if ((repairDS.loading$ | async)) {
+                      } @else if ((repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
@@ -905,12 +905,12 @@
                   </button>
                   }
                   @if (repairDS.canCancel(repairItem)) {
-                  <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-l-5"
+                  <button mat-flat-button color="warn" [disabled]="(repairDS.actionLoading$ | async)" class="m-l-5"
                     (click)="onCancel($event)">
                     <mat-icon>
-                      @if (!(repairDS.loading$ | async)) {
+                      @if (!(repairDS.actionLoading$ | async)) {
                       close
-                      } @else if ((repairDS.loading$ | async)) {
+                      } @else if ((repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
