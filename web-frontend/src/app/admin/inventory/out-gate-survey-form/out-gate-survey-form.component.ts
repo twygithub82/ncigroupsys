@@ -57,6 +57,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { OutGateDS, OutGateGO, OutGateItem } from 'app/data-sources/out-gate';
 import { OutGateSurveyDS, OutGateSurveyGO } from 'app/data-sources/out-gate-survey';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
+import { ReleaseOrderGO } from 'app/data-sources/release-order';
 
 @Component({
   selector: 'app-out-gate-survey-form',
@@ -214,6 +215,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   out_gate_guid: string | null | undefined;
+  ro_sot_guid: string | null | undefined;
   out_gate: OutGateItem | null | undefined;
   tank_info: TankInfoItem | null | undefined;
 
@@ -734,9 +736,10 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     });
 
     this.out_gate_guid = this.route.snapshot.paramMap.get('id');
+    this.ro_sot_guid = this.route.snapshot.paramMap.get('roSotId');
     if (this.out_gate_guid) {
       // EDIT
-      this.subs.sink = this.ogDS.getOutGateByID(this.out_gate_guid).subscribe(data => {
+      this.subs.sink = this.ogDS.getOutGateByID(this.out_gate_guid, this.ro_sot_guid!).subscribe(data => {
         if (data?.length > 0) {
           this.out_gate = data[0];
           console.log('out_gate:', this.out_gate);
@@ -966,13 +969,14 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       sot.unit_type_guid = this.surveyForm.get('tank_details.unit_type_guid')?.value;
       sot.owner_guid = this.surveyForm.get('tank_details.owner_guid')?.value;
 
-      let og: OutGateGO = new OutGateGO(this.out_gate!);
+      let og: any = new OutGateGO(this.out_gate!);
       og.out_gate_survey = undefined;
       og.vehicle_no = this.surveyForm.get('out_gate_details.vehicle_no')?.value?.toUpperCase();
       og.driver_name = this.surveyForm.get('out_gate_details.driver_name')?.value;
       og.haulier = this.surveyForm.get('out_gate_details.haulier')?.value;
       og.remarks = this.surveyForm.get('out_gate_details.in_gate_remarks')?.value;
       og.tank = sot;
+      og.release_order = new ReleaseOrderGO(this.out_gate?.tank?.release_order_sot?.[0]?.release_order);
 
       const periodicTestFormGroup = this.getBottomFormGroup();
       let ogs: OutGateSurveyGO = new OutGateSurveyGO();

@@ -300,7 +300,9 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   search() {
-    const where: any = {};
+    const where: any = {
+      tank: { release_order_sot: { some: { status_cv: { eq: "ACCEPTED" } } } }
+    };
 
     if (this.searchForm!.get('eir_no')?.value) {
       where.eir_no = { contains: this.searchForm!.value['eir_no'] };

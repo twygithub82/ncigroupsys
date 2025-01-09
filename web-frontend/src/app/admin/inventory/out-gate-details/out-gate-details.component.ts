@@ -48,7 +48,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { OutGateDS, OutGateGO, OutGateItem } from 'app/data-sources/out-gate';
-import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
+import { ReleaseOrderSotDS, ReleaseOrderSotGO, ReleaseOrderSotItem } from 'app/data-sources/release-order-sot';
 import { ReleaseOrderGO, ReleaseOrderItem } from 'app/data-sources/release-order';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
@@ -165,12 +165,15 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    BRANCH_NAME: 'COMMON-FORM.BRANCH-NAME'
   }
 
   outGateForm?: UntypedFormGroup;
 
   storingOrderTankItem?: StoringOrderTankItem;
+  roSotItem?: ReleaseOrderSotItem;
+  customerBranch?: CustomerCompanyItem;
 
   cvDS: CodeValuesDS;
   sotDS: StoringOrderTankDS;
@@ -248,10 +251,23 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
-      this.subs.sink = this.sotDS.getStoringOrderTankByIDForOutGate(this.sot_guid).subscribe(data => {
-        if (this.sotDS.totalCount > 0) {
-          this.storingOrderTankItem = data[0];
-          this.populateOutGateForm(this.storingOrderTankItem);
+      // this.subs.sink = this.sotDS.getStoringOrderTankByIDForOutGate(this.sot_guid).subscribe(data => {
+      //   if (this.sotDS.totalCount > 0) {
+      //     this.storingOrderTankItem = data[0];
+      //     this.populateOutGateForm(this.storingOrderTankItem);
+      //   }
+      // });
+      this.subs.sink = this.roSotDS.getReleaseOrderSotForOutGate(this.sot_guid).subscribe(data => {
+        if (data.length > 0) {
+          this.roSotItem = data[0]
+          console.log(this.roSotItem);
+          this.storingOrderTankItem = this.roSotItem.storing_order_tank;
+          this.populateOutGateForm(this.storingOrderTankItem, this.roSotItem);
+          this.ccDS.getCustomerBranch(this.roSotItem!.release_order!.customer_company!.guid!).subscribe(cc => {
+            if (cc.length > 0) {
+              this.customerBranch = cc[0]
+            }
+          });
         }
       });
     } else {
@@ -283,9 +299,9 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-  populateOutGateForm(sot: StoringOrderTankItem | undefined): void {
+  populateOutGateForm(sot: StoringOrderTankItem | undefined, roSot: ReleaseOrderSotItem | undefined): void {
     this.outGateForm!.patchValue({
-      haulier: this.roSotDS.getReleaseOrderSotItem(sot?.release_order_sot)?.release_order?.haulier,
+      haulier: roSot?.release_order?.haulier,
       vehicle_no: this.ogDS.getOutGateItem(sot?.out_gate)?.vehicle_no,
       driver_name: this.ogDS.getOutGateItem(sot?.out_gate)?.driver_name,
       eir_dt: this.ogDS.getOutGateItem(sot?.out_gate)?.eir_dt ? Utility.convertDate(this.ogDS.getOutGateItem(sot?.out_gate)?.eir_dt) : new Date(),
@@ -385,12 +401,13 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   onOutGateFormSubmit() {
     if (this.outGateForm?.valid) {
       console.log('Valid outGateForm', this.outGateForm?.value);
-      const ro = new ReleaseOrderGO(this.roSotDS.getReleaseOrderSotItem(this.storingOrderTankItem!.release_order_sot)?.release_order);
+      let ro: any = new ReleaseOrderGO(this.roSotItem?.release_order);
       ro.haulier = this.outGateForm.get('haulier')?.value;
+      ro.release_order_sot = [new ReleaseOrderSotGO(this.roSotItem)];
 
       const sot = new StoringOrderTankGO(this.storingOrderTankItem);
       sot.release_job_no = this.outGateForm.get('release_job_no')?.value;
-      
+
       const og = new OutGateItem({
         ...this.ogDS.getOutGateItem(this.storingOrderTankItem?.out_gate),
         eir_dt: Utility.convertDate(this.outGateForm.get('eir_dt')?.value) as number,
@@ -468,7 +485,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   resetForm() {
-    this.populateOutGateForm(this.storingOrderTankItem);
+    this.populateOutGateForm(this.storingOrderTankItem, this.roSotItem);
   }
 
   updateValidators(validOptions: any[]) {
