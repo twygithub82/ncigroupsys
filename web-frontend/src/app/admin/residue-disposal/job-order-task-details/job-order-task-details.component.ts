@@ -654,7 +654,8 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
   }
 
   canRollbackJob() {
-    return this.joDS.canRollbackJob(this.jobOrderItem) && this.residueDS.canRollbackJobInProgress(this.residueItem) && !this.isStarted();
+    return this.joDS.canRollbackJobWithCompleted(this.jobOrderItem)&& !this.isStarted();
+    //this.joDS.canRollbackJob(this.jobOrderItem) && this.residueDS.canRollbackJobInProgress(this.residueItem) && !this.isStarted();
   }
 
   getBadgeClass(status: string | undefined): string {
@@ -669,7 +670,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
       case 'JOB_IN_PROGRESS':
         return 'badge-solid-purple';
       default:
-        return '';
+        return 'badge-solid-blue';
     }
   }
 
@@ -1075,8 +1076,15 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     };
 
     where.and.push({
-      residue_part: { all: { job_order: { status_cv: { eq: 'COMPLETED' } } } }
-    });
+      residue_part:{all:{
+        or:[
+          {job_order: { status_cv: {eq:'COMPLETED' }}},
+          {approve_part:{eq:false}},
+          {delete_dt:{neq:0}},
+          {delete_dt:{neq:null}},
+        ]
+      }
+    }});
 
     where.and.push({
       guid: { eq: residue_guid }

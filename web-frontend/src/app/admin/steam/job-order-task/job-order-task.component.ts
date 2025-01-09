@@ -558,7 +558,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
          } ,
          {
           approve_part:{eq:false}
-         }
+         },
+         {delete_dt:{neq:0}},
+         {delete_dt:{neq:null}},
       ]
         }
     }

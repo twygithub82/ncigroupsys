@@ -678,7 +678,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
       case 'JOB_IN_PROGRESS':
         return 'badge-solid-purple';
       default:
-        return '';
+        return 'badge-solid-blue';
     }
   }
 
@@ -1054,8 +1054,20 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     };
 
     where.and.push({
-      steaming_part: { all: { job_order: { status_cv: { eq: 'COMPLETED' } } } }
-    });
+      steaming_part: { all:{ or:[
+        { 
+        job_order: { 
+          status_cv: { eq: 'COMPLETED' } }
+         } ,
+         {
+          approve_part:{eq:false}
+         },
+         {delete_dt:{neq:0}},
+         {delete_dt:{neq:null}},
+      ]
+        }
+    }
+  });
 
     where.and.push({
       guid: { eq: steam_guid }
@@ -1083,7 +1095,8 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
   }
 
   canRollbackJob() {
-    return (this.jobOrderItem?.status_cv=='COMPLETED'|| this.joDS.canRollbackJob(this.jobOrderItem)) && this.steamDS.canRollbackJobInProgress(this.steamItem) && !this.isStarted();
+    return this.joDS.canRollbackJobWithCompleted(this.jobOrderItem) &&!this.isStarted();
+    //(this.jobOrderItem?.status_cv=='COMPLETED'|| this.joDS.canRollbackJob(this.jobOrderItem)) && this.steamDS.canRollbackJobInProgress(this.steamItem) && !this.isStarted();
   }
 
    rollbackJob(event: Event) {

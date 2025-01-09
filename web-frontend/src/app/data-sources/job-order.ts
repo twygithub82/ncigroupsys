@@ -1171,6 +1171,11 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
   }
 
+  canRollbackJobWithCompleted(jobOrderItem: JobOrderItem | undefined) {
+    return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS'||jobOrderItem?.status_cv === 'COMPLETED';
+  }
+
+
   canRollbackJob(jobOrderItem: JobOrderItem | undefined) {
     return !jobOrderItem || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS';
   }
