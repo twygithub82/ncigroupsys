@@ -561,6 +561,8 @@ export const GET_REPAIR_FOR_QC_DETAILS = gql`
         bill_to_guid
         approve_dt
         approve_by
+        allocate_dt
+        allocate_by
         repair_part {
           action
           create_by
@@ -730,6 +732,10 @@ export const GET_REPAIR_FOR_JOB_ORDER = gql`
         total_cost
         update_by
         update_dt
+        approve_by
+        approve_dt
+        allocate_by
+        allocate_dt
         repair_part(where: $repair_part_where) {
           action
           create_by
@@ -976,6 +982,8 @@ const GET_REPAIR_FOR_MOVEMENT = gql`
         bill_to_guid
         approve_dt
         approve_by
+        allocate_dt
+        allocate_by
         complete_dt
         repair_part {
           action
@@ -1039,6 +1047,8 @@ const GET_REPAIR_FOR_MOVEMENT = gql`
           job_order {
             guid
             status_cv
+            qc_dt
+            qc_by
           }
         }
         aspnetsuser {
@@ -1358,41 +1368,61 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   addRepair(repair: any, customerCompany: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_REPAIR,
       variables: {
         repair,
         customerCompany
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateRepair(repair: any, customerCompany: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_REPAIR,
       variables: {
         repair,
         customerCompany
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   cancelRepair(repair: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: CANCEL_REPAIR,
       variables: {
         repair
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   rollbackRepair(repair: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ROLLBACK_REPAIR,
       variables: {
         repair
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   // rollbackRepairStatus(repair: any): Observable<any> {
@@ -1405,12 +1435,17 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   // }
 
   rollbackRepairApproval(repair: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ROLLBACK_REPAIR_APPROVAL,
       variables: {
         repair
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   approveRepair(repair: any): Observable<any> {
@@ -1611,7 +1646,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       return "Invalid time data";
     }
 
-    const days = Math.floor(timeTakenMs / (3600 * 24));
+    const days = Math.ceil(timeTakenMs / (3600 * 24));
 
     return `${days}`;
   }
@@ -1710,5 +1745,22 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       default:
         return '';
     }
+  }
+
+  getRepairJobQcDt(re: RepairItem | undefined): number | undefined {
+    if (!re?.repair_part || re.repair_part.length === 0) {
+      return undefined; // Return undefined if no parts exist
+    }
+  
+    // Extract all qc_dt values, filter valid ones, and find the max
+    const qcDates = re.repair_part
+      .map(part => part.job_order?.qc_dt)
+      .filter((qcDt): qcDt is number => qcDt !== undefined); // Filter valid numbers
+  
+    // Find the maximum qc_dt if qcDates array is not empty
+    const latestQcDt = qcDates.length > 0 ? Math.max(...qcDates) : undefined;
+  
+    // Convert the epoch time to a readable date string
+    return latestQcDt;
   }
 }

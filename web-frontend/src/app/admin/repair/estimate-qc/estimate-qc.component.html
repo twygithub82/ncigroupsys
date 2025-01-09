@@ -418,7 +418,8 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (repairDS.canRollbackQC(repairItem)) {
-                  <button mat-flat-button color="accent" [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)" class="m-l-5"
+                  <button mat-flat-button color="accent"
+                    [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)" class="m-l-5"
                     (click)="onOverwriteQC($event)">
                     <mat-icon>
                       @if (!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async)) {

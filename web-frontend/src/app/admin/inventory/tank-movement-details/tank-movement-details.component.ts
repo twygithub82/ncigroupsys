@@ -69,6 +69,7 @@ import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-pur
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
+import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-survey';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -379,6 +380,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   igs?: InGateSurveyItem;
   ig?: InGateItem;
   og?: OutGateItem;
+  ogs?: OutGateSurveyItem;
   pdItem?: PackageDepotItem;
   tiItem?: TankInfoItem;
   cleaningItem?: InGateCleaningItem[] = [];
@@ -401,6 +403,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   igDS: InGateDS;
   ogDS: OutGateDS;
   igsDS: InGateSurveyDS;
+  ogsDS: OutGateSurveyDS;
   cvDS: CodeValuesDS;
   tDS: TankDS;
   pbDS: PackageBufferDS;
@@ -535,6 +538,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.igDS = new InGateDS(this.apollo);
     this.ogDS = new OutGateDS(this.apollo);
     this.igsDS = new InGateSurveyDS(this.apollo);
+    this.ogsDS = new OutGateSurveyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tDS = new TankDS(this.apollo);
     this.pbDS = new PackageBufferDS(this.apollo);
@@ -744,6 +748,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (data.length > 0) {
           console.log(`ig: `, data)
           this.ig = data[0];
+        }
+      });
+      this.subs.sink = this.ogsDS.getOutGateSurveyByIDForMovement(this.sot_guid).subscribe(data => {
+        if (data.length > 0) {
+          console.log(`ogs: `, data)
+          this.ogs = data[0];
         }
       });
       this.subs.sink = this.ogDS.getOutGateByIDForMovement(this.sot_guid).subscribe(data => {
@@ -1491,6 +1501,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getBookingTypeDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.bookingTypeCvList);
+  }
+
+  getCladdingDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.claddingCvList);
+  }
+
+  getDisCompDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.disCompCvList);
   }
 
   getAvailableDate(sot: StoringOrderTankItem) {

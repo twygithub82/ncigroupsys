@@ -236,6 +236,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
+  processStatusCvList: CodeValuesItem[] = []
 
   teamList?: TeamItem[];
 
@@ -342,6 +343,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
       { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -393,6 +395,9 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     });
     this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
       this.unitTypeCvList = data;
+    });
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+      this.processStatusCvList = data;
     });
 
     this.repair_guid = this.route.snapshot.paramMap.get('id');
@@ -853,6 +858,10 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
 
   getSubgroupNameCodeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
+  }
+
+  getProcessStatusDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
   }
 
   getGroupSeq(codeVal: string | undefined): number | undefined {
