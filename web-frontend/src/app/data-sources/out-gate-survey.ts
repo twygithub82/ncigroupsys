@@ -296,23 +296,33 @@ export class OutGateSurveyDS extends BaseDataSource<OutGateSurveyItem> {
   }
 
   addOutGateSurvey(outGateSurvey: any, outGate: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_OUT_GATE_SURVEY,
       variables: {
         outGateSurvey,
         outGate
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateOutGateSurvey(outGateSurvey: any, outGate: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_OUT_GATE_SURVEY,
       variables: {
         outGateSurvey,
         outGate
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   // getInGateCountForYetToSurvey(): Observable<number> {
