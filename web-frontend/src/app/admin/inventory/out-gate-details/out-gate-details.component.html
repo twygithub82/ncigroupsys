@@ -30,7 +30,7 @@
                         <span>{{translatedLangText.RO_NO}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.ro_no}}</div>
+                        <div class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_no}}</div>
                       </div>
                     </div>
                     <div class="row">
@@ -38,7 +38,7 @@
                         <span>{{translatedLangText.RO_NOTES}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.ro_notes}}
+                        <div class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_notes}}
                         </div>
                       </div>
                     </div>
@@ -50,16 +50,16 @@
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                         <div class="contact-detail-info font-bold">
-                          {{ccDS.displayName(roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.customer_company)}}</div>
+                          {{ccDS.displayName(roSotItem?.release_order?.customer_company)}}</div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.ALIAS_NAME}}:</span>
+                        <span>{{translatedLangText.BRANCH_NAME}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                         <div class="contact-detail-info font-bold">
-                          {{roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.customer_company}}</div>
+                          {{ccDS.displayName(customerBranch)}}</div>
                       </div>
                     </div>
                   </div>
@@ -70,7 +70,7 @@
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                         <div class="contact-detail-info font-bold">
-                          {{displayDate(roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.release_dt!)}}
+                          {{displayDate(roSotItem?.release_order?.release_dt!)}}
                         </div>
                       </div>
                     </div>
@@ -79,7 +79,7 @@
                         <span>{{translatedLangText.STATUS}}:</span>
                       </div>
                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{getROSotStatusDescription(roSotDS.getReleaseOrderSotItem(storingOrderTankItem?.release_order_sot)?.release_order?.status_cv)}}
+                        <div class="contact-detail-info font-bold">{{getROSotStatusDescription(roSotItem?.release_order?.status_cv)}}
                         </div>
                       </div>
                     </div>

@@ -181,6 +181,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   roStatusCvList: CodeValuesItem[] = []
   yardCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  soTankStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
 
@@ -305,7 +306,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const queries = [
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-      { alias: 'roStatusCv', codeValType: 'RO_STATUS' }
+      { alias: 'roStatusCv', codeValType: 'RO_STATUS' },
+      { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' }
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -317,6 +319,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('roStatusCv').subscribe(data => {
       this.roStatusCvList = data;
+    });
+    this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
+      this.soTankStatusCvList = data;
     });
   }
 
@@ -800,6 +805,10 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getRoStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.roStatusCvList);
+  }
+
+  getSoTankStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.soTankStatusCvList);
   }
 
   canRollback(status_cv: string, sot_guid: string): boolean {

@@ -2693,7 +2693,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
           or: [
             { status_cv: { in: ["WAITING", "PREORDER"] } },
             {
-              and: [{ status_cv: { eq: "ACCEPTED" } }, { tank_status_cv: { neq: "RO_GENERATED" } }]
+              and: [{ status_cv: { eq: "ACCEPTED" } }, { tank_status_cv: { neq: "RELEASED" } }]
             }
           ]
         }
