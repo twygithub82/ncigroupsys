@@ -6,16 +6,25 @@ using static HotChocolate.ErrorCodes;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add CORS policy
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularClient", policy =>
-    {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
+    options.AddPolicy("AllowAll",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 });
+
+// Add CORS policy
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAngularClient", policy =>
+//    {
+//        policy.WithOrigins("http://localhost:4200")
+//              .AllowAnyHeader()
+//              .AllowAnyMethod();
+//    });
+//});
 
 //// Add CORS policy
 //builder.Services.AddCors(options =>
@@ -61,7 +70,7 @@ app.UseAuthorization();
 
 //app.MapControllers();
 //app.UseWebSockets();
-app.UseCors("AllowAngularClient");
+app.UseCors("AllowAll");
 app.UseRouting()
           //.UseWebSockets()
           .UseEndpoints(endpoints =>
@@ -69,7 +78,6 @@ app.UseRouting()
               endpoints.MapGraphQL();
           });
 
-app.UseCors("AllowAngularClient");
 app.Run();
 
 
