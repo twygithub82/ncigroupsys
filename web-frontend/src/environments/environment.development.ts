@@ -7,8 +7,7 @@ export const environment = {
   title: 'SIT Home',
   apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
   fileManagerURL: 'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
-  //graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
-  graphQLUrl: 'https://localhost:7047/graphql/',
+  graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
   graphqlWsUrl: 'wss://tlx-idms-global-notification.azurewebsites.net/graphql',
 };
 
