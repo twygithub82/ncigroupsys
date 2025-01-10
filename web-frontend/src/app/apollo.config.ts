@@ -18,19 +18,20 @@ import { setContext } from '@apollo/client/link/context';
         // HTTP Link
         const http = httpLink.create({ uri: environment.graphQLUrl });
         
-        // // Auth Middleware
-        const auth = setContext((operation, context) => {
-         const token = localStorage.getItem('currentToken'); // Retrieve the token from storage
-          return {
-            headers: {
-              //...headers,
-              Authorization: `Bearer ${token}` ,
-            },
-          };
-        });
+        // Auth Middleware
+        // const auth = setContext((_, { headers }) => {
+        //   const token = localStorage.getItem('currentToken'); // Retrieve the token from storage
+        //   console.log('Authorization Token:', token);
+        //   return {
+        //     headers: {
+        //       ...headers,
+        //       Authorization: token ? `Bearer ${token}` : '',
+        //     },
+        //   };
+        // });
 
-        //// Combine Auth Middleware with HTTP Link
-         const authHttpLink = auth.concat(http);
+        // Combine Auth Middleware with HTTP Link
+        // const authHttpLink = auth.concat(http);
 
         // Create a WebSocket link:
         const ws = new GraphQLWsLink(
@@ -49,7 +50,7 @@ import { setContext } from '@apollo/client/link/context';
             );
           },
           ws,
-          authHttpLink
+          http
         );
         
         return {
