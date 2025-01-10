@@ -312,19 +312,31 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
       where.eir_status_cv = { contains: this.searchForm!.get('eir_status_cv')?.value };
     }
 
-    if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
-      where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+    if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
+      const eirDtStart = this.searchForm?.get('eir_dt_start')?.value;
+      const eirDtEnd = this.searchForm?.get('eir_dt_end')?.value;
+      const today = new Date();
+
+      // Check if `est_dt_start` is before today and `est_dt_end` is empty
+      if (eirDtStart && new Date(eirDtStart) < today && !eirDtEnd) {
+        where.eir_dt = {
+          gte: Utility.convertDate(eirDtStart),
+          lte: Utility.convertDate(today, true), // Set end date to today
+        };
+      } else if (eirDtStart || eirDtEnd) {
+        // Handle general case where either or both dates are provided
+        where.eir_dt = {
+          gte: Utility.convertDate(eirDtStart || today),
+          lte: Utility.convertDate(eirDtEnd || today, true),
+        };
+      }
     }
 
-    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('last_cargo')?.value || this.searchForm!.get('purpose')?.value) {
+    if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('last_cargo')?.value || this.searchForm!.get('purpose')?.value) {
       const sotSearch: any = {};
 
       if (this.searchForm!.get('tank_no')?.value) {
         sotSearch.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
-      }
-
-      if (this.searchForm!.get('tank_status_cv')?.value) {
-        sotSearch.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
       }
 
       if (this.searchForm!.get('last_cargo')?.value) {
@@ -355,19 +367,33 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
         }
       }
 
-      if (this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value) {
-        const soSearch: any = {};
+      if (this.searchForm!.get('ro_no')?.value || this.searchForm!.get('customer_code')?.value) {
+        const releaseOrderSearch: any = {};
 
-        if (this.searchForm!.get('so_no')?.value) {
-          soSearch.so_no = { contains: this.searchForm!.get('so_no')?.value };
+        // Check and set ro_no in the search criteria
+        if (this.searchForm!.get('ro_no')?.value) {
+          releaseOrderSearch.ro_no = { contains: this.searchForm!.get('ro_no')?.value };
         }
 
+        // Check and set customer in the search criteria
         if (this.searchForm!.get('customer_code')?.value) {
-          soSearch.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+          releaseOrderSearch.customer_company = {
+            code: { contains: this.searchForm!.get('customer_code')?.value.code }
+          };
         }
-        sotSearch.storing_order = soSearch;
+
+        // Build the release_order_sot search clause
+        const releaseOrderSotSearch = {
+          some: {
+            status_cv: { eq: "ACCEPTED" },
+            release_order: releaseOrderSearch
+          }
+        };
+        sotSearch.release_order_sot = releaseOrderSotSearch;
       }
-      where.tank = sotSearch;
+
+      // Assign the release_order_sot search clause to tank
+      where.tank = { ...where.tank, ...sotSearch };
     }
 
     this.lastSearchCriteria = this.ogDS.addDeleteDtCriteria(where);

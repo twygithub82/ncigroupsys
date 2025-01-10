@@ -344,11 +344,11 @@
                               {{translatedLangText.CLEAR_ALL}}
                             </button>
                             <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
-                              [disabled]="(ogDS.loading$| async)">
+                              [disabled]="(ogDS.actionLoading$| async)">
                               <mat-icon>
-                                @if (!(ogDS.loading$ | async)) {
+                                @if (!(ogDS.actionLoading$ | async)) {
                                 move_to_inbox
-                                } @else if ((ogDS.loading$ | async)) {
+                                } @else if ((ogDS.actionLoading$ | async)) {
                                 <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                                 }
                               </mat-icon>

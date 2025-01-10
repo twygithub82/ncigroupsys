@@ -979,9 +979,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       og.release_order = new ReleaseOrderGO(this.out_gate?.tank?.release_order_sot?.[0]?.release_order);
 
       const periodicTestFormGroup = this.getBottomFormGroup();
-      let ogs: OutGateSurveyGO = new OutGateSurveyGO();
-      ogs.guid = this.out_gate?.out_gate_survey?.guid;
-      ogs.out_gate_guid = this.out_gate?.guid;
+      let ogs: OutGateSurveyGO = new OutGateSurveyGO(this.out_gate?.out_gate_survey);
       ogs.last_test_cv = this.surveyForm.get('periodic_test.last_test_cv')?.value;
       ogs.next_test_cv = this.surveyForm.get('periodic_test.next_test_cv')?.value;
       ogs.test_dt = Utility.convertDate(this.surveyForm.get('periodic_test.test_dt')?.value);
