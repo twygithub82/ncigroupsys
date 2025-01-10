@@ -6,6 +6,30 @@ using static HotChocolate.ErrorCodes;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+//// Add CORS policy
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAngularApp", policy =>
+//    {
+//        policy.WithOrigins("http://localhost:4200")
+//              .AllowAnyHeader()
+//              .AllowAnyMethod()
+//              .AllowCredentials(); // Include if you use cookies/auth
+//    });
+//});
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -37,7 +61,7 @@ app.UseAuthorization();
 
 //app.MapControllers();
 //app.UseWebSockets();
-
+app.UseCors("AllowAngularClient");
 app.UseRouting()
           //.UseWebSockets()
           .UseEndpoints(endpoints =>
@@ -45,6 +69,7 @@ app.UseRouting()
               endpoints.MapGraphQL();
           });
 
+app.UseCors("AllowAngularClient");
 app.Run();
 
 
@@ -57,7 +82,19 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
     // Iterate over properties and register HTTP clients dynamically
     foreach (var service in graphqlServiceSettings)
     {
-        services.AddHttpClient(service.Key.ToLower(), client => client.BaseAddress = new Uri(service.Value));
+        services.AddHttpClient(service.Key.ToLower(), (provider, client) =>
+        {
+            client.BaseAddress = new Uri(service.Value);
+
+            // Configure the HTTP client to forward the Bearer token
+            var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+                "Bearer",
+                httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "")
+            );
+        });
+
+        // services.AddHttpClient(service.Key.ToLower(), client => client.BaseAddress = new Uri(service.Value));
     }
 
     var server = services.AddGraphQLServer();
@@ -79,4 +116,7 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
     server.InitializeOnStartup();
 
     // Add other services and configurations as needed
+
+    // Register IHttpContextAccessor for token forwarding
+    services.AddHttpContextAccessor();
 }
