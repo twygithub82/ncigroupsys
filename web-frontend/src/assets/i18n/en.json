@@ -230,6 +230,25 @@
         "ESTIMATE-EDIT": "Edit Estimate"
       }
     },
+    "BILLING": {
+      "TEXT": "Billing",
+      "LIST": {
+        "DEPOT-COST-BILL": "Depot Cost Bill",
+        "PRE-INSPECTION" :"Pre-Inspection",
+        "LOLO":"LOLO",
+        "STORAGE":"Storage",
+        "RESIDUE-DISPOSAL-BILL":"Residue Disposal Bill",
+        "STEAM-BILL":"Steam Bill",
+        "CLEANING-BILL":"Cleaning Bill",
+        "REPAIR-BILL":"Repair Bill",
+        "BILLED-TANK":"Billed Tank",
+        "INVOICES":"Invoices",
+        "PENDING-SUMMARY":"Pending Summary",
+        "PEDNING-DETAIL":"Pending Detail",
+        "CUSTOMER-INVOICE":"Customer Invoice"
+        }
+      }
+    ,
     "SURVEY": {
       "TEXT": "Survey",
       "LIST": {

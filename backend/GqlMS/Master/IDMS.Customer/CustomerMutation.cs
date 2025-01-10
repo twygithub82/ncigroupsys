@@ -10,6 +10,7 @@ using IDMS.Customer.GqlTypes.LocalModel;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using static IDMS.Customer.GqlTypes.LocalModel.StatusConstant;
+using HotChocolate.Authorization;
 
 namespace IDMS.Customer.GqlTypes
 {
@@ -181,6 +182,7 @@ namespace IDMS.Customer.GqlTypes
             }
         }
 
+        [Authorize]
         public async Task<int> DeleteCustomerCompany(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
          [Service] IConfiguration config, List<string> customerGuids)
         {

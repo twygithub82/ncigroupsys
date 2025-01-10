@@ -1,4 +1,5 @@
 ﻿using CommonUtil.Core.Service;
+using HotChocolate.Authorization;
 using HotChocolate.Data;
 using IDMS.Models.DB;
 using IDMS.Models.Package;
@@ -169,6 +170,7 @@ namespace IDMS.Models.Package.GqlTypes
             return retval;
         }
 
+        
         public async Task<int> DeletePackageDepot(ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string[] DeletePackageDepot_guids)
         {
