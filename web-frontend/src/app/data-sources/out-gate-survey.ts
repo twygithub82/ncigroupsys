@@ -287,7 +287,7 @@ export class OutGateSurveyDS extends BaseDataSource<OutGateSurveyItem> {
         }),
         finalize(() => this.loadingSubject.next(false)),
         map((result) => {
-          const retResult = result.inGatesSurvey || { nodes: [], totalCount: 0 };
+          const retResult = result.resultList || { nodes: [], totalCount: 0 };
           this.dataSubject.next(retResult.nodes);
           this.totalCount = retResult.totalCount;
           return retResult.nodes;
