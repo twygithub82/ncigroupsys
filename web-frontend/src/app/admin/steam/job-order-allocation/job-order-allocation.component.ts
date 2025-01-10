@@ -1368,7 +1368,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
           console.log(result)
           if (result.data.updateSteamingStatus > 0) {
             this.startJobOrders(this.steamItem?.guid!);
-            this.handleSaveSuccess(result.data.updateSteamingStatus);
+           // this.handleSaveSuccess(result.data.updateSteamingStatus);
           }
         });
     });
@@ -1603,6 +1603,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
                     console.log(steamStatusReq);
                     this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
                       console.log(result);
+                      this.handleSaveSuccess(result.data.updateSteamingStatus);
                     });
                   }
                 }

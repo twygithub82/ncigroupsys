@@ -700,7 +700,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   canAmend(re: ResidueItem): boolean {
     if (!re) return true;
     const validStatus = ['PENDING']
-    return validStatus.includes(re?.status_cv!);
+    return validStatus.includes(re?.status_cv?re?.status_cv:'');
   }
 
   canSave(re: ResidueItem): boolean {
@@ -711,13 +711,13 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
   canApprove(re: ResidueItem): boolean {
     //const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
     const validStatus = ['PENDING', 'APPROVED']
-    return validStatus.includes(re?.status_cv!);
+    return validStatus.includes(re?.status_cv?re?.status_cv:'');
   }
 
   canNoAction(re: ResidueItem): boolean {
     //const validStatus = ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS']
     const validStatus = ['APPROVED']
-    return validStatus.includes(re?.status_cv!);
+    return validStatus.includes(re?.status_cv?re?.status_cv:'');
   }
 
   canQCComplete(re: ResidueItem | undefined): boolean {
@@ -730,7 +730,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
 
   canRollback(re: ResidueItem): boolean {
     const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION','COMPLETED','QC_COMPLETED']
-    return validStatus.includes(re?.status_cv!);
+    return validStatus.includes(re?.status_cv?re?.status_cv:'');
   }
 
   canRollbackJobInProgress(re: ResidueItem | undefined): boolean {
