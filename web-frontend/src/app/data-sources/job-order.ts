@@ -427,6 +427,7 @@ const GET_STARTED_JOB_ORDER = gql`
           tank_no
           guid
           tank_status_cv
+          required_temp
           storing_order {
             customer_company {
               name
